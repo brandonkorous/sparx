@@ -780,7 +780,7 @@ export function postStatusMeta(status: string): { label: string; tone: Tone; det
       return {
         label: 'Partly published',
         tone: 'warning',
-        detail: 'Some destinations went out and some did not — see each one below.',
+        detail: 'Some destinations went out and some did not: see each one below.',
       };
     case 'publishing':
       return { label: 'Publishing', tone: 'info', detail: 'Going out to your accounts now.' };
@@ -873,19 +873,19 @@ export function evaluateTarget(
     overBy = text.length - constraints.maxTextLength;
     level = 'warn';
     notes.push(
-      `${overBy.toLocaleString()} ${overBy === 1 ? 'character' : 'characters'} over the ${constraints.maxTextLength.toLocaleString()}-character limit — it will be cut short here.`
+      `${overBy.toLocaleString()} ${overBy === 1 ? 'character' : 'characters'} over the ${constraints.maxTextLength.toLocaleString()}-character limit. It will be cut short here.`
     );
   }
 
   if (constraints.requiresMedia && mediaCount === 0) {
     level = 'block';
-    notes.push('This platform needs a picture or video — add one, or leave it off this post.');
+    notes.push('This platform needs a picture or video. Add one, or leave it off this post.');
   }
 
   if (mediaCount > constraints.maxMediaCount) {
     level = level === 'block' ? 'block' : 'warn';
     notes.push(
-      `Takes at most ${constraints.maxMediaCount} ${constraints.maxMediaCount === 1 ? 'item' : 'items'} — only the first ${constraints.maxMediaCount} will be used.`
+      `Takes at most ${constraints.maxMediaCount} ${constraints.maxMediaCount === 1 ? 'item' : 'items'}: only the first ${constraints.maxMediaCount} will be used.`
     );
   }
 

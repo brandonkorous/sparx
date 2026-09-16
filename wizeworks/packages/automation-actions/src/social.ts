@@ -125,7 +125,7 @@ export function installSocialActions(): void {
     module: 'social',
     gates: [],
     manifestNote:
-      'Writes a draft SocialPost + its fan-out targets only — no platform API call. ' +
+      'Writes a draft SocialPost + its fan-out targets only: no platform API call. ' +
       'The post parks in pending_approval (human ships it) or scheduled (the ' +
       'find_due_social_posts drain + social-worker publish it); the module-active ' +
       'gate (module: social) suffices. External send is gated downstream at publish.',
@@ -134,7 +134,7 @@ export function installSocialActions(): void {
       const draft = buildSocialDraft(config, effect.fields);
       if (draft.body.length === 0) {
         throw new Error(
-          'social.post: the post template produced an empty body — set a message or a ' +
+          'social.post: the post template produced an empty body. Set a message or a ' +
             '{{announce.title}} token that the trigger resolves.'
         );
       }

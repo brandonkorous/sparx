@@ -225,7 +225,7 @@ export async function deleteContentTypeTx(
   const inUse = await tx.contentEntry.count({ where: { typeKey: key, deletedAt: null } });
   if (inUse > 0) {
     throw conflict(
-      `Cannot delete "${key}" — ${inUse} entr${inUse === 1 ? 'y' : 'ies'} still use it. Archive the entries first.`
+      `Cannot delete "${key}": ${inUse} entr${inUse === 1 ? 'y' : 'ies'} still use it. Archive the entries first.`
     );
   }
 

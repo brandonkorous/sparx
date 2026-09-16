@@ -202,7 +202,7 @@ export function ColorField({
             inside the border rather than floating as a small square in a box. */}
         <input
           type="color"
-          aria-label={`${label} — color picker`}
+          aria-label={`${label}: color picker`}
           value={/^#[0-9a-fA-F]{6}$/.test(value) ? value : '#FF6F86'}
           onChange={(e) => onChange(e.target.value.toUpperCase())}
           className="rounded-field border-module h-[3.625rem] w-16 shrink-0 cursor-pointer overflow-hidden border bg-transparent p-px [&::-moz-color-swatch]:rounded-[11px] [&::-moz-color-swatch]:border-0 [&::-webkit-color-swatch]:rounded-[11px] [&::-webkit-color-swatch]:border-0 [&::-webkit-color-swatch-wrapper]:h-full [&::-webkit-color-swatch-wrapper]:p-0"
@@ -212,7 +212,7 @@ export function ColorField({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           spellCheck={false}
-          aria-label={`${label} — hex value`}
+          aria-label={`${label}: hex value`}
         />
       </div>
       {hint ? <FieldDescription className="text-base">{hint}</FieldDescription> : null}

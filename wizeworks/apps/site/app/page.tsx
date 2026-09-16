@@ -12,6 +12,7 @@ import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { SUSPENDED_METADATA } from '@/lib/suspended';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -38,6 +39,10 @@ interface RootPageProps {
 export async function generateMetadata({ searchParams }: RootPageProps): Promise<Metadata> {
   const site = await resolveSite();
   if (!site) return {};
+  // A dark site tells a crawler nothing about the tenant. The layout says the
+  // same, but a route's metadata overrides a layout's, so it has to be said
+  // here too (issue 503).
+  if (site.billingPhase === 'suspended') return SUSPENDED_METADATA;
   // Same preview token as the body below: an author previewing an unpublished home
   // should see its unpublished title/description too, not the live page's.
   const sitePreview = (await searchParams)?.sparxSitePreview;
@@ -145,5 +150,5 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
   // A `throw` rather than a silent fallback: if that invariant is ever broken, this
   // says so on the first request instead of quietly rendering a tier nobody has looked
   // at in months.
-  throw new Error(`No silica home resolved for site "${site.slug}" — see lib/silica.ts`);
+  throw new Error(`No silica home resolved for site "${site.slug}": see lib/silica.ts`);
 }

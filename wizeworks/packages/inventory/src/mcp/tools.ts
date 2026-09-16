@@ -87,7 +87,7 @@ const createPurchaseOrder: McpToolDefinition = {
 const receiveStock: McpToolDefinition = {
   name: 'receive_stock',
   description:
-    'Receive stock against a submitted purchase order — raises on-hand through the ledger, advances the PO status, and records lots. Provide the purchase order id and the received lines.',
+    'Receive stock against a submitted purchase order: raises on-hand through the ledger, advances the PO status, and records lots. Provide the purchase order id and the received lines.',
   scope: 'write:inventory',
   confirmation: true,
   input: CreateGoodsReceiptInput,

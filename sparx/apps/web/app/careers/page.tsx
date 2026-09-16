@@ -11,7 +11,7 @@ import { Section, Display, Spark, Dot } from '@/components/marketing/primitives'
 import { ROLES, OPEN_APPLICATION, CAREERS_COPY, type Role } from './roles';
 
 export const metadata: Metadata = {
-  title: 'Careers — sparx',
+  title: 'Careers: sparx',
   description:
     'Founding roles at WizeWorks LLC, the team building sparx. Equity and revenue share, remote-first, and honest about exactly where we are.',
   alternates: { canonical: '/careers' },

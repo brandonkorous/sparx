@@ -98,7 +98,7 @@ function ReadOnlyNotice() {
     <Alert color="info" className="m-4">
       <AlertTitle>This is one of our ready-made looks</AlertTitle>
       <AlertDescription>
-        Make a copy to change it — the original stays available to everyone.
+        Make a copy to change it: the original stays available to everyone.
       </AlertDescription>
     </Alert>
   );

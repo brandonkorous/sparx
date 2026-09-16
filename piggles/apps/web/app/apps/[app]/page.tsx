@@ -52,7 +52,7 @@ export async function generateMetadata({
     // The description carries the jargon deliberately. A search result has to
     // contain the words the searcher used, and "Piggles Stock" is not a phrase
     // anybody has ever typed into a search box.
-    description: `${copy.lede} ${PRODUCT.name} calls it ${app.label} — other software calls it ${copy.alsoKnownAs.join(', ')}.`,
+    description: `${copy.lede} ${PRODUCT.name} calls it ${app.label}: other software calls it ${copy.alsoKnownAs.join(', ')}.`,
   };
 }
 
@@ -76,7 +76,7 @@ export default async function AppPage({ params }: { params: Promise<{ app: strin
           className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', `app-${app.id}`)}
         >
-          Get Piggles — {PRICE_LABEL}/month
+          Get Piggles for {PRICE_LABEL}/month
         </a>
         <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/apps">
           All fifteen apps

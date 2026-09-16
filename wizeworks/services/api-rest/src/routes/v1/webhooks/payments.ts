@@ -50,7 +50,7 @@ const paymentWebhookRoutes: FastifyPluginAsync = async (app) => {
     if (!process.env.STRIPE_WEBHOOK_SECRET_SPARX_PAY?.trim()) {
       // Dev / pre-ops: no signing secret. Ack so Stripe (or a test) doesn't retry.
       request.log.warn(
-        'STRIPE_WEBHOOK_SECRET_SPARX_PAY unset — sparx-pay webhook acknowledged without processing'
+        'STRIPE_WEBHOOK_SECRET_SPARX_PAY unset: sparx-pay webhook acknowledged without processing'
       );
       await reply.code(200).send({ received: true });
       return;

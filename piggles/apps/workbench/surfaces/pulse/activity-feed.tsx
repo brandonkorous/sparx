@@ -111,7 +111,7 @@ function ActivityRow({ item, count = 1 }: { item: ActivityItem; count?: number }
         />
         <span className="min-w-0 truncate">
           {item.title}
-          {item.subject ? ` — ${item.subject}` : ''}
+          {item.subject ? ` (${item.subject})` : ''}
         </span>
         {count > 1 ? (
           <Badge color="neutral" variant="soft" size="sm" className="shrink-0">
@@ -156,7 +156,7 @@ export function ActivityFeed({ hasJobs }: { hasJobs: boolean }) {
         <PaneLoadError
           icon={<Icon glyph={faWavePulse} className="size-6" aria-hidden />}
           title="Could not load what's happened"
-          description="This is a problem reaching the server. Nothing in your history is affected — it just could not be read."
+          description="This is a problem reaching the server. Nothing in your history is affected. It just could not be read."
           onRetry={retry}
         />
       </FormSection>
@@ -175,7 +175,7 @@ export function ActivityFeed({ hasJobs }: { hasJobs: boolean }) {
           description={
             hasJobs
               ? 'Once your team starts publishing pages, taking orders or importing records, every one of those shows up here, newest first.'
-              : 'As you and your team work — publishing pages, taking orders, importing records — it all shows up here, newest first.'
+              : 'As you and your team work (publishing pages, taking orders, importing records), it all shows up here, newest first.'
           }
         />
       </FormSection>

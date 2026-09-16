@@ -87,8 +87,8 @@ function ConnectPrompt({ configured, onOpen }: { configured: boolean; onOpen: ()
       </div>
       <Text className="text-sm">
         {configured
-          ? 'These are the real numbers Google records — how many people saw your site in search and how many clicked. Connect Search Console, the free tool from Google, to see them here.'
-          : 'Google’s own search numbers are not ready on this side yet. It is nothing to do with your account or your plan, and there is nothing for you to switch on. Everything measured here — how each page scores, and what is worth fixing — is up to date.'}
+          ? 'These are the real numbers Google records: how many people saw your site in search and how many clicked. Connect Search Console, the free tool from Google, to see them here.'
+          : 'Google’s own search numbers are not ready on this side yet. It is nothing to do with your account or your plan, and there is nothing for you to switch on. Everything measured here (how each page scores, and what is worth fixing) is up to date.'}
       </Text>
       <Button size="sm" color="module" variant="outline" onClick={onOpen}>
         <Link2 className="size-4" aria-hidden />
@@ -238,7 +238,7 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
             className="max-w-md"
             icon={<Gauge className="size-6" aria-hidden />}
             title="Let’s see how findable your site is"
-            description="Run a quick scan to score every page for how easily people can find it on a search engine. You’ll get a clear list of what to fix first — no jargon."
+            description="Run a quick scan to score every page for how easily people can find it on a search engine. You’ll get a clear list of what to fix first: no jargon."
             actions={
               <Button size="sm" color="module" loading={reindex.isPending} onClick={rescan}>
                 <RefreshCw className="size-4" aria-hidden />

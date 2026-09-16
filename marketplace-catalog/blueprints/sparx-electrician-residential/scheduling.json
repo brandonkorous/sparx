@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 2,
       "reminderOffsetsMin": [60],
-      "policyText": "Emergency callouts are booked as soon as an electrician is free — often same day. We confirm by phone before we head out so you always know who is coming and when."
+      "policyText": "Emergency callouts are booked as soon as an electrician is free, often same day. We confirm by phone before we head out so you always know who is coming and when."
     }
   ],
   "resources": [
@@ -144,7 +144,7 @@
     {
       "handle": "diagnostic-visit",
       "name": "Diagnostic visit",
-      "description": "Something not working right — a dead outlet, a tripping breaker, flickering lights? We find the cause and explain the fix in plain language. Fee credited toward the repair.",
+      "description": "Something not working right: a dead outlet, a tripping breaker, flickering lights? We find the cause and explain the fix in plain language. Fee credited toward the repair.",
       "durationMinutes": 60,
       "priceCents": 9900,
       "assignmentStrategy": "any_available",
@@ -161,7 +161,7 @@
     {
       "handle": "outlet-lighting-install",
       "name": "Outlets & lighting install",
-      "description": "New outlets, USB receptacles, dimmers, under-cabinet or recessed lighting — installed cleanly and safely, tested before we leave.",
+      "description": "New outlets, USB receptacles, dimmers, under-cabinet or recessed lighting: installed cleanly and safely, tested before we leave.",
       "durationMinutes": 120,
       "priceCents": 18500,
       "bufferAfterMin": 15,
@@ -179,7 +179,7 @@
     {
       "handle": "ceiling-fan-install",
       "name": "Ceiling fan install",
-      "description": "Replacing an old fixture or wiring a fan where there wasn’t one — mounted solid, balanced, and wired to code.",
+      "description": "Replacing an old fixture or wiring a fan where there wasn’t one: mounted solid, balanced, and wired to code.",
       "durationMinutes": 90,
       "priceCents": 14500,
       "bufferAfterMin": 15,
@@ -197,7 +197,7 @@
     {
       "handle": "panel-upgrade-consult",
       "name": "Panel upgrade consult",
-      "description": "Thinking about a service upgrade or a new breaker panel? We assess your current setup, talk through permits, and give you a fixed quote — free.",
+      "description": "Thinking about a service upgrade or a new breaker panel? We assess your current setup, talk through permits, and give you a fixed quote: free.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -232,7 +232,7 @@
     {
       "handle": "emergency-callout",
       "name": "Emergency callout",
-      "description": "No power, a burning smell, sparking or a scorched outlet — we prioritize it and confirm by phone before heading out. Booked to the next available electrician.",
+      "description": "No power, a burning smell, sparking or a scorched outlet. We prioritize it and confirm by phone before heading out. Booked to the next available electrician.",
       "durationMinutes": 60,
       "priceCents": 19900,
       "requiresApproval": true,

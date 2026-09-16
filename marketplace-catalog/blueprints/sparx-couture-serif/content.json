@@ -5,7 +5,7 @@
     "status": "published",
     "body": {
       "title": "The Winter High Jewellery",
-      "excerpt": "A first look at this winter’s numbered pieces — where the stones came from, and why there are so few of them.",
+      "excerpt": "A first look at this winter’s numbered pieces: where the stones came from, and why there are so few of them.",
       "featuredImage": {
         "$asset": "post-winter-high-jewellery"
       },
@@ -17,7 +17,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "A high-jewellery run begins with the stones, not the drawings. We buy a small parcel, lay it out under a north light, and see what it wants to become — which is why we can never tell you in advance exactly how many pieces a season will hold."
+                "text": "A high-jewellery run begins with the stones, not the drawings. We buy a small parcel, lay it out under a north light, and see what it wants to become, which is why we can never tell you in advance exactly how many pieces a season will hold."
               }
             ]
           },
@@ -68,7 +68,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Each piece leaves the atelier numbered, with a note of where its principal stone was cut. That note is not marketing — it is the reason to buy the real thing."
+                "text": "Each piece leaves the atelier numbered, with a note of where its principal stone was cut. That note is not marketing. It is the reason to buy the real thing."
               }
             ]
           }
@@ -82,7 +82,7 @@
     "status": "published",
     "body": {
       "title": "The making of Nº3 Black Rose & Oud",
-      "excerpt": "How the house’s evening scent came together — real oud, a dark rose, and eighteen months of getting the balance wrong.",
+      "excerpt": "How the house’s evening scent came together: real oud, a dark rose, and eighteen months of getting the balance wrong.",
       "featuredImage": {
         "$asset": "post-making-no3"
       },
@@ -94,7 +94,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Nº3 took the longest of the four to settle. Oud is a difficult material — powerful, unpredictable, and expensive enough that every trial batch is a real decision — and pairing it with a rose dark enough to hold its own without turning to jam took most of two years."
+                "text": "Nº3 took the longest of the four to settle. Oud is a difficult material: powerful, unpredictable, and expensive enough that every trial batch is a real decision, and pairing it with a rose dark enough to hold its own without turning to jam took most of two years."
               }
             ]
           },
@@ -192,7 +192,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The house was built on a plain idea — buy less, choose better, and keep it for good. A collection assembled slowly, around a few pieces worth keeping, reads as yours in a way a whole set bought at once never will."
+                "text": "The house was built on a plain idea: buy less, choose better, and keep it for good. A collection assembled slowly, around a few pieces worth keeping, reads as yours in a way a whole set bought at once never will."
               }
             ]
           },

@@ -108,7 +108,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Repeat2 className="size-6" aria-hidden />}
             title="Could not load repeat orders"
-            description="This is a problem reaching the server. Nobody’s repeat order has changed — nothing has been lost."
+            description="This is a problem reaching the server. Nobody’s repeat order has changed. Nothing has been lost."
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -120,7 +120,7 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             title={filtered ? 'None match that' : 'No repeat orders yet'}
             description={
               filtered
-                ? `No repeat orders are marked “${active.label}”. Switch back to All to see the rest — including any still on a free trial.`
+                ? `No repeat orders are marked “${active.label}”. Switch back to All to see the rest, including any still on a free trial.`
                 : 'When a customer sets up a product to be delivered on a schedule, their repeat order shows up here with what it’s worth each month.'
             }
           />

@@ -166,7 +166,7 @@ function hero(): Node {
                   text: 'Every consumable your practice runs on, in stock and compliant.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Meridian is a medical, dental and clinical supplies distributor. We stock the gloves, masks, wound care, infection-control and diagnostics a clinic gets through every day — sold by the case, priced for the trade, traceable by lot, and dispatched next day.',
+                  text: 'Meridian is a medical, dental and clinical supplies distributor. We stock the gloves, masks, wound care, infection-control and diagnostics a clinic gets through every day: sold by the case, priced for the trade, traceable by lot, and dispatched next day.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -243,16 +243,16 @@ function tradeTermsBand(): Node {
                 text: 'Built for the way a practice orders',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Open a trade account and you buy the way a clinic should — by the case, at contract rates, on terms, with the paperwork a regulated practice needs. No consumer markups, no chasing three suppliers.',
+                text: 'Open a trade account and you buy the way a clinic should: by the case, at contract rates, on terms, with the paperwork a regulated practice needs. No consumer markups, no chasing three suppliers.',
               }),
             ],
           }),
           el('div', 'grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6', {
             children: [
               card('Contract pricing', 'Per-case wholesale rates with volume breaks that deepen as your standing order grows. The more the practice gets through, the less each case costs.'),
-              card('Net-30 terms', 'Approved accounts order now and settle on net-30 — keep the treatment rooms stocked without tying up the card on every reorder.'),
+              card('Net-30 terms', 'Approved accounts order now and settle on net-30. Keep the treatment rooms stocked without tying up the card on every reorder.'),
               card('Compliant & traceable', 'Lot-numbered stock with certificates of conformity on file, so a recall or an audit is a lookup, not a scramble. Everything CE / regulatory marked.'),
-              card('Your account manager', 'A direct line to a real person who knows your practice, your standing order and what you go through — not a ticket queue.'),
+              card('Your account manager', 'A direct line to a real person who knows your practice, your standing order and what you go through, not a ticket queue.'),
             ],
           }),
           el('a', 'btn btn-primary btn-lg w-fit', { attrs: { href: '/contact' }, text: 'Open a trade account' }),
@@ -348,10 +348,10 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & terms' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'The price shown is the per-case list rate. Trade accounts unlock volume breaks — deeper per-case pricing on a pallet, a bulk drop, or a standing order — set for your account in your dashboard.',
+                    text: 'The price shown is the per-case list rate. Trade accounts unlock volume breaks (deeper per-case pricing on a pallet, a bulk drop, or a standing order) set for your account in your dashboard.',
                   }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'Every case is lot-numbered and CE / regulatory marked, with certificates of conformity on file for audit. Approved accounts buy on net-30 — open a trade account and we will price your regular lines and get you on terms.',
+                    text: 'Every case is lot-numbered and CE / regulatory marked, with certificates of conformity on file for audit. Approved accounts buy on net-30. Open a trade account and we will price your regular lines and get you on terms.',
                   }),
                   el('a', 'text-base font-semibold text-accent underline underline-offset-4', {
                     attrs: { href: '/contact' },
@@ -394,11 +394,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The catalog',
-    'Every line we stock — PPE, clinical consumables, wound care and infection control, sold by the case. Filter by department or sort by price; trade accounts see their contract pricing and lot traceability at checkout.'
+    'Every line we stock: PPE, clinical consumables, wound care and infection control, sold by the case. Filter by department or sort by price; trade accounts see their contract pricing and lot traceability at checkout.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The catalog grouped the way a practice manager actually reorders — the lines ordered most, new lines just in, the everyday essentials, infection-prevention supplies, wound care, and the bulk consumables you put on a standing order.'),
+  pageMasthead('Collections', 'The catalog grouped the way a practice manager actually reorders: the lines ordered most, new lines just in, the everyday essentials, infection-prevention supplies, wound care, and the bulk consumables you put on a standing order.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search the catalog', 'Know the product, the size, or the code you need? Search the whole catalog and the practice notes below.'),
@@ -424,7 +424,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Practice notes' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Practical guidance for the people who run the supply cupboard — how to keep an infection-control stock, spec gloves and PPE a team will actually wear, and never run a treatment room dry. Written for practice managers, not for a catalog.',
+            text: 'Practical guidance for the people who run the supply cupboard: how to keep an infection-control stock, spec gloves and PPE a team will actually wear, and never run a treatment room dry. Written for practice managers, not for a catalog.',
           }),
         ],
       }),
@@ -441,13 +441,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Meridian' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Meridian Medical Supplies is a medical, dental and clinical supplies distributor. We stock the everyday, essential lines that keep a GP surgery, a dental practice or a care home running — and we sell them to the trade by the case, at wholesale, on terms, with the traceability a regulated practice needs.',
+            text: 'Meridian Medical Supplies is a medical, dental and clinical supplies distributor. We stock the everyday, essential lines that keep a GP surgery, a dental practice or a care home running, and we sell them to the trade by the case, at wholesale, on terms, with the traceability a regulated practice needs.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We built the business around one idea: a practice manager should not have to chase a dozen suppliers, eat consumer markups, or wonder whether a box of gloves will clear an audit. One catalog, one account, one invoice, lot-numbered stock, and shelves that are actually full when you order.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'No minimum-order gymnastics, no mystery lead times, no compliance grey areas. Just the supplies your rooms depend on — CE marked, certified, priced fairly and out the door next day. The quiet reliability a practice is built on.',
+            text: 'No minimum-order gymnastics, no mystery lead times, no compliance grey areas. Just the supplies your rooms depend on: CE marked, certified, priced fairly and out the door next day. The quiet reliability a practice is built on.',
           }),
         ],
       }),
@@ -535,9 +535,9 @@ const caseItem = (opts: {
 const PRODUCTS: Product[] = [
   {
     handle: 'nitrile-exam-gloves-case',
-    title: 'Nitrile Exam Gloves, 4-mil — Case of 1000',
+    title: 'Nitrile Exam Gloves, 4-mil: Case of 1000',
     description:
-      'Powder-free blue nitrile examination gloves, 4-mil, textured fingertips, AQL 1.5 — the everyday clinical glove for exams, treatment and handling. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size; stock the full size run so no room is caught short.',
+      'Powder-free blue nitrile examination gloves, 4-mil, textured fingertips, AQL 1.5: the everyday clinical glove for exams, treatment and handling. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size; stock the full size run so no room is caught short.',
     status: 'active',
     productType: 'PPE',
     vendor: VENDOR,
@@ -557,9 +557,9 @@ const PRODUCTS: Product[] = [
   },
   caseItem({
     handle: 'procedure-face-masks-box',
-    title: 'Procedure Face Masks, Type IIR — Box of 50',
+    title: 'Procedure Face Masks, Type IIR: Box of 50',
     description:
-      'Type IIR fluid-resistant ear-loop procedure masks, 3-ply with an adjustable nose wire, EN 14683 tested. Box of 50. MOQ 10 boxes — buy the outer and keep every treatment room and reception stocked.',
+      'Type IIR fluid-resistant ear-loop procedure masks, 3-ply with an adjustable nose wire, EN 14683 tested. Box of 50. MOQ 10 boxes: buy the outer and keep every treatment room and reception stocked.',
     price: 8.5,
     sku: 'MMS-PPE-MASK-50',
     productType: 'PPE',
@@ -572,9 +572,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'disinfectant-wipes-case',
-    title: 'Surface Disinfectant Wipes — Case of 12',
+    title: 'Surface Disinfectant Wipes: Case of 12',
     description:
-      'Alcohol-free bactericidal, virucidal and fungicidal surface wipes — effective against enveloped viruses, EN 14476 compliant, for daily clinical surface and equipment cleaning. Case of 12 canisters (200 wipes each). MOQ 1 case.',
+      'Alcohol-free bactericidal, virucidal and fungicidal surface wipes: effective against enveloped viruses, EN 14476 compliant, for daily clinical surface and equipment cleaning. Case of 12 canisters (200 wipes each). MOQ 1 case.',
     price: 41,
     sku: 'MMS-IC-WIPES-12',
     productType: 'Infection control',
@@ -587,7 +587,7 @@ const PRODUCTS: Product[] = [
   }),
   {
     handle: 'sterile-gauze-swabs-box',
-    title: 'Sterile Gauze Swabs — Box of 100',
+    title: 'Sterile Gauze Swabs: Box of 100',
     description:
       'Sterile 8-ply 100% cotton gauze swabs, individually wrapped, highly absorbent and low-linting for wound cleaning, dressing and prep. Box of 100. MOQ 5 boxes. Choose the swab size your procedures call for.',
     status: 'active',
@@ -608,7 +608,7 @@ const PRODUCTS: Product[] = [
   },
   {
     handle: 'luer-lock-syringes-case',
-    title: 'Luer-Lock Syringes — Case of 800',
+    title: 'Luer-Lock Syringes: Case of 800',
     description:
       'Sterile single-use luer-lock syringes with a clear barrel and bold graduations, latex-free, for accurate dosing and irrigation. Case of 800 (8 boxes of 100). MOQ 1 case. Pick the volume your clinic uses most.',
     status: 'active',
@@ -629,9 +629,9 @@ const PRODUCTS: Product[] = [
   },
   {
     handle: 'isolation-gowns-case',
-    title: 'Disposable Isolation Gowns — Case of 50',
+    title: 'Disposable Isolation Gowns: Case of 50',
     description:
-      'Fluid-resistant AAMI Level 2 disposable isolation gowns with knit cuffs and full back coverage — single-use protection for examinations, procedures and infection-control precautions. Case of 50. MOQ 2 cases. Choose the fit.',
+      'Fluid-resistant AAMI Level 2 disposable isolation gowns with knit cuffs and full back coverage: single-use protection for examinations, procedures and infection-control precautions. Case of 50. MOQ 2 cases. Choose the fit.',
     status: 'active',
     productType: 'PPE',
     vendor: VENDOR,
@@ -649,9 +649,9 @@ const PRODUCTS: Product[] = [
   },
   caseItem({
     handle: 'hand-sanitiser-case',
-    title: 'Alcohol Hand Sanitiser Gel, 500 mL — Case of 12',
+    title: 'Alcohol Hand Sanitiser Gel, 500 mL: Case of 12',
     description:
-      '70% alcohol hand sanitiser gel with added emollient to protect skin through repeated use, EN 1500 hygienic hand-rub compliant, in a 500 mL pump bottle. Case of 12. MOQ 2 cases — stock every room, station and reception desk.',
+      '70% alcohol hand sanitiser gel with added emollient to protect skin through repeated use, EN 1500 hygienic hand-rub compliant, in a 500 mL pump bottle. Case of 12. MOQ 2 cases: stock every room, station and reception desk.',
     price: 46,
     sku: 'MMS-IC-SAN-12',
     productType: 'Infection control',
@@ -664,9 +664,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'digital-thermometers-box',
-    title: 'Digital Clinical Thermometers — Box of 12',
+    title: 'Digital Clinical Thermometers: Box of 12',
     description:
-      'Fast-read digital clinical thermometers with a flexible tip, fever alarm and last-reading memory, CE marked for clinical use. Box of 12 with spare batteries. MOQ 2 boxes — a reliable diagnostic every room should have to hand.',
+      'Fast-read digital clinical thermometers with a flexible tip, fever alarm and last-reading memory, CE marked for clinical use. Box of 12 with spare batteries. MOQ 2 boxes: a reliable diagnostic every room should have to hand.',
     price: 54,
     sku: 'MMS-CON-THERM-12',
     productType: 'Consumables',
@@ -679,9 +679,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'adhesive-wound-dressings-box',
-    title: 'Adhesive Wound Dressings — Box of 100',
+    title: 'Adhesive Wound Dressings: Box of 100',
     description:
-      'Sterile individually wrapped adhesive island dressings with a low-adherent absorbent pad and a breathable, water-resistant border — for minor wounds, post-procedure cover and everyday first aid. Box of 100. MOQ 5 boxes.',
+      'Sterile individually wrapped adhesive island dressings with a low-adherent absorbent pad and a breathable, water-resistant border, for minor wounds, post-procedure cover and everyday first aid. Box of 100. MOQ 5 boxes.',
     price: 19,
     sku: 'MMS-WC-DRESS-100',
     productType: 'Wound care',
@@ -696,7 +696,7 @@ const PRODUCTS: Product[] = [
     handle: 'clinic-starter-kit',
     title: 'Clinic Starter Kit',
     description:
-      'A curated kit of the consumables a new practice or satellite clinic runs out of first — nitrile gloves, procedure masks, disinfectant wipes, hand sanitiser, sterile gauze and adhesive dressings, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a treatment room from empty.',
+      'A curated kit of the consumables a new practice or satellite clinic runs out of first: nitrile gloves, procedure masks, disinfectant wipes, hand sanitiser, sterile gauze and adhesive dressings, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a treatment room from empty.',
     price: 179,
     sku: 'MMS-KIT-CLINIC-STARTER',
     productType: 'Consumables',
@@ -705,7 +705,7 @@ const PRODUCTS: Product[] = [
     tags: ['consumables', 'kit', 'starter', 'bundle'],
     asset: 'prod-starter-kit',
     seoTitle: 'Clinic Starter Kit | Meridian Medical',
-    seoDescription: 'A curated starter kit of essential clinical consumables — gloves, masks, wipes, sanitiser, gauze and dressings, priced below the sum.',
+    seoDescription: 'A curated starter kit of essential clinical consumables: gloves, masks, wipes, sanitiser, gauze and dressings, priced below the sum.',
   }),
 ];
 
@@ -781,18 +781,18 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'How to set up a clinical stockroom that never runs dry',
-      excerpt: 'An empty glove box mid-clinic stops a room cold. Here is a simple min/max system any practice can run to make sure the case is on the shelf before the last one is gone — and that every lot is traceable.',
+      excerpt: 'An empty glove box mid-clinic stops a room cold. Here is a simple min/max system any practice can run to make sure the case is on the shelf before the last one is gone, and that every lot is traceable.',
       featuredImage: { $asset: 'post-stockroom' },
       body: {
         type: 'doc',
         content: [
-          para('A clinical stockroom exists to do one thing: make sure the supply is there the moment a clinician needs it. Get it wrong and a box of gloves that costs a few pounds holds up a fully booked clinic. The good news is that keeping it right does not take software or a full-time storekeeper — it takes a min/max system, labelled bins, and the discipline to follow them.'),
+          para('A clinical stockroom exists to do one thing: make sure the supply is there the moment a clinician needs it. Get it wrong and a box of gloves that costs a few pounds holds up a fully booked clinic. The good news is that keeping it right does not take software or a full-time storekeeper. It takes a min/max system, labelled bins, and the discipline to follow them.'),
           h2('Set a min and a max for every line'),
-          para('For each consumable, decide two numbers. The MIN is the reorder point — the quantity that should trigger a new order, set high enough to cover your usage over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full — enough to buy at a sensible case price without turning the shelf into dead stock or risking expiry. When stock drops to the min, you order back up to the max. That is the whole system.'),
+          para('For each consumable, decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover your usage over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full, enough to buy at a sensible case price without turning the shelf into dead stock or risking expiry. When stock drops to the min, you order back up to the max. That is the whole system.'),
           h2('Rotate by expiry, and keep the lot numbers'),
-          para('Clinical stock expires, so first-in, first-out is not optional — put the newest cases at the back and pull from the front. Keep the lot number and expiry on every line you hold; if a product is ever recalled, you want to answer "do we have any, and where is it?" with a lookup, not an afternoon emptying cupboards. A supplier that lot-numbers its dispatch notes makes this almost automatic.'),
+          para('Clinical stock expires, so first-in, first-out is not optional. Put the newest cases at the back and pull from the front. Keep the lot number and expiry on every line you hold; if a product is ever recalled, you want to answer "do we have any, and where is it?" with a lookup, not an afternoon emptying cupboards. A supplier that lot-numbers its dispatch notes makes this almost automatic.'),
           h2('Put the fast movers on a standing order'),
-          para('The lines you get through on a predictable schedule — gloves, masks, wipes, sanitiser — do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves.'),
+          para('The lines you get through on a predictable schedule (gloves, masks, wipes, sanitiser) do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves.'),
         ],
       },
     },
@@ -808,13 +808,13 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Infection control is a chain, and it is only as strong as its weakest, emptiest dispenser. A practice can have a spotless policy on paper and still slip if the sanitiser bottle by the door has been empty for a week. Getting the supplies right — the correct spec, in enough quantity, always within reach — is what turns a policy into practice.'),
+          para('Infection control is a chain, and it is only as strong as its weakest, emptiest dispenser. A practice can have a spotless policy on paper and still slip if the sanitiser bottle by the door has been empty for a week. Getting the supplies right (the correct spec, in enough quantity, always within reach) is what turns a policy into practice.'),
           h2('Hand hygiene: mind the standard, not just the smell'),
           para('For a clinical hand rub, look past the fragrance to the standard. An alcohol gel around 70% that meets EN 1500 is the benchmark for hygienic hand disinfection; added emollient matters just as much, because skin that cracks from over-washing is skin people stop cleaning. Place a bottle at every point of care and every entrance, and stock enough that a dispenser is refilled the moment it runs low, not next week.'),
           h2('Surface disinfection: match the wipe to the claim'),
-          para('Not every wipe does every job. For clinical surfaces you want a wipe with a proven virucidal claim — EN 14476 against enveloped viruses is the one to look for — and a realistic contact time your team can actually keep to. Keep a canister in every room, and buy them by the case so the "we are out of wipes" note never appears on the whiteboard.'),
+          para('Not every wipe does every job. For clinical surfaces you want a wipe with a proven virucidal claim (EN 14476 against enveloped viruses is the one to look for) and a realistic contact time your team can actually keep to. Keep a canister in every room, and buy them by the case so the "we are out of wipes" note never appears on the whiteboard.'),
           h2('The rule of thumb: never ration protection'),
-          para('The quiet failure mode is running low and rationing — one canister guarded across three rooms, a sanitiser bottle nursed to the last drop. Buy infection-control consumables by the case at trade pricing and they are always there, always in date, and never the thing standing between a clinician and a clean, safe room.'),
+          para('The quiet failure mode is running low and rationing. One canister guarded across three rooms, a sanitiser bottle nursed to the last drop. Buy infection-control consumables by the case at trade pricing and they are always there, always in date, and never the thing standing between a clinician and a clean, safe room.'),
         ],
       },
     },
@@ -825,18 +825,18 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Choosing gloves and PPE your team will actually wear',
-      excerpt: 'PPE only protects people if it fits, holds up, and is always in the drawer. Here is how to spec gloves and masks a clinical team keeps on — and buy them so you never have to ration.',
+      excerpt: 'PPE only protects people if it fits, holds up, and is always in the drawer. Here is how to spec gloves and masks a clinical team keeps on, and buy them so you never have to ration.',
       featuredImage: { $asset: 'post-ppe' },
       body: {
         type: 'doc',
         content: [
-          para('The best PPE is the set your team does not fight against. Plenty of practices buy protection so thin, so ill-fitting or so scarce that people work around it — and then wonder why compliance slips. Spec it right and buy it in volume, and the safe choice becomes the easy one.'),
+          para('The best PPE is the set your team does not fight against. Plenty of practices buy protection so thin, so ill-fitting or so scarce that people work around it, and then wonder why compliance slips. Spec it right and buy it in volume, and the safe choice becomes the easy one.'),
           h2('Gloves: mind the mil and the fit'),
-          para('For general examination and treatment, a 4-mil powder-free nitrile glove is the everyday standard — strong enough to resist tears and hold up to alcohol and fluids, thin enough to keep the tactile feel a clinician needs. Powder-free avoids contamination and reactions, and getting the SIZE right matters more than people admit: a glove too big snags and slips, one too small tears at the knuckle. Stock small through extra-large so nobody is stuck with the wrong fit.'),
+          para('For general examination and treatment, a 4-mil powder-free nitrile glove is the everyday standard: strong enough to resist tears and hold up to alcohol and fluids, thin enough to keep the tactile feel a clinician needs. Powder-free avoids contamination and reactions, and getting the SIZE right matters more than people admit: a glove too big snags and slips, one too small tears at the knuckle. Stock small through extra-large so nobody is stuck with the wrong fit.'),
           h2('Masks: match the type to the task'),
-          para('For clinical procedures where splash is a risk, a Type IIR fluid-resistant mask tested to EN 14683 is the benchmark — three-ply, with a nose wire that actually seals and ear loops that do not pinch through a shift. Keep the reception and treatment rooms stocked from the same box, and replace masks freely rather than stretching one across a morning.'),
+          para('For clinical procedures where splash is a risk, a Type IIR fluid-resistant mask tested to EN 14683 is the benchmark: three-ply, with a nose wire that actually seals and ear loops that do not pinch through a shift. Keep the reception and treatment rooms stocked from the same box, and replace masks freely rather than stretching one across a morning.'),
           h2('Buy it in volume so you never ration it'),
-          para('The failure mode is always the same — a single box guarded like gold, protection made scarce by the purchasing, not the policy. Buy gloves and masks by the case at trade pricing and they are always there, always fresh, and never the reason a corner gets cut on a busy day.'),
+          para('The failure mode is always the same: a single box guarded like gold, protection made scarce by the purchasing, not the policy. Buy gloves and masks by the case at trade pricing and they are always there, always fresh, and never the reason a corner gets cut on a busy day.'),
         ],
       },
     },
@@ -851,7 +851,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Medical Supply (B2B / Wholesale)',
   theme: THEME,
   summary:
-    'A complete, working wholesale shop for a medical, dental & clinical supplies distributor: a real trade catalogue sold by the case — PPE, consumables, wound care and infection control — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30, lot traceability), and a full merchandised home page. Clean clinical theme — crisp cool ground, calm medical-blue, a teal accent. Shipped as Meridian Medical Supplies.',
+    'A complete, working wholesale shop for a medical, dental & clinical supplies distributor: a real trade catalogue sold by the case, PPE, consumables, wound care and infection control, with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30, lot traceability), and a full merchandised home page. Clean clinical theme, crisp cool ground, calm medical-blue, a teal accent. Shipped as Meridian Medical Supplies.',
   tagline: 'A wholesale storefront built for clinics and practices.',
   vertical: 'b2b',
   industry: 'Medical & clinical supply',
@@ -859,22 +859,22 @@ const SPEC: TemplateSiteSpec = {
   sortWeight: 85,
   brand: {
     businessName: 'Meridian Medical Supplies',
-    tagline: 'Compliant, traceable, in stock — everything a practice needs on one account.',
+    tagline: 'Compliant, traceable, in stock. Everything a practice needs on one account.',
   },
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Meridian Medical Supplies — medical, dental & clinical distributor',
+      title: 'Meridian Medical Supplies: medical, dental & clinical distributor',
       description:
-        'Meridian is a medical, dental and clinical supplies distributor — PPE, consumables, wound care and infection control sold by the case at trade prices, lot-traceable, with net-30 terms and next-day dispatch. Open a trade account.',
+        'Meridian is a medical, dental and clinical supplies distributor: PPE, consumables, wound care and infection control sold by the case at trade prices, lot-traceable, with net-30 terms and next-day dispatch. Open a trade account.',
     },
     about: {
       title: 'About Meridian Medical Supplies',
       description:
-        'How Meridian stocks, prices and ships — one catalog, one account, one invoice, wholesale by the case, lot-numbered and CE marked, with stock that is actually on the shelf when you order it.',
+        'How Meridian stocks, prices and ships. One catalog, one account, one invoice, wholesale by the case, lot-numbered and CE marked, with stock that is actually on the shelf when you order it.',
     },
     contact: {
-      title: 'Open a trade account — Meridian Medical Supplies',
+      title: 'Open a trade account: Meridian Medical Supplies',
       description:
         'Set up a trade account with Meridian: wholesale per-case pricing, volume breaks, net-30 terms, compliance documentation and a dedicated account manager. Wholesale enquiries and bulk quotes start here.',
     },

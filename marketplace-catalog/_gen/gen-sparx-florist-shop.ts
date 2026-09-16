@@ -198,7 +198,7 @@ const SCHEDULING = {
             handle: 'consult-call',
             name: 'Free flower consult',
             description:
-                'A quick, no-pressure chat about what you need — an occasion, a budget, a favourite color — and we’ll point you the right way.',
+                'A quick, no-pressure chat about what you need (an occasion, a budget, a favourite color) and we’ll point you the right way.',
             durationMinutes: 20,
             priceCents: 0,
             assignmentStrategy: 'any_available',
@@ -211,7 +211,7 @@ const SCHEDULING = {
             handle: 'custom-arrangement-consult',
             name: 'Custom arrangement consult',
             description:
-                'Sit down with a florist to design a one-off bouquet or arrangement — flowers, palette, vessel and size, all your call.',
+                'Sit down with a florist to design a one-off bouquet or arrangement: flowers, palette, vessel and size, all your call.',
             durationMinutes: 45,
             priceCents: 2500,
             assignmentStrategy: 'customer_choice',
@@ -224,7 +224,7 @@ const SCHEDULING = {
             handle: 'subscription-setup',
             name: 'Flower subscription setup',
             description:
-                'Set up a weekly, fortnightly or monthly bunch — pick your palette and delivery day and we’ll keep the fresh flowers coming.',
+                'Set up a weekly, fortnightly or monthly bunch. Pick your palette and delivery day and we’ll keep the fresh flowers coming.',
             durationMinutes: 30,
             priceCents: 1500,
             assignmentStrategy: 'any_available',
@@ -237,7 +237,7 @@ const SCHEDULING = {
             handle: 'sympathy-consult',
             name: 'Sympathy flowers consult',
             description:
-                'A gentle, unhurried conversation to arrange sympathy or funeral flowers — we’ll handle the details with care.',
+                'A gentle, unhurried conversation to arrange sympathy or funeral flowers: we’ll handle the details with care.',
             durationMinutes: 30,
             priceCents: 2000,
             assignmentStrategy: 'customer_choice',
@@ -250,7 +250,7 @@ const SCHEDULING = {
             handle: 'celebration-consult',
             name: 'Celebration flowers consult',
             description:
-                'Birthdays, anniversaries, new babies, big wins — plan flowers for the happy days, delivered or picked up.',
+                'Birthdays, anniversaries, new babies, big wins: plan flowers for the happy days, delivered or picked up.',
             durationMinutes: 45,
             priceCents: 3000,
             assignmentStrategy: 'customer_choice',
@@ -263,7 +263,7 @@ const SCHEDULING = {
             handle: 'flower-workshop',
             name: 'Hands-on flower workshop',
             description:
-                'A cheerful ninety minutes at the potting table — you’ll build a seasonal arrangement to take home, flowers and coffee included.',
+                'A cheerful ninety minutes at the potting table: you’ll build a seasonal arrangement to take home, flowers and coffee included.',
             durationMinutes: 90,
             priceCents: 6500,
             bufferAfterMin: 15,
@@ -278,7 +278,7 @@ const SCHEDULING = {
             handle: 'corporate-flowers-consult',
             name: 'Office & corporate flowers consult',
             description:
-                'Set up a standing order for your lobby, front desk or event — fresh flowers on a schedule that suits the space.',
+                'Set up a standing order for your lobby, front desk or event: fresh flowers on a schedule that suits the space.',
             durationMinutes: 45,
             priceCents: 3500,
             assignmentStrategy: 'any_available',
@@ -296,7 +296,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A bright flower shop full of fresh seasonal bouquets in bloom',
         title: 'Fresh flowers, picked for your day',
-        sub: 'A cheerful neighbourhood flower shop — daily fresh bunches, same-day local delivery, subscriptions and hands-on workshops.',
+        sub: 'A cheerful neighbourhood flower shop: daily fresh bunches, same-day local delivery, subscriptions and hands-on workshops.',
         primary: { label: 'Book a consult', href: '/book' },
         secondary: { label: 'See what we do', href: '/book' },
         overlay: 'dark',
@@ -305,7 +305,7 @@ const HOME = [
         items: [
             {
                 title: 'Fresh in every day',
-                body: 'We buy small and often, so the buckets are full of what’s actually in season — never tired stems dressed up to look new.',
+                body: 'We buy small and often, so the buckets are full of what’s actually in season, never tired stems dressed up to look new.',
             },
             {
                 title: 'Same-day local delivery',
@@ -313,7 +313,7 @@ const HOME = [
             },
             {
                 title: 'Flower subscriptions',
-                body: 'A fresh bunch on your table every week, fortnight or month — pick a palette and a day, and we do the rest.',
+                body: 'A fresh bunch on your table every week, fortnight or month. Pick a palette and a day, and we do the rest.',
             },
             {
                 title: 'Hands-on workshops',
@@ -349,7 +349,7 @@ const HOME = [
                 name: 'Hands-on flower workshop',
                 priceCents: 6500,
                 durationMin: 90,
-                desc: 'Build a seasonal arrangement to take home — flowers included.',
+                desc: 'Build a seasonal arrangement to take home: flowers included.',
             },
         ],
         cta: { label: 'See everything & book', href: '/book' },
@@ -369,14 +369,14 @@ const HOME = [
         alt: 'A wrapped weekly flower subscription ready for local delivery',
         heading: 'Fresh flowers, handled for you',
         body: [
-            'A subscription is the easy way to always have flowers on the table. Pick your palette and your day, and we’ll wrap a fresh, seasonal bunch and bring it round — every week, fortnight or month.',
+            'A subscription is the easy way to always have flowers on the table. Pick your palette and your day, and we’ll wrap a fresh, seasonal bunch and bring it round: every week, fortnight or month.',
             'Same-day local delivery means a last-minute gift is never a problem either. Order in the morning, and it’s on their doorstep by evening, with a card in your own words.',
         ],
         cta: { label: 'Set up a subscription', href: '/book' },
     }),
     teamRow({
         heading: 'Meet the florists',
-        intro: 'Book by name — you’ll get the same friendly face who knows what you like.',
+        intro: 'Book by name: you’ll get the same friendly face who knows what you like.',
         members: [
             {
                 name: 'Rosa Mendez',
@@ -431,7 +431,7 @@ const ABOUT = [
         alt: 'A bright flower shop full of fresh seasonal bouquets in bloom',
         heading: 'About Petal & Post',
         body: [
-            'Petal & Post is a small, cheerful flower shop on the corner — the kind of place you can pop into for a last-minute bunch or plan something special weeks ahead.',
+            'Petal & Post is a small, cheerful flower shop on the corner: the kind of place you can pop into for a last-minute bunch or plan something special weeks ahead.',
             'We buy fresh and local wherever we can, arrange everything by hand, and genuinely love helping you pick flowers for the good days and the hard ones alike.',
         ],
         cta: { label: 'Book a consult', href: '/book' },
@@ -446,7 +446,7 @@ const ABOUT = [
             },
             {
                 title: 'Flowers for every day',
-                body: 'Birthdays and big celebrations, quiet sympathy flowers, or just a Tuesday pick-me-up — all equally welcome.',
+                body: 'Birthdays and big celebrations, quiet sympathy flowers, or just a Tuesday pick-me-up. All equally welcome.',
             },
             {
                 title: 'Part of the neighbourhood',
@@ -470,7 +470,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book online?',
-        sub: 'See live availability and reserve a consult, subscription setup or workshop seat — no phone tag.',
+        sub: 'See live availability and reserve a consult, subscription setup or workshop seat: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book a consult', href: '/book' },
     }),
@@ -481,8 +481,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-florist-shop',
     name: 'Florist (Shop)',
     summary:
-        'A bright, joyful neighbourhood flower-shop site — a warm off-white ground, a cheerful coral primary, a fresh-green accent and a friendly rounded display. Installs a working booking flow: online booking for consults, flower subscriptions and hands-on workshops, with the shop’s florists as bookable resources on their own hours. Same-day local delivery, daily fresh arrangements, sympathy and celebration flowers. Ships as "Petal & Post".',
-    tagline: 'A cheerful template for neighbourhood flower shops — book online from day one.',
+        'A bright, joyful neighbourhood flower-shop site: a warm off-white ground, a cheerful coral primary, a fresh-green accent and a friendly rounded display. Installs a working booking flow: online booking for consults, flower subscriptions and hands-on workshops, with the shop’s florists as bookable resources on their own hours. Same-day local delivery, daily fresh arrangements, sympathy and celebration flowers. Ships as "Petal & Post".',
+    tagline: 'A cheerful template for neighbourhood flower shops. Book online from day one.',
     industry: 'Florist',
     sortWeight: 17,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -491,7 +491,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Petal & Post — a neighbourhood flower shop',
+            title: 'Petal & Post: a neighbourhood flower shop',
             description:
                 'Petal & Post is a cheerful flower shop for daily fresh bunches, same-day local delivery, subscriptions and workshops. Book a consult online.',
         },

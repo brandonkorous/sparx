@@ -149,7 +149,7 @@ const SCHEDULING = {
             cancellationWindowHours: 24,
             reminderOffsetsMin: [1440, 120],
             policyText:
-                'Consultations are free and take about half an hour. Give us a day’s notice if you need to move it — no charge either way.',
+                'Consultations are free and take about half an hour. Give us a day’s notice if you need to move it: no charge either way.',
         },
     ],
     resources: [
@@ -191,7 +191,7 @@ const SCHEDULING = {
         {
             handle: 'small-tattoo',
             name: 'Small tattoo',
-            description: 'A single, self-contained piece — up to palm-sized. Design, stencil and tattoo in one sitting.',
+            description: 'A single, self-contained piece: up to palm-sized. Design, stencil and tattoo in one sitting.',
             durationMinutes: 120,
             priceCents: 18000,
             assignmentStrategy: 'customer_choice',
@@ -212,7 +212,7 @@ const SCHEDULING = {
         {
             handle: 'full-day-session',
             name: 'Full-day session',
-            description: 'A seven-hour sitting for major work — sleeves, back pieces and full custom builds, with breaks.',
+            description: 'A seven-hour sitting for major work: sleeves, back pieces and full custom builds, with breaks.',
             durationMinutes: 420,
             priceCents: 84000,
             bufferAfterMin: 15,
@@ -223,7 +223,7 @@ const SCHEDULING = {
         {
             handle: 'fine-line-piece',
             name: 'Fine-line piece',
-            description: 'Delicate single-needle work — script, botanicals and small, precise line designs.',
+            description: 'Delicate single-needle work: script, botanicals and small, precise line designs.',
             durationMinutes: 180,
             priceCents: 32000,
             bufferAfterMin: 10,
@@ -235,7 +235,7 @@ const SCHEDULING = {
             handle: 'cover-up-consultation',
             name: 'Cover-up consultation',
             description:
-                'A longer sit-down for reworking or covering existing ink. We assess what’s there and map out a design that lives on top of it — booked with approval first.',
+                'A longer sit-down for reworking or covering existing ink. We assess what’s there and map out a design that lives on top of it: booked with approval first.',
             durationMinutes: 45,
             priceCents: 0,
             requiresApproval: true,
@@ -252,7 +252,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A dimly lit tattoo studio with a single artist at work',
         title: 'Custom work, made to last',
-        sub: 'A dark studio for considered, hand-drawn tattoos — blackwork, fine-line, traditional and realism. Every piece starts as a conversation, never a flash sheet.',
+        sub: 'A dark studio for considered, hand-drawn tattoos: blackwork, fine-line, traditional and realism. Every piece starts as a conversation, never a flash sheet.',
         primary: { label: 'Book a consult', href: '/book' },
         secondary: { label: 'See the work', href: '/book' },
         overlay: 'darker',
@@ -275,7 +275,7 @@ const HOME = [
     }),
     serviceMenu({
         heading: 'What we do',
-        intro: 'Sessions are priced by the time your piece takes. Consultations are free — start there, and we’ll size the rest together. Live availability is on the booking page.',
+        intro: 'Sessions are priced by the time your piece takes. Consultations are free. Start there, and we’ll size the rest together. Live availability is on the booking page.',
         surface: 'muted',
         columns: 2,
         items: [
@@ -291,14 +291,14 @@ const HOME = [
         alt: 'A private tattoo station under a warm work lamp',
         heading: 'A room built for the work',
         body: [
-            'Ironwood is a private, low-lit studio — three chairs, no walk-in churn, no music you have to shout over. Just focused artists and the time a good tattoo actually needs.',
+            'Ironwood is a private, low-lit studio: three chairs, no walk-in churn, no music you have to shout over. Just focused artists and the time a good tattoo actually needs.',
             'We’d rather do fewer pieces properly than rush a room full. That is the whole idea: craft over comfort, and ink you’ll still be glad you got in twenty years.',
         ],
         cta: { label: 'Book your chair', href: '/book' },
     }),
     teamRow({
         heading: 'The artists',
-        intro: 'Book by name — each artist owns their style, and you sit with the same one from consult to final pass.',
+        intro: 'Book by name. Each artist owns their style, and you sit with the same one from consult to final pass.',
         members: [
             {
                 name: 'Silas Roan',
@@ -363,7 +363,7 @@ const ABOUT = [
         alt: 'A dimly lit tattoo studio with a single artist at work',
         heading: 'About Ironwood Tattoo',
         body: [
-            'We opened Ironwood to tattoo the way we always wanted to be tattooed — slowly, custom, and by the same artist from the first sketch to the last line.',
+            'We opened Ironwood to tattoo the way we always wanted to be tattooed: slowly, custom, and by the same artist from the first sketch to the last line.',
             'No flash-sheet churn, no rush, no leaving with something you settled for. Just hand-drawn work, an honest plan, and a studio that takes hygiene as seriously as the art.',
         ],
         cta: { label: 'Book a consult', href: '/book' },
@@ -374,7 +374,7 @@ const ABOUT = [
         items: [
             {
                 title: 'Consultation first',
-                body: 'Every piece starts with a free sit-down about your idea, your body and your budget — before we book anything.',
+                body: 'Every piece starts with a free sit-down about your idea, your body and your budget: before we book anything.',
             },
             {
                 title: 'A deposit that holds your chair',
@@ -382,7 +382,7 @@ const ABOUT = [
             },
             {
                 title: 'Yours for life',
-                body: 'We tattoo to last and send you home knowing exactly how to heal it — so the piece looks as good on year ten as on day one.',
+                body: 'We tattoo to last and send you home knowing exactly how to heal it, so the piece looks as good on year ten as on day one.',
             },
         ],
     }),
@@ -401,7 +401,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and reserve a consult or session online — no phone tag.',
+        sub: 'See live availability and reserve a consult or session online: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -412,8 +412,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-tattoo-dark',
     name: 'Tattoo (Dark Studio)',
     summary:
-        'A dark, gallery-first tattoo-studio site — a warm ink-black palette in both modes, an old-gold primary over an oxblood accent, a condensed gothic display, and real ink photography carrying the page. Installs a working booking flow: a free consultation, priced session tiers (small, fine-line, half-day, full-day), three artists you book by name with their own late hours, and a $50 session-deposit policy. Ships as "Ironwood Tattoo", a private three-chair studio.',
-    tagline: 'A dark, gallery-first template for tattoo studios — book a consult from day one.',
+        'A dark, gallery-first tattoo-studio site: a warm ink-black palette in both modes, an old-gold primary over an oxblood accent, a condensed gothic display, and real ink photography carrying the page. Installs a working booking flow: a free consultation, priced session tiers (small, fine-line, half-day, full-day), three artists you book by name with their own late hours, and a $50 session-deposit policy. Ships as "Ironwood Tattoo", a private three-chair studio.',
+    tagline: 'A dark, gallery-first template for tattoo studios. Book a consult from day one.',
     industry: 'Tattoo studio',
     sortWeight: 86,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -422,7 +422,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Ironwood Tattoo — a custom tattoo studio',
+            title: 'Ironwood Tattoo: a custom tattoo studio',
             description:
                 'Ironwood Tattoo is a private, dark studio for custom blackwork, fine-line, traditional and realism. Book a free consultation with your artist online.',
         },

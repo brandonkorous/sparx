@@ -20,7 +20,7 @@ import type { McpToolDefinition } from './registry';
 export const listCalls: McpToolDefinition = {
   name: 'list_crm_calls',
   description:
-    'Read the phone calls made to and from a customer — when, how long, how each one ended, and whatever was written down afterwards. Newest first. Use it before contacting somebody so you know whether they were already rung this week, and by whom.',
+    'Read the phone calls made to and from a customer, when, how long, how each one ended, and whatever was written down afterwards. Newest first. Use it before contacting somebody so you know whether they were already rung this week, and by whom.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -35,7 +35,7 @@ export const listCalls: McpToolDefinition = {
 export const listPhoneSystems: McpToolDefinition = {
   name: 'list_crm_phone_systems',
   description:
-    'List the phone systems this business has connected and which number each calls from. Returns nothing when none is connected, which means calls cannot be placed from here — a person can still make them by hand and log them afterwards. Never returns any credential.',
+    'List the phone systems this business has connected and which number each calls from. Returns nothing when none is connected, which means calls cannot be placed from here: a person can still make them by hand and log them afterwards. Never returns any credential.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({}),
@@ -47,7 +47,7 @@ export const listPhoneSystems: McpToolDefinition = {
 export const placeCall: McpToolDefinition = {
   name: 'place_crm_call',
   description:
-    "Ring a member of staff's own phone and, when they answer, dial the customer and join the two. THIS MAKES A REAL PHONE RING FOR A REAL PERSON — confirm with the person you are helping who is being called and from which handset before calling it, and consider the time of day where the customer is. The customer's number comes from their record, so it cannot dial the wrong person. Refused for anyone who has asked not to be contacted.",
+    "Ring a member of staff's own phone and, when they answer, dial the customer and join the two. THIS MAKES A REAL PHONE RING FOR A REAL PERSON. Confirm with the person you are helping who is being called and from which handset before calling it, and consider the time of day where the customer is. The customer's number comes from their record, so it cannot dial the wrong person. Refused for anyone who has asked not to be contacted.",
   scope: 'write:crm',
   confirmation: true,
   input: PlaceCallInput,

@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Restore Physical Therapy & Wellness — gentle, whole-person care",
+      "seoTitle": "Restore Physical Therapy & Wellness: gentle, whole-person care",
       "seoDescription": "Restore is a calm physical-therapy clinic for pelvic and women’s health, balance, chronic pain and wellness. Unhurried one-on-one care. Book your evaluation online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A calm, whole-person physical-therapy clinic for pelvic and women’s health, balance, chronic pain and wellness — one unhurried hour at a time."
+                      "A calm, whole-person physical-therapy clinic for pelvic and women’s health, balance, chronic pain and wellness. One unhurried hour at a time."
                     ],
                     "id": "d615b1c8-9d2b-4113-9bf4-1b7d4a5d9cec",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You get your therapist’s full attention for the whole visit — no double-booking, no handing you off to an aide. Just steady, personal care."
+                              "You get your therapist’s full attention for the whole visit: no double-booking, no handing you off to an aide. Just steady, personal care."
                             ],
                             "id": "4f9b30a1-ce79-4d32-a3e1-33fbc642b687",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Private, respectful care for pregnancy, postpartum recovery and pelvic-floor concerns — with a therapist who truly specializes in it."
+                              "Private, respectful care for pregnancy, postpartum recovery and pelvic-floor concerns, with a therapist who truly specializes in it."
                             ],
                             "id": "ed764707-3afb-4b39-82aa-c5629d91a5e5",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We accept most major plans and will check your benefits before your first visit, so there are no surprises — just care."
+                              "We accept most major plans and will check your benefits before your first visit, so there are no surprises. Just care."
                             ],
                             "id": "5f06c49f-ef47-4292-ae1f-f13149227337",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A few of the visits we offer most. Full pricing and live openings are on the booking page — most people start with an evaluation."
+                          "A few of the visits we offer most. Full pricing and live openings are on the booking page. Most people start with an evaluation."
                         ],
                         "id": "cf2b203d-2f65-47c4-b38d-024ed0dbd632",
                         "ord": "a1"
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Pain and stiffness rarely live in one place. So we take time to understand your whole story — how you move, sleep, work and worry — before we ever lay hands on the problem."
+                          "Pain and stiffness rarely live in one place. So we take time to understand your whole story (how you move, sleep, work and worry) before we ever lay hands on the problem."
                         ],
                         "id": "5f527198-c517-4cc8-9555-b4a6ba0d0add",
                         "ord": "a1"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same person each visit, someone who learns your body and your goals."
+                          "Book by name: you’ll see the same person each visit, someone who learns your body and your goals."
                         ],
                         "id": "f9d3804b-0748-4be9-8baf-7850024f56d3",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Helps older adults move with confidence again — steadier balance, safer walking, fewer falls."
+                                  "Helps older adults move with confidence again: steadier balance, safer walking, fewer falls."
                                 ],
                                 "id": "c5997849-1927-4e1b-a32e-168430ab1235",
                                 "ord": "a2"
@@ -1439,7 +1439,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Choose a time that suits you and pick your therapist — booking online takes about a minute, and there’s no rush."
+                      "Choose a time that suits you and pick your therapist: booking online takes about a minute, and there’s no rush."
                     ],
                     "id": "fb145c1b-f4e3-4a5b-a826-840937b06f51",
                     "ord": "a1"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Restore Physical Therapy & Wellness",
+      "seoTitle": "Book: Restore Physical Therapy & Wellness",
       "seoDescription": "See what Restore Physical Therapy & Wellness offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "34cba885-0bdd-4e18-b690-42cedbd8d9db",
                         "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Restore Physical Therapy & Wellness",
+      "seoTitle": "About: Restore Physical Therapy & Wellness",
       "seoDescription": "Who Restore Physical Therapy & Wellness is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Restore Physical Therapy & Wellness because so much of healthcare feels rushed — fifteen minutes, a printout, and out the door. We wanted to do the opposite: slow down, listen fully, and treat the whole person in front of us."
+                          "We started Restore Physical Therapy & Wellness because so much of healthcare feels rushed: fifteen minutes, a printout, and out the door. We wanted to do the opposite: slow down, listen fully, and treat the whole person in front of us."
                         ],
                         "id": "538f9ab5-9e9d-405f-8d88-073408a955c3",
                         "ord": "a1"
@@ -1892,7 +1892,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You leave each visit knowing exactly what to do at home — simple, doable movement that keeps your progress going between sessions."
+                              "You leave each visit knowing exactly what to do at home: simple, doable movement that keeps your progress going between sessions."
                             ],
                             "id": "58150a3e-3cbf-4ada-a1d1-2818e928f88e",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Restore Physical Therapy & Wellness",
+      "seoTitle": "Visit: Restore Physical Therapy & Wellness",
       "seoDescription": "Where to find Restore Physical Therapy & Wellness, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Restore Physical Therapy & Wellness will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Restore Physical Therapy & Wellness will get back to you, usually the same day."
                         ],
                         "id": "b8e83345-ac08-4193-bd41-5aaea954bd6f",
                         "ord": "a1"
@@ -2409,7 +2409,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live openings and reserve your evaluation online — no phone tag, no waiting on hold."
+                      "See live openings and reserve your evaluation online: no phone tag, no waiting on hold."
                     ],
                     "id": "b94d3e16-7a34-41f8-a26c-1e11ea964867",
                     "ord": "a1"

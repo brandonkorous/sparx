@@ -25,9 +25,9 @@ export interface ToolSeo {
 
 export const TOOL_SEO: Record<string, ToolSeo> = {
   favicon: {
-    seoTitle: 'Free Favicon Generator — PNG/SVG to ICO + Manifest',
+    seoTitle: 'Free Favicon Generator: PNG/SVG to ICO + Manifest',
     answer:
-      'A favicon generator turns one image into the icon files browsers and phones need — a multi-size favicon.ico, Apple touch icon, PWA icons, and a web manifest. This one is free, runs entirely in your browser, and gives you the exact HTML to paste.',
+      'A favicon generator turns one image into the icon files browsers and phones need: a multi-size favicon.ico, Apple touch icon, PWA icons, and a web manifest. This one is free, runs entirely in your browser, and gives you the exact HTML to paste.',
     howTo: {
       name: 'How to make a favicon',
       steps: [
@@ -42,15 +42,15 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
         },
         {
           name: 'Add it to your site',
-          text: 'Paste the generated HTML — or use the Next.js App Router files — into your project.',
+          text: 'Paste the generated HTML (or use the Next.js App Router files) into your project.',
         },
       ],
     },
   },
   'qr-code': {
-    seoTitle: 'Free QR Code Generator — URL, Wi-Fi, vCard + Logo',
+    seoTitle: 'Free QR Code Generator: URL, Wi-Fi, vCard + Logo',
     answer:
-      'A QR code generator encodes a link, Wi-Fi login, contact card, or message into a scannable square. This free tool lets you customize the colors, add a center logo, and export a high-resolution PNG or scalable SVG — no watermark, no sign-up, no expiry.',
+      'A QR code generator encodes a link, Wi-Fi login, contact card, or message into a scannable square. This free tool lets you customize the colors, add a center logo, and export a high-resolution PNG or scalable SVG: no watermark, no sign-up, no expiry.',
     howTo: {
       name: 'How to make a QR code',
       steps: [
@@ -68,7 +68,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'utm-builder': {
-    seoTitle: 'Free UTM Builder — Campaign URL Generator + QR',
+    seoTitle: 'Free UTM Builder: Campaign URL Generator + QR',
     answer:
       'A UTM builder adds tracking parameters (utm_source, utm_medium, utm_campaign) to a link so your analytics knows where each visitor came from. This free tool builds clean, consistent campaign URLs with channel presets, lowercase hygiene, a saved history, and a QR code.',
     howTo: {
@@ -94,7 +94,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'og-image': {
-    seoTitle: 'Free Open Graph Image Generator — 1200×630 Cards',
+    seoTitle: 'Free Open Graph Image Generator: 1200×630 Cards',
     answer:
       'An Open Graph image generator creates the 1200×630 preview image shown when your link is shared on social media. This free tool designs a clean card with a headline, accent color, and logo, then exports the PNG for your og:image tag.',
     howTo: {
@@ -117,7 +117,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'email-signature': {
-    seoTitle: 'Free Email Signature Generator — Gmail & Outlook HTML',
+    seoTitle: 'Free Email Signature Generator: Gmail & Outlook HTML',
     answer:
       'An email signature generator creates a professional HTML signature with your name, title, photo, and links. This free tool produces client-safe, table-based HTML you can copy straight into Gmail, Outlook, or Apple Mail.',
     howTo: {
@@ -140,9 +140,9 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   invoice: {
-    seoTitle: 'Free Invoice Generator — Branded PDF, No Sign-Up',
+    seoTitle: 'Free Invoice Generator: Branded PDF, No Sign-Up',
     answer:
-      'An invoice generator creates an itemized bill with your logo, line items, tax, and totals. This free tool calculates the totals automatically and downloads a print-ready PDF in any currency — no account, no watermark.',
+      'An invoice generator creates an itemized bill with your logo, line items, tax, and totals. This free tool calculates the totals automatically and downloads a print-ready PDF in any currency: no account, no watermark.',
     howTo: {
       name: 'How to create an invoice',
       steps: [
@@ -183,7 +183,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'meta-tags': {
-    seoTitle: 'Free Meta Tag Generator — Title, Description + Preview',
+    seoTitle: 'Free Meta Tag Generator: Title, Description + Preview',
     answer:
       'A meta tag generator writes the title, description, and Open Graph tags that control how your page appears in Google and on social media. This free tool shows a live search and social preview with character counts, then gives you the full meta block to paste.',
     howTo: {
@@ -203,7 +203,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'color-palette': {
-    seoTitle: 'Free Color Palette Generator — Harmony + Tailwind Scale',
+    seoTitle: 'Free Color Palette Generator: Harmony + Tailwind Scale',
     answer:
       'A color palette generator turns one brand color into a complete, harmonious scheme. This free tool generates complementary, analogous, triadic, tetradic, monochromatic, or fully random accent colors from your base, lets you shuffle for fresh variations and lock the colors you like, previews the palette on real UI, and exports a full 50–950 tint and shade scale for every color as CSS variables or a Tailwind config.',
     howTo: {
@@ -212,7 +212,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
         { name: 'Pick your brand color', text: 'Enter the hex of your primary color.' },
         {
           name: 'Choose a harmony',
-          text: 'Pick a scheme — complementary, analogous, triadic, tetradic, or monochromatic — and how many accent colors to generate.',
+          text: 'Pick a scheme (complementary, analogous, triadic, tetradic, or monochromatic) and how many accent colors to generate.',
         },
         {
           name: 'Shuffle and lock',
@@ -220,15 +220,15 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
         },
         {
           name: 'Copy the export',
-          text: 'Copy the full CSS variables or Tailwind config — a 50–950 scale for the primary and every accent.',
+          text: 'Copy the full CSS variables or Tailwind config: a 50–950 scale for the primary and every accent.',
         },
       ],
     },
   },
   'margin-calculator': {
-    seoTitle: 'Free Margin & Markup Calculator — Price + Break-Even',
+    seoTitle: 'Free Margin & Markup Calculator: Price + Break-Even',
     answer:
-      'A margin calculator works out profit margin, markup, profit per unit, and break-even from your cost and price. This free tool also reverses the math — enter a target margin and it tells you the price to charge.',
+      'A margin calculator works out profit margin, markup, profit per unit, and break-even from your cost and price. This free tool also reverses the math. Enter a target margin and it tells you the price to charge.',
     howTo: {
       name: 'How to calculate margin',
       steps: [
@@ -246,9 +246,9 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   quote: {
-    seoTitle: 'Free Quote & Estimate Generator — Branded PDF',
+    seoTitle: 'Free Quote & Estimate Generator: Branded PDF',
     answer:
-      'A quote generator creates an itemized estimate with your logo, line items, totals, and a valid-until date. This free tool calculates totals automatically and downloads a print-ready PDF in any currency — no account, no watermark.',
+      'A quote generator creates an itemized estimate with your logo, line items, totals, and a valid-until date. This free tool calculates totals automatically and downloads a print-ready PDF in any currency: no account, no watermark.',
     howTo: {
       name: 'How to create a quote',
       steps: [
@@ -263,9 +263,9 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'structured-data': {
-    seoTitle: 'Free JSON-LD Schema Generator — Rich Results Markup',
+    seoTitle: 'Free JSON-LD Schema Generator: Rich Results Markup',
     answer:
-      'A structured data generator creates the JSON-LD schema.org markup Google reads to show rich results like ratings, prices, and FAQs. This free tool builds valid markup for Local Business, Product, Article, and FAQ — fill the form and copy the script.',
+      'A structured data generator creates the JSON-LD schema.org markup Google reads to show rich results like ratings, prices, and FAQs. This free tool builds valid markup for Local Business, Product, Article, and FAQ: fill the form and copy the script.',
     howTo: {
       name: 'How to add structured data',
       steps: [
@@ -280,7 +280,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'contrast-checker': {
-    seoTitle: 'Free Color Contrast Checker — WCAG AA & AAA',
+    seoTitle: 'Free Color Contrast Checker: WCAG AA & AAA',
     answer:
       'A color contrast checker measures the ratio between text and its background and tells you whether it passes WCAG AA and AAA for accessibility. This free tool shows the exact ratio with a live preview for normal and large text.',
     howTo: {
@@ -294,7 +294,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   barcode: {
-    seoTitle: 'Free Barcode Generator — Code128, UPC, EAN + SKU',
+    seoTitle: 'Free Barcode Generator: Code128, UPC, EAN + SKU',
     answer:
       'A barcode generator encodes a number or SKU into a scannable barcode with a valid check digit. This free tool supports Code128, UPC-A, EAN-13, EAN-8, and Code39, and exports a crisp PNG or scalable SVG.',
     howTo: {
@@ -308,7 +308,7 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'digital-card': {
-    seoTitle: 'Free Digital Business Card — vCard + QR Generator',
+    seoTitle: 'Free Digital Business Card: vCard + QR Generator',
     answer:
       'A digital business card generator creates a vCard (.vcf) file and a QR code that saves your contact details into any phone with a tap or scan. This free tool builds both from your name, title, company, and links.',
     howTo: {
@@ -322,9 +322,9 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'privacy-policy': {
-    seoTitle: 'Free Privacy Policy Generator — + Terms of Service',
+    seoTitle: 'Free Privacy Policy Generator: + Terms of Service',
     answer:
-      'A privacy policy generator assembles a clear, plain-language privacy policy and terms of service from a few questions about your business and the data you collect. This free tool covers the common GDPR and CCPA sections — a solid starting point, not legal advice.',
+      'A privacy policy generator assembles a clear, plain-language privacy policy and terms of service from a few questions about your business and the data you collect. This free tool covers the common GDPR and CCPA sections: a solid starting point, not legal advice.',
     howTo: {
       name: 'How to create a privacy policy',
       steps: [
@@ -336,13 +336,13 @@ export const TOOL_SEO: Record<string, ToolSeo> = {
     },
   },
   'domain-checker': {
-    seoTitle: 'Free Domain Availability Checker — .com, .io & more',
+    seoTitle: 'Free Domain Availability Checker: .com, .io & more',
     answer:
       'A domain availability checker tells you whether a domain name is registered or free across multiple extensions at once, using live registry (RDAP) data. This free tool checks .com, .co, .io, .app, and more in a single search.',
     howTo: {
       name: 'How to check domain availability',
       steps: [
-        { name: 'Enter a name', text: 'Type the name you want — we add the extensions.' },
+        { name: 'Enter a name', text: 'Type the name you want. We add the extensions.' },
         { name: 'Pick extensions', text: 'Select .com, .co, .io, .app, and any others.' },
         { name: 'Run the check', text: 'Check availability across all of them at once.' },
         { name: 'See the results', text: 'Find which extensions are still available.' },

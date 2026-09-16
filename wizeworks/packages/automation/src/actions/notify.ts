@@ -147,7 +147,7 @@ export function registerNotifyAction(): void {
     module: null, // platform-level: notifications are not a paid module
     gates: [],
     manifestNote:
-      'writes only an in-app row addressed to same-tenant staff resolved through the tenant-scoped tx — no egress, no spend, no cross-tenant reach, so no gate applies',
+      'writes only an in-app row addressed to same-tenant staff resolved through the tenant-scoped tx: no egress, no spend, no cross-tenant reach, so no gate applies',
     execute: executeNotify,
   });
 }

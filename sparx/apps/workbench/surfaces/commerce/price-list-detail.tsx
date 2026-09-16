@@ -237,7 +237,7 @@ function PriceListLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         error={listQuery.error}
         noun="price list"
         title="Could not load this price list"
-        description="This is a problem reaching the server. The price list itself is unaffected — nothing has been lost."
+        description="This is a problem reaching the server. The price list itself is unaffected. Nothing has been lost."
         onRetry={() => {
           void listQuery.refetch();
         }}
@@ -455,7 +455,7 @@ function PriceListEditor({
     const ok = await confirm({
       title: `Retire ${list.name}?`,
       description:
-        'The special prices on this list stop applying — the customers it covers go back to your normal prices. Orders already placed are unaffected. This cannot be undone.',
+        'The special prices on this list stop applying: the customers it covers go back to your normal prices. Orders already placed are unaffected. This cannot be undone.',
       confirmLabel: 'Retire this price list',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -577,7 +577,7 @@ function PriceListEditor({
                 Add a price list
               </Heading>
               <Text>
-                A price list gives certain customers their own prices — a wholesale sheet for the
+                A price list gives certain customers their own prices: a wholesale sheet for the
                 businesses you supply, or a members’ rate. Set who it is for, then the price of each
                 product for them.
               </Text>
@@ -606,7 +606,7 @@ function PriceListEditor({
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  Only you and your team see this — it names the list, not anything a shopper reads.
+                  Only you and your team see this. It names the list, not anything a shopper reads.
                 </FieldDescription>
               )}
             </Field>
@@ -652,7 +652,7 @@ function PriceListEditor({
           {/* 2 — Who gets it */}
           <FormSection
             title="Who gets these prices"
-            description="These prices replace your normal ones — but only for the customers you choose here."
+            description="These prices replace your normal ones, but only for the customers you choose here."
           >
             <Field>
               <FieldLabel>Give them to</FieldLabel>
@@ -792,7 +792,7 @@ function PriceListEditor({
               <FieldDescription>
                 {draft.live
                   ? 'This list is on. Turn it off to keep it as a draft nobody is charged from.'
-                  : 'This list is a draft — no one is charged from it until you switch it on.'}
+                  : 'This list is a draft: no one is charged from it until you switch it on.'}
               </FieldDescription>
             </Field>
 
@@ -965,7 +965,7 @@ function PriceListEditor({
 
                       {mismatch ? (
                         <Text as="span" className="text-sm">
-                          Heads up — this product is normally priced in {entry.variantCurrency}, but
+                          Heads up. This product is normally priced in {entry.variantCurrency}, but
                           this list is in {draft.currency}. Enter the price in {draft.currency}.
                         </Text>
                       ) : null}
@@ -991,7 +991,7 @@ function PriceListEditor({
             <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Retiring this list stops its special prices — the customers it covers go back to
+                  Retiring this list stops its special prices: the customers it covers go back to
                   your normal prices. Orders already placed are unaffected.
                 </Text>
                 <Button

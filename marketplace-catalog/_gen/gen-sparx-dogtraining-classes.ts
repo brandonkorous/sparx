@@ -136,7 +136,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Give us at least 24 hours’ notice to change or cancel and your spot frees up for the next pup — classes are small and fill fast. We send a friendly reminder the day before and two hours ahead.',
+        'Give us at least 24 hours’ notice to change or cancel and your spot frees up for the next pup: classes are small and fill fast. We send a friendly reminder the day before and two hours ahead.',
     },
     {
       handle: 'enrollment-deposit',
@@ -184,7 +184,7 @@ const SCHEDULING = {
       handle: 'free-evaluation',
       name: 'Free meet & evaluation',
       description:
-        'A no-cost, no-pressure first visit — we meet you and your dog, talk through your goals, and point you to the right class. New here? Start exactly here.',
+        'A no-cost, no-pressure first visit. We meet you and your dog, talk through your goals, and point you to the right class. New here? Start exactly here.',
       bookingType: 'appointment',
       durationMinutes: 45,
       priceCents: 0,
@@ -196,7 +196,7 @@ const SCHEDULING = {
       handle: 'puppy-kindergarten',
       name: 'Puppy kindergarten',
       description:
-        'The joyful first-steps class for pups 8–20 weeks — gentle socialization, name games, sit and settle, and confidence with the big world. All the good habits, started early.',
+        'The joyful first-steps class for pups 8–20 weeks: gentle socialization, name games, sit and settle, and confidence with the big world. All the good habits, started early.',
       bookingType: 'class',
       durationMinutes: 60,
       priceCents: 12000,
@@ -212,7 +212,7 @@ const SCHEDULING = {
       handle: 'basic-obedience-class',
       name: 'Basic obedience',
       description:
-        'The everyday-manners class for dogs of any age — sit, down, stay, come when called, and polite leash walking, all taught force-free and made to stick at home.',
+        'The everyday-manners class for dogs of any age: sit, down, stay, come when called, and polite leash walking, all taught force-free and made to stick at home.',
       bookingType: 'class',
       durationMinutes: 60,
       priceCents: 14000,
@@ -228,7 +228,7 @@ const SCHEDULING = {
       handle: 'intermediate-class',
       name: 'Intermediate skills',
       description:
-        'The next step once the basics are solid — longer stays, reliable recall with distractions, loose-leash walking in the real world, and a calm, focused dog wherever you go.',
+        'The next step once the basics are solid: longer stays, reliable recall with distractions, loose-leash walking in the real world, and a calm, focused dog wherever you go.',
       bookingType: 'class',
       durationMinutes: 60,
       priceCents: 14000,
@@ -244,7 +244,7 @@ const SCHEDULING = {
       handle: 'tricks-class',
       name: 'Tricks & games',
       description:
-        'The pure-fun class — spin, shake, roll over, weave and more. Great for bonding, brilliant for burning mental energy, and the friendliest way to fall in love with training.',
+        'The pure-fun class: spin, shake, roll over, weave and more. Great for bonding, brilliant for burning mental energy, and the friendliest way to fall in love with training.',
       bookingType: 'class',
       durationMinutes: 45,
       priceCents: 10000,
@@ -260,7 +260,7 @@ const SCHEDULING = {
       handle: 'private-session',
       name: 'Private session',
       description:
-        'One-on-one time for a specific goal — a shy pup, a tricky behavior, or just a head start before a class. We build a friendly, force-free plan around your dog.',
+        'One-on-one time for a specific goal: a shy pup, a tricky behavior, or just a head start before a class. We build a friendly, force-free plan around your dog.',
       bookingType: 'appointment',
       durationMinutes: 60,
       priceCents: 9000,
@@ -277,7 +277,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A happy group class of dogs and owners training together on a sunny field',
     title: 'Every good dog starts here',
-    sub: 'Friendly, force-free classes for puppies and grown dogs alike — small groups, big tails, and real-life manners that stick. Come learn together.',
+    sub: 'Friendly, force-free classes for puppies and grown dogs alike: small groups, big tails, and real-life manners that stick. Come learn together.',
     primary: { label: 'Enroll in a class', href: '/book' },
     secondary: { label: 'See the classes', href: '/book' },
     overlay: 'dark',
@@ -286,7 +286,7 @@ const HOME = [
     items: [
       {
         title: 'Certified, kind trainers',
-        body: 'Every class is led by a certified, positive-reinforcement trainer — no fear, no force, just treats, praise and patience that actually works.',
+        body: 'Every class is led by a certified, positive-reinforcement trainer: no fear, no force, just treats, praise and patience that actually works.',
       },
       {
         title: 'Small classes, real attention',
@@ -294,11 +294,11 @@ const HOME = [
       },
       {
         title: 'All ages & breeds welcome',
-        body: 'Eight-week puppy or eight-year-old rescue, tiny or enormous, shy or bouncy — every dog is welcome, and every one goes at its own happy pace.',
+        body: 'Eight-week puppy or eight-year-old rescue, tiny or enormous, shy or bouncy: every dog is welcome, and every one goes at its own happy pace.',
       },
       {
         title: 'Skills for real life',
-        body: 'We teach the things you actually need — coming when called, walking politely, settling at home — so training works on a Tuesday, not just in class.',
+        body: 'We teach the things you actually need (coming when called, walking politely, settling at home) so training works on a Tuesday, not just in class.',
       },
     ],
   }),
@@ -308,11 +308,11 @@ const HOME = [
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Free meet & evaluation', priceCents: 0, durationMin: 45, desc: 'A no-pressure first visit — start here.' },
+      { name: 'Free meet & evaluation', priceCents: 0, durationMin: 45, desc: 'A no-pressure first visit. Start here.' },
       { name: 'Puppy kindergarten', priceCents: 12000, durationMin: 60, desc: 'Socialization and first good habits.' },
       { name: 'Basic obedience', priceCents: 14000, durationMin: 60, desc: 'Sit, stay, come and polite walking.' },
       { name: 'Intermediate skills', priceCents: 14000, durationMin: 60, desc: 'Reliable recall and real-world focus.' },
-      { name: 'Tricks & games', priceCents: 10000, durationMin: 45, desc: 'Spin, shake, weave — pure fun.' },
+      { name: 'Tricks & games', priceCents: 10000, durationMin: 45, desc: 'Spin, shake, weave: pure fun.' },
       { name: 'Private session', priceCents: 9000, durationMin: 60, desc: 'One-on-one help for a specific goal.' },
     ],
     cta: { label: 'See everything & enroll', href: '/book' },
@@ -332,8 +332,8 @@ const HOME = [
     alt: 'A trainer rewarding a delighted dog with a treat during a lesson',
     heading: 'Force-free, because it works',
     body: [
-      'We train the way dogs actually learn — by rewarding the things we love and setting them up to get it right. No prong collars, no shouting, no fear. Just clear communication and a whole lot of encouragement.',
-      'It’s kinder, it’s more fun, and it builds a dog who wants to work with you — not one who’s just avoiding a correction. That bond is the whole point, and it’s the part that lasts.',
+      'We train the way dogs actually learn: by rewarding the things we love and setting them up to get it right. No prong collars, no shouting, no fear. Just clear communication and a whole lot of encouragement.',
+      'It’s kinder, it’s more fun, and it builds a dog who wants to work with you, not one who’s just avoiding a correction. That bond is the whole point, and it’s the part that lasts.',
     ],
     cta: { label: 'Book a free evaluation', href: '/book' },
   }),
@@ -342,17 +342,17 @@ const HOME = [
     intro: 'Certified, endlessly patient, and genuinely happy to be here. You’ll get to know them by name.',
     members: [
       { name: 'Bailey Nguyen', role: 'Head trainer', image: url(IMG.bailey), alt: 'Bailey Nguyen, head trainer, kneeling with a puppy', bio: 'Puppy foundations and everyday obedience. Bailey runs the school and never met a dog she couldn’t win over.' },
-      { name: 'Marcus Reed', role: 'Obedience & tricks', image: url(IMG.marcus), alt: 'Marcus Reed, obedience and tricks trainer, with a golden retriever', bio: 'Real-world manners and the crowd-favorite tricks class — proof that serious skills can be seriously fun.' },
+      { name: 'Marcus Reed', role: 'Obedience & tricks', image: url(IMG.marcus), alt: 'Marcus Reed, obedience and tricks trainer, with a golden retriever', bio: 'Real-world manners and the crowd-favorite tricks class: proof that serious skills can be seriously fun.' },
       { name: 'Priya Shah', role: 'Puppy & private sessions', image: url(IMG.priya), alt: 'Priya Shah, puppy and private-session trainer, laughing with a small dog', bio: 'Gentle with shy dogs and brand-new owners alike. Priya leads puppy classes and one-on-one sessions.' },
     ],
   }),
   testimonial({
-    quote: 'We came in with a whirlwind of a rescue and left with a dog who actually looks to us. Nobody made us feel like we were failing — they just cheered every tiny win until they added up.',
+    quote: 'We came in with a whirlwind of a rescue and left with a dog who actually looks to us. Nobody made us feel like we were failing. They just cheered every tiny win until they added up.',
     attribution: 'The Alvarez family, Basic obedience grads',
   }),
   bookingCta({
     title: 'Ready to get started?',
-    sub: 'Pick a class or book a free meet & evaluation — choose a time, and you’re set. It takes about a minute.',
+    sub: 'Pick a class or book a free meet & evaluation. Choose a time, and you’re set. It takes about a minute.',
     cta: { label: 'Enroll in a class', href: '/book' },
   }),
 ];
@@ -362,7 +362,7 @@ const BOOK_INTRO = [
     image: url(IMG.method),
     alt: 'A trainer rewarding a delighted dog with a treat during a lesson',
     title: 'Enroll in a class',
-    sub: 'Choose a class or session to see the price, how long it runs and live availability — then pick your trainer and start date.',
+    sub: 'Choose a class or session to see the price, how long it runs and live availability, then pick your trainer and start date.',
     primary: { label: 'See classes below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -375,7 +375,7 @@ const ABOUT = [
     alt: 'A happy group class of dogs and owners training together on a sunny field',
     heading: 'About Good Dog Academy',
     body: [
-      'We started Good Dog Academy because training should feel good — for the dog and for you. Too many classes lean on fear and force; we wanted a place built entirely on kindness, treats and encouragement.',
+      'We started Good Dog Academy because training should feel good, for the dog and for you. Too many classes lean on fear and force; we wanted a place built entirely on kindness, treats and encouragement.',
       'So this is a school where every dog is welcome, every owner is a beginner at something, and every small win gets a cheer. Come as you are, bring your dog exactly as they are, and let’s build something great together.',
     ],
     cta: { label: 'Book a free evaluation', href: '/book' },
@@ -385,7 +385,7 @@ const ABOUT = [
     heading: 'How the school works',
     items: [
       { title: 'Start with a free evaluation', body: 'Not sure where to begin? Book a free meet & evaluation. We’ll get to know your dog, talk through your goals, and point you to the class that fits.' },
-      { title: 'Learn together in small groups', body: 'Classes run as a friendly series in our training hall — small, capped, and full of encouragement. You and your dog learn side by side with others doing the same.' },
+      { title: 'Learn together in small groups', body: 'Classes run as a friendly series in our training hall: small, capped, and full of encouragement. You and your dog learn side by side with others doing the same.' },
       { title: 'Take it home with you', body: 'Every class ends with exactly how to practice this week. The goal is a dog who’s wonderful at home and out in the world, not just in the room.' },
     ],
   }),
@@ -405,7 +405,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live class times and reserve your spot online — no phone tag, no pressure.',
+    sub: 'See live class times and reserve your spot online: no phone tag, no pressure.',
     surface: 'muted',
     cta: { label: 'Enroll in a class', href: '/book' },
   }),
@@ -416,8 +416,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-dogtraining-classes',
   name: 'Dog Training (Classes)',
   summary:
-    'A warm, playful dog-training-school site — a cheerful teal-green palette, sunny coral accent and rounded, friendly type. Installs a live class schedule with capacity: puppy kindergarten, basic and intermediate obedience and a tricks class, each a group class you enroll in online, plus 1:1 private sessions and a free evaluation. Three positive-reinforcement trainers and a training hall book as resources. Ships as "Good Dog Academy".',
-  tagline: 'A friendly, force-free template for dog-training schools — enroll in classes online from day one.',
+    'A warm, playful dog-training-school site: a cheerful teal-green palette, sunny coral accent and rounded, friendly type. Installs a live class schedule with capacity: puppy kindergarten, basic and intermediate obedience and a tricks class, each a group class you enroll in online, plus 1:1 private sessions and a free evaluation. Three positive-reinforcement trainers and a training hall book as resources. Ships as "Good Dog Academy".',
+  tagline: 'A friendly, force-free template for dog-training schools: enroll in classes online from day one.',
   industry: 'Dog training',
   sortWeight: 52,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -426,9 +426,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Good Dog Academy — friendly, force-free dog training',
+      title: 'Good Dog Academy: friendly, force-free dog training',
       description:
-        'Good Dog Academy runs warm, positive-reinforcement classes for puppies and grown dogs — puppy kindergarten, obedience, tricks, private sessions and a free evaluation. Small classes, certified trainers. Enroll online.',
+        'Good Dog Academy runs warm, positive-reinforcement classes for puppies and grown dogs: puppy kindergarten, obedience, tricks, private sessions and a free evaluation. Small classes, certified trainers. Enroll online.',
     },
   },
   home: HOME,

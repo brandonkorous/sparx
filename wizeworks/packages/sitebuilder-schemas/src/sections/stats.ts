@@ -38,7 +38,7 @@ export const StatsConfig = z.object({
 export type StatsConfig = z.infer<typeof StatsConfig>;
 
 export const statsFields: SectionField[] = [
-  mediaField('mediaId', 'Lead image (optional)', 'A wide image above the stats — e.g. a map.', {
+  mediaField('mediaId', 'Lead image (optional)', 'A wide image above the stats: e.g. a map.', {
     fitKey: 'imageFit',
     focalKey: 'imageFocal',
   }),

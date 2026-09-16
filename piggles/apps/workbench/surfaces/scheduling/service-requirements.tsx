@@ -60,7 +60,7 @@ export function ServiceRequirements({
   return (
     <FormSection
       title="Who or what it needs"
-      description="What a booking uses up — a member of staff, a room, a machine. Two bookings can never claim the same one at the same time. Leave this empty if a booking needs nothing set aside."
+      description="What a booking uses up: a member of staff, a room, a machine. Two bookings can never claim the same one at the same time. Leave this empty if a booking needs nothing set aside."
     >
       <Field>
         <FieldLabel>Who takes the booking</FieldLabel>

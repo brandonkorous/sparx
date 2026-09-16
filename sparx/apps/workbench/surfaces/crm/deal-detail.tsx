@@ -273,7 +273,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
     create.isError || update.isError || moveStage.isError
       ? dealErrorMessage(
           create.error ?? update.error ?? moveStage.error,
-          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
+          'The server did not answer. Nothing was changed and your work is still on screen. Try again in a moment.'
         )
       : null;
 
@@ -344,7 +344,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
     const ok = await confirm({
       title: `Delete ${deal.title}?`,
       description:
-        'This is for a deal that should not exist — the usual way to finish a deal is to move it to a Won or Lost stage. Deleting takes it out of your lists; its history is kept and it can be brought back by support if needed.',
+        'This is for a deal that should not exist: the usual way to finish a deal is to move it to a Won or Lost stage. Deleting takes it out of your lists; its history is kept and it can be brought back by support if needed.',
       confirmLabel: 'Delete this deal',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -581,7 +581,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
                   }
                 />
                 <FieldDescription>
-                  What actually happened. Worth a sentence — it is what tells you why you win and
+                  What actually happened. Worth a sentence. It is what tells you why you win and
                   lose once there are enough of them.
                 </FieldDescription>
               </Field>
@@ -686,7 +686,7 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
                 Finish a deal by moving it to a Won or Lost stage. Delete is for one added by
-                mistake — its history is kept.
+                mistake. Its history is kept.
               </Text>
               <Button
                 size="sm"

@@ -33,7 +33,7 @@ export function emptyAdvice(search: string, locationName: string | null): string
   if (search) parts.push('Try part of a product code or a product name.');
   if (locationName) {
     parts.push(
-      `You are only seeing stock kept at ${locationName} — switch to every location for the rest.`
+      `You are only seeing stock kept at ${locationName}. Switch to every location for the rest.`
     );
   }
   return parts.join(' ');

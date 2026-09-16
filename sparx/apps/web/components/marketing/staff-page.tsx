@@ -63,7 +63,7 @@ export function StaffPage() {
         src="/scenes/craft-bench.jpg"
         alt="Two makers working together at a studio bench, mid-project."
         headline="You quote off a number you’ve carried for years"
-        lede="Call it forty an hour, near enough. It was near enough once. Since then somebody had a raise, your insurance went up, and one job in five takes half a day longer than the one you priced it against — and none of that announced itself. It just quietly came out of what you kept."
+        lede="Call it forty an hour, near enough. It was near enough once. Since then somebody had a raise, your insurance went up, and one job in five takes half a day longer than the one you priced it against, and none of that announced itself. It just quietly came out of what you kept."
       />
       {/* BEAT 3 — THE FALSE FIX. Concede that payroll is correct, then attack
           the grain. The concession is what makes beat 4 credible. */}
@@ -87,7 +87,7 @@ export function StaffPage() {
         src="/scenes/workshop-plans.jpg"
         alt="Two people leaning over drawings spread across a workbench, working something out together."
         headline="Then quote the next one off a real number"
-        lede="Not a feeling about how long that kind of job takes — the hours the last four actually took, at what they actually cost. The estimate stops being the thing you are most nervous about, and the job that always ran long stops being the one you keep taking."
+        lede="Not a feeling about how long that kind of job takes: the hours the last four actually took, at what they actually cost. The estimate stops being the thing you are most nervous about, and the job that always ran long stops being the one you keep taking."
       />
       <StaffHandoff />
       <StaffWeek />
@@ -103,7 +103,7 @@ export function StaffPage() {
             <Spark color={M.ink} />
           </>
         }
-        lede="What it does, what it deliberately doesn’t, and what it costs — answered straight. Fourteen days free, and we don’t ask for a card."
+        lede="What it does, what it deliberately doesn’t, and what it costs: answered straight. Fourteen days free, and we don’t ask for a card."
       />
       <StaffCta />
     </>
@@ -133,7 +133,7 @@ function StaffHero() {
           <Text variant="lead" className="mt-7 max-w-[600px]">
             For most businesses that do work rather than ship boxes, wages are the biggest number on
             the page and the one nobody can break down. sparx records who worked, for how long, on
-            what, and at what rate — then turns it into a real figure instead of a line you type in
+            what, and at what rate, then turns it into a real figure instead of a line you type in
             and hope. It is not payroll, and it never will be.
           </Text>
           <div className="mt-[34px] flex flex-wrap items-center gap-3">
@@ -166,7 +166,7 @@ function StaffHero() {
 
               <div className="flex flex-col">
                 <HourRow who="On the payslip" detail="his hourly wage" cost="$28.00" />
-                <HourRow who="Employer costs" detail="22% — tax, comp, insurance" cost="+ $6.16" />
+                <HourRow who="Employer costs" detail="22%: tax, comp, insurance" cost="+ $6.16" />
               </div>
 
               <div className="border-base-300 border-t pt-2">
@@ -197,11 +197,11 @@ function StaffProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
       n: <>1{<Spark color={M.ink} />}</>,
-      l: 'place the hours and the job both live — labour cost is read, never estimated',
+      l: 'place the hours and the job both live: labor cost is read, never estimated',
     },
     { n: '$29', l: 'a month, flat, whether you have three people or thirty · never per seat' },
     { n: '0', l: 'logins required · the tech who never opens sparx still has hours and a rate' },
-    { n: '2', l: 'records per shift — what you rostered, and what actually happened' },
+    { n: '2', l: 'records per shift: what you rostered, and what actually happened' },
   ];
   return (
     <Section surface="dark" padding="lg">
@@ -249,7 +249,7 @@ function StaffPricing() {
             <span className="text-[clamp(56px,7vw,80px)] leading-none font-medium tracking-[-0.03em]">
               $29
             </span>
-            <span className="text-2xl">/mo — for everybody</span>
+            <span className="text-2xl">/mo, for everybody</span>
           </div>
           <p className="max-w-[660px] text-2xl leading-[1.4]">
             Flat, whether you have three people or thirty. Not per seat, because charging by the
@@ -279,7 +279,7 @@ function StaffCta() {
         </Display>
         <Text variant="lead" className="m-0 max-w-[660px]">
           Fourteen days free, no card, and no contract at the end of it. Turn it off the day it
-          stops earning its $29 and every hour, rate and record you entered stays yours — exportable
+          stops earning its $29 and every hour, rate and record you entered stays yours: exportable
           in full, from a button, without asking anyone.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
@@ -308,7 +308,7 @@ const STAFF_FAQ: FaqItem[] = [
     id: 'staff-not-payroll',
     question: 'Is this payroll? Does it replace my payroll provider?',
     answer:
-      'No, and it is not going to. sparx does not withhold tax, does not file anything with anybody, does not administer benefits, and never pays a person. That boundary is permanent, not a version-one cut — becoming a tax filer in fifty states is a different company, and the people who already do it have spent a decade earning the trust it takes. What sparx does is the part your payroll provider cannot: record what people worked, on which job, at what it cost you, and hand the hours over so payroll can do its job accurately.',
+      'No, and it is not going to. sparx does not withhold tax, does not file anything with anybody, does not administer benefits, and never pays a person. That boundary is permanent, not a version-one cut: becoming a tax filer in fifty states is a different company, and the people who already do it have spent a decade earning the trust it takes. What sparx does is the part your payroll provider cannot: record what people worked, on which job, at what it cost you, and hand the hours over so payroll can do its job accurately.',
   },
   {
     id: 'staff-price',
@@ -320,36 +320,36 @@ const STAFF_FAQ: FaqItem[] = [
     id: 'staff-finance',
     question: 'Do I need the Finance module too?',
     answer:
-      'No. They are two separate $29 modules and neither includes the other. Team on its own gives you hours, pay rates, rotas, time off and licence renewals, and tells you what a period of work cost. What Finance adds is everything else — parts, rent, fuel, subscriptions — so it can show you profit and rank your jobs by what you kept. Run both and the wages figure in Finance is derived from real hours instead of typed in. Run either alone and it is still useful.',
+      'No. They are two separate $29 modules and neither includes the other. Team on its own gives you hours, pay rates, rotas, time off and license renewals, and tells you what a period of work cost. What Finance adds is everything else (parts, rent, fuel, subscriptions) so it can show you profit and rank your jobs by what you kept. Run both and the wages figure in Finance is derived from real hours instead of typed in. Run either alone and it is still useful.',
   },
   {
     id: 'staff-what-if-no-rate',
     question: 'What happens to hours for someone whose pay rate I haven’t entered?',
     answer:
-      'They are counted and reported as unpriced, never costed at zero. The timesheet says how many hours cannot be priced, the period total is labelled as partial rather than final, and the wage cost filed against your spending is short by exactly that much and says so. This matters more than it sounds: a zero in a labour column becomes a zero in a profit figure, and an owner reads that as a fortnight where the work was free. Add the rate afterwards, dated from their first day, and the period prices itself — nobody else’s figures move, because everyone else’s rates were already the rates in force.',
+      'They are counted and reported as unpriced, never costed at zero. The timesheet says how many hours cannot be priced, the period total is labelled as partial rather than final, and the wage cost filed against your spending is short by exactly that much and says so. This matters more than it sounds: a zero in a labor column becomes a zero in a profit figure, and an owner reads that as a fortnight where the work was free. Add the rate afterwards, dated from their first day, and the period prices itself. Nobody else’s figures move, because everyone else’s rates were already the rates in force.',
   },
   {
     id: 'staff-raise',
     question: 'What happens to old jobs when somebody gets a raise?',
     answer:
-      'Nothing, and that is the whole design. A pay rate here is a row with a start date rather than a field on the person: give somebody a new rate and the old one closes the day before it begins, so an hour worked in March is still costed at March’s rate. Systems that store the rate on the person rewrite the cost of every job that person has ever touched the moment you edit it — which is how last quarter’s profit moves for a reason nobody can explain.',
+      'Nothing, and that is the whole design. A pay rate here is a row with a start date rather than a field on the person: give somebody a new rate and the old one closes the day before it begins, so an hour worked in March is still costed at March’s rate. Systems that store the rate on the person rewrite the cost of every job that person has ever touched the moment you edit it, which is how last quarter’s profit moves for a reason nobody can explain.',
   },
   {
     id: 'staff-clock',
     question: 'Do people have to clock in? What if they won’t?',
     answer:
-      'They don’t have to. A duration typed in afterwards — “3.5 hours on the Ellison job” — is a first-class entry here, not a workaround, because that is genuinely how a lot of people work. Clocking in from a phone is there for the teams that prefer it, and a bulk import is there for the fortnight you are catching up on. All three become the same record, so nothing downstream cares which it was. What all three do need is the job, and that is one tap.',
+      'They don’t have to. A duration typed in afterwards (“3.5 hours on the Ellison job”) is a first-class entry here, not a workaround, because that is genuinely how a lot of people work. Clocking in from a phone is there for the teams that prefer it, and a bulk import is there for the fortnight you are catching up on. All three become the same record, so nothing downstream cares which it was. What all three do need is the job, and that is one tap.',
   },
   {
     id: 'staff-payroll-export',
     question: 'How do the hours get to whoever runs my payroll?',
     answer:
-      'You download a file of any period: every approved hour per person, in decimal hours, with their id in your payroll system on the row so nobody is matching names in a spreadsheet. Any payroll package or bureau takes that. Hours that could not be costed are on it too, flagged separately — they still have to be paid, and leaving them off a payroll file would underpay a real person. There is no direct connection to a payroll provider today and none is implied anywhere in the product.',
+      'You download a file of any period: every approved hour per person, in decimal hours, with their id in your payroll system on the row so nobody is matching names in a spreadsheet. Any payroll package or bureau takes that. Hours that could not be costed are on it too, flagged separately. They still have to be paid, and leaving them off a payroll file would underpay a real person. There is no direct connection to a payroll provider today and none is implied anywhere in the product.',
   },
   {
     id: 'staff-contractors',
     question: 'Can I use it for contractors and volunteers, not just employees?',
     answer:
-      'Yes. Each person is recorded as an employee, a contractor or a volunteer, and that is purely a cost-reporting distinction — sparx does not decide anybody’s employment status, does not file anything based on it, and never presents it as though it did. A volunteer or an owner who does not take a wage is recorded as unpaid, which means their hours cost nothing. That is a real answer and it reads differently from “nobody has told us what this person earns”, which is the one the platform refuses to guess at.',
+      'Yes. Each person is recorded as an employee, a contractor or a volunteer, and that is purely a cost-reporting distinction: sparx does not decide anybody’s employment status, does not file anything based on it, and never presents it as though it did. A volunteer or an owner who does not take a wage is recorded as unpaid, which means their hours cost nothing. That is a real answer and it reads differently from “nobody has told us what this person earns”, which is the one the platform refuses to guess at.',
   },
 ];

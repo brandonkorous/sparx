@@ -156,7 +156,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <PaneLoadError
           icon={<Icon glyph={faBox} className="size-6" aria-hidden />}
           title="Could not load your products"
-          description="This is a problem reaching the server. Your catalog is unaffected — nothing has been lost."
+          description="This is a problem reaching the server. Your catalog is unaffected. Nothing has been lost."
           onRetry={() => {
             void refetch();
           }}

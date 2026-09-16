@@ -108,7 +108,7 @@ export function billingProblem(sub: {
 }): string | null {
   if (sub.billingMode !== 'card') return null;
   if (!sub.paymentMethod) {
-    return 'No saved card — this repeat order cannot charge anyone. Add a card or switch it to invoicing.';
+    return 'No saved card. This repeat order cannot charge anyone. Add a card or switch it to invoicing.';
   }
   if (sub.paymentMethod.status !== 'active') {
     return `The saved card is ${sub.paymentMethod.status} and will be declined. Ask the customer for a new one, or switch to invoicing.`;
@@ -251,7 +251,7 @@ export function subscriptionEventLabel(event: string): string {
     case 'created':
       return 'Repeat order started';
     case 'renewed':
-      return 'Renewed — an order was placed';
+      return 'Renewed: an order was placed';
     case 'payment_failed':
       return 'A payment failed';
     case 'paused':
@@ -269,7 +269,7 @@ export function subscriptionEventLabel(event: string): string {
     case 'payment_method_changed':
       return 'How it gets paid changed';
     case 'invoiced':
-      return 'Billed — waiting on payment';
+      return 'Billed: waiting on payment';
     case 'authentication_required':
       return 'The customer’s bank asked them to confirm';
     default:

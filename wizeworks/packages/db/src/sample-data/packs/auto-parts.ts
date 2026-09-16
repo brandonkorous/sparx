@@ -137,7 +137,7 @@ export const autoPartsPack: SampleDataPack = {
           key: 'willingToTakeReman',
           label: 'Takes remanufactured parts',
           type: 'boolean',
-          helpText: 'Off means quote new only — do not offer them a reman core.',
+          helpText: 'Off means quote new only: do not offer them a reman core.',
         },
       ],
     },
@@ -205,7 +205,7 @@ export const autoPartsPack: SampleDataPack = {
       postalCode: '99201',
       properties: {
         accountKind: 'diy',
-        preferredBrands: 'Whatever fits — asks for the cheapest that is not junk.',
+        preferredBrands: 'Whatever fits: asks for the cheapest that is not junk.',
         willingToTakeReman: true,
       },
     },
@@ -269,7 +269,7 @@ export const autoPartsPack: SampleDataPack = {
       postalCode: '37209',
       properties: {
         accountKind: 'owner_operator',
-        preferredBrands: 'No preference — cares about getting it tomorrow, not the badge.',
+        preferredBrands: 'No preference: cares about getting it tomorrow, not the badge.',
         willingToTakeReman: true,
       },
     },
@@ -278,15 +278,15 @@ export const autoPartsPack: SampleDataPack = {
   products: [
     {
       key: 'fuel-filter-67',
-      title: 'Fuel Filter — 6.7L Power Stroke',
+      title: 'Fuel Filter: 6.7L Power Stroke',
       handle: 'fuel-filter-67l-power-stroke',
       description:
-        '<p>OE-spec fuel/water separator filter for the 2011–2016 6.7L Power Stroke. Captures contaminants down to 4 microns and pulls water out of the fuel before it reaches your high-pressure pump and injectors — the single cheapest insurance against a five-figure fuel-system failure.</p><p>Replace at every oil change or every 15,000 miles, whichever comes first. Fits the frame-mounted housing; the water-in-fuel sensor transfers from your old filter.</p>',
+        '<p>OE-spec fuel/water separator filter for the 2011–2016 6.7L Power Stroke. Captures contaminants down to 4 microns and pulls water out of the fuel before it reaches your high-pressure pump and injectors: the single cheapest insurance against a five-figure fuel-system failure.</p><p>Replace at every oil change or every 15,000 miles, whichever comes first. Fits the frame-mounted housing; the water-in-fuel sensor transfers from your old filter.</p>',
       productType: 'Filters',
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'Fits the 2011–2016 6.7L Power Stroke diesel (Ford F-250/F-350/F-450 Super Duty). Mounts in the frame-rail fuel/water separator housing. The water-in-fuel (WIF) sensor is not included — it threads out of your old filter and into this one.',
+          'Fits the 2011–2016 6.7L Power Stroke diesel (Ford F-250/F-350/F-450 Super Duty). Mounts in the frame-rail fuel/water separator housing. The water-in-fuel (WIF) sensor is not included. It threads out of your old filter and into this one.',
         specs: [
           { label: 'Filtration', value: '4 micron absolute' },
           { label: 'Type', value: 'Fuel / water separator' },
@@ -384,7 +384,7 @@ export const autoPartsPack: SampleDataPack = {
           body: 'Does this come with a new water-in-fuel sensor or do I reuse mine?',
           authorPersona: 'priya',
           answer:
-            'You reuse your existing WIF sensor — it threads out of the old filter and into this one.',
+            'You reuse your existing WIF sensor. It threads out of the old filter and into this one.',
           daysAgo: 14,
         },
         { body: 'Will this fit a 2017 6.7?', displayName: 'Newbie', status: 'pending', daysAgo: 3 },
@@ -392,15 +392,15 @@ export const autoPartsPack: SampleDataPack = {
     },
     {
       key: 'glow-plug-60',
-      title: 'Glow Plug Set (8) — 6.0L Power Stroke',
+      title: 'Glow Plug Set (8): 6.0L Power Stroke',
       handle: 'glow-plug-set-6-0l-power-stroke',
       description:
-        '<p>Complete 8-piece glow plug set for the 2003–2007 6.0L Power Stroke. Hard cold starts, white smoke on startup, and a rough first minute are the classic symptoms of failed glow plugs — replace them as a set so you are not back under the valve cover in a month.</p><p>Includes all eight plugs gapped to spec. We strongly recommend inspecting the glow plug harness and valve-cover gasket while you are in there.</p>',
+        '<p>Complete 8-piece glow plug set for the 2003–2007 6.0L Power Stroke. Hard cold starts, white smoke on startup, and a rough first minute are the classic symptoms of failed glow plugs: replace them as a set so you are not back under the valve cover in a month.</p><p>Includes all eight plugs gapped to spec. We strongly recommend inspecting the glow plug harness and valve-cover gasket while you are in there.</p>',
       productType: 'Ignition',
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'Fits the 2003–2007 6.0L Power Stroke diesel (Ford Super Duty and Excursion). Covers all eight cylinders — one complete set per engine. Gapped to specification and ready to install.',
+          'Fits the 2003–2007 6.0L Power Stroke diesel (Ford Super Duty and Excursion). Covers all eight cylinders. One complete set per engine. Gapped to specification and ready to install.',
         specs: [
           { label: 'Set quantity', value: '8 glow plugs' },
           { label: 'Application', value: '6.0L Power Stroke' },
@@ -459,14 +459,14 @@ export const autoPartsPack: SampleDataPack = {
           body: 'Do I need to reprogram anything after replacing these?',
           authorPersona: 'rafael',
           answer:
-            'No programming needed — straight mechanical swap. Just clear any stored glow-plug codes after.',
+            'No programming needed: straight mechanical swap. Just clear any stored glow-plug codes after.',
           daysAgo: 16,
         },
       ],
     },
     {
       key: 'injector-67-cummins',
-      title: 'Fuel Injector — 6.7L Cummins',
+      title: 'Fuel Injector: 6.7L Cummins',
       handle: 'fuel-injector-6-7l-cummins',
       description:
         '<p>Direct-replacement common-rail injector for the 2007.5–2018 6.7L Cummins. Rough idle, excessive smoke, hard starts, and a knock that comes and goes are all signs of a failing injector. Each unit is flow-matched and ships with a new copper sealing washer.</p><p>Available remanufactured (dyno-tested core) or new OEM. Replace in matched sets when possible and always re-torque to spec.</p>',
@@ -474,7 +474,7 @@ export const autoPartsPack: SampleDataPack = {
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'Fits the 2007.5–2018 6.7L Cummins (Ram 2500/3500 Heavy Duty) common-rail fuel system. Sold individually; replace in matched sets when possible. No injector trim coding required on the 6.7 Cummins — install and go.',
+          'Fits the 2007.5–2018 6.7L Cummins (Ram 2500/3500 Heavy Duty) common-rail fuel system. Sold individually; replace in matched sets when possible. No injector trim coding required on the 6.7 Cummins: install and go.',
         specs: [
           { label: 'Type', value: 'Common-rail direct injector' },
           { label: 'Condition', value: 'Remanufactured (dyno-tested) or new OEM' },
@@ -534,7 +534,7 @@ export const autoPartsPack: SampleDataPack = {
           title: 'Idle is smooth again',
           body: 'Reman set cleared up my misfire and the smoke is gone. Flow numbers were on the sheet in the box.',
           authorPersona: 'marcus',
-          response: 'Glad it sorted the misfire — thanks for the flow-sheet note!',
+          response: 'Glad it sorted the misfire: thanks for the flow-sheet note!',
           helpfulCount: 11,
           daysAgo: 25,
         },
@@ -552,7 +552,7 @@ export const autoPartsPack: SampleDataPack = {
           body: 'Do these need to be coded to the ECM after install?',
           displayName: 'WrenchTurner',
           answer:
-            'The 6.7 Cummins does not require injector trim coding like some Duramax/Power Stroke do — install and go.',
+            'The 6.7 Cummins does not require injector trim coding like some Duramax/Power Stroke do: install and go.',
           daysAgo: 18,
         },
         {
@@ -565,15 +565,15 @@ export const autoPartsPack: SampleDataPack = {
     },
     {
       key: 'turbo-lml',
-      title: 'Turbocharger — Duramax LML',
+      title: 'Turbocharger: Duramax LML',
       handle: 'turbocharger-duramax-lml',
       description:
-        '<p>Complete drop-in variable-geometry turbocharger for the 2011–2016 6.6L Duramax LML. Sticking vanes, a P0299 underboost code, or a whistle-then-no-boost are the usual death rattles of the factory unit. This is a complete CHRA-and-housing assembly, not a rebuild kit — bolt it on and go.</p><p>Includes new mounting hardware and gaskets. We recommend a fresh oil feed line and a clean air filter at install.</p>',
+        '<p>Complete drop-in variable-geometry turbocharger for the 2011–2016 6.6L Duramax LML. Sticking vanes, a P0299 underboost code, or a whistle-then-no-boost are the usual death rattles of the factory unit. This is a complete CHRA-and-housing assembly, not a rebuild kit: bolt it on and go.</p><p>Includes new mounting hardware and gaskets. We recommend a fresh oil feed line and a clean air filter at install.</p>',
       productType: 'Forced Induction',
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'Fits the 2011–2016 6.6L Duramax LML (Chevrolet Silverado / GMC Sierra 2500HD/3500HD). Complete drop-in variable-geometry assembly — not a rebuild kit — that works on the factory calibration, so no tune is required.',
+          'Fits the 2011–2016 6.6L Duramax LML (Chevrolet Silverado / GMC Sierra 2500HD/3500HD). Complete drop-in variable-geometry assembly (not a rebuild kit) that works on the factory calibration, so no tune is required.',
         specs: [
           { label: 'Type', value: 'Variable-geometry turbo (VGT)' },
           { label: 'Assembly', value: 'Complete CHRA + housing' },
@@ -623,7 +623,7 @@ export const autoPartsPack: SampleDataPack = {
           body: 'Does this come pre-calibrated or do I need a tune?',
           displayName: 'DuramaxDan',
           answer:
-            'It is a direct OE replacement and works on the stock calibration — no tune required, though it pairs well with one.',
+            'It is a direct OE replacement and works on the stock calibration: no tune required, though it pairs well with one.',
           daysAgo: 11,
         },
       ],
@@ -633,20 +633,20 @@ export const autoPartsPack: SampleDataPack = {
       title: 'Diesel Engine Oil 15W-40 (1 gal)',
       handle: 'diesel-engine-oil-15w40-1gal',
       description:
-        '<p>Heavy-duty 15W-40 CK-4 diesel engine oil — the workhorse weight for nearly every modern diesel pickup and medium-duty truck. Strong soot-handling and shear stability for long drain intervals and hard duty cycles.</p><p>One US gallon. A typical 6.7L oil change takes three gallons plus a filter.</p>',
+        '<p>Heavy-duty 15W-40 CK-4 diesel engine oil: the workhorse weight for nearly every modern diesel pickup and medium-duty truck. Strong soot-handling and shear stability for long drain intervals and hard duty cycles.</p><p>One US gallon. A typical 6.7L oil change takes three gallons plus a filter.</p>',
       productType: 'Fluids',
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'Suits nearly every modern diesel pickup and medium-duty truck that calls for a 15W-40 engine oil — 6.7L Power Stroke, 6.7L Cummins, 6.6L Duramax and older 7.3L applications alike. A typical 6.7L oil change takes three gallons plus a filter.',
+          'Suits nearly every modern diesel pickup and medium-duty truck that calls for a 15W-40 engine oil: 6.7L Power Stroke, 6.7L Cummins, 6.6L Duramax and older 7.3L applications alike. A typical 6.7L oil change takes three gallons plus a filter.',
         specs: [
           { label: 'Viscosity', value: '15W-40' },
           { label: 'Specification', value: 'API CK-4 (backward compatible with CJ-4)' },
           { label: 'Volume', value: '1 US gallon' },
-          { label: 'Soot handling', value: 'High — long drain / hard duty' },
+          { label: 'Soot handling', value: 'High: long drain / hard duty' },
         ],
         warranty:
-          'Consumable fluid — no product warranty. Meets or exceeds API CK-4 and major OEM diesel-oil approvals.',
+          'Consumable fluid: no product warranty. Meets or exceeds API CK-4 and major OEM diesel-oil approvals.',
       },
       vendor: 'Shell Rotella',
       tags: ['oil', '15w40', 'CK-4', 'fluids'],
@@ -714,22 +714,22 @@ export const autoPartsPack: SampleDataPack = {
         {
           body: 'Is this the CK-4 spec? My manual calls for it.',
           authorPersona: 'priya',
-          answer: 'Yes — this is full CK-4, backward compatible with CJ-4 applications.',
+          answer: 'Yes. This is full CK-4, backward compatible with CJ-4 applications.',
           daysAgo: 13,
         },
       ],
     },
     {
       key: 'coolant-hd',
-      title: 'Heavy-Duty Coolant — Nitrite-Free (1 gal)',
+      title: 'Heavy-Duty Coolant: Nitrite-Free (1 gal)',
       handle: 'heavy-duty-coolant-nitrite-free-1gal',
       description:
-        '<p>Extended-life, nitrite-free (NOAT) heavy-duty coolant rated for 600,000 miles / six years in on-highway service. Protects against liner pitting and cavitation without supplemental coolant additives.</p><p>One US gallon, full strength — mix 50/50 with distilled water, or top off as needed.</p>',
+        '<p>Extended-life, nitrite-free (NOAT) heavy-duty coolant rated for 600,000 miles / six years in on-highway service. Protects against liner pitting and cavitation without supplemental coolant additives.</p><p>One US gallon, full strength: mix 50/50 with distilled water, or top off as needed.</p>',
       productType: 'Fluids',
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'For heavy-duty diesel cooling systems that specify a nitrite-free (NOAT) extended-life coolant. Do not mix with conventional green or nitrited coolant — flush and run this straight for the full service life.',
+          'For heavy-duty diesel cooling systems that specify a nitrite-free (NOAT) extended-life coolant. Do not mix with conventional green or nitrited coolant: flush and run this straight for the full service life.',
         specs: [
           { label: 'Chemistry', value: 'Nitrite-free NOAT (extended-life)' },
           { label: 'Service life', value: '600,000 mi / 6 years on-highway' },
@@ -738,7 +738,7 @@ export const autoPartsPack: SampleDataPack = {
           { label: 'SCA testing', value: 'Not required' },
         ],
         warranty:
-          'Consumable fluid — no product warranty. Backed by the manufacturer service-life rating when used as directed.',
+          'Consumable fluid: no product warranty. Backed by the manufacturer service-life rating when used as directed.',
       },
       vendor: 'Fleetguard',
       tags: ['coolant', 'NOAT', 'fluids', 'cooling'],
@@ -781,22 +781,22 @@ export const autoPartsPack: SampleDataPack = {
           body: 'Can I mix this with the green stuff already in my truck?',
           displayName: 'OldSchool',
           answer:
-            'We do not recommend mixing coolant chemistries — flush the system and run this straight for the full service life.',
+            'We do not recommend mixing coolant chemistries: flush the system and run this straight for the full service life.',
           daysAgo: 12,
         },
       ],
     },
     {
       key: 'serpentine-belt-73',
-      title: 'Serpentine Belt — 7.3L Power Stroke',
+      title: 'Serpentine Belt: 7.3L Power Stroke',
       handle: 'serpentine-belt-7-3l-power-stroke',
       description:
-        '<p>OE-length serpentine belt for the 1994–2003 7.3L Power Stroke. EPDM construction resists cracking and glazing far longer than the original. A squeal on cold start or visible cracks between the ribs means it is past due.</p><p>Carry a spare — a broken belt strands you and kills your charging and cooling instantly.</p>',
+        '<p>OE-length serpentine belt for the 1994–2003 7.3L Power Stroke. EPDM construction resists cracking and glazing far longer than the original. A squeal on cold start or visible cracks between the ribs means it is past due.</p><p>Carry a spare: a broken belt strands you and kills your charging and cooling instantly.</p>',
       productType: 'Belts',
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'Fits the 1994–2003 7.3L Power Stroke diesel (Ford Super Duty, F-Series and Excursion). OE length and rib count match the factory routing diagram exactly. Carry a spare — a broken belt strands you and kills charging and cooling instantly.',
+          'Fits the 1994–2003 7.3L Power Stroke diesel (Ford Super Duty, F-Series and Excursion). OE length and rib count match the factory routing diagram exactly. Carry a spare: a broken belt strands you and kills charging and cooling instantly.',
         specs: [
           { label: 'Construction', value: 'EPDM (crack + glaze resistant)' },
           { label: 'Length', value: 'OE-spec' },
@@ -844,10 +844,10 @@ export const autoPartsPack: SampleDataPack = {
     },
     {
       key: 'water-pump-66',
-      title: 'Water Pump — 6.6L Duramax',
+      title: 'Water Pump: 6.6L Duramax',
       handle: 'water-pump-6-6l-duramax',
       description:
-        '<p>Cast-impeller water pump for the 6.6L Duramax. A weep-hole drip, a bearing whine, or coolant loss with no visible hose leak point to a tired pump. Includes a new gasket and O-rings.</p><p>Replace the thermostat and refresh the coolant while the system is open — cheap parts, one job.</p>',
+        '<p>Cast-impeller water pump for the 6.6L Duramax. A weep-hole drip, a bearing whine, or coolant loss with no visible hose leak point to a tired pump. Includes a new gasket and O-rings.</p><p>Replace the thermostat and refresh the coolant while the system is open: cheap parts, one job.</p>',
       productType: 'Cooling',
       productTypeKey: 'auto_part',
       attributes: {
@@ -908,7 +908,7 @@ export const autoPartsPack: SampleDataPack = {
       productTypeKey: 'auto_part',
       attributes: {
         fitment:
-          'A complete scheduled-service kit for the 2011–2016 6.7L Power Stroke — one box covers a full oil-and-filter change plus a coolant top-off. Buy the kit and save versus picking the parts individually.',
+          'A complete scheduled-service kit for the 2011–2016 6.7L Power Stroke. One box covers a full oil-and-filter change plus a coolant top-off. Buy the kit and save versus picking the parts individually.',
         specs: [
           { label: 'Includes', value: 'Fuel filter + 3 gal 15W-40 + 1 gal coolant' },
           { label: 'Service', value: 'Full oil + filter change' },
@@ -1073,7 +1073,7 @@ export const autoPartsPack: SampleDataPack = {
       slug: 'how-often-change-6-7-fuel-filter',
       title: 'How often should you change your 6.7L fuel filter?',
       excerpt:
-        'The single cheapest way to protect a five-figure fuel system — and the schedule most owners get wrong.',
+        'The single cheapest way to protect a five-figure fuel system, and the schedule most owners get wrong.',
       daysAgo: 5,
       body: doc(
         p(
@@ -1081,7 +1081,7 @@ export const autoPartsPack: SampleDataPack = {
         ),
         h2('The short answer'),
         p(
-          'Change the fuel/water separator filter at every oil change, or every 15,000 miles — whichever comes first. If you tow heavy, idle a lot, or buy fuel from low-volume stations, lean toward the shorter end.'
+          'Change the fuel/water separator filter at every oil change, or every 15,000 miles: whichever comes first. If you tow heavy, idle a lot, or buy fuel from low-volume stations, lean toward the shorter end.'
         ),
         h2('Signs you are overdue'),
         ul(
@@ -1107,11 +1107,11 @@ export const autoPartsPack: SampleDataPack = {
         ),
         h2('What glow plugs do'),
         p(
-          'Diesels have no spark. On a cold start the glow plugs pre-heat each cylinder so the compressed air is hot enough to ignite the first shots of fuel. As they wear out, cold starts get rough — and below freezing, a few dead plugs can mean it will not start at all.'
+          'Diesels have no spark. On a cold start the glow plugs pre-heat each cylinder so the compressed air is hot enough to ignite the first shots of fuel. As they wear out, cold starts get rough, and below freezing, a few dead plugs can mean it will not start at all.'
         ),
         h2('Replace them as a set'),
         p(
-          'Once one plug has failed, the others are not far behind — they all have the same hours on them. Replacing all eight at once saves you a second teardown and a second valve-cover gasket. While you are in there, inspect the glow plug harness; a chafed connector is a common hidden culprit.'
+          'Once one plug has failed, the others are not far behind. They all have the same hours on them. Replacing all eight at once saves you a second teardown and a second valve-cover gasket. While you are in there, inspect the glow plug harness; a chafed connector is a common hidden culprit.'
         )
       ),
     },
@@ -1127,11 +1127,11 @@ export const autoPartsPack: SampleDataPack = {
         ),
         h2('What changed'),
         p(
-          'CK-4 replaced CJ-4 in late 2016 with better oxidation resistance and shear stability — meaning the oil holds its viscosity longer under heat and load. It is fully backward compatible: you can run CK-4 in any engine that called for CJ-4.'
+          'CK-4 replaced CJ-4 in late 2016 with better oxidation resistance and shear stability: meaning the oil holds its viscosity longer under heat and load. It is fully backward compatible: you can run CK-4 in any engine that called for CJ-4.'
         ),
         h2('The bottom line'),
         ul(
-          'Buy CK-4 — it meets or exceeds older specs',
+          'Buy CK-4: it meets or exceeds older specs',
           'Match the weight your manual calls for (15W-40 for most on-highway diesels)',
           'Stick to the drain interval in your manual, shorter if you tow or idle hard'
         )

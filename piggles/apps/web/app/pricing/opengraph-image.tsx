@@ -5,7 +5,7 @@ import { PRICE_LABEL } from '@piggles/config/pricing';
 export const runtime = 'nodejs';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
-export const alt = `Piggles pricing — ${PRICE_LABEL} a month, all fifteen apps`;
+export const alt = `Piggles pricing · ${PRICE_LABEL} a month, all fifteen apps`;
 
 export default function Image() {
   return renderOg({

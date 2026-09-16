@@ -27,7 +27,7 @@ const Uuid = z.string().uuid();
 const listUnits: McpToolDefinition = {
   name: 'list_units_of_measure',
   description:
-    'Every unit this business measures things in — each, case, box, pair, kilogram — with how many items use each one. Read this before quoting or entering any quantity in a pack unit, because what a "case" contains is set per item and the codes are the tenant\'s own.',
+    'Every unit this business measures things in (each, case, box, pair, kilogram) with how many items use each one. Read this before quoting or entering any quantity in a pack unit, because what a "case" contains is set per item and the codes are the tenant\'s own.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({ includeInactive: z.boolean().default(false) }),
@@ -55,7 +55,7 @@ const getVariantUnits: McpToolDefinition = {
 const listBoms: McpToolDefinition = {
   name: 'list_bills_of_materials',
   description:
-    'The recipes this business builds to — what each one makes, how many it makes per run, how many components it has and whether it is the live version. Use it to find the recipe id before checking what can be built or raising a run.',
+    'The recipes this business builds to: what each one makes, how many it makes per run, how many components it has and whether it is the live version. Use it to find the recipe id before checking what can be built or raising a run.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -89,7 +89,7 @@ const getBom: McpToolDefinition = {
 const getBuildableQuantity: McpToolDefinition = {
   name: 'get_buildable_quantity',
   description:
-    'How many of something can be made right now from the stock at one location — AND which component runs out first. Measured against what is actually free to use, not raw on-hand, so units already promised to a customer order are not counted twice. Use it to answer "can we make 40 of these by Friday" and to say what to order if not.',
+    'How many of something can be made right now from the stock at one location, AND which component runs out first. Measured against what is actually free to use, not raw on-hand, so units already promised to a customer order are not counted twice. Use it to answer "can we make 40 of these by Friday" and to say what to order if not.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({ bomId: Uuid, warehouseId: Uuid }),
@@ -102,7 +102,7 @@ const getBuildableQuantity: McpToolDefinition = {
 const listAssemblies: McpToolDefinition = {
   name: 'list_assembly_orders',
   description:
-    'Runs that are planned, committed to, finished or cancelled — what is being made, how many, where, and what the finished units cost. Use it to see what the shop floor has on, or to find a run id before releasing or completing it.',
+    'Runs that are planned, committed to, finished or canceled: what is being made, how many, where, and what the finished units cost. Use it to see what the shop floor has on, or to find a run id before releasing or completing it.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -130,7 +130,7 @@ const listAssemblies: McpToolDefinition = {
 const getAssembly: McpToolDefinition = {
   name: 'get_assembly_order',
   description:
-    'One run in full: what it is making, what it needs, what actually went in, and what the finished units cost once it was done. On a completed run the cost is the sum of what genuinely left the shelf plus labour — not a price-list estimate.',
+    'One run in full: what it is making, what it needs, what actually went in, and what the finished units cost once it was done. On a completed run the cost is the sum of what genuinely left the shelf plus labor, not a price-list estimate.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({ assemblyOrderId: Uuid }),
@@ -145,7 +145,7 @@ const getAssembly: McpToolDefinition = {
 const planAssembly: McpToolDefinition = {
   name: 'plan_assembly_run',
   description:
-    'Schedule a build (or a teardown). Nothing moves and nothing is held — this is the paper stage, and the recipe is copied onto the run so editing the recipe later cannot change what this run committed to. Follow with release_assembly_run to hold the parts.',
+    'Schedule a build (or a teardown). Nothing moves and nothing is held. This is the paper stage, and the recipe is copied onto the run so editing the recipe later cannot change what this run committed to. Follow with release_assembly_run to hold the parts.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -163,7 +163,7 @@ const planAssembly: McpToolDefinition = {
 const releaseAssembly: McpToolDefinition = {
   name: 'release_assembly_run',
   description:
-    'Commit to a run: hold every component it needs so nobody sells the last of a part the build depends on. Nothing is consumed and nothing has physically moved — cancelling afterwards releases the hold and costs nothing. Refused, with the shortfall named, if the parts are not there.',
+    'Commit to a run: hold every component it needs so nobody sells the last of a part the build depends on. Nothing is consumed and nothing has physically moved, canceling afterwards releases the hold and costs nothing. Refused, with the shortfall named, if the parts are not there.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ assemblyOrderId: Uuid }),
@@ -176,7 +176,7 @@ const releaseAssembly: McpToolDefinition = {
 const completeAssembly: McpToolDefinition = {
   name: 'complete_assembly_run',
   description:
-    'Finish a run: the components come off the shelf, the finished goods go on it, and the cost is settled from what actually left. Say how many really came out if it was not what was planned — a batch of 100 that yielded 96 completes for 96. This MOVES STOCK and cannot be undone by editing; a correction is a stock count.',
+    'Finish a run: the components come off the shelf, the finished goods go on it, and the cost is settled from what actually left. Say how many really came out if it was not what was planned, a batch of 100 that yielded 96 completes for 96. This MOVES STOCK and cannot be undone by editing; a correction is a stock count.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -199,7 +199,7 @@ const completeAssembly: McpToolDefinition = {
 const cancelAssembly: McpToolDefinition = {
   name: 'cancel_assembly_run',
   description:
-    'Call off a planned or committed run. Any hold on its components is released and nothing is consumed. A run that has already been completed cannot be cancelled — that is a stock count, not a cancellation.',
+    'Call off a planned or committed run. Any hold on its components is released and nothing is consumed. A run that has already been completed cannot be canceled. That is a stock count, not a cancellation.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({

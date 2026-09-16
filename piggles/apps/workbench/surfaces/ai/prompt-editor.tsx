@@ -263,7 +263,7 @@ function InstructionEditor({
   const keyError =
     isNew && !KEY_RE.test(draft.key)
       ? draft.key.trim() === ''
-        ? 'An id is needed — it is created from the name.'
+        ? 'An id is needed. It is created from the name.'
         : 'The id can use lowercase letters, numbers and dashes only.'
       : null;
   const bodyError = draft.body.trim() === '' ? 'Write the instruction itself.' : null;
@@ -427,7 +427,7 @@ function InstructionEditor({
             <Text>
               {productCopy(
                 'ai.prompt.newIntro',
-                'Tell Piggles something about your business for when it writes using your own AI account — how to sound, what to say, or what to avoid. You can turn it on or off any time.'
+                'Tell Piggles something about your business for when it writes using your own AI account: how to sound, what to say, or what to avoid. You can turn it on or off any time.'
               )}
             </Text>
           ) : null}
@@ -474,7 +474,7 @@ function InstructionEditor({
                   <AlertTitle>This is your live chat’s personality</AlertTitle>
                   <AlertDescription>
                     When it is turned on, the assistant that answers on your website uses this as
-                    its personality — how it introduces itself, its tone, and what it will and won’t
+                    its personality: how it introduces itself, its tone, and what it will and won’t
                     do.
                   </AlertDescription>
                 </AlertContent>
@@ -501,7 +501,7 @@ function InstructionEditor({
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  How you will recognize it in the list — your customers never see this.
+                  How you will recognize it in the list. Your customers never see this.
                 </FieldDescription>
               )}
             </Field>
@@ -600,7 +600,7 @@ function InstructionEditor({
 
           <FormSection
             title="Placeholders"
-            description="The gaps the assistant fills in each time it uses this instruction — the things in double braces above."
+            description="The gaps the assistant fills in each time it uses this instruction: the things in double braces above."
             action={
               canEdit ? (
                 <Button size="sm" variant="outline" color="module" onClick={addVariable}>
@@ -612,7 +612,7 @@ function InstructionEditor({
           >
             {draft.variables.length === 0 ? (
               <Text className="text-sm">
-                None yet. Add one for anything the assistant should slot in — a customer’s name, an
+                None yet. Add one for anything the assistant should slot in: a customer’s name, an
                 order number, a product.
               </Text>
             ) : (
@@ -747,7 +747,7 @@ function InstructionEditor({
                 }
               />
               <FieldDescription>
-                Advanced — only set this if you want this one instruction to run on a particular AI
+                Advanced. Only set this if you want this one instruction to run on a particular AI
                 model. Most people leave it blank.
               </FieldDescription>
             </Field>

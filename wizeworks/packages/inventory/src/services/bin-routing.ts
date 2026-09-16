@@ -108,7 +108,7 @@ export async function resolvePutAwayBin(
     });
     if (!bin) {
       throw new InventoryValidationError(
-        'That shelf is not one of this location’s — pick a shelf in the same place the stock is arriving.',
+        'That shelf is not one of this location’s. Pick a shelf in the same place the stock is arriving.',
         [{ field: 'binId', message: 'Unknown or archived shelf for this location' }]
       );
     }

@@ -284,7 +284,7 @@ export function startBookingNotificationLoop(
     try {
       await runBookingNotificationTick(logger);
     } catch (err) {
-      logger.error({ err }, 'scheduling-notifications: tick threw — will retry next interval');
+      logger.error({ err }, 'scheduling-notifications: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

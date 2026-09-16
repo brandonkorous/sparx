@@ -112,7 +112,7 @@ export function SiteNameFields({
               address, connect your own domain under Web addresses.
             </>
           ) : (
-            'Chosen when the site was created, and fixed since — web addresses already point at it. To move to a different address, connect your own domain under Web addresses.'
+            'Chosen when the site was created, and fixed since: web addresses already point at it. To move to a different address, connect your own domain under Web addresses.'
           )}
         </FieldDescription>
       </Field>

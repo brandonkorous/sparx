@@ -140,7 +140,7 @@ function CategorySection({
       title="Categories"
       // The whole difference between the two words, said once, in the place
       // where someone is about to have to choose between them.
-      description="The part of your website's menu this product sits in — like an aisle in a shop. Pick as many as fit; most products belong in one."
+      description="The part of your website's menu this product sits in, like an aisle in a shop. Pick as many as fit; most products belong in one."
     >
       {tree.isError ? (
         <LoadFailure
@@ -169,7 +169,7 @@ function CategorySection({
       ) : (
         <>
           <ChosenSummary
-            empty="Not filed in any category yet — shoppers browsing your menu will not come across it."
+            empty="Not filed in any category yet: shoppers browsing your menu will not come across it."
             label="Filed in"
             items={chosen.map((category) => ({
               id: category.id,
@@ -278,7 +278,7 @@ function CollectionSection({
   return (
     <FormSection
       title="Collections"
-      description="A themed set of products you show together — a summer sale, a gift guide, this month's arrivals. Unlike a category, a collection is not part of your menu: it is a group you can put wherever you like."
+      description="A themed set of products you show together: a summer sale, a gift guide, this month's arrivals. Unlike a category, a collection is not part of your menu: it is a group you can put wherever you like."
     >
       {collections.isError ? (
         <LoadFailure
@@ -330,8 +330,8 @@ function CollectionSection({
                   fill itself". */}
               <Text>
                 {automatic.length === 1
-                  ? 'This collection fills itself from conditions you wrote, and this product fits them. You cannot take it out from here — either change what that collection looks for, or change the product so it no longer fits.'
-                  : 'These collections fill themselves from conditions you wrote, and this product fits them. You cannot take it out from here — either change what those collections look for, or change the product so it no longer fits.'}
+                  ? 'This collection fills itself from conditions you wrote, and this product fits them. You cannot take it out from here. Either change what that collection looks for, or change the product so it no longer fits.'
+                  : 'These collections fill themselves from conditions you wrote, and this product fits them. You cannot take it out from here. Either change what those collections look for, or change the product so it no longer fits.'}
               </Text>
               <ul className="flex flex-col gap-2">
                 {automatic.map((collection) => (
@@ -365,8 +365,8 @@ function CollectionSection({
           {unknownIds.length > 0 ? (
             <Text>
               {unknownIds.length === 1
-                ? 'This product is also in one collection that is no longer in your list — most likely it was deleted. Saving here leaves it exactly as it is.'
-                : `This product is also in ${String(unknownIds.length)} collections that are no longer in your list — most likely they were deleted. Saving here leaves them exactly as they are.`}
+                ? 'This product is also in one collection that is no longer in your list. Most likely it was deleted. Saving here leaves it exactly as it is.'
+                : `This product is also in ${String(unknownIds.length)} collections that are no longer in your list. Most likely they were deleted. Saving here leaves them exactly as they are.`}
             </Text>
           ) : null}
 

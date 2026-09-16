@@ -116,7 +116,7 @@ export const heroFields: SectionField[] = [
     key: 'showScrollHint',
     label: 'Scroll-down hint',
     type: 'boolean',
-    help: 'A bouncing chevron at the bottom — best with a full-screen hero.',
+    help: 'A bouncing chevron at the bottom: best with a full-screen hero.',
   },
   { key: 'fullBleed', label: 'Full-bleed text (edge to edge)', type: 'boolean' },
 ];

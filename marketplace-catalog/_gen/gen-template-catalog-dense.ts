@@ -144,7 +144,7 @@ function hero(): Node {
                                     { text: 'New drops daily' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Hundreds of fresh styles every week — dresses, denim, sets and swim — and up to 70% off the sale rail while it lasts. Trend-fast fashion, priced to move.',
+                                    text: 'Hundreds of fresh styles every week (dresses, denim, sets and swim) and up to 70% off the sale rail while it lasts. Trend-fast fashion, priced to move.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-3', {
                                     children: [
@@ -177,7 +177,7 @@ function promoBand(): Node {
                         el('p', 'flex flex-wrap items-center justify-center gap-2 text-base font-semibold', {
                             children: [
                                 el('span', 'badge badge-accent', { text: 'Extra 30% off' }),
-                                el('span', '', { text: 'everything in the Sale — no code needed' }),
+                                el('span', '', { text: 'everything in the Sale: no code needed' }),
                             ],
                         }),
                         el('a', 'font-semibold underline underline-offset-4', {
@@ -272,7 +272,7 @@ function trendReport(): Node {
                                 text: 'The Voltage Edit',
                             }),
                             el('p', 'max-w-2xl text-lg text-base-content', {
-                                text: 'How the team is wearing the new drops — three looks to steal this week.',
+                                text: 'How the team is wearing the new drops: three looks to steal this week.',
                             }),
                         ],
                     }),
@@ -295,7 +295,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'grid', heading: 'New this week' }),
     pictureBand({
         heading: 'The 50% weekend',
-        lead: 'Half off the new-season rail through Sunday — dresses, sets and the going-out shapes everyone is asking for.',
+        lead: 'Half off the new-season rail through Sunday: dresses, sets and the going-out shapes everyone is asking for.',
         assetId: 'band-new-season',
         cta: 'Shop the drop',
         href: '/collections',
@@ -305,7 +305,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.denim', layout: 'grid', heading: 'Jeans & bottoms' }),
     pictureBand({
         heading: 'Golden hour',
-        lead: 'The going-out edit — satin, cutouts and sets built for the good light and the late night.',
+        lead: 'The going-out edit: satin, cutouts and sets built for the good light and the late night.',
         assetId: 'band-golden-hour',
         cta: 'Shop going-out',
         href: '/collections',
@@ -316,7 +316,7 @@ const HOME: Node[] = [
     trendReport(),
     pictureBand({
         heading: '60–80% off sale',
-        lead: 'The final rail — hundreds of styles at their lowest, while sizes last. No code needed, prices as marked.',
+        lead: 'The final rail: hundreds of styles at their lowest, while sizes last. No code needed, prices as marked.',
         assetId: 'band-sale',
         cta: 'Shop the sale',
         href: '/collections',
@@ -339,7 +339,7 @@ const ABOUT: Node[] = [
                         text: 'About Voltage',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Voltage is fast fashion done right — hundreds of new styles every week, across dresses, denim, tops, sets and swim, at prices built to move. We watch what the street is actually wearing, make it quickly, and pass the speed straight on to you.',
+                        text: 'Voltage is fast fashion done right: hundreds of new styles every week, across dresses, denim, tops, sets and swim, at prices built to move. We watch what the street is actually wearing, make it quickly, and pass the speed straight on to you.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'Priced to move does not mean throwaway. We size every run to sell through, mark the real comparison price on every tag, and keep the best-sellers restocked so the thing you loved on Monday is still there on Friday. Free 1-day shipping over $75, easy 30-day returns, and a sale rail that never quite runs out.',
@@ -357,7 +357,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Talk to us',
-        intro: 'Order questions, sizing help, or a style you cannot find — our team answers fast, usually the same day. Tell us what you need and we will sort it.',
+        intro: 'Order questions, sizing help, or a style you cannot find. Our team answers fast, usually the same day. Tell us what you need and we will sort it.',
         submitLabel: 'Email the team',
     }),
 ];
@@ -409,9 +409,9 @@ interface Product {
 const KNIT_CARE =
     'Machine wash cold on a gentle cycle, inside out, with like colors; hang or lay flat to dry, and a cool iron if it needs one. Skip the hot wash and the tumble dryer, which shrink a knit and crack a print.';
 const DENIM_CARE =
-    'Wash cold inside out with like colors and hang to dry — the less you wash denim, the longer the color lasts. A cool iron on the reverse if you like it crisp; skip the tumble dryer, which sets the creases in.';
+    'Wash cold inside out with like colors and hang to dry: the less you wash denim, the longer the color lasts. A cool iron on the reverse if you like it crisp; skip the tumble dryer, which sets the creases in.';
 const SWIM_CARE =
-    'Rinse in cold water straight after the pool or the sea to flush out chlorine and salt, then hang to dry in the shade. No machine, no wringing, and never leave it balled up wet — that is what kills the stretch.';
+    'Rinse in cold water straight after the pool or the sea to flush out chlorine and salt, then hang to dry in the shade. No machine, no wringing, and never leave it balled up wet. That is what kills the stretch.';
 
 const money = (dollars: number): number => Math.round(dollars * 100);
 
@@ -454,7 +454,7 @@ const PRODUCTS: Product[] = [
         tags: ['dress', 'mini', 'going-out', 'sale'],
         categoryHandles: ['dresses'],
         collectionHandles: ['new-arrivals', 'the-edit', 'sale'],
-        seoTitle: 'Halston Cutout Mini Dress — stretch-crepe going-out mini',
+        seoTitle: 'Halston Cutout Mini Dress: stretch-crepe going-out mini',
         seoDescription: 'A stretch-crepe cutout mini dress with a sharp waist and hidden zip. Was $44.99, now $30.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -475,20 +475,20 @@ const PRODUCTS: Product[] = [
         handle: 'coastline-satin-maxi',
         title: 'Coastline Satin Maxi',
         description:
-            'A liquid-satin maxi that pours to the floor with a thigh-high slit and a cowl back. Weighted so it moves with you and not against you — dinner, a wedding, or a very good Tuesday.',
+            'A liquid-satin maxi that pours to the floor with a thigh-high slit and a cowl back. Weighted so it moves with you and not against you: dinner, a wedding, or a very good Tuesday.',
         status: 'active',
         productType: 'Dress',
         vendor: 'Voltage',
         tags: ['dress', 'maxi', 'satin', 'sale'],
         categoryHandles: ['dresses'],
         collectionHandles: ['best-sellers', 'the-edit', 'sale'],
-        seoTitle: 'Coastline Satin Maxi — slit satin maxi dress',
+        seoTitle: 'Coastline Satin Maxi: slit satin maxi dress',
         seoDescription: 'A liquid-satin maxi dress with a thigh-high slit and cowl back. Was $59.99, now $38.99.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A liquid satin with enough weight to pour to the floor rather than cling, with a thigh-high slit and a cowl back. Bias-cut so it moves with you and skims rather than grips.',
-            fit: 'A long, fluid maxi, true to size; the slit and the bias cut do the shaping. Cut for a heel — check the length against your shoes before the big night.',
+            fit: 'A long, fluid maxi, true to size; the slit and the bias cut do the shaping. Cut for a heel. Check the length against your shoes before the big night.',
             care: 'Cold hand-wash, or a delicate machine cycle in a bag, inside out; hang to dry and never tumble, which pills satin. A cool iron on the reverse takes out a travel crease.',
             materials: [
                 { name: 'Polyester', percent: '95%' },
@@ -510,7 +510,7 @@ const PRODUCTS: Product[] = [
         tags: ['dress', 'midi', 'bodycon', 'sale'],
         categoryHandles: ['dresses'],
         collectionHandles: ['best-sellers', 'sale'],
-        seoTitle: 'Bandage Bodycon Midi — sculpting bandage-knit midi dress',
+        seoTitle: 'Bandage Bodycon Midi: sculpting bandage-knit midi dress',
         seoDescription: 'A sculpting high-neck bandage-knit midi dress. Was $39.99, now $27.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -531,14 +531,14 @@ const PRODUCTS: Product[] = [
         handle: 'rib-knit-cami-3-pack',
         title: 'Rib-Knit Cami 3-Pack',
         description:
-            'Three of the cami you already wear to death — a stretch rib that hugs without gripping, in the neutrals that go under everything. Buy the pack, stop doing laundry on a deadline.',
+            'Three of the cami you already wear to death: a stretch rib that hugs without gripping, in the neutrals that go under everything. Buy the pack, stop doing laundry on a deadline.',
         status: 'active',
         productType: 'Top',
         vendor: 'Voltage',
         tags: ['top', 'cami', 'basics', 'sale'],
         categoryHandles: ['tops'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'sale'],
-        seoTitle: 'Rib-Knit Cami 3-Pack — stretch rib camisole set',
+        seoTitle: 'Rib-Knit Cami 3-Pack: stretch rib camisole set',
         seoDescription: 'Three stretch rib-knit cami tops in everyday neutrals. Was $28.99, now $19.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -560,14 +560,14 @@ const PRODUCTS: Product[] = [
         handle: 'oversized-graphic-tee',
         title: 'Oversized Graphic Tee',
         description:
-            'A drop-shoulder cotton tee cut big on purpose, with a soft-hand print that survives the wash. Knot it, tuck it, or let it hang over the cargos — it works every way you throw it on.',
+            'A drop-shoulder cotton tee cut big on purpose, with a soft-hand print that survives the wash. Knot it, tuck it, or let it hang over the cargos. It works every way you throw it on.',
         status: 'active',
         productType: 'Top',
         vendor: 'Voltage',
         tags: ['top', 'tee', 'graphic', 'sale'],
         categoryHandles: ['tops'],
         collectionHandles: ['new-arrivals', 'sale'],
-        seoTitle: 'Oversized Graphic Tee — drop-shoulder cotton graphic tee',
+        seoTitle: 'Oversized Graphic Tee: drop-shoulder cotton graphic tee',
         seoDescription: 'An oversized drop-shoulder cotton graphic tee with a soft-hand print. Was $24.99, now $16.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -592,13 +592,13 @@ const PRODUCTS: Product[] = [
         tags: ['top', 'corset', 'going-out', 'sale'],
         categoryHandles: ['tops'],
         collectionHandles: ['the-edit', 'sale'],
-        seoTitle: 'Corset Bustier Top — boned hook-front bustier',
+        seoTitle: 'Corset Bustier Top: boned hook-front bustier',
         seoDescription: 'A structured boned corset bustier top with a hook-and-eye front. Was $34.99, now $22.99.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A structured bodice with real boning and a hook-and-eye front that holds its line all night, in a firm woven with a touch of stretch. Fully lined, with a clean top edge.',
-            fit: 'A structured, boned bustier that holds its line; true to size but firm — size up for comfort over a long night. Best with the wide-leg jean, or under a blazer.',
+            fit: 'A structured, boned bustier that holds its line; true to size but firm: size up for comfort over a long night. Best with the wide-leg jean, or under a blazer.',
             care: 'Cold hand-wash and hang to dry to protect the boning; do not tumble, wring or hot-iron. Spot-clean between wears rather than washing every time.',
             materials: [
                 { name: 'Polyester', percent: '88%' },
@@ -621,13 +621,13 @@ const PRODUCTS: Product[] = [
         tags: ['denim', 'jeans', 'wide-leg', 'sale'],
         categoryHandles: ['denim'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'denim-reset', 'sale'],
-        seoTitle: 'High-Rise Wide-Leg Jean — high-waist wide-leg denim',
+        seoTitle: 'High-Rise Wide-Leg Jean: high-waist wide-leg denim',
         seoDescription: 'A high-rise wide-leg jean in rigid-give denim that lengthens the leg. Was $49.99, now $34.99.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A rigid-with-a-little-give denim cut high on the waist and wide to the floor, so it lengthens the leg and forgives the lunch. Proper five-pocket construction with a button fly.',
-            fit: 'High on the waist and wide all the way down; true to size at the waist, long in the leg — hem it or wear a heel. Rigid with a little give, so it holds its shape.',
+            fit: 'High on the waist and wide all the way down; true to size at the waist, long in the leg: hem it or wear a heel. Rigid with a little give, so it holds its shape.',
             care: DENIM_CARE,
             materials: [
                 { name: 'Cotton', percent: '99%' },
@@ -642,14 +642,14 @@ const PRODUCTS: Product[] = [
         handle: 'cargo-parachute-pant',
         title: 'Cargo Parachute Pant',
         description:
-            'A lightweight parachute cargo with cinch-cord hems and pockets that actually hold a phone. Baggy where it counts, tapered where it should be — the easy win on a getting-dressed-fast morning.',
+            'A lightweight parachute cargo with cinch-cord hems and pockets that actually hold a phone. Baggy where it counts, tapered where it should be: the easy win on a getting-dressed-fast morning.',
         status: 'active',
         productType: 'Pants',
         vendor: 'Voltage',
         tags: ['bottoms', 'cargo', 'parachute', 'sale'],
         categoryHandles: ['denim'],
         collectionHandles: ['best-sellers', 'denim-reset', 'sale'],
-        seoTitle: 'Cargo Parachute Pant — cinch-hem utility cargo',
+        seoTitle: 'Cargo Parachute Pant: cinch-hem utility cargo',
         seoDescription: 'A lightweight cinch-hem parachute cargo pant with real pockets. Was $48.00, now $32.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -667,14 +667,14 @@ const PRODUCTS: Product[] = [
         handle: 'faux-leather-mini-skirt',
         title: 'Faux-Leather Mini Skirt',
         description:
-            'A matte faux-leather mini with a hidden stretch panel so it moves like fabric, not armour. Off to the office with tights, out at night with the corset — one skirt, two lives.',
+            'A matte faux-leather mini with a hidden stretch panel so it moves like fabric, not armour. Off to the office with tights, out at night with the corset. One skirt, two lives.',
         status: 'active',
         productType: 'Skirt',
         vendor: 'Voltage',
         tags: ['bottoms', 'skirt', 'faux-leather', 'sale'],
         categoryHandles: ['denim'],
         collectionHandles: ['new-arrivals', 'sale'],
-        seoTitle: 'Faux-Leather Mini Skirt — matte stretch-panel mini',
+        seoTitle: 'Faux-Leather Mini Skirt: matte stretch-panel mini',
         seoDescription: 'A matte faux-leather mini skirt with a hidden stretch panel. Was $32.99, now $21.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -696,19 +696,19 @@ const PRODUCTS: Product[] = [
         handle: 'ribbed-lounge-set',
         title: 'Ribbed Lounge Set',
         description:
-            'A matching rib-knit set — a fitted long-sleeve and a high-waist flare — soft enough to travel in and sharp enough to arrive in. Buy it together, split it up forever.',
+            'A matching rib-knit set (a fitted long-sleeve and a high-waist flare) soft enough to travel in and sharp enough to arrive in. Buy it together, split it up forever.',
         status: 'active',
         productType: 'Matching set',
         vendor: 'Voltage',
         tags: ['set', 'loungewear', 'ribbed', 'sale'],
         categoryHandles: ['sets'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'sale'],
-        seoTitle: 'Ribbed Lounge Set — matching rib-knit lounge set',
+        seoTitle: 'Ribbed Lounge Set: matching rib-knit lounge set',
         seoDescription: 'A matching rib-knit lounge set: fitted long-sleeve and high-waist flare. Was $44.99, now $29.99.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'A matching rib-knit set — a fitted long-sleeve and a high-waist flare — soft enough to travel in and sharp enough to arrive in. The rib holds its shape wash after wash.',
+                'A matching rib-knit set (a fitted long-sleeve and a high-waist flare) soft enough to travel in and sharp enough to arrive in. The rib holds its shape wash after wash.',
             fit: 'A fitted long-sleeve and a high-waist flare, close through the body and relaxed through the leg; true to size. Buy it as a set, wear the halves apart.',
             care: KNIT_CARE,
             materials: [
@@ -725,20 +725,20 @@ const PRODUCTS: Product[] = [
         handle: 'blazer-short-suit-set',
         title: 'Blazer + Short Suit Set',
         description:
-            'A tailored two-piece — a structured single-button blazer and a matching high-waist short — in a crease-resistant suiting that reads expensive and packs like nothing. The whole look, one add-to-bag.',
+            'A tailored two-piece (a structured single-button blazer and a matching high-waist short) in a crease-resistant suiting that reads expensive and packs like nothing. The whole look, one add-to-bag.',
         status: 'active',
         productType: 'Matching set',
         vendor: 'Voltage',
         tags: ['set', 'suit', 'tailored', 'sale'],
         categoryHandles: ['sets'],
         collectionHandles: ['the-edit', 'sale'],
-        seoTitle: 'Blazer + Short Suit Set — tailored blazer and short two-piece',
+        seoTitle: 'Blazer + Short Suit Set: tailored blazer and short two-piece',
         seoDescription: 'A tailored blazer and matching high-waist short suit set in crease-resistant suiting. Was $79.99, now $54.99.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A crease-resistant suiting that reads expensive and packs like nothing, tailored into a structured single-button blazer and a matching high-waist short. Fully lined, with working details.',
-            fit: 'A structured single-button blazer and a matching high-waist short; true to size, tailored close — size up the blazer if you layer under it. The whole look in one bag.',
+            fit: 'A structured single-button blazer and a matching high-waist short; true to size, tailored close: size up the blazer if you layer under it. The whole look in one bag.',
             care: 'Machine wash cold on a gentle cycle or dry-clean; hang to dry and steam rather than hot-iron to keep the tailoring sharp. Do not tumble, which puckers the lining.',
             materials: [
                 { name: 'Polyester', percent: '63%' },
@@ -761,7 +761,7 @@ const PRODUCTS: Product[] = [
         tags: ['set', 'jumpsuit', 'going-out', 'sale'],
         categoryHandles: ['sets'],
         collectionHandles: ['the-edit', 'sale'],
-        seoTitle: 'Strapless Wide-Leg Jumpsuit — grip-band wide-leg jumpsuit',
+        seoTitle: 'Strapless Wide-Leg Jumpsuit: grip-band wide-leg jumpsuit',
         seoDescription: 'A strapless wide-leg jumpsuit with a grippy inner band that stays put. Was $58.00, now $39.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -789,7 +789,7 @@ const PRODUCTS: Product[] = [
         tags: ['swim', 'bikini', 'vacation', 'sale'],
         categoryHandles: ['swim'],
         collectionHandles: ['new-arrivals', 'sale'],
-        seoTitle: 'Ring-Detail String Bikini — adjustable ring-hardware bikini',
+        seoTitle: 'Ring-Detail String Bikini: adjustable ring-hardware bikini',
         seoDescription: 'A quick-dry string bikini with gold-tone ring hardware and adjustable ties. Was $36.99, now $24.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -810,14 +810,14 @@ const PRODUCTS: Product[] = [
         handle: 'one-shoulder-one-piece',
         title: 'One-Shoulder One-Piece',
         description:
-            'A sculpting one-shoulder one-piece with a hidden shelf and a high-cut leg. Reads as a swimsuit at the pool and a bodysuit under a skirt — the hardest-working thing in the bag.',
+            'A sculpting one-shoulder one-piece with a hidden shelf and a high-cut leg. Reads as a swimsuit at the pool and a bodysuit under a skirt: the hardest-working thing in the bag.',
         status: 'active',
         productType: 'Swimwear',
         vendor: 'Voltage',
         tags: ['swim', 'one-piece', 'vacation', 'sale'],
         categoryHandles: ['swim'],
         collectionHandles: ['best-sellers', 'sale'],
-        seoTitle: 'One-Shoulder One-Piece — sculpting one-shoulder swimsuit',
+        seoTitle: 'One-Shoulder One-Piece: sculpting one-shoulder swimsuit',
         seoDescription: 'A sculpting one-shoulder one-piece swimsuit with a hidden shelf and high-cut leg. Was $39.99, now $27.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -838,14 +838,14 @@ const PRODUCTS: Product[] = [
         handle: 'oversized-shield-sunglasses',
         title: 'Oversized Shield Sunglasses',
         description:
-            'A single-lens shield in a wraparound frame that covers half the face and all the mystery. UV400, featherlight, and the fastest way to finish a look — throw them on and leave.',
+            'A single-lens shield in a wraparound frame that covers half the face and all the mystery. UV400, featherlight, and the fastest way to finish a look: throw them on and leave.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Voltage',
         tags: ['accessory', 'sunglasses', 'sale'],
         categoryHandles: ['accessories'],
         collectionHandles: ['new-arrivals', 'sale'],
-        seoTitle: 'Oversized Shield Sunglasses — UV400 wraparound shield',
+        seoTitle: 'Oversized Shield Sunglasses: UV400 wraparound shield',
         seoDescription: 'Oversized UV400 shield sunglasses in a featherlight wraparound frame. Was $19.99, now $12.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -866,14 +866,14 @@ const PRODUCTS: Product[] = [
         handle: 'quilted-shoulder-bag',
         title: 'Quilted Shoulder Bag',
         description:
-            'A quilted vegan-leather shoulder bag with a gold chain strap you can double up or wear long. Fits the phone, the cards and the lipstick — and nothing you were going to lose anyway.',
+            'A quilted vegan-leather shoulder bag with a gold chain strap you can double up or wear long. Fits the phone, the cards and the lipstick, and nothing you were going to lose anyway.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Voltage',
         tags: ['accessory', 'bag', 'sale'],
         categoryHandles: ['accessories'],
         collectionHandles: ['best-sellers', 'sale'],
-        seoTitle: 'Quilted Shoulder Bag — chain-strap quilted vegan-leather bag',
+        seoTitle: 'Quilted Shoulder Bag: chain-strap quilted vegan-leather bag',
         seoDescription: 'A quilted vegan-leather shoulder bag with a doubling gold chain strap. Was $44.99, now $29.99.',
         productTypeKey: 'apparel',
         attributes: {
@@ -895,12 +895,12 @@ const PRODUCTS: Product[] = [
 
 const COMMERCE = {
     categories: [
-        { handle: 'dresses', name: 'Dresses', description: 'Mini, midi and maxi — the going-out rail.', featured: true },
+        { handle: 'dresses', name: 'Dresses', description: 'Mini, midi and maxi: the going-out rail.', featured: true },
         { handle: 'tops', name: 'Tops', description: 'Camis, tees, corsets and everything under a jacket.', featured: true },
         { handle: 'denim', name: 'Jeans & Bottoms', description: 'Wide-leg denim, cargos and skirts.', featured: true },
-        { handle: 'sets', name: 'Sets & Rompers', description: 'Two pieces, one decision — matching sets and jumpsuits.', featured: false },
+        { handle: 'sets', name: 'Sets & Rompers', description: 'Two pieces, one decision: matching sets and jumpsuits.', featured: false },
         { handle: 'swim', name: 'Swim', description: 'Bikinis and one-pieces, vacation-ready.', featured: true },
-        { handle: 'accessories', name: 'Accessories', description: 'The finishing pieces — bags and shades.', featured: false },
+        { handle: 'accessories', name: 'Accessories', description: 'The finishing pieces: bags and shades.', featured: false },
     ],
     collections: [
         {
@@ -940,7 +940,7 @@ const COMMERCE = {
         {
             handle: 'the-edit',
             name: 'The Edit',
-            description: 'The going-out edit — the pieces the team is styling right now.',
+            description: 'The going-out edit: the pieces the team is styling right now.',
             type: 'manual',
             featured: false,
             productHandles: [
@@ -961,7 +961,7 @@ const COMMERCE = {
         },
         {
             handle: 'sale',
-            name: 'Sale — 60-80% Off',
+            name: 'Sale: 60-80% Off',
             description: 'The final rail. Prices as marked, while sizes last.',
             type: 'manual',
             featured: false,
@@ -994,16 +994,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The Golden Hour Edit',
-            excerpt: 'Warm tones, cutouts and satin — the going-out shapes built for the last good light of the day.',
+            excerpt: 'Warm tones, cutouts and satin: the going-out shapes built for the last good light of the day.',
             featuredImage: { $asset: 'post-golden-hour' },
             body: {
                 type: 'doc',
                 content: [
                     para('Golden hour is the twenty minutes the whole night gets planned around. The light does half the work; the outfit only has to not fight it. That means warm tones over cool ones, a little skin on purpose, and a fabric that catches the light instead of flattening it.'),
                     h2('Start with the satin'),
-                    para('The Coastline Satin Maxi is the anchor — it pours, it slits, and it photographs like money. If a floor-length feels like too much for the plan, the Halston Cutout Mini does the same warm-toned job with more leg and less commitment.'),
+                    para('The Coastline Satin Maxi is the anchor. It pours, it slits, and it photographs like money. If a floor-length feels like too much for the plan, the Halston Cutout Mini does the same warm-toned job with more leg and less commitment.'),
                     h2('One cutout, not five'),
-                    para('A single sharp cutout reads as intentional; a dress that is more hole than fabric reads as a dare. Let one detail do the talking — the waist, the shoulder, the back — and keep the rest clean.'),
+                    para('A single sharp cutout reads as intentional; a dress that is more hole than fabric reads as a dare. Let one detail do the talking (the waist, the shoulder, the back) and keep the rest clean.'),
                     para('Finish with the shield sunglasses until the sun is actually down, then push them up into your hair and let the night start.'),
                 ],
             },
@@ -1015,16 +1015,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Vacation Mode: 12 Resort Looks',
-            excerpt: 'Twelve looks that pack flat, mix hard, and photograph everywhere — built around two swimsuits and a bag.',
+            excerpt: 'Twelve looks that pack flat, mix hard, and photograph everywhere: built around two swimsuits and a bag.',
             featuredImage: { $asset: 'post-vacation' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A good vacation capsule is a small number of pieces that make a large number of outfits. The trick is not packing more — it is packing things that talk to each other, so a swimsuit becomes a bodysuit and a skirt becomes an evening.'),
+                    para('A good vacation capsule is a small number of pieces that make a large number of outfits. The trick is not packing more. It is packing things that talk to each other, so a swimsuit becomes a bodysuit and a skirt becomes an evening.'),
                     h2('Two swimsuits, worn twelve ways'),
                     para('The Ring-Detail String Bikini and the One-Shoulder One-Piece are the whole foundation. The one-piece doubles as a top under the faux-leather mini for dinner; the bikini lives under a cami and the wide-leg jean for the market run.'),
                     h2('Pack flat, arrive sharp'),
-                    para('Everything here rolls into a carry-on and shakes out crease-free — the satin maxi included. Add the quilted shoulder bag for the plane and the beach both, and leave the hard cases at home.'),
+                    para('Everything here rolls into a carry-on and shakes out crease-free: the satin maxi included. Add the quilted shoulder bag for the plane and the beach both, and leave the hard cases at home.'),
                     para('Twelve looks, one small bag. The only thing you should overpack is sunscreen.'),
                 ],
             },
@@ -1035,18 +1035,18 @@ const CONTENT = [
         slug: 'denim-reset-wide-leg',
         status: 'published',
         body: {
-            title: 'Denim Reset — Styling Wide-Leg',
+            title: 'Denim Reset: Styling Wide-Leg',
             excerpt: 'The wide-leg jean is the new blank canvas. Five ways to wear it, from the coffee run to the night out.',
             featuredImage: { $asset: 'post-denim' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The skinny era is over and nobody is mourning it. The high-rise wide-leg is the jean everything gets built around now — it lengthens the leg, forgives the lunch, and reads dressed-up or thrown-on depending entirely on what you put with it.'),
+                    para('The skinny era is over and nobody is mourning it. The high-rise wide-leg is the jean everything gets built around now. It lengthens the leg, forgives the lunch, and reads dressed-up or thrown-on depending entirely on what you put with it.'),
                     h2('Day: keep it easy'),
                     para('The wide-leg jean, the rib-knit cami, and a jacket over the shoulders. Flat shoes, big sunglasses, done. This is the version you can get dressed for in ninety seconds and still feel put-together in.'),
                     h2('Night: raise the top half'),
                     para('Swap the cami for the corset bustier and add a heel. The volume down low balances the structure up top, and the whole thing tips from errand to evening without changing the jean.'),
-                    para('One pair, five outfits, zero fuss. That is the reset — buy the good jean, then let it do the heavy lifting for a year.'),
+                    para('One pair, five outfits, zero fuss. That is the reset: buy the good jean, then let it do the heavy lifting for a year.'),
                 ],
             },
         },
@@ -1141,7 +1141,7 @@ function pdpBuyRegion(): Node {
                                     el('div', 'flex flex-wrap items-center gap-3', {
                                         children: [
                                             el('span', 'badge badge-accent font-semibold', {
-                                                text: 'Prices as marked — no code needed',
+                                                text: 'Prices as marked: no code needed',
                                             }),
                                         ],
                                     }),
@@ -1209,7 +1209,7 @@ const SHOP: Node[] = [
                         { text: 'Shop everything' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed', {
-                        text: 'Every style Voltage is dropping right now — dresses, denim, tops, sets and swim — filtered and sorted however you like. Prices as marked, restocked before they sell out, and priced to move.',
+                        text: 'Every style Voltage is dropping right now (dresses, denim, tops, sets and swim) filtered and sorted however you like. Prices as marked, restocked before they sell out, and priced to move.',
                     }),
                 ],
             }),
@@ -1267,7 +1267,7 @@ const COLLECTIONS: Node[] = [
                         { text: 'Shop the drops' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed', {
-                        text: 'New arrivals, best-sellers, the going-out edit and the 60–80% off sale rail — every collection Voltage is dropping right now, grouped so you can shop straight to the vibe. Fresh styles land every week, restocked before they sell out.',
+                        text: 'New arrivals, best-sellers, the going-out edit and the 60–80% off sale rail: every collection Voltage is dropping right now, grouped so you can shop straight to the vibe. Fresh styles land every week, restocked before they sell out.',
                     }),
                 ],
             }),
@@ -1278,14 +1278,14 @@ const COLLECTIONS: Node[] = [
 const SEARCH: Node[] = [
     pageMasthead(
         'Search Voltage',
-        'Hunting a specific style, size or steal? Search the whole catalogue and the Edit below — thousands of pieces, new drops every week, all priced to move.'
+        'Hunting a specific style, size or steal? Search the whole catalogue and the Edit below: thousands of pieces, new drops every week, all priced to move.'
     ),
 ];
 
 const JOURNAL: Node[] = [
     pageMasthead(
         'The Voltage Edit',
-        'How the team is actually wearing the new drops — trend reports, styling tricks and vacation packing lists, each one built to shop straight from the story.'
+        'How the team is actually wearing the new drops: trend reports, styling tricks and vacation packing lists, each one built to shop straight from the story.'
     ),
 ];
 
@@ -1307,7 +1307,7 @@ const CART: Node[] = [
                                 { text: 'Your bag' }
                             ),
                             el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                                text: 'Almost yours. Free 1-day shipping over $75, easy 30-day returns and a secure checkout — no surprises at the till. Bag your styles before they sell out.',
+                                text: 'Almost yours. Free 1-day shipping over $75, easy 30-day returns and a secure checkout: no surprises at the till. Bag your styles before they sell out.',
                             }),
                         ],
                     }),
@@ -1346,7 +1346,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-catalog-dense',
     name: 'Catalog Dense',
     summary:
-        'A high-volume, discount-forward storefront for a fast-fashion apparel shop — a full-bleed offer hero over relentless dense product grids, per-category rails and candy-loud promo bands, in a bright near-black-chrome theme with one sale-red accent. Modelled on the dense fast-fashion catalog archetype; shipped as Voltage.',
+        'A high-volume, discount-forward storefront for a fast-fashion apparel shop: a full-bleed offer hero over relentless dense product grids, per-category rails and candy-loud promo bands, in a bright near-black-chrome theme with one sale-red accent. Modelled on the dense fast-fashion catalog archetype; shipped as Voltage.',
     tagline: 'A dense, energetic template for high-volume apparel and fast-fashion catalogs.',
     vertical: 'retail',
     industry: 'Fast-fashion apparel',
@@ -1362,9 +1362,9 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Voltage — new-season fashion, new drops daily',
+            title: 'Voltage: new-season fashion, new drops daily',
             description:
-                'Voltage drops new-season dresses, denim, tops and sets every week at prices built to move — the trend-fast fashion edit, restocked before it sells out.',
+                'Voltage drops new-season dresses, denim, tops and sets every week at prices built to move: the trend-fast fashion edit, restocked before it sells out.',
         },
         about: {
             title: 'About Voltage',

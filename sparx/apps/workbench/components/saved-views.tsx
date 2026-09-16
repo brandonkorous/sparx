@@ -294,7 +294,7 @@ export function SavedViewsBar({
                       const ok = await confirm({
                         title: `Delete "${activeName ?? 'this view'}"?`,
                         description:
-                          'The rows are untouched — this only forgets the saved question. Anyone on the team using a shared view will lose it too.',
+                          'The rows are untouched. This only forgets the saved question. Anyone on the team using a shared view will lose it too.',
                         confirmLabel: 'Delete it',
                         cancelLabel: 'Keep it',
                         color: 'danger',
@@ -327,7 +327,7 @@ export function SavedViewsBar({
         <DialogContent>
           <DialogTitle>Save this view</DialogTitle>
           <DialogDescription>
-            What you are looking at right now — the filters, the sort and the columns — kept under a
+            What you are looking at right now (the filters, the sort and the columns) kept under a
             name. It saves the question, not the rows, so it stays true as the stock changes.
           </DialogDescription>
           <div className="flex flex-col gap-3 py-2">

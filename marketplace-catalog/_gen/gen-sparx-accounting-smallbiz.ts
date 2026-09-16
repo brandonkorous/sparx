@@ -187,7 +187,7 @@ const SCHEDULING = {
       handle: 'bookkeeping-setup',
       name: 'Bookkeeping setup',
       description:
-        'We’ll get your books set up right from the start — connected accounts, clean categories, and a simple monthly rhythm you can actually keep up with.',
+        'We’ll get your books set up right from the start: connected accounts, clean categories, and a simple monthly rhythm you can actually keep up with.',
       durationMinutes: 60,
       priceCents: 20000,
       assignmentStrategy: 'customer_choice',
@@ -239,7 +239,7 @@ const SCHEDULING = {
       handle: 'small-business-advisory',
       name: 'Small business advisory',
       description:
-        'A sit-down to look at the bigger picture — cash flow, pricing, what the numbers are telling you, and the next smart move for your business.',
+        'A sit-down to look at the bigger picture: cash flow, pricing, what the numbers are telling you, and the next smart move for your business.',
       durationMinutes: 60,
       priceCents: 22000,
       assignmentStrategy: 'customer_choice',
@@ -257,7 +257,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A friendly, sunlit workspace with a laptop, a coffee and a small stack of paperwork',
     title: 'The numbers, off your plate',
-    sub: 'Friendly bookkeeping, payroll and taxes for freelancers and small businesses — so you can get back to running the thing you actually love.',
+    sub: 'Friendly bookkeeping, payroll and taxes for freelancers and small businesses, so you can get back to running the thing you actually love.',
     primary: { label: 'Book a free consult', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
     overlay: 'dark',
@@ -266,21 +266,21 @@ const HOME = [
     items: [
       {
         title: 'One flat monthly price',
-        body: 'No surprise invoices, no hourly meter running. You’ll know exactly what you pay every month — and it won’t change because you asked a question.',
+        body: 'No surprise invoices, no hourly meter running. You’ll know exactly what you pay every month, and it won’t change because you asked a question.',
       },
       {
         title: 'We speak plain English',
-        body: 'No jargon, no lecture. We explain your numbers the way we’d explain them to a friend — clearly, honestly, and without making you feel behind.',
+        body: 'No jargon, no lecture. We explain your numbers the way we’d explain them to a friend: clearly, honestly, and without making you feel behind.',
       },
       {
         title: 'Deadlines we never miss',
-        body: 'Quarterly taxes, payroll filings, year-end — we track every date so you don’t have to. No late fees, no last-minute scramble, ever.',
+        body: 'Quarterly taxes, payroll filings, year-end. We track every date so you don’t have to. No late fees, no last-minute scramble, ever.',
       },
     ],
   }),
   serviceMenu({
     heading: 'How we help',
-    intro: 'Pick a service to see how long it takes and what it costs. Not sure where to start? Book the free consult — that’s what it’s for.',
+    intro: 'Pick a service to see how long it takes and what it costs. Not sure where to start? Book the free consult: that’s what it’s for.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -316,14 +316,14 @@ const HOME = [
     alt: 'A tidy desk with a calculator, notebook and a cup of coffee',
     heading: 'You run the business. We’ll run the books.',
     body: [
-      'Most small-business owners didn’t start out to become part-time accountants — but somehow the spreadsheets, the receipts and the quarterly taxes landed on their desk anyway.',
+      'Most small-business owners didn’t start out to become part-time accountants, but somehow the spreadsheets, the receipts and the quarterly taxes landed on their desk anyway.',
       'That’s where we come in. We take all of it off your plate, keep it tidy and up to date, and tell you in plain language exactly where you stand. No stress, no jargon, no April panic.',
     ],
     cta: { label: 'Book a free consult', href: '/book' },
   }),
   teamRow({
     heading: 'The people behind your books',
-    intro: 'A small, friendly team that actually gets to know your business. Book with whoever fits — we’ll point you to the right person.',
+    intro: 'A small, friendly team that actually gets to know your business. Book with whoever fits: we’ll point you to the right person.',
     members: [
       {
         name: 'Dana Whitfield',
@@ -337,7 +337,7 @@ const HOME = [
         role: 'Bookkeeping & payroll',
         image: url(IMG.marcus),
         alt: 'Marcus Bell, bookkeeping and payroll',
-        bio: 'Keeps your books clean and your team paid — on time, every time.',
+        bio: 'Keeps your books clean and your team paid: on time, every time.',
       },
       {
         name: 'Rosa Nguyen',
@@ -350,12 +350,12 @@ const HOME = [
   }),
   testimonial({
     quote:
-      'I used to dread every tax season and lose whole weekends to my books. Now I honestly don’t think about it — they just handle it, and I finally feel on top of my money.',
+      'I used to dread every tax season and lose whole weekends to my books. Now I honestly don’t think about it. They just handle it, and I finally feel on top of my money.',
     attribution: 'Priya, bakery owner & client since 2022',
   }),
   bookingCta({
     title: 'Let’s take a look at your books',
-    sub: 'Book a free 30-minute consult. We’ll talk through where you are and how we can help — no cost, no commitment.',
+    sub: 'Book a free 30-minute consult. We’ll talk through where you are and how we can help: no cost, no commitment.',
     cta: { label: 'Book a free consult', href: '/book' },
   }),
 ];
@@ -378,7 +378,7 @@ const ABOUT = [
     alt: 'A friendly, sunlit workspace with a laptop, a coffee and a small stack of paperwork',
     heading: 'About Ledger & Co.',
     body: [
-      'We started Ledger & Co. because we kept meeting small-business owners who were brilliant at their craft and completely underwater on their books — not because they weren’t smart, but because nobody ever made the money side feel human.',
+      'We started Ledger & Co. because we kept meeting small-business owners who were brilliant at their craft and completely underwater on their books, not because they weren’t smart, but because nobody ever made the money side feel human.',
       'So that’s what we do. We handle the bookkeeping, payroll and taxes, and we explain it all in plain English. You get your evenings back, your numbers make sense, and tax season stops being something to fear.',
     ],
     cta: { label: 'Book a free consult', href: '/book' },
@@ -389,15 +389,15 @@ const ABOUT = [
     items: [
       {
         title: 'A real person, every time',
-        body: 'You’ll work with the same friendly team who knows your business — not a call center and never a different stranger each month.',
+        body: 'You’ll work with the same friendly team who knows your business, not a call center and never a different stranger each month.',
       },
       {
         title: 'Everything in the cloud',
-        body: 'Your books live online, always current, always accessible. Check in whenever you like, or leave it to us — either way it’s handled.',
+        body: 'Your books live online, always current, always accessible. Check in whenever you like, or leave it to us. Either way it’s handled.',
       },
       {
         title: 'Honest, upfront pricing',
-        body: 'Flat monthly plans, spelled out before you commit. Ask us anything without watching a clock — questions are part of the service.',
+        body: 'Flat monthly plans, spelled out before you commit. Ask us anything without watching a clock: questions are part of the service.',
       },
     ],
   }),
@@ -417,7 +417,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather just book a time?',
-    sub: 'Grab a free consult online and pick a slot that suits you — no phone tag, no waiting on a callback.',
+    sub: 'Grab a free consult online and pick a slot that suits you: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Book a free consult', href: '/book' },
   }),
@@ -428,8 +428,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-accounting-smallbiz',
   name: 'Accounting (Small Business)',
   summary:
-    'A warm, friendly small-business accounting site — a fresh teal palette, a coral accent and a clean, approachable look. Installs a working booking flow: three accountants you book by name, and a real menu of consultations (a free consult, bookkeeping, payroll, quarterly taxes, new-business setup). Ships as "Ledger & Co.", the everyday bookkeeping & tax practice for freelancers and small businesses.',
-  tagline: 'A friendly template for bookkeeping & tax practices — take bookings from day one.',
+    'A warm, friendly small-business accounting site: a fresh teal palette, a coral accent and a clean, approachable look. Installs a working booking flow: three accountants you book by name, and a real menu of consultations (a free consult, bookkeeping, payroll, quarterly taxes, new-business setup). Ships as "Ledger & Co.", the everyday bookkeeping & tax practice for freelancers and small businesses.',
+  tagline: 'A friendly template for bookkeeping & tax practices: take bookings from day one.',
   industry: 'Accounting',
   sortWeight: 64,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -438,9 +438,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Ledger & Co. — friendly bookkeeping & taxes for small business',
+      title: 'Ledger & Co. friendly bookkeeping & taxes for small business',
       description:
-        'Ledger & Co. handles the bookkeeping, payroll and taxes for freelancers and small businesses — in plain English, at one flat monthly price. Book a free consult online.',
+        'Ledger & Co. handles the bookkeeping, payroll and taxes for freelancers and small businesses: in plain English, at one flat monthly price. Book a free consult online.',
     },
   },
   home: HOME,

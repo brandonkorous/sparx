@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Life happens — just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you."
+      "policyText": "Life happens. Just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you."
     },
     {
       "handle": "glow-noshow",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service — a heads-up text keeps you in the clear."
+      "policyText": "Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service: a heads-up text keeps you in the clear."
     }
   ],
   "resources": [
@@ -193,7 +193,7 @@
     {
       "handle": "express-glow-facial",
       "name": "Express glow facial",
-      "description": "Cleanse, exfoliate, mask and a dewy finish — a proper glow on your lunch break.",
+      "description": "Cleanse, exfoliate, mask and a dewy finish: a proper glow on your lunch break.",
       "durationMinutes": 30,
       "priceCents": 4500,
       "assignmentStrategy": "any_available",
@@ -216,7 +216,7 @@
     {
       "handle": "signature-glow-facial",
       "name": "Signature glow facial",
-      "description": "The full feel-good ritual — deep cleanse, custom mask, massage and glow serum.",
+      "description": "The full feel-good ritual: deep cleanse, custom mask, massage and glow serum.",
       "durationMinutes": 45,
       "priceCents": 7500,
       "bufferAfterMin": 10,
@@ -240,7 +240,7 @@
     {
       "handle": "hydrating-facial",
       "name": "Dewy hydration facial",
-      "description": "Thirsty skin, meet its match — layers of hydration for a plump, bouncy glow.",
+      "description": "Thirsty skin, meet its match: layers of hydration for a plump, bouncy glow.",
       "durationMinutes": 45,
       "priceCents": 7000,
       "bufferAfterMin": 10,
@@ -288,7 +288,7 @@
     {
       "handle": "led-add-on",
       "name": "LED light add-on",
-      "description": "Ten minutes under the glow lights — calming, brightening, extra dewy.",
+      "description": "Ten minutes under the glow lights: calming, brightening, extra dewy.",
       "durationMinutes": 15,
       "priceCents": 2500,
       "assignmentStrategy": "any_available",

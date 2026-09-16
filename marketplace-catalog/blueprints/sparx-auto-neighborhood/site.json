@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Sparrow & Sons Auto — honest neighborhood car repair",
+      "seoTitle": "Sparrow & Sons Auto: honest neighborhood car repair",
       "seoDescription": "A family-run repair shop since 1994. Honest estimates, ASE-certified techs, and a warranty on every job. Book a service or a free estimate online.",
       "root": {
         "kind": "element",
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The people under your hood are trained and certified — not a rotating crew of whoever’s cheapest this week."
+                              "The people under your hood are trained and certified, not a rotating crew of whoever’s cheapest this week."
                             ],
                             "id": "d8b13d07-4594-4c54-8564-97c6720517c0",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The everyday work that keeps a car running well. Book any of these online — live times and prices are on the booking page."
+                          "The everyday work that keeps a car running well. Book any of these online: live times and prices are on the booking page."
                         ],
                         "id": "d256385a-ae23-41d2-9425-541d2df5f02b",
                         "ord": "a1"
@@ -872,7 +872,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["We look it over and tell you what it needs — no charge."],
+                            "children": ["We look it over and tell you what it needs: no charge."],
                             "id": "f31c4949-1672-41ee-a69a-ba2c7c2d398f",
                             "ord": "a2"
                           }
@@ -978,7 +978,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Pads, rotors and a full inspection — warrantied."],
+                            "children": ["Pads, rotors and a full inspection: warrantied."],
                             "id": "f1fd6e8e-6e57-4047-a683-d00e9a5aa7ba",
                             "ord": "a2"
                           }
@@ -1217,7 +1217,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Ray Sparrow opened these bay doors in 1994, and his boy Danny grew up sweeping the floors before he started turning wrenches himself. Most of our customers have been coming for a decade or more — and they send their kids."
+                          "Ray Sparrow opened these bay doors in 1994, and his boy Danny grew up sweeping the floors before he started turning wrenches himself. Most of our customers have been coming for a decade or more, and they send their kids."
                         ],
                         "id": "da625c49-56dc-42de-8088-06e814e32e4e",
                         "ord": "a1"
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Real names, real faces. Book with whoever you like — they all trained in this shop."
+                          "Real names, real faces. Book with whoever you like. They all trained in this shop."
                         ],
                         "id": "c03e67f4-9687-49d9-9ce0-be19d95bf207",
                         "ord": "a1"
@@ -1576,7 +1576,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Sparrow & Sons Auto",
+      "seoTitle": "Book: Sparrow & Sons Auto",
       "seoDescription": "See what Sparrow & Sons Auto offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1627,7 +1627,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose what you need — a service, a diagnostic, or a free estimate — to see live availability, then pick your time and tech."
+                      "Choose what you need (a service, a diagnostic, or a free estimate) to see live availability, then pick your time and tech."
                     ],
                     "id": "6ec1d3fc-053e-4dcd-b3ae-ee6853eba3d4",
                     "ord": "a1"
@@ -1700,7 +1700,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "6d25398e-6e19-4519-bf76-49838b156b45",
                         "ord": "a1"
@@ -1807,7 +1807,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Sparrow & Sons Auto",
+      "seoTitle": "About: Sparrow & Sons Auto",
       "seoDescription": "Who Sparrow & Sons Auto is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -2026,7 +2026,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Sparrow & Sons Auto",
+      "seoTitle": "Visit: Sparrow & Sons Auto",
       "seoDescription": "Where to find Sparrow & Sons Auto, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2063,7 +2063,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Sparrow & Sons Auto will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Sparrow & Sons Auto will get back to you, usually the same day."
                         ],
                         "id": "db1e5049-5230-41a3-acf4-4fd3c82c77b0",
                         "ord": "a1"
@@ -2490,7 +2490,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Grab a time online and we’ll have a bay ready when you pull in — no phone tag, no waiting on hold."
+                      "Grab a time online and we’ll have a bay ready when you pull in: no phone tag, no waiting on hold."
                     ],
                     "id": "f3cdd0fd-b4ab-44a3-8acb-6e340a869ad3",
                     "ord": "a1"

@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Apex Driving Academy — adult & advanced driving lessons",
-      "seoDescription": "Apex Driving Academy teaches adult and advanced drivers — defensive driving, nervous-driver coaching, senior refreshers, highway skills and license transfers. Book online.",
+      "seoTitle": "Apex Driving Academy: adult & advanced driving lessons",
+      "seoDescription": "Apex Driving Academy teaches adult and advanced drivers: defensive driving, nervous-driver coaching, senior refreshers, highway skills and license transfers. Book online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Professional lessons for adult and advanced drivers — defensive skills, nervous-driver coaching, senior refreshers and highway confidence. Book with a real instructor and see live times in about a minute."
+                      "Professional lessons for adult and advanced drivers: defensive skills, nervous-driver coaching, senior refreshers and highway confidence. Book with a real instructor and see live times in about a minute."
                     ],
                     "id": "1367d979-f437-4106-a8a8-f4e306a1fa99",
                     "ord": "a1"
@@ -664,7 +664,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Calm, experienced professionals who teach grown-ups — no teen-driver-ed vibe, just clear feedback and steady progress."
+                              "Calm, experienced professionals who teach grown-ups: no teen-driver-ed vibe, just clear feedback and steady progress."
                             ],
                             "id": "c61179cb-1465-4f4c-8f5c-051c187962d6",
                             "ord": "a1"
@@ -745,7 +745,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Live availability across our instructors and dual-control cars — pick a time that fits your week, not ours."
+                              "Live availability across our instructors and dual-control cars. Pick a time that fits your week, not ours."
                             ],
                             "id": "a7c1c2b6-b2b1-4423-8759-26d56461cf51",
                             "ord": "a1"
@@ -1191,7 +1191,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Confidence is a skill — we teach it on purpose"],
+                        "children": ["Confidence is a skill. We teach it on purpose"],
                         "id": "0db57b65-0696-45ea-b234-8858f8db8c39",
                         "ord": "a0"
                       },
@@ -1210,7 +1210,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Dual-control cars, unflappable instructors and honest feedback — that’s how a first-timer, a returning driver and a nervous one all leave steadier than they arrived."
+                          "Dual-control cars, unflappable instructors and honest feedback: that’s how a first-timer, a returning driver and a nervous one all leave steadier than they arrived."
                         ],
                         "id": "2c95dc75-f45b-41af-bd9d-0f85c431ffd1",
                         "ord": "a2"
@@ -1275,7 +1275,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with someone who teaches your kind of driving."
+                          "Book by name: you’ll work with someone who teaches your kind of driving."
                         ],
                         "id": "a0bf50e4-685d-4e26-82a0-770461dfbd11",
                         "ord": "a1"
@@ -1484,7 +1484,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I avoided the freeway for eleven years. Three lessons with Dana and I drove myself two hours to see my sister — first time ever. I still can’t quite believe it.”"
+                      "“I avoided the freeway for eleven years. Three lessons with Dana and I drove myself two hours to see my sister: first time ever. I still can’t quite believe it.”"
                     ],
                     "id": "7c26e556-154e-416d-a5bc-aa3ace9e6123",
                     "ord": "a0"
@@ -1559,7 +1559,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Apex Driving Academy",
+      "seoTitle": "Book: Apex Driving Academy",
       "seoDescription": "See what Apex Driving Academy offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1664,7 +1664,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "35f71170-c5b8-4118-81d4-a76d276acf7b",
                         "ord": "a1"
@@ -1733,7 +1733,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A missed lesson with no notice, or a cancellation inside 24 hours, is charged in full — the car and instructor were held for you. Life happens, so tell us as early as you can and we’ll always try to move you instead."
+                              "A missed lesson with no notice, or a cancellation inside 24 hours, is charged in full: the car and instructor were held for you. Life happens, so tell us as early as you can and we’ll always try to move you instead."
                             ],
                             "id": "9f4f7c52-d1e0-44e7-bca9-7752ea9a43d3",
                             "ord": "a1"
@@ -1771,7 +1771,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Apex Driving Academy",
+      "seoTitle": "About: Apex Driving Academy",
       "seoDescription": "Who Apex Driving Academy is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1820,7 +1820,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We built Apex for the drivers other schools overlook — adults starting late, people getting their nerve back, newcomers transferring a license, and good drivers who want to be great. Not a teen driver-ed mill."
+                          "We built Apex for the drivers other schools overlook: adults starting late, people getting their nerve back, newcomers transferring a license, and good drivers who want to be great. Not a teen driver-ed mill."
                         ],
                         "id": "bfa80224-5380-4bf3-af73-a11bb8850468",
                         "ord": "a1"
@@ -1935,7 +1935,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You get a clear path — the specific skills to build and the order to build them in, not an open-ended meter running."
+                              "You get a clear path: the specific skills to build and the order to build them in, not an open-ended meter running."
                             ],
                             "id": "be2f86ee-0012-40ec-a9f0-3f4af685fc3d",
                             "ord": "a1"
@@ -1990,7 +1990,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Apex Driving Academy",
+      "seoTitle": "Visit: Apex Driving Academy",
       "seoDescription": "Where to find Apex Driving Academy, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2027,7 +2027,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Apex Driving Academy will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Apex Driving Academy will get back to you, usually the same day."
                         ],
                         "id": "5946f4a3-ff86-4d21-b6a3-271cdaa52395",
                         "ord": "a1"
@@ -2454,7 +2454,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability across our instructors and cars, and lock in your time online — no phone tag."
+                      "See live availability across our instructors and cars, and lock in your time online: no phone tag."
                     ],
                     "id": "df860fa8-bd78-4301-98c7-b421098eca32",
                     "ord": "a1"

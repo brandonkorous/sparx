@@ -98,7 +98,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
                 ? '1 redirect imported'
                 : `${outcome.inserted} redirects imported`,
             ...(outcome.skipped.length > 0
-              ? { description: `${outcome.skipped.length} could not be added — see the summary.` }
+              ? { description: `${outcome.skipped.length} could not be added: see the summary.` }
               : {}),
             type: outcome.skipped.length > 0 ? 'warning' : 'success',
           });
@@ -106,7 +106,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
         onError: (err) => {
           toast.add({
             title: 'Could not import those redirects',
-            description: redirectErrorMessage(err, 'Nothing was changed — try again in a moment.'),
+            description: redirectErrorMessage(err, 'Nothing was changed. Try again in a moment.'),
             type: 'error',
           });
         },
@@ -154,7 +154,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
               Import redirects
             </Heading>
             <Text>
-              Bringing over a lot of moved pages at once — after a site rebuild, say. Paste them all
+              Bringing over a lot of moved pages at once: after a site rebuild, say. Paste them all
               in below and add them in one go, instead of one at a time.
             </Text>
           </div>
@@ -172,7 +172,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Your list"
-            description="One redirect per line: the old address, then where it should go. Separate the two with a comma. Add a third word — permanent or temporary — to say whether the move is for good; leave it off and it counts as permanent."
+            description="One redirect per line: the old address, then where it should go. Separate the two with a comma. Add a third word (permanent or temporary) to say whether the move is for good; leave it off and it counts as permanent."
           >
             <Textarea
               color="module"
@@ -187,7 +187,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
               }}
             />
             <Text className="text-sm">
-              Copied straight from a spreadsheet works too — the columns come across as tabs. Both
+              Copied straight from a spreadsheet works too: the columns come across as tabs. Both
               addresses are paths on this site, starting with a slash.
             </Text>
           </FormSection>
@@ -217,7 +217,7 @@ function PreviewTable({
       title="Check before importing"
       description={
         invalidCount > 0
-          ? `${validCount} ready to import. ${invalidCount} need a fix first — the rest will still import without them.`
+          ? `${validCount} ready to import. ${invalidCount} need a fix first: the rest will still import without them.`
           : `All ${validCount} ready to import.`
       }
     >
@@ -298,21 +298,21 @@ function ImportResult({
               <>
                 <span>
                   {outcome.skipped.length === 1
-                    ? 'One line could not be added — the server turned it down for this reason:'
-                    : `${outcome.skipped.length} lines could not be added — the server turned them down for these reasons:`}
+                    ? 'One line could not be added. The server turned it down for this reason:'
+                    : `${outcome.skipped.length} lines could not be added. The server turned them down for these reasons:`}
                 </span>
                 <ul className="flex flex-col gap-1">
                   {outcome.skipped.map((item) => {
                     const source = sent[item.row];
                     return (
                       <li key={item.row} className="text-sm">
-                        <span className="font-mono">{source?.from ?? `Row ${item.row + 1}`}</span> —{' '}
+                        <span className="font-mono">{source?.from ?? `Row ${item.row + 1}`}</span>:{' '}
                         {item.reason}
                       </li>
                     );
                   })}
                 </ul>
-                <span>Fix those lines and import them again — the rest are already in.</span>
+                <span>Fix those lines and import them again: the rest are already in.</span>
               </>
             ) : (
               <span className="flex items-center gap-2">

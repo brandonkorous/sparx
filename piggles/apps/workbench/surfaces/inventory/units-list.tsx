@@ -139,7 +139,7 @@ export function UnitsListSurface(_props: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Delete ${unit.code}?`,
       description:
-        'Purchase orders and deliveries already written keep this unit — they record the code as it was. Only new entries lose it.',
+        'Purchase orders and deliveries already written keep this unit. They record the code as it was. Only new entries lose it.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -209,7 +209,7 @@ export function UnitsListSurface(_props: { ctx: SurfaceContext }) {
     return (
       <div className={COLUMN}>
         <Text>
-          The words you count in — each, case, box, pair. How many singles are in a case is set on
+          The words you count in. Each, case, box, pair. How many singles are in a case is set on
           each item, because a case of one thing is rarely a case of another.
         </Text>
 
@@ -273,7 +273,7 @@ export function UnitsListSurface(_props: { ctx: SurfaceContext }) {
                 />
                 {/* The reason this field exists at all. */}
                 <FieldDescription>
-                  Only needed when adding an &quot;s&quot; would be wrong — boxes, not boxs.
+                  Only needed when adding an &quot;s&quot; would be wrong: boxes, not boxs.
                 </FieldDescription>
               </Field>
               <Field>
@@ -323,7 +323,7 @@ export function UnitsListSurface(_props: { ctx: SurfaceContext }) {
             <AlertContent>
               <AlertTitle>No units yet</AlertTitle>
               <AlertDescription>
-                Add the first one above. Most businesses need only a handful — whatever they buy and
+                Add the first one above. Most businesses need only a handful: whatever they buy and
                 sell things by.
               </AlertDescription>
             </AlertContent>
@@ -414,7 +414,7 @@ export function UnitsListSurface(_props: { ctx: SurfaceContext }) {
         <Text className="text-sm">
           <span className="font-medium">Where the numbers come from.</span> A unit is only a word
           until an item says what it contains. Open any product&apos;s stock panel to say that a
-          case of THAT thing is twelve — and from then on you can order, receive and count in cases,
+          case of THAT thing is twelve, and from then on you can order, receive and count in cases,
           while your stock figures stay in singles.
         </Text>
       </div>

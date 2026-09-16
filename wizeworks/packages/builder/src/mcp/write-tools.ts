@@ -20,11 +20,11 @@ import type { McpToolDefinition } from './registry';
 const documentArg = z
   .union([z.string(), z.record(z.string(), z.unknown())])
   .describe(
-    'A Builder page document — { format:"sparx.builder/v1", type:"page", name, kind, slug?, recordType?, ' +
-      'seoTitle?, seoDescription?, canonical?, ogImage?, noindex?, tree } — OR a bare node tree. JSON string or inline ' +
+    'A Builder page document: { format:"sparx.builder/v1", type:"page", name, kind, slug?, recordType?, ' +
+      'seoTitle?, seoDescription?, canonical?, ogImage?, noindex?, tree }: OR a bare node tree. JSON string or inline ' +
       'object. Missing node ids are auto-filled. Include the optional SEO fields to set the page title/description the ' +
       'site renders (omit them on an update to leave existing SEO untouched). See describe_builder_styling. ' +
-      'The tree MUST be responsive (mobile-first; layout adapts to width) — see the guide’s `responsive` section.'
+      'The tree MUST be responsive (mobile-first; layout adapts to width): see the guide’s `responsive` section.'
   );
 
 const propertyIdArg = z
@@ -33,14 +33,14 @@ const propertyIdArg = z
   .optional()
   .describe(
     'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
-      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'MULTIPLE sites. Call list_sites first to get each site’s id, then pass it here to target ' +
       'that specific site.'
   );
 
 export const createBuilderPage: McpToolDefinition = {
   name: 'create_builder_page',
   description:
-    'Create a new Builder page from a document (or bare node tree). Lands as a DRAFT — call publish_builder_page to take it ' +
+    'Create a new Builder page from a document (or bare node tree). Lands as a DRAFT. Call publish_builder_page to take it ' +
     'live. A full document carries its own name/kind/slug; pass `name` when you supply only a bare tree.',
   scope: 'write:builder',
   confirmation: false,
@@ -51,7 +51,7 @@ export const createBuilderPage: McpToolDefinition = {
       .min(1)
       .max(255)
       .optional()
-      .describe('Page name — used when `document` is a bare tree.'),
+      .describe('Page name: used when `document` is a bare tree.'),
     propertyId: propertyIdArg,
   }),
   run: async (ctx, input) => {
@@ -86,7 +86,7 @@ export const updateBuilderPage: McpToolDefinition = {
   name: 'update_builder_page',
   description:
     'Replace a Builder page’s draft tree (and its name / slug / recordType when the document envelope carries them). Saves to ' +
-    'DRAFT — call publish_builder_page to take the change live.',
+    'DRAFT. Call publish_builder_page to take the change live.',
   scope: 'write:builder',
   confirmation: false,
   input: z.object({
@@ -121,10 +121,10 @@ export const updateBuilderPage: McpToolDefinition = {
 export const setPageSeo: McpToolDefinition = {
   name: 'set_page_seo',
   description:
-    'Set a page’s SEO metadata — seoTitle / seoDescription / canonical / ogImage / noindex — WITHOUT resending its ' +
+    'Set a page’s SEO metadata (seoTitle / seoDescription / canonical / ogImage / noindex) WITHOUT resending its ' +
     'content tree. The shortcut for fixing a title or description: pass pageId plus the fields to change (no need to ' +
     'round-trip the whole page). Omit a field to leave it unchanged; pass an empty string to CLEAR it (the live site ' +
-    'then falls back to the page name). Saves to DRAFT — call publish_builder_page to take it live.',
+    'then falls back to the page name). Saves to DRAFT. Call publish_builder_page to take it live.',
   scope: 'write:builder',
   confirmation: false,
   input: z.object({
@@ -150,10 +150,10 @@ export const setPageFrame: McpToolDefinition = {
   name: 'set_page_frame',
   description:
     'Choose which header and footer wrap ONE page. Three values, and the two that look empty mean opposite things: ' +
-    'omit `frameId` (or pass null) to follow the SITE DEFAULT — the live layout, what almost every page should do; ' +
-    'pass "none" for a page with NO header or footer at all — the campaign or landing page built to hold someone’s ' +
+    'omit `frameId` (or pass null) to follow the SITE DEFAULT: the live layout, what almost every page should do; ' +
+    'pass "none" for a page with NO header or footer at all: the campaign or landing page built to hold someone’s ' +
     'attention with nothing to click away to; or pass a layout id from list_builder_layouts to pin this page to that ' +
-    'specific design even if the site default changes later. Saves to DRAFT — call publish_silica_site (or ' +
+    'specific design even if the site default changes later. Saves to DRAFT. Call publish_silica_site (or ' +
     'publish_builder_page) to take it live, exactly like the page body.',
   scope: 'write:builder',
   confirmation: false,
@@ -180,7 +180,7 @@ export const setPageFrame: McpToolDefinition = {
 export const publishBuilderPage: McpToolDefinition = {
   name: 'publish_builder_page',
   description:
-    'Publish a Builder page live to the site — snapshots the draft tree (expanding any tenant components to primitives). ' +
+    'Publish a Builder page live to the site: snapshots the draft tree (expanding any tenant components to primitives). ' +
     'Confirmation-gated.',
   scope: 'write:builder',
   confirmation: true,
@@ -196,8 +196,8 @@ export const setPageRecordType: McpToolDefinition = {
   name: 'set_page_record_type',
   description:
     'Set a page’s recordType, turning it into a COLLECTION TEMPLATE that renders every record of that type (e.g. ' +
-    '"commerce.product", "cms.blog_post") — WITHOUT resending its content tree. Applies equally to a silica-' +
-    'materialized page (see describe_silica_authoring’s `metadata` section — a silica page id IS this row’s id). ' +
+    '"commerce.product", "cms.blog_post"), WITHOUT resending its content tree. Applies equally to a silica-' +
+    'materialized page (see describe_silica_authoring’s `metadata` section: a silica page id IS this row’s id). ' +
     'Saves to DRAFT.',
   scope: 'write:builder',
   confirmation: false,
@@ -220,7 +220,7 @@ export const setPageRecordType: McpToolDefinition = {
 export const setPageDefault: McpToolDefinition = {
   name: 'set_page_default',
   description:
-    'Make a collection-template page the DEFAULT for its recordType — the template used when no per-record override ' +
+    'Make a collection-template page the DEFAULT for its recordType: the template used when no per-record override ' +
     'exists (e.g. the default product-detail layout). The page must already have a recordType set (via ' +
     'set_page_record_type) and be a collection template. Saves to DRAFT.',
   scope: 'write:builder',

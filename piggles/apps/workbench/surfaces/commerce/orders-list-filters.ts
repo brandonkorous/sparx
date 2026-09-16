@@ -30,7 +30,7 @@ export function emptyAdvice(search: string, filterLabel: string | null): string 
   }
   if (filterLabel) {
     parts.push(
-      `You are only seeing orders marked “${filterLabel}” — switch back to All for the rest.`
+      `You are only seeing orders marked “${filterLabel}”. Switch back to All for the rest.`
     );
   }
   return parts.join(' ');

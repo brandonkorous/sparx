@@ -96,7 +96,7 @@ export async function validateAuthorizeRequest(p: AuthorizeParams): Promise<Vali
   if (p.responseType !== 'code') {
     return {
       ok: false,
-      error: 'Unsupported response type — only the authorization-code flow is allowed.',
+      error: 'Unsupported response type. Only the authorization-code flow is allowed.',
     };
   }
   if (!p.clientId) return { ok: false, error: 'Missing client_id.' };

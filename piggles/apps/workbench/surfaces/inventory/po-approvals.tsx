@@ -346,7 +346,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                     color="module"
                     rows={3}
                     value={reason}
-                    placeholder="Too much for one order — split it, or get a second quote first."
+                    placeholder="Too much for one order: split it, or get a second quote first."
                     onChange={(event) => {
                       setReason(event.target.value);
                     }}

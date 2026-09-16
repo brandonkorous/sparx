@@ -17,7 +17,7 @@ const getSiteInfo: SiteTool = {
 const searchSite: SiteTool = {
   name: 'search_site',
   description:
-    'Search everything on the site — products, collections, and published pages — returning titles + links. Use for broad "do you have / where can I find" questions.',
+    'Search everything on the site (products, collections, and published pages) returning titles + links. Use for broad "do you have / where can I find" questions.',
   kind: 'read',
   input: z.object({
     q: z.string().max(255).optional(),

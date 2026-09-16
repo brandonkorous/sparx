@@ -40,7 +40,7 @@ function shoppableCard(): PlatformCatalogEntry['tree'] {
             bound(
               atom('Text', 'text-sm text-base-content', {
                 variant: 'body',
-                text: 'Hand-glazed and microwave-safe — built for a slow morning.',
+                text: 'Hand-glazed and microwave-safe: built for a slow morning.',
               }),
               'item.description'
             ),
@@ -103,7 +103,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'shopping-bag',
     description:
-      'A shoppable card — photo, title, price, and a working Add to cart. Pin it to a product (Data panel → A record) and everything inside reads that product.',
+      'A shoppable card: photo, title, price, and a working Add to cart. Pin it to a product (Data panel → A record) and everything inside reads that product.',
     surfaces: ['page', 'site'],
     tags: ['product', 'card', 'shop', 'buy', 'add to cart', 'commerce', 'store'],
     tree: shoppableCard(),
@@ -117,7 +117,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'layout-grid',
     description:
-      'A responsive grid that repeats a shoppable card once per product. Points at the whole catalog by default — re-point it to a collection or category in the Data panel.',
+      'A responsive grid that repeats a shoppable card once per product. Points at the whole catalog by default: re-point it to a collection or category in the Data panel.',
     surfaces: ['page', 'site'],
     tags: ['products', 'grid', 'collection', 'catalog', 'shop', 'repeater', 'commerce'],
     tree: el('section', 'w-full px-4 py-12', {
@@ -154,7 +154,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'sparkles',
     description:
-      'A two-column hero for one product — a large image beside its title, story, and a complete buy-box (price, variants, quantity, add to cart). Pin it to the product to feature.',
+      'A two-column hero for one product: a large image beside its title, story, and a complete buy-box (price, variants, quantity, add to cart). Pin it to the product to feature.',
     surfaces: ['page', 'site'],
     tags: ['product', 'featured', 'spotlight', 'hero', 'buy box', 'pdp', 'commerce'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -200,7 +200,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'shopping-bag',
     description:
-      'A “You may also like” strip — a repeating row of shoppable cards. Points at the catalog by default; re-point it to a collection in the Data panel.',
+      'A “You may also like” strip: a repeating row of shoppable cards. Points at the catalog by default; re-point it to a collection in the Data panel.',
     surfaces: ['page', 'site'],
     tags: ['related', 'cross-sell', 'recommended', 'you may also like', 'products', 'commerce'],
     tree: el('section', 'w-full px-4 py-12', {
@@ -233,7 +233,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'shopping-cart',
     description:
-      'A mini-cart panel — line items with thumbnails, a subtotal, and a checkout button. Drop it in a drawer or sidebar; wire the items to the live cart.',
+      'A mini-cart panel: line items with thumbnails, a subtotal, and a checkout button. Drop it in a drawer or sidebar; wire the items to the live cart.',
     surfaces: ['page', 'site'],
     tags: ['cart', 'mini cart', 'basket', 'checkout', 'drawer', 'commerce'],
     tree: el(
@@ -281,7 +281,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'list-filter',
     description:
-      'A horizontal row of collection links styled as filter pills — point each at a collection page and mark the current one active.',
+      'A horizontal row of collection links styled as filter pills: point each at a collection page and mark the current one active.',
     surfaces: ['page', 'site'],
     tags: ['collections', 'categories', 'filter', 'pills', 'nav', 'shop', 'commerce'],
     tree: el('nav', 'w-full px-4 py-4', {

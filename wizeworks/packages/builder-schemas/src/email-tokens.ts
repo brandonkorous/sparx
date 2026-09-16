@@ -197,14 +197,14 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     // plus imageUrl for the product thumbnail.
     items: [
       {
-        name: 'House Blend — Whole bean, 12 oz',
+        name: 'House Blend: Whole bean, 12 oz',
         quantity: '2',
         unitPrice: '$18.00',
         lineTotal: '$36.00',
         imageUrl: SAMPLE_ITEM_IMG,
       },
       {
-        name: 'Ethiopia Guji — Whole bean, 12 oz',
+        name: 'Ethiopia Guji: Whole bean, 12 oz',
         quantity: '1',
         unitPrice: '$22.00',
         lineTotal: '$22.00',
@@ -281,6 +281,8 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     labelUrl: '#',
     hasLabel: 'yes',
     manageUrl: '#',
+    replacement: 'Marlow Knit: Oat · L',
+    deniedReason: 'It came back outside the 30-day window.',
   },
   cart: {
     total: '$48.00',
@@ -288,7 +290,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     recoveryUrl: '#',
     items: [
       {
-        name: 'House Blend — Whole bean, 12 oz',
+        name: 'House Blend: Whole bean, 12 oz',
         quantity: '1',
         unitPrice: '$18.00',
         lineTotal: '$18.00',
@@ -311,13 +313,13 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     reviewUrl: '#',
     items: [
       {
-        name: 'Wholesale House Blend — 5 lb',
+        name: 'Wholesale House Blend: 5 lb',
         quantity: '10',
         unitPrice: '$85.00',
         lineTotal: '$850.00',
       },
       {
-        name: 'Wholesale Ethiopia Guji — 5 lb',
+        name: 'Wholesale Ethiopia Guji: 5 lb',
         quantity: '4',
         unitPrice: '$100.00',
         lineTotal: '$400.00',
@@ -334,13 +336,13 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
     payUrl: '#',
     items: [
       {
-        name: 'Wholesale House Blend — 5 lb',
+        name: 'Wholesale House Blend: 5 lb',
         quantity: '10',
         unitPrice: '$85.00',
         lineTotal: '$850.00',
       },
       {
-        name: 'Wholesale Ethiopia Guji — 5 lb',
+        name: 'Wholesale Ethiopia Guji: 5 lb',
         quantity: '4',
         unitPrice: '$100.00',
         lineTotal: '$400.00',
@@ -399,7 +401,7 @@ export const SAMPLE_EMAIL_DATA: Record<string, unknown> = {
       },
       {
         title: 'Brewing the perfect pour-over at home',
-        excerpt: 'Grind, water, ratio, time — the four dials that change everything.',
+        excerpt: 'Grind, water, ratio, time: the four dials that change everything.',
         imageUrl: SAMPLE_ITEM_IMG,
         url: '#',
         dateLabel: 'May 30, 2026',

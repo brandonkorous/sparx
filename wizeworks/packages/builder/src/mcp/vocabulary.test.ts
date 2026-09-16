@@ -19,7 +19,7 @@ describe('BUILDER_STYLE_GUIDE', () => {
     if (parsed.ok) {
       expect(parsed.meta.name).toBe('About');
       expect(parsed.meta.slug).toBe('about');
-      expect(parsed.meta.seoTitle).toBe('About — Your Company');
+      expect(parsed.meta.seoTitle).toBe('About: Your Company');
     }
   });
 

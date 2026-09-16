@@ -16,10 +16,10 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 export const SOCIAL_ANNOUNCE_PRODUCT: SystemAutomationSpec = {
   name: 'Announce new product',
   description:
-    'Drafts a social post when you publish a new product, and drops it in your Approvals inbox to review before it goes out. Off by default — connect a social account, pick where to post, then turn it on.',
+    'Drafts a social post when you publish a new product, and drops it in your Approvals inbox to review before it goes out. Off by default. Connect a social account, pick where to post, then turn it on.',
   trigger: { kind: 'event', eventType: 'product.published' },
   conditions: { logic: 'AND', conditions: [] },
-  actions: [{ type: 'social.post', config: { template: 'New arrival — {{announce.title}}' } }],
+  actions: [{ type: 'social.post', config: { template: 'New arrival: {{announce.title}}' } }],
   locked: false,
   status: 'paused',
 };
@@ -29,10 +29,10 @@ export const SOCIAL_ANNOUNCE_PRODUCT: SystemAutomationSpec = {
 export const SOCIAL_ANNOUNCE_BLOG: SystemAutomationSpec = {
   name: 'Announce new blog post',
   description:
-    'Drafts a social post when you publish a new article, ready in your Approvals inbox to review before it goes out. Off by default — connect a social account, pick where to post, then turn it on.',
+    'Drafts a social post when you publish a new article, ready in your Approvals inbox to review before it goes out. Off by default. Connect a social account, pick where to post, then turn it on.',
   trigger: { kind: 'event', eventType: 'content.entry.published' },
   conditions: { logic: 'AND', conditions: [] },
-  actions: [{ type: 'social.post', config: { template: 'New on the blog — {{announce.title}}' } }],
+  actions: [{ type: 'social.post', config: { template: 'New on the blog: {{announce.title}}' } }],
   locked: false,
   status: 'paused',
 };

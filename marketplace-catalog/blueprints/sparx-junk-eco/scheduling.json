@@ -127,7 +127,7 @@
     {
       "handle": "free-quote",
       "name": "Free pickup quote",
-      "description": "A free, no-pressure look — in person or by photo — at what you need gone. We’ll tell you what can be donated, what we can recycle, and give you a flat, upfront price before anything moves.",
+      "description": "A free, no-pressure look (in person or by photo) at what you need gone. We’ll tell you what can be donated, what we can recycle, and give you a flat, upfront price before anything moves.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -144,7 +144,7 @@
     {
       "handle": "donation-pickup",
       "name": "Donation pickup",
-      "description": "Gently-used furniture, clothing, housewares and more, collected and driven straight to local charities and shelters. Still good? It gets a second home, not a dumpster — and you get the donation receipt.",
+      "description": "Gently-used furniture, clothing, housewares and more, collected and driven straight to local charities and shelters. Still good? It gets a second home, not a dumpster, and you get the donation receipt.",
       "durationMinutes": 60,
       "priceCents": 6000,
       "assignmentStrategy": "any_available",
@@ -161,7 +161,7 @@
     {
       "handle": "recycling-haul",
       "name": "Recycling haul",
-      "description": "Metal, cardboard, wood, appliances and mixed materials sorted and taken to the right recycler — not the landfill. We break it down, separate it, and divert as much as the facilities near you will take.",
+      "description": "Metal, cardboard, wood, appliances and mixed materials sorted and taken to the right recycler, not the landfill. We break it down, separate it, and divert as much as the facilities near you will take.",
       "durationMinutes": 90,
       "priceCents": 8500,
       "assignmentStrategy": "any_available",
@@ -178,7 +178,7 @@
     {
       "handle": "ewaste-removal",
       "name": "E-waste removal",
-      "description": "Old computers, TVs, monitors, cables and batteries handled by our certified e-waste crew and taken to a responsible processor — data-bearing drives noted, nothing dumped or shipped offshore.",
+      "description": "Old computers, TVs, monitors, cables and batteries handled by our certified e-waste crew and taken to a responsible processor: data-bearing drives noted, nothing dumped or shipped offshore.",
       "durationMinutes": 60,
       "priceCents": 7500,
       "assignmentStrategy": "any_available",
@@ -195,7 +195,7 @@
     {
       "handle": "furniture-removal",
       "name": "Furniture removal",
-      "description": "Couches, mattresses, desks and the heavy things you can’t lift alone — carried out for you, then donated if they’re usable and recycled if they’re not. No stairs, no problem.",
+      "description": "Couches, mattresses, desks and the heavy things you can’t lift alone: carried out for you, then donated if they’re usable and recycled if they’re not. No stairs, no problem.",
       "durationMinutes": 90,
       "priceCents": 9500,
       "assignmentStrategy": "any_available",
@@ -229,7 +229,7 @@
     {
       "handle": "same-day-pickup",
       "name": "Same-day pickup",
-      "description": "Need it gone today? When a crew has an open window, we’ll come the same day — same donation-first, minimal-landfill promise, just faster. Book it and we’ll confirm your slot by text.",
+      "description": "Need it gone today? When a crew has an open window, we’ll come the same day: same donation-first, minimal-landfill promise, just faster. Book it and we’ll confirm your slot by text.",
       "durationMinutes": 120,
       "priceCents": 14000,
       "assignmentStrategy": "any_available",

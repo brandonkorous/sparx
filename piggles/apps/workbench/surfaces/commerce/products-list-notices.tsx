@@ -46,7 +46,7 @@ export function ProductsListNotices({
             <AlertTitle>Nobody can pay you on your site yet</AlertTitle>
             <AlertDescription>
               Customers can fill a basket and reach the last step, and then there is no way for them
-              to hand over the money — so the order is lost right at the end. Connect a card
+              to hand over the money, so the order is lost right at the end. Connect a card
               processor and they can pay you.
             </AlertDescription>
           </AlertContent>
@@ -77,7 +77,7 @@ export function ProductsListNotices({
             </AlertTitle>
             <AlertDescription>
               They are on your site and people can buy them. What isn’t working is the search box
-              and the filters beside your shop — those look things up in a separate list, and these
+              and the filters beside your shop. Those look things up in a separate list, and these
               are not in it, so a customer searching for one by name is told you don’t have it.
             </AlertDescription>
           </AlertContent>

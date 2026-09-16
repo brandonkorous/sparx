@@ -87,7 +87,7 @@ export default async function DomainsPage({
     <Stack gap={6}>
       <PageHeader
         title="Domains"
-        description="Every custom and sparx-purchased domain across the platform — routing status, SSL readiness, DNS verification, and registration history. Open a domain to inspect its DNS or force a re-verify."
+        description="Every custom and sparx-purchased domain across the platform: routing status, SSL readiness, DNS verification, and registration history. Open a domain to inspect its DNS or force a re-verify."
       />
 
       {tenantId ? (
@@ -148,7 +148,7 @@ export default async function DomainsPage({
             {q
               ? `No domains match “${q}”.`
               : attention
-                ? 'No domains need attention — everything is verified and live.'
+                ? 'No domains need attention. Everything is verified and live.'
                 : 'No domains yet.'}
           </Text>
         </Card>

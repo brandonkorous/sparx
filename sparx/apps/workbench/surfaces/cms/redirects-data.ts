@@ -172,14 +172,14 @@ export function redirectTypeMeta(code: number): RedirectTypeMeta {
         label: 'Temporary',
         tone: 'warning',
         detail:
-          'A short-term move that keeps the request exactly as it was — for form and checkout paths that are briefly away.',
+          'A short-term move that keeps the request exactly as it was, for form and checkout paths that are briefly away.',
       };
     case 308:
       return {
         label: 'Permanent',
         tone: 'info',
         detail:
-          'A permanent move that keeps the request exactly as it was — for form and checkout paths that have moved for good.',
+          'A permanent move that keeps the request exactly as it was, for form and checkout paths that have moved for good.',
       };
     case 301:
       return {
@@ -297,7 +297,7 @@ export function parseRedirectRows(text: string): ParsedRedirectRow[] {
     } else {
       const earlier = seen.get(from);
       if (earlier) {
-        error = `Same old address as line ${String(earlier)} — only the first will be kept.`;
+        error = `Same old address as line ${String(earlier)}: only the first will be kept.`;
       } else {
         seen.set(from, i + 1);
       }

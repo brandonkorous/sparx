@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description =
     merchant.headline ??
     merchant.bio?.slice(0, 200) ??
-    `Shop ${merchant.name} on sparx.market — ${merchant.listingCount} listings from an independent seller.`;
+    `Shop ${merchant.name} on sparx.market · ${merchant.listingCount} listings from an independent seller.`;
 
   return {
     title: merchant.name,

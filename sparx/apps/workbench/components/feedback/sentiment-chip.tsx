@@ -121,7 +121,7 @@ export function SentimentChip() {
           feedback.openSend({ source: 'pulse', sentiment: answered ?? 3 });
         }}
       >
-        Thank you — say more?
+        Thank you. Say more?
       </Button>
     );
   }

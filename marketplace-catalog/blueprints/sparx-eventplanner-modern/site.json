@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Assembly Events — corporate & social event production",
+      "seoTitle": "Assembly Events: corporate & social event production",
       "seoDescription": "Assembly Events plans and produces conferences, product launches, galas and brand activations end to end. Book a consultation with a producer online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "We plan and produce corporate and social events end to end — conferences, launches, galas and activations that hit every mark, on time and on budget."
+                      "We plan and produce corporate and social events end to end: conferences, launches, galas and activations that hit every mark, on time and on budget."
                     ],
                     "id": "abf55143-e56c-4ad1-ab77-e984d8c4aebf",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Venue, staging, AV, catering, run-of-show and the hundred details in between — one team owning all of it, so nothing falls through the gaps."
+                              "Venue, staging, AV, catering, run-of-show and the hundred details in between. One team owning all of it, so nothing falls through the gaps."
                             ],
                             "id": "68f6b5f9-5422-4827-bb92-5e6efef9cc0f",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every touchpoint, from the invite to the after-film, designed to look and feel unmistakably like you — not a template with your logo dropped on top."
+                              "Every touchpoint, from the invite to the after-film, designed to look and feel unmistakably like you, not a template with your logo dropped on top."
                             ],
                             "id": "a83d33b1-6216-4816-8b1e-f1c10069bb6c",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Years of vetted partners — AV crews, caterers, entertainers, fabricators — booked at the right price and held to our standard, not just theirs."
+                              "Years of vetted partners (AV crews, caterers, entertainers, fabricators) booked at the right price and held to our standard, not just theirs."
                             ],
                             "id": "a781952a-c650-4e0a-a918-6439aad9b4c6",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every engagement starts with a consultation. Pick the one that fits, see live availability and book a time — the discovery call is free."
+                          "Every engagement starts with a consultation. Pick the one that fits, see live availability and book a time: the discovery call is free."
                         ],
                         "id": "e5036bc9-2ece-4c1c-949a-f39513fa18f6",
                         "ord": "a1"
@@ -1363,7 +1363,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — the producer you meet in the consultation is the one who runs your event."
+                          "Book by name: the producer you meet in the consultation is the one who runs your event."
                         ],
                         "id": "76dbc98f-d2a4-49d4-8223-0d80d56ded7e",
                         "ord": "a1"
@@ -1476,7 +1476,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Design-led social events and galas — the room, the flow and the moments people remember."
+                                  "Design-led social events and galas: the room, the flow and the moments people remember."
                                 ],
                                 "id": "d25c5791-0446-410a-b98e-e62c91c34e54",
                                 "ord": "a2"
@@ -1572,7 +1572,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Our annual summit went from a logistical scramble to the smoothest event we’ve run. 600 attendees, three stages, zero surprises — and it came in under budget.”"
+                      "“Our annual summit went from a logistical scramble to the smoothest event we’ve run. 600 attendees, three stages, zero surprises, and it came in under budget.”"
                     ],
                     "id": "6b5b9233-e512-4307-85bc-94d4310cfaa1",
                     "ord": "a0"
@@ -1647,7 +1647,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Assembly Events",
+      "seoTitle": "Book: Assembly Events",
       "seoDescription": "See what Assembly Events offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1771,7 +1771,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "2811eb58-8e5f-45d1-8106-aee2055396fd",
                         "ord": "a1"
@@ -1878,7 +1878,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Assembly Events",
+      "seoTitle": "About: Assembly Events",
       "seoDescription": "Who Assembly Events is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1927,7 +1927,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Assembly Events because too many events are planned by one company and produced by another — and the seams always show. We do both, so they don’t."
+                          "We started Assembly Events because too many events are planned by one company and produced by another, and the seams always show. We do both, so they don’t."
                         ],
                         "id": "b24d44a4-28e5-4085-8024-d66f2fc80b69",
                         "ord": "a1"
@@ -2015,7 +2015,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We start with your goals — not a package — then shape a concept, a budget and a timeline you can actually stand behind."
+                              "We start with your goals (not a package) then shape a concept, a budget and a timeline you can actually stand behind."
                             ],
                             "id": "a656f6cc-db0d-42c7-9e3c-a82978e57a37",
                             "ord": "a1"
@@ -2069,7 +2069,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A producer runs the room to the minute, handles the load-out, and delivers a wrap report — what worked, what it cost, what’s next."
+                              "A producer runs the room to the minute, handles the load-out, and delivers a wrap report: what worked, what it cost, what’s next."
                             ],
                             "id": "957c925c-987b-4e08-9f7c-e62164fb9545",
                             "ord": "a1"
@@ -2097,7 +2097,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Assembly Events",
+      "seoTitle": "Visit: Assembly Events",
       "seoDescription": "Where to find Assembly Events, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2134,7 +2134,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Assembly Events will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Assembly Events will get back to you, usually the same day."
                         ],
                         "id": "4ec6d69f-80fc-4dd7-9636-4dc4f215a559",
                         "ord": "a1"
@@ -2561,7 +2561,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a consultation online — no phone tag, no waiting on a callback."
+                      "See live availability and reserve a consultation online: no phone tag, no waiting on a callback."
                     ],
                     "id": "33ddb98a-f319-4a8c-95c9-c30278831129",
                     "ord": "a1"

@@ -24,12 +24,12 @@ export function EmailKinds() {
   const panels: { title: string; body: string; flow: [string, string, string] }[] = [
     {
       title: 'Sent the instant something happens',
-      body: 'Order confirmations, shipping updates, password resets, quote replies — wired into every module and live from the moment Email is on. Editable, brandable, never missed.',
+      body: 'Order confirmations, shipping updates, password resets, quote replies: wired into every module and live from the moment Email is on. Editable, brandable, never missed.',
       flow: ['order.placed', 'email.send', 'delivered'],
     },
     {
       title: 'Sent to exactly who should get it',
-      body: 'Broadcasts target a live CRM segment — there is never a list to export. Compose, preview against a real customer, send or schedule, and watch opens and clicks roll in.',
+      body: 'Broadcasts target a live CRM segment. There is never a list to export. Compose, preview against a real customer, send or schedule, and watch opens and clicks roll in.',
       flow: ['CRM segment', 'broadcast', 'open · click'],
     },
   ];
@@ -38,7 +38,7 @@ export function EmailKinds() {
       <SectionHeader
         accent={E.color}
         headline="One engine for both kinds of email"
-        lede="Transactional messages your customers expect and marketing your team chooses to send — same domain, same reputation, same analytics. No second tool, no separate sender."
+        lede="Transactional messages your customers expect and marketing your team chooses to send: same domain, same reputation, same analytics. No second tool, no separate sender."
       />
       <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
         {panels.map((p, i) => (
@@ -86,7 +86,7 @@ export function EmailDeliverability() {
       <SectionHeader
         accent={E.color}
         headline="Authenticated the moment you verify"
-        lede="Add your domain and sparx configures the records that get you to the inbox — SPF, DKIM, and DMARC — then watches them. Until a domain verifies, mail sends from the shared sparx domain, so you are never blocked."
+        lede="Add your domain and sparx configures the records that get you to the inbox (SPF, DKIM, and DMARC) then watches them. Until a domain verifies, mail sends from the shared sparx domain, so you are never blocked."
       />
       <div className="mkt-deliv-grid mt-13">
         <SenderHealth />

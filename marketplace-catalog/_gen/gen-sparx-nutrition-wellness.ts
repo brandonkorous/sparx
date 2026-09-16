@@ -143,7 +143,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Please give at least 24 hours’ notice to reschedule or cancel — life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead.',
+        'Please give at least 24 hours’ notice to reschedule or cancel: life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead.',
     },
     {
       handle: 'nutrition-no-show',
@@ -199,7 +199,7 @@ const SCHEDULING = {
       handle: 'initial-consultation',
       name: 'Initial consultation',
       description:
-        'A thorough first session — your history, health goals and relationship with food — and a realistic, personal plan you leave with.',
+        'A thorough first session (your history, health goals and relationship with food) and a realistic, personal plan you leave with.',
       durationMinutes: 60,
       priceCents: 16500,
       assignmentStrategy: 'customer_choice',
@@ -225,7 +225,7 @@ const SCHEDULING = {
       handle: 'gut-health-consult',
       name: 'Gut health consult',
       description:
-        'Focused support for bloating, IBS and digestive comfort — evidence-based, food-first, and never one-size-fits-all.',
+        'Focused support for bloating, IBS and digestive comfort: evidence-based, food-first, and never one-size-fits-all.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -238,7 +238,7 @@ const SCHEDULING = {
       handle: 'weight-management-session',
       name: 'Weight management session',
       description:
-        'A non-diet approach to weight and energy — steady, sustainable habits built around your body, not a crash plan.',
+        'A non-diet approach to weight and energy: steady, sustainable habits built around your body, not a crash plan.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -251,7 +251,7 @@ const SCHEDULING = {
       handle: 'intuitive-eating-session',
       name: 'Intuitive eating session',
       description:
-        'Rebuild trust with food and step off the diet cycle — gentle, judgment-free coaching toward eating that feels easy again.',
+        'Rebuild trust with food and step off the diet cycle: gentle, judgment-free coaching toward eating that feels easy again.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -264,7 +264,7 @@ const SCHEDULING = {
       handle: 'family-nutrition-consult',
       name: 'Family nutrition consult',
       description:
-        'Practical, calm help feeding a family well — picky eaters, busy weeknights and real budgets, without the guilt.',
+        'Practical, calm help feeding a family well: picky eaters, busy weeknights and real budgets, without the guilt.',
       durationMinutes: 45,
       priceCents: 14000,
       assignmentStrategy: 'customer_choice',
@@ -282,7 +282,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A bright wooden table of fresh vegetables, fruit and whole grains',
     title: 'Food that feels good again',
-    sub: 'Work one-to-one with a registered dietitian on real, sustainable changes — weight, gut health, energy and your whole relationship with food. In person or by video, whenever suits you.',
+    sub: 'Work one-to-one with a registered dietitian on real, sustainable changes: weight, gut health, energy and your whole relationship with food. In person or by video, whenever suits you.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'Start with a free call', href: '/book' },
     overlay: 'soft',
@@ -292,11 +292,11 @@ const HOME = [
     items: [
       {
         title: 'Registered dietitians',
-        body: 'Every plan comes from a qualified, registered dietitian — real credentials and real science, translated into food you’ll genuinely eat.',
+        body: 'Every plan comes from a qualified, registered dietitian: real credentials and real science, translated into food you’ll genuinely eat.',
       },
       {
         title: 'Non-diet & judgment-free',
-        body: 'No shame, no crash plans, no forbidden foods. We build steady habits around your life, your budget and your body — not against them.',
+        body: 'No shame, no crash plans, no forbidden foods. We build steady habits around your life, your budget and your body, not against them.',
       },
       {
         title: 'Insurance often covers it',
@@ -304,7 +304,7 @@ const HOME = [
       },
       {
         title: 'In person & virtual',
-        body: 'Meet us at the office or by secure video from your own kitchen — evenings and a Saturday morning included, so it fits your week.',
+        body: 'Meet us at the office or by secure video from your own kitchen: evenings and a Saturday morning included, so it fits your week.',
       },
     ],
   }),
@@ -346,14 +346,14 @@ const HOME = [
     alt: 'A dietitian and client talking warmly over a cup of tea',
     heading: 'Whole-health nutrition, not another diet',
     body: [
-      'Diets ask you to shrink your life to fit a plan. We do the opposite — build the plan around your real days, your favourite foods and the health goals that matter to you.',
-      'That means no food is off-limits and no number defines you. Just warm, evidence-based guidance that helps you feel steadier, more energised and more at ease at the table — for good, not for six weeks.',
+      'Diets ask you to shrink your life to fit a plan. We do the opposite. Build the plan around your real days, your favourite foods and the health goals that matter to you.',
+      'That means no food is off-limits and no number defines you. Just warm, evidence-based guidance that helps you feel steadier, more energised and more at ease at the table, for good, not for six weeks.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your dietitians',
-    intro: 'Book by name — you’ll see the same dietitian each visit, someone who gets to know you, your health and your story.',
+    intro: 'Book by name: you’ll see the same dietitian each visit, someone who gets to know you, your health and your story.',
     members: [
       {
         name: 'Hannah Okafor',
@@ -367,25 +367,25 @@ const HOME = [
         role: 'Registered dietitian',
         image: url(IMG.david),
         alt: 'David Alvarez, registered dietitian',
-        bio: 'Diabetes and heart health — turning a diagnosis into calm, doable everyday choices.',
+        bio: 'Diabetes and heart health: turning a diagnosis into calm, doable everyday choices.',
       },
       {
         name: 'Sofia Lindqvist',
         role: 'Registered dietitian',
         image: url(IMG.sofia),
         alt: 'Sofia Lindqvist, registered dietitian',
-        bio: 'Intuitive eating and family nutrition, judgment-free — feeding yourself and your kids without the stress.',
+        bio: 'Intuitive eating and family nutrition, judgment-free: feeding yourself and your kids without the stress.',
       },
     ],
   }),
   testimonial({
     quote:
-      'I came in expecting another diet and a list of foods to fear. Instead I got a plan that fits my actual life — and the first calm relationship with food I’ve had in years.',
+      'I came in expecting another diet and a list of foods to fear. Instead I got a plan that fits my actual life, and the first calm relationship with food I’ve had in years.',
     attribution: 'Rachel, client since 2024',
   }),
   bookingCta({
     title: 'Start with one small, kind step',
-    sub: 'Book a free 20-minute discovery call — no cost, no commitment, just a conversation about what you’re hoping to change. It takes about a minute.',
+    sub: 'Book a free 20-minute discovery call: no cost, no commitment, just a conversation about what you’re hoping to change. It takes about a minute.',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
 ];
@@ -408,7 +408,7 @@ const ABOUT = [
     alt: 'A bright wooden table of fresh vegetables, fruit and whole grains',
     heading: 'About Nourish Nutrition',
     body: [
-      'We started Nourish because so much of what people are told about food is loud, contradictory and unkind. Cutting out whole food groups, chasing the newest diet, feeling guilty for eating — none of it lasts, and none of it feels good.',
+      'We started Nourish because so much of what people are told about food is loud, contradictory and unkind. Cutting out whole food groups, chasing the newest diet, feeling guilty for eating: none of it lasts, and none of it feels good.',
       'So we built a practice around the opposite: registered dietitians, real science, and warm, practical support that meets you exactly where you are. Whether it’s gut trouble, a new diagnosis, or just wanting to feel at ease with food again, our job is to make the next step feel doable.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
@@ -427,7 +427,7 @@ const ABOUT = [
       },
       {
         title: 'Your goals, your pace',
-        body: 'You set the direction and the speed. We’re here to guide, adjust and cheer you on — never to hand you a rigid plan and walk away.',
+        body: 'You set the direction and the speed. We’re here to guide, adjust and cheer you on, never to hand you a rigid plan and walk away.',
       },
     ],
   }),
@@ -451,7 +451,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than email?',
-    sub: 'See live availability and reserve a free discovery call online — no phone tag, no waiting.',
+    sub: 'See live availability and reserve a free discovery call online: no phone tag, no waiting.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -462,8 +462,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-nutrition-wellness',
   name: 'Nutrition (Wellness)',
   summary:
-    'A warm, non-diet nutrition site — a soft-cream palette, a sage primary and a terracotta accent, with fresh-food photography carrying the page. Installs a working online booking flow: a free discovery call plus initial, gut-health, weight, intuitive-eating and family consults, three registered dietitians you book by name with evening and Saturday hours, and a no-show hold policy. Ships as "Nourish Nutrition", a caring whole-health practice.',
-  tagline: 'A warm, non-diet template for nutrition practices — book consults from day one.',
+    'A warm, non-diet nutrition site: a soft-cream palette, a sage primary and a terracotta accent, with fresh-food photography carrying the page. Installs a working online booking flow: a free discovery call plus initial, gut-health, weight, intuitive-eating and family consults, three registered dietitians you book by name with evening and Saturday hours, and a no-show hold policy. Ships as "Nourish Nutrition", a caring whole-health practice.',
+  tagline: 'A warm, non-diet template for nutrition practices. Book consults from day one.',
   industry: 'Nutrition',
   sortWeight: 20,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -472,9 +472,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Nourish Nutrition — warm, non-diet nutrition counseling',
+      title: 'Nourish Nutrition: warm, non-diet nutrition counseling',
       description:
-        'Nourish Nutrition is a whole-health dietitian practice — one-to-one nutrition counseling for weight, gut health, intuitive eating and family nutrition, in person or by video. Book a free discovery call.',
+        'Nourish Nutrition is a whole-health dietitian practice. One-to-one nutrition counseling for weight, gut health, intuitive eating and family nutrition, in person or by video. Book a free discovery call.',
     },
   },
   home: HOME,

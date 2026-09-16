@@ -67,7 +67,7 @@ export function ReportGlimpse({
         </Badge>
       </div>
       <Text size={14} className="mt-1">
-        128 {noun} ready — 1 row will be skipped.
+        128 {noun} ready: 1 row will be skipped.
       </Text>
 
       <div className="border-base-content/10 mt-3 flex items-start gap-3 rounded-lg border p-3">

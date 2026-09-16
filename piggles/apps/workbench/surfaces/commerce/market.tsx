@@ -327,7 +327,7 @@ function EnrolledBody({ profile, ctx }: { profile: MarketProfile; ctx: SurfaceCo
 
       <FormSection
         title="Listed products"
-        description="To add a product, open it and use its Listings panel — listing is a per-product decision, made where you can see its price and stock."
+        description="To add a product, open it and use its Listings panel: listing is a per-product decision, made where you can see its price and stock."
       >
         {products.isError ? (
           <EmptyState

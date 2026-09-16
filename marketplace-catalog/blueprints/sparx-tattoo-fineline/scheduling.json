@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "A short, free consultation — no deposit. Give us a day’s notice if you need to move it, and we’ll find another time."
+      "policyText": "A short, free consultation: no deposit. Give us a day’s notice if you need to move it, and we’ll find another time."
     },
     {
       "handle": "session-deposit",
@@ -135,8 +135,8 @@
     },
     {
       "handle": "fineline-small",
-      "name": "Fine-line — small",
-      "description": "A small single-needle piece — a stem, a symbol, a few words. About an hour in the chair.",
+      "name": "Fine-line: small",
+      "description": "A small single-needle piece: a stem, a symbol, a few words. About an hour in the chair.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "bufferAfterMin": 15,
@@ -153,8 +153,8 @@
     },
     {
       "handle": "fineline-medium",
-      "name": "Fine-line — medium",
-      "description": "A more detailed line piece — a small composition or a set of elements. Around two hours.",
+      "name": "Fine-line: medium",
+      "description": "A more detailed line piece: a small composition or a set of elements. Around two hours.",
       "durationMinutes": 120,
       "priceCents": 24000,
       "bufferAfterMin": 15,
@@ -171,7 +171,7 @@
     },
     {
       "handle": "fineline-large",
-      "name": "Fine-line — large",
+      "name": "Fine-line: large",
       "description": "A larger, layered line piece across a full placement. A considered three-hour session.",
       "durationMinutes": 180,
       "priceCents": 36000,
@@ -190,7 +190,7 @@
     {
       "handle": "lettering-script",
       "name": "Lettering & script",
-      "description": "Fine cursive or hand-drawn script — a name, a date, a line worth keeping. Set with your artist.",
+      "description": "Fine cursive or hand-drawn script: a name, a date, a line worth keeping. Set with your artist.",
       "durationMinutes": 90,
       "priceCents": 18000,
       "bufferAfterMin": 15,
@@ -208,7 +208,7 @@
     {
       "handle": "delicate-floral",
       "name": "Delicate floral",
-      "description": "Botanical fine-line work — single stems, wildflowers, small clusters — drawn light and precise.",
+      "description": "Botanical fine-line work (single stems, wildflowers, small clusters) drawn light and precise.",
       "durationMinutes": 120,
       "priceCents": 22000,
       "bufferAfterMin": 15,

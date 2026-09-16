@@ -38,7 +38,7 @@ export const UomCode = z
   .string()
   .trim()
   .min(1, 'A unit needs a short code')
-  .max(12, 'Keep the code to 12 characters — it has to fit on a document line')
+  .max(12, 'Keep the code to 12 characters: it has to fit on a document line')
   .regex(/^[A-Za-z0-9/-]+$/, 'Use letters, numbers, a slash or a dash')
   .transform((v) => v.toUpperCase());
 

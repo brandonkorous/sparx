@@ -5,7 +5,7 @@ const PRINCIPLES: { n: string; title: string; body: string }[] = [
   {
     n: '01',
     title: 'Flat by default',
-    body: 'No gradients, drop shadows, or blur — except a functional focus ring. Depth comes from border contrast, never from elevation.',
+    body: 'No gradients, drop shadows, or blur, except a functional focus ring. Depth comes from border contrast, never from elevation.',
   },
   {
     n: '02',
@@ -15,7 +15,7 @@ const PRINCIPLES: { n: string; title: string; body: string }[] = [
   {
     n: '03',
     title: 'One tinted card per module',
-    body: 'A module’s color surfaces as a soft tint on a single lead card per section — a color-mix wash, never a loud stripe. One tinted card is wayfinding; a wall of them is noise, so the rest of the cards stay neutral.',
+    body: 'A module’s color surfaces as a soft tint on a single lead card per section: a color-mix wash, never a loud stripe. One tinted card is wayfinding; a wall of them is noise, so the rest of the cards stay neutral.',
   },
   {
     n: '04',
@@ -25,7 +25,7 @@ const PRINCIPLES: { n: string; title: string; body: string }[] = [
   {
     n: '05',
     title: 'Progressive disclosure',
-    body: 'Advanced features — API keys, webhooks, MCP config, B2B pricing rules — exist but stay hidden from a new tenant. The five-minute path to a live site is always clear.',
+    body: 'Advanced features (API keys, webhooks, MCP config, B2B pricing rules) exist but stay hidden from a new tenant. The five-minute path to a live site is always clear.',
   },
   {
     n: '06',

@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Faint — a fine-line tattoo studio",
+      "seoTitle": "Faint: a fine-line tattoo studio",
       "seoDescription": "Faint is a bright, minimal fine-line tattoo studio for delicate line work, lettering and botanical pieces. Book your artist online, starting with a free consultation.",
       "root": {
         "kind": "element",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A bright, quiet studio for delicate fine-line tattoos — considered work, unhurried sessions, and a plan you leave with before any needle touches skin."
+                      "A bright, quiet studio for delicate fine-line tattoos: considered work, unhurried sessions, and a plan you leave with before any needle touches skin."
                     ],
                     "id": "2a013e20-87b4-48dd-8e91-6aef38875918",
                     "ord": "a1"
@@ -821,7 +821,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Fine-line — small"],
+                                "children": ["Fine-line: small"],
                                 "id": "c78c4dfe-04f1-44f0-9027-b431d6868ac5",
                                 "ord": "a0"
                               },
@@ -849,7 +849,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A single-needle piece — a stem, a symbol, a few words."],
+                            "children": ["A single-needle piece: a stem, a symbol, a few words."],
                             "id": "5b8a35a6-795f-468c-8221-3fe162233ac9",
                             "ord": "a2"
                           }
@@ -874,7 +874,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Fine-line — medium"],
+                                "children": ["Fine-line: medium"],
                                 "id": "568e355b-5d5c-4b95-acfa-b0cb0b670e59",
                                 "ord": "a0"
                               },
@@ -927,7 +927,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Fine-line — large"],
+                                "children": ["Fine-line: large"],
                                 "id": "4c49776a-ec17-4abd-8524-d45d5d0feee4",
                                 "ord": "a0"
                               },
@@ -1063,7 +1063,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Botanical fine-line — single stems and small clusters."],
+                            "children": ["Botanical fine-line: single stems and small clusters."],
                             "id": "64a32fef-c928-48d4-8ba3-361189cac998",
                             "ord": "a2"
                           }
@@ -1143,7 +1143,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It starts with a short, free consultation — we talk through the idea, the placement and the size, and agree on a design before we book anything."
+                          "It starts with a short, free consultation. We talk through the idea, the placement and the size, and agree on a design before we book anything."
                         ],
                         "id": "0520c1f3-50b3-4273-a383-dccc749557d1",
                         "ord": "a1"
@@ -1228,7 +1228,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with the same artist from the first line to the last."
+                          "Book by name: you’ll work with the same artist from the first line to the last."
                         ],
                         "id": "6c95680f-1f93-456e-a9dd-415674ccc73a",
                         "ord": "a1"
@@ -1437,7 +1437,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“They talked me out of making it bigger, then drew exactly what I’d pictured. A year on the line is still crisp — and the room felt like a gallery, not a garage.”"
+                      "“They talked me out of making it bigger, then drew exactly what I’d pictured. A year on the line is still crisp, and the room felt like a gallery, not a garage.”"
                     ],
                     "id": "d0485b02-84ed-451c-9b8f-f4b7b69c7aec",
                     "ord": "a0"
@@ -1512,7 +1512,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Faint",
+      "seoTitle": "Book: Faint",
       "seoDescription": "See what Faint offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1617,7 +1617,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "98b0ed5c-898b-4d62-8284-cee0a7183097",
                         "ord": "a1"
@@ -1649,7 +1649,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A short, free consultation — no deposit. Give us a day’s notice if you need to move it, and we’ll find another time."
+                              "A short, free consultation: no deposit. Give us a day’s notice if you need to move it, and we’ll find another time."
                             ],
                             "id": "dca1aca8-d4b7-43e5-b722-2a3e9fb3126e",
                             "ord": "a1"
@@ -1724,7 +1724,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Faint",
+      "seoTitle": "About: Faint",
       "seoDescription": "Who Faint is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1773,7 +1773,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Faint is a small, bright fine-line studio — white walls, good light, and work that hangs like a gallery. We opened it to prove a tattoo shop doesn’t have to be dark to be serious."
+                          "Faint is a small, bright fine-line studio: white walls, good light, and work that hangs like a gallery. We opened it to prove a tattoo shop doesn’t have to be dark to be serious."
                         ],
                         "id": "2a7438b2-36f3-4030-bf4d-f6a000f95c24",
                         "ord": "a1"
@@ -1783,7 +1783,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We do one thing carefully: delicate line work. No walk-in flash wall, no rushing, no talking you into more than you came for — just a considered piece, drawn light and made to last."
+                          "We do one thing carefully: delicate line work. No walk-in flash wall, no rushing, no talking you into more than you came for. Just a considered piece, drawn light and made to last."
                         ],
                         "id": "60107053-e91d-4e53-8b63-7a03e3b5a059",
                         "ord": "a2"
@@ -1888,7 +1888,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You book by name and stay with the same hand — someone who knows the line they’re drawing and why."
+                              "You book by name and stay with the same hand. Someone who knows the line they’re drawing and why."
                             ],
                             "id": "df891398-053e-4149-92f9-1a2ba76b7344",
                             "ord": "a1"
@@ -1943,7 +1943,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Faint",
+      "seoTitle": "Visit: Faint",
       "seoDescription": "Where to find Faint, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1980,7 +1980,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Faint will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Faint will get back to you, usually the same day."
                         ],
                         "id": "169ccc96-e6e0-4e5a-ab7d-11ceff3a823c",
                         "ord": "a1"
@@ -2405,7 +2405,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your consultation online — no phone tag."
+                      "See live availability and reserve your consultation online: no phone tag."
                     ],
                     "id": "18cf6865-15a5-4957-81da-c92752bf539f",
                     "ord": "a1"

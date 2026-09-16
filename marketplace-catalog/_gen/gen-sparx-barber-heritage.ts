@@ -136,7 +136,7 @@ const SCHEDULING = {
       cancellationWindowHours: 12,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Walk in or book ahead — either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out.',
+        'Walk in or book ahead. Either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out.',
     },
     {
       handle: 'no-show',
@@ -145,7 +145,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 180, 60],
       policyText:
-        'The shave and the full combo hold your barber for the better part of an hour. No deposit — just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook.',
+        'The shave and the full combo hold your barber for the better part of an hour. No deposit. Just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook.',
     },
   ],
   resources: [
@@ -265,7 +265,7 @@ const HOME = [
     items: [
       {
         title: 'Walk-ins welcome',
-        body: 'Got a free hour? Come in. If a chair’s open we’ll take you — no appointment needed, no attitude at the door.',
+        body: 'Got a free hour? Come in. If a chair’s open we’ll take you: no appointment needed, no attitude at the door.',
       },
       {
         title: 'Hot-towel finish',
@@ -295,14 +295,14 @@ const HOME = [
     alt: 'A barber station with a straight razor and hot towels',
     heading: 'Brass, leather and a good blade',
     body: [
-      'Copper & Cole has run the same way since 2014 — real barbers, real chairs, and the old tools kept sharp. No gimmicks, no rushing you out the door.',
+      'Copper & Cole has run the same way since 2014: real barbers, real chairs, and the old tools kept sharp. No gimmicks, no rushing you out the door.',
       'You sit down, you get looked after, you leave sharper than you came in. That’s the whole job, and we take it seriously.',
     ],
     cta: { label: 'Book your chair', href: '/book' },
   }),
   teamRow({
     heading: 'Your barbers',
-    intro: 'Book by name — the same hands every time, or take whoever’s open.',
+    intro: 'Book by name: the same hands every time, or take whoever’s open.',
     members: [
       { name: 'Vince Cole', role: 'Master barber', image: url(IMG.vince), alt: 'Vince Cole, master barber', bio: 'Founded the shop in 2014. Classic cuts and a straight-razor shave nobody beats.' },
       { name: 'Marcus Reyes', role: 'Barber', image: url(IMG.marcus), alt: 'Marcus Reyes, barber', bio: 'Fades, tapers and sharp line-ups. Fast hands, clean work.' },
@@ -320,12 +320,12 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'Best cut in the city, hands down. The shave alone is worth the trip — hot towel, straight razor, the works. I don’t go anywhere else.',
+    quote: 'Best cut in the city, hands down. The shave alone is worth the trip: hot towel, straight razor, the works. I don’t go anywhere else.',
     attribution: 'Dev, regular since 2018',
   }),
   bookingCta({
     title: 'Grab a chair',
-    sub: 'Pick your service, pick your barber, see live times. Or just walk in — we’ll sort you out.',
+    sub: 'Pick your service, pick your barber, see live times. Or just walk in: we’ll sort you out.',
     cta: { label: 'Book a chair', href: '/book' },
   }),
 ];
@@ -349,7 +349,7 @@ const ABOUT = [
     alt: 'A dark, wood-and-brass barbershop with leather chairs',
     heading: 'About Copper & Cole',
     body: [
-      'We opened Copper & Cole in 2014 to run a barbershop the old way — real barbers, sharp tools, and time taken over every cut and shave.',
+      'We opened Copper & Cole in 2014 to run a barbershop the old way: real barbers, sharp tools, and time taken over every cut and shave.',
       'No franchise script, no upsell, no ten-minute turnaround. Just good work done properly, for men who want to look after themselves.',
     ],
     cta: { label: 'Book a chair', href: '/book' },
@@ -379,7 +379,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Skip the wait',
-    sub: 'Book your chair online and see live times — walk-ins still welcome whenever a chair’s open.',
+    sub: 'Book your chair online and see live times: walk-ins still welcome whenever a chair’s open.',
     surface: 'muted',
     cta: { label: 'Book a chair', href: '/book' },
   }),
@@ -390,8 +390,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-barber-heritage',
   name: 'Barbershop (Heritage)',
   summary:
-    'A dark, masculine heritage-barbershop site — a warm charcoal-black palette, a brass-gold primary, an oxblood accent and a heritage serif over sharp, low-radius chrome. Installs a working booking flow: a real menu (cuts, skin fades, beard work, a hot-towel straight-razor shave), three barbers you book by name with their own hours, and walk-in-friendly no-deposit policies. Ships as "Copper & Cole", a shop running the old way since 2014.',
-  tagline: 'A dark, heritage template for barbershops — book online from day one.',
+    'A dark, masculine heritage-barbershop site: a warm charcoal-black palette, a brass-gold primary, an oxblood accent and a heritage serif over sharp, low-radius chrome. Installs a working booking flow: a real menu (cuts, skin fades, beard work, a hot-towel straight-razor shave), three barbers you book by name with their own hours, and walk-in-friendly no-deposit policies. Ships as "Copper & Cole", a shop running the old way since 2014.',
+  tagline: 'A dark, heritage template for barbershops. Book online from day one.',
   industry: 'Barbershop',
   sortWeight: 88,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -400,7 +400,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Copper & Cole — a heritage barbershop',
+      title: 'Copper & Cole: a heritage barbershop',
       description:
         'Copper & Cole is a heritage barbershop for sharp cuts, clean skin fades, beard work and a hot-towel straight-razor shave. Walk in or book your barber online.',
     },

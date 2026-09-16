@@ -194,7 +194,7 @@ const SCHEDULING = {
       handle: 'strength',
       name: 'Strength',
       description:
-        'Barbell strength in a capped small group — squat, press, pull, hinge. Every set coached, every load scaled to you. Come for the numbers, stay for the people chasing them with you.',
+        'Barbell strength in a capped small group: squat, press, pull, hinge. Every set coached, every load scaled to you. Come for the numbers, stay for the people chasing them with you.',
       bookingType: 'class',
       capacity: 14,
       durationMinutes: 60,
@@ -210,7 +210,7 @@ const SCHEDULING = {
       handle: 'hiit',
       name: 'HIIT',
       description:
-        'Forty-five loud minutes of intervals — bike, rower, bells and bodyweight, hard work and full recoveries. You pick the intensity, we hold the clock.',
+        'Forty-five loud minutes of intervals: bike, rower, bells and bodyweight, hard work and full recoveries. You pick the intensity, we hold the clock.',
       bookingType: 'class',
       capacity: 16,
       durationMinutes: 45,
@@ -226,7 +226,7 @@ const SCHEDULING = {
       handle: 'metcon',
       name: 'Metcon',
       description:
-        'Mixed-modal conditioning — the classic "workout of the day". Lifts, carries and cardio stitched into one score you chase week over week.',
+        'Mixed-modal conditioning: the classic "workout of the day". Lifts, carries and cardio stitched into one score you chase week over week.',
       bookingType: 'class',
       capacity: 12,
       durationMinutes: 45,
@@ -242,7 +242,7 @@ const SCHEDULING = {
       handle: 'foundations',
       name: 'Foundations',
       description:
-        'New to the barbell? Start here. A small, unhurried group that drills the six core lifts until they feel like yours — no ego, no rush, no assumed experience.',
+        'New to the barbell? Start here. A small, unhurried group that drills the six core lifts until they feel like yours: no ego, no rush, no assumed experience.',
       bookingType: 'class',
       capacity: 10,
       durationMinutes: 45,
@@ -258,7 +258,7 @@ const SCHEDULING = {
       handle: 'conditioning',
       name: 'Engine',
       description:
-        'A thirty-minute pure-conditioning hit — steady intervals that build the engine under everything else. Quick, brutal, done before the day starts.',
+        'A thirty-minute pure-conditioning hit: steady intervals that build the engine under everything else. Quick, brutal, done before the day starts.',
       bookingType: 'class',
       capacity: 16,
       durationMinutes: 30,
@@ -274,7 +274,7 @@ const SCHEDULING = {
       handle: 'personal-training',
       name: '1:1 Personal training',
       description:
-        'You and a coach, a plan built around your goals and your schedule. Pick the coach you want and the time that fits — technique, programming and someone in your corner every rep.',
+        'You and a coach, a plan built around your goals and your schedule. Pick the coach you want and the time that fits: technique, programming and someone in your corner every rep.',
       bookingType: 'appointment',
       capacity: 1,
       durationMinutes: 60,
@@ -287,7 +287,7 @@ const SCHEDULING = {
       handle: 'intro-assessment',
       name: 'Free intro & assessment',
       description:
-        'Never trained here? Book a free session — movement screen, goal chat and a walk of the floor so your first class isn’t your first guess. We confirm it once we see it land.',
+        'Never trained here? Book a free session: movement screen, goal chat and a walk of the floor so your first class isn’t your first guess. We confirm it once we see it land.',
       bookingType: 'appointment',
       capacity: 1,
       durationMinutes: 30,
@@ -313,7 +313,7 @@ const HOME = [
     items: [
       {
         title: 'Coaches, not a playlist',
-        body: 'Every class is run by a certified coach who watches your reps, scales the load and knows your name — not a screen counting you down.',
+        body: 'Every class is run by a certified coach who watches your reps, scales the load and knows your name, not a screen counting you down.',
       },
       {
         title: 'Small groups, hard caps',
@@ -330,7 +330,7 @@ const HOME = [
     alt: 'The open training floor with racks, plates and turf',
     heading: 'Real programming, not random punishment',
     body: [
-      'Forge runs on a written plan that builds week over week — strength blocks that add load on purpose, conditioning that grows an engine, and deloads before you need them.',
+      'Forge runs on a written plan that builds week over week: strength blocks that add load on purpose, conditioning that grows an engine, and deloads before you need them.',
       'You’ll see your numbers move because we track them. Nothing here is a bootcamp free-for-all designed to smoke you and forget you.',
     ],
     cta: { label: 'Start free', href: '/book' },
@@ -355,7 +355,7 @@ const HOME = [
     intro: 'The people under the bar with you. Book a class or grab any of them for 1:1.',
     members: [
       { name: 'Marcus Vane', role: 'Head strength coach', image: url(IMG.marcus), alt: 'Marcus Vane, head strength coach', bio: 'Powerlifting background, obsessed with clean technique and slow, stubborn PRs.' },
-      { name: 'Déja Okafor', role: 'Conditioning coach', image: url(IMG.deja), alt: 'Déja Okafor, conditioning coach', bio: 'Runs the HIIT, Metcon and Engine floors — the loudest, most contagious energy in the room.' },
+      { name: 'Déja Okafor', role: 'Conditioning coach', image: url(IMG.deja), alt: 'Déja Okafor, conditioning coach', bio: 'Runs the HIIT, Metcon and Engine floors: the loudest, most contagious energy in the room.' },
       { name: 'Theo Marsh', role: 'Foundations coach', image: url(IMG.theo), alt: 'Theo Marsh, foundations coach', bio: 'Gets nervous first-timers under a barbell and grinning by the end of week one.' },
       { name: 'Rae Calloway', role: 'Strength & PT coach', image: url(IMG.rae), alt: 'Rae Calloway, strength & personal-training coach', bio: 'Strength and hybrid conditioning; builds the 1:1 plans people actually stick to.' },
     ],
@@ -371,13 +371,13 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'Walked in twelve weeks ago unable to squat the empty bar. Hit 135 for five today and the whole class lost their minds for me. That’s Forge — you get strong and nobody lets you do it quietly.',
+    quote: 'Walked in twelve weeks ago unable to squat the empty bar. Hit 135 for five today and the whole class lost their minds for me. That’s Forge. You get strong and nobody lets you do it quietly.',
     attribution: 'Devon, member since this spring',
     surface: 'primary',
   }),
   bookingCta({
     title: 'Your first session is on us',
-    sub: 'Book the free intro, meet a coach and see the floor. No membership, no pressure — just show up.',
+    sub: 'Book the free intro, meet a coach and see the floor. No membership, no pressure. Just show up.',
     cta: { label: 'Claim your spot', href: '/book' },
   }),
 ];
@@ -400,7 +400,7 @@ const ABOUT = [
     alt: 'A lifter mid-set under a loaded barbell in a dark gym',
     heading: 'Built for people, not personal records they’ll never chase',
     body: [
-      'Forge started because the big-box gym wasn’t working — no coaching, no plan, no one who noticed if you showed up or quit. So we built the opposite: small groups, real programming, and coaches who know your name and your numbers.',
+      'Forge started because the big-box gym wasn’t working: no coaching, no plan, no one who noticed if you showed up or quit. So we built the opposite: small groups, real programming, and coaches who know your name and your numbers.',
       'Strong isn’t a look here, it’s a habit. We keep classes capped and the ego at the door so the person on their first day trains next to the person on their thousandth, and both leave better than they came.',
     ],
     cta: { label: 'Start free', href: '/book' },
@@ -409,9 +409,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we train',
     items: [
-      { title: 'Coached every rep', body: 'A certified coach runs every session — cueing form, scaling load and keeping you honest. You’re never just clocking time on a machine.' },
+      { title: 'Coached every rep', body: 'A certified coach runs every session: cueing form, scaling load and keeping you honest. You’re never just clocking time on a machine.' },
       { title: 'Programmed on purpose', body: 'Strength that adds weight over blocks, conditioning that builds an engine, deloads before you’re fried. It’s written, tracked and it moves your numbers.' },
-      { title: 'Scaled for you', body: 'Every workout scales up or down on the spot. Injury, first week, off day — we adjust the movement and the load so it’s the right hard for you.' },
+      { title: 'Scaled for you', body: 'Every workout scales up or down on the spot. Injury, first week, off day. We adjust the movement and the load so it’s the right hard for you.' },
     ],
   }),
 ];
@@ -430,7 +430,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Stop scrolling. Start lifting.',
-    sub: 'Book the free intro online and pick a time this week — no phone call, no sales pitch.',
+    sub: 'Book the free intro online and pick a time this week: no phone call, no sales pitch.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -441,8 +441,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-fitness-bold',
   name: 'Fitness (Bold)',
   summary:
-    'A dark, electric strength & conditioning studio site — near-black charcoal ground, a volt-green primary and a bold condensed display. Installs a working booking flow: capacity-based GROUP CLASSES (strength, HIIT, metcon, foundations, conditioning) with per-class caps, plus 1:1 personal training and a free intro assessment. Coaches and the gym floor are bookable resources with early-morning and evening hours. Ships as "Forge".',
-  tagline: 'A loud, high-energy template for gyms & studios — book classes and 1:1s from day one.',
+    'A dark, electric strength & conditioning studio site: near-black charcoal ground, a volt-green primary and a bold condensed display. Installs a working booking flow: capacity-based GROUP CLASSES (strength, HIIT, metcon, foundations, conditioning) with per-class caps, plus 1:1 personal training and a free intro assessment. Coaches and the gym floor are bookable resources with early-morning and evening hours. Ships as "Forge".',
+  tagline: 'A loud, high-energy template for gyms & studios. Book classes and 1:1s from day one.',
   industry: 'Fitness studio',
   sortWeight: 81,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -451,7 +451,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Forge — strength & conditioning studio',
+      title: 'Forge: strength & conditioning studio',
       description:
         'Forge is a small-group strength & conditioning studio: coached classes, real programming and 1:1 personal training. Book your free intro online.',
     },

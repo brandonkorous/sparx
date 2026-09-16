@@ -197,7 +197,7 @@ const SCHEDULING = {
       handle: 'initial-consult-treatment',
       name: 'Initial consultation & treatment',
       description:
-        'A full intake — your health history, pulse and tongue diagnosis — followed by your first acupuncture treatment.',
+        'A full intake (your health history, pulse and tongue diagnosis) followed by your first acupuncture treatment.',
       durationMinutes: 90,
       priceCents: 13000,
       assignmentStrategy: 'customer_choice',
@@ -226,7 +226,7 @@ const SCHEDULING = {
       handle: 'cupping-session',
       name: 'Cupping session',
       description:
-        'Traditional cupping to ease tension and improve circulation — on its own or added to acupuncture.',
+        'Traditional cupping to ease tension and improve circulation: on its own or added to acupuncture.',
       durationMinutes: 45,
       priceCents: 7500,
       assignmentStrategy: 'any_available',
@@ -269,7 +269,7 @@ const SCHEDULING = {
       handle: 'stress-relief-session',
       name: 'Stress & sleep session',
       description:
-        'A calming, restorative treatment for stress, anxiety and sleep — a quiet hour to reset the nervous system.',
+        'A calming, restorative treatment for stress, anxiety and sleep: a quiet hour to reset the nervous system.',
       durationMinutes: 60,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -302,7 +302,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A serene treatment room with warm wood, soft light and a made-up table',
     title: 'Healing, the way it has been done for centuries',
-    sub: 'A calm clinic for acupuncture, cupping and herbal medicine — traditional Chinese medicine, practised with patience and care.',
+    sub: 'A calm clinic for acupuncture, cupping and herbal medicine: traditional Chinese medicine, practised with patience and care.',
     primary: { label: 'Book a treatment', href: '/book' },
     secondary: { label: 'See treatments', href: '/book' },
     overlay: 'dark',
@@ -311,7 +311,7 @@ const HOME = [
     items: [
       {
         title: 'Licensed acupuncturists',
-        body: 'Every treatment is with a board-certified, state-licensed acupuncturist — trained for years in both needle work and herbal medicine.',
+        body: 'Every treatment is with a board-certified, state-licensed acupuncturist: trained for years in both needle work and herbal medicine.',
       },
       {
         title: 'Rooted in tradition',
@@ -319,7 +319,7 @@ const HOME = [
       },
       {
         title: 'Custom herbal formulas',
-        body: 'Where herbs will help, we build a formula for your constitution — nothing off a shelf, everything made to fit you.',
+        body: 'Where herbs will help, we build a formula for your constitution. Nothing off a shelf, everything made to fit you.',
       },
       {
         title: 'A calm healing space',
@@ -365,14 +365,14 @@ const HOME = [
     alt: 'Dried herbs and a set of fine acupuncture needles laid out on a linen cloth',
     heading: 'We treat the whole person',
     body: [
-      'Traditional Chinese medicine sees the body as one connected system — the five elements in balance. Pain, poor sleep, low energy and stress are rarely separate problems; they’re signs of where that balance has slipped.',
-      'So we don’t chase a single symptom. We read your pulse, look and listen, and treat the pattern underneath — gently, over time, so the results hold.',
+      'Traditional Chinese medicine sees the body as one connected system: the five elements in balance. Pain, poor sleep, low energy and stress are rarely separate problems; they’re signs of where that balance has slipped.',
+      'So we don’t chase a single symptom. We read your pulse, look and listen, and treat the pattern underneath: gently, over time, so the results hold.',
     ],
     cta: { label: 'Book a treatment', href: '/book' },
   }),
   teamRow({
     heading: 'Your practitioners',
-    intro: 'Book by name — you’ll see the same practitioner each visit.',
+    intro: 'Book by name: you’ll see the same practitioner each visit.',
     members: [
       {
         name: 'Mei Lin Zhao',
@@ -393,7 +393,7 @@ const HOME = [
         role: 'Licensed acupuncturist',
         image: url(IMG.daniel),
         alt: 'Daniel Okafor, licensed acupuncturist',
-        bio: 'Pain, sports recovery and cupping — helping bodies move freely again.',
+        bio: 'Pain, sports recovery and cupping: helping bodies move freely again.',
       },
     ],
   }),
@@ -426,8 +426,8 @@ const ABOUT = [
     alt: 'A serene treatment room with warm wood, soft light and a made-up table',
     heading: 'About Five Elements Acupuncture',
     body: [
-      'We opened Five Elements to practise Chinese medicine the way it was meant to be practised — unhurried, personal, and rooted in a tradition thousands of years old.',
-      'No rushing, no one-size-fits-all. Just careful diagnosis, treatment tailored to you, and a calm space to heal in — for pain, stress, sleep, fertility and everything in between.',
+      'We opened Five Elements to practise Chinese medicine the way it was meant to be practised: unhurried, personal, and rooted in a tradition thousands of years old.',
+      'No rushing, no one-size-fits-all. Just careful diagnosis, treatment tailored to you, and a calm space to heal in, for pain, stress, sleep, fertility and everything in between.',
     ],
     cta: { label: 'Book a treatment', href: '/book' },
   }),
@@ -437,11 +437,11 @@ const ABOUT = [
     items: [
       {
         title: 'Diagnosis first',
-        body: 'Every course of care begins with a real intake — your history, your pulse, your tongue — so the treatment fits the person, not the label.',
+        body: 'Every course of care begins with a real intake (your history, your pulse, your tongue) so the treatment fits the person, not the label.',
       },
       {
         title: 'Medicine we trust',
-        body: 'Fine, single-use needles and high-grade herbs sourced from suppliers we know — with honest advice on what will and won’t help.',
+        body: 'Fine, single-use needles and high-grade herbs sourced from suppliers we know, with honest advice on what will and won’t help.',
       },
       {
         title: 'Care that adds up',
@@ -464,7 +464,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your treatment online — no phone tag.',
+    sub: 'See live availability and reserve your treatment online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a treatment', href: '/book' },
   }),
@@ -475,8 +475,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-acupuncture-tcm',
   name: 'Acupuncture (Traditional)',
   summary:
-    'An earthy, serene template for a traditional Chinese-medicine acupuncture clinic — warm clay and gold on a soft sand ground, with a calm serif display. Installs a working booking flow: acupuncture, cupping, herbal and fertility treatments; three licensed acupuncturists booked by name with their own hours; and two treatment rooms as bookable resources. Ships as "Five Elements Acupuncture", a grounded, holistic healing space rooted in TCM tradition.',
-  tagline: 'A warm, grounded template for acupuncture & TCM clinics — book online from day one.',
+    'An earthy, serene template for a traditional Chinese-medicine acupuncture clinic: warm clay and gold on a soft sand ground, with a calm serif display. Installs a working booking flow: acupuncture, cupping, herbal and fertility treatments; three licensed acupuncturists booked by name with their own hours; and two treatment rooms as bookable resources. Ships as "Five Elements Acupuncture", a grounded, holistic healing space rooted in TCM tradition.',
+  tagline: 'A warm, grounded template for acupuncture & TCM clinics. Book online from day one.',
   industry: 'Acupuncture',
   sortWeight: 46,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -485,7 +485,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Five Elements Acupuncture — traditional Chinese medicine',
+      title: 'Five Elements Acupuncture: traditional Chinese medicine',
       description:
         'Five Elements Acupuncture is a calm clinic for acupuncture, cupping and herbal medicine. Book your licensed practitioner online.',
     },

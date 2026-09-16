@@ -25,23 +25,23 @@ export function MonogramSection() {
         <SectionHeader
           accent="var(--color-primary)"
           headline="The mark"
-          lede="When the full wordmark won’t fit, the “x” stands in on its own — the same letterform, the same brand moment. It comes in two forms: the mark, drawn in sparx Ember on whatever surface it lands on; and the app icon, where that same “x” is cut out of a solid Ember field and runs off all four edges."
+          lede="When the full wordmark won’t fit, the “x” stands in on its own: the same letterform, the same brand moment. It comes in two forms: the mark, drawn in sparx Ember on whatever surface it lands on; and the app icon, where that same “x” is cut out of a solid Ember field and runs off all four edges."
         />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Tile label="The mark — on light" theme="light">
+          <Tile label="The mark: on light" theme="light">
             <SparxMark size={72} />
           </Tile>
-          <Tile label="The mark — on dark" theme="dark">
+          <Tile label="The mark: on dark" theme="dark">
             <SparxMark size={72} />
           </Tile>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <Tile label="The app icon — on light" theme="light">
+          <Tile label="The app icon: on light" theme="light">
             <AppIcon size={72} />
           </Tile>
-          <Tile label="The app icon — on dark" theme="dark">
+          <Tile label="The app icon: on dark" theme="dark">
             <AppIcon size={72} />
           </Tile>
         </div>
@@ -57,7 +57,7 @@ export function MonogramSection() {
             </dl>
             <Text size={13.5}>
               In product UI the mark renders via <Code>&lt;Spark&gt;</Code> (or its{' '}
-              <Code>&lt;SparxMark&gt;</Code> alias) and the icon via <Code>&lt;AppIcon&gt;</Code> —
+              <Code>&lt;SparxMark&gt;</Code> alias) and the icon via <Code>&lt;AppIcon&gt;</Code>,
               both from <Code>@wizeworks/ui</Code>, drawing paths defined once in{' '}
               <Code>@sparx/brand</Code>. As a favicon, where CSS variables can’t resolve, each app
               ships static files with the hexes inlined, generated from that same geometry by{' '}

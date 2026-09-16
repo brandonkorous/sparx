@@ -7,12 +7,12 @@ export const HARMONY_LABELS: Record<HarmonyKind, { label: string; blurb: string 
   complementary: {
     label: 'Opposites',
     blurb:
-      'Two colors from opposite sides of the wheel. High energy — good when one thing needs to stand out against everything else.',
+      'Two colors from opposite sides of the wheel. High energy: good when one thing needs to stand out against everything else.',
   },
   analogous: {
     label: 'Neighbours',
     blurb:
-      'Colors that sit beside each other. Calm and unmistakably related — good for backgrounds and large areas.',
+      'Colors that sit beside each other. Calm and unmistakably related: good for backgrounds and large areas.',
   },
   triadic: {
     label: 'Three-way',
@@ -22,7 +22,7 @@ export const HARMONY_LABELS: Record<HarmonyKind, { label: string; blurb: string 
   tetradic: {
     label: 'Four-way',
     blurb:
-      'Two pairs of opposites. The most range on offer, and the easiest to overdo — pick one to lead and keep the rest quiet.',
+      'Two pairs of opposites. The most range on offer, and the easiest to overdo. Pick one to lead and keep the rest quiet.',
   },
   monochromatic: {
     label: 'One color',

@@ -158,7 +158,7 @@ export function FeedbackCompose({
       {
         onSuccess: () => {
           clearDraft(DRAFT_KEY);
-          toast.add({ title: 'Thanks — we got your message.', type: 'success' });
+          toast.add({ title: 'Thanks. We got your message.', type: 'success' });
           onSubmitted();
         },
         onError: (error) => {
@@ -238,7 +238,7 @@ export function FeedbackCompose({
             />
           }
         />
-        <FieldDescription>Optional — it just helps us file it.</FieldDescription>
+        <FieldDescription>Optional. It just helps us file it.</FieldDescription>
       </Field>
 
       <Field>

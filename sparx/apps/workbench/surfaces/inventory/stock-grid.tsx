@@ -272,7 +272,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                 title: `${plural(result.saved, 'row', 'rows')} saved`,
                 ...(result.failed > 0
                   ? {
-                      description: `${plural(result.failed, 'row', 'rows')} did not save — the reason is on the row.`,
+                      description: `${plural(result.failed, 'row', 'rows')} did not save: the reason is on the row.`,
                     }
                   : result.unitsChanged > 0
                     ? { description: `${result.unitsChanged.toLocaleString()} units moved.` }
@@ -380,7 +380,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
       {selected.size > 0 ? (
         <div className="border-base-300 bg-base-100 flex flex-wrap items-end gap-2 border-b p-3">
           <Text className="text-sm font-medium">
-            {plural(selected.size, 'row', 'rows')} selected — set
+            {plural(selected.size, 'row', 'rows')} selected. Set
           </Text>
           <NativeSelect
             color="module"
@@ -591,7 +591,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
         <div className="border-base-300 border-t p-3">
           <Text className="text-sm">
             Showing {rows.length.toLocaleString()} of {grid.data.total.toLocaleString()}. Narrow it
-            with the search or the location filter — everything shown here is editable, and nothing
+            with the search or the location filter. Everything shown here is editable, and nothing
             off-screen is touched by a save.
           </Text>
         </div>

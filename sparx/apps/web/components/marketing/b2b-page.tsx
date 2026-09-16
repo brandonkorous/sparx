@@ -49,7 +49,7 @@ export function B2bPage() {
             <Spark color={M.color} />
           </>
         }
-        lede="Account pricing, net terms, RFQs, and how it fits Commerce — answered straight. Still deciding? Read the B2B docs or start the 14-day trial."
+        lede="Account pricing, net terms, RFQs, and how it fits Commerce: answered straight. Still deciding? Read the B2B docs or start the 14-day trial."
       />
       <B2bCta />
     </>
@@ -66,43 +66,43 @@ const B2B_FAQ: FaqItem[] = [
     id: 'b2b-pricing',
     question: 'How much does sparx B2B cost?',
     answer:
-      'A flat $99/mo. B2B layers on Commerce, so turning it on also activates Commerce at $49/mo — the two run as one engine, on one bill. Invoicing and Inventory are included free with either. No tiers, no per-account or per-seat charge. Start on a 14-day free trial; no card required to begin.',
+      'A flat $99/mo. B2B layers on Commerce, so turning it on also activates Commerce at $49/mo: the two run as one engine, on one bill. Invoicing and Inventory are included free with either. No tiers, no per-account or per-seat charge. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'b2b-needs-commerce',
     question: 'Do I need Commerce to run B2B?',
     answer:
-      'Yes — B2B is wholesale on top of the commerce engine, so enabling it auto-activates Commerce, and Commerce can’t be switched off while B2B is on. Your wholesale and retail orders then share one catalog, one inventory, one checkout, and one customer record; the difference is account-aware pricing and terms.',
+      'Yes: B2B is wholesale on top of the commerce engine, so enabling it auto-activates Commerce, and Commerce can’t be switched off while B2B is on. Your wholesale and retail orders then share one catalog, one inventory, one checkout, and one customer record; the difference is account-aware pricing and terms.',
   },
   {
     id: 'b2b-account-pricing',
     question: 'How does account-specific pricing work?',
     answer:
-      'You build pricing tiers — a percentage off list, a fixed price, or a per-product price list — and assign them to accounts, with optional account-level overrides on a variant or collection. When a buyer logs in, the catalog and checkout show their negotiated price automatically. No manual quoting for everyday orders; the price resolves from the account.',
+      'You build pricing tiers (a percentage off list, a fixed price, or a per-product price list) and assign them to accounts, with optional account-level overrides on a variant or collection. When a buyer logs in, the catalog and checkout show their negotiated price automatically. No manual quoting for everyday orders; the price resolves from the account.',
   },
   {
     id: 'b2b-net-terms',
     question: 'Can I offer net terms and credit limits?',
     answer:
-      'Yes. Set payment terms per account — Net 15, 30, 45, or 60 — and a credit limit. An order on terms generates an invoice with the due date and the buyer’s PO number, and counts against the limit. When an account would exceed its limit the order holds for your approval, and the dashboard tracks A/R aging — current, 1–30, 31–60, and 60+ days — so you see what’s outstanding.',
+      'Yes. Set payment terms per account (Net 15, 30, 45, or 60) and a credit limit. An order on terms generates an invoice with the due date and the buyer’s PO number, and counts against the limit. When an account would exceed its limit the order holds for your approval, and the dashboard tracks A/R aging (current, 1–30, 31–60, and 60+ days) so you see what’s outstanding.',
   },
   {
     id: 'b2b-rfq',
     question: 'How does the RFQ and quote flow work?',
     answer:
-      'A buyer builds a request for quote from the catalog — quantities, delivery needs, and notes — and submits it. You review it in the dashboard, set line-item pricing, add notes and an expiry, and send the quote back. When the buyer accepts, the quote converts straight to an order at the quoted prices. The lifecycle is tracked end to end: submitted, under review, quoted, accepted, converted.',
+      'A buyer builds a request for quote from the catalog (quantities, delivery needs, and notes) and submits it. You review it in the dashboard, set line-item pricing, add notes and an expiry, and send the quote back. When the buyer accepts, the quote converts straight to an order at the quoted prices. The lifecycle is tracked end to end: submitted, under review, quoted, accepted, converted.',
   },
   {
     id: 'b2b-portal',
     question: 'Do my wholesale customers get their own portal?',
     answer:
-      'Yes. B2B contacts log in to an account portal — order history with invoice downloads, outstanding balance, RFQs and quote responses, one-click reorder, and a fitment-filtered catalog for accounts with a registered fleet. Contacts carry roles: account admin, buyer, or view-only, so AP can see invoices without being able to place orders.',
+      'Yes. B2B contacts log in to an account portal: order history with invoice downloads, outstanding balance, RFQs and quote responses, one-click reorder, and a fitment-filtered catalog for accounts with a registered fleet. Contacts carry roles: account admin, buyer, or view-only, so AP can see invoices without being able to place orders.',
   },
   {
     id: 'b2b-fleet',
     question: 'Does it handle fleet management and service booking?',
     answer:
-      'Fleet management is built into B2B: store a fleet profile per account — vehicles and engine types — so the catalog can surface and badge the parts that fit. Service booking itself is the separate Scheduling module ($29/mo); activate it alongside B2B and customers book service against the fleet account, with confirmation and reminder emails. Fleet is one capability of B2B, not a requirement — a salon-products or office-coffee distributor never touches it.',
+      'Fleet management is built into B2B: store a fleet profile per account (vehicles and engine types) so the catalog can surface and badge the parts that fit. Service booking itself is the separate Scheduling module ($29/mo); activate it alongside B2B and customers book service against the fleet account, with confirmation and reminder emails. Fleet is one capability of B2B, not a requirement: a salon-products or office-coffee distributor never touches it.',
   },
 ];
 
@@ -111,14 +111,14 @@ function B2bProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
       n: <>1{<Spark color={M.color} />}</>,
-      l: 'catalog and checkout under retail and wholesale — nothing to mirror',
+      l: 'catalog and checkout under retail and wholesale: nothing to mirror',
     },
-    { n: 'D2C + B2B', l: 'on one engine — wholesale toggles on per account, not per store' },
+    { n: 'D2C + B2B', l: 'on one engine: wholesale toggles on per account, not per store' },
     {
       n: '$0',
-      l: 'extra for Invoicing and Inventory — estimates, A/R aging, and stock ride along',
+      l: 'extra for Invoicing and Inventory: estimates, A/R aging, and stock ride along',
     },
-    { n: 'Net 60', l: 'terms, credit limits, and approval holds — native, not a spreadsheet' },
+    { n: 'Net 60', l: 'terms, credit limits, and approval holds: native, not a spreadsheet' },
   ];
   return (
     <Section surface="dark" padding="lg">
@@ -129,7 +129,7 @@ function B2bProof() {
         </Display>
         <Text size={18} className="mt-6 max-w-[640px]">
           B2B isn’t a second store bolted onto the first. It’s the same products, inventory, and
-          orders your retail side runs — with account pricing, net terms, and quotes layered on top,
+          orders your retail side runs, with account pricing, net terms, and quotes layered on top,
           so nothing is duplicated and nothing drifts out of sync.
         </Text>
       </div>
@@ -166,7 +166,7 @@ function B2bPricing() {
             </Text>
           </div>
           <Text size={14} className="max-w-[660px]">
-            A flat $99/mo — account pricing, RFQ and quotes, net terms and credit, bulk PO ordering,
+            A flat $99/mo: account pricing, RFQ and quotes, net terms and credit, bulk PO ordering,
             and fleet accounts. B2B layers on Commerce, so turning it on activates Commerce too
             ($49/mo) and the two bill as one engine. Invoicing and Inventory are included free; add
             the Scheduling module ($29/mo) to book service against a fleet. No tiers, no per-account
@@ -198,7 +198,7 @@ function B2bCta() {
           <Spark color={M.color} />
         </Display>
         <Text size={18} className="max-w-[640px]">
-          Set up a pricing tier, invite your accounts, and take a PO on net terms — on the same
+          Set up a pricing tier, invite your accounts, and take a PO on net terms: on the same
           catalog you already sell from. No second platform, no migration weekend; switch B2B off
           the day you stop selling wholesale, and your accounts and history stay yours.
         </Text>

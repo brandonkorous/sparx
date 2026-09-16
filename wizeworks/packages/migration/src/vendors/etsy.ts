@@ -186,7 +186,7 @@ export const etsy: VendorAdapter = {
       entity: 'customers',
       label: 'Buyers',
       file: 'EtsySoldOrderItems.csv',
-      where: 'The same orders file — Etsy has no customer export',
+      where: 'The same orders file: Etsy has no customer export',
       format: 'csv',
       required: ['Order ID', 'Ship Name'],
       hints: ['Buyer', 'Sale Date'],

@@ -187,7 +187,7 @@ export function PigglesHomeSurface({ ctx }: { ctx: SurfaceContext }) {
           </Card>
         ) : clear.length > 0 ? (
           <Text className="mt-6 text-base">
-            Everything else is fine — {quietLine(clear, { lead: false })}
+            Everything else is fine: {quietLine(clear, { lead: false })}
           </Text>
         ) : null}
 

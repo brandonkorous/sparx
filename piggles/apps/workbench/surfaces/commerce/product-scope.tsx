@@ -531,7 +531,7 @@ function ScopeMessage({
         module={module}
         icon={<Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />}
         title="Choose a product first"
-        description={`This panel shows ${label.toLowerCase()} for one product at a time. Open a product and it will follow along — or open this from a product to keep it fixed on that one.`}
+        description={`This panel shows ${label.toLowerCase()} for one product at a time. Open a product and it will follow along, or open this from a product to keep it fixed on that one.`}
         actions={
           <Button
             size="sm"
@@ -600,7 +600,7 @@ function ScopeMessage({
       module={module}
       icon={<Icon glyph={faServer} className="size-6" aria-hidden />}
       title={`Could not load ${label.toLowerCase()}`}
-      description="This is a problem reaching the server. Nothing about the product has changed — it just could not be read just now."
+      description="This is a problem reaching the server. Nothing about the product has changed. It just could not be read just now."
       onRetry={scope.retry}
     />
   );

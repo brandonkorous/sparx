@@ -138,7 +138,7 @@ export const professionalPack: SampleDataPack = {
       postalCode: '97209',
       properties: {
         engagementType: 'project',
-        introducedBy: 'Inbound — found us searching',
+        introducedBy: 'Inbound: found us searching',
         nextReviewOn: '2026-09-18',
       },
     },
@@ -212,7 +212,7 @@ export const professionalPack: SampleDataPack = {
       title: 'Brand Audit',
       handle: 'brand-audit',
       description:
-        "<p>A two-week diagnostic that tells you the truth about how your brand actually shows up — to customers, to search engines, and against the competitors you keep losing deals to. We pull apart your messaging, visual identity, website, and core funnels, then hand you a prioritized fix list you can act on with or without us.</p><h3>What's included</h3><ul><li>Stakeholder kickoff and a review of your goals, audience, and competitive set</li><li>Messaging teardown — positioning, value proposition, and tone across every public touchpoint</li><li>Visual identity review — logo usage, type, color, and consistency across channels</li><li>Website and conversion-path walkthrough with annotated screenshots</li><li>A scored audit deck plus a ranked, effort-vs-impact action plan</li></ul><h3>Timeline</h3><p>Two weeks from kickoff to readout. Fixed scope, fixed price — no surprise change orders.</p>",
+        "<p>A two-week diagnostic that tells you the truth about how your brand actually shows up: to customers, to search engines, and against the competitors you keep losing deals to. We pull apart your messaging, visual identity, website, and core funnels, then hand you a prioritized fix list you can act on with or without us.</p><h3>What's included</h3><ul><li>Stakeholder kickoff and a review of your goals, audience, and competitive set</li><li>Messaging teardown: positioning, value proposition, and tone across every public touchpoint</li><li>Visual identity review: logo usage, type, color, and consistency across channels</li><li>Website and conversion-path walkthrough with annotated screenshots</li><li>A scored audit deck plus a ranked, effort-vs-impact action plan</li></ul><h3>Timeline</h3><p>Two weeks from kickoff to readout. Fixed scope, fixed price: no surprise change orders.</p>",
       productType: 'Strategy',
       vendor: 'Studio North',
       tags: ['brand', 'audit', 'strategy', 'positioning'],
@@ -221,7 +221,7 @@ export const professionalPack: SampleDataPack = {
         details: [
           {
             label: 'Scope',
-            body: 'A two-week diagnostic of how your brand actually shows up — messaging, visual identity, website, and core funnels — against your goals and competitive set.',
+            body: 'A two-week diagnostic of how your brand actually shows up (messaging, visual identity, website, and core funnels) against your goals and competitive set.',
           },
           {
             label: 'Deliverables',
@@ -229,7 +229,7 @@ export const professionalPack: SampleDataPack = {
           },
           {
             label: 'Timeline',
-            body: 'Two weeks from kickoff to readout. Fixed scope, fixed price — no surprise change orders.',
+            body: 'Two weeks from kickoff to readout. Fixed scope, fixed price: no surprise change orders.',
           },
           {
             label: 'Standalone',
@@ -238,9 +238,9 @@ export const professionalPack: SampleDataPack = {
         ],
       },
       fulfillmentType: 'service',
-      seoTitle: 'Brand Audit — a 2-week diagnostic with a prioritized fix list',
+      seoTitle: 'Brand Audit: a 2-week diagnostic with a prioritized fix list',
       seoDescription:
-        'A fixed-scope brand audit covering messaging, identity, website, and funnels — with a ranked, effort-vs-impact action plan you can act on.',
+        'A fixed-scope brand audit covering messaging, identity, website, and funnels, with a ranked, effort-vs-impact action plan you can act on.',
       categoryKeys: ['strategy'],
       collectionKeys: ['featured-engagements', 'most-requested'],
       variants: [
@@ -259,7 +259,7 @@ export const professionalPack: SampleDataPack = {
           body: 'We thought we needed a rebrand. The audit showed we mostly had a consistency problem and a muddy value prop. Saved us a five-figure detour.',
           authorPersona: 'nadia',
           response:
-            'Love that it pointed you somewhere cheaper than a full rebrand, Nadia — that is the whole point.',
+            'Love that it pointed you somewhere cheaper than a full rebrand, Nadia. That is the whole point.',
           helpfulCount: 7,
           daysAgo: 24,
         },
@@ -285,7 +285,7 @@ export const professionalPack: SampleDataPack = {
           body: 'Do we need to commit to a project afterward, or is the audit standalone?',
           authorPersona: 'sofia',
           answer:
-            'Completely standalone. The fix list is yours to run in-house if you prefer — plenty of clients do exactly that.',
+            'Completely standalone. The fix list is yours to run in-house if you prefer: plenty of clients do exactly that.',
           daysAgo: 15,
         },
       ],
@@ -295,7 +295,7 @@ export const professionalPack: SampleDataPack = {
       title: 'SEO Sprint (4 weeks)',
       handle: 'seo-sprint-4-weeks',
       description:
-        "<p>Four focused weeks to fix what is quietly costing you organic traffic. We start with a technical crawl, prioritize the issues actually moving rankings, and ship the fixes — not a 60-page report you have to interpret and implement yourself.</p><h3>What's included</h3><ul><li>Full technical crawl: indexation, site speed, Core Web Vitals, structured data, and crawl-budget waste</li><li>Keyword and intent mapping against your top revenue pages</li><li>On-page optimization for up to fifteen priority URLs</li><li>An internal-linking and content-gap plan</li><li>Weekly check-ins and a final scorecard with tracked-keyword movement</li></ul><h3>Deliverables</h3><p>Implemented on-page fixes, a prioritized backlog for everything out of scope, and a baseline dashboard so you can see the line move after we leave.</p>",
+        "<p>Four focused weeks to fix what is quietly costing you organic traffic. We start with a technical crawl, prioritize the issues actually moving rankings, and ship the fixes, not a 60-page report you have to interpret and implement yourself.</p><h3>What's included</h3><ul><li>Full technical crawl: indexation, site speed, Core Web Vitals, structured data, and crawl-budget waste</li><li>Keyword and intent mapping against your top revenue pages</li><li>On-page optimization for up to fifteen priority URLs</li><li>An internal-linking and content-gap plan</li><li>Weekly check-ins and a final scorecard with tracked-keyword movement</li></ul><h3>Deliverables</h3><p>Implemented on-page fixes, a prioritized backlog for everything out of scope, and a baseline dashboard so you can see the line move after we leave.</p>",
       productType: 'Marketing',
       vendor: 'Studio North',
       tags: ['seo', 'sprint', 'marketing', 'organic'],
@@ -321,7 +321,7 @@ export const professionalPack: SampleDataPack = {
         ],
       },
       fulfillmentType: 'service',
-      seoTitle: 'SEO Sprint — 4 weeks of fixes shipped, not a report handed off',
+      seoTitle: 'SEO Sprint: 4 weeks of fixes shipped, not a report handed off',
       seoDescription:
         'A four-week SEO sprint: technical crawl, keyword mapping, on-page fixes for fifteen priority pages, and a tracked baseline dashboard.',
       categoryKeys: ['marketing'],
@@ -342,7 +342,7 @@ export const professionalPack: SampleDataPack = {
           body: 'Every other agency handed us a PDF and an invoice. These folks fixed our indexation mess and our Core Web Vitals in four weeks flat.',
           authorPersona: 'theo',
           response:
-            'Shipping over reporting — thanks for the shout, Theo. Glad the CWV scores moved.',
+            'Shipping over reporting: thanks for the shout, Theo. Glad the CWV scores moved.',
           helpfulCount: 9,
           daysAgo: 20,
         },
@@ -360,7 +360,7 @@ export const professionalPack: SampleDataPack = {
           body: 'Will you also write the new content, or just tell us what to write?',
           authorPersona: 'darnell',
           answer:
-            'The sprint covers on-page optimization of existing pages and a content-gap plan. New long-form writing is the Content Retainer — happy to roll into that after.',
+            'The sprint covers on-page optimization of existing pages and a content-gap plan. New long-form writing is the Content Retainer: happy to roll into that after.',
           daysAgo: 11,
         },
       ],
@@ -379,7 +379,7 @@ export const professionalPack: SampleDataPack = {
         details: [
           {
             label: 'Scope',
-            body: 'A complete marketing website designed and built end to end — up to eight pages, responsive and fast, on a content system your team can update without calling us.',
+            body: 'A complete marketing website designed and built end to end: up to eight pages, responsive and fast, on a content system your team can update without calling us.',
           },
           {
             label: "What's included",
@@ -391,12 +391,12 @@ export const professionalPack: SampleDataPack = {
           },
           {
             label: 'Timeline',
-            body: 'Six to eight weeks depending on content readiness — we tell you up front which of the two it is.',
+            body: 'Six to eight weeks depending on content readiness. We tell you up front which of the two it is.',
           },
         ],
       },
       fulfillmentType: 'service',
-      seoTitle: 'Website Package — a full marketing site, designed and built',
+      seoTitle: 'Website Package: a full marketing site, designed and built',
       seoDescription:
         'An end-to-end website package: discovery, custom design, build, content migration, QA, and a 30-day support window. Up to eight pages.',
       categoryKeys: ['web', 'design'],
@@ -414,7 +414,7 @@ export const professionalPack: SampleDataPack = {
         {
           rating: 5,
           title: 'Best agency experience we have had',
-          body: 'Two design rounds was exactly right — enough to get it dialed without endless revisions. The handover docs meant we could edit it ourselves day one.',
+          body: 'Two design rounds was exactly right: enough to get it dialed without endless revisions. The handover docs meant we could edit it ourselves day one.',
           authorPersona: 'darnell',
           response: 'A site your team can run without us is the goal. Thanks, Darnell!',
           helpfulCount: 11,
@@ -431,7 +431,7 @@ export const professionalPack: SampleDataPack = {
         {
           rating: 4,
           title: 'Worth getting content ready first',
-          body: 'They were upfront that our timeline rode on our content. We were slow, so it ran eight weeks not six — on us, not them.',
+          body: 'They were upfront that our timeline rode on our content. We were slow, so it ran eight weeks not six: on us, not them.',
           displayName: 'OpsDirectorK',
           helpfulCount: 2,
           daysAgo: 7,
@@ -442,7 +442,7 @@ export const professionalPack: SampleDataPack = {
           body: 'What happens after the thirty-day support window closes?',
           authorPersona: 'nadia',
           answer:
-            'Most clients roll into a Content Retainer for ongoing changes, but you are never locked in — the site is fully yours, on a platform you control.',
+            'Most clients roll into a Content Retainer for ongoing changes, but you are never locked in: the site is fully yours, on a platform you control.',
           daysAgo: 19,
         },
       ],
@@ -452,7 +452,7 @@ export const professionalPack: SampleDataPack = {
       title: 'Content Retainer (monthly)',
       handle: 'content-retainer-monthly',
       description:
-        "<p>A steady stream of on-brand content without the cost of an in-house team. Each month we plan, write, and ship a set quota of long-form and short-form work tied to your goals — then report on what actually moved.</p><h3>What's included each month</h3><ul><li>A content calendar planned against your campaigns and keyword targets</li><li>Two long-form articles, fully edited and SEO-optimized</li><li>Four short-form pieces (social, email, or landing-page copy)</li><li>One round of revisions per piece</li><li>A monthly performance recap with recommendations</li></ul><h3>Terms</h3><p>Month-to-month after an initial three-month commitment. Unused quota does not roll over — we plan the calendar so it rarely comes up.</p>",
+        "<p>A steady stream of on-brand content without the cost of an in-house team. Each month we plan, write, and ship a set quota of long-form and short-form work tied to your goals, then report on what actually moved.</p><h3>What's included each month</h3><ul><li>A content calendar planned against your campaigns and keyword targets</li><li>Two long-form articles, fully edited and SEO-optimized</li><li>Four short-form pieces (social, email, or landing-page copy)</li><li>One round of revisions per piece</li><li>A monthly performance recap with recommendations</li></ul><h3>Terms</h3><p>Month-to-month after an initial three-month commitment. Unused quota does not roll over, and we plan the calendar so it rarely comes up.</p>",
       productType: 'Marketing',
       vendor: 'Studio North',
       tags: ['content', 'retainer', 'marketing', 'writing'],
@@ -461,7 +461,7 @@ export const professionalPack: SampleDataPack = {
         details: [
           {
             label: 'Scope',
-            body: 'A monthly content engine: a calendar planned against your campaigns and keyword targets, then written and shipped — without the cost of an in-house team.',
+            body: 'A monthly content engine: a calendar planned against your campaigns and keyword targets, then written and shipped, without the cost of an in-house team.',
           },
           {
             label: 'Monthly quota',
@@ -478,9 +478,9 @@ export const professionalPack: SampleDataPack = {
         ],
       },
       fulfillmentType: 'service',
-      seoTitle: 'Content Retainer — monthly long-form + short-form, planned and shipped',
+      seoTitle: 'Content Retainer: monthly long-form + short-form, planned and shipped',
       seoDescription:
-        'A monthly content retainer: a planned calendar, two long-form articles, four short-form pieces, and a performance recap — on-brand, every month.',
+        'A monthly content retainer: a planned calendar, two long-form articles, four short-form pieces, and a performance recap, on-brand, every month.',
       categoryKeys: ['marketing'],
       collectionKeys: ['most-requested'],
       variants: [
@@ -498,7 +498,7 @@ export const professionalPack: SampleDataPack = {
           title: 'Like having a content team for a fraction',
           body: 'We get our two articles and the social pieces on the same cadence every month. The calendar means we are never scrambling.',
           authorPersona: 'imani',
-          response: 'Predictable cadence is the whole pitch — thank you, Imani.',
+          response: 'Predictable cadence is the whole pitch: thank you, Imani.',
           helpfulCount: 5,
           daysAgo: 21,
         },
@@ -526,7 +526,7 @@ export const professionalPack: SampleDataPack = {
       title: 'Logo & Identity',
       handle: 'logo-and-identity',
       description:
-        "<p>A complete visual identity, not just a logo file. We design the mark, the type system, the color palette, and the rules for using them — then package it so any designer, printer, or developer can stay on brand without guessing.</p><h3>What's included</h3><ul><li>A discovery workshop on your story, audience, and market</li><li>Three distinct logo directions, narrowed to one with two refinement rounds</li><li>A type and color system with accessibility-checked combinations</li><li>Primary, secondary, and responsive logo lockups plus favicon and app-icon sizes</li><li>A brand guidelines document and a packaged asset library (SVG, PNG, and source files)</li></ul><h3>Timeline</h3><p>Three to four weeks. You own every file outright when we are done.</p>",
+        "<p>A complete visual identity, not just a logo file. We design the mark, the type system, the color palette, and the rules for using them, then package it so any designer, printer, or developer can stay on brand without guessing.</p><h3>What's included</h3><ul><li>A discovery workshop on your story, audience, and market</li><li>Three distinct logo directions, narrowed to one with two refinement rounds</li><li>A type and color system with accessibility-checked combinations</li><li>Primary, secondary, and responsive logo lockups plus favicon and app-icon sizes</li><li>A brand guidelines document and a packaged asset library (SVG, PNG, and source files)</li></ul><h3>Timeline</h3><p>Three to four weeks. You own every file outright when we are done.</p>",
       productType: 'Design',
       vendor: 'Studio North',
       tags: ['logo', 'identity', 'design', 'branding'],
@@ -535,7 +535,7 @@ export const professionalPack: SampleDataPack = {
         details: [
           {
             label: 'Scope',
-            body: 'A complete visual identity — the mark, the type system, the color palette, and the rules for using them — not just a logo file.',
+            body: 'A complete visual identity (the mark, the type system, the color palette, and the rules for using them) not just a logo file.',
           },
           {
             label: "What's included",
@@ -543,7 +543,7 @@ export const professionalPack: SampleDataPack = {
           },
           {
             label: 'Deliverables',
-            body: 'A brand guidelines document and a packaged asset library (SVG, PNG, and source files) you own outright — no licensing strings, ever.',
+            body: 'A brand guidelines document and a packaged asset library (SVG, PNG, and source files) you own outright: no licensing strings, ever.',
           },
           {
             label: 'Timeline',
@@ -552,7 +552,7 @@ export const professionalPack: SampleDataPack = {
         ],
       },
       fulfillmentType: 'service',
-      seoTitle: 'Logo & Identity — a full visual system, not just a logo',
+      seoTitle: 'Logo & Identity: a full visual system, not just a logo',
       seoDescription:
         'A complete identity package: logo, type system, color, lockups, guidelines, and a packaged asset library you own outright.',
       categoryKeys: ['design'],
@@ -570,7 +570,7 @@ export const professionalPack: SampleDataPack = {
         {
           rating: 5,
           title: 'A system, not a JPEG',
-          body: 'We have hired logo people before and gotten one file. This was the full kit — guidelines, every size, source files. Our printer and our dev both said thank you.',
+          body: 'We have hired logo people before and gotten one file. This was the full kit: guidelines, every size, source files. Our printer and our dev both said thank you.',
           authorPersona: 'theo',
           helpfulCount: 8,
           daysAgo: 22,
@@ -589,7 +589,7 @@ export const professionalPack: SampleDataPack = {
           body: 'Do we get the editable source files or just exports?',
           authorPersona: 'darnell',
           answer:
-            'Both. The packaged library includes source files and you own them outright — no licensing strings, ever.',
+            'Both. The packaged library includes source files and you own them outright: no licensing strings, ever.',
           daysAgo: 16,
         },
       ],
@@ -599,7 +599,7 @@ export const professionalPack: SampleDataPack = {
       title: 'Conversion Teardown',
       handle: 'conversion-teardown',
       description:
-        "<p>A focused, one-week review of a single funnel — a landing page, a checkout, a signup flow — that finds the leaks costing you conversions and tells you exactly how to plug them. The fastest way to get a second set of expert eyes before you spend on more traffic.</p><h3>What's included</h3><ul><li>A heuristic review against conversion best practices, frame by frame</li><li>Analytics and funnel-drop analysis where data is available</li><li>A prioritized list of friction points with annotated screenshots</li><li>Specific, testable recommendations — copy, layout, and trust signals</li><li>A thirty-minute walkthrough call to talk through the findings</li></ul><h3>Timeline</h3><p>Five business days. Ideal as a standalone tune-up or a precursor to a larger engagement.</p>",
+        "<p>A focused, one-week review of a single funnel (a landing page, a checkout, a signup flow) that finds the leaks costing you conversions and tells you exactly how to plug them. The fastest way to get a second set of expert eyes before you spend on more traffic.</p><h3>What's included</h3><ul><li>A heuristic review against conversion best practices, frame by frame</li><li>Analytics and funnel-drop analysis where data is available</li><li>A prioritized list of friction points with annotated screenshots</li><li>Specific, testable recommendations: copy, layout, and trust signals</li><li>A thirty-minute walkthrough call to talk through the findings</li></ul><h3>Timeline</h3><p>Five business days. Ideal as a standalone tune-up or a precursor to a larger engagement.</p>",
       productType: 'Strategy',
       vendor: 'Studio North',
       tags: ['conversion', 'cro', 'strategy', 'funnel'],
@@ -608,7 +608,7 @@ export const professionalPack: SampleDataPack = {
         details: [
           {
             label: 'Scope',
-            body: 'A focused one-week review of a single funnel — a landing page, a checkout, a signup flow — to find the leaks costing you conversions.',
+            body: 'A focused one-week review of a single funnel (a landing page, a checkout, a signup flow) to find the leaks costing you conversions.',
           },
           {
             label: "What's included",
@@ -625,7 +625,7 @@ export const professionalPack: SampleDataPack = {
         ],
       },
       fulfillmentType: 'service',
-      seoTitle: 'Conversion Teardown — a 1-week funnel review with testable fixes',
+      seoTitle: 'Conversion Teardown: a 1-week funnel review with testable fixes',
       seoDescription:
         'A focused one-week conversion teardown of a single funnel: friction points, analytics drop-off, and specific testable recommendations.',
       categoryKeys: ['strategy', 'marketing'],
@@ -645,7 +645,7 @@ export const professionalPack: SampleDataPack = {
           title: 'Paid for itself in a week',
           body: 'They spotted a trust-signal gap above the fold we had stared past for a year. One change, signups up double digits.',
           authorPersona: 'nadia',
-          response: 'A teardown that pays for itself is exactly the bar — thanks, Nadia.',
+          response: 'A teardown that pays for itself is exactly the bar: thanks, Nadia.',
           helpfulCount: 10,
           daysAgo: 18,
         },
@@ -674,7 +674,7 @@ export const professionalPack: SampleDataPack = {
       title: 'Fractional Marketing Lead (monthly)',
       handle: 'fractional-marketing-lead-monthly',
       description:
-        "<p>Senior marketing leadership without the senior-leadership salary. A dedicated lead embeds with your team part-time to own strategy, set priorities, manage vendors, and keep the whole effort pointed at revenue — for companies that need a steady hand but not a full-time hire yet.</p><h3>What's included each month</h3><ul><li>A standing weekly leadership session and async availability between</li><li>Quarterly strategy and a rolling 90-day roadmap</li><li>Hands-on management of your existing marketing team and outside vendors</li><li>Budget planning and channel-mix recommendations</li><li>A monthly metrics review tied to pipeline and revenue</li></ul><h3>Terms</h3><p>Month-to-month after a three-month minimum. Scales up or down as your needs change — most clients graduate to a full-time hire, and we help you find them.</p>",
+        "<p>Senior marketing leadership without the senior-leadership salary. A dedicated lead embeds with your team part-time to own strategy, set priorities, manage vendors, and keep the whole effort pointed at revenue, for companies that need a steady hand but not a full-time hire yet.</p><h3>What's included each month</h3><ul><li>A standing weekly leadership session and async availability between</li><li>Quarterly strategy and a rolling 90-day roadmap</li><li>Hands-on management of your existing marketing team and outside vendors</li><li>Budget planning and channel-mix recommendations</li><li>A monthly metrics review tied to pipeline and revenue</li></ul><h3>Terms</h3><p>Month-to-month after a three-month minimum. Scales up or down as your needs change: most clients graduate to a full-time hire, and we help you find them.</p>",
       productType: 'Strategy',
       vendor: 'Studio North',
       tags: ['fractional', 'leadership', 'strategy', 'retainer'],
@@ -700,7 +700,7 @@ export const professionalPack: SampleDataPack = {
         ],
       },
       fulfillmentType: 'service',
-      seoTitle: 'Fractional Marketing Lead — senior leadership, part-time',
+      seoTitle: 'Fractional Marketing Lead: senior leadership, part-time',
       seoDescription:
         'A monthly fractional marketing lead: weekly leadership sessions, a 90-day roadmap, team and vendor management, and a revenue-tied metrics review.',
       categoryKeys: ['strategy'],
@@ -729,7 +729,7 @@ export const professionalPack: SampleDataPack = {
           body: 'How many hours a week is "part-time" in practice?',
           displayName: 'SeedStageCEO',
           answer:
-            'Plan on a standing weekly session plus async availability — roughly a day a week of focused attention, scaled to the engagement.',
+            'Plan on a standing weekly session plus async availability: roughly a day a week of focused attention, scaled to the engagement.',
           daysAgo: 9,
         },
       ],
@@ -798,7 +798,7 @@ export const professionalPack: SampleDataPack = {
         key: 'discovery-call',
         name: 'Discovery Call',
         description:
-          'A free 30-minute call to talk through your goals and figure out whether we are a fit. No prep, no pitch deck — just a conversation.',
+          'A free 30-minute call to talk through your goals and figure out whether we are a fit. No prep, no pitch deck. Just a conversation.',
         durationMinutes: 30,
         priceCents: 0,
         bookingType: 'appointment',
@@ -811,7 +811,7 @@ export const professionalPack: SampleDataPack = {
         key: 'strategy-session',
         name: 'Strategy Session',
         description:
-          'A focused 90-minute working session on a specific challenge — positioning, a launch, a funnel — with a senior strategist. You leave with a written recap and next steps.',
+          'A focused 90-minute working session on a specific challenge (positioning, a launch, a funnel) with a senior strategist. You leave with a written recap and next steps.',
         durationMinutes: 90,
         priceCents: 45000,
         bookingType: 'appointment',
@@ -824,7 +824,7 @@ export const professionalPack: SampleDataPack = {
         key: 'design-review',
         name: 'Design Review',
         description:
-          'A 60-minute critique of your current design work — site, identity, or campaign assets — with a senior designer. Practical, candid, and prioritized.',
+          'A 60-minute critique of your current design work (site, identity, or campaign assets) with a senior designer. Practical, candid, and prioritized.',
         durationMinutes: 60,
         priceCents: 30000,
         bookingType: 'appointment',
@@ -862,7 +862,7 @@ export const professionalPack: SampleDataPack = {
         ),
         h2('Start with pages and templates, not features'),
         p(
-          'Count the unique page templates, not the pages. A site can have forty pages and four templates — and it is the templates that drive design and build cost. Write down every template you need (home, service, article, contact) and roughly how many pages sit on each. That single list does more to control cost than any feature wishlist.'
+          'Count the unique page templates, not the pages. A site can have forty pages and four templates, and it is the templates that drive design and build cost. Write down every template you need (home, service, article, contact) and roughly how many pages sit on each. That single list does more to control cost than any feature wishlist.'
         ),
         h2('Decide who writes the content'),
         p(
@@ -870,7 +870,7 @@ export const professionalPack: SampleDataPack = {
         ),
         h2('Name what is explicitly out'),
         ol(
-          'List the things you are NOT doing this round — the blog redesign, the customer portal, the integrations — in writing.',
+          'List the things you are NOT doing this round (the blog redesign, the customer portal, the integrations) in writing.',
           'Agree on what triggers a change order, and what is a free in-scope revision.',
           'Set the number of design revision rounds up front; "until we are happy" is not a number.'
         ),
@@ -887,14 +887,14 @@ export const professionalPack: SampleDataPack = {
       daysAgo: 14,
       body: doc(
         p(
-          'When people hear "brand audit" they often picture someone squinting at their logo and suggesting a new font. A real audit is a diagnostic of how your brand performs across every place a customer meets it — and the logo is one of the smaller pieces.'
+          'When people hear "brand audit" they often picture someone squinting at their logo and suggesting a new font. A real audit is a diagnostic of how your brand performs across every place a customer meets it, and the logo is one of the smaller pieces.'
         ),
         h2('The four layers we examine'),
         ul(
-          'Messaging — is your positioning clear, differentiated, and consistent from your homepage to your sales deck to your job listings?',
-          'Visual identity — do your logo, type, and color hold together across channels, or has every team improvised its own version?',
-          'Experience — does your website and core funnel actually guide someone to the action you want?',
-          'Perception — how do customers and search engines describe you, and does it match what you intend?'
+          'Messaging: is your positioning clear, differentiated, and consistent from your homepage to your sales deck to your job listings?',
+          'Visual identity: do your logo, type, and color hold together across channels, or has every team improvised its own version?',
+          'Experience: does your website and core funnel actually guide someone to the action you want?',
+          'Perception: how do customers and search engines describe you, and does it match what you intend?'
         ),
         h2('A diagnostic, not a pitch'),
         p(
@@ -902,7 +902,7 @@ export const professionalPack: SampleDataPack = {
         ),
         h2('What you walk away with'),
         p(
-          'A scored picture of where you stand and a ranked action plan — ordered by effort versus impact, so you know what to fix Monday morning whether or not you hire anyone to do it. The deliverable should be usable on its own. If it only makes sense as a setup for the next invoice, it was not really an audit.'
+          'A scored picture of where you stand and a ranked action plan: ordered by effort versus impact, so you know what to fix Monday morning whether or not you hire anyone to do it. The deliverable should be usable on its own. If it only makes sense as a setup for the next invoice, it was not really an audit.'
         )
       ),
     },
@@ -914,7 +914,7 @@ export const professionalPack: SampleDataPack = {
       daysAgo: 22,
       body: doc(
         p(
-          'One of the first questions we ask a new client is whether their need is a project or a retainer. Get it wrong and you either pay for ongoing capacity you do not use, or you keep re-scoping the same engagement every few weeks. The deciding factor is rarely budget — it is the shape of the work.'
+          'One of the first questions we ask a new client is whether their need is a project or a retainer. Get it wrong and you either pay for ongoing capacity you do not use, or you keep re-scoping the same engagement every few weeks. The deciding factor is rarely budget. It is the shape of the work.'
         ),
         h2('A project has a finish line'),
         p(
@@ -922,7 +922,7 @@ export const professionalPack: SampleDataPack = {
         ),
         h2('A retainer suits work that never ends'),
         p(
-          'Content, SEO, paid media, and marketing leadership are not projects — they are ongoing capacities. The work resets every month. A retainer buys you a predictable cadence and a team that already knows your business, instead of re-onboarding a freelancer every time something comes up.'
+          'Content, SEO, paid media, and marketing leadership are not projects. They are ongoing capacities. The work resets every month. A retainer buys you a predictable cadence and a team that already knows your business, instead of re-onboarding a freelancer every time something comes up.'
         ),
         h2('A simple test'),
         ul(

@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Hearth & Hollow — considered homeware, made to last",
-      "seoDescription": "Hearth & Hollow makes warm, tactile homeware from natural materials — washed linen, hand-thrown ceramics, real wool — in small runs, built to be lived with for years.",
+      "seoTitle": "Hearth & Hollow: considered homeware, made to last",
+      "seoDescription": "Hearth & Hollow makes warm, tactile homeware from natural materials (washed linen, hand-thrown ceramics, real wool) in small runs, built to be lived with for years.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Hearth & Hollow makes the honest, tactile pieces a home is actually built from — washed linen, hand-thrown stoneware, real wool. Chosen for how they feel and how they age, not for a season. Buy once, live with it for years."
+                          "Hearth & Hollow makes the honest, tactile pieces a home is actually built from: washed linen, hand-thrown stoneware, real wool. Chosen for how they feel and how they age, not for a season. Buy once, live with it for years."
                         ],
                         "id": "2f7ba748-c255-4390-b76f-35a05d5079ca",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Our stoneware is thrown on a wheel, our linen is washed until it goes soft, and our wool is spun from real fleece. We work with small makers who put their name to what they make — so the piece that arrives is one you’ll still want in ten years."
+                          "Our stoneware is thrown on a wheel, our linen is washed until it goes soft, and our wool is spun from real fleece. We work with small makers who put their name to what they make, so the piece that arrives is one you’ll still want in ten years."
                         ],
                         "id": "4c0d8aaf-d9fd-43eb-bd5e-f933e2c9d4f7",
                         "ord": "a1"
@@ -1539,7 +1539,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A home isn’t furnished in a weekend — it’s gathered, one considered piece at a time. Start with the things you touch every day: the sheets you sleep in, the mug you reach for, the throw that lives on the sofa. Get those right and the rest follows."
+                          "A home isn’t furnished in a weekend: it’s gathered, one considered piece at a time. Start with the things you touch every day: the sheets you sleep in, the mug you reach for, the throw that lives on the sofa. Get those right and the rest follows."
                         ],
                         "id": "61d6890d-c80d-4c42-bb2b-ae3073f28110",
                         "ord": "a1"
@@ -1574,7 +1574,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Hearth & Hollow",
+      "seoTitle": "Shop: Hearth & Hollow",
       "seoDescription": "Browse everything Hearth & Hollow makes, with prices and options at a glance. Home goods & homeware.",
       "root": {
         "kind": "element",
@@ -1606,7 +1606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The whole collection in one place — bedding, tableware, textiles, lighting, storage and scent. Filter by room or sort however you like; every piece is made in small runs from natural materials and built to be lived with."
+                      "The whole collection in one place: bedding, tableware, textiles, lighting, storage and scent. Filter by room or sort however you like; every piece is made in small runs from natural materials and built to be lived with."
                     ],
                     "id": "761779b9-0f16-4c72-bc38-ff698b5c44e2",
                     "ord": "a1"
@@ -1634,7 +1634,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Hearth & Hollow",
+      "seoTitle": "Collections: Hearth & Hollow",
       "seoDescription": "Explore the collections at Hearth & Hollow, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1666,7 +1666,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The pieces grouped the way people actually shop — what’s new this season, the ones people keep coming back for, and edits for the bedroom, the table and the living room."
+                      "The pieces grouped the way people actually shop: what’s new this season, the ones people keep coming back for, and edits for the bedroom, the table and the living room."
                     ],
                     "id": "95f904b8-b544-4fe9-a421-c436d306273f",
                     "ord": "a1"
@@ -1694,7 +1694,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Hearth & Hollow",
+      "seoTitle": "Your cart: Hearth & Hollow",
       "seoDescription": "Review what is in your cart and check out securely at Hearth & Hollow.",
       "root": {
         "kind": "element",
@@ -1726,7 +1726,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $95, carefully packed to arrive safely. Not quite right for your space? Send it back within 30 days — we want you to love it, not just keep it."
+                      "Free shipping on orders over $95, carefully packed to arrive safely. Not quite right for your space? Send it back within 30 days. We want you to love it, not just keep it."
                     ],
                     "id": "8bfdcceb-0c55-4c3e-900a-8f332c686c30",
                     "ord": "a1"
@@ -1754,7 +1754,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Hearth & Hollow",
+      "seoTitle": "Search: Hearth & Hollow",
       "seoDescription": "Search Hearth & Hollow for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Hearth & Hollow",
+      "seoTitle": "Journal: Hearth & Hollow",
       "seoDescription": "Stories, guides and notes from Hearth & Hollow.",
       "root": {
         "kind": "element",
@@ -1846,7 +1846,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the workshop and the home — where our materials come from, how to style them, and how to care for the pieces so they last. Plain, useful, no fuss."
+                      "Notes from the workshop and the home: where our materials come from, how to style them, and how to care for the pieces so they last. Plain, useful, no fuss."
                     ],
                     "id": "8d4059b5-cfce-4497-8c3e-38dfb5a45610",
                     "ord": "a1"
@@ -1980,7 +1980,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Hearth & Hollow",
-      "seoDescription": "Why Hearth & Hollow makes homeware the slow way — small runs, natural materials, makers we know by name, and pieces designed to age well and be handed on.",
+      "seoDescription": "Why Hearth & Hollow makes homeware the slow way: small runs, natural materials, makers we know by name, and pieces designed to age well and be handed on.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2011,7 +2011,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Hearth & Hollow began with a simple frustration: it was easy to buy homeware and hard to buy homeware worth keeping. So we started small — a run of washed linen, a batch of thrown mugs — with makers we’d met in person and materials we could stand behind."
+                      "Hearth & Hollow began with a simple frustration: it was easy to buy homeware and hard to buy homeware worth keeping. So we started small (a run of washed linen, a batch of thrown mugs) with makers we’d met in person and materials we could stand behind."
                     ],
                     "id": "4fc51504-fceb-42c0-ada4-68cb4101bc3b",
                     "ord": "a1"
@@ -2021,7 +2021,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We still work the same way. Everything we sell is made in small quantities from natural materials — real linen, real wool, real clay and wood — by workshops we know by name. We’d rather offer one honest version of a thing than a wall of nearly-the-same, and we’d rather it lasted a decade than a season."
+                      "We still work the same way. Everything we sell is made in small quantities from natural materials (real linen, real wool, real clay and wood) by workshops we know by name. We’d rather offer one honest version of a thing than a wall of nearly-the-same, and we’d rather it lasted a decade than a season."
                     ],
                     "id": "9974df8c-b86c-4d1d-8de4-3fb311d1e1dc",
                     "ord": "a2"
@@ -2031,7 +2031,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No throwaway trends, no mystery materials, no pieces designed to be replaced next year. Just warm, tactile, well-made things for the rooms you actually live in — chosen to age well and be handed on."
+                      "No throwaway trends, no mystery materials, no pieces designed to be replaced next year. Just warm, tactile, well-made things for the rooms you actually live in: chosen to age well and be handed on."
                     ],
                     "id": "b591deea-1df9-4db8-b277-e1f9dd7c0b26",
                     "ord": "a3"
@@ -2051,8 +2051,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Hearth & Hollow",
-      "seoDescription": "Get in touch with Hearth & Hollow — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Hearth & Hollow",
+      "seoDescription": "Get in touch with Hearth & Hollow: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2088,7 +2088,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions about a material, help styling a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you — usually within a day."
+                          "Questions about a material, help styling a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you, usually within a day."
                         ],
                         "id": "3084c8df-64d8-4e9d-9ea3-41e4de4d8473",
                         "ord": "a1"
@@ -2359,8 +2359,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Hearth & Hollow",
-      "seoDescription": "Product details at Hearth & Hollow — home goods & homeware, with options and pricing.",
+      "seoTitle": "Product: Hearth & Hollow",
+      "seoDescription": "Product details at Hearth & Hollow: home goods & homeware, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2723,7 +2723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Natural materials, made in small runs — so every piece has its own character, and no two are exactly alike. Cared for simply, they only get better with use. Free returns within 30 days if it isn’t right for your space."
+                              "Natural materials, made in small runs, so every piece has its own character, and no two are exactly alike. Cared for simply, they only get better with use. Free returns within 30 days if it isn’t right for your space."
                             ],
                             "id": "04af8646-7f83-4f5f-a0b0-2e345bc71197",
                             "ord": "a1"

@@ -172,7 +172,7 @@ const SCHEDULING = {
       handle: 'free-estimate',
       name: 'Free estimate',
       description:
-        'We come out, look at the job and give you a flat, written price before any work starts — no charge, no pressure.',
+        'We come out, look at the job and give you a flat, written price before any work starts: no charge, no pressure.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -198,7 +198,7 @@ const SCHEDULING = {
       handle: 'drain-cleaning',
       name: 'Drain cleaning',
       description:
-        'A slow or backed-up drain cleared and tested — kitchen, bath, laundry or main line.',
+        'A slow or backed-up drain cleared and tested: kitchen, bath, laundry or main line.',
       durationMinutes: 90,
       priceCents: 14900,
       bufferAfterMin: 15,
@@ -225,7 +225,7 @@ const SCHEDULING = {
       handle: 'water-heater-service',
       name: 'Water heater service',
       description:
-        'Flush, inspect and repair a tank or tankless heater — or a straight quote to replace one that’s had its day.',
+        'Flush, inspect and repair a tank or tankless heater, or a straight quote to replace one that’s had its day.',
       durationMinutes: 90,
       priceCents: 21900,
       bufferAfterMin: 15,
@@ -253,7 +253,7 @@ const SCHEDULING = {
       handle: 'emergency-callout',
       name: 'Emergency call-out',
       description:
-        'A burst pipe, no water or a backed-up main — we dispatch the first available plumber and confirm your arrival window by text.',
+        'A burst pipe, no water or a backed-up main. We dispatch the first available plumber and confirm your arrival window by text.',
       durationMinutes: 120,
       priceCents: 24900,
       requiresApproval: true,
@@ -281,7 +281,7 @@ const HOME = [
     items: [
       {
         title: 'Licensed & insured',
-        body: 'Fully licensed, bonded and insured — the same crew in the same vans, background-checked and in uniform at your door.',
+        body: 'Fully licensed, bonded and insured: the same crew in the same vans, background-checked and in uniform at your door.',
       },
       {
         title: 'Upfront flat-rate pricing',
@@ -336,20 +336,20 @@ const HOME = [
     heading: 'Family-run since 2004',
     body: [
       'Copper & Main started as one plumber, one van and a simple promise: show up when we say, charge what we quote, and treat your home like it’s our own.',
-      'Twenty years later we’re still family-run — a small crew of licensed plumbers who’d rather do the job right and be your plumber for life than chase the next ticket.',
+      'Twenty years later we’re still family-run: a small crew of licensed plumbers who’d rather do the job right and be your plumber for life than chase the next ticket.',
     ],
     cta: { label: 'Book your visit', href: '/book' },
   }),
   teamRow({
     heading: 'The crew who’ll be at your door',
-    intro: 'The same familiar faces every visit — licensed, background-checked and glad to explain what they’re doing.',
+    intro: 'The same familiar faces every visit: licensed, background-checked and glad to explain what they’re doing.',
     members: [
       {
         name: 'Marcus Bell',
         role: 'Master plumber & owner',
         image: url(IMG.marcus),
         alt: 'Marcus Bell, master plumber and owner',
-        bio: 'Twenty years on the tools. Marcus handles repairs, drains and water heaters — and answers the phone.',
+        bio: 'Twenty years on the tools. Marcus handles repairs, drains and water heaters, and answers the phone.',
       },
       {
         name: 'Diego Ramos',
@@ -383,7 +383,7 @@ const BOOK_INTRO = [
     image: url(IMG.story),
     alt: 'A plumber fitting a new copper line under a kitchen sink',
     title: 'Book a plumber',
-    sub: 'Choose the visit you need to see the flat price, how long it takes and the next open time — then pick your plumber and day.',
+    sub: 'Choose the visit you need to see the flat price, how long it takes and the next open time, then pick your plumber and day.',
     primary: { label: 'See services below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -396,7 +396,7 @@ const ABOUT = [
     alt: 'A uniformed plumber stepping down from a company van with a tool bag',
     heading: 'About Copper & Main',
     body: [
-      'We built Copper & Main Plumbing on the plumbing most people wish they got — someone who shows up when they say, quotes an honest flat price, and does the work like it’s their own home.',
+      'We built Copper & Main Plumbing on the plumbing most people wish they got. Someone who shows up when they say, quotes an honest flat price, and does the work like it’s their own home.',
       'We’re a small, family-run crew of licensed plumbers serving homeowners across the area. No call-center runaround, no upsells, no hourly meter. Just the same trusted faces, fair prices and work that’s guaranteed.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
@@ -435,7 +435,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See the next open times and reserve your visit online — no phone tag, no waiting on hold.',
+    sub: 'See the next open times and reserve your visit online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book your visit', href: '/book' },
   }),
@@ -446,8 +446,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-plumbing-trusted',
   name: 'Plumbing (Trusted Local)',
   summary:
-    'A warm, trusted local-plumber site — a deep navy palette with a brass accent, sturdy sans display and photo-led reliability. Installs a working online booking flow: homeowners book a free estimate or a service call and get a real time slot. Ships a full visit menu (estimate, drain, leak, water-heater, fixture install, emergency), three plumbers as dispatchable staff with their own hours, and standard + emergency policies. Ships as "Copper & Main Plumbing".',
-  tagline: 'A warm, trusted template for local plumbers — book visits online from day one.',
+    'A warm, trusted local-plumber site: a deep navy palette with a brass accent, sturdy sans display and photo-led reliability. Installs a working online booking flow: homeowners book a free estimate or a service call and get a real time slot. Ships a full visit menu (estimate, drain, leak, water-heater, fixture install, emergency), three plumbers as dispatchable staff with their own hours, and standard + emergency policies. Ships as "Copper & Main Plumbing".',
+  tagline: 'A warm, trusted template for local plumbers. Book visits online from day one.',
   industry: 'Plumbing',
   sortWeight: 78,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -456,7 +456,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Copper & Main Plumbing — trusted local plumbers',
+      title: 'Copper & Main Plumbing: trusted local plumbers',
       description:
         'Copper & Main is a family-run, licensed plumbing company with upfront flat-rate pricing and on-time service. Book a free estimate or a service call online.',
     },

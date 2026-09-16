@@ -85,8 +85,8 @@ describe('reconcileSystemSeeds (backfill)', () => {
     expect(active.map((a) => a.name).sort()).toEqual([
       'B2B account approved',
       'B2B invoice due reminder',
-      'B2B order approved — email',
-      'B2B order rejected — email',
+      'B2B order approved: email',
+      'B2B order rejected: email',
       'B2B overdue escalation',
       'B2B quote expiring',
       'B2B quote received',
@@ -144,8 +144,8 @@ describe('reconcileSystemSeeds (backfill)', () => {
     expect((await systemAutomations(live)).map((a) => a.name).sort()).toEqual([
       'B2B account approved',
       'B2B invoice due reminder',
-      'B2B order approved — email',
-      'B2B order rejected — email',
+      'B2B order approved: email',
+      'B2B order rejected: email',
       'B2B overdue escalation',
       'B2B quote expiring',
       'B2B quote received',

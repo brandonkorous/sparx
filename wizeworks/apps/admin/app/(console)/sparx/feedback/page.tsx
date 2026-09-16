@@ -93,7 +93,7 @@ export default async function FeedbackInboxPage({
     <Stack gap={6}>
       <PageHeader
         title="Feedback"
-        description="Every idea, problem, question, and bit of praise from across the platform. Triage, assign, and reply — the response closes the loop back to the submitter."
+        description="Every idea, problem, question, and bit of praise from across the platform. Triage, assign, and reply: the response closes the loop back to the submitter."
       />
 
       <QuickFilters
@@ -123,7 +123,7 @@ export default async function FeedbackInboxPage({
         <Stack gap={3}>
           {result.truncated ? (
             <Text size="xs" variant="muted">
-              Some tenants have more feedback than a single scan returns — counts are a floor.
+              Some tenants have more feedback than a single scan returns: counts are a floor.
             </Text>
           ) : null}
           <FeedbackTable submissions={result.submissions} assigneeNames={assigneeNames} />

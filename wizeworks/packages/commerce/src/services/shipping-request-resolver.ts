@@ -32,7 +32,7 @@ export async function resolveShipFromAddress(
     (await inventoryService.resolveDefaultWarehouseId(ctx, opts.channel ?? 'storefront'));
   if (!warehouseId) {
     throw new CommerceValidationError(
-      'No active warehouse is configured — add one under Inventory → Warehouses to enable live carrier rates.'
+      'No active warehouse is configured. Add one under Inventory → Warehouses to enable live carrier rates.'
     );
   }
   const [warehouse, tenant] = await withTenant(ctx, (tx) =>
@@ -61,7 +61,7 @@ export async function resolveShipFromAddress(
   );
   if (missing.length > 0) {
     throw new CommerceValidationError(
-      `Your ship-from warehouse address is incomplete (missing ${missing.join(', ')}) — finish it under Inventory → Warehouses to enable live carrier rates.`
+      `Your ship-from warehouse address is incomplete (missing ${missing.join(', ')}). Finish it under Inventory → Warehouses to enable live carrier rates.`
     );
   }
   return {

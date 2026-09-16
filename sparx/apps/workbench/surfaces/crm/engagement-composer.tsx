@@ -84,7 +84,7 @@ const COPY: Record<Mode, { title: string; description: string; action: string }>
   email: {
     title: 'Send an email',
     description:
-      'It goes to the address on their record, so it cannot reach the wrong person — and the whole thread is kept against them.',
+      'It goes to the address on their record, so it cannot reach the wrong person, and the whole thread is kept against them.',
     action: 'Send it',
   },
   call: {
@@ -468,7 +468,7 @@ export function EngagementComposer({
                           color="module"
                           rows={6}
                           value={body}
-                          placeholder="Hi — just checking whether you had a chance to look at the numbers."
+                          placeholder="Hi. Just checking whether you had a chance to look at the numbers."
                           onKeyDown={expandShortcut}
                           onChange={(event) => {
                             setBody(event.target.value);

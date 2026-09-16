@@ -248,7 +248,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
               description={
                 filter === 'requested'
                   ? 'Every request has been answered. Switch to Everything to see what has already been decided.'
-                  : 'When someone asks for time off — or you log it for them — it appears here, and approved dates show on the schedule.'
+                  : 'When someone asks for time off (or you log it for them), it appears here, and approved dates show on the schedule.'
               }
             />
           </Card>

@@ -41,7 +41,7 @@ export default function AppsIndexPage() {
           className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', 'apps-index')}
         >
-          Get Piggles — {PRICE_LABEL}/month
+          Get Piggles for {PRICE_LABEL}/month
         </a>
         <Link className={buttonClasses({ variant: 'outline', size: 'lg' })} href="/pricing">
           See what changes the price

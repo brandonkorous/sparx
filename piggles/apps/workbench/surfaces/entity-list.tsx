@@ -112,7 +112,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
                 color="module"
                 size="sm"
                 className="ml-auto"
-                title={`${config.createLabel ?? 'New'} — hold Shift to open alongside, Alt for a new window`}
+                title={`${config.createLabel ?? 'New'}: hold Shift to open alongside, Alt for a new window`}
                 onClick={(event) => {
                   ctx.open(config.createSurface!, { id: 'new' }, { target: targetFor(event) });
                 }}
@@ -138,7 +138,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
           {error ? (
             <EmptyState
               title="Could not load this list"
-              description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+              description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             />
           ) : isLoading ? (
             // Full ink, not `/60`. This is text a person is meant to READ, and

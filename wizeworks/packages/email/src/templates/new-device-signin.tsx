@@ -62,7 +62,7 @@ export function NewDeviceSigninEmail({
       ) : null}
 
       <EmailParagraph>
-        Don&apos;t recognize this? Secure your account now — reset your password and sign out other
+        Don&apos;t recognize this? Secure your account now: reset your password and sign out other
         sessions.
       </EmailParagraph>
 

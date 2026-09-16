@@ -127,7 +127,7 @@
     {
       "handle": "free-install-estimate",
       "name": "Free install estimate",
-      "description": "A no-pressure home visit to size up a new furnace, AC or heat pump and give you an honest, written quote — free, with financing options laid out plainly.",
+      "description": "A no-pressure home visit to size up a new furnace, AC or heat pump and give you an honest, written quote: free, with financing options laid out plainly.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -144,7 +144,7 @@
     {
       "handle": "ac-tune-up",
       "name": "AC tune-up",
-      "description": "A full spring check-up so your air conditioner runs cool and efficient all summer — coils, refrigerant, drain and airflow, all cleaned and tested.",
+      "description": "A full spring check-up so your air conditioner runs cool and efficient all summer: coils, refrigerant, drain and airflow, all cleaned and tested.",
       "durationMinutes": 60,
       "priceCents": 8900,
       "assignmentStrategy": "any_available",
@@ -161,7 +161,7 @@
     {
       "handle": "furnace-tune-up",
       "name": "Furnace tune-up",
-      "description": "A fall safety-and-comfort check on your furnace or heat pump — burners, heat exchanger, filter and thermostat — so winter starts warm and worry-free.",
+      "description": "A fall safety-and-comfort check on your furnace or heat pump (burners, heat exchanger, filter and thermostat) so winter starts warm and worry-free.",
       "durationMinutes": 60,
       "priceCents": 9900,
       "assignmentStrategy": "any_available",
@@ -178,7 +178,7 @@
     {
       "handle": "system-diagnostic",
       "name": "System diagnostic",
-      "description": "Something not right — weak airflow, odd noises, uneven rooms? A tech tracks down the cause and explains your options before any work begins.",
+      "description": "Something not right: weak airflow, odd noises, uneven rooms? A tech tracks down the cause and explains your options before any work begins.",
       "durationMinutes": 75,
       "priceCents": 12900,
       "bufferAfterMin": 15,
@@ -196,7 +196,7 @@
     {
       "handle": "install-consult",
       "name": "Install consultation",
-      "description": "Ready to replace a system? A sit-down with our install lead to plan the right equipment, sizing and timeline for your home — no hard sell.",
+      "description": "Ready to replace a system? A sit-down with our install lead to plan the right equipment, sizing and timeline for your home: no hard sell.",
       "durationMinutes": 90,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -213,7 +213,7 @@
     {
       "handle": "air-quality-assessment",
       "name": "Indoor air-quality assessment",
-      "description": "A walkthrough of what you’re breathing at home — filtration, humidity, ventilation and dust — with simple, honest fixes ranked by what actually helps.",
+      "description": "A walkthrough of what you’re breathing at home (filtration, humidity, ventilation and dust) with simple, honest fixes ranked by what actually helps.",
       "durationMinutes": 60,
       "priceCents": 7900,
       "assignmentStrategy": "any_available",

@@ -75,7 +75,7 @@ export function PanelHeader({
  */
 export function PanelPin({ pinned, onTogglePin }: { pinned: boolean; onTogglePin: () => void }) {
   return (
-    <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
+    <Tooltip content={pinned ? 'Unpin: hide after opening' : 'Pin: keep this open'}>
       <Button
         size="xs"
         shape="square"

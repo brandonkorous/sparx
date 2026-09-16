@@ -73,7 +73,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faShieldCheck} className="size-6" aria-hidden />}
           title="Could not load your booking rules"
-          description="This is a problem reaching the server. Your rules are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your rules are unaffected: the list just could not be read just now."
           actions={
             <Button
               size="sm"
@@ -193,7 +193,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
           label: 'New rule set',
           icon: faPlus,
           onClick: openNew,
-          title: 'New rule set — hold Shift to open alongside, Alt for a new window',
+          title: 'New rule set: hold Shift to open alongside, Alt for a new window',
         }}
         views={{
           target: '/scheduling/policies',

@@ -252,7 +252,7 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<CheckCircle2 className="size-6" aria-hidden />}
               title="You're all paid up"
-              description="Every invoice you've sent has been paid. When something is invoiced but still owed, it'll show here — sorted by how late it is."
+              description="Every invoice you've sent has been paid. When something is invoiced but still owed, it'll show here: sorted by how late it is."
             />
           </div>
         ) : (

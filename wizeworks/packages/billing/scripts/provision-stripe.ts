@@ -185,7 +185,7 @@ async function ensurePortalConfig(
     return 'bpc_dryrun';
   }
   const created = await stripe.billingPortal.configurations.create({
-    business_profile: { headline: 'sparx — manage your subscription' },
+    business_profile: { headline: 'sparx: manage your subscription' },
     features: {
       customer_update: { enabled: true, allowed_updates: ['email', 'address', 'tax_id'] },
       invoice_history: { enabled: true },
@@ -211,7 +211,7 @@ async function ensureWebhook(stripe: Stripe, apiUrl: string): Promise<void> {
   const endpoints = await stripe.webhookEndpoints.list({ limit: 100 });
   const existing = endpoints.data.find((e) => e.url === url);
   if (existing) {
-    log(`  webhook ✓ ${url} (${existing.id}) — secret unchanged (set already?)`);
+    log(`  webhook ✓ ${url} (${existing.id}): secret unchanged (set already?)`);
     return;
   }
   if (DRY_RUN) {
@@ -238,7 +238,7 @@ async function main(): Promise<void> {
   const stripe = new Stripe(key, { apiVersion: API_VERSION as Stripe.LatestApiVersion });
   const mode = key.startsWith('sk_live') ? 'LIVE' : 'TEST';
 
-  log(`\nProvisioning Stripe platform billing — ${mode} mode${DRY_RUN ? ' (dry-run)' : ''}\n`);
+  log(`\nProvisioning Stripe platform billing: ${mode} mode${DRY_RUN ? ' (dry-run)' : ''}\n`);
 
   // 1) Module products + monthly/annual prices.
   log('Modules:');
@@ -284,7 +284,7 @@ async function main(): Promise<void> {
   if (apiUrl) {
     await ensureWebhook(stripe, apiUrl);
   } else {
-    log('  webhook ⤬ skipped — set SPARX_REST_URL to provision (e.g. https://api.sparx.works)');
+    log('  webhook ⤬ skipped. Set SPARX_REST_URL to provision (e.g. https://api.sparx.works)');
   }
 
   // 4) Env block.
@@ -296,7 +296,7 @@ async function main(): Promise<void> {
   log('─────────────────────────────────────────────────────────────');
   log(
     DRY_RUN
-      ? '\nDry-run complete — nothing was written.\n'
+      ? '\nDry-run complete. Nothing was written.\n'
       : '\nDone. Set the values above in Secret Manager, then roll api-rest.\n'
   );
 }

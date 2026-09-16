@@ -79,10 +79,10 @@ function previewOf(submission: FormSubmission): string {
 function emptyAdvice(statusLabel: string | null, formName: string | null): string {
   const parts: string[] = [];
   if (statusLabel) {
-    parts.push(`You are only seeing “${statusLabel}” — switch to All to see the rest.`);
+    parts.push(`You are only seeing “${statusLabel}”. Switch to All to see the rest.`);
   }
   if (formName) {
-    parts.push(`Only submissions from “${formName}” are showing — choose All forms to widen it.`);
+    parts.push(`Only submissions from “${formName}” are showing. Choose All forms to widen it.`);
   }
   return parts.join(' ');
 }
@@ -224,7 +224,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Inbox className="size-6" aria-hidden />}
             title="Could not load your submissions"
-            description="This is a problem reaching the server. Nothing anyone sent has been lost — none of it is affected."
+            description="This is a problem reaching the server. Nothing anyone sent has been lost: none of it is affected."
             actions={
               <Button
                 size="sm"
@@ -248,7 +248,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               narrowed
                 ? emptyAdvice(statusFilter === 'all' ? null : activeStatus.label, activeFormName)
-                : 'When someone fills in a form on your site — a contact request, an enquiry, a sign-up — it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
+                : 'When someone fills in a form on your site (a contact request, an enquiry, a sign-up), it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
             }
           />
         ) : (

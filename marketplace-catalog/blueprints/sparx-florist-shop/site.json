@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Petal & Post — a neighbourhood flower shop",
+      "seoTitle": "Petal & Post: a neighbourhood flower shop",
       "seoDescription": "Petal & Post is a cheerful flower shop for daily fresh bunches, same-day local delivery, subscriptions and workshops. Book a consult online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A cheerful neighbourhood flower shop — daily fresh bunches, same-day local delivery, subscriptions and hands-on workshops."
+                      "A cheerful neighbourhood flower shop: daily fresh bunches, same-day local delivery, subscriptions and hands-on workshops."
                     ],
                     "id": "caeaf71a-6997-4b1e-bfdb-c0767e5fb14a",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We buy small and often, so the buckets are full of what’s actually in season — never tired stems dressed up to look new."
+                              "We buy small and often, so the buckets are full of what’s actually in season, never tired stems dressed up to look new."
                             ],
                             "id": "f65ce1d8-4809-41eb-8a5a-e2bae1729384",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A fresh bunch on your table every week, fortnight or month — pick a palette and a day, and we do the rest."
+                              "A fresh bunch on your table every week, fortnight or month. Pick a palette and a day, and we do the rest."
                             ],
                             "id": "611c68b2-df83-42a8-a657-5140d3cfaac8",
                             "ord": "a1"
@@ -1036,7 +1036,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Build a seasonal arrangement to take home — flowers included."
+                              "Build a seasonal arrangement to take home: flowers included."
                             ],
                             "id": "38574153-5271-4bf0-ac5a-4fa165f68fd9",
                             "ord": "a2"
@@ -1188,7 +1188,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A subscription is the easy way to always have flowers on the table. Pick your palette and your day, and we’ll wrap a fresh, seasonal bunch and bring it round — every week, fortnight or month."
+                          "A subscription is the easy way to always have flowers on the table. Pick your palette and your day, and we’ll wrap a fresh, seasonal bunch and bring it round: every week, fortnight or month."
                         ],
                         "id": "2c218a2f-4e48-4647-8961-412e046b7183",
                         "ord": "a1"
@@ -1263,7 +1263,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll get the same friendly face who knows what you like."
+                          "Book by name: you’ll get the same friendly face who knows what you like."
                         ],
                         "id": "feefa6b9-89f7-4ea4-98b3-fa7c2a37f0fe",
                         "ord": "a1"
@@ -1547,7 +1547,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Petal & Post",
+      "seoTitle": "Book: Petal & Post",
       "seoDescription": "See what Petal & Post offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1671,7 +1671,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "69c7bad0-b1b6-4437-8359-4fa76cd8aa68",
                         "ord": "a1"
@@ -1778,7 +1778,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Petal & Post",
+      "seoTitle": "About: Petal & Post",
       "seoDescription": "Who Petal & Post is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1827,7 +1827,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Petal & Post is a small, cheerful flower shop on the corner — the kind of place you can pop into for a last-minute bunch or plan something special weeks ahead."
+                          "Petal & Post is a small, cheerful flower shop on the corner: the kind of place you can pop into for a last-minute bunch or plan something special weeks ahead."
                         ],
                         "id": "e14943e3-07b5-4288-a5aa-4b6676d3925a",
                         "ord": "a1"
@@ -1942,7 +1942,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Birthdays and big celebrations, quiet sympathy flowers, or just a Tuesday pick-me-up — all equally welcome."
+                              "Birthdays and big celebrations, quiet sympathy flowers, or just a Tuesday pick-me-up. All equally welcome."
                             ],
                             "id": "57738357-f860-4172-8951-d67035289e74",
                             "ord": "a1"
@@ -1997,7 +1997,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Petal & Post",
+      "seoTitle": "Visit: Petal & Post",
       "seoDescription": "Where to find Petal & Post, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2034,7 +2034,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Petal & Post will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Petal & Post will get back to you, usually the same day."
                         ],
                         "id": "04c86ead-3945-4dd9-8b4a-100c69e4cf0d",
                         "ord": "a1"
@@ -2484,7 +2484,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a consult, subscription setup or workshop seat — no phone tag."
+                      "See live availability and reserve a consult, subscription setup or workshop seat: no phone tag."
                     ],
                     "id": "da71a37d-35d2-4c84-b49a-92903e14579c",
                     "ord": "a1"

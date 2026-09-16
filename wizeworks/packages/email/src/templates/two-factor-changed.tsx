@@ -35,7 +35,7 @@ export function TwoFactorChangedEmail({ enabled, name, secureUrl }: TwoFactorCha
       <EmailParagraph>
         {name ? `Hi ${name}, ` : ''}
         {enabled
-          ? `Two-factor authentication is now protecting your ${platform} account. From now on, signing in needs your password and a one-time code — nice work locking things down.`
+          ? `Two-factor authentication is now protecting your ${platform} account. From now on, signing in needs your password and a one-time code: nice work locking things down.`
           : `Two-factor authentication has been turned off for your ${platform} account. Signing in now needs only your password.`}
       </EmailParagraph>
 
@@ -55,7 +55,7 @@ export function TwoFactorChangedEmail({ enabled, name, secureUrl }: TwoFactorCha
 
       <EmailFinePrint>
         {enabled
-          ? 'Keep your backup codes somewhere safe — they let you back in if you lose your device.'
+          ? 'Keep your backup codes somewhere safe. They let you back in if you lose your device.'
           : 'We recommend keeping two-factor on for the best protection.'}
       </EmailFinePrint>
     </PlatformEmailLayout>

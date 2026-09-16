@@ -143,7 +143,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Please give at least 24 hours’ notice to reschedule or cancel — life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead.',
+        'Please give at least 24 hours’ notice to reschedule or cancel: life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead.',
     },
     {
       handle: 'therapy-no-show',
@@ -212,7 +212,7 @@ const SCHEDULING = {
       handle: 'individual-session',
       name: 'Individual therapy session',
       description:
-        'A standard one-to-one video session — a calm, confidential hour to work through what’s on your mind.',
+        'A standard one-to-one video session: a calm, confidential hour to work through what’s on your mind.',
       durationMinutes: 50,
       priceCents: 14000,
       assignmentStrategy: 'customer_choice',
@@ -225,7 +225,7 @@ const SCHEDULING = {
       handle: 'stress-burnout-session',
       name: 'Stress & burnout session',
       description:
-        'Focused support for chronic stress, overwhelm and burnout — practical tools alongside space to actually breathe.',
+        'Focused support for chronic stress, overwhelm and burnout: practical tools alongside space to actually breathe.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -238,7 +238,7 @@ const SCHEDULING = {
       handle: 'professional-wellness-session',
       name: 'Therapy for professionals',
       description:
-        'Coaching-informed therapy for high-demand careers — pressure, perfectionism and work-life balance, on a schedule that fits.',
+        'Coaching-informed therapy for high-demand careers: pressure, perfectionism and work-life balance, on a schedule that fits.',
       durationMinutes: 45,
       priceCents: 14500,
       assignmentStrategy: 'customer_choice',
@@ -282,7 +282,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, light-filled room with a laptop set up for an online therapy session',
     title: 'Therapy that fits your actual life',
-    sub: 'Talk to a licensed therapist by secure video — from home, on your schedule, evenings and weekends included. Getting started takes one short call.',
+    sub: 'Talk to a licensed therapist by secure video: from home, on your schedule, evenings and weekends included. Getting started takes one short call.',
     primary: { label: 'Book a session', href: '/book' },
     secondary: { label: 'Get matched', href: '/book' },
     overlay: 'soft',
@@ -292,11 +292,11 @@ const HOME = [
     items: [
       {
         title: 'Get matched in minutes',
-        body: 'Start with a free 20-minute call. We’ll listen to what you need and match you with a therapist who’s the right fit — no endless searching.',
+        body: 'Start with a free 20-minute call. We’ll listen to what you need and match you with a therapist who’s the right fit: no endless searching.',
       },
       {
         title: 'Meet by secure video',
-        body: 'Sessions happen over private, encrypted video. No waiting room, no commute — just a calm, confidential space wherever you are.',
+        body: 'Sessions happen over private, encrypted video. No waiting room, no commute. Just a calm, confidential space wherever you are.',
       },
       {
         title: 'Evenings & weekends',
@@ -342,14 +342,14 @@ const HOME = [
     alt: 'A person on a sofa at home in a relaxed video call on a tablet',
     heading: 'Care that meets you where you are',
     body: [
-      'Clearmind is online-first on purpose. Good therapy shouldn’t depend on living near the right office or finding a free afternoon — so we built it around your life, not the other way around.',
+      'Clearmind is online-first on purpose. Good therapy shouldn’t depend on living near the right office or finding a free afternoon, so we built it around your life, not the other way around.',
       'That means secure video from wherever you feel comfortable, evening and weekend hours, and affordable monthly memberships that make regular support something you can actually keep up.',
     ],
     cta: { label: 'Book a session', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your therapists',
-    intro: 'Book by name — you’ll see the same person each session, someone who gets to know you and your story.',
+    intro: 'Book by name: you’ll see the same person each session, someone who gets to know you and your story.',
     members: [
       {
         name: 'Dr. Elena Voss',
@@ -381,7 +381,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Take the first small step',
-    sub: 'Start with a free 20-minute matching call — no cost, no commitment, just a conversation. It takes about a minute to book.',
+    sub: 'Start with a free 20-minute matching call: no cost, no commitment, just a conversation. It takes about a minute to book.',
     cta: { label: 'Book a session', href: '/book' },
   }),
 ];
@@ -405,7 +405,7 @@ const ABOUT = [
     heading: 'About Clearmind Therapy',
     body: [
       'We started Clearmind because reaching out for support is hard enough without the logistics getting in the way. Long waitlists, awkward hours and a two-hour round trip turn “I should talk to someone” into “maybe next year.”',
-      'So we built a practice around access: licensed therapists, secure video, evening and weekend hours, and pricing that doesn’t make regular care feel like a luxury. Asking for help is a strength — our job is to make the next step an easy one.',
+      'So we built a practice around access: licensed therapists, secure video, evening and weekend hours, and pricing that doesn’t make regular care feel like a luxury. Asking for help is a strength. Our job is to make the next step an easy one.',
     ],
     cta: { label: 'Book a session', href: '/book' },
   }),
@@ -423,7 +423,7 @@ const ABOUT = [
       },
       {
         title: 'Private and yours',
-        body: 'Every session is confidential and encrypted. What you share stays between you and your therapist — full stop.',
+        body: 'Every session is confidential and encrypted. What you share stays between you and your therapist: full stop.',
       },
     ],
   }),
@@ -447,7 +447,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than email?',
-    sub: 'See live availability and reserve a free matching call online — no phone tag, no waiting room.',
+    sub: 'See live availability and reserve a free matching call online: no phone tag, no waiting room.',
     surface: 'muted',
     cta: { label: 'Book a session', href: '/book' },
   }),
@@ -458,8 +458,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-therapy-modern',
   name: 'Therapy (Modern)',
   summary:
-    'A clean, modern teletherapy site — a soft-indigo palette, a warm accent and a modern sans, built for accessible online mental-wellness care. Installs a working booking flow: a free matching call plus individual, stress & burnout, and professional-wellness sessions, three therapists you book by name with evening and weekend hours, and a no-show hold policy. Ships as "Clearmind Therapy", an online-first practice you can book in about a minute.',
-  tagline: 'A modern template for online therapy practices — book sessions from day one.',
+    'A clean, modern teletherapy site: a soft-indigo palette, a warm accent and a modern sans, built for accessible online mental-wellness care. Installs a working booking flow: a free matching call plus individual, stress & burnout, and professional-wellness sessions, three therapists you book by name with evening and weekend hours, and a no-show hold policy. Ships as "Clearmind Therapy", an online-first practice you can book in about a minute.',
+  tagline: 'A modern template for online therapy practices. Book sessions from day one.',
   industry: 'Counseling',
   sortWeight: 33,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -468,9 +468,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Clearmind Therapy — modern online therapy',
+      title: 'Clearmind Therapy: modern online therapy',
       description:
-        'Clearmind is an online-first therapy practice — secure video sessions with licensed therapists, evenings and weekends. Start with a free matching call and book online.',
+        'Clearmind is an online-first therapy practice: secure video sessions with licensed therapists, evenings and weekends. Start with a free matching call and book online.',
     },
   },
   home: HOME,

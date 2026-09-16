@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Recurring plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically."
+      "policyText": "Recurring plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically."
     }
   ],
   "resources": [
@@ -127,7 +127,7 @@
     {
       "handle": "free-quote",
       "name": "Free lawn quote",
-      "description": "We stop by, walk your yard, and send a clear flat-rate quote — no pressure, no obligation. The fastest way to get started.",
+      "description": "We stop by, walk your yard, and send a clear flat-rate quote: no pressure, no obligation. The fastest way to get started.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -143,7 +143,7 @@
     },
     {
       "handle": "lawn-mowing-setup",
-      "name": "Recurring mowing — first visit",
+      "name": "Recurring mowing: first visit",
       "description": "Sets up your flat-rate mowing plan: mow, string-trim, edge and blow-off, then we keep it on schedule automatically.",
       "durationMinutes": 45,
       "priceCents": 4500,
@@ -195,7 +195,7 @@
     {
       "handle": "aeration-overseed",
       "name": "Aeration & overseeding",
-      "description": "Core aeration to relieve compaction plus overseeding to fill thin spots — the once-a-year reset a thick lawn needs.",
+      "description": "Core aeration to relieve compaction plus overseeding to fill thin spots: the once-a-year reset a thick lawn needs.",
       "durationMinutes": 90,
       "priceCents": 18000,
       "assignmentStrategy": "any_available",
@@ -229,7 +229,7 @@
     {
       "handle": "mulch-install",
       "name": "Mulch install",
-      "description": "Fresh mulch delivered and spread across your beds — clean edges, even depth, and a crisp look that lasts all season.",
+      "description": "Fresh mulch delivered and spread across your beds: clean edges, even depth, and a crisp look that lasts all season.",
       "durationMinutes": 120,
       "priceCents": 35000,
       "assignmentStrategy": "any_available",

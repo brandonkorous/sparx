@@ -113,7 +113,7 @@ export function AssociationsPanel({
     const ok = await confirm({
       title: `Unlink ${who}?`,
       description: item.isPrimary
-        ? `${who} is the main one of its kind here. Unlinking takes them off this record everywhere it is used — neither record is deleted.`
+        ? `${who} is the main one of its kind here. Unlinking takes them off this record everywhere it is used. Neither record is deleted.`
         : `They stay in your ${objectLabel(item.other?.objectKey ?? 'contact').toLowerCase()}; only the link between the two goes.`,
       confirmLabel: 'Unlink them',
       cancelLabel: 'Keep the link',
@@ -157,8 +157,8 @@ export function AssociationsPanel({
         <PaneWaiting />
       ) : groups.length === 0 ? (
         <p className="py-2 text-sm">
-          Nothing else is linked to this yet. Add the other people involved — who signs it off, who
-          will use it, who handles the invoice — and they show up here and on their own records.
+          Nothing else is linked to this yet. Add the other people involved (who signs it off, who
+          will use it, who handles the invoice) and they show up here and on their own records.
         </p>
       ) : (
         <div className="flex flex-col gap-4">
@@ -291,7 +291,7 @@ function AssociationRow({
           color="neutral"
           variant="ghost"
           disabled={busy}
-          title="Make this the main one — it is what shows on lists, invoices and reports"
+          title="Make this the main one. It is what shows on lists, invoices and reports"
           aria-label={`Make ${other?.title ?? 'this'} the main one`}
           onClick={onMakePrimary}
         >
@@ -524,7 +524,7 @@ function RelateDialog({
                     {/* An unlabelled link is a real, valid state — the honest
                         answer when someone connects two records before deciding
                         what the connection means. */}
-                    <option value="">Just related — I will say how later</option>
+                    <option value="">Just related: I will say how later</option>
                     {available.map((label) => (
                       <option key={label.id} value={label.key}>
                         {label.label}

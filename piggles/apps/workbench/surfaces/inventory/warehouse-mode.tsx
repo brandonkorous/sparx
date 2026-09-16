@@ -409,7 +409,7 @@ function PutAwayJob({ warehouseId }: { warehouseId: string }) {
             {shelves.map((bin) => (
               <option key={bin.id} value={bin.id}>
                 {bin.code}
-                {bin.name ? ` — ${bin.name}` : ''}
+                {bin.name ? ` (${bin.name})` : ''}
               </option>
             ))}
           </NativeSelect>
@@ -535,7 +535,7 @@ function OpenSomethingJob({
           <AlertContent>
             <AlertTitle>{message}</AlertTitle>
             <AlertDescription>
-              You can also type the number — {job === 'count' ? 'CNT-000012' : 'PO-000045'} — and
+              You can also type the number ({job === 'count' ? 'CNT-000012' : 'PO-000045'}) and
               press Enter.
             </AlertDescription>
           </AlertContent>

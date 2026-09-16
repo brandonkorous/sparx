@@ -38,7 +38,7 @@ export async function ensureSeedOperator(): Promise<SeedOperatorResult | null> {
 
   if (!password) {
     console.warn(
-      '[operator-auth] OPERATOR_BOOTSTRAP_PASSWORD is unset — skipping operator #1 seed. ' +
+      '[operator-auth] OPERATOR_BOOTSTRAP_PASSWORD is unset: skipping operator #1 seed. ' +
         'Set it (Secret Manager) once to provision the first operator; rotate it on first sign-in.'
     );
     return null;

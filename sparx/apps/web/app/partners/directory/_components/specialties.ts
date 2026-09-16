@@ -31,17 +31,17 @@ const SPECIALTIES: Record<string, Specialty> = {
   ecommerce: {
     label: 'E-commerce',
     color: 'module-commerce',
-    blurb: 'Selling online — products, checkout, shipping and tax.',
+    blurb: 'Selling online: products, checkout, shipping and tax.',
   },
   commerce: {
     label: 'Commerce',
     color: 'module-commerce',
-    blurb: 'Selling online — products, checkout, shipping and tax.',
+    blurb: 'Selling online: products, checkout, shipping and tax.',
   },
   b2b: {
     label: 'B2B',
     color: 'module-b2b',
-    blurb: 'Trade and wholesale accounts — price lists, credit terms, approvals.',
+    blurb: 'Trade and wholesale accounts: price lists, credit terms, approvals.',
   },
   crm: {
     label: 'CRM',
@@ -61,7 +61,7 @@ const SPECIALTIES: Record<string, Specialty> = {
   seo: {
     label: 'SEO',
     color: 'module-seo',
-    blurb: 'Being found on search — page structure, speed, and what Google reads.',
+    blurb: 'Being found on search: page structure, speed, and what Google reads.',
   },
   ai: {
     label: 'AI',
@@ -71,7 +71,7 @@ const SPECIALTIES: Record<string, Specialty> = {
   design: {
     label: 'Design',
     color: 'module-builder',
-    blurb: 'How the site looks and reads — layout, branding, and building it.',
+    blurb: 'How the site looks and reads: layout, branding, and building it.',
   },
   migration: {
     label: 'Migration',

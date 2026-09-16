@@ -113,7 +113,7 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<LayoutDashboard className="size-6" aria-hidden />}
               title="No dashboards yet"
-              description="Dashboards arrive with the parts of sparx you switch on — turn on the site builder for your traffic dashboard, for example."
+              description="Dashboards arrive with the parts of sparx you switch on. Turn on the site builder for your traffic dashboard, for example."
             />
           ) : (
             <>

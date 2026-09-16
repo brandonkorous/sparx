@@ -106,7 +106,7 @@ export default async function SupportPage({
               : `${found} ${found === 1 ? 'match' : 'matches'} for “${q}”${
                   found &&
                   found > (mode === 'orders' ? orders!.orders.length : customers!.customers.length)
-                    ? ` — showing the first ${mode === 'orders' ? orders!.orders.length : customers!.customers.length}`
+                    ? `, showing the first ${mode === 'orders' ? orders!.orders.length : customers!.customers.length}`
                     : ''
                 }.`}
           </Text>

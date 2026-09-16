@@ -119,7 +119,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
           title="Could not load your purchase orders"
-          description="This is a problem reaching the server. Your orders are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your orders are unaffected: the list just could not be read just now."
         />
       );
     }

@@ -163,7 +163,7 @@ function hero(): Node {
                                     text: 'Clean, stocked, and on schedule.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities. We stock the cleaning chemicals, paper, liners and tools your building runs on — sold by the case, priced for the trade, and delivered on a schedule you can plan around.',
+                                    text: 'Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities. We stock the cleaning chemicals, paper, liners and tools your building runs on: sold by the case, priced for the trade, and delivered on a schedule you can plan around.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -246,11 +246,11 @@ function tradeTerms(): Node {
                     el('div', 'grid grid-cols-1 gap-4 @md:grid-cols-2 @3xl:grid-cols-3 @3xl:gap-6', {
                         children: [
                             term('Contract pricing', 'Lock in per-case trade prices across your regular order, with volume breaks that get better as your carton count grows. No re-quoting every month.'),
-                            term('Scheduled deliveries', 'Pick your delivery days and we build the route around them — weekly, biweekly or monthly — so consumables land before your closets run empty, not after.'),
+                            term('Scheduled deliveries', 'Pick your delivery days and we build the route around them (weekly, biweekly or monthly) so consumables land before your closets run empty, not after.'),
                             term('Net-30 terms', 'Approved accounts order on net-30 invoicing with consolidated monthly statements, PO numbers on every line, and no card at checkout.'),
-                            term('A named account manager', 'One person who knows your building, your standing order and your budget — reachable by phone or email, not a ticket queue.'),
+                            term('A named account manager', 'One person who knows your building, your standing order and your budget: reachable by phone or email, not a ticket queue.'),
                             term('SDS on file', 'Safety data sheets for every chemical we ship, kept current and pulled for your binder or your auditor on request. Compliance handled, not homework.'),
-                            term('One catalogue, one invoice', 'Chemicals, paper, liners and tools on a single account and a single invoice — fewer vendors to manage and fewer boxes at the dock.'),
+                            term('One catalogue, one invoice', 'Chemicals, paper, liners and tools on a single account and a single invoice: fewer vendors to manage and fewer boxes at the dock.'),
                         ],
                     }),
                 ],
@@ -345,7 +345,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & terms' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Priced per case for the trade, with volume breaks on standing orders and better pricing under a contract. Open accounts order on net-30 with PO numbers on every line, and safety data sheets are on file for every chemical — pulled for your binder on request.',
+                                        text: 'Priced per case for the trade, with volume breaks on standing orders and better pricing under a contract. Open accounts order on net-30 with PO numbers on every line, and safety data sheets are on file for every chemical: pulled for your binder on request.',
                                     }),
                                 ],
                             }),
@@ -384,13 +384,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The facility-supply catalogue',
-        'Every case we stock — cleaning chemicals, paper and tissue, can liners, and the tools to use them. Each product lists its pack size and minimum order quantity; prices are per-case trade prices. Filter by category, or sort however you order.'
+        'Every case we stock: cleaning chemicals, paper and tissue, can liners, and the tools to use them. Each product lists its pack size and minimum order quantity; prices are per-case trade prices. Filter by category, or sort however you order.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Supply programs',
-        'The catalogue grouped the way a building actually orders it — new-account essentials, the movers every closet reorders, a full restroom program, and floor-care sets. Build a standing order from a program in a few clicks.'
+        'The catalogue grouped the way a building actually orders it: new-account essentials, the movers every closet reorders, a full restroom program, and floor-care sets. Build a standing order from a program in a few clicks.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -403,7 +403,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your order' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Prices shown are per-case trade prices. Open trade accounts check out on net-30 with a PO number and free freight on qualifying orders — your account manager confirms delivery days on your first standing order.',
+                        text: 'Prices shown are per-case trade prices. Open trade accounts check out on net-30 with a PO number and free freight on qualifying orders. Your account manager confirms delivery days on your first standing order.',
                     }),
                 ],
             }),
@@ -417,7 +417,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Saniworx facility journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Practical notes for the people who keep buildings running — cleaning protocols that hold up to an audit, how to read cost-per-use instead of shelf price, and where sustainable supply actually saves money.',
+                        text: 'Practical notes for the people who keep buildings running: cleaning protocols that hold up to an audit, how to read cost-per-use instead of shelf price, and where sustainable supply actually saves money.',
                     }),
                 ],
             }),
@@ -434,7 +434,7 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Saniworx' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Saniworx started as a single delivery route serving a handful of office parks that were tired of chasing four vendors for one supply closet. It grew the way a good distributor should — one building, one standing order, one on-time delivery at a time — and it still runs on the same promise: keep the closet stocked, keep the price honest, keep the schedule.',
+                        text: 'Saniworx started as a single delivery route serving a handful of office parks that were tired of chasing four vendors for one supply closet. It grew the way a good distributor should (one building, one standing order, one on-time delivery at a time) and it still runs on the same promise: keep the closet stocked, keep the price honest, keep the schedule.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We supply offices, schools, medical suites, gyms and property managers with the cleaning chemicals, paper, liners and tools their buildings run on. Everything ships by the case at trade pricing, from a warehouse we stock deep so a reorder is a delivery date, not a backorder.',
@@ -455,7 +455,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Open a trade account',
-        intro: 'Tell us about your building — square footage, the closets you stock, and how often you want deliveries — and we’ll set up contract pricing, net-30 terms and a delivery schedule that fits. A real person at the warehouse will get back to you.',
+        intro: 'Tell us about your building (square footage, the closets you stock, and how often you want deliveries) and we’ll set up contract pricing, net-30 terms and a delivery schedule that fits. A real person at the warehouse will get back to you.',
         submitLabel: 'Request a trade account',
     }),
 ];
@@ -530,14 +530,14 @@ const PRODUCTS: Product[] = [
         handle: 'multi-surface-concentrate',
         title: 'Multi-Surface Cleaner Concentrate',
         description:
-            'A neutral-pH concentrate for floors, walls and hard surfaces — no rinse, no residue, safe on finished floors. One gallon dilutes up to 1:64, making 64 gallons of ready-to-use cleaner, so the cost per bottle at the mop is pennies. Case of 4 one-gallon jugs. Minimum order 1 case.',
+            'A neutral-pH concentrate for floors, walls and hard surfaces: no rinse, no residue, safe on finished floors. One gallon dilutes up to 1:64, making 64 gallons of ready-to-use cleaner, so the cost per bottle at the mop is pennies. Case of 4 one-gallon jugs. Minimum order 1 case.',
         status: 'active',
         productType: 'Cleaning chemical',
         vendor: 'Saniworx',
         tags: ['chemical', 'concentrate', 'floor-care', 'neutral-ph'],
         categoryHandles: ['cleaning-chemicals'],
         collectionHandles: ['best-sellers', 'new-account-essentials'],
-        seoTitle: 'Multi-Surface Cleaner Concentrate — case of 4 gallons | Saniworx',
+        seoTitle: 'Multi-Surface Cleaner Concentrate: case of 4 gallons | Saniworx',
         seoDescription: 'Neutral-pH no-rinse floor and surface concentrate, dilutes 1:64. Case of 4 one-gallon jugs at trade pricing.',
         options: [
             { name: 'Format', displayType: 'dropdown', values: [{ value: 'Case of 4 (1 gal)' }, { value: '5-gallon drum' }] },
@@ -552,14 +552,14 @@ const PRODUCTS: Product[] = [
         handle: 'disinfectant-cleaner',
         title: 'Disinfectant Cleaner',
         description:
-            'A one-step, EPA-registered disinfectant cleaner that cleans and kills 99.9% of common bacteria and viruses on hard non-porous surfaces in one pass — restrooms, break rooms, high-touch points. Case of 12 quart bottles with trigger sprayers. Minimum order 1 case. SDS on file.',
+            'A one-step, EPA-registered disinfectant cleaner that cleans and kills 99.9% of common bacteria and viruses on hard non-porous surfaces in one pass: restrooms, break rooms, high-touch points. Case of 12 quart bottles with trigger sprayers. Minimum order 1 case. SDS on file.',
         status: 'active',
         productType: 'Cleaning chemical',
         vendor: 'Saniworx',
         tags: ['chemical', 'disinfectant', 'restroom', 'epa-registered'],
         categoryHandles: ['cleaning-chemicals'],
         collectionHandles: ['best-sellers', 'restroom-program', 'new-account-essentials'],
-        seoTitle: 'Disinfectant Cleaner — case of 12 quarts | Saniworx',
+        seoTitle: 'Disinfectant Cleaner: case of 12 quarts | Saniworx',
         seoDescription: 'One-step EPA-registered disinfectant cleaner, kills 99.9% of common germs. Case of 12 quart bottles.',
         variants: [{ sku: 'SANI-DIS-CS12', priceCents: money(46), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-disinfectant', isPrimary: true, alt: 'A case of disinfectant cleaner bottles' }],
@@ -575,7 +575,7 @@ const PRODUCTS: Product[] = [
         tags: ['chemical', 'concentrate', 'glass'],
         categoryHandles: ['cleaning-chemicals'],
         collectionHandles: ['best-sellers'],
-        seoTitle: 'Glass & Surface Cleaner Concentrate — case of 4 gallons | Saniworx',
+        seoTitle: 'Glass & Surface Cleaner Concentrate: case of 4 gallons | Saniworx',
         seoDescription: 'Streak-free glass and surface concentrate, dilutes 1:20. Case of 4 one-gallon jugs at trade pricing.',
         variants: [{ sku: 'SANI-GLS-CS4', priceCents: money(36), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-glass-cleaner', isPrimary: true, alt: 'A case of glass and surface cleaner concentrate' }],
@@ -584,14 +584,14 @@ const PRODUCTS: Product[] = [
         handle: 'foam-hand-soap',
         title: 'Foaming Hand Soap',
         description:
-            'A mild, dye-free foaming hand soap that stretches further than lotion soap — gentle on skin for high-traffic restrooms, and refills standard bulk dispensers. Case of 4 one-gallon refills. Minimum order 1 case.',
+            'A mild, dye-free foaming hand soap that stretches further than lotion soap: gentle on skin for high-traffic restrooms, and refills standard bulk dispensers. Case of 4 one-gallon refills. Minimum order 1 case.',
         status: 'active',
         productType: 'Restroom supply',
         vendor: 'Saniworx',
         tags: ['restroom', 'hand-soap', 'refill'],
         categoryHandles: ['cleaning-chemicals'],
         collectionHandles: ['restroom-program', 'new-account-essentials'],
-        seoTitle: 'Foaming Hand Soap — case of 4 gallons | Saniworx',
+        seoTitle: 'Foaming Hand Soap: case of 4 gallons | Saniworx',
         seoDescription: 'Mild dye-free foaming hand soap for bulk dispensers. Case of 4 one-gallon refills at trade pricing.',
         variants: [{ sku: 'SANI-SOAP-CS4', priceCents: money(64), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-hand-soap', isPrimary: true, alt: 'A case of gallon hand soap refills' }],
@@ -601,14 +601,14 @@ const PRODUCTS: Product[] = [
         handle: 'hardwound-paper-towels',
         title: 'Hardwound Roll Paper Towels',
         description:
-            'Natural-kraft hardwound roll towels for high-traffic restrooms and break rooms — 800 feet per roll, so a case lasts and fits standard hands-free dispensers. Case of 12 rolls (9,600 ft total). Minimum order 1 case.',
+            'Natural-kraft hardwound roll towels for high-traffic restrooms and break rooms: 800 feet per roll, so a case lasts and fits standard hands-free dispensers. Case of 12 rolls (9,600 ft total). Minimum order 1 case.',
         status: 'active',
         productType: 'Paper',
         vendor: 'Saniworx',
         tags: ['paper', 'towels', 'restroom'],
         categoryHandles: ['paper-tissue'],
         collectionHandles: ['best-sellers', 'restroom-program', 'new-account-essentials'],
-        seoTitle: 'Hardwound Roll Paper Towels — case of 12 rolls | Saniworx',
+        seoTitle: 'Hardwound Roll Paper Towels: case of 12 rolls | Saniworx',
         seoDescription: 'Natural hardwound roll towels, 800 ft per roll, for hands-free dispensers. Case of 12 rolls.',
         variants: [{ sku: 'SANI-PT-CS12', priceCents: money(38), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-paper-towels', isPrimary: true, alt: 'A case of hardwound roll paper towels' }],
@@ -617,14 +617,14 @@ const PRODUCTS: Product[] = [
         handle: 'toilet-tissue',
         title: 'Two-Ply Toilet Tissue',
         description:
-            'Soft-yet-durable two-ply standard-roll bath tissue, 500 sheets per roll — the everyday reorder for restrooms of any size, fitting standard and multi-roll dispensers. Case of 48 rolls. Minimum order 1 case.',
+            'Soft-yet-durable two-ply standard-roll bath tissue, 500 sheets per roll: the everyday reorder for restrooms of any size, fitting standard and multi-roll dispensers. Case of 48 rolls. Minimum order 1 case.',
         status: 'active',
         productType: 'Paper',
         vendor: 'Saniworx',
         tags: ['paper', 'tissue', 'restroom'],
         categoryHandles: ['paper-tissue'],
         collectionHandles: ['best-sellers', 'restroom-program', 'new-account-essentials'],
-        seoTitle: 'Two-Ply Toilet Tissue — case of 48 rolls | Saniworx',
+        seoTitle: 'Two-Ply Toilet Tissue: case of 48 rolls | Saniworx',
         seoDescription: 'Two-ply standard-roll bath tissue, 500 sheets per roll. Case of 48 rolls at trade pricing.',
         variants: [{ sku: 'SANI-TT-CS48', priceCents: money(54), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-toilet-tissue', isPrimary: true, alt: 'A case of two-ply toilet tissue rolls' }],
@@ -634,26 +634,26 @@ const PRODUCTS: Product[] = [
         handle: 'can-liners',
         title: 'Low-Density Can Liners',
         description:
-            'Puncture-resistant low-density liners for general waste — strong enough for break-room and restroom bins without tearing at the pull. Sold by the carton; pick your can size below. Minimum order 1 carton.',
+            'Puncture-resistant low-density liners for general waste: strong enough for break-room and restroom bins without tearing at the pull. Sold by the carton; pick your can size below. Minimum order 1 carton.',
         status: 'active',
         productType: 'Can liner',
         vendor: 'Saniworx',
         tags: ['liners', 'waste', 'low-density'],
         categoryHandles: ['liners'],
         collectionHandles: ['best-sellers', 'new-account-essentials'],
-        seoTitle: 'Low-Density Can Liners — by the carton | Saniworx',
+        seoTitle: 'Low-Density Can Liners: by the carton | Saniworx',
         seoDescription: 'Puncture-resistant low-density can liners in 33, 45 and 55 gallon sizes, sold by the carton.',
         options: [
             {
                 name: 'Size',
                 displayType: 'dropdown',
-                values: [{ value: '33 gal — carton of 500' }, { value: '45 gal — carton of 250' }, { value: '55 gal — carton of 200' }],
+                values: [{ value: '33 gal: carton of 500' }, { value: '45 gal: carton of 250' }, { value: '55 gal: carton of 200' }],
             },
         ],
         variants: [
-            { sku: 'SANI-LIN-33', priceCents: money(46), isDefault: true, inventoryPolicy: 'continue', optionValues: { Size: '33 gal — carton of 500' } },
-            { sku: 'SANI-LIN-45', priceCents: money(52), inventoryPolicy: 'continue', optionValues: { Size: '45 gal — carton of 250' } },
-            { sku: 'SANI-LIN-55', priceCents: money(58), inventoryPolicy: 'continue', optionValues: { Size: '55 gal — carton of 200' } },
+            { sku: 'SANI-LIN-33', priceCents: money(46), isDefault: true, inventoryPolicy: 'continue', optionValues: { Size: '33 gal: carton of 500' } },
+            { sku: 'SANI-LIN-45', priceCents: money(52), inventoryPolicy: 'continue', optionValues: { Size: '45 gal: carton of 250' } },
+            { sku: 'SANI-LIN-55', priceCents: money(58), inventoryPolicy: 'continue', optionValues: { Size: '55 gal: carton of 200' } },
         ],
         images: [{ assetId: 'prod-liners', isPrimary: true, alt: 'A carton of low-density trash can liners' }],
     },
@@ -662,7 +662,7 @@ const PRODUCTS: Product[] = [
         handle: 'microfibre-cloths',
         title: 'Microfibre Cleaning Cloths',
         description:
-            'Color-coded 16-inch microfibre cloths that lift dust and grime with water alone — launderable up to 200 washes, so the cost per use undercuts disposable wipes fast. Pack of 50 cloths. Minimum order 1 pack.',
+            'Color-coded 16-inch microfibre cloths that lift dust and grime with water alone: launderable up to 200 washes, so the cost per use undercuts disposable wipes fast. Pack of 50 cloths. Minimum order 1 pack.',
         price: 32,
         sku: 'SANI-MF-PK50',
         productType: 'Cleaning tool',
@@ -671,21 +671,21 @@ const PRODUCTS: Product[] = [
         tags: ['tools', 'microfibre', 'reusable'],
         asset: 'prod-microfibre',
         alt: 'A stack of folded microfibre cleaning cloths',
-        seoTitle: 'Microfibre Cleaning Cloths — pack of 50 | Saniworx',
+        seoTitle: 'Microfibre Cleaning Cloths: pack of 50 | Saniworx',
         seoDescription: 'Color-coded 16-inch microfibre cloths, launderable to 200 washes. Pack of 50 at trade pricing.',
     }),
     {
         handle: 'floor-pads',
         title: 'Floor Machine Pads',
         description:
-            'Full-cycle floor pads for buffing, scrubbing and stripping — consistent cut and long life on rotary and orbital machines. Case of 5 pads; pick your machine size below. Minimum order 1 case.',
+            'Full-cycle floor pads for buffing, scrubbing and stripping: consistent cut and long life on rotary and orbital machines. Case of 5 pads; pick your machine size below. Minimum order 1 case.',
         status: 'active',
         productType: 'Floor-care equipment',
         vendor: 'Saniworx',
         tags: ['tools', 'floor-care', 'pads'],
         categoryHandles: ['tools'],
         collectionHandles: ['floor-care'],
-        seoTitle: 'Floor Machine Pads — case of 5 | Saniworx',
+        seoTitle: 'Floor Machine Pads: case of 5 | Saniworx',
         seoDescription: 'Full-cycle floor buffing and scrubbing pads for rotary and orbital machines. Case of 5, 17 or 20 inch.',
         options: [
             { name: 'Size', displayType: 'dropdown', values: [{ value: '17 inch' }, { value: '20 inch' }] },
@@ -701,7 +701,7 @@ const PRODUCTS: Product[] = [
         handle: 'facility-starter-kit',
         title: 'Facility Starter Kit',
         description:
-            'Everything a new account needs to stand up a supply closet in one order: a case of multi-surface concentrate, a case of disinfectant, a case of paper towels, a case of toilet tissue, a carton of 33-gallon liners and a pack of microfibre cloths — matched so nothing runs out first. One SKU, one delivery. Minimum order 1 kit.',
+            'Everything a new account needs to stand up a supply closet in one order: a case of multi-surface concentrate, a case of disinfectant, a case of paper towels, a case of toilet tissue, a carton of 33-gallon liners and a pack of microfibre cloths, matched so nothing runs out first. One SKU, one delivery. Minimum order 1 kit.',
         price: 189,
         sku: 'SANI-KIT-START',
         productType: 'Supply kit',
@@ -710,8 +710,8 @@ const PRODUCTS: Product[] = [
         tags: ['kit', 'starter', 'bundle'],
         asset: 'prod-starter-kit',
         alt: 'A facility starter kit of cleaning chemicals, paper and tools',
-        seoTitle: 'Facility Starter Kit — stand up a supply closet in one order | Saniworx',
-        seoDescription: 'A matched starter kit — concentrate, disinfectant, towels, tissue, liners and cloths. One SKU, one delivery.',
+        seoTitle: 'Facility Starter Kit: stand up a supply closet in one order | Saniworx',
+        seoDescription: 'A matched starter kit: concentrate, disinfectant, towels, tissue, liners and cloths. One SKU, one delivery.',
     }),
 ];
 
@@ -771,18 +771,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'A restroom cleaning protocol that holds up to an audit',
-            excerpt: 'A repeatable, top-down order of operations for restrooms — the one that passes inspection and doesn’t waste chemical.',
+            excerpt: 'A repeatable, top-down order of operations for restrooms: the one that passes inspection and doesn’t waste chemical.',
             featuredImage: { $asset: 'post-protocol' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A restroom is the room a building gets judged on, and the difference between one that passes an audit and one that doesn’t is rarely the products — it’s the order of operations. A protocol removes the guesswork so any member of the crew, on any shift, cleans it the same way.'),
+                    para('A restroom is the room a building gets judged on, and the difference between one that passes an audit and one that doesn’t is rarely the products: it’s the order of operations. A protocol removes the guesswork so any member of the crew, on any shift, cleans it the same way.'),
                     h2('Work top-down, dirty-to-clean'),
-                    para('Start high and finish low so nothing you’ve cleaned gets re-soiled: mirrors and dispensers first, then sinks and counters, then partitions and fixtures, and floors last. Apply disinfectant to toilets and urinals early and let it sit — dwell time is what actually kills germs, and spraying-and-immediately-wiping is the most common reason a surface tests dirty after it looks clean.'),
+                    para('Start high and finish low so nothing you’ve cleaned gets re-soiled: mirrors and dispensers first, then sinks and counters, then partitions and fixtures, and floors last. Apply disinfectant to toilets and urinals early and let it sit, dwell time is what actually kills germs, and spraying-and-immediately-wiping is the most common reason a surface tests dirty after it looks clean.'),
                     h2('Color-code to stop cross-contamination'),
-                    para('Assign a microfibre color to each zone — one for toilets and urinals, another for sinks and counters, a third for mirrors and glass — and never cross them. It’s the simplest control there is against moving bacteria from a toilet to a sink, and it’s the first thing an inspector looks for. Launder the cloths after every shift and retire them at 200 washes.'),
+                    para('Assign a microfibre color to each zone. One for toilets and urinals, another for sinks and counters, a third for mirrors and glass, and never cross them. It’s the simplest control there is against moving bacteria from a toilet to a sink, and it’s the first thing an inspector looks for. Launder the cloths after every shift and retire them at 200 washes.'),
                     h2('Restock while you’re in there'),
-                    para('The last step of the protocol is a supply check: soap, tissue and towels topped up before you leave, and anything low written on the reorder list. A closet that’s restocked on a schedule never triggers the Friday-afternoon scramble — which is the whole point of a standing order.'),
+                    para('The last step of the protocol is a supply check: soap, tissue and towels topped up before you leave, and anything low written on the reorder list. A closet that’s restocked on a schedule never triggers the Friday-afternoon scramble, which is the whole point of a standing order.'),
                 ],
             },
         },
@@ -798,13 +798,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The number on the case is the number that gets compared, because it’s the easy one. But a facility doesn’t spend per case — it spends per clean, per wash, per restroom visit. Cost-per-use is the honest comparison, and it routinely flips which product is actually cheaper.'),
+                    para('The number on the case is the number that gets compared, because it’s the easy one. But a facility doesn’t spend per case. It spends per clean, per wash, per restroom visit. Cost-per-use is the honest comparison, and it routinely flips which product is actually cheaper.'),
                     h2('Concentrate is the clearest example'),
-                    para('A gallon of ready-to-use cleaner and a gallon of 1:64 concentrate can sit on the shelf at similar prices, but the concentrate makes 64 gallons of working solution. Divide the case price by the gallons it yields and the concentrate isn’t a little cheaper per use — it’s an order of magnitude cheaper, before you count the freight and storage you save shipping water you already have.'),
+                    para('A gallon of ready-to-use cleaner and a gallon of 1:64 concentrate can sit on the shelf at similar prices, but the concentrate makes 64 gallons of working solution. Divide the case price by the gallons it yields and the concentrate isn’t a little cheaper per use: it’s an order of magnitude cheaper, before you count the freight and storage you save shipping water you already have.'),
                     h2('Reusables beat disposables on a curve'),
                     para('A microfibre cloth costs more than a paper wipe on day one and less than a paper wipe by the second week. Rated to 200 launderings, its cost-per-use falls every time it goes through the wash, while a disposable is spent the moment it’s used. The break-even is fast enough that most buildings switch their general wiping to microfibre and keep paper only where it’s required.'),
                     h2('Do the math once, buy right for a year'),
-                    para('You don’t need a spreadsheet per order — just run cost-per-use once per category when you set your standing order, and lock it in. Ask us for the dilution yields and pack counts; we’ll do the division with you, because a customer who buys the right case reorders the right case.'),
+                    para('You don’t need a spreadsheet per order. Just run cost-per-use once per category when you set your standing order, and lock it in. Ask us for the dilution yields and pack counts; we’ll do the division with you, because a customer who buys the right case reorders the right case.'),
                 ],
             },
         },
@@ -815,18 +815,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Where sustainable supply actually saves money',
-            excerpt: 'Greener facility supply isn’t only a compliance line — done in the right places, it lowers cost and waste at the same time.',
+            excerpt: 'Greener facility supply isn’t only a compliance line: done in the right places, it lowers cost and waste at the same time.',
             featuredImage: { $asset: 'post-sustainability' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Sustainability in facility supply gets talked about as a cost — a certification to chase, a premium to pay. In a few specific places it’s the opposite: the greener choice is also the cheaper one, because it removes waste you were paying to ship, store and throw away.'),
+                    para('Sustainability in facility supply gets talked about as a cost: a certification to chase, a premium to pay. In a few specific places it’s the opposite: the greener choice is also the cheaper one, because it removes waste you were paying to ship, store and throw away.'),
                     h2('Concentrates cut packaging and freight'),
-                    para('Shipping ready-to-use cleaner means shipping mostly water in plastic jugs. Concentrates ship the active ingredient and dilute on site, which cuts packaging plastic, pallet count and freight weight dramatically — fewer trucks, fewer empty jugs in the dumpster, and a lower line on the invoice. It’s the rare change that a facilities budget and a sustainability report both like.'),
+                    para('Shipping ready-to-use cleaner means shipping mostly water in plastic jugs. Concentrates ship the active ingredient and dilute on site, which cuts packaging plastic, pallet count and freight weight dramatically: fewer trucks, fewer empty jugs in the dumpster, and a lower line on the invoice. It’s the rare change that a facilities budget and a sustainability report both like.'),
                     h2('Right-sizing liners stops buying air'),
-                    para('Most buildings buy one liner size for every can, which means oversized bags on small bins — plastic that gets tied off half-empty. Matching liner size and mil to the actual can removes that waste at the source: less plastic bought, less plastic landfilled, and a smaller reorder. We’ll walk your bins and spec the sizes so you stop paying for bag you throw away.'),
+                    para('Most buildings buy one liner size for every can, which means oversized bags on small bins: plastic that gets tied off half-empty. Matching liner size and mil to the actual can removes that waste at the source: less plastic bought, less plastic landfilled, and a smaller reorder. We’ll walk your bins and spec the sizes so you stop paying for bag you throw away.'),
                     h2('Reusables and refills close the loop'),
-                    para('Launderable microfibre in place of disposable wipes, bulk refill soap in place of throwaway cartridges, and dispensers that take a refill rather than a replacement — each one trades a recurring disposable for a durable good and a smaller, cheaper reorder. Start where the volume is highest; that’s where both the savings and the waste reduction are biggest.'),
+                    para('Launderable microfibre in place of disposable wipes, bulk refill soap in place of throwaway cartridges, and dispensers that take a refill rather than a replacement. Each one trades a recurring disposable for a durable good and a smaller, cheaper reorder. Start where the volume is highest; that’s where both the savings and the waste reduction are biggest.'),
                 ],
             },
         },
@@ -854,17 +854,17 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Saniworx — janitorial & facility supply, by the case',
+            title: 'Saniworx: janitorial & facility supply, by the case',
             description:
-                'Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities — cleaning chemicals, paper, liners and tools by the case, at trade pricing, on a delivery schedule you set.',
+                'Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities: cleaning chemicals, paper, liners and tools by the case, at trade pricing, on a delivery schedule you set.',
         },
         about: {
             title: 'About Saniworx',
             description:
-                'How Saniworx supplies buildings — deep-stocked cases, honest trade pricing, scheduled deliveries and a real person on the phone. Keep the closet stocked, keep the schedule.',
+                'How Saniworx supplies buildings: deep-stocked cases, honest trade pricing, scheduled deliveries and a real person on the phone. Keep the closet stocked, keep the schedule.',
         },
         contact: {
-            title: 'Open a trade account — Saniworx',
+            title: 'Open a trade account: Saniworx',
             description:
                 'Set up contract pricing, net-30 terms and a delivery schedule for your building. Tell us your square footage and closets and we’ll build your supply program.',
         },

@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Green Haul — eco, donation-first junk removal",
-      "seoDescription": "Green Haul is a donation-first junk removal and hauling service — we donate, recycle and responsibly dispose so most of every load stays out of the landfill. Book a pickup or a free quote online.",
+      "seoTitle": "Green Haul: eco, donation-first junk removal",
+      "seoDescription": "Green Haul is a donation-first junk removal and hauling service. We donate, recycle and responsibly dispose so most of every load stays out of the landfill. Book a pickup or a free quote online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Donation-first junk removal for homes and small businesses — we sort, donate, recycle and responsibly dispose, so most of what leaves your place never sees a dump."
+                      "Donation-first junk removal for homes and small businesses. We sort, donate, recycle and responsibly dispose, so most of what leaves your place never sees a dump."
                     ],
                     "id": "e81ab9d1-8434-4fab-b613-0606110af697",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Anything still usable goes to local charities and shelters before it’s ever called trash — and you get the donation receipt for it."
+                              "Anything still usable goes to local charities and shelters before it’s ever called trash, and you get the donation receipt for it."
                             ],
                             "id": "bed4281f-d838-47ad-95a7-f27ab8426c36",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Old electronics and batteries go to certified processors — never dumped, never shipped offshore, data-bearing drives noted first."
+                              "Old electronics and batteries go to certified processors, never dumped, never shipped offshore, data-bearing drives noted first."
                             ],
                             "id": "54ab9afe-975a-44a4-83e8-a137a65dd791",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A flat, upfront price after a free quote — by the load, not by the surprise. You know the number before anything moves."
+                              "A flat, upfront price after a free quote: by the load, not by the surprise. You know the number before anything moves."
                             ],
                             "id": "bf6b025c-b0ac-4f2e-90e8-bc1476dd2453",
                             "ord": "a1"
@@ -1106,7 +1106,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Donate, recycle, divert — dump last"],
+                        "children": ["Donate, recycle, divert: dump last"],
                         "id": "4aca7105-40d4-4bea-9a60-f2c70ad5fd94",
                         "ord": "a0"
                       },
@@ -1115,7 +1115,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most hauling ends the same way: one truck, one trip, straight to the landfill. We work the other direction. Every load gets sorted first — what’s still good is donated, what can be recycled is separated out, and only what’s truly finished is disposed of."
+                          "Most hauling ends the same way: one truck, one trip, straight to the landfill. We work the other direction. Every load gets sorted first, what’s still good is donated, what can be recycled is separated out, and only what’s truly finished is disposed of."
                         ],
                         "id": "1ae54212-ab59-41f3-b623-e72b7d260737",
                         "ord": "a1"
@@ -1125,7 +1125,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It takes a little longer at the curb, and it’s the whole point. On a typical job the great majority of what we take never becomes trash — it becomes someone else’s couch, or a bale of clean metal, instead of another cubic yard buried."
+                          "It takes a little longer at the curb, and it’s the whole point. On a typical job the great majority of what we take never becomes trash. It becomes someone else’s couch, or a bale of clean metal, instead of another cubic yard buried."
                         ],
                         "id": "4b6d9d47-cc6b-4ea5-911e-62bde469132c",
                         "ord": "a2"
@@ -1190,7 +1190,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Real people who’ll treat your place with care — and sort every load like it matters, because it does."
+                          "Real people who’ll treat your place with care, and sort every load like it matters, because it does."
                         ],
                         "id": "b3f49b3e-b202-498b-a45b-035f3736b590",
                         "ord": "a1"
@@ -1303,7 +1303,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Sena handles the sorting and the certified processors — the reason so little of a load ends up buried."
+                                  "Sena handles the sorting and the certified processors: the reason so little of a load ends up buried."
                                 ],
                                 "id": "51f7c6a3-4320-449c-ba2d-e1966b4c78d1",
                                 "ord": "a2"
@@ -1359,7 +1359,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Malik takes on the big garage, estate and office clearouts — calm, careful, and quick on the heavy stuff."
+                                  "Malik takes on the big garage, estate and office clearouts: calm, careful, and quick on the heavy stuff."
                                 ],
                                 "id": "d8e72ba5-02ff-480c-96d7-451e80f73174",
                                 "ord": "a2"
@@ -1399,7 +1399,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“We cleared out my mom’s house after she moved, and I dreaded it. Green Haul turned it into something I felt good about — three carloads went to a women’s shelter, the old electronics were handled properly, and barely anything went to the dump. They made a hard week easier.”"
+                      "“We cleared out my mom’s house after she moved, and I dreaded it. Green Haul turned it into something I felt good about: three carloads went to a women’s shelter, the old electronics were handled properly, and barely anything went to the dump. They made a hard week easier.”"
                     ],
                     "id": "f9e2bb09-b35c-46a2-ac90-a6fddc42cb0d",
                     "ord": "a0"
@@ -1474,7 +1474,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Green Haul",
+      "seoTitle": "Book: Green Haul",
       "seoDescription": "See what Green Haul offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1598,7 +1598,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "8c362dc3-43c9-4d51-bbf8-5cd20065140f",
                         "ord": "a1"
@@ -1705,7 +1705,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Green Haul",
+      "seoTitle": "About: Green Haul",
       "seoDescription": "Who Green Haul is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1764,7 +1764,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we built a hauling company around a different order of operations — donate what’s still good, recycle what can be recycled, and only dump what’s genuinely finished. Same easy pickup, far less buried. It’s better for your town, and it’s the kind of work we’re proud to load onto the truck."
+                          "So we built a hauling company around a different order of operations: donate what’s still good, recycle what can be recycled, and only dump what’s genuinely finished. Same easy pickup, far less buried. It’s better for your town, and it’s the kind of work we’re proud to load onto the truck."
                         ],
                         "id": "7dbdb9ab-643d-4d34-a3c0-0205abd765a7",
                         "ord": "a2"
@@ -1842,7 +1842,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every load gets separated on site — donations, recycling, e-waste and disposal — so the landfill is the last resort, never the default."
+                              "Every load gets separated on site (donations, recycling, e-waste and disposal) so the landfill is the last resort, never the default."
                             ],
                             "id": "d84526ba-7c36-4e0f-b781-3132a43dc6bc",
                             "ord": "a1"
@@ -1896,7 +1896,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A free quote, then one clear price by the load. No hourly meter running, no add-ons at the curb — you know the number before we lift a thing."
+                              "A free quote, then one clear price by the load. No hourly meter running, no add-ons at the curb. You know the number before we lift a thing."
                             ],
                             "id": "ddabe283-de02-40fb-8c94-0a2548af5251",
                             "ord": "a1"
@@ -1924,7 +1924,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Green Haul",
+      "seoTitle": "Visit: Green Haul",
       "seoDescription": "Where to find Green Haul, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1961,7 +1961,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Green Haul will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Green Haul will get back to you, usually the same day."
                         ],
                         "id": "0627bd26-b354-4e89-b4ad-069f5f4aa5d3",
                         "ord": "a1"
@@ -2386,7 +2386,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your pickup online — no phone tag, no quote forms to chase."
+                      "See live availability and reserve your pickup online: no phone tag, no quote forms to chase."
                     ],
                     "id": "a4dd75c6-00c1-4836-a53e-55bcf56a1642",
                     "ord": "a1"

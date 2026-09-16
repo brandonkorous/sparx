@@ -144,7 +144,7 @@ function ChecklistCard({
         </ul>
       ) : (
         <Text className="text-sm">
-          Nothing stands out across the site — every check is passing on the pages scored so far.
+          Nothing stands out across the site: every check is passing on the pages scored so far.
         </Text>
       )}
     </section>
@@ -331,7 +331,7 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <PaneLoadError
               icon={<Icon glyph={faMagnifyingGlass} className="size-6" aria-hidden />}
               title="Could not load your site checks"
-              description="This is a problem reaching the server. Your pages are unaffected — the scores just could not be read."
+              description="This is a problem reaching the server. Your pages are unaffected: the scores just could not be read."
               onRetry={() => {
                 void audits.refetch();
               }}

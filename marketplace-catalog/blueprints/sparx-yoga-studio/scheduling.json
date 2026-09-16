@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 12,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Reserve your mat ahead — classes are small and fill up. Cancel at least 12 hours before and your spot frees for the next person; we send a reminder the day before and two hours ahead."
+      "policyText": "Reserve your mat ahead: classes are small and fill up. Cancel at least 12 hours before and your spot frees for the next person; we send a reminder the day before and two hours ahead."
     },
     {
       "handle": "drop-in",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 4,
       "reminderOffsetsMin": [120],
-      "policyText": "Pay as you go — book a single class with no commitment. Life happens; give us a few hours’ notice if your plans change."
+      "policyText": "Pay as you go. Book a single class with no commitment. Life happens; give us a few hours’ notice if your plans change."
     }
   ],
   "resources": [
@@ -211,7 +211,7 @@
     {
       "handle": "vinyasa-flow",
       "name": "Vinyasa flow",
-      "description": "A breath-led flow that builds heat and moves with you — strong but never rushed. All levels; modifications offered throughout.",
+      "description": "A breath-led flow that builds heat and moves with you: strong but never rushed. All levels; modifications offered throughout.",
       "bookingType": "class",
       "durationMinutes": 60,
       "priceCents": 2200,
@@ -236,7 +236,7 @@
     {
       "handle": "yin-yoga",
       "name": "Yin yoga",
-      "description": "Long, quiet holds that open the deeper tissues and settle the nervous system. Bring nothing but yourself — props do the work.",
+      "description": "Long, quiet holds that open the deeper tissues and settle the nervous system. Bring nothing but yourself: props do the work.",
       "bookingType": "class",
       "durationMinutes": 75,
       "priceCents": 2000,
@@ -261,7 +261,7 @@
     {
       "handle": "hot-yoga",
       "name": "Hot yoga",
-      "description": "A warm-room flow in The Hearth — heat to loosen, sweat to reset. Come hydrated; leave lighter.",
+      "description": "A warm-room flow in The Hearth: heat to loosen, sweat to reset. Come hydrated; leave lighter.",
       "bookingType": "class",
       "durationMinutes": 60,
       "priceCents": 2500,
@@ -286,7 +286,7 @@
     {
       "handle": "restorative",
       "name": "Restorative",
-      "description": "Fully supported, deeply still. A slow, blanketed hour that asks nothing of you but rest — the softest landing in the week.",
+      "description": "Fully supported, deeply still. A slow, blanketed hour that asks nothing of you but rest: the softest landing in the week.",
       "bookingType": "class",
       "durationMinutes": 75,
       "priceCents": 2000,
@@ -311,7 +311,7 @@
     {
       "handle": "foundations",
       "name": "Foundations",
-      "description": "The beginners’ track — the shapes, the breath and the words, taught slowly and kindly. Brand new? Start exactly here.",
+      "description": "The beginners’ track: the shapes, the breath and the words, taught slowly and kindly. Brand new? Start exactly here.",
       "bookingType": "class",
       "durationMinutes": 60,
       "priceCents": 1800,
@@ -336,7 +336,7 @@
     {
       "handle": "prenatal",
       "name": "Prenatal",
-      "description": "A gentle, knowing practice for every trimester — strength, breath and space, with a teacher who’s been there.",
+      "description": "A gentle, knowing practice for every trimester: strength, breath and space, with a teacher who’s been there.",
       "bookingType": "class",
       "durationMinutes": 60,
       "priceCents": 2000,
@@ -361,7 +361,7 @@
     {
       "handle": "community-flow",
       "name": "Community flow",
-      "description": "Our pay-what-you-can class — an easy, all-levels gentle flow, open to everyone. Come as you are; bring a friend.",
+      "description": "Our pay-what-you-can class: an easy, all-levels gentle flow, open to everyone. Come as you are; bring a friend.",
       "bookingType": "class",
       "durationMinutes": 45,
       "priceCents": 1500,

@@ -129,7 +129,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Calculator className="size-6" aria-hidden />}
           title="Nobody has been measured yet"
-          description="This is empty because no pass has been made over your orders and deliveries — not because your suppliers are perfect. Press “Measure now” above to find out which."
+          description="This is empty because no pass has been made over your orders and deliveries, not because your suppliers are perfect. Press “Measure now” above to find out which."
           actions={
             <Button color="module" loading={recompute.isPending} onClick={onRecompute}>
               <Calculator className="size-4" aria-hidden />
@@ -205,7 +205,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                   {rateOrUnknown(row.onTimeRate)}
                 </Badge>
                 {row.onTimeRate === null ? (
-                  <Tooltip content="No delivery on this supplier has ever had a date to be judged against — either nobody set an expected arrival, or the supplier never stated a lead time.">
+                  <Tooltip content="No delivery on this supplier has ever had a date to be judged against. Either nobody set an expected arrival, or the supplier never stated a lead time.">
                     <span className="block text-sm">no dates set</span>
                   </Tooltip>
                 ) : (

@@ -158,7 +158,7 @@ export function rateAmountLabel(basis: string, amountCents: number, currency = '
 /** A rate window, in words. An open-ended rate is the one in force TODAY, and
  *  saying so beats rendering a blank end date. */
 export function rateWindowLabel(effectiveFrom: string, effectiveTo: string | null): string {
-  if (!effectiveTo) return `From ${formatDate(effectiveFrom)} — current`;
+  if (!effectiveTo) return `From ${formatDate(effectiveFrom)} to now`;
   return `${formatDate(effectiveFrom)} – ${formatDate(effectiveTo)}`;
 }
 

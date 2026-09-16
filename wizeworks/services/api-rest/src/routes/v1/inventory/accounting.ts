@@ -244,7 +244,7 @@ const inventoryAccountingRoutes: FastifyPluginAsync = async (app) => {
     const accountExternalId = body.account_external_id ?? roles.inventory;
     if (!accountExternalId) {
       throw badRequest(
-        'Match your stock asset account to one in your books first — otherwise there is nothing to compare against.'
+        'Match your stock asset account to one in your books first, otherwise there is nothing to compare against.'
       );
     }
 

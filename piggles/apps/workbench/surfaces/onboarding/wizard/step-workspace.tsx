@@ -30,8 +30,8 @@ export type SlugCheck =
 
 const REASON_COPY: Record<string, string> = {
   invalid: 'Use lowercase letters, numbers, and hyphens (3–63 characters).',
-  reserved: 'That address is reserved — try another.',
-  taken: 'That address is already taken — try another.',
+  reserved: 'That address is reserved. Try another.',
+  taken: 'That address is already taken. Try another.',
 };
 
 export function StepWorkspace({
@@ -139,7 +139,7 @@ export function StepWorkspace({
 
         {!slugAvailable && !slugUnavailable && check.status !== 'checking' ? (
           <FieldDescription>
-            Your site goes live here the moment you launch — free, and yours to keep.
+            Your site goes live here the moment you launch: free, and yours to keep.
           </FieldDescription>
         ) : null}
       </Field>

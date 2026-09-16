@@ -345,7 +345,7 @@ export default function CartPage() {
 
           <p className="mt-4 flex items-center justify-center gap-1.5 text-[0.8125rem]">
             <Lock size={13} aria-hidden />
-            Secure checkout — sparx is the merchant of record.
+            Secure checkout: sparx is the merchant of record.
           </p>
         </aside>
       </div>

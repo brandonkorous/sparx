@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Wander & Co. Travel — a luxury bespoke travel advisory",
-      "seoDescription": "Wander & Co. is a private travel advisory for discerning travelers — bespoke itineraries, honeymoons, luxury trips and VIP access. Book a consultation online.",
+      "seoTitle": "Wander & Co. Travel: a luxury bespoke travel advisory",
+      "seoDescription": "Wander & Co. is a private travel advisory for discerning travelers: bespoke itineraries, honeymoons, luxury trips and VIP access. Book a consultation online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Wander & Co. is a private travel advisory for discerning travelers — bespoke itineraries, quiet luxury and access you can’t book yourself, all handled by one advisor who knows your name."
+                      "Wander & Co. is a private travel advisory for discerning travelers: bespoke itineraries, quiet luxury and access you can’t book yourself, all handled by one advisor who knows your name."
                     ],
                     "id": "87c5e990-3a25-485f-843f-b0a67e855ce8",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One dedicated advisor who learns how you like to travel and plans every trip with you — not a call centre, not a booking site."
+                              "One dedicated advisor who learns how you like to travel and plans every trip with you, not a call centre, not a booking site."
                             ],
                             "id": "3dc0504a-130a-41d2-b673-dae18ec72c57",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every journey is built from scratch around you — the stays, the routes, the tables and the timing, considered down to the detail."
+                              "Every journey is built from scratch around you: the stays, the routes, the tables and the timing, considered down to the detail."
                             ],
                             "id": "b73b82c5-f298-4a1b-aa47-3934cd31c1d6",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A missed connection, a change of plan, a late-night question — we’re a message away, wherever you are in the world."
+                              "A missed connection, a change of plan, a late-night question: we’re a message away, wherever you are in the world."
                             ],
                             "id": "9fa27f80-69e0-4c29-bbac-ea14eacb7f76",
                             "ord": "a1"
@@ -1220,7 +1220,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We don’t sell packages. Every trip begins with a conversation — how you like to move, what you want to feel, the pace that suits you — and grows into an itinerary built entirely around you."
+                          "We don’t sell packages. Every trip begins with a conversation (how you like to move, what you want to feel, the pace that suits you) and grows into an itinerary built entirely around you."
                         ],
                         "id": "2d9ad0a3-63cf-4381-aae4-fb110e533d33",
                         "ord": "a1"
@@ -1282,7 +1282,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Elena planned three weeks across Japan for our anniversary and it was flawless — the ryokan, a private tea ceremony, a table we could never have got ourselves. It was the trip of a lifetime, and we never once had to worry.”"
+                      "“Elena planned three weeks across Japan for our anniversary and it was flawless: the ryokan, a private tea ceremony, a table we could never have got ourselves. It was the trip of a lifetime, and we never once had to worry.”"
                     ],
                     "id": "bd8e9948-4401-46da-affb-19689cccaf5d",
                     "ord": "a0"
@@ -1326,7 +1326,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a complimentary discovery call. Pick an advisor and a time that suits you — it takes about a minute."
+                      "Start with a complimentary discovery call. Pick an advisor and a time that suits you. It takes about a minute."
                     ],
                     "id": "17a195ec-1338-4cf0-92f2-8c210d0a9550",
                     "ord": "a1"
@@ -1357,7 +1357,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Wander & Co. Travel",
+      "seoTitle": "Book: Wander & Co. Travel",
       "seoDescription": "See what Wander & Co. Travel offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1481,7 +1481,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "a6142016-bc44-4df9-8a6d-dff0e3678293",
                         "ord": "a1"
@@ -1588,7 +1588,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Wander & Co. Travel",
+      "seoTitle": "About: Wander & Co. Travel",
       "seoDescription": "Who Wander & Co. Travel is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1637,7 +1637,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Wander & Co. began with a simple belief: the best trips aren’t booked, they’re planned — by someone who listens, knows the world first-hand, and cares how it turns out."
+                          "Wander & Co. began with a simple belief: the best trips aren’t booked, they’re planned, by someone who listens, knows the world first-hand, and cares how it turns out."
                         ],
                         "id": "f128d939-7c60-44ee-a5f4-2072a7be5009",
                         "ord": "a1"
@@ -1725,7 +1725,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every plan starts with your story — where you’ve been, what moved you, and what you’re dreaming of next."
+                              "Every plan starts with your story: where you’ve been, what moved you, and what you’re dreaming of next."
                             ],
                             "id": "9aacd4cc-cdb2-4305-8fc4-c68a3f788e4b",
                             "ord": "a1"
@@ -1807,7 +1807,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Wander & Co. Travel",
+      "seoTitle": "Visit: Wander & Co. Travel",
       "seoDescription": "Where to find Wander & Co. Travel, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1844,7 +1844,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Wander & Co. Travel will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Wander & Co. Travel will get back to you, usually the same day."
                         ],
                         "id": "0363012b-8377-42df-a562-774bf116a97b",
                         "ord": "a1"
@@ -2271,7 +2271,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a complimentary discovery call and see live availability — no phone tag, no pressure."
+                      "Book a complimentary discovery call and see live availability: no phone tag, no pressure."
                     ],
                     "id": "8f1d51fc-a885-416b-8bff-da6b448f9b3c",
                     "ord": "a1"

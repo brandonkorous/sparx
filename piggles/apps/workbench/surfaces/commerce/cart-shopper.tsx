@@ -76,7 +76,7 @@ export function CartShopper({
           ) : null}
           {!customer ? (
             <Text className="text-sm">
-              They were not signed in, so there is no account behind this — but they gave you this
+              They were not signed in, so there is no account behind this, but they gave you this
               much at checkout.
             </Text>
           ) : null}

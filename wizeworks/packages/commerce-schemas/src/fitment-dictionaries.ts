@@ -69,7 +69,7 @@ export function fitmentDictionary(d: FitmentDictionary): FitmentDictionary {
 const VEHICLE = fitmentDictionary({
   slug: 'vehicle',
   name: 'Vehicle',
-  description: 'Automotive fitment — Make → Model → Engine, narrowable by model year.',
+  description: 'Automotive fitment. Make → Model → Engine, narrowable by model year.',
   iconKey: 'car',
   tags: ['automotive', 'parts', 'truck', 'car', 'diesel'],
   dimensions: [
@@ -279,7 +279,7 @@ const VEHICLE = fitmentDictionary({
 const DEVICE = fitmentDictionary({
   slug: 'device',
   name: 'Device',
-  description: 'Phone & tablet fitment — Brand → Model, for cases, screens, and accessories.',
+  description: 'Phone & tablet fitment: Brand → Model, for cases, screens, and accessories.',
   iconKey: 'smartphone',
   tags: ['electronics', 'phone', 'tablet', 'case', 'accessory'],
   dimensions: [
@@ -323,7 +323,7 @@ const DEVICE = fitmentDictionary({
 const APPAREL = fitmentDictionary({
   slug: 'apparel-sizes',
   name: 'Apparel sizes',
-  description: 'Clothing fitment — a single Size axis (alpha + numeric), no sub-levels.',
+  description: 'Clothing fitment: a single Size axis (alpha + numeric), no sub-levels.',
   iconKey: 'shirt',
   tags: ['clothing', 'fashion', 'size', 'retail'],
   dimensions: [{ key: 'size', label: 'Size', kind: 'level' }],
@@ -342,7 +342,7 @@ const APPAREL = fitmentDictionary({
 const PET = fitmentDictionary({
   slug: 'pet',
   name: 'Pet',
-  description: 'Pet fitment — Species → Breed, narrowable by body weight.',
+  description: 'Pet fitment: Species → Breed, narrowable by body weight.',
   iconKey: 'paw-print',
   tags: ['pet', 'animal', 'collar', 'harness', 'apparel'],
   dimensions: [
@@ -391,7 +391,7 @@ const PET = fitmentDictionary({
 const EQUIPMENT = fitmentDictionary({
   slug: 'equipment',
   name: 'Industrial equipment',
-  description: 'Machinery fitment — Class → Model, for parts, filters, and wear items.',
+  description: 'Machinery fitment: Class → Model, for parts, filters, and wear items.',
   iconKey: 'construction',
   tags: ['industrial', 'machinery', 'parts', 'agriculture', 'construction'],
   dimensions: [
@@ -431,7 +431,7 @@ const EQUIPMENT = fitmentDictionary({
 const FOOTWEAR = fitmentDictionary({
   slug: 'footwear',
   name: 'Footwear',
-  description: 'Shoe fitment — Department → Width, narrowable by US shoe size.',
+  description: 'Shoe fitment: Department → Width, narrowable by US shoe size.',
   iconKey: 'footprints',
   tags: ['shoes', 'footwear', 'size', 'retail', 'fashion'],
   dimensions: [
@@ -472,7 +472,7 @@ const FOOTWEAR = fitmentDictionary({
 const BICYCLE = fitmentDictionary({
   slug: 'bicycle',
   name: 'Bicycle',
-  description: 'Bike fitment — Discipline → Wheel size, for tires, tubes, and components.',
+  description: 'Bike fitment: Discipline → Wheel size, for tires, tubes, and components.',
   iconKey: 'bike',
   tags: ['cycling', 'bike', 'tire', 'component', 'outdoor'],
   dimensions: [
@@ -516,7 +516,7 @@ const BICYCLE = fitmentDictionary({
 const EYEWEAR = fitmentDictionary({
   slug: 'eyewear',
   name: 'Eyewear',
-  description: 'Glasses & sunglasses fitment — Brand → Frame, for lenses and parts.',
+  description: 'Glasses & sunglasses fitment: Brand → Frame, for lenses and parts.',
   iconKey: 'glasses',
   tags: ['eyewear', 'glasses', 'sunglasses', 'optical', 'lens'],
   dimensions: [
@@ -551,7 +551,7 @@ const EYEWEAR = fitmentDictionary({
 const TIRES_WHEELS = fitmentDictionary({
   slug: 'tires-wheels',
   name: 'Tires & wheels',
-  description: 'Tire & wheel fitment — Rim diameter → Section width.',
+  description: 'Tire & wheel fitment: Rim diameter → Section width.',
   iconKey: 'disc',
   tags: ['tire', 'wheel', 'automotive', 'size'],
   dimensions: [
@@ -594,7 +594,7 @@ const TIRES_WHEELS = fitmentDictionary({
 const HVAC_FILTERS = fitmentDictionary({
   slug: 'hvac-filters',
   name: 'HVAC filters',
-  description: 'Air-filter fitment — a single Nominal size axis (W×H×D inches).',
+  description: 'Air-filter fitment: a single Nominal size axis (W×H×D inches).',
   iconKey: 'air-vent',
   tags: ['hvac', 'filter', 'home', 'maintenance'],
   dimensions: [{ key: 'nominal_size', label: 'Nominal size', kind: 'level' }],
@@ -611,7 +611,7 @@ const HVAC_FILTERS = fitmentDictionary({
 const FURNITURE = fitmentDictionary({
   slug: 'furniture',
   name: 'Furniture',
-  description: 'Furniture fitment — Room → Piece, for covers, cushions, and parts.',
+  description: 'Furniture fitment: Room → Piece, for covers, cushions, and parts.',
   iconKey: 'sofa',
   tags: ['furniture', 'home', 'cover', 'cushion'],
   dimensions: [
@@ -647,7 +647,7 @@ const FURNITURE = fitmentDictionary({
 const MARINE_POWERSPORTS = fitmentDictionary({
   slug: 'marine-powersports',
   name: 'Marine & powersports',
-  description: 'Boat, ATV & moto fitment — Make → Model, narrowable by year.',
+  description: 'Boat, ATV & moto fitment. Make → Model, narrowable by year.',
   iconKey: 'ship',
   tags: ['marine', 'boat', 'atv', 'motorcycle', 'powersports'],
   dimensions: [
@@ -689,7 +689,7 @@ const MARINE_POWERSPORTS = fitmentDictionary({
 const INSTRUMENTS = fitmentDictionary({
   slug: 'instruments',
   name: 'Musical instruments',
-  description: 'Instrument fitment — Family → Instrument, for strings, reeds, and parts.',
+  description: 'Instrument fitment: Family → Instrument, for strings, reeds, and parts.',
   iconKey: 'guitar',
   tags: ['music', 'instrument', 'strings', 'accessory'],
   dimensions: [
@@ -726,7 +726,7 @@ const INSTRUMENTS = fitmentDictionary({
 const APPLIANCES = fitmentDictionary({
   slug: 'appliances',
   name: 'Home appliances',
-  description: 'Appliance fitment — Category → Brand, for parts, filters, and seals.',
+  description: 'Appliance fitment: Category → Brand, for parts, filters, and seals.',
   iconKey: 'washing-machine',
   tags: ['appliance', 'home', 'part', 'filter', 'repair'],
   dimensions: [

@@ -177,7 +177,7 @@ export function startWaitlistLoop(
     try {
       await runWaitlistTick(logger);
     } catch (err) {
-      logger.error({ err }, 'waitlist-tick: tick threw — will retry next interval');
+      logger.error({ err }, 'waitlist-tick: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

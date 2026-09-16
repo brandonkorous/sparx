@@ -164,7 +164,7 @@ function hero(): Node {
                                     text: 'The good stuff your pet actually deserves.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Barkwell makes the everyday things your dog uses most — collars, beds, bowls, treats — from natural materials, built by hand, and vet-approved. No plastic tat, no mystery ingredients. Just gear that lasts and food you’d be happy to read the label of.',
+                                    text: 'Barkwell makes the everyday things your dog uses most (collars, beds, bowls, treats) from natural materials, built by hand, and vet-approved. No plastic tat, no mystery ingredients. Just gear that lasts and food you’d be happy to read the label of.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -266,7 +266,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.rest', layout: 'carousel', heading: 'Somewhere to sleep' }),
     editorialBand({
         heading: 'The box that turns up before you run out',
-        lead: 'A subscription is the easy way to never scramble for treats or poop bags again: pick what your dog loves, pick how often, and a freshly packed box arrives on your schedule. Skip, swap or cancel any time — no lock-in, ever.',
+        lead: 'A subscription is the easy way to never scramble for treats or poop bags again: pick what your dog loves, pick how often, and a freshly packed box arrives on your schedule. Skip, swap or cancel any time, no lock-in, ever.',
         assetId: 'paw-band-sub',
         cta: 'Start a subscription',
         href: '/shop/subscription',
@@ -311,7 +311,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'The Barkwell promise' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Natural materials, vet-approved and made to last. Free shipping over $49, and a 30-day happy-tails guarantee — if it isn’t right for your dog, send it back for a full refund, no questions asked.',
+                                        text: 'Natural materials, vet-approved and made to last. Free shipping over $49, and a 30-day happy-tails guarantee: if it isn’t right for your dog, send it back for a full refund, no questions asked.',
                                     }),
                                 ],
                             }),
@@ -350,11 +350,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop everything',
-        'The whole range in one place — collars and leads, beds, bowls, treats, toys and travel gear. Filter by what your dog needs or sort however you like; everything is made from natural materials, vet-approved, and built to be used every single day.'
+        'The whole range in one place: collars and leads, beds, bowls, treats, toys and travel gear. Filter by what your dog needs or sort however you like; everything is made from natural materials, vet-approved, and built to be used every single day.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The range grouped the way people actually shop — what’s new, the ones dogs come back for, the daily-walk essentials, the sleep gear, and boxes that make an easy gift.'),
+    pageMasthead('Collections', 'The range grouped the way people actually shop: what’s new, the ones dogs come back for, the daily-walk essentials, the sleep gear, and boxes that make an easy gift.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Barkwell', 'Looking for a size, a color, or a bit of advice? Search the whole shop and the journal below.'),
@@ -366,7 +366,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping on orders over $49, packed with care and sent within a day. Not quite right for your dog? Send it back within 30 days for a full refund — our happy-tails guarantee means the risk is on us, not you.',
+                        text: 'Free shipping on orders over $49, packed with care and sent within a day. Not quite right for your dog? Send it back within 30 days for a full refund. Our happy-tails guarantee means the risk is on us, not you.',
                     }),
                 ],
             }),
@@ -380,7 +380,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Barkwell journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Straight-talking help from people who live with dogs — settling a new pup, what actually belongs in the bowl, and keeping a coat healthy in five minutes a week. Plain, useful, no jargon.',
+                        text: 'Straight-talking help from people who live with dogs: settling a new pup, what actually belongs in the bowl, and keeping a coat healthy in five minutes a week. Plain, useful, no jargon.',
                     }),
                 ],
             }),
@@ -397,13 +397,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Barkwell' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Barkwell started with a rescue mutt named Biscuit and a frustration every dog owner knows: the collar that frayed in a month, the bed that flattened by winter, the treats with a label you couldn’t pronounce. We figured the everyday things a dog uses most deserved to be made properly — so we set out to make them that way.',
+                        text: 'Barkwell started with a rescue mutt named Biscuit and a frustration every dog owner knows: the collar that frayed in a month, the bed that flattened by winter, the treats with a label you couldn’t pronounce. We figured the everyday things a dog uses most deserved to be made properly, so we set out to make them that way.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Everything we sell is made from natural, hard-wearing materials — full-grain leather, orthopedic foam, food-safe ceramic, single-ingredient food — by small workshops we know by name, and checked over by the vets we trust. We’d rather offer one honest version of a thing than a wall of cheap plastic, and we’d rather it lasted years than a season.',
+                        text: 'Everything we sell is made from natural, hard-wearing materials (full-grain leather, orthopedic foam, food-safe ceramic, single-ingredient food) by small workshops we know by name, and checked over by the vets we trust. We’d rather offer one honest version of a thing than a wall of cheap plastic, and we’d rather it lasted years than a season.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No mystery ingredients, no throwaway gear, no marketing dressed up as care. Just well-made things for the animal who’s genuinely pleased to see you every single day — and a share of every order goes to the shelters that help dogs like Biscuit find their people.',
+                        text: 'No mystery ingredients, no throwaway gear, no marketing dressed up as care. Just well-made things for the animal who’s genuinely pleased to see you every single day, and a share of every order goes to the shelters that help dogs like Biscuit find their people.',
                     }),
                 ],
             }),
@@ -418,7 +418,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'Not sure which size collar fits, need a hand choosing a bed, or want to talk about stocking Barkwell in your shop? Tell us about your dog and a real person here — usually with a dog at their feet — will get back to you within a day.',
+        intro: 'Not sure which size collar fits, need a hand choosing a bed, or want to talk about stocking Barkwell in your shop? Tell us about your dog and a real person here (usually with a dog at their feet) will get back to you within a day.',
         submitLabel: 'Email us',
     }),
 ];
@@ -579,7 +579,7 @@ const PRODUCTS: Product[] = [
         handle: 'heritage-leather-collar',
         title: 'Heritage Leather Collar',
         description:
-            'A collar cut from a single strip of full-grain leather and stitched by a real saddler, with a solid brass buckle and D-ring that won’t bend or rust. It softens as it wears and picks up the character of every walk — the one collar you buy once and never think about again. Measure your dog’s neck and pick the size below.',
+            'A collar cut from a single strip of full-grain leather and stitched by a real saddler, with a solid brass buckle and D-ring that won’t bend or rust. It softens as it wears and picks up the character of every walk: the one collar you buy once and never think about again. Measure your dog’s neck and pick the size below.',
         price: 38,
         sku: 'BARK-COL-LEATHER',
         productType: 'Collar',
@@ -589,14 +589,14 @@ const PRODUCTS: Product[] = [
         sizes: ['Small', 'Medium', 'Large'],
         colors: ['Tan', 'Chestnut', 'Black'],
         asset: 'prod-collar',
-        seoTitle: 'Heritage Leather Dog Collar — full-grain, brass hardware | Barkwell',
+        seoTitle: 'Heritage Leather Dog Collar: full-grain, brass hardware | Barkwell',
         seoDescription: 'A hand-stitched full-grain leather collar with solid brass hardware, in three sizes and three colors. Buy once, wear it for years.',
     }),
     colored({
         handle: 'heritage-leather-lead',
         title: 'Heritage Leather Lead',
         description:
-            'The lead made to match the collar — the same full-grain leather and solid brass trigger clip, in a comfortable five-foot length that sits soft in the hand from the first walk. No plastic, no fraying nylon; just a lead that ages beautifully and outlasts the dog’s puppyhood many times over.',
+            'The lead made to match the collar: the same full-grain leather and solid brass trigger clip, in a comfortable five-foot length that sits soft in the hand from the first walk. No plastic, no fraying nylon; just a lead that ages beautifully and outlasts the dog’s puppyhood many times over.',
         price: 44,
         sku: 'BARK-LEAD-LEATHER',
         productType: 'Lead',
@@ -605,14 +605,14 @@ const PRODUCTS: Product[] = [
         tags: ['lead', 'leash', 'leather', 'walk'],
         colors: ['Tan', 'Chestnut', 'Black'],
         asset: 'prod-lead',
-        seoTitle: 'Heritage Leather Dog Lead — full-grain, 5ft | Barkwell',
+        seoTitle: 'Heritage Leather Dog Lead: full-grain, 5ft | Barkwell',
         seoDescription: 'A five-foot full-grain leather lead with a solid brass trigger clip, made to match the Heritage collar. Soft in the hand, built to last.',
     }),
     sizeColor({
         handle: 'adventure-harness',
         title: 'Adventure Harness',
         description:
-            'A padded, no-pull harness for dogs who treat every walk like an expedition — breathable mesh, a chest ring to ease pulling, a back handle for helping over stiles, and reflective trim for dark mornings. Four points of adjustment mean it actually fits, and the whole thing wipes clean after the muddiest field.',
+            'A padded, no-pull harness for dogs who treat every walk like an expedition: breathable mesh, a chest ring to ease pulling, a back handle for helping over stiles, and reflective trim for dark mornings. Four points of adjustment mean it actually fits, and the whole thing wipes clean after the muddiest field.',
         price: 52,
         sku: 'BARK-HARN-ADV',
         productType: 'Harness',
@@ -622,14 +622,14 @@ const PRODUCTS: Product[] = [
         sizes: ['Small', 'Medium', 'Large'],
         colors: ['Forest', 'Slate', 'Coral'],
         asset: 'prod-harness',
-        seoTitle: 'Adventure No-Pull Dog Harness — padded, reflective | Barkwell',
+        seoTitle: 'Adventure No-Pull Dog Harness: padded, reflective | Barkwell',
         seoDescription: 'A padded no-pull harness with a chest ring, back handle and reflective trim, in three sizes and three colors. Built for real walks.',
     }),
     choices({
         handle: 'orthopedic-dog-bed',
         title: 'Orthopedic Dog Bed',
         description:
-            'A proper bed for a proper sleep — a solid slab of orthopedic memory foam, not shredded off-cuts, topped with a bolster edge for chin-resting and a cover that unzips and machine-washes in one go. It supports ageing joints, holds its shape for years, and gives even a young dog the deep rest they need. Pick the size for your dog below.',
+            'A proper bed for a proper sleep: a solid slab of orthopedic memory foam, not shredded off-cuts, topped with a bolster edge for chin-resting and a cover that unzips and machine-washes in one go. It supports ageing joints, holds its shape for years, and gives even a young dog the deep rest they need. Pick the size for your dog below.',
         sku: 'BARK-BED-ORTHO',
         productType: 'Bed',
         categories: ['rest'],
@@ -642,14 +642,14 @@ const PRODUCTS: Product[] = [
             { value: 'Large', price: 169 },
         ],
         asset: 'prod-bed',
-        seoTitle: 'Orthopedic Memory-Foam Dog Bed — washable | Barkwell',
+        seoTitle: 'Orthopedic Memory-Foam Dog Bed: washable | Barkwell',
         seoDescription: 'A solid orthopedic memory-foam dog bed with a bolster edge and a fully machine-washable cover, in three sizes. Real support for real sleep.',
     }),
     colored({
         handle: 'everyday-ceramic-bowl',
         title: 'Everyday Ceramic Bowl',
         description:
-            'A hand-glazed stoneware bowl with real heft, a non-slip base and a food-safe finish that won’t harbour the bacteria plastic and steel bowls trap in their scratches. Weighted enough that an enthusiastic eater can’t skate it across the kitchen, dishwasher-safe, and handsome enough to leave out. Sold singly — pair one for water, one for food.',
+            'A hand-glazed stoneware bowl with real heft, a non-slip base and a food-safe finish that won’t harbour the bacteria plastic and steel bowls trap in their scratches. Weighted enough that an enthusiastic eater can’t skate it across the kitchen, dishwasher-safe, and handsome enough to leave out. Sold singly: pair one for water, one for food.',
         price: 26,
         sku: 'BARK-BOWL-CERAMIC',
         productType: 'Bowl',
@@ -658,14 +658,14 @@ const PRODUCTS: Product[] = [
         tags: ['bowl', 'ceramic', 'eat', 'feeding'],
         colors: ['Speckled Cream', 'Sage', 'Clay'],
         asset: 'prod-bowl',
-        seoTitle: 'Hand-Glazed Ceramic Dog Bowl — non-slip, food-safe | Barkwell',
+        seoTitle: 'Hand-Glazed Ceramic Dog Bowl: non-slip, food-safe | Barkwell',
         seoDescription: 'A weighted hand-glazed stoneware dog bowl with a non-slip base and a food-safe finish, in three colors. Dishwasher-safe and built to stay put.',
     }),
     choices({
         handle: 'slow-roasted-treats',
         title: 'Slow-Roasted Natural Treats',
         description:
-            'Single-ingredient treats slow-roasted from one clean protein — nothing else in the bag. No grain filler, no glycerine, no unpronounceable preservatives; just real meat your dog can smell from the next room and a label you can actually read. Resealable pouch, and gentle enough on the stomach to use for everyday training, not just a rare reward.',
+            'Single-ingredient treats slow-roasted from one clean protein. Nothing else in the bag. No grain filler, no glycerine, no unpronounceable preservatives; just real meat your dog can smell from the next room and a label you can actually read. Resealable pouch, and gentle enough on the stomach to use for everyday training, not just a rare reward.',
         sku: 'BARK-TREAT-ROAST',
         productType: 'Treats',
         categories: ['eat'],
@@ -678,14 +678,14 @@ const PRODUCTS: Product[] = [
             { value: 'Wild Salmon', price: 18 },
         ],
         asset: 'prod-treats',
-        seoTitle: 'Slow-Roasted Single-Ingredient Dog Treats — grain-free | Barkwell',
+        seoTitle: 'Slow-Roasted Single-Ingredient Dog Treats: grain-free | Barkwell',
         seoDescription: 'Single-ingredient, slow-roasted natural dog treats with no filler or preservatives, in three flavours. Gentle enough for everyday training.',
     }),
     colored({
         handle: 'cotton-rope-tug-toy',
         title: 'Cotton Rope Tug Toy',
         description:
-            'A chunky tug toy hand-knotted from undyed natural cotton — tough enough for a serious game of tug, soft enough to be kind on teeth and gums, and just abrasive enough to help floss away plaque as they chew. Machine-washable, and it floats, so it’s as good in the water as on the living-room floor.',
+            'A chunky tug toy hand-knotted from undyed natural cotton: tough enough for a serious game of tug, soft enough to be kind on teeth and gums, and just abrasive enough to help floss away plaque as they chew. Machine-washable, and it floats, so it’s as good in the water as on the living-room floor.',
         price: 16,
         sku: 'BARK-TOY-ROPE',
         productType: 'Toy',
@@ -694,14 +694,14 @@ const PRODUCTS: Product[] = [
         tags: ['toy', 'rope', 'play', 'chew'],
         colors: ['Natural', 'Ocean', 'Berry'],
         asset: 'prod-toy',
-        seoTitle: 'Cotton Rope Tug Toy — natural, tooth-friendly | Barkwell',
+        seoTitle: 'Cotton Rope Tug Toy: natural, tooth-friendly | Barkwell',
         seoDescription: 'A hand-knotted natural-cotton rope tug toy that’s tough on play and kind on teeth, in three colors. Machine-washable and it floats.',
     }),
     single({
         handle: 'travel-water-bottle',
         title: 'Stainless Travel Water Bottle',
         description:
-            'The end of cupped hands at the park water fountain — a leak-proof stainless steel bottle with a fold-out silicone bowl built into the lid, so a drink is one thumb-press away on any walk. Holds a proper 500ml, keeps water cool, and any your dog doesn’t finish pours neatly back in rather than down your leg.',
+            'The end of cupped hands at the park water fountain: a leak-proof stainless steel bottle with a fold-out silicone bowl built into the lid, so a drink is one thumb-press away on any walk. Holds a proper 500ml, keeps water cool, and any your dog doesn’t finish pours neatly back in rather than down your leg.',
         price: 29,
         sku: 'BARK-BOTTLE-TRAVEL',
         productType: 'Travel',
@@ -709,14 +709,14 @@ const PRODUCTS: Product[] = [
         collections: ['the-daily-walk', 'gifting'],
         tags: ['travel', 'water', 'bottle', 'walk'],
         asset: 'prod-bottle',
-        seoTitle: 'Stainless Travel Dog Water Bottle — leak-proof, 500ml | Barkwell',
+        seoTitle: 'Stainless Travel Dog Water Bottle: leak-proof, 500ml | Barkwell',
         seoDescription: 'A leak-proof 500ml stainless steel travel water bottle with a fold-out bowl in the lid. One-handed hydration on every walk.',
     }),
     single({
         handle: 'bamboo-grooming-brush',
         title: 'Bamboo Grooming Brush',
         description:
-            'A double-sided brush with a warm bamboo handle — fine bent pins to work through tangles and undercoat on one side, a soft bristle to bring up shine and spread natural oils on the other. Five minutes a week keeps a coat healthy, cuts the shedding on your sofa, and — most dogs quickly decide — feels rather good.',
+            'A double-sided brush with a warm bamboo handle: fine bent pins to work through tangles and undercoat on one side, a soft bristle to bring up shine and spread natural oils on the other. Five minutes a week keeps a coat healthy, cuts the shedding on your sofa, and (most dogs quickly decide) feels rather good.',
         price: 24,
         sku: 'BARK-BRUSH-BAMBOO',
         productType: 'Grooming',
@@ -725,13 +725,13 @@ const PRODUCTS: Product[] = [
         tags: ['grooming', 'brush', 'coat', 'care'],
         asset: 'prod-brush',
         seoTitle: 'Bamboo Double-Sided Dog Grooming Brush | Barkwell',
-        seoDescription: 'A double-sided bamboo grooming brush — bent pins for tangles, soft bristle for shine. Five minutes a week for a healthy coat.',
+        seoDescription: 'A double-sided bamboo grooming brush: bent pins for tangles, soft bristle for shine. Five minutes a week for a healthy coat.',
     }),
     choices({
         handle: 'subscription',
         title: 'Companion Subscription Box',
         description:
-            'The box that turns up before you run out — a freshly packed selection of treats, a new toy and the everyday consumables (poop bags, dental chews) matched to your dog, on the schedule you choose. Skip, swap or cancel any time, and every box works out cheaper than buying the same things one at a time. The easiest way to keep a happy dog stocked.',
+            'The box that turns up before you run out: a freshly packed selection of treats, a new toy and the everyday consumables (poop bags, dental chews) matched to your dog, on the schedule you choose. Skip, swap or cancel any time, and every box works out cheaper than buying the same things one at a time. The easiest way to keep a happy dog stocked.',
         sku: 'BARK-SUB',
         productType: 'Subscription',
         categories: ['eat'],
@@ -743,7 +743,7 @@ const PRODUCTS: Product[] = [
             { value: 'Large dog', price: 44 },
         ],
         asset: 'prod-subscription',
-        seoTitle: 'Companion Subscription Box — treats, toys & essentials | Barkwell',
+        seoTitle: 'Companion Subscription Box: treats, toys & essentials | Barkwell',
         seoDescription: 'A flexible monthly box of treats, a toy and everyday essentials matched to your dog. Skip, swap or cancel any time.',
     }),
 ];
@@ -776,7 +776,7 @@ const COMMERCE = {
         {
             handle: 'the-daily-walk',
             name: 'The daily walk',
-            description: 'Everything for getting out the door — collars, leads, harnesses and water.',
+            description: 'Everything for getting out the door: collars, leads, harnesses and water.',
             type: 'manual',
             featured: false,
             productHandles: ['heritage-leather-collar', 'heritage-leather-lead', 'adventure-harness', 'travel-water-bottle'],
@@ -800,7 +800,7 @@ const COMMERCE = {
         {
             handle: 'gifting',
             name: 'Gift-ready',
-            description: 'Easy to give, better to keep — for the dog who has (almost) everything.',
+            description: 'Easy to give, better to keep, for the dog who has (almost) everything.',
             type: 'manual',
             featured: false,
             productHandles: ['everyday-ceramic-bowl', 'slow-roasted-treats', 'cotton-rope-tug-toy', 'bamboo-grooming-brush', 'travel-water-bottle'],
@@ -821,16 +821,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The first week with a new dog',
-            excerpt: 'Bringing a dog home is joyful and a little chaotic. Here’s how we help a new arrival settle — less about training, more about giving them room to feel safe.',
+            excerpt: 'Bringing a dog home is joyful and a little chaotic. Here’s how we help a new arrival settle: less about training, more about giving them room to feel safe.',
             featuredImage: { $asset: 'post-training' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The day you bring a dog home, everything is new to them — the smells, the floor, the people, the rules they don’t know yet. Whether they’re an eight-week puppy or an eight-year rescue, the single most useful thing you can do in the first week isn’t training. It’s making them feel safe enough to relax. A settled dog learns; an anxious one just copes.'),
+                    para('The day you bring a dog home, everything is new to them: the smells, the floor, the people, the rules they don’t know yet. Whether they’re an eight-week puppy or an eight-year rescue, the single most useful thing you can do in the first week isn’t training. It’s making them feel safe enough to relax. A settled dog learns; an anxious one just copes.'),
                     h2('Give them a place that’s theirs'),
-                    para('Before anything else, set up one spot that belongs to the dog and no one else — a bed in a quiet corner, away from the front door and the busiest foot traffic. When they take themselves there, leave them completely alone, even if the kids are desperate to cuddle. A dog that learns it can retreat and won’t be followed is a dog that settles far faster, because it always has somewhere to switch off.'),
+                    para('Before anything else, set up one spot that belongs to the dog and no one else: a bed in a quiet corner, away from the front door and the busiest foot traffic. When they take themselves there, leave them completely alone, even if the kids are desperate to cuddle. A dog that learns it can retreat and won’t be followed is a dog that settles far faster, because it always has somewhere to switch off.'),
                     h2('Keep the first week boring'),
-                    para('The instinct is to introduce the new dog to everyone and everything at once. Resist it. Keep the first week small and predictable: the same short walks, the same feeding times, the same handful of people. Predictability is what tells an animal it’s safe. The parties, the dog park, the big family visit — those can all wait a fortnight, and they’ll go far better once your dog trusts that home is calm and the routine holds.'),
+                    para('The instinct is to introduce the new dog to everyone and everything at once. Resist it. Keep the first week small and predictable: the same short walks, the same feeding times, the same handful of people. Predictability is what tells an animal it’s safe. The parties, the dog park, the big family visit. Those can all wait a fortnight, and they’ll go far better once your dog trusts that home is calm and the routine holds.'),
                 ],
             },
         },
@@ -841,16 +841,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'What actually belongs in your dog’s bowl',
-            excerpt: 'Dog food labels are designed to confuse. Here’s a plain-English guide to reading one — and why single-ingredient treats are worth the small premium.',
+            excerpt: 'Dog food labels are designed to confuse. Here’s a plain-English guide to reading one, and why single-ingredient treats are worth the small premium.',
             featuredImage: { $asset: 'post-nutrition' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Walk down the pet-food aisle and every bag promises the same things — “natural”, “premium”, “complete”. Those words are marketing, not nutrition, and none of them are regulated in the way you’d hope. The only honest guide to what’s in the bag is the ingredients list, and once you know how to read it, the good stuff separates from the filler very quickly.'),
+                    para('Walk down the pet-food aisle and every bag promises the same things: “natural”, “premium”, “complete”. Those words are marketing, not nutrition, and none of them are regulated in the way you’d hope. The only honest guide to what’s in the bag is the ingredients list, and once you know how to read it, the good stuff separates from the filler very quickly.'),
                     h2('Read the first three ingredients'),
-                    para('Ingredients are listed by weight, so the first two or three are most of what your dog is actually eating. You want a named meat at the top — “chicken” or “beef”, not “meat meal” or “animal derivatives”, which are the cuts nobody wants to name. Be wary when the list opens with a grain or a vague “cereals”: that’s a bag padded out with cheap filler your dog digests poorly and you pay for anyway.'),
+                    para('Ingredients are listed by weight, so the first two or three are most of what your dog is actually eating. You want a named meat at the top: “chicken” or “beef”, not “meat meal” or “animal derivatives”, which are the cuts nobody wants to name. Be wary when the list opens with a grain or a vague “cereals”: that’s a bag padded out with cheap filler your dog digests poorly and you pay for anyway.'),
                     h2('Why single-ingredient treats matter'),
-                    para('Treats are where the worst offenders hide — glycerine, sugar, dyes and preservatives, all in something you hand over dozens of times a day during training. A single-ingredient treat is exactly what it says: one clean protein, slow-roasted, and nothing else. It’s gentler on sensitive stomachs, it won’t undo a careful diet, and because you’re giving so many, it’s the easiest place to cut the junk without your dog noticing anything but the better smell.'),
+                    para('Treats are where the worst offenders hide: glycerine, sugar, dyes and preservatives, all in something you hand over dozens of times a day during training. A single-ingredient treat is exactly what it says: one clean protein, slow-roasted, and nothing else. It’s gentler on sensitive stomachs, it won’t undo a careful diet, and because you’re giving so many, it’s the easiest place to cut the junk without your dog noticing anything but the better smell.'),
                 ],
             },
         },
@@ -861,16 +861,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The five-minute grooming routine that prevents big problems',
-            excerpt: 'Grooming isn’t about looks — it’s the cheapest health check you’ll ever do. A short weekly routine catches trouble early and keeps a coat working the way it should.',
+            excerpt: 'Grooming isn’t about looks: it’s the cheapest health check you’ll ever do. A short weekly routine catches trouble early and keeps a coat working the way it should.',
             featuredImage: { $asset: 'post-care' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Most owners think of grooming as a cosmetic thing — a wash and a brush before visitors come. In fact it’s the most reliable early-warning system you have. Five minutes a week with your hands and a brush will catch lumps, ticks, sore ears, matted fur and cracked pads long before they turn into an expensive vet visit, and it keeps your dog’s coat doing the job it’s meant to.'),
+                    para('Most owners think of grooming as a cosmetic thing: a wash and a brush before visitors come. In fact it’s the most reliable early-warning system you have. Five minutes a week with your hands and a brush will catch lumps, ticks, sore ears, matted fur and cracked pads long before they turn into an expensive vet visit, and it keeps your dog’s coat doing the job it’s meant to.'),
                     h2('Brush with the grain, feel as you go'),
-                    para('Once a week, brush the whole dog in the direction the coat lies — bent pins first to lift out loose undercoat and work through any tangles, then a soft bristle to spread the natural oils that keep the coat weatherproof and shiny. As you go, let your hands do a quiet survey: run them over the ribs, the belly, the legs and around the ears, noticing anything new — a bump, a tender spot, a patch of missing fur. You’ll know your dog’s body better than any once-a-year check-up can.'),
+                    para('Once a week, brush the whole dog in the direction the coat lies: bent pins first to lift out loose undercoat and work through any tangles, then a soft bristle to spread the natural oils that keep the coat weatherproof and shiny. As you go, let your hands do a quiet survey: run them over the ribs, the belly, the legs and around the ears, noticing anything new, a bump, a tender spot, a patch of missing fur. You’ll know your dog’s body better than any once-a-year check-up can.'),
                     h2('Don’t forget the bits at the ends'),
-                    para('Finish with the extremities, where problems love to hide. Glance inside the ears for redness or a yeasty smell, check the pads for cracks and stuck grit, and look at the nails — if you can hear them clicking on a hard floor, they’re due a trim. None of this takes long, and doing it little and often means your dog stays relaxed about being handled, so the day you really do need to check something sore, they let you.'),
+                    para('Finish with the extremities, where problems love to hide. Glance inside the ears for redness or a yeasty smell, check the pads for cracks and stuck grit, and look at the nails: if you can hear them clicking on a hard floor, they’re due a trim. None of this takes long, and doing it little and often means your dog stays relaxed about being handled, so the day you really do need to check something sore, they let you.'),
                 ],
             },
         },
@@ -885,7 +885,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Pet Supplies (Premium)',
     theme: THEME,
     summary:
-        'A complete, working shop for a premium modern pet brand: a real catalogue of a hand-stitched leather collar and matching lead, an adventure harness, an orthopedic dog bed, a ceramic bowl, natural treats, a rope toy, a travel bottle, a grooming brush and a flexible subscription box, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Warm, friendly-but-premium theme — a cream ground, a deep teal primary and a warm coral accent. Shipped as Barkwell.',
+        'A complete, working shop for a premium modern pet brand: a real catalogue of a hand-stitched leather collar and matching lead, an adventure harness, an orthopedic dog bed, a ceramic bowl, natural treats, a rope toy, a travel bottle, a grooming brush and a flexible subscription box, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Warm, friendly-but-premium theme, a cream ground, a deep teal primary and a warm coral accent. Shipped as Barkwell.',
     tagline: 'A warm, working storefront for a premium pet brand.',
     vertical: 'retail',
     industry: 'Pet supplies & accessories',
@@ -898,14 +898,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Barkwell — premium pet supplies, made to last',
+            title: 'Barkwell: premium pet supplies, made to last',
             description:
-                'Barkwell makes the everyday things your dog uses most — leather collars, orthopedic beds, ceramic bowls, natural treats — from natural materials, built by hand and vet-approved.',
+                'Barkwell makes the everyday things your dog uses most (leather collars, orthopedic beds, ceramic bowls, natural treats) from natural materials, built by hand and vet-approved.',
         },
         about: {
             title: 'About Barkwell',
             description:
-                'Why Barkwell makes pet gear the proper way — natural materials, small workshops, vet-approved, built to last, with a share of every order going to shelters.',
+                'Why Barkwell makes pet gear the proper way: natural materials, small workshops, vet-approved, built to last, with a share of every order going to shelters.',
         },
     },
     home: HOME,

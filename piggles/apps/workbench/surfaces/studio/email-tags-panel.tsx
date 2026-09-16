@@ -58,7 +58,7 @@ export function EmailTagsPanel() {
       <Input
         size="sm"
         value={query}
-        placeholder="Search — “name”, “order”, “total”"
+        placeholder="Search: “name”, “order”, “total”"
         onChange={(event) => setQuery(event.currentTarget.value)}
       />
 

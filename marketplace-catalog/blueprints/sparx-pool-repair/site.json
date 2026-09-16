@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "AquaTech Pool & Spa — expert pool & spa repair",
+      "seoTitle": "AquaTech Pool & Spa: expert pool & spa repair",
       "seoDescription": "AquaTech Pool & Spa repairs pumps, heaters and leaks, and handles equipment, automation and resurfacing. Certified technicians, fixed prices. Book a service call online.",
       "root": {
         "kind": "element",
@@ -664,7 +664,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Factory-trained, background-checked pros who repair equipment for a living — not a route driver taking a guess at your pump."
+                              "Factory-trained, background-checked pros who repair equipment for a living, not a route driver taking a guess at your pump."
                             ],
                             "id": "5cf3164f-c7bd-4197-8a9d-844d3cc2ac6c",
                             "ord": "a1"
@@ -691,7 +691,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Pentair, Hayward, Jandy, Raypak and the rest — we carry the common parts and know the boards, so most repairs finish in one visit."
+                              "Pentair, Hayward, Jandy, Raypak and the rest. We carry the common parts and know the boards, so most repairs finish in one visit."
                             ],
                             "id": "0034d1f1-de42-4f2f-a802-442a2bd5772c",
                             "ord": "a1"
@@ -745,7 +745,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "When a fix isn’t worth it, we size a modern, efficient replacement — variable-speed pumps and phone-controlled automation that pay you back."
+                              "When a fix isn’t worth it, we size a modern, efficient replacement: variable-speed pumps and phone-controlled automation that pay you back."
                             ],
                             "id": "bc604f89-495e-4b29-893c-74bde9b8a8cd",
                             "ord": "a1"
@@ -794,7 +794,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The service calls homeowners book most. Full details and live availability are on the booking page — pick a problem and a time."
+                          "The service calls homeowners book most. Full details and live availability are on the booking page. Pick a problem and a time."
                         ],
                         "id": "70dbd546-e193-49d4-85d5-fdc490639778",
                         "ord": "a1"
@@ -854,7 +854,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We find the fault and quote a fixed repair — fee comes off the fix."
+                              "We find the fault and quote a fixed repair: fee comes off the fix."
                             ],
                             "id": "59abffed-4753-4f6e-a476-c50702c4bdc3",
                             "ord": "a2"
@@ -909,7 +909,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Seals, bearings, motors and drives — usually done in one visit."
+                              "Seals, bearings, motors and drives, usually done in one visit."
                             ],
                             "id": "4737e576-6a86-42ba-b97e-3edec2914f44",
                             "ord": "a2"
@@ -1100,7 +1100,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most pool problems get \"fixed\" three times because nobody found the real cause the first time. We do the opposite — pressure tests, dye tests, board readings and flow checks until we can point at exactly what’s wrong and why."
+                          "Most pool problems get \"fixed\" three times because nobody found the real cause the first time. We do the opposite: pressure tests, dye tests, board readings and flow checks until we can point at exactly what’s wrong and why."
                         ],
                         "id": "98cc1c13-4a81-4a6c-9608-f1d6f78de7c0",
                         "ord": "a1"
@@ -1187,7 +1187,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Sometimes the honest call is to stop repairing an old, power-hungry system and upgrade it. We’ll tell you when you’ve hit that line — and we’ll show you the math, not just push a sale."
+                          "Sometimes the honest call is to stop repairing an old, power-hungry system and upgrade it. We’ll tell you when you’ve hit that line, and we’ll show you the math, not just push a sale."
                         ],
                         "id": "32670b21-b3d0-43f5-b921-5eb23555ea8c",
                         "ord": "a1"
@@ -1242,7 +1242,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Real specialists, background-checked and factory-trained — you’ll know who’s coming and what they’re expert in before they arrive."
+                          "Real specialists, background-checked and factory-trained: you’ll know who’s coming and what they’re expert in before they arrive."
                         ],
                         "id": "c4226bc8-2e1e-4090-b851-311a6145ef2b",
                         "ord": "a1"
@@ -1411,7 +1411,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Equipment upgrades, automation and full resurfacing — the bigger jobs, planned and done clean."
+                                  "Equipment upgrades, automation and full resurfacing: the bigger jobs, planned and done clean."
                                 ],
                                 "id": "aeec7382-9714-4e7f-a7d1-b357d9319700",
                                 "ord": "a2"
@@ -1526,7 +1526,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — AquaTech Pool & Spa",
+      "seoTitle": "Book: AquaTech Pool & Spa",
       "seoDescription": "See what AquaTech Pool & Spa offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1577,7 +1577,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose a service to see what it covers, how long it takes and live availability — then pick your technician and time."
+                      "Choose a service to see what it covers, how long it takes and live availability, then pick your technician and time."
                     ],
                     "id": "a2b27b9e-dcc3-48bf-8b79-94ebb4fe1a75",
                     "ord": "a1"
@@ -1650,7 +1650,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "81de7df2-6c46-4e3a-8f99-5f0e1b3ca7e0",
                         "ord": "a1"
@@ -1757,7 +1757,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — AquaTech Pool & Spa",
+      "seoTitle": "About: AquaTech Pool & Spa",
       "seoDescription": "Who AquaTech Pool & Spa is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1806,7 +1806,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started AquaTech because too many pool owners get handed guesses — a swapped part, a big bill, and the same problem a month later. Pools and spas are real machinery, and machinery deserves a real diagnosis."
+                          "We started AquaTech because too many pool owners get handed guesses: a swapped part, a big bill, and the same problem a month later. Pools and spas are real machinery, and machinery deserves a real diagnosis."
                         ],
                         "id": "d5b4714d-fe90-4ab2-a0f6-ab034ce6b368",
                         "ord": "a1"
@@ -1816,7 +1816,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a small crew of factory-trained technicians who’d rather find the fault once than bill for it three times. Every job starts with tracing the actual cause, so you pay to fix the problem — not to chase it."
+                          "We’re a small crew of factory-trained technicians who’d rather find the fault once than bill for it three times. Every job starts with tracing the actual cause, so you pay to fix the problem, not to chase it."
                         ],
                         "id": "efaa17ef-6a7d-4633-8a33-e95cca02e9cb",
                         "ord": "a2"
@@ -1894,7 +1894,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every repair starts with a real diagnosis — tested and confirmed, never a part swapped on a hunch."
+                              "Every repair starts with a real diagnosis: tested and confirmed, never a part swapped on a hunch."
                             ],
                             "id": "9501611d-7800-441b-8fbd-771971462a1d",
                             "ord": "a1"
@@ -1976,7 +1976,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — AquaTech Pool & Spa",
+      "seoTitle": "Visit: AquaTech Pool & Spa",
       "seoDescription": "Where to find AquaTech Pool & Spa, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2013,7 +2013,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and AquaTech Pool & Spa will get back to you — usually the same day."
+                          "Questions before you book? Send a note and AquaTech Pool & Spa will get back to you, usually the same day."
                         ],
                         "id": "3e546447-7316-4cdb-89dc-b83557882cdc",
                         "ord": "a1"
@@ -2465,7 +2465,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a technician online — pick a service, a day and a time in about a minute."
+                      "See live availability and reserve a technician online. Pick a service, a day and a time in about a minute."
                     ],
                     "id": "30d4c283-8f90-42a6-a84f-db9c9a89ad97",
                     "ord": "a1"

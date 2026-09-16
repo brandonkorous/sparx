@@ -133,7 +133,7 @@ export function ResendVerificationButton({
         disabled={pending || sent}
         className="w-full"
       >
-        {sent ? 'Sent — check your inbox' : 'Send the email again'}
+        {sent ? 'Sent: check your inbox' : 'Send the email again'}
       </Button>
       {sent ? (
         <Alert color="success" variant="soft" role="status">

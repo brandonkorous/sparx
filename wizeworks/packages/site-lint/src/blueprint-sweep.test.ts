@@ -93,7 +93,7 @@ function lines(slug: string, report: SiteLintReport, rule?: string): string[] {
   return report.findings
     .filter((f) => (rule ? f.rule === rule : f.severity === 'error'))
     .filter((f) => !isAcceptedBrandContrast(slug, f))
-    .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule} — ${f.evidence ?? f.title}`);
+    .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule}: ${f.evidence ?? f.title}`);
 }
 
 describe('the shipped blueprints', () => {
@@ -181,9 +181,9 @@ describe('the shipped blueprints', () => {
     const remaining = slugs().flatMap((slug) =>
       grade(slug)
         .findings.filter((f) => !isAcceptedBrandContrast(slug, f))
-        .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule} — ${f.evidence ?? f.title}`)
+        .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule}: ${f.evidence ?? f.title}`)
     );
-    const stale = remaining.filter((line) => line.endsWith('page-unreachable — /collections'));
+    const stale = remaining.filter((line) => line.endsWith('page-unreachable: /collections'));
     expect(stale.length).toBe(STALE_COLLECTIONS_FRAME);
     expect(remaining.filter((line) => !stale.includes(line))).toEqual([]);
   });

@@ -163,7 +163,7 @@ const SCHEDULING = {
       handle: 'free-estimate',
       name: 'Free estimate',
       description:
-        'We walk the space, talk through your colors and finishes, and give you a clear written price — no charge, no pressure.',
+        'We walk the space, talk through your colors and finishes, and give you a clear written price: no charge, no pressure.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -176,7 +176,7 @@ const SCHEDULING = {
       handle: 'interior-painting-estimate',
       name: 'Interior painting estimate',
       description:
-        'A room, a floor or the whole inside — we measure, check the prep and quote a flat, written price for the job.',
+        'A room, a floor or the whole inside. We measure, check the prep and quote a flat, written price for the job.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -189,7 +189,7 @@ const SCHEDULING = {
       handle: 'exterior-painting-estimate',
       name: 'Exterior painting estimate',
       description:
-        'Siding, trim, doors and eaves — we look at the surfaces and weather wear and give you a straight price to repaint.',
+        'Siding, trim, doors and eaves. We look at the surfaces and weather wear and give you a straight price to repaint.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -202,7 +202,7 @@ const SCHEDULING = {
       handle: 'cabinet-refinishing-consult',
       name: 'Cabinet refinishing consult',
       description:
-        'A sit-down about your kitchen cabinets — color, finish and how we prep and spray for a factory-smooth result.',
+        'A sit-down about your kitchen cabinets: color, finish and how we prep and spray for a factory-smooth result.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -242,7 +242,7 @@ const SCHEDULING = {
       handle: 'trim-accent-estimate',
       name: 'Trim & accent estimate',
       description:
-        'Baseboards, crown, doors or a single feature wall — we quote the detail work that makes a room feel finished.',
+        'Baseboards, crown, doors or a single feature wall. We quote the detail work that makes a room feel finished.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -269,11 +269,11 @@ const HOME = [
     items: [
       {
         title: 'Tidy, respectful crews',
-        body: 'Drop cloths, taped edges and shoe covers. We move your things carefully, clean up every day, and you’d never know we were there — except for the paint.',
+        body: 'Drop cloths, taped edges and shoe covers. We move your things carefully, clean up every day, and you’d never know we were there, except for the paint.',
       },
       {
         title: 'Premium paints only',
-        body: 'We paint with top-tier, low-odor paints that cover better and last longer. No thin coats, no cheap substitutes — the finish holds up for years.',
+        body: 'We paint with top-tier, low-odor paints that cover better and last longer. No thin coats, no cheap substitutes: the finish holds up for years.',
       },
       {
         title: 'Satisfaction guaranteed',
@@ -281,13 +281,13 @@ const HOME = [
       },
       {
         title: 'On time, on budget',
-        body: 'You get a real start date and a flat written price up front. We finish when we say we will, for what we quoted — no creeping costs at the end.',
+        body: 'You get a real start date and a flat written price up front. We finish when we say we will, for what we quoted: no creeping costs at the end.',
       },
     ],
   }),
   serviceMenu({
     heading: 'What we come out for',
-    intro: 'The visits we book most. Pick one to see how long it takes and grab the next open time — most estimates are free.',
+    intro: 'The visits we book most. Pick one to see how long it takes and grab the next open time. Most estimates are free.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -323,14 +323,14 @@ const HOME = [
     alt: 'A painter cutting a clean line along the ceiling with a brush',
     heading: 'The clean process behind every job',
     body: [
-      'Great paint is mostly great prep. We patch, sand, caulk and prime before a single finish coat goes on — that’s why our lines stay crisp and our walls stay smooth.',
+      'Great paint is mostly great prep. We patch, sand, caulk and prime before a single finish coat goes on: that’s why our lines stay crisp and our walls stay smooth.',
       'Then we protect everything that isn’t getting painted, keep a tidy site the whole way through, and do a final walk with you room by room before we call it done.',
     ],
     cta: { label: 'Book your free estimate', href: '/book' },
   }),
   teamRow({
     heading: 'The crew who’ll be at your door',
-    intro: 'The same familiar faces every visit — skilled painters who care about the details and treat your home like their own.',
+    intro: 'The same familiar faces every visit: skilled painters who care about the details and treat your home like their own.',
     members: [
       {
         name: 'Maya Okonkwo',
@@ -356,7 +356,7 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'They repainted our whole downstairs and I keep looking for something to nitpick — there’s nothing. Crisp lines, spotless floors, done on the day they promised. We’ve already booked the exterior.',
+    quote: 'They repainted our whole downstairs and I keep looking for something to nitpick: there’s nothing. Crisp lines, spotless floors, done on the day they promised. We’ve already booked the exterior.',
     attribution: 'Rachel T., Maplewood homeowner',
   }),
   bookingCta({
@@ -371,7 +371,7 @@ const BOOK_INTRO = [
     image: url(IMG.story),
     alt: 'A painter cutting a clean line along the ceiling with a brush',
     title: 'Book a free estimate',
-    sub: 'Choose the visit you need to see how long it takes and the next open time — then pick your painter and day. Most estimates are free.',
+    sub: 'Choose the visit you need to see how long it takes and the next open time, then pick your painter and day. Most estimates are free.',
     primary: { label: 'See services below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -384,7 +384,7 @@ const ABOUT = [
     alt: 'A freshly painted, sunlit living room with crisp white trim',
     heading: 'About Brushworks Painting',
     body: [
-      'We started Brushworks to do painting the way homeowners actually want it — a crew that arrives on time, protects your home, quotes an honest flat price, and leaves the place cleaner than they found it.',
+      'We started Brushworks to do painting the way homeowners actually want it: a crew that arrives on time, protects your home, quotes an honest flat price, and leaves the place cleaner than they found it.',
       'We’re a small, local team painting homes across the area. No sales pressure, no thin coats, no mess left behind. Just careful prep, premium paint and a finish you’ll be glad to look at every day.',
     ],
     cta: { label: 'Book a free estimate', href: '/book' },
@@ -403,7 +403,7 @@ const ABOUT = [
       },
       {
         title: 'A final walk, together',
-        body: 'Before we pack up, we walk every room with you in good light. If anything needs another pass, it gets one — that’s the guarantee.',
+        body: 'Before we pack up, we walk every room with you in good light. If anything needs another pass, it gets one: that’s the guarantee.',
       },
     ],
   }),
@@ -423,7 +423,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See the next open times and reserve your free estimate online — no phone tag, no waiting on hold.',
+    sub: 'See the next open times and reserve your free estimate online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book a free estimate', href: '/book' },
   }),
@@ -434,8 +434,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-painting-residential',
   name: 'Painting (Residential)',
   summary:
-    'A clean, reliable residential-painting site — a fresh near-white palette with a clean-blue primary and warm accent, photo-led throughout. Installs a working online booking flow: homeowners book a free estimate or consult and get a real time slot. Ships a full visit menu (free, interior, exterior, cabinet, color, drywall, trim), three painters as dispatchable staff with their own hours, and a standard visit policy. Ships as "Brushworks Painting".',
-  tagline: 'A fresh, reliable template for residential painters — book free estimates online from day one.',
+    'A clean, reliable residential-painting site: a fresh near-white palette with a clean-blue primary and warm accent, photo-led throughout. Installs a working online booking flow: homeowners book a free estimate or consult and get a real time slot. Ships a full visit menu (free, interior, exterior, cabinet, color, drywall, trim), three painters as dispatchable staff with their own hours, and a standard visit policy. Ships as "Brushworks Painting".',
+  tagline: 'A fresh, reliable template for residential painters. Book free estimates online from day one.',
   industry: 'Painting',
   sortWeight: 26,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -447,9 +447,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Brushworks Painting — clean, reliable residential painters',
+      title: 'Brushworks Painting: clean, reliable residential painters',
       description:
-        'Brushworks is a local residential painting company — interior, exterior, cabinets and trim, done tidy and on time. Book a free estimate online.',
+        'Brushworks is a local residential painting company: interior, exterior, cabinets and trim, done tidy and on time. Book a free estimate online.',
     },
   },
   home: HOME,

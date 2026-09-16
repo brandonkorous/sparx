@@ -77,7 +77,7 @@ export const FIELD_META: Record<SegmentField, FieldMeta> = {
     label: 'Credit used (share)',
     group: 'Wholesale account',
     kind: 'number',
-    hint: 'A share between 0 and 1 — 0.8 means 80% of their limit is used.',
+    hint: 'A share between 0 and 1: 0.8 means 80% of their limit is used.',
   },
   'b2bAccount.fleetSize': { label: 'Fleet size', group: 'Wholesale account', kind: 'number' },
   'b2bAccount.status': {

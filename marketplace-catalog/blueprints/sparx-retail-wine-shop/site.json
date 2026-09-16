@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Sediment — a natural-wine bottle shop",
-      "seoDescription": "Sediment is a natural-wine shop — low-intervention reds, whites, skin-contact oranges, pét-nats and rosé from small growers who farm clean. Nothing added, nothing taken away.",
+      "seoTitle": "Sediment: a natural-wine bottle shop",
+      "seoDescription": "Sediment is a natural-wine shop: low-intervention reds, whites, skin-contact oranges, pét-nats and rosé from small growers who farm clean. Nothing added, nothing taken away.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -799,7 +799,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Sediment is a natural-wine shop. We buy from small growers who farm organically and let the wine make itself — nothing added, nothing stripped out. Bright, alive bottles, chosen by people who drink them."
+                          "Sediment is a natural-wine shop. We buy from small growers who farm organically and let the wine make itself. Nothing added, nothing stripped out. Bright, alive bottles, chosen by people who drink them."
                         ],
                         "id": "27588a5a-7325-47fe-a27a-ee247a2d00ef",
                         "ord": "a1"
@@ -1256,7 +1256,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Natural wine is farmed organically, fermented with its own wild yeast, and bottled with little or no added sulphur — no lab yeasts, no color, no fining agents, no filtering the life out of it. What that gets you is wine that tastes like the year, the place and the person who grew it."
+                          "Natural wine is farmed organically, fermented with its own wild yeast, and bottled with little or no added sulphur: no lab yeasts, no color, no fining agents, no filtering the life out of it. What that gets you is wine that tastes like the year, the place and the person who grew it."
                         ],
                         "id": "d21d0ebf-ee51-4d2e-8c88-b0f86d6d5cd1",
                         "ord": "a1"
@@ -1530,7 +1530,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Not sure where to start? The mixed six is our pick of the shelf right now — three reds, three whites and oranges, all low-intervention, all delicious, at a better price than buying them one at a time. We swap it every month."
+                          "Not sure where to start? The mixed six is our pick of the shelf right now: three reds, three whites and oranges, all low-intervention, all delicious, at a better price than buying them one at a time. We swap it every month."
                         ],
                         "id": "645d41bb-7b24-4f2c-9dfc-6a4c32b88a7f",
                         "ord": "a1"
@@ -1565,7 +1565,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Sediment",
+      "seoTitle": "Shop: Sediment",
       "seoDescription": "Browse everything Sediment makes, with prices and options at a glance. Wine shop.",
       "root": {
         "kind": "element",
@@ -1597,7 +1597,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we are pouring right now — reds, whites, skin-contact oranges, pét-nats, rosé, a magnum or two and a low-intervention non-alc. Filter by color or sort however you like; every bottle here is farmed clean and made with a light hand."
+                      "Everything we are pouring right now: reds, whites, skin-contact oranges, pét-nats, rosé, a magnum or two and a low-intervention non-alc. Filter by color or sort however you like; every bottle here is farmed clean and made with a light hand."
                     ],
                     "id": "7d9ad559-d89e-4b03-966b-a65062247da9",
                     "ord": "a1"
@@ -1625,7 +1625,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Sediment",
+      "seoTitle": "Collections: Sediment",
       "seoDescription": "Explore the collections at Sediment, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1657,7 +1657,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The bottles grouped the way people actually shop — what just landed, the low-intervention core, the ones to chill hard, our staff picks and the bottles worth keeping."
+                      "The bottles grouped the way people actually shop: what just landed, the low-intervention core, the ones to chill hard, our staff picks and the bottles worth keeping."
                     ],
                     "id": "53adccb9-9562-47da-9828-7d100616d863",
                     "ord": "a1"
@@ -1685,7 +1685,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Sediment",
+      "seoTitle": "Your cart: Sediment",
       "seoDescription": "Review what is in your cart and check out securely at Sediment.",
       "root": {
         "kind": "element",
@@ -1717,7 +1717,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free local delivery over $75, and every order is packed to travel safely. Not sure about a bottle? Tell us what you like and we will point you at the right one — buying wine should be fun, not a test."
+                      "Free local delivery over $75, and every order is packed to travel safely. Not sure about a bottle? Tell us what you like and we will point you at the right one: buying wine should be fun, not a test."
                     ],
                     "id": "8c92c615-2774-4f0c-a568-9cfa1567568d",
                     "ord": "a1"
@@ -1745,7 +1745,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Sediment",
+      "seoTitle": "Search: Sediment",
       "seoDescription": "Search Sediment for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1805,7 +1805,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Sediment",
+      "seoTitle": "Journal: Sediment",
       "seoDescription": "Stories, guides and notes from Sediment.",
       "root": {
         "kind": "element",
@@ -1837,7 +1837,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from behind the counter — what natural wine actually means, what to pour with dinner, and how to taste a bottle without the ceremony. Honest, useful, no snobbery."
+                      "Notes from behind the counter: what natural wine actually means, what to pour with dinner, and how to taste a bottle without the ceremony. Honest, useful, no snobbery."
                     ],
                     "id": "b3f5e5a9-c7ea-49e5-9e0c-a852c899008d",
                     "ord": "a1"
@@ -1970,8 +1970,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Sediment — natural wine, honestly chosen",
-      "seoDescription": "How Sediment buys and keeps its wine — small growers, organic farming, a light hand in the cellar, and a well-kept shelf of living bottles worth the money.",
+      "seoTitle": "About Sediment: natural wine, honestly chosen",
+      "seoDescription": "How Sediment buys and keeps its wine: small growers, organic farming, a light hand in the cellar, and a well-kept shelf of living bottles worth the money.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2002,7 +2002,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Sediment started as a corner of a wine bar and a stubborn belief: that the most interesting bottles were the ones the big shops would not stock — made by small growers, farmed without chemicals, and left alone in the cellar to become themselves."
+                      "Sediment started as a corner of a wine bar and a stubborn belief: that the most interesting bottles were the ones the big shops would not stock, made by small growers, farmed without chemicals, and left alone in the cellar to become themselves."
                     ],
                     "id": "868cfa26-b666-4a6e-94fc-9adf5fee1b49",
                     "ord": "a1"
@@ -2012,7 +2012,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We buy from importers and growers we can name, and we taste everything before it hits the shelf. If a bottle is not honest, alive and worth the money, it does not make the cut — no matter how good the label looks or how fashionable the region has become."
+                      "We buy from importers and growers we can name, and we taste everything before it hits the shelf. If a bottle is not honest, alive and worth the money, it does not make the cut: no matter how good the label looks or how fashionable the region has become."
                     ],
                     "id": "fec9f5dd-5d0f-418d-a114-3cd809652b5b",
                     "ord": "a2"
@@ -2042,8 +2042,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Sediment",
-      "seoDescription": "Get in touch with Sediment — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Sediment",
+      "seoDescription": "Get in touch with Sediment: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2079,7 +2079,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "After a bottle for a dinner, a case for a party, or a hand picking something for a gift? Tell us what you are after and a real person from the shop will get back to you — recommendations always welcome."
+                          "After a bottle for a dinner, a case for a party, or a hand picking something for a gift? Tell us what you are after and a real person from the shop will get back to you: recommendations always welcome."
                         ],
                         "id": "67b7ed21-dd7e-49ea-a091-829c9bbe3808",
                         "ord": "a1"
@@ -2350,8 +2350,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Sediment",
-      "seoDescription": "Product details at Sediment — wine shop, with options and pricing.",
+      "seoTitle": "Product: Sediment",
+      "seoDescription": "Product details at Sediment: wine shop, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2714,7 +2714,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Serve it a touch cooler than you think — a light chill flatters almost everything on this shelf, reds included. Living wine can throw a little sediment or fizz; that is the wine, not a fault. Open it, give it a minute, and let it wake up."
+                              "Serve it a touch cooler than you think: a light chill flatters almost everything on this shelf, reds included. Living wine can throw a little sediment or fizz; that is the wine, not a fault. Open it, give it a minute, and let it wake up."
                             ],
                             "id": "0cf19c7d-cf85-4082-b3c2-4d22e3c2b910",
                             "ord": "a1"

@@ -28,7 +28,7 @@ export function PricingDashboardSection() {
             One place.
           </Heading>
           <Text variant="lead" className="text-primary-content mt-5 max-w-xl text-2xl">
-            Whatever you switch on opens in the same workspace — your site, orders, customers and
+            Whatever you switch on opens in the same workspace. Your site, orders, customers and
             email side by side, no extra seats, no new logins, no tab-hopping. This is the one
             product every module lives inside.
           </Text>

@@ -34,7 +34,7 @@ export function FeaturesHero() {
     { v: String(counts.live), s: 'working today' },
     { v: String(counts.building), s: 'being built right now' },
     { v: String(counts.planned), s: 'planned next' },
-    { v: String(counts.modules), s: 'modules — pay only for the ones you turn on' },
+    { v: String(counts.modules), s: 'modules: pay only for the ones you turn on' },
     { v: String(freeAreas), s: 'areas free on every plan, whatever you turn on' },
   ] as const;
 
@@ -51,7 +51,7 @@ export function FeaturesHero() {
             <span className="text-primary">.</span>
           </Heading>
           <Text variant="lead" className="text-base-content max-w-2xl text-xl">
-            All {counts.total} of them, written down — {counts.live} of which you can use today.
+            All {counts.total} of them, written down, {counts.live} of which you can use today.
             Search it for the thing your business actually needs, and see which module it comes with
             before you spend a cent.
           </Text>

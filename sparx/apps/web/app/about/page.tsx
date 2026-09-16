@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'About WizeWorks — sparx',
+  title: 'About WizeWorks: sparx',
   description:
     'WizeWorks is a Visalia, California software studio. sparx is our flagship content and commerce platform. kanNINJA and HelpNinja are also ours.',
   alternates: { canonical: '/about' },

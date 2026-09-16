@@ -266,7 +266,7 @@ export function ContentBlockEditor({
 
   const insertEmbed = () => {
     const url = window.prompt(
-      'Embed URL — a video (YouTube, Vimeo, Loom) or a track, album or podcast (Spotify, ' +
+      'Embed URL: a video (YouTube, Vimeo, Loom) or a track, album or podcast (Spotify, ' +
         'SoundCloud, Apple Music, Apple Podcasts). Pasted as-is; the storefront re-validates ' +
         'before rendering.'
     );
@@ -416,22 +416,22 @@ export function ContentBlockEditor({
           <BlockMenu open={menuOpen} onClose={() => setMenuOpen(false)}>
             <MenuItem
               icon={<Info className="h-3.5 w-3.5" />}
-              label="Callout — info"
+              label="Callout: info"
               onClick={() => insertCallout('info')}
             />
             <MenuItem
               icon={<Info className="h-3.5 w-3.5" />}
-              label="Callout — success"
+              label="Callout: success"
               onClick={() => insertCallout('success')}
             />
             <MenuItem
               icon={<Info className="h-3.5 w-3.5" />}
-              label="Callout — warning"
+              label="Callout: warning"
               onClick={() => insertCallout('warning')}
             />
             <MenuItem
               icon={<Info className="h-3.5 w-3.5" />}
-              label="Callout — danger"
+              label="Callout: danger"
               onClick={() => insertCallout('danger')}
             />
             <MenuItem

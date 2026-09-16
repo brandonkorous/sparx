@@ -59,7 +59,7 @@ function resolveAvailability(
   if (!adapter.isConfigured()) {
     return {
       availability: 'needs_platform_setup',
-      reason: `{platform} is finishing its ${descriptor.name} app approval. Nothing for you to do — this will switch on by itself.`,
+      reason: `{platform} is finishing its ${descriptor.name} app approval. Nothing for you to do. This will switch on by itself.`,
     };
   }
   return { availability: 'available' };

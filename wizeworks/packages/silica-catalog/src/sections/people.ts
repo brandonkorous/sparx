@@ -84,7 +84,7 @@ export function founderNote(): Node {
             ),
             body(
               'So we fixed those two things first and built the rest around them. It is not complicated ' +
-                'and it is not a slogan — it is just the part everybody else seems to skip.'
+                'and it is not a slogan. It is just the part everybody else seems to skip.'
             ),
             el('div', 'flex flex-col gap-1', {
               children: [

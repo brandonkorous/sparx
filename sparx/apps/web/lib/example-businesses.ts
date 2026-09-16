@@ -329,7 +329,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       segment: 'high-value, loyal',
       deal: { title: 'Flax & Fern bulk', value: '$9,300', stage: 'Closed Won', probability: 'won' },
       signals: [
-        { module: 'commerce', label: 'Order #1042 placed — $539.38' },
+        { module: 'commerce', label: 'Order #1042 placed: $539.38' },
         { module: 'email', label: 'Opened “Spring restock” email' },
         { module: 'crm', label: 'In segment: high-value, loyal' },
         { module: 'ai', label: 'Asked the AI for a reorder quote' },
@@ -338,13 +338,13 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     email: {
       sender: 'hello@flaxandfern.com',
-      broadcastSubject: 'Spring linen restock — your shade is back',
+      broadcastSubject: 'Spring linen restock: your shade is back',
       segment: 'high-value, loyal',
       recipients: '6,420',
       openRate: '52.4%',
       clickRate: '7.1%',
       transactional: { event: 'order.placed', subject: 'Your Flax & Fern order is confirmed' },
-      previewLine: 'Hi Dana — your order is confirmed and heading out the door.',
+      previewLine: 'Hi Dana. Your order is confirmed and heading out the door.',
     },
     b2b: {
       account: 'Cedar & Co. Hotels',
@@ -443,7 +443,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       segment: 'win-back at-risk',
       deal: { title: 'Hudson farm CSA', value: '$1,800', stage: 'Lead', probability: '20%' },
       signals: [
-        { module: 'commerce', label: 'Order #1043 placed — $100.00' },
+        { module: 'commerce', label: 'Order #1043 placed: $100.00' },
         { module: 'email', label: 'Clicked “This week’s harvest” email' },
         { module: 'crm', label: 'In segment: win-back at-risk' },
         { module: 'ai', label: 'Asked the AI when strawberries return' },
@@ -457,8 +457,8 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       recipients: '3,180',
       openRate: '48.9%',
       clickRate: '6.3%',
-      transactional: { event: 'order.placed', subject: 'Pickup confirmed — see you Saturday' },
-      previewLine: 'Hi Marcus — your pickup is set. Here is what is ready this week.',
+      transactional: { event: 'order.placed', subject: 'Pickup confirmed: see you Saturday' },
+      previewLine: 'Hi Marcus. Your pickup is set. Here is what is ready this week.',
     },
     b2b: {
       account: 'Harvest Table Restaurants',
@@ -544,7 +544,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       category: 'How-to',
       readTime: '4 min read',
       metaDescription:
-        'Measure once and order with confidence — our quick method for finding the right collar fit.',
+        'Measure once and order with confidence. Our quick method for finding the right collar fit.',
       seoScore: 92,
     },
     crm: {
@@ -562,7 +562,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         probability: '60%',
       },
       signals: [
-        { module: 'commerce', label: 'Order #1044 placed — $61.11' },
+        { module: 'commerce', label: 'Order #1044 placed: $61.11' },
         { module: 'email', label: 'Opened “New collars dropped” email' },
         { module: 'crm', label: 'In segment: new, growing' },
         { module: 'ai', label: 'Asked the AI to recommend a size' },
@@ -571,13 +571,13 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     email: {
       sender: 'hello@wagglepetco.com',
-      broadcastSubject: 'New collars just dropped — fit guide inside',
+      broadcastSubject: 'New collars just dropped: fit guide inside',
       segment: 'new, growing',
       recipients: '2,260',
       openRate: '54.7%',
       clickRate: '8.2%',
       transactional: { event: 'order.fulfilled', subject: 'Your Waggle order has shipped' },
-      previewLine: 'Hi Priya — good news, your collar and tag are on the way.',
+      previewLine: 'Hi Priya: good news, your collar and tag are on the way.',
     },
     b2b: {
       account: 'Paws & Claws Grooming',
@@ -663,7 +663,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       category: 'Brew guides',
       readTime: '7 min read',
       metaDescription:
-        'The three variables that decide your cup — and the starting numbers we use for every roast.',
+        'The three variables that decide your cup, and the starting numbers we use for every roast.',
       seoScore: 98,
     },
     crm: {
@@ -681,7 +681,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         probability: '40%',
       },
       signals: [
-        { module: 'commerce', label: 'Order #1045 placed — $112.43' },
+        { module: 'commerce', label: 'Order #1045 placed: $112.43' },
         { module: 'email', label: 'Opened “This month’s roast” email' },
         { module: 'crm', label: 'In segment: subscriber, monthly' },
         { module: 'ai', label: 'Asked the AI to pause a subscription' },
@@ -696,7 +696,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       openRate: '57.1%',
       clickRate: '9.0%',
       transactional: { event: 'subscription.renewed', subject: 'Your monthly roast is on its way' },
-      previewLine: 'Hi Sam — your subscription renewed and this month’s bag is brewing.',
+      previewLine: 'Hi Sam. Your subscription renewed and this month’s bag is brewing.',
     },
     b2b: {
       account: 'Daybreak Office Group',
@@ -786,7 +786,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
       category: 'Spec guides',
       readTime: '8 min read',
       metaDescription:
-        'Pressure rating, bend radius, and fittings — the spec checklist our buyers run before every order.',
+        'Pressure rating, bend radius, and fittings: the spec checklist our buyers run before every order.',
       seoScore: 95,
     },
     crm: {
@@ -804,7 +804,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         probability: '75%',
       },
       signals: [
-        { module: 'commerce', label: 'Order #1046 placed — $558.00' },
+        { module: 'commerce', label: 'Order #1046 placed: $558.00' },
         { module: 'b2b', label: 'Net-30 invoice, due in 11 days' },
         { module: 'email', label: 'Opened “Q3 contract renewal” email' },
         { module: 'crm', label: 'In segment: B2B fleet, net-30' },
@@ -813,7 +813,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     email: {
       sender: 'orders@atlassupply.co',
-      broadcastSubject: 'Q3 contract pricing — your account renewal',
+      broadcastSubject: 'Q3 contract pricing: your account renewal',
       segment: 'B2B fleet, net-30',
       recipients: '1,140',
       openRate: '61.3%',
@@ -822,7 +822,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         event: 'b2b.quote.responded',
         subject: 'Your quote from Atlas Supply is ready',
       },
-      previewLine: 'Hi Reyes — your requested quote is attached, valid for 30 days.',
+      previewLine: 'Hi Reyes. Your requested quote is attached, valid for 30 days.',
     },
     b2b: {
       account: 'Reyes Fabrication',

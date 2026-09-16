@@ -149,7 +149,7 @@ function RecipeCard({
                   disabled
                   aria-label={productCopyWith(
                     'automations.recipe.alwaysOn',
-                    `${meta.title} is always on — Piggles manages this and it cannot be turned off`,
+                    `${meta.title} is always on: Piggles manages this and it cannot be turned off`,
                     { title: meta.title }
                   )}
                 />
@@ -178,7 +178,7 @@ function RecipeCard({
               size="sm"
               variant="ghost"
               color="module"
-              title="Customize this automation — hold Shift to open alongside, Alt for a new window"
+              title="Customize this automation. Hold Shift to open alongside, Alt for a new window"
               onClick={onCustomize}
             >
               <Icon glyph={faSliders} className="size-4" aria-hidden />
@@ -294,7 +294,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
           <Text>
             {productCopy(
               'automations.recipes.intro',
-              'These are automations Piggles has already set up for your business. Each one runs a job for you in the background — welcoming customers, chasing overdue invoices, following up on a sale. Flip one on to put it to work, and use “Customize” to change how it behaves.'
+              'These are automations Piggles has already set up for your business. Each one runs a job for you in the background: welcoming customers, chasing overdue invoices, following up on a sale. Flip one on to put it to work, and use “Customize” to change how it behaves.'
             )}
           </Text>
 
@@ -302,7 +302,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Icon glyph={faSparkles} className="size-6" aria-hidden />}
               title="Could not load your recipes"
-              description="Something went wrong reaching the server. Whatever you have switched on is unaffected and still running — try again in a moment."
+              description="Something went wrong reaching the server. Whatever you have switched on is unaffected and still running. Try again in a moment."
               actions={
                 <Button
                   size="sm"
@@ -346,7 +346,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
                 title="No recipes yet"
                 description={productCopy(
                   'automations.recipes.firstRun',
-                  'Recipes appear here as you add apps — add Sell, Invoices or Messages and their ready-made automations turn up ready to use.'
+                  'Recipes appear here as you add apps. Add Sell, Invoices or Messages and their ready-made automations turn up ready to use.'
                 )}
               />
             )

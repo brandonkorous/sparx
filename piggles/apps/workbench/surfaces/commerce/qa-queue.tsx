@@ -64,7 +64,7 @@ function AnswerBox({
         color="module"
         rows={3}
         value={text}
-        placeholder="Answer this question — once you show it, everyone reading the product's page sees your answer under their question."
+        placeholder="Answer this question: once you show it, everyone reading the product's page sees your answer under their question."
         aria-label="Answer this question"
         onChange={(event) => {
           setText(event.target.value);

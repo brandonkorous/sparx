@@ -171,7 +171,7 @@ function SettingsPanel({
         {nameError && touched ? (
           <FieldStatus status="error">{nameError}</FieldStatus>
         ) : (
-          <FieldDescription>For you — so you can tell your rules apart.</FieldDescription>
+          <FieldDescription>For you, so you can tell your rules apart.</FieldDescription>
         )}
       </Field>
 
@@ -205,7 +205,7 @@ function SettingsPanel({
           }}
         />
         <FieldDescription>
-          Choosing every business is wider — a rule set to one business never fires on another’s
+          Choosing every business is wider: a rule set to one business never fires on another’s
           orders or customers.
           {!isNew ? ' Changing this takes effect straight away, even before you publish.' : ''}
         </FieldDescription>
@@ -230,7 +230,7 @@ function SettingsPanel({
             }
           />
           <FieldDescription>
-            A safety limit — if this rule’s actions set off other rules, how many times that may
+            A safety limit: if this rule’s actions set off other rules, how many times that may
             cascade before it stops. Three is a sensible default; leave it unless you know you need
             to change it.
           </FieldDescription>
@@ -365,7 +365,7 @@ function BranchQuestionEditor({
           }}
         />
         {condition.conditions.length === 0 ? (
-          <Text>Nothing to check yet — as it stands this always takes the “If yes” side.</Text>
+          <Text>Nothing to check yet. As it stands this always takes the “If yes” side.</Text>
         ) : null}
       </div>
     </div>
@@ -387,12 +387,12 @@ function GoalPanel({ goal, onGoal }: InspectorProps) {
       <PanelHead
         icon={faBullseye}
         title="What you’re aiming for"
-        subtitle="Optional — how you’ll know it worked"
+        subtitle="Optional: how you’ll know it worked"
       />
       <Text>
         {productCopy(
           'automations.goal.explain',
-          'Describe what you want to happen because of this automation. When it happens for someone, Piggles stops running the rest of the steps for them — there is no point nudging somebody who has already done it — and counts them as a success.'
+          'Describe what you want to happen because of this automation. When it happens for someone, Piggles stops running the rest of the steps for them (there is no point nudging somebody who has already done it) and counts them as a success.'
         )}
       </Text>
 
@@ -406,7 +406,7 @@ function GoalPanel({ goal, onGoal }: InspectorProps) {
           />
           <Text>
             Leave every line blank to go back to having no goal. Without one, this rule just runs to
-            the end — which is right for something like a receipt.
+            the end, which is right for something like a receipt.
           </Text>
         </>
       ) : (

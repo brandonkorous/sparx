@@ -214,7 +214,7 @@ const SCHEDULING = {
       handle: 'cleaning',
       name: 'Cleaning & polish',
       description:
-        'A gentle professional clean with one of our hygienists — plaque and stain removed, teeth polished, gums cared for.',
+        'A gentle professional clean with one of our hygienists: plaque and stain removed, teeth polished, gums cared for.',
       durationMinutes: 60,
       priceCents: 14900,
       assignmentStrategy: 'customer_choice',
@@ -228,7 +228,7 @@ const SCHEDULING = {
       handle: 'whitening',
       name: 'Professional whitening',
       description:
-        'In-studio whitening that lifts everyday stains several shades in a single visit — brighter, but still natural.',
+        'In-studio whitening that lifts everyday stains several shades in a single visit: brighter, but still natural.',
       durationMinutes: 90,
       priceCents: 39900,
       bufferAfterMin: 10,
@@ -293,7 +293,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A bright, minimal dental studio with clean lines and soft daylight',
     title: 'A calmer way to love your smile',
-    sub: 'A modern studio for cosmetic and everyday dental care — veneers, clear aligners, whitening and implants, done gently and beautifully.',
+    sub: 'A modern studio for cosmetic and everyday dental care: veneers, clear aligners, whitening and implants, done gently and beautifully.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
     overlay: 'dark',
@@ -302,7 +302,7 @@ const HOME = [
     items: [
       {
         title: 'Design your smile digitally',
-        body: 'Before anything is done, we scan your teeth and show you a preview of the result — so you decide with a picture, not a promise.',
+        body: 'Before anything is done, we scan your teeth and show you a preview of the result, so you decide with a picture, not a promise.',
       },
       {
         title: 'Straighten without braces',
@@ -320,7 +320,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'What you can book',
-    intro: 'A few of the visits we see most. Every consultation is free — full pricing and live times are on the booking page.',
+    intro: 'A few of the visits we see most. Every consultation is free: full pricing and live times are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -356,21 +356,21 @@ const HOME = [
     alt: 'A calm treatment suite with a modern chair and a large window',
     heading: 'We design the smile before we touch a tooth',
     body: [
-      'Cosmetic dentistry should never be a guess. We start with a digital scan and a smile preview, so you can see the finish — the shape, the shade, the proportion — and shape it with us until it feels like you.',
+      'Cosmetic dentistry should never be a guess. We start with a digital scan and a smile preview, so you can see the finish (the shape, the shade, the proportion) and shape it with us until it feels like you.',
       'Only when you love the plan do we begin. It’s the difference between hoping for a result and choosing one.',
     ],
     cta: { label: 'Start with a consult', href: '/book' },
   }),
   teamRow({
     heading: 'The people you’ll meet',
-    intro: 'Book by name — you’ll see the clinician who knows your plan.',
+    intro: 'Book by name: you’ll see the clinician who knows your plan.',
     members: [
       {
         name: 'Dr. Elise Marchetti',
         role: 'Cosmetic & general dentist',
         image: url(IMG.elise),
         alt: 'Dr. Elise Marchetti, cosmetic & general dentist',
-        bio: 'Leads the studio. Veneers, implants and full smile design — precise, natural, unhurried.',
+        bio: 'Leads the studio. Veneers, implants and full smile design: precise, natural, unhurried.',
       },
       {
         name: 'Dr. Priya Anand',
@@ -418,7 +418,7 @@ const ABOUT = [
     alt: 'A bright, minimal dental studio with clean lines and soft daylight',
     heading: 'About Arch Dental Studio',
     body: [
-      'We built Arch to be the dental studio we’d want to visit — calm, modern and genuinely on your side. Cosmetic work and everyday care under one roof, without the cold clinic feeling.',
+      'We built Arch to be the dental studio we’d want to visit: calm, modern and genuinely on your side. Cosmetic work and everyday care under one roof, without the cold clinic feeling.',
       'That means real consultations, a preview before any cosmetic treatment, and honest pricing you see up front. Come as you are; leave a little more confident.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
@@ -457,7 +457,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your time online — no phone tag, no hold music.',
+    sub: 'See live availability and reserve your time online: no phone tag, no hold music.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -468,8 +468,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-dental-modern',
   name: 'Dental (Modern Cosmetic)',
   summary:
-    'A modern cosmetic-and-general dental studio site — a crisp porcelain palette, a deep-teal primary and a refined serif display, with a calm, spa-like structure. Installs a working booking flow: free consults plus whitening, aligners, veneers and implants, clinicians and treatment suites as bookable resources (a visit reserves a provider AND a suite), and a cosmetic-consult deposit policy. Ships as "Arch Dental Studio".',
-  tagline: 'A crisp, modern template for cosmetic dental studios — book consults online from day one.',
+    'A modern cosmetic-and-general dental studio site: a crisp porcelain palette, a deep-teal primary and a refined serif display, with a calm, spa-like structure. Installs a working booking flow: free consults plus whitening, aligners, veneers and implants, clinicians and treatment suites as bookable resources (a visit reserves a provider AND a suite), and a cosmetic-consult deposit policy. Ships as "Arch Dental Studio".',
+  tagline: 'A crisp, modern template for cosmetic dental studios. Book consults online from day one.',
   industry: 'Dental',
   sortWeight: 69,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -478,7 +478,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Arch Dental Studio — modern cosmetic & general dentistry',
+      title: 'Arch Dental Studio: modern cosmetic & general dentistry',
       description:
         'Arch Dental Studio is a calm, modern practice for veneers, clear aligners, whitening, implants and everyday care. Book a free consultation online.',
     },

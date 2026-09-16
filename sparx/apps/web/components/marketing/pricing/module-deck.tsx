@@ -93,7 +93,7 @@ export function PricingModuleDeck() {
           className="w-full"
           role="button"
           tabIndex={0}
-          aria-label={`${MODULES.length} modules — activate to see the next`}
+          aria-label={`${MODULES.length} modules: activate to see the next`}
           onClick={take}
           onKeyDown={(e) => {
             if (e.key === 'Enter' || e.key === ' ') {

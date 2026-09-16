@@ -6,7 +6,7 @@ export const apparelType: ProductTypeDefinition = {
   key: 'apparel',
   name: 'Apparel',
   pluralName: 'Apparel',
-  description: 'Clothing and worn goods — fabric, fit, care, and material composition.',
+  description: 'Clothing and worn goods: fabric, fit, care, and material composition.',
   icon: '👕',
   attributeSchema: {
     fields: [
@@ -16,7 +16,7 @@ export const apparelType: ProductTypeDefinition = {
         label: 'Fabric & construction',
         max: 2000,
         helpText:
-          "What it's made of and how it's built. This is product-specific — write it per product.",
+          "What it's made of and how it's built. This is product-specific. Write it per product.",
       },
       {
         key: 'fit',

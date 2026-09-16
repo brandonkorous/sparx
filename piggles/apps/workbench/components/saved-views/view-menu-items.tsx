@@ -94,7 +94,7 @@ export function ViewAdminItems({ target, view }: { target: string; view: SavedVi
     const ok = await confirm({
       title: `Delete "${view.name}"?`,
       description:
-        'The rows are untouched — this only forgets the saved question. Anyone on the team using a shared view will lose it too.',
+        'The rows are untouched. This only forgets the saved question. Anyone on the team using a shared view will lose it too.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',

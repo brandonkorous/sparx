@@ -44,7 +44,7 @@ export function ToolBrowser({ items, groups }: { items: BrowserItem[]; groups: C
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search — invoice, QR, colors…"
+          placeholder="Search: invoice, QR, colors…"
           aria-label="Search the tools"
           className="lg:max-w-sm"
         />
@@ -84,7 +84,7 @@ export function ToolBrowser({ items, groups }: { items: BrowserItem[]; groups: C
         </div>
       ) : (
         <p className="py-16 text-center text-lg">
-          Nothing matches “{query}”. Try a plainer word — “invoice”, “code”, “color”.
+          Nothing matches “{query}”. Try a plainer word: “invoice”, “code”, “color”.
         </p>
       )}
     </div>

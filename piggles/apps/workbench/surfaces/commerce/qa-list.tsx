@@ -233,7 +233,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
             variant="soft"
             size="sm"
             className="ml-auto"
-            title="Work the queue — read and answer questions one at a time. Hold Shift to open alongside, Alt for a new window"
+            title="Work the queue. Read and answer questions one at a time. Hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               openQueue(event);
             }}
@@ -322,7 +322,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faCircleQuestion} className="size-6" aria-hidden />}
             title="Could not load the questions"
-            description="Something went wrong reaching the server. Nothing customers asked has been lost — try again in a moment."
+            description="Something went wrong reaching the server. Nothing customers asked has been lost. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}

@@ -247,7 +247,7 @@ function departmentsBand(): Node {
                 text: 'Explore Northgate',
               }),
               el('p', 'max-w-2xl text-lg text-base-content', {
-                text: 'Reporting from every part of the university — findings from the labs, life on the quad, and the teams that carry the Northgate name.',
+                text: 'Reporting from every part of the university: findings from the labs, life on the quad, and the teams that carry the Northgate name.',
               }),
             ],
           }),
@@ -457,7 +457,7 @@ const JOURNAL: Node[] = [
             text: 'The Northgate Newsroom',
           }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Research findings, campus life, and the people who make the university — reported by the news office for students, faculty, alumni and the public.',
+            text: 'Research findings, campus life, and the people who make the university: reported by the news office for students, faculty, alumni and the public.',
           }),
         ],
       }),
@@ -476,7 +476,7 @@ const ABOUT: Node[] = [
             text: 'About the Newsroom',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The Northgate Newsroom is the official news office of Northgate University. We report on the research, teaching and life of the institution — the findings coming out of the labs, the decisions shaping the campus, and the students, faculty and staff behind them.',
+            text: 'The Northgate Newsroom is the official news office of Northgate University. We report on the research, teaching and life of the institution: the findings coming out of the labs, the decisions shaping the campus, and the students, faculty and staff behind them.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'Our job is to tell the university’s story plainly and accurately, to a mixed audience of the campus community, alumni, the press and the wider public. When we cover research, we read the study before we write the headline, and we say clearly what has been found and what has not.',
@@ -531,7 +531,7 @@ interface Product {
 const PRODUCTS: Product[] = [
   {
     handle: 'northgate-press-anthology',
-    title: 'Northgate Review — the tenth anthology',
+    title: 'Northgate Review: the tenth anthology',
     description:
       'A hardback collection of the best essays, poetry and long-form reporting from a decade of the Northgate Review, the university’s literary and ideas journal. Edited by the faculty of Arts & Sciences.',
     status: 'active',
@@ -540,7 +540,7 @@ const PRODUCTS: Product[] = [
     tags: ['press', 'book', 'anthology'],
     categoryHandles: ['press'],
     collectionHandles: ['featured'],
-    seoTitle: 'Northgate Review — the tenth anthology | Northgate University Press',
+    seoTitle: 'Northgate Review: the tenth anthology | Northgate University Press',
     seoDescription: 'A hardback decade anthology of essays, poetry and reporting from the Northgate Review.',
     variants: [{ sku: 'NGP-ANTH-10', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'press-anthology', isPrimary: true, alt: 'The Northgate Review anthology, a hardback book' }],
@@ -572,7 +572,7 @@ const PRODUCTS: Product[] = [
     tags: ['merch', 'apparel', 'alumni'],
     categoryHandles: ['merch'],
     collectionHandles: ['featured'],
-    seoTitle: 'Northgate Alumni Tee — heavyweight cotton t-shirt',
+    seoTitle: 'Northgate Alumni Tee: heavyweight cotton t-shirt',
     seoDescription: 'A heavyweight cotton t-shirt with the Northgate seal, cut for everyday wear.',
     variants: [{ sku: 'NG-TEE-ALUM', priceCents: money(26), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'alumni-tee', isPrimary: true, alt: 'A folded Northgate alumni t-shirt' }],
@@ -588,7 +588,7 @@ const PRODUCTS: Product[] = [
     tags: ['merch', 'mug'],
     categoryHandles: ['merch'],
     collectionHandles: [],
-    seoTitle: 'Northgate Campus Mug — stoneware mug',
+    seoTitle: 'Northgate Campus Mug: stoneware mug',
     seoDescription: 'A stoneware mug with a line drawing of Hartwell Hall.',
     variants: [{ sku: 'NG-MUG', priceCents: money(18), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'campus-mug', isPrimary: true, alt: 'A ceramic Northgate campus mug' }],
@@ -628,7 +628,7 @@ const AUTHORS = [
   {
     slug: 'theo-park',
     displayName: 'Theo Park',
-    bio: 'Theo Park covers campus and community for the Northgate Newsroom — student life, housing, the arts, and the relationship between the university and the city around it.',
+    bio: 'Theo Park covers campus and community for the Northgate Newsroom: student life, housing, the arts, and the relationship between the university and the city around it.',
     avatarAssetId: 'author-park',
   },
   {
@@ -662,7 +662,7 @@ const CONTENT = [
         content: [
           para('For decades the carbon a salt marsh holds was estimated from the top layer of soil, because that is the part a researcher can reach with a hand corer on a low tide. A Northgate team spent six years reaching deeper, and found that most of the story was buried where nobody had been counting.'),
           h2('What the survey measured'),
-          para('Working across eleven marshes along the state’s coast, the group drove cores two metres down and dated each layer. Below the reach of the usual sample, the sediment kept holding carbon — the slow accumulation of centuries of tidal plants, sealed away from the air by the water above it.'),
+          para('Working across eleven marshes along the state’s coast, the group drove cores two metres down and dated each layer. Below the reach of the usual sample, the sediment kept holding carbon: the slow accumulation of centuries of tidal plants, sealed away from the air by the water above it.'),
           para('Averaged over the sites, the marshes were storing roughly forty per cent more carbon per hectare than the figures the state currently uses in its planning. The oldest, least disturbed marshes held the most.'),
           h2('Why it matters beyond the lab'),
           para('That gap is not academic. The same wetlands are routinely valued at close to nothing when a road, a port expansion or a housing tract is weighed against them. If a hectare of marsh is holding decades of a small town’s emissions, the accounting that treats it as empty ground is simply wrong.'),
@@ -686,10 +686,10 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('On the last Saturday of August, eight hundred first-year students carried boxes up the steps of the new East Quad residential college — and a neighbourhood that had spent thirty years as a quiet edge of campus became, overnight, its front door.'),
+          para('On the last Saturday of August, eight hundred first-year students carried boxes up the steps of the new East Quad residential college, and a neighbourhood that had spent thirty years as a quiet edge of campus became, overnight, its front door.'),
           h2('A block that changed with them'),
           para('The café on the corner has doubled its morning staff. The old hardware store now stocks desk lamps and command hooks alongside the paint. A long-empty storefront reopened as a study space that keeps the lights on until two in the morning, because that is when the students are awake.'),
-          para('Not everyone welcomed the change at the same pace. Residents who had grown used to the calm came to the community board with real questions about noise, rubbish and rent. The university sent people to listen, and — for once — kept sending them after the first meeting.'),
+          para('Not everyone welcomed the change at the same pace. Residents who had grown used to the calm came to the community board with real questions about noise, rubbish and rent. The university sent people to listen, and (for once) kept sending them after the first meeting.'),
           h2('The deal that made it work'),
           para('What has held the peace is an agreement most students never see: the college funds a neighbourhood liaison, the city holds the university to a noise plan, and a share of ground-floor space is reserved for local businesses rather than campus chains. It is not a truce so much as a working relationship, and both sides seem faintly surprised it is working.'),
           para('“I moved here for quiet,” one long-time resident said, watching a line form at the reopened café. “I got a college instead. But it’s a better café than the quiet ever gave me.”'),
@@ -712,9 +712,9 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Every campus clinician knows students do not sleep enough. The Northgate health service wanted to know something more useful: not the average, but the shape of it — who is losing sleep, when, and to what.'),
+          para('Every campus clinician knows students do not sleep enough. The Northgate health service wanted to know something more useful: not the average, but the shape of it, who is losing sleep, when, and to what.'),
           h2('The pattern under the average'),
-          para('Over a semester, six hundred volunteers wore a simple wrist tracker. The average landed where everyone expected, at a little under seven hours. But the average hid two very different populations. One group kept a steady, if short, schedule. The other swung wildly — five hours one night, ten the next — chasing a debt they never repaid.'),
+          para('Over a semester, six hundred volunteers wore a simple wrist tracker. The average landed where everyone expected, at a little under seven hours. But the average hid two very different populations. One group kept a steady, if short, schedule. The other swung wildly (five hours one night, ten the next) chasing a debt they never repaid.'),
           para('It was the second group, the clinicians found, that reported the most anxiety and the lowest marks, regardless of how many total hours they logged. The problem was not the quantity of sleep. It was the chaos of it.'),
           h2('What the clinic changed'),
           para('The health service has rebuilt its sleep advice around consistency rather than duration. The new first line is not “sleep more” but “sleep at the same time,” a message that turns out to be far easier for a stressed nineteen-year-old to act on than an instruction to find two more hours in a day that has none.'),
@@ -733,15 +733,15 @@ const CONTENT = [
     body: {
       title: 'Inside the lab teaching robots to read handwriting',
       excerpt:
-        'A Northgate engineering group is training machines to read the one thing they have always failed at — a doctor’s scrawl, a field notebook, a century-old ledger. The trick was to stop treating it as text.',
+        'A Northgate engineering group is training machines to read the one thing they have always failed at: a doctor’s scrawl, a field notebook, a century-old ledger. The trick was to stop treating it as text.',
       featuredImage: { $asset: 'story-robotics' },
       body: {
         type: 'doc',
         content: [
-          para('Handwriting is the problem computers were supposed to have solved decades ago and never quite did. A printed page is easy; a hurried note in a margin, a field biologist’s pencil, a nineteenth-century clerk’s cursive — those still defeat the best systems on the market. A lab in the Northgate engineering school thinks it knows why.'),
+          para('Handwriting is the problem computers were supposed to have solved decades ago and never quite did. A printed page is easy; a hurried note in a margin, a field biologist’s pencil, a nineteenth-century clerk’s cursive. Those still defeat the best systems on the market. A lab in the Northgate engineering school thinks it knows why.'),
           h2('Reading strokes, not letters'),
-          para('“Everyone tries to turn the writing into letters and then read the letters,” the lab’s director explained. “We stopped doing that.” Instead, their system watches the physical motion the pen would have made — the order and direction of strokes — and learns handwriting the way a person learns to read a friend’s scrawl: by getting used to the hand, not by decoding each mark.'),
-          para('On a benchmark of archival documents that off-the-shelf tools read at barely fifty per cent accuracy, the Northgate model passed ninety. On field notebooks — smudged, abbreviated, half in Latin — it still cleared eighty.'),
+          para('“Everyone tries to turn the writing into letters and then read the letters,” the lab’s director explained. “We stopped doing that.” Instead, their system watches the physical motion the pen would have made (the order and direction of strokes) and learns handwriting the way a person learns to read a friend’s scrawl: by getting used to the hand, not by decoding each mark.'),
+          para('On a benchmark of archival documents that off-the-shelf tools read at barely fifty per cent accuracy, the Northgate model passed ninety. On field notebooks (smudged, abbreviated, half in Latin) it still cleared eighty.'),
           h2('Where it goes first'),
           para('The first users are not banks or hospitals but archives and natural-history collections, sitting on centuries of handwritten records nobody has the labour to transcribe. A museum partner has already fed the system a shelf of Victorian specimen logs, and watched a decade of unread observations become searchable in a weekend.'),
           para('“It is not glamorous,” the director said. “But there are libraries full of things people wrote down and no one has read since. We would like to change that.”'),
@@ -759,17 +759,17 @@ const CONTENT = [
     body: {
       title: 'The student orchestra that filled a century-old hall',
       excerpt:
-        'Whitfield Hall reopened this month after a three-year restoration. The student symphony that played the first night gave it back the one thing the builders could not — a full house that knew the room.',
+        'Whitfield Hall reopened this month after a three-year restoration. The student symphony that played the first night gave it back the one thing the builders could not: a full house that knew the room.',
       featuredImage: { $asset: 'story-orchestra' },
       body: {
         type: 'doc',
         content: [
           para('For three years Whitfield Hall sat behind scaffolding while restorers put back a ceiling, a century of plasterwork, and an acoustic that a 1970s renovation had quietly ruined. The night it reopened, ninety student musicians walked onto the stage to find out whether the room worked.'),
           h2('An acoustic that came back'),
-          para('It worked. The restoration had chased an old set of drawings and a stubborn belief that the hall’s original shape — narrower, taller, wrapped in wood — was the reason players a hundred years ago had loved it. The first chord settled the argument. The sound bloomed and held, the way the oldest recordings from the room suggested it once had.'),
+          para('It worked. The restoration had chased an old set of drawings and a stubborn belief that the hall’s original shape (narrower, taller, wrapped in wood) was the reason players a hundred years ago had loved it. The first chord settled the argument. The sound bloomed and held, the way the oldest recordings from the room suggested it once had.'),
           para('“You could hear the back of the orchestra from the front,” the symphony’s conductor said afterwards, still slightly stunned. “In the old hall you fought the room. In this one it helps you.”'),
           h2('A full house that knew the room'),
-          para('What the restoration could not supply, the students did: a hall full of people who cared. The programme spanned the room’s hundred years, and the audience — parents, faculty, alumni who had played the same stage decades before — treated each piece like a homecoming, because for many of them it was.'),
+          para('What the restoration could not supply, the students did: a hall full of people who cared. The programme spanned the room’s hundred years, and the audience (parents, faculty, alumni who had played the same stage decades before) treated each piece like a homecoming, because for many of them it was.'),
           para('The symphony has a full season booked in the hall now. The first tickets sold out in a morning.'),
         ],
       },
@@ -784,7 +784,7 @@ const SPEC: TemplateSiteSpec = {
   key: 'sparx-institution-news',
   name: 'Institution News',
   summary:
-    'A curated institutional newsroom for a university, hospital system, museum or agency — a marquee research lead over a rail of the day’s stories, a live feed, a departments directory, an upcoming-events band, and a bespoke bylined research writeup, in a paper-ground navy-primary + crimson-accent serif theme. Shipped as the Northgate University news office, with a light university-press + alumni store to demo content + commerce together.',
+    'A curated institutional newsroom for a university, hospital system, museum or agency: a marquee research lead over a rail of the day’s stories, a live feed, a departments directory, an upcoming-events band, and a bespoke bylined research writeup, in a paper-ground navy-primary + crimson-accent serif theme. Shipped as the Northgate University news office, with a light university-press + alumni store to demo content + commerce together.',
   tagline: 'An authoritative newsroom template for an institution that reports and belongs to a place.',
   vertical: 'content',
   industry: 'University & campus news',
@@ -799,14 +799,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: false },
   seo: {
     home: {
-      title: 'Northgate University — news, research and campus life',
+      title: 'Northgate University: news, research and campus life',
       description:
-        'The official news office of Northgate University — research findings from the labs, campus and community reporting, health and science, arts and athletics, and what is happening on campus.',
+        'The official news office of Northgate University: research findings from the labs, campus and community reporting, health and science, arts and athletics, and what is happening on campus.',
     },
     about: {
-      title: 'About the Northgate Newsroom — the university news office',
+      title: 'About the Northgate Newsroom: the university news office',
       description:
-        'Who the Northgate Newsroom is and how it works — the official news office reporting the research, teaching and life of the university to the campus, alumni and the public.',
+        'Who the Northgate Newsroom is and how it works: the official news office reporting the research, teaching and life of the university to the campus, alumni and the public.',
     },
   },
   home: HOME,

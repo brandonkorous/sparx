@@ -12,7 +12,7 @@ export function CountsUnpricedNotice({ onOpen }: { onOpen: () => void }) {
   return (
     <div className="bg-base-100 flex shrink-0 flex-wrap items-center gap-3 rounded-lg p-2">
       <Text className="text-sm">
-        Some counts below say “No cost yet”. They moved real stock — there is just nothing recorded
+        Some counts below say “No cost yet”. They moved real stock. There is just nothing recorded
         about what it cost, so they cannot be given a value.
       </Text>
       <Button size="sm" color="module" className="ml-auto shrink-0" onClick={onOpen}>

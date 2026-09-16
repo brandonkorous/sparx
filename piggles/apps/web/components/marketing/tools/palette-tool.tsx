@@ -60,7 +60,7 @@ export function PaletteTool() {
       })),
       ...(css.length <= MAX_LINE_VALUE ? [{ label: 'Code for your website', value: css }] : []),
     ],
-    note: 'The codes are what a printer, a sign writer or whoever built your site will ask for. Keep this somewhere you will find it — using the same five everywhere is most of what makes a small business look put together.',
+    note: 'The codes are what a printer, a sign writer or whoever built your site will ask for. Keep this somewhere you will find it: using the same five everywhere is most of what makes a small business look put together.',
   });
 
   return (

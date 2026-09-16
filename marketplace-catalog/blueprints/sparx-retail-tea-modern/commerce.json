@@ -35,7 +35,7 @@
     {
       "handle": "club-picks",
       "name": "The club’s picks",
-      "description": "Where to start — the drops we’d put in your first box.",
+      "description": "Where to start: the drops we’d put in your first box.",
       "type": "manual",
       "featured": true,
       "productHandles": [
@@ -63,7 +63,7 @@
     {
       "handle": "matcha-flight",
       "name": "The matcha flight",
-      "description": "Taste across the grades — ceremonial to everyday.",
+      "description": "Taste across the grades: ceremonial to everyday.",
       "type": "manual",
       "featured": false,
       "productHandles": ["ceremonial-matcha", "daily-matcha", "iced-matcha-sachets"]
@@ -71,7 +71,7 @@
     {
       "handle": "functional",
       "name": "By mood",
-      "description": "Focus, calm and sleep — a blend for the hour.",
+      "description": "Focus, calm and sleep: a blend for the hour.",
       "type": "manual",
       "featured": false,
       "productHandles": ["focus-blend", "calm-blend", "sleep-blend"]
@@ -87,7 +87,7 @@
     {
       "handle": "gifts",
       "name": "Gifts",
-      "description": "Kits, tools and the club — sorted.",
+      "description": "Kits, tools and the club: sorted.",
       "type": "manual",
       "featured": false,
       "productHandles": ["matcha-starter-kit", "bamboo-whisk", "subscription"]
@@ -97,15 +97,15 @@
     {
       "handle": "ceremonial-matcha",
       "title": "Ceremonial Matcha",
-      "description": "Our flagship: first-harvest, shade-grown leaf from Uji, stone-ground to a fine, vivid powder that whisks up smooth and sweet. Vegetal and umami-rich with a clean, lingering finish and zero chalk — the bowl to drink straight, whisked with water. Grade you can taste, in a starter or a stock-up size.",
+      "description": "Our flagship: first-harvest, shade-grown leaf from Uji, stone-ground to a fine, vivid powder that whisks up smooth and sweet. Vegetal and umami-rich with a clean, lingering finish and zero chalk, the bowl to drink straight, whisked with water. Grade you can taste, in a starter or a stock-up size.",
       "status": "active",
       "productType": "Matcha",
       "vendor": "Matcha Club",
       "tags": ["matcha", "ceremonial", "single-origin", "caffeinated"],
       "categoryHandles": ["matcha"],
       "collectionHandles": ["club-picks", "best-sellers", "matcha-flight"],
-      "seoTitle": "Ceremonial Matcha — first-harvest Uji matcha | Matcha Club",
-      "seoDescription": "Shade-grown, stone-ground ceremonial matcha from Uji — bright, sweet, umami-rich, no chalk. Whisk and drink.",
+      "seoTitle": "Ceremonial Matcha: first-harvest Uji matcha | Matcha Club",
+      "seoDescription": "Shade-grown, stone-ground ceremonial matcha from Uji: bright, sweet, umami-rich, no chalk. Whisk and drink.",
       "options": [
         {
           "name": "Size",
@@ -150,14 +150,14 @@
     {
       "handle": "daily-matcha",
       "title": "Daily Matcha",
-      "description": "The everyday workhorse — a second-harvest matcha built for lattes, smoothies and iced cups you drink all week. A little bolder and more astringent than the ceremonial, so it holds its own against milk and ice without disappearing. Great value, brilliant color, made to be used generously.",
+      "description": "The everyday workhorse: a second-harvest matcha built for lattes, smoothies and iced cups you drink all week. A little bolder and more astringent than the ceremonial, so it holds its own against milk and ice without disappearing. Great value, brilliant color, made to be used generously.",
       "status": "active",
       "productType": "Matcha",
       "vendor": "Matcha Club",
       "tags": ["matcha", "everyday", "latte", "caffeinated"],
       "categoryHandles": ["matcha"],
       "collectionHandles": ["club-picks", "matcha-flight", "best-sellers"],
-      "seoTitle": "Daily Matcha — everyday latte-grade matcha | Matcha Club",
+      "seoTitle": "Daily Matcha: everyday latte-grade matcha | Matcha Club",
       "seoDescription": "A bold, vivid everyday matcha built for lattes, smoothies and iced cups. Holds up to milk and ice.",
       "options": [
         {
@@ -203,14 +203,14 @@
     {
       "handle": "focus-blend",
       "title": "Focus",
-      "description": "Matcha plus guayusa and a whisper of peppermint — a clean, steady lift with the L-theanine calm that keeps caffeine from turning into jitters. The cup for a deep-work morning: alert, even, and gone by mid-afternoon so it doesn’t follow you to bed.",
+      "description": "Matcha plus guayusa and a whisper of peppermint: a clean, steady lift with the L-theanine calm that keeps caffeine from turning into jitters. The cup for a deep-work morning: alert, even, and gone by mid-afternoon so it doesn’t follow you to bed.",
       "status": "active",
       "productType": "Tea blend",
       "vendor": "Matcha Club",
       "tags": ["blend", "functional", "focus", "caffeinated"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["functional", "best-sellers", "club-picks"],
-      "seoTitle": "Focus — matcha & guayusa functional blend | Matcha Club",
+      "seoTitle": "Focus: matcha & guayusa functional blend | Matcha Club",
       "seoDescription": "Matcha with guayusa and peppermint for a clean, steady, jitter-free lift. The deep-work cup.",
       "options": [
         {
@@ -256,15 +256,15 @@
     {
       "handle": "calm-blend",
       "title": "Calm",
-      "description": "A daytime unwind — green tea softened with lemon balm, rose and a little chamomile, gently caffeinated so it takes the edge off without knocking you out. The cup for the 3pm dip, a busy inbox, or any hour that needs the volume turned down a notch.",
+      "description": "A daytime unwind: green tea softened with lemon balm, rose and a little chamomile, gently caffeinated so it takes the edge off without knocking you out. The cup for the 3pm dip, a busy inbox, or any hour that needs the volume turned down a notch.",
       "status": "active",
       "productType": "Tea blend",
       "vendor": "Matcha Club",
       "tags": ["blend", "functional", "calm", "caffeinated"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["functional"],
-      "seoTitle": "Calm — green tea & lemon balm blend | Matcha Club",
-      "seoDescription": "Green tea with lemon balm, rose and chamomile — a gentle daytime unwind, lightly caffeinated.",
+      "seoTitle": "Calm: green tea & lemon balm blend | Matcha Club",
+      "seoDescription": "Green tea with lemon balm, rose and chamomile: a gentle daytime unwind, lightly caffeinated.",
       "options": [
         {
           "name": "Format",
@@ -309,15 +309,15 @@
     {
       "handle": "sleep-blend",
       "title": "Sleep",
-      "description": "A caffeine-free wind-down of chamomile, valerian, lavender and a touch of liquorice root — softly floral and naturally sweet, built for the last hour of the day. No matcha, no caffeine, no next-morning fog; just a warm cup that tells your body it’s time to stop.",
+      "description": "A caffeine-free wind-down of chamomile, valerian, lavender and a touch of liquorice root: softly floral and naturally sweet, built for the last hour of the day. No matcha, no caffeine, no next-morning fog; just a warm cup that tells your body it’s time to stop.",
       "status": "active",
       "productType": "Tea blend",
       "vendor": "Matcha Club",
       "tags": ["blend", "functional", "sleep", "caffeine-free", "evening"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["functional"],
-      "seoTitle": "Sleep — caffeine-free chamomile & valerian blend | Matcha Club",
-      "seoDescription": "Chamomile, valerian, lavender and liquorice — a caffeine-free wind-down for the end of the day.",
+      "seoTitle": "Sleep: caffeine-free chamomile & valerian blend | Matcha Club",
+      "seoDescription": "Chamomile, valerian, lavender and liquorice: a caffeine-free wind-down for the end of the day.",
       "options": [
         {
           "name": "Format",
@@ -362,15 +362,15 @@
     {
       "handle": "iced-matcha-sachets",
       "title": "Iced Matcha Sachets",
-      "description": "Cold-whisk matcha, pre-portioned for the shaker — tear a sachet into cold water or milk, shake, pour over ice, done. The same vivid daily matcha, formulated to dissolve cold without clumping, so a café-grade iced matcha takes fifteen seconds at your desk or in the car.",
+      "description": "Cold-whisk matcha, pre-portioned for the shaker: tear a sachet into cold water or milk, shake, pour over ice, done. The same vivid daily matcha, formulated to dissolve cold without clumping, so a café-grade iced matcha takes fifteen seconds at your desk or in the car.",
       "status": "active",
       "productType": "Matcha",
       "vendor": "Matcha Club",
       "tags": ["matcha", "iced", "grab-and-go", "caffeinated"],
       "categoryHandles": ["iced"],
       "collectionHandles": ["best-sellers", "club-picks"],
-      "seoTitle": "Iced Matcha Sachets — cold-whisk grab-and-go matcha | Matcha Club",
-      "seoDescription": "Pre-portioned cold-dissolve matcha sachets — tear, shake over ice, drink. Café-grade iced matcha in seconds.",
+      "seoTitle": "Iced Matcha Sachets: cold-whisk grab-and-go matcha | Matcha Club",
+      "seoDescription": "Pre-portioned cold-dissolve matcha sachets: tear, shake over ice, drink. Café-grade iced matcha in seconds.",
       "options": [
         {
           "name": "Pack",
@@ -415,14 +415,14 @@
     {
       "handle": "matcha-starter-kit",
       "title": "The Starter Kit",
-      "description": "Everything to make a proper bowl from day one — a tin of our ceremonial matcha, a handmade bamboo whisk, a bamboo scoop and a wide ceramic bowl, boxed together. The easiest way to begin, and a genuinely lovely thing to give someone who keeps saying they should get into matcha.",
+      "description": "Everything to make a proper bowl from day one: a tin of our ceremonial matcha, a handmade bamboo whisk, a bamboo scoop and a wide ceramic bowl, boxed together. The easiest way to begin, and a genuinely lovely thing to give someone who keeps saying they should get into matcha.",
       "status": "active",
       "productType": "Kit",
       "vendor": "Matcha Club",
       "tags": ["kit", "gift", "starter", "tools"],
       "categoryHandles": ["kits-tools"],
       "collectionHandles": ["everyday-kit", "gifts", "club-picks"],
-      "seoTitle": "The Starter Kit — matcha, whisk, scoop & bowl | Matcha Club",
+      "seoTitle": "The Starter Kit: matcha, whisk, scoop & bowl | Matcha Club",
       "seoDescription": "Ceremonial matcha, a bamboo whisk, a scoop and a ceramic bowl, boxed together. The easiest way to start.",
       "variants": [
         {
@@ -443,14 +443,14 @@
     {
       "handle": "bamboo-whisk",
       "title": "Bamboo Whisk (Chasen)",
-      "description": "A traditional hand-cut bamboo chasen with a hundred fine tines — the tool that turns clumpy powder into a smooth, even froth no spoon or shaker can match. Rest it on a whisk stand to keep its shape and it’ll make a better bowl for months. The one upgrade that changes every cup.",
+      "description": "A traditional hand-cut bamboo chasen with a hundred fine tines: the tool that turns clumpy powder into a smooth, even froth no spoon or shaker can match. Rest it on a whisk stand to keep its shape and it’ll make a better bowl for months. The one upgrade that changes every cup.",
       "status": "active",
       "productType": "Tool",
       "vendor": "Matcha Club",
       "tags": ["tools", "whisk", "bamboo"],
       "categoryHandles": ["kits-tools"],
       "collectionHandles": ["everyday-kit", "gifts"],
-      "seoTitle": "Bamboo Whisk (Chasen) — hand-cut matcha whisk | Matcha Club",
+      "seoTitle": "Bamboo Whisk (Chasen): hand-cut matcha whisk | Matcha Club",
       "seoDescription": "A traditional hand-cut bamboo chasen with a hundred fine tines for a smooth, even matcha froth.",
       "variants": [
         {
@@ -471,15 +471,15 @@
     {
       "handle": "travel-shaker-tin",
       "title": "Travel Shaker Tin",
-      "description": "A slim, leak-proof stainless shaker with a fine internal strainer — add a sachet or a scoop, splash in cold water, shake, and drink from the same tin. Fits a cup holder and a coat pocket, keeps matcha cold for hours, and makes an iced cup anywhere the day takes you.",
+      "description": "A slim, leak-proof stainless shaker with a fine internal strainer. Add a sachet or a scoop, splash in cold water, shake, and drink from the same tin. Fits a cup holder and a coat pocket, keeps matcha cold for hours, and makes an iced cup anywhere the day takes you.",
       "status": "active",
       "productType": "Tool",
       "vendor": "Matcha Club",
       "tags": ["tools", "travel", "shaker", "iced"],
       "categoryHandles": ["kits-tools"],
       "collectionHandles": ["everyday-kit"],
-      "seoTitle": "Travel Shaker Tin — leak-proof matcha shaker | Matcha Club",
-      "seoDescription": "A slim leak-proof stainless shaker with a fine strainer — make and drink an iced matcha anywhere.",
+      "seoTitle": "Travel Shaker Tin: leak-proof matcha shaker | Matcha Club",
+      "seoDescription": "A slim leak-proof stainless shaker with a fine strainer. Make and drink an iced matcha anywhere.",
       "variants": [
         {
           "sku": "MC-TOOL-SHAKER",
@@ -499,15 +499,15 @@
     {
       "handle": "subscription",
       "title": "The Club Subscription",
-      "description": "Fresh matcha on your schedule — pick your tins and how often, and we grind, blend and ship them to match. Rotate the whole shelf or stay with your daily; members get first access to new drops and a standing discount. Skip, swap or cancel any time. The easiest way to keep good matcha in the house.",
+      "description": "Fresh matcha on your schedule. Pick your tins and how often, and we grind, blend and ship them to match. Rotate the whole shelf or stay with your daily; members get first access to new drops and a standing discount. Skip, swap or cancel any time. The easiest way to keep good matcha in the house.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Matcha Club",
       "tags": ["subscription", "gift", "club"],
       "categoryHandles": ["subscription"],
       "collectionHandles": ["club-picks", "gifts", "best-sellers"],
-      "seoTitle": "The Club Subscription — fresh matcha, on your schedule | Matcha Club",
-      "seoDescription": "A flexible matcha subscription — choose tins and cadence, get first access to drops. Skip or cancel any time.",
+      "seoTitle": "The Club Subscription: fresh matcha, on your schedule | Matcha Club",
+      "seoDescription": "A flexible matcha subscription. Choose tins and cadence, get first access to drops. Skip or cancel any time.",
       "options": [
         {
           "name": "Plan",

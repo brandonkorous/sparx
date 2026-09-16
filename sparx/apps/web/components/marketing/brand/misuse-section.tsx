@@ -45,7 +45,7 @@ const DONTS: { caption: string; demo: React.ReactNode }[] = [
   },
   {
     caption:
-      'Don’t let the “x” vanish into the letters. Keep it Ember — or, in one-color use, dimmed.',
+      'Don’t let the “x” vanish into the letters. Keep it Ember, or, in one-color use, dimmed.',
     demo: <Faux xColor="var(--color-base-content)" />,
   },
   {
@@ -78,7 +78,7 @@ export function MisuseSection() {
               What not to do <span>with the mark</span>
             </>
           }
-          lede="The wordmark earns its clarity from restraint. These are the treatments that break it — each one undoes the single detail the brand is built on."
+          lede="The wordmark earns its clarity from restraint. These are the treatments that break it. Each one undoes the single detail the brand is built on."
         />
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

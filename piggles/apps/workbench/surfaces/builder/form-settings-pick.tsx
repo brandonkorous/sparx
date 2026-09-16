@@ -58,8 +58,8 @@ export function FormSettingsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>No forms on this site yet</AlertTitle>
                 <AlertDescription>
-                  Add a form to a page in My Site — an enquiry form, a callback request, an email
-                  sign-up — and it will appear here so you can say who should hear about it.
+                  Add a form to a page in My Site (an enquiry form, a callback request, an email
+                  sign-up) and it will appear here so you can say who should hear about it.
                 </AlertDescription>
               </AlertContent>
             </Alert>

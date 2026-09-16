@@ -65,7 +65,7 @@ export interface InventoryReportEmailProps {
 }
 
 export function inventoryReportSubject(scheduleName: string, periodLabel?: string): string {
-  return periodLabel ? `${scheduleName} — ${periodLabel}` : scheduleName;
+  return periodLabel ? `${scheduleName}: ${periodLabel}` : scheduleName;
 }
 
 export function InventoryReportEmail({
@@ -87,7 +87,7 @@ export function InventoryReportEmail({
 
   return (
     <PlatformEmailLayout
-      preview={`${reportLabel}${periodLabel ? ` — ${periodLabel}` : ''}`}
+      preview={`${reportLabel}${periodLabel ? `: ${periodLabel}` : ''}`}
       {...(periodLabel ? { mastheadRight: periodLabel } : {})}
       footerReason={`Someone at ${businessName} set up "${scheduleName}". Change or stop it in your stock reports.`}
     >

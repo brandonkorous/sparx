@@ -106,7 +106,7 @@ const ASSETS: Asset[] = [
   { id: 'forno-pizza-2', url: src('forno-pizza-2'), alt: 'A pizza topped with soppressata and hot honey on a marble counter' },
   { id: 'forno-pasta', url: src('forno-pasta'), alt: 'A bowl of hand-rolled pasta with tomato and torn basil' },
   { id: 'forno-antipasti', url: src('forno-antipasti'), alt: 'A shared board of cured meats, olives and burrata' },
-  { id: 'forno-room', url: src('forno-room'), alt: 'The trattoria dining room — long communal tables, warm light, hanging plants' },
+  { id: 'forno-room', url: src('forno-room'), alt: 'The trattoria dining room: long communal tables, warm light, hanging plants' },
   { id: 'forno-oven', url: src('forno-oven'), alt: 'A pizzaiolo sliding a pizza into the flames of the wood-fired oven' },
   { id: 'forno-dolci', url: src('forno-dolci'), alt: 'A plate of tiramisù dusted with cocoa beside two small espresso cups' },
 ];
@@ -181,13 +181,13 @@ function tonightBand(): Node {
                 text: 'Straight from the fire',
               }),
               el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                text: 'The oven runs at five hundred degrees and never really cools down. Three of the things we’re pulling out of it this week — the rest is on the menu.',
+                text: 'The oven runs at five hundred degrees and never really cools down. Three of the things we’re pulling out of it this week: the rest is on the menu.',
               }),
             ],
           }),
           el('div', 'grid grid-cols-1 gap-6 @3xl:grid-cols-3', {
             children: [
-              card('forno-antipasti', 'To share first', 'Boards for the middle of the table — burrata, cured meats, marinated olives and a pile of warm focaccia.', 'A shared board of cured meats, olives and burrata'),
+              card('forno-antipasti', 'To share first', 'Boards for the middle of the table: burrata, cured meats, marinated olives and a pile of warm focaccia.', 'A shared board of cured meats, olives and burrata'),
               card('forno-pizza-1', 'From the oven', 'Naples-style pizza, blistered and floppy in the middle. The Margherita, the ’nduja, and a white pie with fennel sausage.', 'A blistered Margherita pizza fresh from the wood oven'),
               card('forno-dolci', 'To finish', 'Tiramisù made in trays out back, a lemon sorbetto, and affogato with a shot of proper espresso over the top.', 'A plate of tiramisù dusted with cocoa'),
             ],
@@ -209,7 +209,7 @@ function reserveBand(): Node {
       el('div', 'mx-auto grid w-full max-w-5xl gap-8 @3xl:grid-cols-2 @3xl:items-center', {
         children: [
           el('img', 'aspect-video w-full rounded-box border border-base-300 object-cover', {
-            attrs: { src: assetUrl('forno-room'), alt: 'The trattoria dining room — long communal tables, warm light', loading: 'lazy' },
+            attrs: { src: assetUrl('forno-room'), alt: 'The trattoria dining room: long communal tables, warm light', loading: 'lazy' },
           }),
           el('div', 'flex flex-col gap-5', {
             children: [
@@ -217,7 +217,7 @@ function reserveBand(): Node {
                 text: 'Pull up a chair',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Book online in under a minute — you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome; we keep the front counter and a few tables back for people who just wander in hungry.',
+                text: 'Book online in under a minute: you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome; we keep the front counter and a few tables back for people who just wander in hungry.',
               }),
               el('div', 'flex flex-wrap gap-3', {
                 children: [
@@ -321,7 +321,7 @@ const MENU: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The menu' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Flour, fire, and not much fuss. Dough proved for two days, sauce from San Marzano tomatoes, mozzarella pulled the same morning. The specials board fills in the rest — tell us about allergies and we’ll steer you right.',
+            text: 'Flour, fire, and not much fuss. Dough proved for two days, sauce from San Marzano tomatoes, mozzarella pulled the same morning. The specials board fills in the rest. Tell us about allergies and we’ll steer you right.',
           }),
         ],
       }),
@@ -332,32 +332,32 @@ const MENU: Node[] = [
     { name: 'Burrata & marinated peppers', desc: 'Whole burrata, wood-roasted peppers, basil oil, grilled bread.', price: '14' },
     { name: 'Salumi board', desc: 'Soppressata, finocchiona and prosciutto, olives, pickled things.', price: '16' },
     { name: 'Fritto misto', desc: 'Lightly fried zucchini, artichoke and lemon, with a garlic aioli.', price: '11' },
-    { name: 'Tomato & bread salad', desc: 'Panzanella — ripe tomatoes, torn focaccia, red onion, oregano.', price: '10' },
+    { name: 'Tomato & bread salad', desc: 'Panzanella: ripe tomatoes, torn focaccia, red onion, oregano.', price: '10' },
   ]),
-  menuSection('Pizza', 'Naples-style — a 48-hour dough, thirty seconds in a 500° oven, blistered and floppy. Gluten-free bases on request.', [
+  menuSection('Pizza', 'Naples-style: a 48-hour dough, thirty seconds in a 500° oven, blistered and floppy. Gluten-free bases on request.', [
     { name: 'Margherita', desc: 'San Marzano, fior di latte, basil, a slick of olive oil. The one we’re judged on.', price: '14' },
     { name: 'Diavola', desc: 'Spicy soppressata, chilli, mozzarella, a drizzle of hot honey.', price: '17' },
-    { name: 'Salsiccia e finocchio', desc: 'Fennel sausage, mozzarella, roasted onion, wild fennel — no tomato.', price: '18' },
+    { name: 'Salsiccia e finocchio', desc: 'Fennel sausage, mozzarella, roasted onion, wild fennel: no tomato.', price: '18' },
     { name: 'Funghi', desc: 'Mixed mushrooms, taleggio, thyme, garlic cream, no tomato.', price: '17' },
-    { name: 'Marinara', desc: 'Tomato, garlic, oregano, olive oil — no cheese, all the way old-school.', price: '12' },
+    { name: 'Marinara', desc: 'Tomato, garlic, oregano, olive oil: no cheese, all the way old-school.', price: '12' },
     { name: 'Ortolana', desc: 'Grilled aubergine, courgette, peppers, mozzarella, basil.', price: '16' },
   ]),
   menuSection('Pasta', 'Rolled and cut by hand out back each morning. Ask what’s on today.', [
     { name: 'Rigatoni all’Amatriciana', desc: 'Guanciale, tomato, pecorino, a lift of black pepper.', price: '18' },
-    { name: 'Cacio e pepe', desc: 'Tonnarelli, pecorino romano, cracked pepper — three things, done right.', price: '16' },
+    { name: 'Cacio e pepe', desc: 'Tonnarelli, pecorino romano, cracked pepper: three things, done right.', price: '16' },
     { name: 'Tagliatelle al ragù', desc: 'A slow Sunday beef-and-pork ragù, parmesan, ribbons of fresh pasta.', price: '19' },
     { name: 'Gnocchi al pomodoro', desc: 'Pillowy potato gnocchi, simple tomato and basil, torn mozzarella.', price: '17' },
   ]),
-  menuSection('Dolci', 'A short list — plus whatever the kitchen felt like making.', [
-    { name: 'Tiramisù', desc: 'Made in trays out back — espresso, mascarpone, a heavy dust of cocoa.', price: '9' },
+  menuSection('Dolci', 'A short list: plus whatever the kitchen felt like making.', [
+    { name: 'Tiramisù', desc: 'Made in trays out back: espresso, mascarpone, a heavy dust of cocoa.', price: '9' },
     { name: 'Affogato', desc: 'Vanilla gelato drowned in a shot of hot espresso. Add amaretto.', price: '7' },
-    { name: 'Lemon sorbetto', desc: 'Sharp, bright, and cold — the way to end a big meal.', price: '6' },
+    { name: 'Lemon sorbetto', desc: 'Sharp, bright, and cold: the way to end a big meal.', price: '6' },
     { name: 'Cannoli', desc: 'Crisp shells piped to order, ricotta and candied peel, pistachio.', price: '8' },
   ]),
-  menuSection('Drinks', 'A short Italian list — Negronis, a handful of growers’ wines, and beer from the brewery two streets over.', [
+  menuSection('Drinks', 'A short Italian list: Negronis, a handful of growers’ wines, and beer from the brewery two streets over.', [
     { name: 'Negroni / Americano / Spritz', desc: 'The three that belong before dinner. Ask which vermouth’s open.', price: '11' },
     { name: 'House red / white / orange', desc: 'By the glass or carafe, low-intervention, all Italian.', price: '8' },
-    { name: 'Peroni / local pale ale', desc: 'On tap — one classic, one from two streets over.', price: '6' },
+    { name: 'Peroni / local pale ale', desc: 'On tap. One classic, one from two streets over.', price: '6' },
     { name: 'Espresso / macchiato', desc: 'Single-origin, pulled properly, the only right ending.', price: '4' },
   ]),
 ];
@@ -371,7 +371,7 @@ const BOOK_INTRO: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Book a table' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Pick your party size and a time below — you’ll see live availability for the next few weeks. For parties of seven or more, or to take over the long table for a birthday, drop us a line and we’ll sort it.',
+            text: 'Pick your party size and a time below: you’ll see live availability for the next few weeks. For parties of seven or more, or to take over the long table for a birthday, drop us a line and we’ll sort it.',
           }),
         ],
       }),
@@ -388,13 +388,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Forno' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Forno started with an oven and a stubborn idea: that a pizzeria should feel like someone’s kitchen, not a chain. We built the oven ourselves, brick by brick, on the corner where the old bakery used to be — so the room still smells of flour and fire the way it always did.',
+            text: 'Forno started with an oven and a stubborn idea: that a pizzeria should feel like someone’s kitchen, not a chain. We built the oven ourselves, brick by brick, on the corner where the old bakery used to be, so the room still smells of flour and fire the way it always did.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The dough proves for two days. The sauce is San Marzano tomatoes and not much else. The pasta gets rolled and cut by hand every morning, and half the menu changes with whatever the market had that week. We keep it simple on purpose — good flour, real fire, and time.',
+            text: 'The dough proves for two days. The sauce is San Marzano tomatoes and not much else. The pasta gets rolled and cut by hand every morning, and half the menu changes with whatever the market had that week. We keep it simple on purpose: good flour, real fire, and time.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The long communal tables are there so strangers end up passing the chilli oil. Book ahead for the weekend, but there’s always a stool at the counter for a walk-in — a pizza, a glass of something red, and a seat by the flames.',
+            text: 'The long communal tables are there so strangers end up passing the chilli oil. Book ahead for the weekend, but there’s always a stool at the counter for a walk-in: a pizza, a glass of something red, and a seat by the flames.',
           }),
         ],
       }),
@@ -455,7 +455,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 180],
       policyText:
-        'Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead.',
+        'Tables are held for 15 minutes past your time. Plans change. Just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead.',
     },
     {
       handle: 'large-party',
@@ -464,7 +464,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 1440, 180],
       policyText:
-        'Parties of six place a card hold to secure the table — nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone.',
+        'Parties of six place a card hold to secure the table. Nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone.',
     },
   ],
   resources: [
@@ -480,7 +480,7 @@ const SCHEDULING = {
       handle: 'table-for-two',
       name: 'Table for two',
       description:
-        'A table for two, for lunch or dinner. Ninety minutes at the weekend, longer midweek — we won’t rush you.',
+        'A table for two, for lunch or dinner. Ninety minutes at the weekend, longer midweek. We won’t rush you.',
       bookingType: 'reservation',
       durationMinutes: 90,
       assignmentStrategy: 'any_available',
@@ -517,8 +517,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-pizzeria',
   name: 'Pizzeria',
   summary:
-    'A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme — cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.',
-  tagline: 'Flour, fire, and a long table — a working template for a pizzeria that books tables.',
+    'A complete, working site for a wood-fired pizzeria & trattoria: a real menu (antipasti, pizza, pasta, dolci, drinks) and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm terracotta theme, cream, tomato-brick red, a basil-green accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Forno.',
+  tagline: 'Flour, fire, and a long table: a working template for a pizzeria that books tables.',
   industry: 'Restaurant & pizzeria',
   sortWeight: 85,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -543,14 +543,14 @@ const SPEC: ServiceSiteSpec = {
   },
   seo: {
     home: {
-      title: 'Forno — a wood-fired pizzeria & trattoria',
+      title: 'Forno: a wood-fired pizzeria & trattoria',
       description:
-        'Forno is a wood-fired pizzeria and trattoria — Naples-style pizza, hand-rolled pasta, open Tue–Sun for lunch and dinner. See the menu and book a table.',
+        'Forno is a wood-fired pizzeria and trattoria: Naples-style pizza, hand-rolled pasta, open Tue–Sun for lunch and dinner. See the menu and book a table.',
     },
     about: {
-      title: 'About Forno — the pizzeria',
+      title: 'About Forno: the pizzeria',
       description:
-        'A wood-fired pizzeria & trattoria built around a brick oven — two-day dough, San Marzano sauce, pasta rolled by hand each morning, long communal tables.',
+        'A wood-fired pizzeria & trattoria built around a brick oven: two-day dough, San Marzano sauce, pasta rolled by hand each morning, long communal tables.',
     },
   },
   home: HOME,

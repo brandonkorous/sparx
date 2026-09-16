@@ -55,7 +55,7 @@ function outcomeMessage(result: CommissionOutcome, who: string): string {
     case 'recorded':
       return result.amountCents
         ? `${who} earned ${formatCents(result.amountCents)} on this order.`
-        : `Credited to ${who}. This order earned nothing — the amount it was based on came to zero.`;
+        : `Credited to ${who}. This order earned nothing: the amount it was based on came to zero.`;
     case 'no-rate':
       return `Credited to ${who}, but they are not on commission, so nothing was earned. Set a commission rate on their pay record to change that.`;
     case 'rate-not-in-force':
@@ -135,7 +135,7 @@ export function SoldBySection({
         // Says exactly what survives. A confirm that only asks "are you sure"
         // leaves the reader to guess whether the money goes with it.
         description:
-          'Nobody will be credited with selling this order. Any commission already earned on it stays on their record — void it from their pay page if that is what you mean.',
+          'Nobody will be credited with selling this order. Any commission already earned on it stays on their record: void it from their pay page if that is what you mean.',
         confirmLabel: 'Remove credit',
         cancelLabel: 'Keep it',
         color: 'danger',

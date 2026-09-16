@@ -44,7 +44,7 @@ export function PayoutActions() {
       const res = await runPayoutsAction();
       if (res.ok) {
         toast.success(
-          `Paid ${res.data.partnersPaid} partner(s) — ${formatMoneyCents(res.data.totalCents)} total. ${res.data.skipped} skipped.`
+          `Paid ${res.data.partnersPaid} partner(s): ${formatMoneyCents(res.data.totalCents)} total. ${res.data.skipped} skipped.`
         );
       } else {
         toast.error(res.error);

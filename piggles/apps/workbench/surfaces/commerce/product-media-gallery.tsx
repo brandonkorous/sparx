@@ -49,7 +49,7 @@ export function PhotoGallery({
       title="Photos"
       description={
         images.length > 0
-          ? 'Shoppers see these in this order. Your main photo always comes first — it is the one used in lists, on cards and in search results.'
+          ? 'Shoppers see these in this order. Your main photo always comes first. It is the one used in lists, on cards and in search results.'
           : 'The pictures shoppers see on this product’s page.'
       }
     >
@@ -111,7 +111,7 @@ export function PhotoGallery({
             rejections
               .map(
                 (rejection) =>
-                  `“${rejection.file.name}” was not added — it is either too large or not a picture.`
+                  `“${rejection.file.name}” was not added. It is either too large or not a picture.`
               )
               .join(' ')
           );

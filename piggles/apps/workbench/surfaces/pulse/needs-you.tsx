@@ -81,7 +81,7 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
   return (
     <FormSection
       title="Needs your attention"
-      description="Addressed to you personally — and it waits here until you've dealt with it."
+      description="Addressed to you personally, and it waits here until you've dealt with it."
     >
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {/* A variant switch on a real component, not a hand-built segmented
@@ -137,7 +137,7 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
         <PaneLoadError
           icon={<Icon glyph={faBell} className="size-6" aria-hidden />}
           title="Could not load what needs you"
-          description="This is a problem reaching the server. Anything waiting on you is still waiting — it just could not be read."
+          description="This is a problem reaching the server. Anything waiting on you is still waiting. It just could not be read."
           onRetry={retry}
         />
       ) : empty ? (
@@ -149,7 +149,7 @@ export function NeedsYou({ ctx }: { ctx: SurfaceContext }) {
             title: "You're all caught up",
             description: productCopy(
               'pulse.needsYou.description',
-              'Anything waiting on you turns up here — a payment that failed, stock running low, a reply from the Piggles team.'
+              'Anything waiting on you turns up here: a payment that failed, stock running low, a reply from the Piggles team.'
             ),
           }}
           firstRun={{

@@ -47,7 +47,7 @@ function LocationLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           description={
             missing
               ? 'It was removed, or the link is out of date.'
-              : 'This is a problem reaching the server. The place itself is unaffected — nothing has been lost.'
+              : 'This is a problem reaching the server. The place itself is unaffected. Nothing has been lost.'
           }
           onRetry={() => {
             void refetch();

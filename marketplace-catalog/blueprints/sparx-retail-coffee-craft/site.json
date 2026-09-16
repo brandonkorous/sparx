@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Cairn Coffee Roasters — small-batch coffee, roasted to order",
-      "seoDescription": "Cairn is a small-batch coffee roaster — single origins, blends and a flexible subscription, roasted to order and shipped within days. Buy well, roast small, ship fast.",
+      "seoTitle": "Cairn Coffee Roasters: small-batch coffee, roasted to order",
+      "seoDescription": "Cairn is a small-batch coffee roaster: single origins, blends and a flexible subscription, roasted to order and shipped within days. Buy well, roast small, ship fast.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -799,7 +799,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Cairn is a small-batch coffee roaster. We buy green coffee from farms we can name, roast it in tens of pounds, and ship it within days — so it reaches you tasting like the roaster meant it to."
+                          "Cairn is a small-batch coffee roaster. We buy green coffee from farms we can name, roast it in tens of pounds, and ship it within days, so it reaches you tasting like the roaster meant it to."
                         ],
                         "id": "94bb6d9e-00ce-492c-9948-79adca9a3043",
                         "ord": "a1"
@@ -1256,7 +1256,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We roast in tens of pounds, not thousands, on a drum roaster we run by ear and by nose. Every batch is cupped before it ships — if it isn’t what we tasted on the sample table, it doesn’t go in a bag."
+                          "We roast in tens of pounds, not thousands, on a drum roaster we run by ear and by nose. Every batch is cupped before it ships: if it isn’t what we tasted on the sample table, it doesn’t go in a bag."
                         ],
                         "id": "5274765c-36fb-47e1-ad05-dcc4fdb40f9b",
                         "ord": "a1"
@@ -1530,7 +1530,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A subscription is the easy way to never run out: pick a bag, pick how often, and it arrives freshly roasted on your schedule. Skip, swap or cancel any time — no lock-in, ever."
+                          "A subscription is the easy way to never run out: pick a bag, pick how often, and it arrives freshly roasted on your schedule. Skip, swap or cancel any time, no lock-in, ever."
                         ],
                         "id": "4388639a-1df6-4510-ae9b-a53f7abd4cd3",
                         "ord": "a1"
@@ -1565,7 +1565,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Cairn Coffee Roasters",
+      "seoTitle": "Shop: Cairn Coffee Roasters",
       "seoDescription": "Browse everything Cairn Coffee Roasters makes, with prices and options at a glance. Coffee roaster.",
       "root": {
         "kind": "element",
@@ -1597,7 +1597,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every coffee we’re roasting right now — single origins, blends, decaf, and the gear to brew them. Filter by roast or origin, or sort however you like; all of it ships freshly roasted to order."
+                      "Every coffee we’re roasting right now: single origins, blends, decaf, and the gear to brew them. Filter by roast or origin, or sort however you like; all of it ships freshly roasted to order."
                     ],
                     "id": "176cca7d-cd47-4832-9195-3ab2984dc894",
                     "ord": "a1"
@@ -1625,7 +1625,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Cairn Coffee Roasters",
+      "seoTitle": "Collections: Cairn Coffee Roasters",
       "seoDescription": "Explore the collections at Cairn Coffee Roasters, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1657,7 +1657,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The coffees grouped the way people actually shop — this week’s roasts, the everyday blends, the bright single origins, and starter kits for a new brew method."
+                      "The coffees grouped the way people actually shop. This week’s roasts, the everyday blends, the bright single origins, and starter kits for a new brew method."
                     ],
                     "id": "dabd7e29-4576-49a8-ab63-423183eb96a8",
                     "ord": "a1"
@@ -1685,7 +1685,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Cairn Coffee Roasters",
+      "seoTitle": "Your cart: Cairn Coffee Roasters",
       "seoDescription": "Review what is in your cart and check out securely at Cairn Coffee Roasters.",
       "root": {
         "kind": "element",
@@ -1717,7 +1717,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not sure it’s for you? Tell us and we’ll make it right — coffee should be a pleasure, not a gamble."
+                      "Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not sure it’s for you? Tell us and we’ll make it right: coffee should be a pleasure, not a gamble."
                     ],
                     "id": "f1f0e7d9-cb4b-4273-ba42-f6a9e582b4b7",
                     "ord": "a1"
@@ -1745,7 +1745,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Cairn Coffee Roasters",
+      "seoTitle": "Search: Cairn Coffee Roasters",
       "seoDescription": "Search Cairn Coffee Roasters for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1805,7 +1805,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Cairn Coffee Roasters",
+      "seoTitle": "Journal: Cairn Coffee Roasters",
       "seoDescription": "Stories, guides and notes from Cairn Coffee Roasters.",
       "root": {
         "kind": "element",
@@ -1837,7 +1837,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the roastery — how we roast, how to brew it at home, and where the coffee actually comes from. Plain, useful, no coffee snobbery."
+                      "Notes from the roastery: how we roast, how to brew it at home, and where the coffee actually comes from. Plain, useful, no coffee snobbery."
                     ],
                     "id": "8cf9dc6b-7a7c-41d3-ac52-d65b49eb9ed8",
                     "ord": "a1"
@@ -1971,7 +1971,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Cairn Coffee Roasters",
-      "seoDescription": "How Cairn buys, roasts and ships — small batches, named farms, fair prices, and coffee that tastes the way the roaster meant it to.",
+      "seoDescription": "How Cairn buys, roasts and ships: small batches, named farms, fair prices, and coffee that tastes the way the roaster meant it to.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2002,7 +2002,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Cairn started as a drum roaster in a garage and a standing order from a few neighbours who were tired of stale supermarket coffee. It grew the slow way — one bag, one café, one farmer relationship at a time — and it still runs on the same idea: buy well, roast small, ship fast."
+                      "Cairn started as a drum roaster in a garage and a standing order from a few neighbours who were tired of stale supermarket coffee. It grew the slow way (one bag, one café, one farmer relationship at a time) and it still runs on the same idea: buy well, roast small, ship fast."
                     ],
                     "id": "43adbdab-b44a-459d-804d-5d477bd0f7fe",
                     "ord": "a1"
@@ -2042,8 +2042,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Cairn Coffee Roasters",
-      "seoDescription": "Get in touch with Cairn Coffee Roasters — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Cairn Coffee Roasters",
+      "seoDescription": "Get in touch with Cairn Coffee Roasters: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2350,8 +2350,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Cairn Coffee Roasters",
-      "seoDescription": "Product details at Cairn Coffee Roasters — coffee roaster, with options and pricing.",
+      "seoTitle": "Product: Cairn Coffee Roasters",
+      "seoDescription": "Product details at Cairn Coffee Roasters: coffee roaster, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

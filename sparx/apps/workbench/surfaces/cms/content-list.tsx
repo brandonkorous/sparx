@@ -72,10 +72,10 @@ function emptyAdvice(search: string, statusLabel: string | null, typeLabel: stri
   const parts: string[] = [];
   if (search) parts.push('Try part of the title or web address.');
   if (statusLabel) {
-    parts.push(`You are only seeing “${statusLabel}” — switch to All to see the rest.`);
+    parts.push(`You are only seeing “${statusLabel}”. Switch to All to see the rest.`);
   }
   if (typeLabel) {
-    parts.push(`Only “${typeLabel}” is showing — choose All kinds to widen it.`);
+    parts.push(`Only “${typeLabel}” is showing. Choose All kinds to widen it.`);
   }
   return parts.join(' ');
 }
@@ -165,7 +165,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Write something new — hold Shift to open alongside, Alt for a new window"
+            title="Write something new. Hold Shift to open alongside, Alt for a new window"
             onClick={create}
           >
             <Plus className="size-4" aria-hidden />
@@ -254,7 +254,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<FileText className="size-6" aria-hidden />}
             title="Could not load your content"
-            description="This is a problem reaching the server. Nothing you have written is affected — none of it has been lost."
+            description="This is a problem reaching the server. Nothing you have written is affected: none of it has been lost."
             actions={
               <Button
                 size="sm"
@@ -286,7 +286,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'Nothing written yet',
               description:
-                'This is where everything you publish lives — pages, posts, articles. Write your first one and it can be on your site within a minute.',
+                'This is where everything you publish lives: pages, posts, articles. Write your first one and it can be on your site within a minute.',
               actions: (
                 <Button
                   size="sm"

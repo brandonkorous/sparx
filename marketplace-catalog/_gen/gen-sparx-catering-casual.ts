@@ -167,7 +167,7 @@ const SCHEDULING = {
       handle: 'event-consultation',
       name: 'Event consultation',
       description:
-        'A free, no-pressure call to talk headcount, budget, menu and logistics. Fifteen guests or five hundred — we’ll map it out.',
+        'A free, no-pressure call to talk headcount, budget, menu and logistics. Fifteen guests or five hundred: we’ll map it out.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -180,7 +180,7 @@ const SCHEDULING = {
       handle: 'bbq-tasting',
       name: 'Signature BBQ tasting',
       description:
-        'Come hungry. Brisket, pulled pork, ribs, chicken and the sides that go with them — taste the spread before you book the date.',
+        'Come hungry. Brisket, pulled pork, ribs, chicken and the sides that go with them: taste the spread before you book the date.',
       durationMinutes: 60,
       priceCents: 4000,
       assignmentStrategy: 'customer_choice',
@@ -193,7 +193,7 @@ const SCHEDULING = {
       handle: 'backyard-party-consult',
       name: 'Backyard party consult',
       description:
-        'Graduations, birthdays, family reunions — a relaxed sit-down to build a generous flat per-head spread that feeds the whole yard.',
+        'Graduations, birthdays, family reunions: a relaxed sit-down to build a generous flat per-head spread that feeds the whole yard.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -206,7 +206,7 @@ const SCHEDULING = {
       handle: 'corporate-lunch-consult',
       name: 'Corporate lunch consult',
       description:
-        'Team lunches, client meetings and office spreads — dependable drop-off or full-service, on time, with easy per-head pricing.',
+        'Team lunches, client meetings and office spreads: dependable drop-off or full-service, on time, with easy per-head pricing.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -232,7 +232,7 @@ const SCHEDULING = {
       handle: 'game-day-package-consult',
       name: 'Game-day package consult',
       description:
-        'Wings, sliders, brisket nachos and a cooler’s worth of sides — plan the tailgate or watch-party spread that keeps everyone fed.',
+        'Wings, sliders, brisket nachos and a cooler’s worth of sides: plan the tailgate or watch-party spread that keeps everyone fed.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -245,7 +245,7 @@ const SCHEDULING = {
       handle: 'large-event-consult',
       name: 'Large event consult',
       description:
-        'Weddings, company picnics and festivals from 100 guests up — full-service catering, staffing and timing planned end to end.',
+        'Weddings, company picnics and festivals from 100 guests up: full-service catering, staffing and timing planned end to end.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -263,7 +263,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A loaded backyard BBQ spread of smoked brisket, ribs and sides',
     title: 'Real smoke. Big spreads. Zero fuss.',
-    sub: 'Low-and-slow BBQ, taco bars and game-day feasts for backyard parties and corporate lunches — catered by folks who actually run the pit.',
+    sub: 'Low-and-slow BBQ, taco bars and game-day feasts for backyard parties and corporate lunches: catered by folks who actually run the pit.',
     primary: { label: 'Book a tasting', href: '/book' },
     secondary: { label: 'See the spreads', href: '/book' },
     overlay: 'darker',
@@ -272,11 +272,11 @@ const HOME = [
     items: [
       {
         title: 'Smoked low and slow, in-house',
-        body: 'Brisket, pork and ribs over real wood for twelve-plus hours — never a warming tray of somebody else’s food. You taste the difference.',
+        body: 'Brisket, pork and ribs over real wood for twelve-plus hours, never a warming tray of somebody else’s food. You taste the difference.',
       },
       {
         title: 'Feeds any crowd',
-        body: 'A backyard of fifteen or a company picnic of five hundred — we scale the spread and bring enough that nobody leaves hungry.',
+        body: 'A backyard of fifteen or a company picnic of five hundred. We scale the spread and bring enough that nobody leaves hungry.',
       },
       {
         title: 'Drop-off or full-service',
@@ -284,7 +284,7 @@ const HOME = [
       },
       {
         title: 'Easy flat per-head pricing',
-        body: 'One clear price per guest, sides included. No surprise line items, no math the morning of — just a spread that shows up ready.',
+        body: 'One clear price per guest, sides included. No surprise line items, no math the morning of. Just a spread that shows up ready.',
       },
     ],
   }),
@@ -294,7 +294,7 @@ const HOME = [
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Event consultation', priceCents: 0, durationMin: 30, desc: 'Free call — headcount, budget, menu, logistics.' },
+      { name: 'Event consultation', priceCents: 0, durationMin: 30, desc: 'Free call: headcount, budget, menu, logistics.' },
       { name: 'Signature BBQ tasting', priceCents: 4000, durationMin: 60, desc: 'Brisket, pork, ribs, chicken and the sides.' },
       { name: 'Taco bar tasting', priceCents: 4000, durationMin: 60, desc: 'Build-your-own smoked-meat taco bar.' },
       { name: 'Corporate lunch consult', priceCents: 0, durationMin: 45, desc: 'Drop-off or full-service office spreads.' },
@@ -318,7 +318,7 @@ const HOME = [
     heading: 'One pit, up before sunrise',
     body: [
       'Smoke & Barrel started with a backyard offset smoker, a stack of oak and way too much food for one family reunion. Word got around fast.',
-      'These days we run a mobile pit and cater the whole region — but the rule hasn’t changed: everything’s smoked fresh the day of your event, by the same crew that started it.',
+      'These days we run a mobile pit and cater the whole region, but the rule hasn’t changed: everything’s smoked fresh the day of your event, by the same crew that started it.',
     ],
     cta: { label: 'Book a tasting', href: '/book' },
   }),
@@ -329,7 +329,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Get your event on the calendar',
-    sub: 'Grab a free consult or book a tasting — pick a time that works and we’ll take it from there. Takes about a minute.',
+    sub: 'Grab a free consult or book a tasting. Pick a time that works and we’ll take it from there. Takes about a minute.',
     cta: { label: 'Book a tasting', href: '/book' },
   }),
 ];
@@ -339,7 +339,7 @@ const BOOK_INTRO = [
     image: url(IMG.spread2),
     alt: 'A build-your-own taco bar with smoked meats and toppings',
     title: 'Book your tasting or consult',
-    sub: 'Pick a service to see how long it takes and grab a live time — start free with a consult, or come taste the spread.',
+    sub: 'Pick a service to see how long it takes and grab a live time. Start free with a consult, or come taste the spread.',
     primary: { label: 'See services below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -352,8 +352,8 @@ const ABOUT = [
     alt: 'A loaded backyard BBQ spread of smoked brisket, ribs and sides',
     heading: 'About Smoke & Barrel',
     body: [
-      'We’re a small crew that takes BBQ seriously and takes ourselves not at all. We smoke everything ourselves, over real wood, the day of your event — no shortcuts, no reheated trays.',
-      'Backyard party, office lunch, tailgate or a wedding for three hundred — we bring a generous, hearty spread and the kind of easygoing service that makes hosting feel easy.',
+      'We’re a small crew that takes BBQ seriously and takes ourselves not at all. We smoke everything ourselves, over real wood, the day of your event: no shortcuts, no reheated trays.',
+      'Backyard party, office lunch, tailgate or a wedding for three hundred. We bring a generous, hearty spread and the kind of easygoing service that makes hosting feel easy.',
     ],
     cta: { label: 'Book a tasting', href: '/book' },
   }),
@@ -363,7 +363,7 @@ const ABOUT = [
     items: [
       { title: 'Tell us the plan', body: 'Headcount, date, vibe and budget on a quick free consult. We’ll tell you honestly what feeds your crowd best.' },
       { title: 'Taste it first', body: 'Come to a tasting and try the spread before you commit. Tweak the menu until it’s exactly what you want.' },
-      { title: 'We show up ready', body: 'Everything smoked fresh, delivered hot and on time — drop-off or full-service, set up and cleaned up.' },
+      { title: 'We show up ready', body: 'Everything smoked fresh, delivered hot and on time: drop-off or full-service, set up and cleaned up.' },
     ],
   }),
 ];
@@ -381,7 +381,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Grab a free consult or a tasting online — see live times and lock in a slot without the phone tag.',
+    sub: 'Grab a free consult or a tasting online: see live times and lock in a slot without the phone tag.',
     surface: 'muted',
     cta: { label: 'Book a tasting', href: '/book' },
   }),
@@ -392,8 +392,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-catering-casual',
   name: 'Catering (Casual BBQ)',
   summary:
-    'A bold, smoky catering site for a casual BBQ & food-truck outfit — a kraft ground, a deep-rust primary and an ember-amber accent under a sturdy condensed display. Installs online booking for tastings and event consults: a real menu (free consults, BBQ and taco-bar tastings, corporate and game-day packages), three coordinators you book by name with their own hours, and a tasting-deposit policy. Ships as "Smoke & Barrel BBQ Catering".',
-  tagline: 'A hearty, no-fuss template for BBQ & casual caterers — book tastings from day one.',
+    'A bold, smoky catering site for a casual BBQ & food-truck outfit: a kraft ground, a deep-rust primary and an ember-amber accent under a sturdy condensed display. Installs online booking for tastings and event consults: a real menu (free consults, BBQ and taco-bar tastings, corporate and game-day packages), three coordinators you book by name with their own hours, and a tasting-deposit policy. Ships as "Smoke & Barrel BBQ Catering".',
+  tagline: 'A hearty, no-fuss template for BBQ & casual caterers. Book tastings from day one.',
   industry: 'Catering',
   sortWeight: 57,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -402,7 +402,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Smoke & Barrel BBQ Catering — real smoke, big spreads',
+      title: 'Smoke & Barrel BBQ Catering: real smoke, big spreads',
       description:
         'Smoke & Barrel caters low-and-slow BBQ, taco bars and game-day feasts for backyard parties and corporate lunches. Book a free consult or a tasting online.',
     },

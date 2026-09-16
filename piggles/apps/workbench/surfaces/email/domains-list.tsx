@@ -97,7 +97,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <PaneLoadError
           icon={<Icon glyph={faEnvelopeCircleCheck} className="size-6" aria-hidden />}
           title="Could not load your sending addresses"
-          description="This is a problem reaching the server. Your addresses are unaffected — nothing has been lost."
+          description="This is a problem reaching the server. Your addresses are unaffected. Nothing has been lost."
           onRetry={() => {
             void refetch();
           }}
@@ -138,7 +138,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add a sending address — hold Shift to open alongside, Alt for a new window"
+            title="Add a sending address. Hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('email.domains.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -183,7 +183,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No sending addresses yet',
               description:
-                'A sending address is a domain you own that your email goes out from — so customers see mail from your own address, like hello@yourbusiness.com, and it lands in inboxes instead of spam. Add one and add a few records at your domain provider to prove it is yours.',
+                'A sending address is a domain you own that your email goes out from, so customers see mail from your own address, like hello@yourbusiness.com, and it lands in inboxes instead of spam. Add one and add a few records at your domain provider to prove it is yours.',
               actions: (
                 <Button
                   color="module"

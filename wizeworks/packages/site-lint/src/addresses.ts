@@ -64,7 +64,7 @@ export function checkAddresses(pages: readonly PageAddress[]): RawFinding[] {
         severity: 'error',
         title: `${sharing.length} pages are all set to be ${nameFor(address)}`,
         detail:
-          `${others.join(', ')} all answer to ${address}. Only one of them can — visitors ` +
+          `${others.join(', ')} all answer to ${address}. Only one of them can: visitors ` +
           `will get whichever the site happens to reach first, and the others cannot be ` +
           `opened at all. Give the ones you did not mean a web address of their own in ` +
           `page settings, or delete them.`,

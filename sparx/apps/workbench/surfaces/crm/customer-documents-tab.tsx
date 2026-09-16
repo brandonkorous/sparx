@@ -142,7 +142,7 @@ export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
       onError: () => {
         toast.add({
           title: 'Could not upload that file',
-          description: 'Nothing was added. PDFs and images are accepted — try one of those.',
+          description: 'Nothing was added. PDFs and images are accepted. Try one of those.',
           type: 'error',
         });
       },
@@ -195,7 +195,7 @@ export function CustomerDocumentsTab({ customerId }: { customerId: string }) {
           <EmptyState
             icon={<FileText className="size-6" aria-hidden />}
             title="Could not load documents"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

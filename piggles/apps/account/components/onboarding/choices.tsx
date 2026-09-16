@@ -40,7 +40,7 @@ export function Choices({
     <div>
       <h2 className="text-xl font-bold">What do you do?</h2>
       <p className="mt-1 text-base">
-        Pick any that fit. This only decides what you see first — everything is included either way,
+        Pick any that fit. This only decides what you see first. Everything is included either way,
         and nothing is switched off by leaving it unticked.
       </p>
 

@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -618,8 +618,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Kettle & Crumb — a sunny all-day café",
-      "seoDescription": "Kettle & Crumb is a bright all-day café — proper coffee, unhurried brunch served open to close, house pastries and a warm welcome. Open eight to four, every day. See the menu and book a table.",
+      "seoTitle": "Kettle & Crumb: a sunny all-day café",
+      "seoDescription": "Kettle & Crumb is a bright all-day café: proper coffee, unhurried brunch served open to close, house pastries and a warm welcome. Open eight to four, every day. See the menu and book a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -743,7 +743,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Roll in for a quiet coffee, settle in for a slow brunch, or grab something sweet on the way past. We serve the whole menu from open to close — no breakfast cut-off here."
+                          "Roll in for a quiet coffee, settle in for a slow brunch, or grab something sweet on the way past. We serve the whole menu from open to close: no breakfast cut-off here."
                         ],
                         "id": "5bd28ee8-3d8c-462c-a85d-e3253bd45c45",
                         "ord": "a1"
@@ -832,7 +832,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Loaded toasts, big breakfast plates, and greens that earn their place. Long tables welcome — we’ll pull them together."
+                              "Loaded toasts, big breakfast plates, and greens that earn their place. Long tables welcome: we’ll pull them together."
                             ],
                             "id": "3d9fb27f-8f70-402e-bbeb-d8524f4c2929",
                             "ord": "a2"
@@ -937,7 +937,7 @@
                     "class": "aspect-video w-full rounded-box border border-base-300 object-cover",
                     "attrs": {
                       "src": "https://images.unsplash.com/photo-1524484485831-a92ffc0de03f?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2FmJTIwcm9vbSUyMGxpZ2h0fGVufDB8MHx8fDE3ODY0MTU1MDZ8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                      "alt": "The café room — light wood, hanging plants, mismatched chairs",
+                      "alt": "The café room: light wood, hanging plants, mismatched chairs",
                       "loading": "lazy"
                     },
                     "id": "f07cf87c-95ad-4e28-8870-2d2a5366494e",
@@ -961,7 +961,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Weekend brunch fills up fast, so booking ahead is the safe bet — it takes about a minute and you’ll see the real availability. Walk-ins are always welcome too; there’s usually a stool at the counter with your name on it."
+                          "Weekend brunch fills up fast, so booking ahead is the safe bet. It takes about a minute and you’ll see the real availability. Walk-ins are always welcome too; there’s usually a stool at the counter with your name on it."
                         ],
                         "id": "b31575bd-be72-4c2a-b2e7-6e107fed15cf",
                         "ord": "a1"
@@ -1202,8 +1202,8 @@
       "name": "Menu",
       "kind": "singleton",
       "slug": "menu",
-      "seoTitle": "Menu — Kettle & Crumb",
-      "seoDescription": "See the full menu at Kettle & Crumb — dishes, drinks and prices — then reserve a table.",
+      "seoTitle": "Menu: Kettle & Crumb",
+      "seoDescription": "See the full menu at Kettle & Crumb (dishes, drinks and prices) then reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1234,7 +1234,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything you see is served all day — no breakfast cut-off, no rush. We bake most of it here, the eggs are free-range, and there’s always something for the little ones. Tell us about allergies and we’ll sort you out."
+                      "Everything you see is served all day: no breakfast cut-off, no rush. We bake most of it here, the eggs are free-range, and there’s always something for the little ones. Tell us about allergies and we’ll sort you out."
                     ],
                     "id": "bd4f3e36-e12e-4e07-b844-9708df23adf5",
                     "ord": "a1"
@@ -1712,7 +1712,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Whatever’s good this week — ask the counter. Comes with buttered sourdough."
+                              "Whatever’s good this week. Ask the counter. Comes with buttered sourdough."
                             ],
                             "id": "3eeae051-8deb-4b9b-a5b4-6fb781bac8b3",
                             "ord": "a1"
@@ -1800,7 +1800,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "From the pastry case up front — ask what came out of the oven this morning."
+                      "From the pastry case up front. Ask what came out of the oven this morning."
                     ],
                     "id": "ccc309c1-23f5-4981-9751-4d6dff2a3853",
                     "ord": "a1"
@@ -1845,7 +1845,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Soft, tall and iced. Best still warm — they rarely make it past noon."
+                              "Soft, tall and iced. Best still warm. They rarely make it past noon."
                             ],
                             "id": "76483a1d-04b1-4e5c-a9e8-754cc31b4ee6",
                             "ord": "a1"
@@ -1977,7 +1977,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A croissant, a morning bun, or whatever the baker felt like — ask what’s in."
+                              "A croissant, a morning bun, or whatever the baker felt like. Ask what’s in."
                             ],
                             "id": "1be15e1f-cca9-4dfc-81cc-54c9b384a639",
                             "ord": "a1"
@@ -2021,7 +2021,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "Beans roasted two streets over. Oat, soya and whole milk all on the house — no extra."
+                      "Beans roasted two streets over. Oat, soya and whole milk all on the house: no extra."
                     ],
                     "id": "9b3fc342-af27-4c06-b4bf-5b9aa261bfca",
                     "ord": "a1"
@@ -2268,7 +2268,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Kettle & Crumb",
+      "seoTitle": "Book: Kettle & Crumb",
       "seoDescription": "See what Kettle & Crumb offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -2300,7 +2300,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Pick your party size and a time below — you’ll see live availability across the week. No deposit, no fuss. Walk-ins are always welcome; booking just means your table’s waiting when the weekend gets busy."
+                      "Pick your party size and a time below: you’ll see live availability across the week. No deposit, no fuss. Walk-ins are always welcome; booking just means your table’s waiting when the weekend gets busy."
                     ],
                     "id": "aaa9b5e2-dc47-4812-9999-da5c8d2607d1",
                     "ord": "a1"
@@ -2353,7 +2353,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "2dbbe716-4a07-4028-9695-dc5354f4e317",
                         "ord": "a1"
@@ -2385,7 +2385,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "No deposit, ever — just book and turn up. We hold your table for 15 minutes past your time; if your plans change, a quick heads-up by a couple of hours before frees it for someone else. Walk-ins are always welcome, so don’t worry if you didn’t book."
+                              "No deposit, ever. Just book and turn up. We hold your table for 15 minutes past your time; if your plans change, a quick heads-up by a couple of hours before frees it for someone else. Walk-ins are always welcome, so don’t worry if you didn’t book."
                             ],
                             "id": "2bbf7efb-31a6-4835-87d3-f97bb8f9b1bc",
                             "ord": "a1"
@@ -2422,7 +2422,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Groups of five or six get the big communal table by the window — still no deposit. If you need to cancel, letting us know the evening before means we can offer it to another party. Bigger than six? Email us and we’ll happily sort it."
+                              "Groups of five or six get the big communal table by the window: still no deposit. If you need to cancel, letting us know the evening before means we can offer it to another party. Bigger than six? Email us and we’ll happily sort it."
                             ],
                             "id": "1818c153-c9c6-446c-bd3e-a3f75905171d",
                             "ord": "a1"
@@ -2460,8 +2460,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Kettle & Crumb — the café",
-      "seoDescription": "A sunny corner café that bakes its own sourdough and pastries, pulls coffee from a local roaster, and serves brunch all day long — everyone welcome.",
+      "seoTitle": "About Kettle & Crumb: the café",
+      "seoDescription": "A sunny corner café that bakes its own sourdough and pastries, pulls coffee from a local roaster, and serves brunch all day long. Everyone welcome.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2492,7 +2492,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Kettle & Crumb started as a tiny coffee window and grew into the corner café we always wanted on our own street — the kind you can drop into any hour of the day and feel at home in. Sunny, unhurried, and open to everyone."
+                      "Kettle & Crumb started as a tiny coffee window and grew into the corner café we always wanted on our own street: the kind you can drop into any hour of the day and feel at home in. Sunny, unhurried, and open to everyone."
                     ],
                     "id": "c031babe-06f8-4801-8153-a75d7e14dc6f",
                     "ord": "a1"
@@ -2532,7 +2532,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Kettle & Crumb",
+      "seoTitle": "Visit: Kettle & Crumb",
       "seoDescription": "Where to find Kettle & Crumb, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2569,7 +2569,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Kettle & Crumb will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Kettle & Crumb will get back to you, usually the same day."
                         ],
                         "id": "2b6fea29-8cfa-44f9-918a-8e7b9c66deeb",
                         "ord": "a1"
@@ -2850,7 +2850,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "9 Marigold Street, on the sunny corner by the little park. Open every day, eight till four, kitchen running the whole time. Bikes, buggies and well-behaved dogs always welcome — the number 4 stops right outside."
+                      "9 Marigold Street, on the sunny corner by the little park. Open every day, eight till four, kitchen running the whole time. Bikes, buggies and well-behaved dogs always welcome: the number 4 stops right outside."
                     ],
                     "id": "df80e7be-d0c6-46da-8723-1335fb659e09",
                     "ord": "a1"

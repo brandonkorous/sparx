@@ -280,7 +280,7 @@ function eventsBand(): Node {
                 '18',
                 'Sep',
                 'The AI Infrastructure Briefing',
-                'A morning with the people building the racks, the grids and the models — on the record, off the hype.',
+                'A morning with the people building the racks, the grids and the models: on the record, off the hype.',
                 'San Francisco · 9am PT',
               ),
               event(
@@ -406,7 +406,7 @@ const JOURNAL: Node[] = [
             text: 'The Frequency',
           }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Technology, business, and the people building what is next — reported plainly, without the hype cycle.',
+            text: 'Technology, business, and the people building what is next: reported plainly, without the hype cycle.',
           }),
         ],
       }),
@@ -425,7 +425,7 @@ const ABOUT: Node[] = [
             text: 'About Frequency',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Frequency is an independent newsroom covering technology and the business of building it. We report on the companies, the money and the policy that decide what gets made — for the people who have to make decisions about it on Monday morning.',
+            text: 'Frequency is an independent newsroom covering technology and the business of building it. We report on the companies, the money and the policy that decide what gets made, for the people who have to make decisions about it on Monday morning.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We take no money from the companies we cover. Our reporting is paid for by readers and members, which is the only arrangement that lets us tell you when the thing everyone is excited about does not actually work.',
@@ -486,14 +486,14 @@ const PRODUCTS: Product[] = [
     tags: ['report', 'ai', 'infrastructure'],
     categoryHandles: ['reports'],
     collectionHandles: ['featured'],
-    seoTitle: 'The State of AI Infrastructure 2026 — Frequency report',
+    seoTitle: 'The State of AI Infrastructure 2026: Frequency report',
     seoDescription: 'A fully-sourced annual report on AI data centres, cost and power, with the dataset.',
     variants: [{ sku: 'FRQ-REP-AI26', priceCents: money(149), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'report-cover', isPrimary: true, alt: 'The State of AI Infrastructure 2026 report' }],
   },
   {
     handle: 'the-signal-book',
-    title: 'The Signal — a field guide to hype',
+    title: 'The Signal: a field guide to hype',
     description:
       'A short, sharp book from the Frequency desk on how to tell a real technology shift from a funding-round press release. The reporting behind five years of the newsletter.',
     status: 'active',
@@ -502,14 +502,14 @@ const PRODUCTS: Product[] = [
     tags: ['book'],
     categoryHandles: ['books'],
     collectionHandles: ['featured'],
-    seoTitle: 'The Signal — a field guide to hype | Frequency',
+    seoTitle: 'The Signal: a field guide to hype | Frequency',
     seoDescription: 'A short book on telling a real technology shift from a press release.',
     variants: [{ sku: 'FRQ-BOOK-SIGNAL', priceCents: money(24), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'book-cover', isPrimary: true, alt: 'The Signal, a hardback book' }],
   },
   {
     handle: 'frequency-membership',
-    title: 'Frequency Membership — annual',
+    title: 'Frequency Membership: annual',
     description:
       'The whole archive, every report, the members-only briefings, and the Saturday long read. The subscription that pays for the reporting and keeps it free of the companies we cover.',
     status: 'active',
@@ -518,7 +518,7 @@ const PRODUCTS: Product[] = [
     tags: ['membership', 'subscription'],
     categoryHandles: ['membership'],
     collectionHandles: ['featured'],
-    seoTitle: 'Frequency Membership — annual subscription',
+    seoTitle: 'Frequency Membership: annual subscription',
     seoDescription: 'Annual membership: the full archive, every report, members-only briefings.',
     variants: [{ sku: 'FRQ-MEM-ANNUAL', priceCents: money(120), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'membership', isPrimary: true, alt: 'A reader at a laptop' }],
@@ -534,7 +534,7 @@ const PRODUCTS: Product[] = [
     tags: ['merch', 'tote'],
     categoryHandles: ['merch'],
     collectionHandles: [],
-    seoTitle: 'Frequency Tote — heavyweight canvas tote',
+    seoTitle: 'Frequency Tote: heavyweight canvas tote',
     seoDescription: 'A heavyweight canvas tote with the Frequency masthead.',
     variants: [{ sku: 'FRQ-TOTE', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'tote-bag', isPrimary: true, alt: 'The Frequency canvas tote' }],
@@ -576,7 +576,7 @@ const AUTHORS = [
   {
     slug: 'marcus-bell',
     displayName: 'Marcus Bell',
-    bio: 'Marcus Bell writes about startups and the money behind them — who is raising, who is spending, and what the terms actually mean for the people building the companies.',
+    bio: 'Marcus Bell writes about startups and the money behind them, who is raising, who is spending, and what the terms actually mean for the people building the companies.',
     avatarAssetId: 'author-bell',
   },
   {
@@ -608,11 +608,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('A single large training cluster can draw as much power as a small city, around the clock, for years. Utilities are not used to a customer like that — one that arrives all at once, never sleeps, and signs a twenty-year contract before the concrete is poured.'),
+          para('A single large training cluster can draw as much power as a small city, around the clock, for years. Utilities are not used to a customer like that. One that arrives all at once, never sleeps, and signs a twenty-year contract before the concrete is poured.'),
           h2('The load is real, and it is lumpy'),
           para('We reviewed interconnection filings in six states. The pattern is the same everywhere: a cluster of enormous new requests, all from a short list of names, all pushing planners to build generation and transmission a decade ahead of where the models said demand would be.'),
           h2('Who pays for the build-out'),
-          para('That is the fight now playing out in rate cases most people will never read. If a utility builds a power plant to serve one data centre and that data centre leaves, the cost does not vanish — it lands on everyone else’s bill. Regulators are only beginning to write the rules that decide who carries that risk.'),
+          para('That is the fight now playing out in rate cases most people will never read. If a utility builds a power plant to serve one data centre and that data centre leaves, the cost does not vanish. It lands on everyone else’s bill. Regulators are only beginning to write the rules that decide who carries that risk.'),
           para('The compute story has always been told as a chip story. It is turning out to be a power story, and the grid is where the next few years actually get decided.'),
         ],
       },
@@ -628,7 +628,7 @@ const CONTENT = [
     body: {
       title: 'The seed round is back, and it looks nothing like 2021',
       excerpt:
-        'Early-stage money is flowing again — but the terms, the check sizes and the expectations have all quietly reset. A look at what a first round costs a founder now.',
+        'Early-stage money is flowing again, but the terms, the check sizes and the expectations have all quietly reset. A look at what a first round costs a founder now.',
       featuredImage: { $asset: 'story-office' },
       body: {
         type: 'doc',
@@ -637,7 +637,7 @@ const CONTENT = [
           h2('Smaller, slower, and with more asked of it'),
           para('The rounds are getting done, but investors want more traction for the same money and take longer to decide. The party round of a dozen small checks closing in a week is mostly gone; in its place is a lead who wants a board seat and a plan to a real milestone.'),
           h2('What has not changed'),
-          para('The best companies still raise on their own terms, and the very earliest bets are still made on people more than numbers. What reset was the middle — the ordinary round for the ordinary good company, which is where most of the market actually lives.'),
+          para('The best companies still raise on their own terms, and the very earliest bets are still made on people more than numbers. What reset was the middle: the ordinary round for the ordinary good company, which is where most of the market actually lives.'),
           para('If you are raising now, price it to the company you can honestly become in eighteen months, not the one the last cycle would have funded.'),
         ],
       },
@@ -653,14 +653,14 @@ const CONTENT = [
     body: {
       title: 'What the new export rules actually cover, line by line',
       excerpt:
-        'The headlines said “chip ban”. The text says something more specific — and more consequential. We read the rule so you do not have to.',
+        'The headlines said “chip ban”. The text says something more specific, and more consequential. We read the rule so you do not have to.',
       featuredImage: { $asset: 'story-policy' },
       body: {
         type: 'doc',
         content: [
           para('Export controls are written in a language designed to be precise and read as if it were designed to be impenetrable. The new rule is neither as broad nor as narrow as the coverage suggested.'),
           h2('It is about performance, not names'),
-          para('The rule does not ban a product; it draws a line at a level of capability and controls anything above it. That is deliberate — a threshold survives the next generation of hardware in a way a model number never could.'),
+          para('The rule does not ban a product; it draws a line at a level of capability and controls anything above it. That is deliberate: a threshold survives the next generation of hardware in a way a model number never could.'),
           h2('The parts that will bite'),
           para('The provisions that matter most are not the chips themselves but the tooling and the service contracts around them. Control the ability to maintain a fab, and you control the fab, whoever technically owns it.'),
           para('The politics will move on by next week. The rule will still be there, shaping what gets built where, for years.'),
@@ -683,7 +683,7 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('The problem with renewable power was never making it. It was keeping it — holding a sunny afternoon’s output until a still, dark evening. The technology to do that cheaply is the whole game, and it just got a lot closer.'),
+          para('The problem with renewable power was never making it. It was keeping it: holding a sunny afternoon’s output until a still, dark evening. The technology to do that cheaply is the whole game, and it just got a lot closer.'),
           h2('Cheap chemistry, boring engineering'),
           para('The breakthrough is not exotic. It is an unglamorous chemistry that trades energy density for cost, packaged in a way that a utility can actually finance. The magic is in the spreadsheet, not the lab.'),
           h2('Why it matters now'),
@@ -712,7 +712,7 @@ const CONTENT = [
           h2('The hard part is not the machines'),
           para('You can buy the lithography tools; everyone buys them from the same supplier. The scarce thing is the thousands of people who know how to run them, and the ecosystem of suppliers that grows up around a fab over decades. That cannot be air-freighted in.'),
           h2('The subsidy question'),
-          para('None of this pencils out without public money, and everyone involved knows it. The honest debate is not whether to subsidise but what the public buys for the cheque — resilience, jobs, or simply the option of not depending on one strait on the map.'),
+          para('None of this pencils out without public money, and everyone involved knows it. The honest debate is not whether to subsidise but what the public buys for the cheque: resilience, jobs, or simply the option of not depending on one strait on the map.'),
           para('The building will open on schedule. Whether it becomes a real cluster or an expensive island is a ten-year question.'),
         ],
       },
@@ -727,7 +727,7 @@ const SPEC: TemplateSiteSpec = {
   key: 'sparx-news-feed',
   name: 'News Feed',
   summary:
-    'A dense front-page feed for a technology & business publication — a full-width lead over a rail of the day’s stories, a live journal, and a bespoke bylined article page, in a white-ground one-accent theme. Modelled on the tech-newsroom archetype; shipped as Frequency. Ships a light store (reports, a book, membership) to demonstrate content + commerce together.',
+    'A dense front-page feed for a technology & business publication: a full-width lead over a rail of the day’s stories, a live journal, and a bespoke bylined article page, in a white-ground one-accent theme. Modelled on the tech-newsroom archetype; shipped as Frequency. Ships a light store (reports, a book, membership) to demonstrate content + commerce together.',
   tagline: 'A high-signal news-feed template for a publication that reports and sells.',
   vertical: 'content',
   industry: 'Technology & business news',
@@ -742,14 +742,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'Frequency — technology & business news, without the hype',
+      title: 'Frequency: technology & business news, without the hype',
       description:
-        'Frequency is an independent newsroom covering technology and the business of building it — the companies, the money and the policy that decide what gets made.',
+        'Frequency is an independent newsroom covering technology and the business of building it: the companies, the money and the policy that decide what gets made.',
     },
     about: {
-      title: 'About Frequency — an independent tech newsroom',
+      title: 'About Frequency: an independent tech newsroom',
       description:
-        'Who Frequency is and how it is paid for — reader- and member-funded reporting that takes no money from the companies it covers.',
+        'Who Frequency is and how it is paid for: reader- and member-funded reporting that takes no money from the companies it covers.',
     },
   },
   home: HOME,

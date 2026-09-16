@@ -295,7 +295,7 @@ export function installationState(installation: Installation): {
       return {
         label: 'Needs a quick test',
         tone: 'warning',
-        detail: 'Almost there — test the connection once to switch it on.',
+        detail: 'Almost there: test the connection once to switch it on.',
       };
     case 'pending_oauth':
       return {

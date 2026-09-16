@@ -58,7 +58,7 @@ export function PaymentsSection({
       description="Every attempt to take payment for this order, including the ones that did not work."
       isPending={payments.isPending}
       isError={payments.isError}
-      errorText="We could not load the payments just now. The order and its money are unaffected — try reopening this order in a moment."
+      errorText="We could not load the payments just now. The order and its money are unaffected. Try reopening this order in a moment."
       emptyText="No payment has been recorded against this order yet."
       count={payments.data?.length ?? 0}
       footer={

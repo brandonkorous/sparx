@@ -198,7 +198,7 @@
     {
       "handle": "free-estimate",
       "name": "Free estimate",
-      "description": "Not sure what’s wrong? Bring it by. We’ll look it over and tell you honestly what it needs — no charge, no pressure.",
+      "description": "Not sure what’s wrong? Bring it by. We’ll look it over and tell you honestly what it needs: no charge, no pressure.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -267,7 +267,7 @@
     {
       "handle": "brake-service",
       "name": "Brake service",
-      "description": "Pads, rotors and a full brake inspection — so you stop the way you’re supposed to. Every job is warrantied.",
+      "description": "Pads, rotors and a full brake inspection, so you stop the way you’re supposed to. Every job is warrantied.",
       "durationMinutes": 120,
       "priceCents": 28000,
       "assignmentStrategy": "any_available",
@@ -290,7 +290,7 @@
     {
       "handle": "tire-rotation",
       "name": "Tire rotation & balance",
-      "description": "Rotate, balance and set your pressures right — the cheapest way to make a set of tires last longer.",
+      "description": "Rotate, balance and set your pressures right: the cheapest way to make a set of tires last longer.",
       "durationMinutes": 30,
       "priceCents": 3500,
       "assignmentStrategy": "any_available",
@@ -313,7 +313,7 @@
     {
       "handle": "safety-inspection",
       "name": "Safety inspection",
-      "description": "The state check, done right the first time — plus an honest heads-up on anything that’ll need attention soon.",
+      "description": "The state check, done right the first time: plus an honest heads-up on anything that’ll need attention soon.",
       "durationMinutes": 45,
       "priceCents": 3000,
       "assignmentStrategy": "any_available",
@@ -336,7 +336,7 @@
     {
       "handle": "check-engine",
       "name": "Check-engine light",
-      "description": "That light means something — we pull the codes, explain them in plain English and only fix what’s actually broken.",
+      "description": "That light means something. We pull the codes, explain them in plain English and only fix what’s actually broken.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "any_available",

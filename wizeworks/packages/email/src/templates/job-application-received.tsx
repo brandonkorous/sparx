@@ -58,10 +58,10 @@ export function JobApplicationReceivedEmail({
     <EmailLayout
       // Our own hiring inbox.
       audience="platform"
-      preview={`${applicantName} applied — ${roleTitle}`}
+      preview={`${applicantName} applied: ${roleTitle}`}
     >
       <Section>
-        <EmailHeading>New application — {roleTitle}</EmailHeading>
+        <EmailHeading>New application: {roleTitle}</EmailHeading>
         <EmailParagraph>
           {applicantName} just applied. Reply to this email to reach them at{' '}
           <EmailLink href={`mailto:${applicantEmail}`}>{applicantEmail}</EmailLink>.
@@ -91,5 +91,5 @@ export function JobApplicationReceivedEmail({
 }
 
 export function jobApplicationReceivedSubject(roleTitle: string): string {
-  return `New application — ${roleTitle}`;
+  return `New application: ${roleTitle}`;
 }

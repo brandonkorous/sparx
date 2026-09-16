@@ -82,7 +82,7 @@ function healthLine(source: InventorySource): string {
     if (!source.enrolledAt) return 'Not paired yet';
     return agentOnline(source.agentLastSeenAt)
       ? `Reached us ${relativeTime(source.agentLastSeenAt)}`
-      : `Silent — last seen ${relativeTime(source.agentLastSeenAt)}`;
+      : `Silent: last seen ${relativeTime(source.agentLastSeenAt)}`;
   }
   return syncIntervalLabel(source.syncIntervalSec);
 }
@@ -134,7 +134,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
           title="Could not load your stock sources"
-          description="This is a problem reaching the server. Your connections are unaffected — they just could not be listed just now."
+          description="This is a problem reaching the server. Your connections are unaffected. They just could not be listed just now."
         />
       );
     }
@@ -157,7 +157,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
             title: 'No stock sources yet',
             description: productCopy(
               'inventory.sources.description',
-              'Connect a stock source when something outside Piggles keeps the count — a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.'
+              'Connect a stock source when something outside Piggles keeps the count: a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.'
             ),
             actions: (
               <Button size="sm" color="module" onClick={addSource}>

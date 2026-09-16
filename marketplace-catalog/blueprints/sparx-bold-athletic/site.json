@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Threshold — endurance cycling kit for the long road",
-      "seoDescription": "Threshold makes endurance cycling kit — bibs, jerseys and shells tested over real distance, in real weather, and built to hold up ride after ride.",
+      "seoTitle": "Threshold: endurance cycling kit for the long road",
+      "seoDescription": "Threshold makes endurance cycling kit: bibs, jerseys and shells tested over real distance, in real weather, and built to hold up ride after ride.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -773,7 +773,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Threshold makes endurance cycling kit for the riders who are still out when everyone else has turned for home — bibs, jerseys and shells tested over real distance, in real weather, and made to hold up ride after ride."
+                          "Threshold makes endurance cycling kit for the riders who are still out when everyone else has turned for home: bibs, jerseys and shells tested over real distance, in real weather, and made to hold up ride after ride."
                         ],
                         "id": "2a79627e-804d-4da4-afda-f2218e2f56fd",
                         "ord": "a1"
@@ -1067,7 +1067,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A century is decided from the waist down. Our bibs run a seamless multi-panel chamois and a bracing straps-and-mesh upper, so hour six feels like hour one — the single piece of kit worth getting right first."
+                          "A century is decided from the waist down. Our bibs run a seamless multi-panel chamois and a bracing straps-and-mesh upper, so hour six feels like hour one: the single piece of kit worth getting right first."
                         ],
                         "id": "13cd5dba-a527-4362-8d40-fc0e8af7fc8a",
                         "ord": "a1"
@@ -1329,7 +1329,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "Whatever the ride asks of you — a long climb, a fast bunch, a cold dawn — start with the kit built for it."
+                          "Whatever the ride asks of you (a long climb, a fast bunch, a cold dawn) start with the kit built for it."
                         ],
                         "id": "4a9c4ba5-8c11-4baf-b47f-454d7ecb4d5f",
                         "ord": "a1"
@@ -1559,7 +1559,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The season does not stop because it got cold and wet. Thermal jerseys, a packable wind gilet and a proper storm shell — the layers that keep you riding through the months most riders sit out."
+                          "The season does not stop because it got cold and wet. Thermal jerseys, a packable wind gilet and a proper storm shell: the layers that keep you riding through the months most riders sit out."
                         ],
                         "id": "d677ba81-a1e8-4007-8391-cbebcb51162a",
                         "ord": "a1"
@@ -2082,7 +2082,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Threshold",
+      "seoTitle": "Shop: Threshold",
       "seoDescription": "Browse everything Threshold makes, with prices and options at a glance. Endurance cycling apparel.",
       "root": {
         "kind": "element",
@@ -2114,7 +2114,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
                     "children": [
-                      "Every piece Threshold makes — bibs, jerseys, base layers, shells and the small kit that finishes the ride — filtered and sorted however you like. All of it tested over real distance, in real weather, and built to hold up ride after ride."
+                      "Every piece Threshold makes (bibs, jerseys, base layers, shells and the small kit that finishes the ride) filtered and sorted however you like. All of it tested over real distance, in real weather, and built to hold up ride after ride."
                     ],
                     "id": "56cbbd0c-639a-4f86-91b6-51d59f437258",
                     "ord": "a1"
@@ -2142,7 +2142,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Threshold",
+      "seoTitle": "Collections: Threshold",
       "seoDescription": "Explore the collections at Threshold, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2174,7 +2174,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
                     "children": [
-                      "Bibs, jerseys, base layers, cold-weather kit and the small stuff that finishes the ride — grouped by the job it does, so you can kit up for the ride in front of you and not the one in the catalogue."
+                      "Bibs, jerseys, base layers, cold-weather kit and the small stuff that finishes the ride: grouped by the job it does, so you can kit up for the ride in front of you and not the one in the catalogue."
                     ],
                     "id": "f343e1d6-9c3e-4db2-b0ec-8fa3db7bacc3",
                     "ord": "a1"
@@ -2202,7 +2202,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Threshold",
+      "seoTitle": "Your cart: Threshold",
       "seoDescription": "Review what is in your cart and check out securely at Threshold.",
       "root": {
         "kind": "element",
@@ -2234,7 +2234,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
                     "children": [
-                      "Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund — and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name."
+                      "Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund, and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name."
                     ],
                     "id": "b8cc4818-807e-4efb-9c65-7d3ad7e6eb9e",
                     "ord": "a1"
@@ -2262,7 +2262,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Threshold",
+      "seoTitle": "Search: Threshold",
       "seoDescription": "Search Threshold for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2294,7 +2294,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
                     "children": [
-                      "Chasing something specific — a size, a fabric, the gilet that lives in your jersey pocket? Search the whole range and the Journal below and get straight to it."
+                      "Chasing something specific: a size, a fabric, the gilet that lives in your jersey pocket? Search the whole range and the Journal below and get straight to it."
                     ],
                     "id": "9877ecd2-9acd-4378-a09f-0a818db06e88",
                     "ord": "a1"
@@ -2322,7 +2322,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Threshold",
+      "seoTitle": "Journal: Threshold",
       "seoDescription": "Stories, guides and notes from Threshold.",
       "root": {
         "kind": "element",
@@ -2354,7 +2354,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
                     "children": [
-                      "Training that actually moves the needle, kit that earns its place in the bag, and notes from the long rides that shape every season — written by riders, for riders."
+                      "Training that actually moves the needle, kit that earns its place in the bag, and notes from the long rides that shape every season: written by riders, for riders."
                     ],
                     "id": "c5494976-cf92-4a26-bf9e-6049dd2c0a5c",
                     "ord": "a1"
@@ -2519,7 +2519,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Threshold started with a simple complaint: too much cycling kit is designed for the photo and not the ride. It looks fast in the shop and falls apart at the point where a ride actually gets hard — the seam that chafes at hour four, the shell that wets out in the first real downpour, the chamois that gives up before you do."
+                      "Threshold started with a simple complaint: too much cycling kit is designed for the photo and not the ride. It looks fast in the shop and falls apart at the point where a ride actually gets hard, the seam that chafes at hour four, the shell that wets out in the first real downpour, the chamois that gives up before you do."
                     ],
                     "id": "63ff9215-7bf6-4c00-959e-7088b2e7d3f6",
                     "ord": "a1"
@@ -2529,7 +2529,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "So we build the other way round. Every piece is ridden long and hard before it ships — over passes, through winters, deep into the kind of distance where cheap kit shows its true colors. If it does not hold up out there, it does not get made. That is the whole standard, and it is not negotiable."
+                      "So we build the other way round. Every piece is ridden long and hard before it ships: over passes, through winters, deep into the kind of distance where cheap kit shows its true colors. If it does not hold up out there, it does not get made. That is the whole standard, and it is not negotiable."
                     ],
                     "id": "1e0b90df-b0d3-4c1d-ba73-822b55a28bde",
                     "ord": "a2"
@@ -2539,7 +2539,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We are a small team of riders making kit for other riders. No sponsored pros, no seasonal churn for its own sake — just gear built to earn its place in your kit bag and stay there for years."
+                      "We are a small team of riders making kit for other riders. No sponsored pros, no seasonal churn for its own sake. Just gear built to earn its place in your kit bag and stay there for years."
                     ],
                     "id": "f9b37f80-c3fb-43e3-a7ba-f20e603be086",
                     "ord": "a3"
@@ -2559,8 +2559,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Threshold",
-      "seoDescription": "Get in touch with Threshold — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Threshold",
+      "seoDescription": "Get in touch with Threshold: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2596,7 +2596,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Sizing question, a fault, or you just want to know how a piece holds up over a long winter? A real rider on the team reads every message and answers straight — no script, no runaround."
+                          "Sizing question, a fault, or you just want to know how a piece holds up over a long winter? A real rider on the team reads every message and answers straight: no script, no runaround."
                         ],
                         "id": "3f0f46da-d9fd-4955-86eb-47a8e88e408d",
                         "ord": "a1"
@@ -2867,8 +2867,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Threshold",
-      "seoDescription": "Product details at Threshold — endurance cycling apparel, with options and pricing.",
+      "seoTitle": "Product: Threshold",
+      "seoDescription": "Product details at Threshold: endurance cycling apparel, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2913,7 +2913,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-bold uppercase tracking-widest text-base-content",
-                            "children": ["Threshold — race-tested kit"],
+                            "children": ["Threshold: race-tested kit"],
                             "id": "5b8c4d87-647a-4f91-a5b0-a920fdc1a80d",
                             "ord": "a0"
                           },

@@ -103,7 +103,7 @@ export const ESSENTIAL: CookieRow[] = [
   {
     name: 'piggles-account.session_token',
     where: `${PRODUCT.hosts.account} and ${PRODUCT.hosts.console}`,
-    what: 'Keeps you signed in. Each of the two sites sets its own copy on its own address — they cannot share one — and both point at the same single sign-in, so signing out of either ends both.',
+    what: 'Keeps you signed in. Each of the two sites sets its own copy on its own address (they cannot share one) and both point at the same single sign-in, so signing out of either ends both.',
     life: 'Until the session expires or you sign out',
   },
   {
@@ -130,7 +130,7 @@ export const PRODUCT_ANALYTICS: CookieRow[] = [
   {
     name: 'piggles_attr_first',
     where: PRODUCT.hosts.marketing,
-    what: 'Where you first came from — a search, an advert, somebody else’s website — so we know what is worth doing more of. Written once and never revised, so however often you come back it still says how you found us the first time. Only set if you say yes.',
+    what: 'Where you first came from (a search, an advert, somebody else’s website) so we know what is worth doing more of. Written once and never revised, so however often you come back it still says how you found us the first time. Only set if you say yes.',
     life: 'Up to one year',
   },
   {
@@ -142,7 +142,7 @@ export const PRODUCT_ANALYTICS: CookieRow[] = [
   {
     name: 'piggles_consent_state',
     where: PRODUCT.hosts.marketing,
-    what: 'Your answer to the question above, so we stop asking. This one is set whichever way you answer — including when you say no, because remembering a no is the only way to honour it.',
+    what: 'Your answer to the question above, so we stop asking. This one is set whichever way you answer, including when you say no, because remembering a no is the only way to honor it.',
     life: 'One year',
   },
 ];
@@ -162,11 +162,11 @@ export const FACTS = [
   },
   {
     title: 'Connecting an outside account does not add cookies here',
-    body: 'Linking Instagram, Amazon or a carrier lets Piggles talk to them from our servers — it does not put their tracking on any page you look at. What information travels to them is on the privacy page.',
+    body: 'Linking Instagram, Amazon or a carrier lets Piggles talk to them from our servers. It does not put their tracking on any page you look at. What information travels to them is on the privacy page.',
   },
   {
     title: 'Your own visitors are your business, not ours',
-    body: 'The website you build with Piggles is yours. If you add something to it that sets cookies — a chat widget, an ad pixel, a video embed — that is your decision to make and yours to tell your visitors about.',
+    body: 'The website you build with Piggles is yours. If you add something to it that sets cookies (a chat widget, an ad pixel, a video embed), that is your decision to make and yours to tell your visitors about.',
   },
   {
     title: 'You are asked before anything is counted',

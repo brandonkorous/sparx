@@ -90,14 +90,14 @@
     {
       "handle": "shipping-boxes",
       "title": "Corrugated Shipping Boxes",
-      "description": "Single-wall 32 ECT kraft cartons, sold in bundles of 25, flat-packed. MOQ 4 bundles (100 boxes); price shown is per bundle and steps down by the pallet. Clean die-cut creases fold square by hand — no tape gun fight, no bulging seams. Pick the size to your product and stop paying to ship air.",
+      "description": "Single-wall 32 ECT kraft cartons, sold in bundles of 25, flat-packed. MOQ 4 bundles (100 boxes); price shown is per bundle and steps down by the pallet. Clean die-cut creases fold square by hand: no tape gun fight, no bulging seams. Pick the size to your product and stop paying to ship air.",
       "status": "active",
       "productType": "Shipping box",
       "vendor": "Boxwell Supply",
       "tags": ["boxes", "corrugated", "bulk", "best-seller"],
       "categoryHandles": ["boxes"],
       "collectionHandles": ["best-sellers", "ship-boxes"],
-      "seoTitle": "Corrugated Shipping Boxes — bundles of 25 | Boxwell Supply",
+      "seoTitle": "Corrugated Shipping Boxes: bundles of 25 | Boxwell Supply",
       "seoDescription": "Single-wall 32 ECT kraft shipping boxes in bundles of 25, three sizes. Trade-priced by the pallet, next-day dispatch.",
       "options": [
         {
@@ -161,7 +161,7 @@
       "tags": ["mailers", "poly", "bulk", "best-seller"],
       "categoryHandles": ["mailers"],
       "collectionHandles": ["best-sellers", "mailer-range"],
-      "seoTitle": "Poly Mailers — case of 500 | Boxwell Supply",
+      "seoTitle": "Poly Mailers: case of 500 | Boxwell Supply",
       "seoDescription": "Waterproof self-seal poly mailers in a case of 500, three sizes. Trade-priced, next-day dispatch from stock.",
       "options": [
         {
@@ -218,14 +218,14 @@
     {
       "handle": "packing-tape",
       "title": "Packing Tape",
-      "description": "Heavy-grade acrylic carton-sealing tape, 48mm x 100m, sold by the case of 36 rolls. MOQ 1 case; price shown is per case. Quiet off the roll, sticks first pass to kraft, and holds through a cold van — the tape you stop thinking about. Fits every standard 2-inch dispenser.",
+      "description": "Heavy-grade acrylic carton-sealing tape, 48mm x 100m, sold by the case of 36 rolls. MOQ 1 case; price shown is per case. Quiet off the roll, sticks first pass to kraft, and holds through a cold van: the tape you stop thinking about. Fits every standard 2-inch dispenser.",
       "status": "active",
       "productType": "Tape",
       "vendor": "Boxwell Supply",
       "tags": ["tape", "sealing", "bulk"],
       "categoryHandles": ["tape-fill"],
       "collectionHandles": ["best-sellers", "new-this-quarter"],
-      "seoTitle": "Packing Tape — case of 36 rolls | Boxwell Supply",
+      "seoTitle": "Packing Tape: case of 36 rolls | Boxwell Supply",
       "seoDescription": "Heavy-grade 48mm acrylic carton-sealing tape, 36 rolls to the case. First-pass adhesion on kraft, trade-priced.",
       "variants": [
         {
@@ -246,14 +246,14 @@
     {
       "handle": "bubble-wrap",
       "title": "Bubble Cushioning Roll",
-      "description": "Small-bubble cushioning film, 500mm x 100m on the roll, perforated every 300mm so it tears clean at the bench. MOQ 4 rolls; price shown is per roll. Nesting bubbles keep their air under stacking — the everyday wrap for anything with an edge or a screen.",
+      "description": "Small-bubble cushioning film, 500mm x 100m on the roll, perforated every 300mm so it tears clean at the bench. MOQ 4 rolls; price shown is per roll. Nesting bubbles keep their air under stacking: the everyday wrap for anything with an edge or a screen.",
       "status": "active",
       "productType": "Protective packaging",
       "vendor": "Boxwell Supply",
       "tags": ["fill", "protective", "bubble", "roll"],
       "categoryHandles": ["tape-fill"],
       "collectionHandles": ["protective-fill"],
-      "seoTitle": "Bubble Cushioning Roll — 500mm x 100m | Boxwell Supply",
+      "seoTitle": "Bubble Cushioning Roll: 500mm x 100m | Boxwell Supply",
       "seoDescription": "Perforated small-bubble cushioning film, 500mm x 100m. Tears clean at the bench, trade-priced by the roll.",
       "variants": [
         {
@@ -274,14 +274,14 @@
     {
       "handle": "void-fill-paper",
       "title": "Kraft Void-Fill Paper",
-      "description": "Recycled 70gsm kraft void-fill on a 400m fan-folded stack that feeds straight into a dispenser — no jams, no tangles. MOQ 2 stacks; price shown is per stack. Scrunches to fill a carton fast and drops in the household recycling, so it is the greener swap for loose-fill and air pillows.",
+      "description": "Recycled 70gsm kraft void-fill on a 400m fan-folded stack that feeds straight into a dispenser: no jams, no tangles. MOQ 2 stacks; price shown is per stack. Scrunches to fill a carton fast and drops in the household recycling, so it is the greener swap for loose-fill and air pillows.",
       "status": "active",
       "productType": "Protective packaging",
       "vendor": "Boxwell Supply",
       "tags": ["fill", "void-fill", "kraft", "recyclable"],
       "categoryHandles": ["tape-fill"],
       "collectionHandles": ["protective-fill", "new-this-quarter"],
-      "seoTitle": "Kraft Void-Fill Paper — 400m fan-fold | Boxwell Supply",
+      "seoTitle": "Kraft Void-Fill Paper: 400m fan-fold | Boxwell Supply",
       "seoDescription": "Recycled 70gsm kraft void-fill, 400m fan-folded for jam-free dispensing. Kerbside-recyclable, trade-priced.",
       "variants": [
         {
@@ -302,14 +302,14 @@
     {
       "handle": "kraft-mailers",
       "title": "Padded Kraft Mailers",
-      "description": "Paper-padded kraft bubble mailers with a self-seal strip, sold by the case of 100. MOQ 2 cases; price shown is per case. A recyclable protective mailer for small fragile items — books, cosmetics, electronics accessories — that skips the plastic bubble lining entirely.",
+      "description": "Paper-padded kraft bubble mailers with a self-seal strip, sold by the case of 100. MOQ 2 cases; price shown is per case. A recyclable protective mailer for small fragile items (books, cosmetics, electronics accessories) that skips the plastic bubble lining entirely.",
       "status": "active",
       "productType": "Mailer",
       "vendor": "Boxwell Supply",
       "tags": ["mailers", "kraft", "padded", "recyclable"],
       "categoryHandles": ["mailers"],
       "collectionHandles": ["mailer-range", "protective-fill"],
-      "seoTitle": "Padded Kraft Mailers — case of 100 | Boxwell Supply",
+      "seoTitle": "Padded Kraft Mailers: case of 100 | Boxwell Supply",
       "seoDescription": "Recyclable paper-padded kraft mailers, self-seal, case of 100. Protective without the plastic, trade-priced.",
       "variants": [
         {
@@ -330,14 +330,14 @@
     {
       "handle": "thermal-labels",
       "title": "Thermal Shipping Labels",
-      "description": "4x6 direct-thermal shipping labels on a 250-count roll, sold in a pack of 12 rolls (3,000 labels). MOQ 1 pack; price shown is per pack. Smudge-proof, no ink or ribbon, and sized for every major carrier — feeds any standard 4-inch desktop or industrial label printer.",
+      "description": "4x6 direct-thermal shipping labels on a 250-count roll, sold in a pack of 12 rolls (3,000 labels). MOQ 1 pack; price shown is per pack. Smudge-proof, no ink or ribbon, and sized for every major carrier: feeds any standard 4-inch desktop or industrial label printer.",
       "status": "active",
       "productType": "Label",
       "vendor": "Boxwell Supply",
       "tags": ["labels", "thermal", "shipping", "bulk"],
       "categoryHandles": ["labels"],
       "collectionHandles": ["best-sellers", "new-this-quarter"],
-      "seoTitle": "Thermal Shipping Labels — 4x6, 12-roll pack | Boxwell Supply",
+      "seoTitle": "Thermal Shipping Labels: 4x6, 12-roll pack | Boxwell Supply",
       "seoDescription": "4x6 direct-thermal shipping labels, 250 to the roll, 12-roll pack. Ribbon-free, carrier-sized, trade-priced.",
       "variants": [
         {
@@ -365,7 +365,7 @@
       "tags": ["stretch-wrap", "pallet", "film", "bulk"],
       "categoryHandles": ["tape-fill"],
       "collectionHandles": ["protective-fill"],
-      "seoTitle": "Pallet Stretch Wrap — 500mm, case of 6 rolls | Boxwell Supply",
+      "seoTitle": "Pallet Stretch Wrap: 500mm, case of 6 rolls | Boxwell Supply",
       "seoDescription": "Blown cast stretch film, 500mm x 300m, 20 micron, 6 rolls to the case. High cling, trade-priced by the case.",
       "variants": [
         {
@@ -393,8 +393,8 @@
       "tags": ["kit", "starter", "bundle", "best-seller"],
       "categoryHandles": ["boxes"],
       "collectionHandles": ["starter-kits", "new-this-quarter"],
-      "seoTitle": "Warehouse Starter Kit — boxes, tape, fill & labels | Boxwell Supply",
-      "seoDescription": "A bundled packing starter kit — assorted boxes, tape, bubble, void-fill and labels — at a trade price below the parts.",
+      "seoTitle": "Warehouse Starter Kit: boxes, tape, fill & labels | Boxwell Supply",
+      "seoDescription": "A bundled packing starter kit (assorted boxes, tape, bubble, void-fill and labels) at a trade price below the parts.",
       "variants": [
         {
           "sku": "KIT-START-1",

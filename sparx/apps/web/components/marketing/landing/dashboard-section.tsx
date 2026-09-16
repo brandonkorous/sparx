@@ -25,7 +25,7 @@ export function LandingDashboardSection() {
             Your whole business, open at once.
           </Heading>
           <Text variant="lead" className="text-primary-content mt-5 text-2xl">
-            One login opens one workspace — and inside it your site, orders, customers and messages
+            One login opens one workspace, and inside it your site, orders, customers and messages
             sit side by side, not buried in eight browser tabs. Pull a screen onto a second monitor,
             keep the rest in view. It&rsquo;s every part of sparx, on one pane of glass.
           </Text>

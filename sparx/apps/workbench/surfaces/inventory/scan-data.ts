@@ -519,7 +519,7 @@ async function sendOrQueue(
     enqueue(queued);
     return {
       outcome: 'applied',
-      message: 'Saved on this device — it will sync when the connection is back.',
+      message: 'Saved on this device. It will sync when the connection is back.',
       match: null,
       quantity: queued.quantity ?? 1,
       sessionQuantity: null,

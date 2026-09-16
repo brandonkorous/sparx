@@ -23,7 +23,7 @@ export const MediaTextConfig = z.object({
   body: z
     .string()
     .max(1200)
-    .default('Use this space to explain a single idea — what it is and why it matters.'),
+    .default('Use this space to explain a single idea: what it is and why it matters.'),
   ctas: ctas([]),
   background: z.enum(['default', 'subtle']).default('subtle'),
   sectionHeight: SectionHeight.default('auto'),

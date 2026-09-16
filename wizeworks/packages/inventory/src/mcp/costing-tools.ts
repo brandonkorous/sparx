@@ -44,7 +44,7 @@ const getLandedCostBreakdown: McpToolDefinition = {
 const getStockCostLayers: McpToolDefinition = {
   name: 'get_stock_cost_layers',
   description:
-    "What the stock of one item is actually made of: each batch still on the shelf, when it arrived, how many of it are left and what those units cost. This is the question a moving average cannot answer — 'these 40 units are 28 from the March delivery at £8.20 and 12 from January at £7.15'. Use it before repricing, or when someone asks which purchase a unit came from.",
+    "What the stock of one item is actually made of: each batch still on the shelf, when it arrived, how many of it are left and what those units cost. This is the question a moving average cannot answer, 'these 40 units are 28 from the March delivery at £8.20 and 12 from January at £7.15'. Use it before repricing, or when someone asks which purchase a unit came from.",
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -65,7 +65,7 @@ const getStockCostLayers: McpToolDefinition = {
 const getValuationAsOf: McpToolDefinition = {
   name: 'get_valuation_as_of',
   description:
-    'What the stock was worth at a moment in the PAST — the year-end figure an accountant asks for in March, or what was being held when a discrepancy happened. Computed from the movement and cost ledgers rather than from a snapshot, so any date works, not only dates someone thought to snapshot. Reports how many units the cost history could not account for rather than valuing them at zero.',
+    'What the stock was worth at a moment in the PAST: the year-end figure an accountant asks for in March, or what was being held when a discrepancy happened. Computed from the movement and cost ledgers rather than from a snapshot, so any date works, not only dates someone thought to snapshot. Reports how many units the cost history could not account for rather than valuing them at zero.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -86,7 +86,7 @@ const getValuationAsOf: McpToolDefinition = {
 const getPriceVariance: McpToolDefinition = {
   name: 'get_price_variance',
   description:
-    'What was planned against what was actually paid, per item and supplier, over a period. Compares the standard cost to the LANDED cost — so a supplier who held their price but moved the freight onto you shows up as the increase it is. Use it to prepare a supplier conversation, or to find the lines whose margin is quietly eroding.',
+    'What was planned against what was actually paid, per item and supplier, over a period. Compares the standard cost to the LANDED cost, so a supplier who held their price but moved the freight onto you shows up as the increase it is. Use it to prepare a supplier conversation, or to find the lines whose margin is quietly eroding.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -117,7 +117,7 @@ const getPriceVariance: McpToolDefinition = {
 const getCostOfGoods: McpToolDefinition = {
   name: 'get_cost_of_goods',
   description:
-    'What the goods that left over a period cost, split by why they left — sold, lost, damaged, written off at a count. Each figure was stamped on the movement when the stock left, so it does not drift when a new delivery changes the average. Use it for margin, and to see how much of what left was sold rather than lost.',
+    'What the goods that left over a period cost, split by why they left: sold, lost, damaged, written off at a count. Each figure was stamped on the movement when the stock left, so it does not drift when a new delivery changes the average. Use it for margin, and to see how much of what left was sold rather than lost.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -138,7 +138,7 @@ const getCostOfGoods: McpToolDefinition = {
 const getCostingPolicy: McpToolDefinition = {
   name: 'get_costing_policy',
   description:
-    'How this business values its stock: moving average, FIFO or standard cost, the currency the cost ledger is kept in, and the default way charges are spread across a delivery. Read this before interpreting any cost figure — the same stock is worth different amounts under different methods, and saying which one produced a number is part of the number.',
+    'How this business values its stock: moving average, FIFO or standard cost, the currency the cost ledger is kept in, and the default way charges are spread across a delivery. Read this before interpreting any cost figure, the same stock is worth different amounts under different methods, and saying which one produced a number is part of the number.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({}),
@@ -150,7 +150,7 @@ const getCostingPolicy: McpToolDefinition = {
 const recordDeliveryCharge: McpToolDefinition = {
   name: 'record_delivery_charge',
   description:
-    "Record money spent on a delivery over and above the goods — the freight invoice, the duty, the customs broker's fee. Spreads it across that delivery's lines (by value, by units, or by weight), corrects the cost of what is still on the shelf, and leaves what has already sold costed at what it cost then. This is the normal way a freight bill that arrives after the pallet gets into the numbers.",
+    "Record money spent on a delivery over and above the goods: the freight invoice, the duty, the customs broker's fee. Spreads it across that delivery's lines (by value, by units, or by weight), corrects the cost of what is still on the shelf, and leaves what has already sold costed at what it cost then. This is the normal way a freight bill that arrives after the pallet gets into the numbers.",
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -166,7 +166,7 @@ const recordDeliveryCharge: McpToolDefinition = {
 const recordOrderCharge: McpToolDefinition = {
   name: 'record_purchase_order_charge',
   description:
-    'Record an EXPECTED cost on a purchase order — the freight quote, the duty you know is coming. Apportioned across the deliveries that order produces by the share of the order each one brings, so a part-shipment carries its part of the freight. Use this when the cost is known at ordering time; use record_delivery_charge for the invoice that actually turns up.',
+    'Record an EXPECTED cost on a purchase order: the freight quote, the duty you know is coming. Apportioned across the deliveries that order produces by the share of the order each one brings, so a part-shipment carries its part of the freight. Use this when the cost is known at ordering time; use record_delivery_charge for the invoice that actually turns up.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({

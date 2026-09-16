@@ -136,7 +136,7 @@ export function LineItems({
                       <Text
                         as="span"
                         className="tabular-nums @lg:pr-1 @lg:text-right"
-                        title="Priced from cost + markup — edit to re-price"
+                        title="Priced from cost + markup: edit to re-price"
                       >
                         {formatMoney(line.unitPrice, currency)}
                       </Text>
@@ -183,7 +183,7 @@ export function LineItems({
                           size="sm"
                           shape="square"
                           aria-label={`Remove line ${String(position)}${
-                            line.description ? ` — ${line.description}` : ''
+                            line.description ? ` (${line.description})` : ''
                           }`}
                           onClick={() => {
                             remove(line.key);

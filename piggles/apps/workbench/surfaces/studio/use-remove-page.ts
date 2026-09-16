@@ -39,10 +39,10 @@ function cost(page: PageSummary, peers: readonly string[]): string {
 
   lines.push(
     page.published
-      ? 'It is live right now — anyone who follows a link to it, or finds it in Google, will get a not-found page straight away.'
+      ? 'It is live right now. Anyone who follows a link to it, or finds it in Google, will get a not-found page straight away.'
       : 'It has never been live, so nobody outside your business has seen it.'
   );
-  lines.push('There is no undo — the page and everything on it go for good.');
+  lines.push('There is no undo: the page and everything on it go for good.');
   return lines.join(' ');
 }
 

@@ -165,7 +165,7 @@ const SCHEDULING = {
       handle: 'free-consultation',
       name: 'Free consultation',
       description:
-        'A relaxed, no-pressure first conversation. Tell us what’s on your mind and we’ll explain your options in plain English — no bill, no commitment.',
+        'A relaxed, no-pressure first conversation. Tell us what’s on your mind and we’ll explain your options in plain English: no bill, no commitment.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -176,7 +176,7 @@ const SCHEDULING = {
       handle: 'estate-planning-consult',
       name: 'Estate planning consultation',
       description:
-        'Sit down with us about wills, trusts and a plan for the people you love. We’ll walk you through what you actually need — and what you don’t.',
+        'Sit down with us about wills, trusts and a plan for the people you love. We’ll walk you through what you actually need, and what you don’t.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -187,7 +187,7 @@ const SCHEDULING = {
       handle: 'will-trust-review',
       name: 'Will & trust review',
       description:
-        'Already have documents? We’ll read them closely and tell you honestly whether they still do what you want — a flat fee, no surprises.',
+        'Already have documents? We’ll read them closely and tell you honestly whether they still do what you want: a flat fee, no surprises.',
       durationMinutes: 45,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -220,7 +220,7 @@ const SCHEDULING = {
       handle: 'business-formation-consult',
       name: 'Business formation session',
       description:
-        'Starting or restructuring a family business? A working session to set it up right — the entity, the paperwork and how it fits your estate plan.',
+        'Starting or restructuring a family business? A working session to set it up right: the entity, the paperwork and how it fits your estate plan.',
       durationMinutes: 60,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -231,7 +231,7 @@ const SCHEDULING = {
       handle: 'guardianship-consult',
       name: 'Guardianship consultation',
       description:
-        'When someone you love needs protecting — a child or an aging parent — we’ll explain guardianship and conservatorship in words that make sense.',
+        'When someone you love needs protecting (a child or an aging parent), we’ll explain guardianship and conservatorship in words that make sense.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -249,7 +249,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A warm law office with two people talking across a table',
     title: 'The law, on your side, explained plainly',
-    sub: 'Wills, trusts, probate and family matters — handled by people who take the time to make it make sense. Start with a free, no-pressure conversation.',
+    sub: 'Wills, trusts, probate and family matters: handled by people who take the time to make it make sense. Start with a free, no-pressure conversation.',
     primary: { label: 'Book a free consultation', href: '/book' },
     secondary: { label: 'See how we help', href: '/book' },
     overlay: 'darker',
@@ -272,7 +272,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'How we can help',
-    intro: 'A few of the ways families work with us. Every consultation starts free — you only decide to go further once you understand your options.',
+    intro: 'A few of the ways families work with us. Every consultation starts free. You only decide to go further once you understand your options.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -288,18 +288,18 @@ const HOME = [
     alt: 'A calm, sunlit meeting room with comfortable chairs',
     heading: 'A practice that treats you like a person',
     body: [
-      'Hearth & Stone Law has helped families in this community plan, protect and move forward for more than twenty years. Most of our clients come from someone we’ve already helped — a neighbor, a parent, a friend.',
+      'Hearth & Stone Law has helped families in this community plan, protect and move forward for more than twenty years. Most of our clients come from someone we’ve already helped: a neighbor, a parent, a friend.',
       'We take on fewer matters so we can give yours real attention. You’ll never feel like a case number, and you’ll always be able to reach the person handling your work.',
     ],
     cta: { label: 'Book your consultation', href: '/book' },
   }),
   teamRow({
     heading: 'The people you’ll work with',
-    intro: 'Book by name — you’ll meet with the same attorney each time.',
+    intro: 'Book by name: you’ll meet with the same attorney each time.',
     members: [
       { name: 'Eleanor Stone', role: 'Estate planning attorney', image: url(IMG.eleanor), alt: 'Eleanor Stone, estate planning attorney', bio: 'Wills, trusts and probate. Eleanor is known for making a hard subject feel calm and clear.' },
       { name: 'Marcus Hearth', role: 'Family law attorney', image: url(IMG.marcus), alt: 'Marcus Hearth, family law attorney', bio: 'Divorce, custody and guardianship, guided with patience and a steady hand.' },
-      { name: 'Priya Nair', role: 'Estate & business attorney', image: url(IMG.priya), alt: 'Priya Nair, estate and business attorney', bio: 'Trusts and family businesses — protecting what you’ve built for the next generation.' },
+      { name: 'Priya Nair', role: 'Estate & business attorney', image: url(IMG.priya), alt: 'Priya Nair, estate and business attorney', bio: 'Trusts and family businesses: protecting what you’ve built for the next generation.' },
     ],
   }),
   testimonial({
@@ -331,7 +331,7 @@ const ABOUT = [
     alt: 'A warm law office with two people talking across a table',
     heading: 'About Hearth & Stone Law',
     body: [
-      'We started Hearth & Stone Law on a simple belief: that legal help for families should feel human. The moments that bring people to us — planning for children, losing a parent, protecting someone who can’t protect themselves — are tender ones, and they deserve care, not a cold desk.',
+      'We started Hearth & Stone Law on a simple belief: that legal help for families should feel human. The moments that bring people to us, planning for children, losing a parent, protecting someone who can’t protect themselves, are tender ones, and they deserve care, not a cold desk.',
       'So we do things a little differently. We explain everything in plain words, we quote fees up front, and we stay reachable long after the paperwork is signed. Twenty years on, most of our clients still come from someone we’ve helped before.',
     ],
     cta: { label: 'Book a free consultation', href: '/book' },
@@ -340,7 +340,7 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'We listen first', body: 'Every matter starts with your story — what you’re worried about, who you’re protecting, and what a good outcome looks like to you.' },
+      { title: 'We listen first', body: 'Every matter starts with your story: what you’re worried about, who you’re protecting, and what a good outcome looks like to you.' },
       { title: 'We keep it clear', body: 'You’ll get straight answers in plain English, a written summary of your options, and honest advice on what’s worth doing.' },
       { title: 'We stay with you', body: 'We don’t disappear when the documents are signed. As life changes, we’re here to update your plan and answer the next question.' },
     ],
@@ -361,7 +361,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See who’s available and reserve your free consultation online — no phone tag, no waiting on hold.',
+    sub: 'See who’s available and reserve your free consultation online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book a free consultation', href: '/book' },
   }),
@@ -372,8 +372,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-law-family',
   name: 'Law (Family & Estate)',
   summary:
-    'A warm, approachable family and estate law site — a cream ground, a deep-navy primary and a trustworthy serif — built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as "Hearth & Stone Law", a caring, plain-English practice.',
-  tagline: 'A warm, human template for family & estate law firms — book consultations from day one.',
+    'A warm, approachable family and estate law site (a cream ground, a deep-navy primary and a trustworthy serif) built around booking a free consultation. Installs a working booking flow: wills, trusts, probate, family-law and guardianship consults, three attorneys you book by name with their own hours, and a standard reschedule policy. Ships as "Hearth & Stone Law", a caring, plain-English practice.',
+  tagline: 'A warm, human template for family & estate law firms. Book consultations from day one.',
   industry: 'Law firm',
   sortWeight: 66,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -382,7 +382,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Hearth & Stone Law — family & estate attorneys',
+      title: 'Hearth & Stone Law: family & estate attorneys',
       description:
         'Hearth & Stone Law is a warm, plain-English practice for wills, trusts, probate and family law. Book a free consultation with an attorney online.',
     },

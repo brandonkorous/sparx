@@ -148,7 +148,7 @@ export function CostLegend() {
             aria-hidden
           />
           <Text as="span">
-            <span className="font-medium">{k.label}</span> — {k.example}
+            <span className="font-medium">{k.label}</span>: {k.example}
           </Text>
         </li>
       ))}

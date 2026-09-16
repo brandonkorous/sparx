@@ -211,7 +211,7 @@ function BlueprintBody({
     if (targetSite === '') return;
     const ok = await confirm({
       title: `Add “${blueprint.name}” to ${targetName}?`,
-      description: `This adds the design's pages and a matching look to ${targetName} — all as drafts only you can see. ${examplesSentence(sampleData)} Your existing pages and products are left exactly as they are, and nothing goes live until you publish it.`,
+      description: `This adds the design's pages and a matching look to ${targetName}: all as drafts only you can see. ${examplesSentence(sampleData)} Your existing pages and products are left exactly as they are, and nothing goes live until you publish it.`,
       confirmLabel: 'Add it',
       cancelLabel: 'Cancel',
       color: 'module',
@@ -246,7 +246,7 @@ function BlueprintBody({
     if (!current) return;
     const ok = await confirm({
       title: `Publish “${blueprint.name}” on ${targetName}?`,
-      description: `This makes everything the design added — its pages, look, and anything else it created — live on ${targetName} for visitors to see. You can still edit any of it afterwards.`,
+      description: `This makes everything the design added (its pages, look, and anything else it created) live on ${targetName} for visitors to see. You can still edit any of it afterwards.`,
       confirmLabel: 'Publish it live',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -282,7 +282,7 @@ function BlueprintBody({
     const changeLine = bits.length > 0 ? ` This brings in ${bits.join(', ')}.` : '';
     const ok = await confirm({
       title: `Update “${blueprint.name}” on ${targetName}?`,
-      description: `This updates the design from version ${current.blueprint_version} to ${blueprint.version} on ${targetName}.${changeLine} Anything you have changed yourself is kept — the update never overwrites your edits.`,
+      description: `This updates the design from version ${current.blueprint_version} to ${blueprint.version} on ${targetName}.${changeLine} Anything you have changed yourself is kept: the update never overwrites your edits.`,
       confirmLabel: 'Update it',
       cancelLabel: 'Cancel',
       color: 'module',
@@ -315,7 +315,7 @@ function BlueprintBody({
     if (!current) return;
     const ok = await confirm({
       title: `Remove “${blueprint.name}” from ${targetName}?`,
-      description: `This tears the whole design back out of ${targetName} — the pages, content, products and email designs it added are deleted, and its look is cleared. This cannot be undone. Anything you created yourself is left alone.`,
+      description: `This tears the whole design back out of ${targetName}: the pages, content, products and email designs it added are deleted, and its look is cleared. This cannot be undone. Anything you created yourself is left alone.`,
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -463,7 +463,7 @@ function BlueprintBody({
 
           <FormSection
             title="What this adds to your site"
-            description="Everything comes in as drafts you can change — nothing here replaces what you already have."
+            description="Everything comes in as drafts you can change. Nothing here replaces what you already have."
           >
             {!hasContents ? (
               <Text className="text-sm">
@@ -474,8 +474,8 @@ function BlueprintBody({
             )}
             {themeName ? (
               <Text className="text-sm">
-                Comes with the <span className="font-medium">{themeName}</span> look — colors, fonts
-                and spacing — applied for you.
+                Comes with the <span className="font-medium">{themeName}</span> look (colors, fonts
+                and spacing) applied for you.
               </Text>
             ) : null}
 
@@ -498,7 +498,7 @@ function BlueprintBody({
                 {' ('}
                 {offModules.map((slug) => moduleLabel(slug)).join(', ')}
                 {'). '}
-                Those parts are skipped — turn the feature on first if you want them included.
+                Those parts are skipped. Turn the feature on first if you want them included.
               </Text>
             ) : null}
           </FormSection>
@@ -527,7 +527,7 @@ function BlueprintBody({
                 </Text>
               )}
               <FieldDescription>
-                The design is added only to the site you choose here — your other sites are not
+                The design is added only to the site you choose here. Your other sites are not
                 touched.
               </FieldDescription>
             </Field>

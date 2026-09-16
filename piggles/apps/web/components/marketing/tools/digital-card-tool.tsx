@@ -171,7 +171,7 @@ export function DigitalCardTool() {
             <Aside>
               A contact saved today gets looked at in eighteen months, when somebody finally has the
               budget. Be sparing with a job title that might change or an address you might move out
-              of — the point is being findable later.
+              of: the point is being findable later.
             </Aside>
           </Panel>
 
@@ -213,7 +213,7 @@ export function DigitalCardTool() {
                   aria-label="A code containing your contact details"
                 />
                 <p className="mt-3 text-center text-base">
-                  Any phone camera reads this and offers to save you to contacts — spelt correctly,
+                  Any phone camera reads this and offers to save you to contacts: spelt correctly,
                   first time.
                 </p>
 
@@ -221,7 +221,7 @@ export function DigitalCardTool() {
                   <Aside>
                     <strong>This code has got quite dense.</strong> It will still scan, but print it
                     at least three centimetres square. Taking out the address, or the note, makes a
-                    simpler pattern that reads from further away — which matters on a business card.
+                    simpler pattern that reads from further away, which matters on a business card.
                   </Aside>
                 ) : null}
 
@@ -291,7 +291,7 @@ export function DigitalCardTool() {
         ) : (
           <Blank
             title="Your card appears here"
-            body="Put in a name and at least one way to reach you. It is all worked out in this page — nothing about you is sent anywhere, and closing the tab is the end of it."
+            body="Put in a name and at least one way to reach you. It is all worked out in this page. Nothing about you is sent anywhere, and closing the tab is the end of it."
             intent="empty"
           />
         )

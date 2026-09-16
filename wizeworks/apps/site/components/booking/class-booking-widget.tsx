@@ -75,7 +75,7 @@ export function ClassBookingWidget({
         </h2>
         <p className="text-base-content">
           {result.waitlisted
-            ? `This session is full — we'll let you know at ${email} if a spot opens.`
+            ? `This session is full: we'll let you know at ${email} if a spot opens.`
             : `Your spot in ${service.name} is confirmed. A confirmation is on its way to ${email}.`}
         </p>
       </div>
@@ -107,7 +107,7 @@ export function ClassBookingWidget({
                 <span className="text-base-content text-sm">
                   {s.remaining > 0
                     ? `${s.remaining} ${s.remaining === 1 ? 'seat' : 'seats'} left`
-                    : 'Full — join the waitlist'}
+                    : 'Full: join the waitlist'}
                 </span>
               </button>
             ))}

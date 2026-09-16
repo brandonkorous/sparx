@@ -155,7 +155,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Life happens — just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets.',
+        'Life happens. Just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets.',
     },
     {
       handle: 'roadready-noshow',
@@ -210,7 +210,7 @@ const SCHEDULING = {
       handle: 'free-consultation',
       name: 'Free consultation',
       description:
-        'A no-pressure chat to map out a plan — where you are, what you need for your license, and the schedule that fits. Great for nervous first-timers and their parents.',
+        'A no-pressure chat to map out a plan: where you are, what you need for your license, and the schedule that fits. Great for nervous first-timers and their parents.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -223,7 +223,7 @@ const SCHEDULING = {
       handle: 'intro-lesson',
       name: 'Intro drive',
       description:
-        'A gentle first time behind the wheel in an empty lot and quiet streets — seat, mirrors, brakes and your very first turns, all at your pace.',
+        'A gentle first time behind the wheel in an empty lot and quiet streets: seat, mirrors, brakes and your very first turns, all at your pace.',
       durationMinutes: 45,
       priceCents: 4500,
       assignmentStrategy: 'customer_choice',
@@ -237,7 +237,7 @@ const SCHEDULING = {
       handle: 'behind-the-wheel-lesson',
       name: 'Behind-the-wheel lesson',
       description:
-        'A full one-on-one driving lesson in a dual-brake car — real roads, real traffic, building confidence turn by turn with a patient instructor beside you.',
+        'A full one-on-one driving lesson in a dual-brake car: real roads, real traffic, building confidence turn by turn with a patient instructor beside you.',
       durationMinutes: 90,
       priceCents: 9000,
       assignmentStrategy: 'customer_choice',
@@ -251,7 +251,7 @@ const SCHEDULING = {
       handle: 'drivers-ed-session',
       name: 'Driver’s-ed classroom session',
       description:
-        'The classroom half of learning to drive — road signs, right-of-way, safe following distance and the rules of the road, taught in plain language for teens.',
+        'The classroom half of learning to drive: road signs, right-of-way, safe following distance and the rules of the road, taught in plain language for teens.',
       durationMinutes: 120,
       priceCents: 7500,
       assignmentStrategy: 'customer_choice',
@@ -264,7 +264,7 @@ const SCHEDULING = {
       handle: 'permit-prep-session',
       name: 'Permit prep',
       description:
-        'Everything you need to walk into the DMV ready for the written permit test — practice questions, the tricky signs, and the stuff that trips people up.',
+        'Everything you need to walk into the DMV ready for the written permit test: practice questions, the tricky signs, and the stuff that trips people up.',
       durationMinutes: 60,
       priceCents: 5500,
       assignmentStrategy: 'customer_choice',
@@ -277,7 +277,7 @@ const SCHEDULING = {
       handle: 'road-test-prep',
       name: 'Road-test prep',
       description:
-        'A dress-rehearsal for test day on the actual test route — parallel parking, three-point turns and the checklist examiners grade, so you show up calm and ready.',
+        'A dress-rehearsal for test day on the actual test route: parallel parking, three-point turns and the checklist examiners grade, so you show up calm and ready.',
       durationMinutes: 90,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -291,7 +291,7 @@ const SCHEDULING = {
       handle: 'refresher-lesson',
       name: 'Refresher lesson',
       description:
-        'Back after a break, or just want to shake off the nerves? A focused hour to rebuild confidence on the skills that feel rusty — no judgment, just practice.',
+        'Back after a break, or just want to shake off the nerves? A focused hour to rebuild confidence on the skills that feel rusty: no judgment, just practice.',
       durationMinutes: 60,
       priceCents: 6000,
       assignmentStrategy: 'customer_choice',
@@ -310,7 +310,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A happy new teen driver at the wheel with a calm instructor beside them',
     title: 'Confident behind the wheel, one lesson at a time',
-    sub: 'A friendly, safety-first driving school for teens and brand-new drivers. Patient instructors, dual-brake cars, and a plan that goes at your pace — not the other way around.',
+    sub: 'A friendly, safety-first driving school for teens and brand-new drivers. Patient instructors, dual-brake cars, and a plan that goes at your pace, not the other way around.',
     primary: { label: 'Book a lesson', href: '/book' },
     secondary: { label: 'See lessons', href: '/book' },
     overlay: 'dark',
@@ -319,7 +319,7 @@ const HOME = [
     items: [
       {
         title: 'Patient, certified instructors',
-        body: 'Every instructor is state-certified, background-checked, and genuinely kind about it. Nervous drivers are our specialty — we never rush and never yell.',
+        body: 'Every instructor is state-certified, background-checked, and genuinely kind about it. Nervous drivers are our specialty. We never rush and never yell.',
       },
       {
         title: 'Dual-brake safety cars',
@@ -331,13 +331,13 @@ const HOME = [
       },
       {
         title: 'A high road-test pass rate',
-        body: 'Most of our students pass the DMV road test on the first try — because we practice on the real routes until it feels routine.',
+        body: 'Most of our students pass the DMV road test on the first try, because we practice on the real routes until it feels routine.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Lessons & packages',
-    intro: 'Start wherever you are — a first drive, the classroom hours, or a final tune-up before the test. Full prices and live availability are on the booking page.',
+    intro: 'Start wherever you are: a first drive, the classroom hours, or a final tune-up before the test. Full prices and live availability are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -353,22 +353,22 @@ const HOME = [
     alt: 'An instructor coaching a learner through a turn in a dual-brake training car',
     heading: 'We teach confidence, not just parallel parking',
     body: [
-      'Learning to drive is nerve-wracking — for teens and parents both. So we start slow, explain the why behind every rule, and celebrate the small wins until the big stuff feels easy.',
+      'Learning to drive is nerve-wracking, for teens and parents both. So we start slow, explain the why behind every rule, and celebrate the small wins until the big stuff feels easy.',
       'By the time you take your test, driving isn’t a thing you survive. It’s a thing you’re good at. That’s the whole goal: a driver who’s calm, safe and actually enjoys the road.',
     ],
     cta: { label: 'Book a lesson', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your instructors',
-    intro: 'Book by name — you’ll build a rhythm with the same person every lesson.',
+    intro: 'Book by name: you’ll build a rhythm with the same person every lesson.',
     members: [
       { name: 'Maria Alvarez', role: 'Behind-the-wheel instructor', image: url(IMG.maria), alt: 'Maria Alvarez, behind-the-wheel instructor', bio: 'Ten years teaching first-time teen drivers. Endlessly patient with the nervous ones.' },
-      { name: 'James Park', role: 'Driver’s-ed instructor', image: url(IMG.james), alt: 'James Park, driver’s-ed instructor', bio: 'Makes the classroom hours and permit rules genuinely make sense — no boring lectures.' },
+      { name: 'James Park', role: 'Driver’s-ed instructor', image: url(IMG.james), alt: 'James Park, driver’s-ed instructor', bio: 'Makes the classroom hours and permit rules genuinely make sense: no boring lectures.' },
       { name: 'Tanya Brooks', role: 'Road-test prep instructor', image: url(IMG.tanya), alt: 'Tanya Brooks, road-test prep instructor', bio: 'Knows every local test route by heart and gets students test-day ready and calm.' },
     ],
   }),
   testimonial({
-    quote: 'My daughter was terrified to even sit in the driver’s seat. Six lessons later she passed her road test on the first try — and actually likes driving now. I can’t thank RoadReady enough.',
+    quote: 'My daughter was terrified to even sit in the driver’s seat. Six lessons later she passed her road test on the first try, and actually likes driving now. I can’t thank RoadReady enough.',
     attribution: 'Denise M., parent of a new driver',
     surface: 'muted',
   }),
@@ -398,7 +398,7 @@ const ABOUT = [
     heading: 'About RoadReady Driving School',
     body: [
       'We started RoadReady because learning to drive shouldn’t feel like a test you’re failing before it begins. New drivers deserve patience, a calm car, and someone in the passenger seat who’s genuinely on their side.',
-      'So that’s what we built: certified instructors, dual-brake safety cars, and a plan that meets each teen exactly where they are — from a white-knuckle first drive to a confident, licensed driver.',
+      'So that’s what we built: certified instructors, dual-brake safety cars, and a plan that meets each teen exactly where they are, from a white-knuckle first drive to a confident, licensed driver.',
     ],
     cta: { label: 'Book a lesson', href: '/book' },
   }),
@@ -406,9 +406,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we keep it safe and encouraging',
     items: [
-      { title: 'Safety comes first, always', body: 'Dual-brake cars, quiet practice routes to start, and instructors trained to keep a lesson calm — because a relaxed driver is a safe driver.' },
+      { title: 'Safety comes first, always', body: 'Dual-brake cars, quiet practice routes to start, and instructors trained to keep a lesson calm, because a relaxed driver is a safe driver.' },
       { title: 'A real plan, not random hours', body: 'Every student gets a path: what to practice, what comes next, and exactly what the DMV will ask on test day.' },
-      { title: 'Parents in the loop', body: 'We’ll tell you honestly how it’s going and what to practice together between lessons — no surprises, no upselling.' },
+      { title: 'Parents in the loop', body: 'We’ll tell you honestly how it’s going and what to practice together between lessons: no surprises, no upselling.' },
     ],
   }),
 ];
@@ -427,7 +427,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability for every instructor and car, and reserve your lesson online — no phone tag.',
+    sub: 'See live availability for every instructor and car, and reserve your lesson online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a lesson', href: '/book' },
   }),
@@ -438,8 +438,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-driving-teen',
   name: 'Driving School (Teen)',
   summary:
-    'A cheerful, safety-first template for a teen driving school — a warm off-white palette with a friendly blue and a sunny coral, rounded and encouraging. Installs a working booking flow: real lessons and packages (intro drive, behind-the-wheel, driver’s ed, permit and road-test prep), patient instructors you book by name, and dual-brake training cars booked alongside them for behind-the-wheel time. Ships as "RoadReady Driving School".',
-  tagline: 'A friendly, encouraging template for teen driving schools — book lessons online from day one.',
+    'A cheerful, safety-first template for a teen driving school: a warm off-white palette with a friendly blue and a sunny coral, rounded and encouraging. Installs a working booking flow: real lessons and packages (intro drive, behind-the-wheel, driver’s ed, permit and road-test prep), patient instructors you book by name, and dual-brake training cars booked alongside them for behind-the-wheel time. Ships as "RoadReady Driving School".',
+  tagline: 'A friendly, encouraging template for teen driving schools. Book lessons online from day one.',
   industry: 'Driving school',
   sortWeight: 22,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -448,7 +448,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'RoadReady Driving School — patient teen driving lessons',
+      title: 'RoadReady Driving School: patient teen driving lessons',
       description:
         'RoadReady is a friendly, safety-first driving school for teens and new drivers. Certified instructors, dual-brake cars, driver’s ed and road-test prep. Book a lesson online.',
     },

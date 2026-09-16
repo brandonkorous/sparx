@@ -71,7 +71,7 @@ export function TierSurface({ ctx }: { ctx: SurfaceContext }) {
       title: `Apply to become a ${meta.label} partner?`,
       description: productCopyWith(
         'partner.tier.applyConfirm',
-        `${meta.commission}. Applications are reviewed by sparx, usually within a few business days — nothing changes about your account until it is approved.`,
+        `${meta.commission}. Applications are reviewed by sparx, usually within a few business days. Nothing changes about your account until it is approved.`,
         { commission: meta.commission }
       ),
       confirmLabel: 'Send my application',
@@ -216,7 +216,7 @@ export function TierSurface({ ctx }: { ctx: SurfaceContext }) {
               </Heading>
               <Text className="text-sm">
                 You earn ongoing commission on the accounts you manage and can publish bootcamps
-                publicly. Keep it up — the directory rewards active Certified partners with priority
+                publicly. Keep it up: the directory rewards active Certified partners with priority
                 placement.
               </Text>
             </section>

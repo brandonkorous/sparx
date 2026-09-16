@@ -34,9 +34,9 @@ const GESTURES: Gesture[] = [
   {
     icon: Search,
     title: 'Open anything by name',
-    body: 'Press ⌘K and start typing. No menus to learn — if you know what you want, say it.',
+    body: 'Press ⌘K and start typing. No menus to learn: if you know what you want, say it.',
     compactBody:
-      'Tap the magnifying glass and start typing. No menus to learn — if you know what you want, say it.',
+      'Tap the magnifying glass and start typing. No menus to learn: if you know what you want, say it.',
   },
   {
     icon: Columns2,

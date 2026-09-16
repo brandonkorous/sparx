@@ -83,14 +83,14 @@
     {
       "handle": "aphelion-one",
       "title": "Aphelion One",
-      "description": "Our flagship open-back over-ear headphones, built around a hand-matched planar-magnetic driver. Open-back means the sound breathes rather than pressing on your ears — a wide, natural stage that puts each instrument in its own place. Machined aluminium, real leather, and a cable and earpads you can replace instead of a headphone you have to.",
+      "description": "Our flagship open-back over-ear headphones, built around a hand-matched planar-magnetic driver. Open-back means the sound breathes rather than pressing on your ears: a wide, natural stage that puts each instrument in its own place. Machined aluminium, real leather, and a cable and earpads you can replace instead of a headphone you have to.",
       "status": "active",
       "productType": "Headphones",
       "vendor": "Aphelion",
       "tags": ["headphones", "over-ear", "open-back", "planar", "reference"],
       "categoryHandles": ["headphones"],
       "collectionHandles": ["new-arrivals", "headphones"],
-      "seoTitle": "Aphelion One — open-back planar-magnetic headphones",
+      "seoTitle": "Aphelion One. Open-back planar-magnetic headphones",
       "seoDescription": "Flagship open-back over-ear headphones with a hand-matched planar-magnetic driver and replaceable parts.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -120,9 +120,9 @@
             "value": "385 g"
           }
         ],
-        "connectivity": "Wired only, on a detachable 1.5 m cable terminated in 3.5 mm, with a 6.35 mm screw-on adapter in the box and an optional balanced cable for a blacker background. Open-backs are made to sit still and be driven properly — there is no battery to age and no wireless to compress the signal.",
+        "connectivity": "Wired only, on a detachable 1.5 m cable terminated in 3.5 mm, with a 6.35 mm screw-on adapter in the box and an optional balanced cable for a blacker background. Open-backs are made to sit still and be driven properly. There is no battery to age and no wireless to compress the signal.",
         "inTheBox": "The Aphelion One, a detachable 1.5 m single-ended cable, a 6.35 mm adapter, a spare set of protein-leather earpads and a hard storage case.",
-        "warranty": "Three years, with a sixty-day home audition. Every wear part — earpads, cable, headband — is a stocked replaceable spare, so a tired pair is repaired, never retired."
+        "warranty": "Three years, with a sixty-day home audition. Every wear part (earpads, cable, headband) is a stocked replaceable spare, so a tired pair is repaired, never retired."
       },
       "options": [
         {
@@ -175,7 +175,7 @@
       "tags": ["headphones", "over-ear", "wireless", "anc"],
       "categoryHandles": ["headphones"],
       "collectionHandles": ["headphones"],
-      "seoTitle": "Aphelion One Wireless — adaptive-ANC over-ear headphones",
+      "seoTitle": "Aphelion One Wireless: adaptive-ANC over-ear headphones",
       "seoDescription": "Wireless over-ear headphones with adaptive noise cancelling, 38-hour battery, and the reference One tuning.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -260,7 +260,7 @@
       "tags": ["earbuds", "true-wireless", "anc", "ldac"],
       "categoryHandles": ["earbuds"],
       "collectionHandles": ["new-arrivals", "earbuds"],
-      "seoTitle": "Aphelion Buds Pro — ANC true-wireless earbuds with LDAC",
+      "seoTitle": "Aphelion Buds Pro: ANC true-wireless earbuds with LDAC",
       "seoDescription": "True-wireless earbuds with high-resolution LDAC, deep active noise cancelling, and a sealed four-size fit.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -338,14 +338,14 @@
     {
       "handle": "aphelion-buds-air",
       "title": "Aphelion Buds Air",
-      "description": "The everyday earbud — the Aphelion signature, the long battery and the easy pairing, without the active cancelling. A light, comfortable fit for a run or a call, with clear voice pickup so the person on the other end hears you, not the wind.",
+      "description": "The everyday earbud: the Aphelion signature, the long battery and the easy pairing, without the active cancelling. A light, comfortable fit for a run or a call, with clear voice pickup so the person on the other end hears you, not the wind.",
       "status": "active",
       "productType": "Earbuds",
       "vendor": "Aphelion",
       "tags": ["earbuds", "true-wireless", "everyday"],
       "categoryHandles": ["earbuds"],
       "collectionHandles": ["earbuds"],
-      "seoTitle": "Aphelion Buds Air — everyday true-wireless earbuds",
+      "seoTitle": "Aphelion Buds Air: everyday true-wireless earbuds",
       "seoDescription": "Light, comfortable true-wireless earbuds with the Aphelion signature, long battery, and clear call pickup.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -356,7 +356,7 @@
           },
           {
             "label": "Noise cancelling",
-            "value": "None — light open fit"
+            "value": "None: light open fit"
           },
           {
             "label": "Battery",
@@ -423,14 +423,14 @@
     {
       "handle": "aphelion-monolith",
       "title": "Aphelion Monolith",
-      "description": "A reference active bookshelf speaker, sold as a matched pair. The amplifier lives inside, tuned to the exact driver it drives, so you plug in a source and you are done — no separate box, no guesswork, no mismatch. Measured to the millimetre and voiced by ear, a pair on a shelf throws a stage you can point to with your eyes shut.",
+      "description": "A reference active bookshelf speaker, sold as a matched pair. The amplifier lives inside, tuned to the exact driver it drives, so you plug in a source and you are done: no separate box, no guesswork, no mismatch. Measured to the millimetre and voiced by ear, a pair on a shelf throws a stage you can point to with your eyes shut.",
       "status": "active",
       "productType": "Speakers",
       "vendor": "Aphelion",
       "tags": ["speakers", "bookshelf", "active", "reference", "pair"],
       "categoryHandles": ["speakers"],
       "collectionHandles": ["new-arrivals", "speakers"],
-      "seoTitle": "Aphelion Monolith — reference active bookshelf speakers (pair)",
+      "seoTitle": "Aphelion Monolith: reference active bookshelf speakers (pair)",
       "seoDescription": "A matched pair of reference active bookshelf speakers with the amplifier built in and tuned to the driver.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -460,7 +460,7 @@
             "value": "6.2 kg each"
           }
         ],
-        "connectivity": "Balanced XLR and RCA analogue in, plus optical, coaxial and USB digital in — the amplifier and DAC live inside, tuned to the exact driver, so you plug a source straight in with no separate box and no mismatch. The two speakers link over a single supplied cable.",
+        "connectivity": "Balanced XLR and RCA analogue in, plus optical, coaxial and USB digital in: the amplifier and DAC live inside, tuned to the exact driver, so you plug a source straight in with no separate box and no mismatch. The two speakers link over a single supplied cable.",
         "inTheBox": "A matched pair of Aphelion Monolith speakers, the inter-speaker link cable, a power lead for each, magnetic grilles and two sets of isolation feet.",
         "warranty": "Five years on the drivers and cabinet, two on the electronics, with a sixty-day home audition. Room-correction firmware updates over USB for the life of the pair."
       },
@@ -508,14 +508,14 @@
     {
       "handle": "aphelion-field",
       "title": "Aphelion Field",
-      "description": "A portable speaker that does not apologise for its size. Sealed against dust and water to IP67 — it survives a beach, a shower and a spilled drink — with a battery that runs a whole afternoon and a tuning that stays honest instead of turning everything into thud. Pairs two together for real stereo.",
+      "description": "A portable speaker that does not apologise for its size. Sealed against dust and water to IP67 (it survives a beach, a shower and a spilled drink) with a battery that runs a whole afternoon and a tuning that stays honest instead of turning everything into thud. Pairs two together for real stereo.",
       "status": "active",
       "productType": "Speakers",
       "vendor": "Aphelion",
       "tags": ["speakers", "portable", "bluetooth", "ip67"],
       "categoryHandles": ["speakers"],
       "collectionHandles": ["speakers"],
-      "seoTitle": "Aphelion Field — IP67 portable Bluetooth speaker",
+      "seoTitle": "Aphelion Field: IP67 portable Bluetooth speaker",
       "seoDescription": "A rugged IP67 portable Bluetooth speaker with an all-afternoon battery and an honest, un-boomy tuning.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -593,14 +593,14 @@
     {
       "handle": "aphelion-pulse",
       "title": "Aphelion Pulse",
-      "description": "A pocket-sized USB-C headphone amplifier and DAC — the small box that makes a laptop or a phone drive a real pair of headphones properly. It gives demanding open-backs the power they need to open up, and cleans up the thin, quiet output most devices ship with. One cable in, your headphones out, and everything gets louder, clearer and more alive.",
+      "description": "A pocket-sized USB-C headphone amplifier and DAC: the small box that makes a laptop or a phone drive a real pair of headphones properly. It gives demanding open-backs the power they need to open up, and cleans up the thin, quiet output most devices ship with. One cable in, your headphones out, and everything gets louder, clearer and more alive.",
       "status": "active",
       "productType": "Amps & DACs",
       "vendor": "Aphelion",
       "tags": ["dac", "amplifier", "usb-c", "portable"],
       "categoryHandles": ["amps-dacs"],
       "collectionHandles": ["new-arrivals"],
-      "seoTitle": "Aphelion Pulse — portable USB-C DAC and headphone amplifier",
+      "seoTitle": "Aphelion Pulse: portable USB-C DAC and headphone amplifier",
       "seoDescription": "A pocket USB-C DAC and headphone amplifier that drives demanding headphones from a laptop or phone.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -630,7 +630,7 @@
             "value": "95 g"
           }
         ],
-        "connectivity": "One USB-C in from a laptop or phone, one 3.5 mm and one 4.4 mm balanced headphone out. Bus-powered, so there is no battery and no wall wart — one cable in, your headphones out, everything louder and cleaner.",
+        "connectivity": "One USB-C in from a laptop or phone, one 3.5 mm and one 4.4 mm balanced headphone out. Bus-powered, so there is no battery and no wall wart. One cable in, your headphones out, everything louder and cleaner.",
         "inTheBox": "The Aphelion Pulse, a USB-C to USB-C cable, a USB-C to USB-A adapter and a silicone band for stacking it to a phone.",
         "warranty": "Three years, with a sixty-day home audition. Firmware updates over the same USB-C port keep it current with new formats."
       },
@@ -653,14 +653,14 @@
     {
       "handle": "aphelion-ridgeline",
       "title": "Aphelion Ridgeline",
-      "description": "A slim soundbar that treats a film the way we treat a record — dialogue you never have to rewind, and an effects track with real weight, from one bar under the screen. No rack of boxes, no calibration ritual: it measures your room on setup and tunes itself to it.",
+      "description": "A slim soundbar that treats a film the way we treat a record: dialogue you never have to rewind, and an effects track with real weight, from one bar under the screen. No rack of boxes, no calibration ritual: it measures your room on setup and tunes itself to it.",
       "status": "active",
       "productType": "Speakers",
       "vendor": "Aphelion",
       "tags": ["speakers", "soundbar", "home-cinema"],
       "categoryHandles": ["speakers"],
       "collectionHandles": ["speakers"],
-      "seoTitle": "Aphelion Ridgeline — self-calibrating soundbar",
+      "seoTitle": "Aphelion Ridgeline: self-calibrating soundbar",
       "seoDescription": "A slim soundbar with clear dialogue and real weight that measures your room and tunes itself to it.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -690,7 +690,7 @@
             "value": "98 cm"
           }
         ],
-        "connectivity": "HDMI eARC to the television, plus optical in and Bluetooth for music. It measures your room on setup and tunes itself — no rack of boxes, no calibration mic to fuss with.",
+        "connectivity": "HDMI eARC to the television, plus optical in and Bluetooth for music. It measures your room on setup and tunes itself: no rack of boxes, no calibration mic to fuss with.",
         "inTheBox": "The Aphelion Ridgeline, an HDMI eARC cable, a wall-mount template and bracket, and a power lead.",
         "warranty": "Three years, with a sixty-day home audition. Room tuning and format support update over HDMI for the life of the bar."
       },
@@ -713,14 +713,14 @@
     {
       "handle": "aphelion-cable",
       "title": "Aphelion Balanced Cable",
-      "description": "A braided replacement cable for the One and One Wireless, in a balanced connection that keeps the left and right channels fully apart for a cleaner, blacker background. Oxygen-free copper, a machined connector, and a length you choose — so a worn cable is a small part, never a reason to retire the headphones.",
+      "description": "A braided replacement cable for the One and One Wireless, in a balanced connection that keeps the left and right channels fully apart for a cleaner, blacker background. Oxygen-free copper, a machined connector, and a length you choose, so a worn cable is a small part, never a reason to retire the headphones.",
       "status": "active",
       "productType": "Accessories",
       "vendor": "Aphelion",
       "tags": ["accessories", "cable", "balanced"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["accessories"],
-      "seoTitle": "Aphelion Balanced Cable — braided replacement headphone cable",
+      "seoTitle": "Aphelion Balanced Cable: braided replacement headphone cable",
       "seoDescription": "A braided balanced replacement cable in oxygen-free copper for the Aphelion One headphones.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -750,7 +750,7 @@
             "value": "Braided, low-microphonic"
           }
         ],
-        "connectivity": "A passive analogue cable — a balanced 4.4 mm at the amplifier end and dual locking connectors at the earcups, keeping the left and right channels fully apart for a cleaner, blacker background.",
+        "connectivity": "A passive analogue cable: a balanced 4.4 mm at the amplifier end and dual locking connectors at the earcups, keeping the left and right channels fully apart for a cleaner, blacker background.",
         "inTheBox": "The Aphelion Balanced Cable in your chosen length, and a reusable cable tie.",
         "warranty": "Two years. A replaceable wear part by design, so a worn cable is a small part to swap, never a reason to retire the headphones."
       },
@@ -805,7 +805,7 @@
       "tags": ["accessories", "stand", "desk"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["accessories"],
-      "seoTitle": "Aphelion Stand — machined aluminium headphone stand",
+      "seoTitle": "Aphelion Stand: machined aluminium headphone stand",
       "seoDescription": "A weighted machined-aluminium headphone stand with a soft yoke and a cable channel.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -835,7 +835,7 @@
             "value": "640 g"
           }
         ],
-        "connectivity": "None — a passive desk stand. The channel down the back keeps the cable off your keyboard rather than routing any signal.",
+        "connectivity": "None: a passive desk stand. The channel down the back keeps the cable off your keyboard rather than routing any signal.",
         "inTheBox": "The Aphelion Stand, assembled, with felt base pads and a hex key for the yoke.",
         "warranty": "Two years against any manufacturing fault in the machining or the anodised finish."
       },
@@ -865,7 +865,7 @@
       "tags": ["accessories", "case", "travel"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["accessories"],
-      "seoTitle": "Aphelion Travel Case — hard case for earbuds and the Pulse",
+      "seoTitle": "Aphelion Travel Case: hard case for earbuds and the Pulse",
       "seoDescription": "A crush-proof hard travel case with a moulded tray for the Aphelion Buds Pro and Pulse.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -895,7 +895,7 @@
             "value": "140 g"
           }
         ],
-        "connectivity": "None — protection, not electronics. The moulded tray holds each piece and its tips in place so nothing rattles loose in a bag.",
+        "connectivity": "None: protection, not electronics. The moulded tray holds each piece and its tips in place so nothing rattles loose in a bag.",
         "inTheBox": "The Aphelion Travel Case with its moulded tray, and a clip-in mesh pocket for cables and tips.",
         "warranty": "Two years, covering the zip and the shell against failure in normal use."
       },
@@ -918,14 +918,14 @@
     {
       "handle": "aphelion-pads",
       "title": "Aphelion Earpads",
-      "description": "Replacement earpads for the One and One Wireless, in the same protein leather and memory foam we fit at the factory. Pads are the one part that wears, and swapping them brings back the seal, the comfort and the bass a tired pair loses — a five-minute job, no tools, in a couple of years when you need it.",
+      "description": "Replacement earpads for the One and One Wireless, in the same protein leather and memory foam we fit at the factory. Pads are the one part that wears, and swapping them brings back the seal, the comfort and the bass a tired pair loses: a five-minute job, no tools, in a couple of years when you need it.",
       "status": "active",
       "productType": "Accessories",
       "vendor": "Aphelion",
       "tags": ["accessories", "earpads", "replacement"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["accessories"],
-      "seoTitle": "Aphelion Earpads — replacement earpads for the One",
+      "seoTitle": "Aphelion Earpads: replacement earpads for the One",
       "seoDescription": "Factory-grade replacement earpads in protein leather and memory foam for the Aphelion One.",
       "productTypeKey": "electronics",
       "attributes": {
@@ -955,7 +955,7 @@
             "value": "About five minutes"
           }
         ],
-        "connectivity": "None — a factory-grade wear part. Swapping the pads restores the seal, the comfort and the bass a tired pair slowly loses.",
+        "connectivity": "None: a factory-grade wear part. Swapping the pads restores the seal, the comfort and the bass a tired pair slowly loses.",
         "inTheBox": "A matched pair of Aphelion Earpads, and a quick-fit card.",
         "warranty": "One year. Pads are the part that wears, so we price them to be replaced every couple of years without a second thought."
       },

@@ -184,7 +184,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="New site — hold Shift to open alongside, Alt for a new window"
+            title="New site: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('platform.settings.site', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -249,7 +249,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
               // already carries "New site".
               title: 'No sites yet',
               description:
-                'A site is one website — its own name, pages, and web address. Your business can run as many as it needs.',
+                'A site is one website. Its own name, pages, and web address. Your business can run as many as it needs.',
             }}
           />
         ) : (

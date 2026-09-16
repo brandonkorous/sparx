@@ -295,10 +295,10 @@ function departmentsBand(): Node {
                     }),
                     el('div', 'grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-4', {
                         children: [
-                            dept('dept-fashion', 'A rack of considered clothing in a studio', 'Fashion', 'The wardrobe, edited — what to keep, what to let go.'),
+                            dept('dept-fashion', 'A rack of considered clothing in a studio', 'Fashion', 'The wardrobe, edited: what to keep, what to let go.'),
                             dept('dept-beauty', 'A clean beauty portrait in daylight', 'Beauty', 'Skin, scent and the case for doing less.'),
                             dept('dept-runway', 'A look moving down a bare runway', 'Runway', 'The collections that mattered, read closely.'),
-                            dept('dept-culture', 'A ceramic object on a plinth', 'Culture', 'The made world — objects, interiors, the design of desire.'),
+                            dept('dept-culture', 'A ceramic object on a plinth', 'Culture', 'The made world: objects, interiors, the design of desire.'),
                         ],
                     }),
                 ],
@@ -309,7 +309,7 @@ function departmentsBand(): Node {
 
 const HOME: Node[] = [
     coverStory(),
-    headingBand('From the Desk', 'The Latest', 'New writing across fashion, beauty, runway and culture — the issue as it fills in.'),
+    headingBand('From the Desk', 'The Latest', 'New writing across fashion, beauty, runway and culture: the issue as it fills in.'),
     blogPostGrid(),
     lookbookBand(),
     departmentsBand(),
@@ -409,7 +409,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Journal' },
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Fashion, beauty, runway and the made world — looked at closely, and photographed the way it deserves. Newest first.',
+                        text: 'Fashion, beauty, runway and the made world: looked at closely, and photographed the way it deserves. Newest first.',
                     }),
                 ],
             }),
@@ -428,7 +428,7 @@ const ABOUT: Node[] = [
                         text: 'About Mode & Object',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Mode & Object is a style and design magazine about the things people choose to keep. We write about fashion, beauty, the runway and the made world with the same attention — not as trends to chase, but as decisions made by real people with taste and a point of view.',
+                        text: 'Mode & Object is a style and design magazine about the things people choose to keep. We write about fashion, beauty, the runway and the made world with the same attention, not as trends to chase, but as decisions made by real people with taste and a point of view.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'The photograph is the story here, and the writing is the caption. We commission original work, we credit every image, and we would rather run one considered piece than ten filed to fill a feed.',
@@ -482,14 +482,14 @@ const PRODUCTS: Product[] = [
         handle: 'the-everyday-scarf',
         title: 'The Everyday Scarf',
         description:
-            'A generous square of heavyweight silk twill, hand-rolled at the edge, in a single quiet color. The one accessory the wardrobe story kept coming back to — it finishes a coat and asks for nothing.',
+            'A generous square of heavyweight silk twill, hand-rolled at the edge, in a single quiet color. The one accessory the wardrobe story kept coming back to. It finishes a coat and asks for nothing.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Mode & Object',
         tags: ['accessory', 'silk', 'the-edit'],
         categoryHandles: ['accessories'],
         collectionHandles: ['featured'],
-        seoTitle: 'The Everyday Scarf — hand-rolled silk twill | Mode & Object',
+        seoTitle: 'The Everyday Scarf: hand-rolled silk twill | Mode & Object',
         seoDescription: 'A heavyweight silk twill scarf in a single quiet color, hand-rolled at the edge.',
         variants: [{ sku: 'MO-ACC-SCARF', priceCents: money(120), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'product-scarf', isPrimary: true, alt: 'A folded silk scarf' }],
@@ -498,15 +498,15 @@ const PRODUCTS: Product[] = [
         handle: 'studio-carafe',
         title: 'The Studio Carafe',
         description:
-            'A hand-thrown stoneware carafe from the atelier we visited this issue — matte, off-white, a little uneven on purpose. Made in small runs, so no two are quite the same. Water, wine, or a single stem.',
+            'A hand-thrown stoneware carafe from the atelier we visited this issue: matte, off-white, a little uneven on purpose. Made in small runs, so no two are quite the same. Water, wine, or a single stem.',
         status: 'active',
         productType: 'Object',
         vendor: 'Mode & Object',
         tags: ['object', 'ceramic', 'the-edit'],
         categoryHandles: ['objects'],
         collectionHandles: ['featured'],
-        seoTitle: 'The Studio Carafe — hand-thrown stoneware | Mode & Object',
-        seoDescription: 'A hand-thrown matte stoneware carafe, made in small runs — no two the same.',
+        seoTitle: 'The Studio Carafe: hand-thrown stoneware | Mode & Object',
+        seoDescription: 'A hand-thrown matte stoneware carafe, made in small runs: no two the same.',
         variants: [{ sku: 'MO-OBJ-CARAFE', priceCents: money(88), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'product-carafe', isPrimary: true, alt: 'A hand-thrown ceramic carafe' }],
     },
@@ -521,7 +521,7 @@ const PRODUCTS: Product[] = [
         tags: ['accessory', 'eyewear', 'the-edit'],
         categoryHandles: ['accessories'],
         collectionHandles: ['featured'],
-        seoTitle: 'The Acetate Sunglasses — hand-polished frame | Mode & Object',
+        seoTitle: 'The Acetate Sunglasses: hand-polished frame | Mode & Object',
         seoDescription: 'A rounded acetate sunglass frame in warm tortoise, cut and polished by hand.',
         variants: [{ sku: 'MO-ACC-SUN', priceCents: money(165), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'product-sunglasses', isPrimary: true, alt: 'A pair of acetate sunglasses' }],
@@ -530,14 +530,14 @@ const PRODUCTS: Product[] = [
         handle: 'studio-print-no-4',
         title: 'Studio Print No. 4',
         description:
-            'An archival giclée print from our contributing photographer Iris Blum — a still life from the design portfolio, editioned and signed. Ships flat, unframed, in a run of one hundred.',
+            'An archival giclée print from our contributing photographer Iris Blum: a still life from the design portfolio, editioned and signed. Ships flat, unframed, in a run of one hundred.',
         status: 'active',
         productType: 'Print',
         vendor: 'Mode & Object',
         tags: ['print', 'photography'],
         categoryHandles: ['prints'],
         collectionHandles: [],
-        seoTitle: 'Studio Print No. 4 — signed archival giclée | Mode & Object',
+        seoTitle: 'Studio Print No. 4: signed archival giclée | Mode & Object',
         seoDescription: 'A signed, editioned archival giclée still life by Iris Blum, in a run of one hundred.',
         variants: [{ sku: 'MO-PRINT-04', priceCents: money(220), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'product-print', isPrimary: true, alt: 'A framed studio print' }],
@@ -554,7 +554,7 @@ const COMMERCE = {
         {
             handle: 'featured',
             name: 'The Edit',
-            description: 'What the desk is pointing at this issue — shop the look.',
+            description: 'What the desk is pointing at this issue. Shop the look.',
             type: 'manual',
             featured: true,
             productHandles: ['the-everyday-scarf', 'studio-carafe', 'acetate-sunglasses'],
@@ -572,13 +572,13 @@ const AUTHORS = [
     {
         slug: 'elena-prevost',
         displayName: 'Elena Prévost',
-        bio: 'Elena Prévost is the fashion director of Mode & Object. She writes about how people actually get dressed — the editing, the keeping, and the case against buying more.',
+        bio: 'Elena Prévost is the fashion director of Mode & Object. She writes about how people actually get dressed: the editing, the keeping, and the case against buying more.',
         avatarAssetId: 'author-prevost',
     },
     {
         slug: 'nadia-okonkwo',
         displayName: 'Nadia Okonkwo',
-        bio: 'Nadia Okonkwo directs beauty coverage at Mode & Object. Her subject is restraint — skin, scent and the discipline of doing less, reported from the chair and the lab.',
+        bio: 'Nadia Okonkwo directs beauty coverage at Mode & Object. Her subject is restraint: skin, scent and the discipline of doing less, reported from the chair and the lab.',
         avatarAssetId: 'author-okonkwo',
     },
     {
@@ -610,9 +610,9 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The most interesting wardrobes I saw this season did not belong to people chasing anything. They belonged to people who had stopped — who had, at some point, decided what they liked and then simply kept wearing it until it wore out and was replaced with the same thing, a little better made.'),
+                    para('The most interesting wardrobes I saw this season did not belong to people chasing anything. They belonged to people who had stopped, who had, at some point, decided what they liked and then simply kept wearing it until it wore out and was replaced with the same thing, a little better made.'),
                     h2('The end of the churn'),
-                    para('For a decade the industry sold newness as a virtue in itself. What is quietly replacing it is not minimalism, exactly — the closets are not empty — but a kind of editing. Fewer things, chosen slowly, kept for years. A coat is a ten-year decision again, not a nine-week one.'),
+                    para('For a decade the industry sold newness as a virtue in itself. What is quietly replacing it is not minimalism, exactly (the closets are not empty) but a kind of editing. Fewer things, chosen slowly, kept for years. A coat is a ten-year decision again, not a nine-week one.'),
                     h2('What survives the cull'),
                     para('When you strip a wardrobe back to what a person actually reaches for, the same shapes appear across every closet: a good coat, a real shirt, one pair of trousers that fit, a shoe that can be resoled. The trend was never the point. The point was the editing, and the editing is a skill.'),
                     para('If there is a look this season, it is the look of someone who has already decided. That is the hardest thing in fashion to fake, and the only thing worth photographing.'),
@@ -635,11 +635,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Backstage this season the instruction to the artists was the same everywhere, in three or four languages: less. Less product, less color, less of the face doing the work the clothes were supposed to do. The result reads, from the front row, as skin — and almost nothing else.'),
+                    para('Backstage this season the instruction to the artists was the same everywhere, in three or four languages: less. Less product, less color, less of the face doing the work the clothes were supposed to do. The result reads, from the front row, as skin, and almost nothing else.'),
                     h2('The paradox of the bare face'),
                     para('None of this is actually bare, of course. The undone face is one of the most worked-on effects in beauty, the product of skincare that starts weeks before the show and a hand light enough to be invisible. Doing nothing well is the most expensive kind of doing something.'),
                     h2('Why now'),
-                    para('There is a fatigue in it — a reaction against a decade of the sculpted, filtered, fully-built face. When everyone can look like anyone, looking like yourself becomes the statement. The skin you actually have, lit well, is the last thing a filter cannot sell you.'),
+                    para('There is a fatigue in it: a reaction against a decade of the sculpted, filtered, fully-built face. When everyone can look like anyone, looking like yourself becomes the statement. The skin you actually have, lit well, is the last thing a filter cannot sell you.'),
                     para('The kindest reading is that the industry is finally selling maintenance instead of transformation. The honest one is that maintenance, done properly, costs more than transformation ever did.'),
                 ],
             },
@@ -660,7 +660,7 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Resort is the season where fashion admits what it is for. There is no myth to sell, no theatre to build — just the clothes people will actually buy and wear, shown in a hotel courtyard to a room that has seen everything. It is the most honest week on the calendar, and this year it was unusually good.'),
+                    para('Resort is the season where fashion admits what it is for. There is no myth to sell, no theatre to build. Just the clothes people will actually buy and wear, shown in a hotel courtyard to a room that has seen everything. It is the most honest week on the calendar, and this year it was unusually good.'),
                     h2('Restraint as a position'),
                     para('The best collections did not shout. They proposed a way of dressing and then argued it, look after look, without a single gimmick to distract from whether the argument held. When it did, you left wanting to wear it. When it did not, no amount of set design could hide the gap.'),
                     h2('The debuts'),
@@ -687,7 +687,7 @@ const CONTENT = [
                 content: [
                     para('The carafe on the shelf has not changed since the studio opened. Same proportion, same matte glaze, same slightly heavy base that means it does not tip when it is full. The maker has been asked, more than once, to update it. She has, more than once, declined.'),
                     h2('Against the new'),
-                    para('"A good object does not have a season," she tells me, turning one on the wheel while we talk. "If I redesign it every year, I am telling you the old one was wrong. It was not wrong. It was right, and it is still right." The shelves behind her are proof — twenty years of the same shape, each one a little more assured.'),
+                    para('"A good object does not have a season," she tells me, turning one on the wheel while we talk. "If I redesign it every year, I am telling you the old one was wrong. It was not wrong. It was right, and it is still right." The shelves behind her are proof: twenty years of the same shape, each one a little more assured.'),
                     h2('The long life of a thing'),
                     para('There is a version of design culture that treats permanence as a failure of imagination. The studio argues the opposite: that making one thing well and then defending it against the pressure to change is the harder, rarer discipline. The trend is easy. The object that outlives it is the achievement.'),
                     para('You can buy the carafe, still, for less than a season’s worth of the things it will outlast. That, she says, is the whole point.'),
@@ -710,11 +710,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Ask people about the perfumes they have loved and almost no one describes a smell. They describe a room — a grandmother’s coat, a hallway in summer, a person long gone. Fragrance is the one part of beauty that works on memory directly, and the perfumers who understand that build differently.'),
+                    para('Ask people about the perfumes they have loved and almost no one describes a smell. They describe a room: a grandmother’s coat, a hallway in summer, a person long gone. Fragrance is the one part of beauty that works on memory directly, and the perfumers who understand that build differently.'),
                     h2('The trap of the loud scent'),
-                    para('The easiest fragrance to sell is the one you can smell across a room. It is also the one that empties fastest, because it announces itself and then has nothing else to say. The scents that stay in rotation for years tend to be quieter — a thing you notice on yourself at the end of the day and are glad to still be wearing.'),
+                    para('The easiest fragrance to sell is the one you can smell across a room. It is also the one that empties fastest, because it announces itself and then has nothing else to say. The scents that stay in rotation for years tend to be quieter: a thing you notice on yourself at the end of the day and are glad to still be wearing.'),
                     h2('Building for the long wear'),
-                    para('"I am not trying to be noticed," the perfumer says. "I am trying to be remembered." The distinction sounds small until you live with a bottle for a year. Restraint, again — the same lesson the beauty desk keeps arriving at from every direction this season.'),
+                    para('"I am not trying to be noticed," the perfumer says. "I am trying to be remembered." The distinction sounds small until you live with a bottle for a year. Restraint, again: the same lesson the beauty desk keeps arriving at from every direction this season.'),
                     para('The best compliment a fragrance can earn is not that someone loved it, but that it reminded them, unaccountably, of somewhere they used to be.'),
                 ],
             },
@@ -729,7 +729,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-glossy-fashion',
     name: 'Glossy Fashion',
     summary:
-        'An image-first, editorial-luxury template for a style & design magazine — a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every color. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.',
+        'An image-first, editorial-luxury template for a style & design magazine: a full-bleed cover story, an editorial feed, a lookbook of looks, image-led department tiles and a bespoke photo-story article page, in a pure black-and-white serif theme where the photograph supplies every color. Modelled on the high-fashion glossy archetype; shipped as Mode & Object. Ships a light object edit (accessories, ceramics, a print) to demonstrate content + commerce together.',
     tagline: 'An image-first editorial template for a magazine of style and taste.',
     vertical: 'content',
     industry: 'Style, fashion & design',
@@ -744,14 +744,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Mode & Object — a magazine of style and the made world',
+            title: 'Mode & Object: a magazine of style and the made world',
             description:
-                'Mode & Object is a style and design magazine covering fashion, beauty, the runway and the made world — image-first, credited, and looked at closely.',
+                'Mode & Object is a style and design magazine covering fashion, beauty, the runway and the made world: image-first, credited, and looked at closely.',
         },
         about: {
-            title: 'About Mode & Object — a style & design magazine',
+            title: 'About Mode & Object: a style & design magazine',
             description:
-                'Who Mode & Object is and how it works — original photography, credited images, and one considered piece over ten filed to fill a feed.',
+                'Who Mode & Object is and how it works: original photography, credited images, and one considered piece over ten filed to fill a feed.',
         },
     },
     home: HOME,

@@ -66,7 +66,7 @@ function HistoryForDocument({
   const doc = session.store(ref_)?.current;
 
   useEffect(() => {
-    ctx.setTitle(doc ? `History — ${doc.name}` : 'History');
+    ctx.setTitle(doc ? `History: ${doc.name}` : 'History');
   }, [ctx, doc]);
 
   // The document has to be OPEN for its history to be readable: history is about a
@@ -110,7 +110,7 @@ function savesNote(source: HistorySource): string {
     return 'This piece is shared with your other sites, so putting a version back changes it everywhere it is used.';
   }
   if (source.store === 'theme') {
-    return 'A look is shared by every site using it. Putting one back changes your copy — nobody sees it until you publish the look and then the site.';
+    return 'A look is shared by every site using it. Putting one back changes your copy. Nobody sees it until you publish the look and then the site.';
   }
   return 'Putting one of these back changes only your copy. Nobody sees it until you publish.';
 }
@@ -179,7 +179,7 @@ function LiveSection({
       />
       {source.store === 'site' ? (
         <p className="text-base-content mt-3 text-sm">
-          To put your live site back to how it was, use Publish — your website is one connected
+          To put your live site back to how it was, use Publish. Your website is one connected
           thing, so it goes back all together rather than a page at a time.
         </p>
       ) : null}

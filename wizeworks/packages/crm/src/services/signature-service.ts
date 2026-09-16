@@ -90,7 +90,7 @@ export async function request(
     });
     if (!document) throw new CrmNotFoundError('BillingDocument', documentId);
     if (document.stage.stageType === 'void') {
-      throw new CrmValidationError('That document has been voided — nothing to sign.');
+      throw new CrmValidationError('That document has been voided. Nothing to sign.');
     }
     if (document.stage.locksEditing) {
       throw new CrmValidationError(
@@ -330,7 +330,7 @@ export async function signByToken(
     });
     if (!row) throw new CrmNotFoundError('BillingDocumentSignature', 'token');
     if (row.status === 'signed') {
-      throw new CrmValidationError('This has already been signed — nothing more to do.');
+      throw new CrmValidationError('This has already been signed. Nothing more to do.');
     }
     if (row.status !== 'pending') {
       throw new CrmValidationError('This link is no longer active. Ask for a fresh one.');

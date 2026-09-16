@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Crescendo Music School — lessons for every age",
+      "seoTitle": "Crescendo Music School: lessons for every age",
       "seoDescription": "Crescendo Music School offers warm, encouraging lessons in piano, guitar, voice and violin for all ages and levels. Book a free trial lesson online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Warm, encouraging private lessons and group classes in piano, guitar, voice, violin and more — for every age and every level. Start with a free trial lesson."
+                      "Warm, encouraging private lessons and group classes in piano, guitar, voice, violin and more, for every age and every level. Start with a free trial lesson."
                     ],
                     "id": "253129c1-7401-4325-84dd-c9f2b25fe73d",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Real musicians who love to teach — patient, encouraging, and trained to meet you exactly where you are."
+                              "Real musicians who love to teach: patient, encouraging, and trained to meet you exactly where you are."
                             ],
                             "id": "e39aff1f-70e5-411f-a3aa-2a06291caaac",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "From four-year-olds at their first keyboard to grandparents picking up guitar — beginners are genuinely welcome here."
+                              "From four-year-olds at their first keyboard to grandparents picking up guitar: beginners are genuinely welcome here."
                             ],
                             "id": "8d4ea32f-7a8e-44db-bb85-2ca192b8e90c",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A few of the ways to make music with us. See full prices and live times on the booking page — and remember, your first lesson is free."
+                          "A few of the ways to make music with us. See full prices and live times on the booking page, and remember, your first lesson is free."
                         ],
                         "id": "adf4b9b5-67c6-4a02-a4ed-8d25a16b85bb",
                         "ord": "a1"
@@ -872,7 +872,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A free first lesson — meet a teacher and try it out."],
+                            "children": ["A free first lesson: meet a teacher and try it out."],
                             "id": "65e8a1b0-7291-4d74-8a5a-f6eb83408bfa",
                             "ord": "a2"
                           }
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We believe every person is musical, and that the fastest way to grow is to enjoy the journey. So we teach with encouragement first — celebrating small wins, choosing songs students actually want to play, and never making anyone feel behind."
+                          "We believe every person is musical, and that the fastest way to grow is to enjoy the journey. So we teach with encouragement first: celebrating small wins, choosing songs students actually want to play, and never making anyone feel behind."
                         ],
                         "id": "c42b0b38-3d16-4d6a-8a33-d4884feb0120",
                         "ord": "a1"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll learn with the same teacher each week, someone who gets to know you and how you like to learn."
+                          "Book by name: you’ll learn with the same teacher each week, someone who gets to know you and how you like to learn."
                         ],
                         "id": "c4c88a57-88fa-4549-9487-bab7a40bbbe7",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "From first chords to full songs, Theo meets every student where they are — teens and grown-up beginners especially love his classes."
+                                  "From first chords to full songs, Theo meets every student where they are: teens and grown-up beginners especially love his classes."
                                 ],
                                 "id": "f2b80a93-df5f-41fd-b2ea-cba59018cbb7",
                                 "ord": "a2"
@@ -1439,7 +1439,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Pick an instrument, choose your teacher and see live times. Your first lesson is free — it takes about a minute to book."
+                      "Pick an instrument, choose your teacher and see live times. Your first lesson is free. It takes about a minute to book."
                     ],
                     "id": "f0787d01-7b36-4928-953e-772fc1d5e506",
                     "ord": "a1"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Crescendo Music School",
+      "seoTitle": "Book: Crescendo Music School",
       "seoDescription": "See what Crescendo Music School offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "50880198-a67e-4e43-a325-389737f494b6",
                         "ord": "a1"
@@ -1663,7 +1663,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens — just let your teacher know as early as you can and we’ll do our best to find another time."
+                              "Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens. Just let your teacher know as early as you can and we’ll do our best to find another time."
                             ],
                             "id": "96a97076-d1f9-4ae4-97ea-8bd9ac14b899",
                             "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Crescendo Music School",
+      "seoTitle": "About: Crescendo Music School",
       "seoDescription": "Who Crescendo Music School is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1760,7 +1760,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Today we’re a small, close-knit school of teachers who genuinely love what they do — and a community of students, families and friends who cheer each other on at every recital."
+                          "Today we’re a small, close-knit school of teachers who genuinely love what they do, and a community of students, families and friends who cheer each other on at every recital."
                         ],
                         "id": "2e60675c-bb1c-4b3a-8b2d-a18c89029c90",
                         "ord": "a2"
@@ -1838,7 +1838,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "There’s no such thing as “not musical” — only music not yet discovered. We teach with that faith in every student."
+                              "There’s no such thing as “not musical” only music not yet discovered. We teach with that faith in every student."
                             ],
                             "id": "aa5c6479-bc5d-4680-aea3-103f47ac8db0",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Crescendo Music School",
+      "seoTitle": "Visit: Crescendo Music School",
       "seoDescription": "Where to find Crescendo Music School, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Crescendo Music School will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Crescendo Music School will get back to you, usually the same day."
                         ],
                         "id": "8029a7ea-3e4c-44a8-b2b4-0e954709aef2",
                         "ord": "a1"
@@ -2409,7 +2409,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your free trial lesson online — no phone tag."
+                      "See live availability and reserve your free trial lesson online: no phone tag."
                     ],
                     "id": "e7fcff52-2578-4e0e-9ce9-df7e8eaa90d6",
                     "ord": "a1"

@@ -201,7 +201,7 @@ const SCHEDULING = {
       handle: 'scheduled-maintenance',
       name: 'Scheduled maintenance',
       description:
-        'Your factory service interval done to the book — fluids, filters, inspection points — with OEM-grade parts.',
+        'Your factory service interval done to the book (fluids, filters, inspection points) with OEM-grade parts.',
       durationMinutes: 90,
       priceCents: 18000,
       assignmentStrategy: 'any_available',
@@ -215,7 +215,7 @@ const SCHEDULING = {
       handle: 'diagnostic-scan',
       name: 'Diagnostic scan',
       description:
-        'Dealer-level fault-code read and live-data analysis on the factory interface — then a plain-English plan.',
+        'Dealer-level fault-code read and live-data analysis on the factory interface, then a plain-English plan.',
       durationMinutes: 60,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -229,7 +229,7 @@ const SCHEDULING = {
       handle: 'brake-service',
       name: 'Brake service',
       description:
-        'Pads, rotors and sensors matched to your marque — measured, torqued to spec and bedded in properly.',
+        'Pads, rotors and sensors matched to your marque: measured, torqued to spec and bedded in properly.',
       durationMinutes: 120,
       priceCents: 42000,
       bufferAfterMin: 15,
@@ -244,7 +244,7 @@ const SCHEDULING = {
       handle: 'performance-upgrade-consult',
       name: 'Performance upgrade consult',
       description:
-        'Tuning, suspension, intake or exhaust — sit down with a specialist and map a build that stays reliable. No charge.',
+        'Tuning, suspension, intake or exhaust: sit down with a specialist and map a build that stays reliable. No charge.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -258,7 +258,7 @@ const SCHEDULING = {
       handle: 'oil-service',
       name: 'Oil & filter service',
       description:
-        'Full-synthetic oil to your car’s exact specification and a genuine filter — reset service light included.',
+        'Full-synthetic oil to your car’s exact specification and a genuine filter: reset service light included.',
       durationMinutes: 45,
       priceCents: 14000,
       assignmentStrategy: 'any_available',
@@ -272,7 +272,7 @@ const SCHEDULING = {
       handle: 'check-engine-diagnosis',
       name: 'Check-engine diagnosis',
       description:
-        'Light on? We scan it, trace the real cause and quote the fix — the scan itself is on us.',
+        'Light on? We scan it, trace the real cause and quote the fix: the scan itself is on us.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -291,7 +291,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A European performance sedan in a clean service bay under focused light',
     title: 'European precision, kept to spec',
-    sub: 'BMW, Mercedes, Audi, Porsche and VW — diagnosed, serviced and dialed in by factory-trained technicians, without the dealer markup.',
+    sub: 'BMW, Mercedes, Audi, Porsche and VW: diagnosed, serviced and dialed in by factory-trained technicians, without the dealer markup.',
     primary: { label: 'Book service', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
     overlay: 'darker',
@@ -300,11 +300,11 @@ const HOME = [
     items: [
       {
         title: 'Factory-trained technicians',
-        body: 'Marque-certified master techs who work on your make every day — not a generalist meeting it for the first time.',
+        body: 'Marque-certified master techs who work on your make every day, not a generalist meeting it for the first time.',
       },
       {
         title: 'Dealer-level diagnostics',
-        body: 'The same factory interfaces the dealer uses, reading live data and coding to spec — so the fix is the real fix.',
+        body: 'The same factory interfaces the dealer uses, reading live data and coding to spec, so the fix is the real fix.',
       },
       {
         title: 'OEM & performance parts',
@@ -312,13 +312,13 @@ const HOME = [
       },
       {
         title: 'No dealer markup',
-        body: 'Dealership expertise and equipment at an independent’s rate — with a straight answer on what actually needs doing.',
+        body: 'Dealership expertise and equipment at an independent’s rate, with a straight answer on what actually needs doing.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Book a visit',
-    intro: 'The services we book most. Full pricing and live availability are on the booking page — pick a technician and a bay opens up.',
+    intro: 'The services we book most. Full pricing and live availability are on the booking page. Pick a technician and a bay opens up.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -334,17 +334,17 @@ const HOME = [
     alt: 'A technician running a factory-level diagnostic scan on a laptop',
     heading: 'Import specialists, not generalists',
     body: [
-      'European cars are engineered tightly, and they’re unforgiving of guesswork. Autobahn Werks exists to work on them the way the factory intended — with the right tools, the right procedures and technicians who know the platform cold.',
-      'That means we find the actual fault instead of throwing parts at a symptom, we torque and code to spec, and we tell you what can wait and what can’t. Precision is the point — and it’s what keeps a well-built machine feeling built.',
+      'European cars are engineered tightly, and they’re unforgiving of guesswork. Autobahn Werks exists to work on them the way the factory intended, with the right tools, the right procedures and technicians who know the platform cold.',
+      'That means we find the actual fault instead of throwing parts at a symptom, we torque and code to spec, and we tell you what can wait and what can’t. Precision is the point, and it’s what keeps a well-built machine feeling built.',
     ],
     cta: { label: 'Book your visit', href: '/book' },
   }),
   teamRow({
     heading: 'Your technicians',
-    intro: 'Book by name — the specialist who knows your marque and your history.',
+    intro: 'Book by name: the specialist who knows your marque and your history.',
     members: [
       { name: 'Klaus Adler', role: 'Master diagnostic tech', image: url(IMG.klaus), alt: 'Klaus Adler, master diagnostic technician', bio: 'Factory-level diagnostics and performance builds across BMW, Audi and Porsche.' },
-      { name: 'Dieter Voss', role: 'Master service tech', image: url(IMG.dieter), alt: 'Dieter Voss, master service technician', bio: 'Scheduled maintenance, brakes and electrical — meticulous, to the book.' },
+      { name: 'Dieter Voss', role: 'Master service tech', image: url(IMG.dieter), alt: 'Dieter Voss, master service technician', bio: 'Scheduled maintenance, brakes and electrical: meticulous, to the book.' },
       { name: 'Lena Brandt', role: 'Master inspection tech', image: url(IMG.lena), alt: 'Lena Brandt, master inspection technician', bio: 'Pre-purchase inspections, engine and transmission work you can trust.' },
     ],
   }),
@@ -364,7 +364,7 @@ const BOOK_INTRO = [
     image: url(IMG.bay),
     alt: 'A precise, orderly workshop with a car on a lift',
     title: 'Schedule your import',
-    sub: 'Choose a service to see pricing and live availability, then pick your technician — a bay is reserved with you automatically.',
+    sub: 'Choose a service to see pricing and live availability, then pick your technician: a bay is reserved with you automatically.',
     primary: { label: 'See services below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -377,7 +377,7 @@ const ABOUT = [
     alt: 'A European performance sedan in a clean service bay under focused light',
     heading: 'About Autobahn Werks',
     body: [
-      'We opened Autobahn Werks because European drivers deserved a shop that treats their cars as seriously as the engineers who built them — dealer-level capability, without the dealer runaround.',
+      'We opened Autobahn Werks because European drivers deserved a shop that treats their cars as seriously as the engineers who built them: dealer-level capability, without the dealer runaround.',
       'Everyone here is factory-trained on the marques we service, working with the same diagnostic equipment and genuine parts the dealership uses. The difference is the relationship: you book by name, you get a straight answer, and you keep the car that made you fall for it in the first place.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
@@ -386,8 +386,8 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'Diagnose before we quote', body: 'We confirm the real cause on the factory interface before recommending a repair — no parts-cannon, no guesswork.' },
-      { title: 'To-spec, every time', body: 'Torque values, fluids, coding and procedures follow the manufacturer — the way precision engineering expects to be handled.' },
+      { title: 'Diagnose before we quote', body: 'We confirm the real cause on the factory interface before recommending a repair: no parts-cannon, no guesswork.' },
+      { title: 'To-spec, every time', body: 'Torque values, fluids, coding and procedures follow the manufacturer: the way precision engineering expects to be handled.' },
       { title: 'Honest about priorities', body: 'You get a clear picture of what needs doing now and what can safely wait, so you decide with the full story.' },
     ],
   }),
@@ -406,7 +406,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your technician and bay online — no phone tag.',
+    sub: 'See live availability and reserve your technician and bay online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book service', href: '/book' },
   }),
@@ -417,8 +417,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-auto-euro',
   name: 'Auto (European Specialist)',
   summary:
-    'A precision European-import auto shop — BMW, Mercedes, Audi, Porsche and VW — in a dark graphite palette with a sharp marque-red primary. Installs a working booking flow: factory-trained master technicians you book by name, real service bays as bookable resources (a visit reserves both), and a live menu of diagnostics, scheduled maintenance, performance and pre-purchase inspection with a diagnostic-deposit policy. Ships as "Autobahn Werks" — dealer-level, without the dealer markup.',
-  tagline: 'A dark, precise template for European auto specialists — book online from day one.',
+    'A precision European-import auto shop: BMW, Mercedes, Audi, Porsche and VW, in a dark graphite palette with a sharp marque-red primary. Installs a working booking flow: factory-trained master technicians you book by name, real service bays as bookable resources (a visit reserves both), and a live menu of diagnostics, scheduled maintenance, performance and pre-purchase inspection with a diagnostic-deposit policy. Ships as "Autobahn Werks", dealer-level, without the dealer markup.',
+  tagline: 'A dark, precise template for European auto specialists. Book online from day one.',
   industry: 'Auto repair',
   sortWeight: 71,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -427,9 +427,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Autobahn Werks — European import specialists',
+      title: 'Autobahn Werks: European import specialists',
       description:
-        'Autobahn Werks is a factory-trained BMW, Mercedes, Audi, Porsche and VW specialist — dealer-level diagnostics without the dealer markup. Book your service online.',
+        'Autobahn Werks is a factory-trained BMW, Mercedes, Audi, Porsche and VW specialist: dealer-level diagnostics without the dealer markup. Book your service online.',
     },
   },
   home: HOME,

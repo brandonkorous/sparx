@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Sweet Tooth Co. — bright, gift-forward chocolate & sweets",
-      "seoDescription": "Sweet Tooth Co. makes colorful chocolate for people who like a bit of joy — hand-painted bonbons, hot-cocoa bombs, dipped treats, gift boxes and a monthly subscription. Treats, gifts, and a little everyday joy.",
+      "seoTitle": "Sweet Tooth Co. bright, gift-forward chocolate & sweets",
+      "seoDescription": "Sweet Tooth Co. makes colorful chocolate for people who like a bit of joy: hand-painted bonbons, hot-cocoa bombs, dipped treats, gift boxes and a monthly subscription. Treats, gifts, and a little everyday joy.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -799,7 +799,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Sweet Tooth Co. makes bright, colorful chocolate for people who like a bit of joy with their cocoa — jewel-colored bonbons, hot-cocoa bombs, dipped treats and gift boxes packed to make someone’s day. Treats, gifts, and a little everyday happy."
+                          "Sweet Tooth Co. makes bright, colorful chocolate for people who like a bit of joy with their cocoa: jewel-colored bonbons, hot-cocoa bombs, dipped treats and gift boxes packed to make someone’s day. Treats, gifts, and a little everyday happy."
                         ],
                         "id": "5ffa8a16-d45f-4c0f-8e82-122574230a42",
                         "ord": "a1"
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every bonbon is hand-shelled, hand-filled and hand-decorated in small colorful batches — because the fun is in the color, and the color is in the care. We use proper chocolate and real fillings, then make it look like a party."
+                          "Every bonbon is hand-shelled, hand-filled and hand-decorated in small colorful batches, because the fun is in the color, and the color is in the care. We use proper chocolate and real fillings, then make it look like a party."
                         ],
                         "id": "bef04f9c-1912-4246-ac23-a7e69733a1b5",
                         "ord": "a1"
@@ -1566,7 +1566,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A subscription is the good kind of habit: a fresh box of bright, seasonal treats lands on your doorstep on your schedule. Skip, swap or cancel any time — no lock-in, just something to look forward to (and yes, you can send it to someone else)."
+                          "A subscription is the good kind of habit: a fresh box of bright, seasonal treats lands on your doorstep on your schedule. Skip, swap or cancel any time, no lock-in, just something to look forward to (and yes, you can send it to someone else)."
                         ],
                         "id": "7c91ec30-9864-4ae5-a499-d88fb74a5dcb",
                         "ord": "a1"
@@ -1601,7 +1601,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Sweet Tooth Co.",
+      "seoTitle": "Shop: Sweet Tooth Co.",
       "seoDescription": "Browse everything Sweet Tooth Co. makes, with prices and options at a glance. Chocolate & sweet shop.",
       "root": {
         "kind": "element",
@@ -1633,7 +1633,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we’re making right now — bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, gift boxes and the subscription. Filter by occasion or price, or sort however you like; it’s all made fresh and packed to travel."
+                      "Everything we’re making right now: bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, gift boxes and the subscription. Filter by occasion or price, or sort however you like; it’s all made fresh and packed to travel."
                     ],
                     "id": "50a9a179-7fb6-4442-ba68-01562ac9036b",
                     "ord": "a1"
@@ -1661,7 +1661,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Sweet Tooth Co.",
+      "seoTitle": "Collections: Sweet Tooth Co.",
       "seoDescription": "Explore the collections at Sweet Tooth Co., grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1693,7 +1693,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The treats grouped the way people actually shop — what’s new, the boxes everyone comes back for, gifts ready to send, and the little treats that make a Tuesday better."
+                      "The treats grouped the way people actually shop: what’s new, the boxes everyone comes back for, gifts ready to send, and the little treats that make a Tuesday better."
                     ],
                     "id": "cd785646-a8d8-4e1b-a8af-788be19e28e2",
                     "ord": "a1"
@@ -1721,7 +1721,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Sweet Tooth Co.",
+      "seoTitle": "Your cart: Sweet Tooth Co.",
       "seoDescription": "Review what is in your cart and check out securely at Sweet Tooth Co..",
       "root": {
         "kind": "element",
@@ -1753,7 +1753,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $40, and everything is made fresh and packed to arrive looking its best. Sending it as a gift? Add a note at checkout. Something not quite right? Tell us and we’ll make it good — treats should be pure joy, start to finish."
+                      "Free shipping on orders over $40, and everything is made fresh and packed to arrive looking its best. Sending it as a gift? Add a note at checkout. Something not quite right? Tell us and we’ll make it good: treats should be pure joy, start to finish."
                     ],
                     "id": "5f6084a8-3858-4276-a08d-96c6d3e5d0be",
                     "ord": "a1"
@@ -1781,7 +1781,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Sweet Tooth Co.",
+      "seoTitle": "Search: Sweet Tooth Co.",
       "seoDescription": "Search Sweet Tooth Co. for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1841,7 +1841,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Sweet Tooth Co.",
+      "seoTitle": "Journal: Sweet Tooth Co.",
       "seoDescription": "Stories, guides and notes from Sweet Tooth Co..",
       "root": {
         "kind": "element",
@@ -1873,7 +1873,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Fun from the kitchen — how to build the perfect gift box, the right way to melt a cocoa bomb, and how a bonbon actually gets its color. Sweet, useful, no snobbery."
+                      "Fun from the kitchen: how to build the perfect gift box, the right way to melt a cocoa bomb, and how a bonbon actually gets its color. Sweet, useful, no snobbery."
                     ],
                     "id": "bd6a4775-e69c-4c2b-86af-fd57e13e11ce",
                     "ord": "a1"
@@ -2007,7 +2007,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Sweet Tooth Co.",
-      "seoDescription": "How Sweet Tooth Co. makes it — proper chocolate, real fillings, hand-shelled and hand-decorated in small colorful batches, packed to arrive looking as good as it tastes.",
+      "seoDescription": "How Sweet Tooth Co. makes it: proper chocolate, real fillings, hand-shelled and hand-decorated in small colorful batches, packed to arrive looking as good as it tastes.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2038,7 +2038,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Sweet Tooth Co. started at a market stall with a folding table, a tray of hand-piped bonbons, and a simple idea: chocolate is a treat, so it should feel like one. Not precious, not stuffy — bright, generous and a little bit silly, the kind of thing that makes a grown adult grin."
+                      "Sweet Tooth Co. started at a market stall with a folding table, a tray of hand-piped bonbons, and a simple idea: chocolate is a treat, so it should feel like one. Not precious, not stuffy, bright, generous and a little bit silly, the kind of thing that makes a grown adult grin."
                     ],
                     "id": "2090d58e-2ca7-44c3-bc54-6cabdeee8031",
                     "ord": "a1"
@@ -2048,7 +2048,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We use proper chocolate and real fillings — slow-cooked caramels, fresh fruit purées, actual vanilla — then we make it look like a party. Everything is hand-shelled, hand-filled and hand-decorated in small colorful batches, made the week it ships so it reaches you at its best."
+                      "We use proper chocolate and real fillings (slow-cooked caramels, fresh fruit purées, actual vanilla) then we make it look like a party. Everything is hand-shelled, hand-filled and hand-decorated in small colorful batches, made the week it ships so it reaches you at its best."
                     ],
                     "id": "d0600083-986d-4cf2-aedc-0efad787180a",
                     "ord": "a2"
@@ -2058,7 +2058,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Most of what we make is a gift for someone — a birthday, a thank-you, a “thinking of you.” So we pack every box to arrive looking as good as it tastes, and we’ll write the card for you. Treats, gifts, and a little everyday joy: that’s the whole job."
+                      "Most of what we make is a gift for someone: a birthday, a thank-you, a “thinking of you.” So we pack every box to arrive looking as good as it tastes, and we’ll write the card for you. Treats, gifts, and a little everyday joy: that’s the whole job."
                     ],
                     "id": "d72161ba-1e9e-4390-a24b-2c3e65cd1396",
                     "ord": "a3"
@@ -2078,8 +2078,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Sweet Tooth Co.",
-      "seoDescription": "Get in touch with Sweet Tooth Co. — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Sweet Tooth Co.",
+      "seoDescription": "Get in touch with Sweet Tooth Co. questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2386,8 +2386,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Sweet Tooth Co.",
-      "seoDescription": "Product details at Sweet Tooth Co. — chocolate & sweet shop, with options and pricing.",
+      "seoTitle": "Product: Sweet Tooth Co.",
+      "seoDescription": "Product details at Sweet Tooth Co. chocolate & sweet shop, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2750,7 +2750,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Everything is made the week it ships and packed to arrive looking as good as it tastes — nestled, cushioned and travel-cool. Add a gift note at checkout and we’ll tuck in a hand-written card. Keep it somewhere cool (not the fridge) and enjoy within a month."
+                              "Everything is made the week it ships and packed to arrive looking as good as it tastes: nestled, cushioned and travel-cool. Add a gift note at checkout and we’ll tuck in a hand-written card. Keep it somewhere cool (not the fridge) and enjoy within a month."
                             ],
                             "id": "bbfbb9a5-8593-49e3-b3b4-66b2c2222f92",
                             "ord": "a1"

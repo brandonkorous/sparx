@@ -170,7 +170,7 @@ function hero(): Node {
                                     text: 'Ceremonial matcha, made for your morning.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-primary-content', {
-                                    text: 'Matcha Club is a modern matcha and tea brand. We source stone-ground matcha and functional blends, whisk-test every batch, and ship it bright and fresh — so your daily cup does more than wake you up.',
+                                    text: 'Matcha Club is a modern matcha and tea brand. We source stone-ground matcha and functional blends, whisk-test every batch, and ship it bright and fresh, so your daily cup does more than wake you up.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -280,7 +280,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'This week’s drop' }),
     editorialBand({
         heading: 'Ceremonial grade, no chalk',
-        lead: 'We buy shade-grown leaf and stone-grind it into a bright, sweet matcha that whisks up smooth — none of the flat, chalky bitterness that gives cheap powder a bad name. Every batch is whisk-tested before it’s tinned, so the bowl you make is the bowl we tasted.',
+        lead: 'We buy shade-grown leaf and stone-grind it into a bright, sweet matcha that whisks up smooth: none of the flat, chalky bitterness that gives cheap powder a bad name. Every batch is whisk-tested before it’s tinned, so the bowl you make is the bowl we tasted.',
         assetId: 'band-ceremonial',
         cta: 'What ceremonial grade means',
         href: '/blog/what-ceremonial-grade-means',
@@ -289,7 +289,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.blends', layout: 'carousel', heading: 'Functional blends' }),
     editorialBand({
         heading: 'Your cup, on autopilot',
-        lead: 'The club is the easy way to never run out: pick your matcha and blends, pick how often, and they land bright and fresh on your schedule. Rotate the whole shelf or stay with your daily — skip, swap or cancel any time, no lock-in.',
+        lead: 'The club is the easy way to never run out: pick your matcha and blends, pick how often, and they land bright and fresh on your schedule. Rotate the whole shelf or stay with your daily, skip, swap or cancel any time, no lock-in.',
         assetId: 'band-club',
         cta: 'Join the club',
         href: '/shop/subscription',
@@ -335,7 +335,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'How to make it' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Sift one teaspoon into a bowl, add a splash of water just off the boil — around 70°C, not boiling — and whisk in a brisk W until it froths. Top with hot or cold water, or pour over ice and milk for a latte. Blends steep like any tea: one teaspoon, three minutes, taste as you go.',
+                                        text: 'Sift one teaspoon into a bowl, add a splash of water just off the boil (around 70°C, not boiling) and whisk in a brisk W until it froths. Top with hot or cold water, or pour over ice and milk for a latte. Blends steep like any tea: one teaspoon, three minutes, taste as you go.',
                                     }),
                                 ],
                             }),
@@ -374,11 +374,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop everything',
-        'The whole shelf, right now — ceremonial and daily matcha, functional focus, calm and sleep blends, grab-and-go iced sachets, and the tools to whisk it all. Filter by type or caffeine, or sort however you like; it all ships bright and fresh from small batches.'
+        'The whole shelf, right now: ceremonial and daily matcha, functional focus, calm and sleep blends, grab-and-go iced sachets, and the tools to whisk it all. Filter by type or caffeine, or sort however you like; it all ships bright and fresh from small batches.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The shelf grouped the way people actually drink it — the club’s picks, the everyday best sellers, the functional blends by mood, and starter kits for a brand-new matcha habit.'),
+    pageMasthead('Collections', 'The shelf grouped the way people actually drink it: the club’s picks, the everyday best sellers, the functional blends by mood, and starter kits for a brand-new matcha habit.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Matcha Club', 'Looking for a grade, a mood, or a how-to? Search the whole shelf and the journal below.'),
@@ -390,7 +390,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a matcha is for you? Tell us and we’ll make it right — your daily cup should be a bright spot, never a gamble.',
+                        text: 'Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a matcha is for you? Tell us and we’ll make it right. Your daily cup should be a bright spot, never a gamble.',
                     }),
                 ],
             }),
@@ -404,7 +404,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Matcha Club journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the whisk — how to make a smooth bowl, why matcha wakes you up without the crash, and what the grades on the tin actually mean. Bright, useful, no wellness jargon.',
+                        text: 'Notes from the whisk: how to make a smooth bowl, why matcha wakes you up without the crash, and what the grades on the tin actually mean. Bright, useful, no wellness jargon.',
                     }),
                 ],
             }),
@@ -421,13 +421,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Matcha Club' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Matcha Club started with a simple frustration: the good matcha was hard to find and the easy matcha was chalky, dull and half-stale. So we went straight to the source, found shade-grown leaf worth grinding, and built a modern brand around one idea — a bright, functional cup that actually earns a place in your morning.',
+                        text: 'Matcha Club started with a simple frustration: the good matcha was hard to find and the easy matcha was chalky, dull and half-stale. So we went straight to the source, found shade-grown leaf worth grinding, and built a modern brand around one idea, a bright, functional cup that actually earns a place in your morning.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We work with growers and mills we can name, and we pay above the commodity rate because the people who tend these fields deserve a living from them. Then we grind and blend in small batches, whisk-test every one, and only tin what tastes as bright as it looks.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No dusty green powder, no mystery blends, no wellness theatre. Just genuinely good matcha and functional tea, handled with care from the field to your bowl — and made to fit an ordinary, busy day.',
+                        text: 'No dusty green powder, no mystery blends, no wellness theatre. Just genuinely good matcha and functional tea, handled with care from the field to your bowl, and made to fit an ordinary, busy day.',
                     }),
                 ],
             }),
@@ -563,7 +563,7 @@ const PRODUCTS: Product[] = [
         handle: 'ceremonial-matcha',
         title: 'Ceremonial Matcha',
         description:
-            'Our flagship: first-harvest, shade-grown leaf from Uji, stone-ground to a fine, vivid powder that whisks up smooth and sweet. Vegetal and umami-rich with a clean, lingering finish and zero chalk — the bowl to drink straight, whisked with water. Grade you can taste, in a starter or a stock-up size.',
+            'Our flagship: first-harvest, shade-grown leaf from Uji, stone-ground to a fine, vivid powder that whisks up smooth and sweet. Vegetal and umami-rich with a clean, lingering finish and zero chalk, the bowl to drink straight, whisked with water. Grade you can taste, in a starter or a stock-up size.',
         price: 32,
         price100: 88,
         sku: 'MC-MAT-CER',
@@ -571,14 +571,14 @@ const PRODUCTS: Product[] = [
         collections: ['club-picks', 'best-sellers', 'matcha-flight'],
         tags: ['matcha', 'ceremonial', 'single-origin', 'caffeinated'],
         asset: 'prod-ceremonial',
-        seoTitle: 'Ceremonial Matcha — first-harvest Uji matcha | Matcha Club',
-        seoDescription: 'Shade-grown, stone-ground ceremonial matcha from Uji — bright, sweet, umami-rich, no chalk. Whisk and drink.',
+        seoTitle: 'Ceremonial Matcha: first-harvest Uji matcha | Matcha Club',
+        seoDescription: 'Shade-grown, stone-ground ceremonial matcha from Uji: bright, sweet, umami-rich, no chalk. Whisk and drink.',
     }),
     matcha({
         handle: 'daily-matcha',
         title: 'Daily Matcha',
         description:
-            'The everyday workhorse — a second-harvest matcha built for lattes, smoothies and iced cups you drink all week. A little bolder and more astringent than the ceremonial, so it holds its own against milk and ice without disappearing. Great value, brilliant color, made to be used generously.',
+            'The everyday workhorse: a second-harvest matcha built for lattes, smoothies and iced cups you drink all week. A little bolder and more astringent than the ceremonial, so it holds its own against milk and ice without disappearing. Great value, brilliant color, made to be used generously.',
         price: 24,
         price100: 62,
         sku: 'MC-MAT-DAILY',
@@ -586,64 +586,64 @@ const PRODUCTS: Product[] = [
         collections: ['club-picks', 'matcha-flight', 'best-sellers'],
         tags: ['matcha', 'everyday', 'latte', 'caffeinated'],
         asset: 'prod-daily',
-        seoTitle: 'Daily Matcha — everyday latte-grade matcha | Matcha Club',
+        seoTitle: 'Daily Matcha: everyday latte-grade matcha | Matcha Club',
         seoDescription: 'A bold, vivid everyday matcha built for lattes, smoothies and iced cups. Holds up to milk and ice.',
     }),
     blend({
         handle: 'focus-blend',
         title: 'Focus',
         description:
-            'Matcha plus guayusa and a whisper of peppermint — a clean, steady lift with the L-theanine calm that keeps caffeine from turning into jitters. The cup for a deep-work morning: alert, even, and gone by mid-afternoon so it doesn’t follow you to bed.',
+            'Matcha plus guayusa and a whisper of peppermint: a clean, steady lift with the L-theanine calm that keeps caffeine from turning into jitters. The cup for a deep-work morning: alert, even, and gone by mid-afternoon so it doesn’t follow you to bed.',
         price: 18,
         sku: 'MC-BLD-FOCUS',
         categories: ['blends'],
         collections: ['functional', 'best-sellers', 'club-picks'],
         tags: ['blend', 'functional', 'focus', 'caffeinated'],
         asset: 'prod-focus',
-        seoTitle: 'Focus — matcha & guayusa functional blend | Matcha Club',
+        seoTitle: 'Focus: matcha & guayusa functional blend | Matcha Club',
         seoDescription: 'Matcha with guayusa and peppermint for a clean, steady, jitter-free lift. The deep-work cup.',
     }),
     blend({
         handle: 'calm-blend',
         title: 'Calm',
         description:
-            'A daytime unwind — green tea softened with lemon balm, rose and a little chamomile, gently caffeinated so it takes the edge off without knocking you out. The cup for the 3pm dip, a busy inbox, or any hour that needs the volume turned down a notch.',
+            'A daytime unwind: green tea softened with lemon balm, rose and a little chamomile, gently caffeinated so it takes the edge off without knocking you out. The cup for the 3pm dip, a busy inbox, or any hour that needs the volume turned down a notch.',
         price: 18,
         sku: 'MC-BLD-CALM',
         categories: ['blends'],
         collections: ['functional'],
         tags: ['blend', 'functional', 'calm', 'caffeinated'],
         asset: 'prod-calm',
-        seoTitle: 'Calm — green tea & lemon balm blend | Matcha Club',
-        seoDescription: 'Green tea with lemon balm, rose and chamomile — a gentle daytime unwind, lightly caffeinated.',
+        seoTitle: 'Calm: green tea & lemon balm blend | Matcha Club',
+        seoDescription: 'Green tea with lemon balm, rose and chamomile: a gentle daytime unwind, lightly caffeinated.',
     }),
     blend({
         handle: 'sleep-blend',
         title: 'Sleep',
         description:
-            'A caffeine-free wind-down of chamomile, valerian, lavender and a touch of liquorice root — softly floral and naturally sweet, built for the last hour of the day. No matcha, no caffeine, no next-morning fog; just a warm cup that tells your body it’s time to stop.',
+            'A caffeine-free wind-down of chamomile, valerian, lavender and a touch of liquorice root: softly floral and naturally sweet, built for the last hour of the day. No matcha, no caffeine, no next-morning fog; just a warm cup that tells your body it’s time to stop.',
         price: 18,
         sku: 'MC-BLD-SLEEP',
         categories: ['blends'],
         collections: ['functional'],
         tags: ['blend', 'functional', 'sleep', 'caffeine-free', 'evening'],
         asset: 'prod-sleep',
-        seoTitle: 'Sleep — caffeine-free chamomile & valerian blend | Matcha Club',
-        seoDescription: 'Chamomile, valerian, lavender and liquorice — a caffeine-free wind-down for the end of the day.',
+        seoTitle: 'Sleep: caffeine-free chamomile & valerian blend | Matcha Club',
+        seoDescription: 'Chamomile, valerian, lavender and liquorice: a caffeine-free wind-down for the end of the day.',
     }),
     {
         handle: 'iced-matcha-sachets',
         title: 'Iced Matcha Sachets',
         description:
-            'Cold-whisk matcha, pre-portioned for the shaker — tear a sachet into cold water or milk, shake, pour over ice, done. The same vivid daily matcha, formulated to dissolve cold without clumping, so a café-grade iced matcha takes fifteen seconds at your desk or in the car.',
+            'Cold-whisk matcha, pre-portioned for the shaker: tear a sachet into cold water or milk, shake, pour over ice, done. The same vivid daily matcha, formulated to dissolve cold without clumping, so a café-grade iced matcha takes fifteen seconds at your desk or in the car.',
         status: 'active',
         productType: 'Matcha',
         vendor: 'Matcha Club',
         tags: ['matcha', 'iced', 'grab-and-go', 'caffeinated'],
         categoryHandles: ['iced'],
         collectionHandles: ['best-sellers', 'club-picks'],
-        seoTitle: 'Iced Matcha Sachets — cold-whisk grab-and-go matcha | Matcha Club',
-        seoDescription: 'Pre-portioned cold-dissolve matcha sachets — tear, shake over ice, drink. Café-grade iced matcha in seconds.',
+        seoTitle: 'Iced Matcha Sachets: cold-whisk grab-and-go matcha | Matcha Club',
+        seoDescription: 'Pre-portioned cold-dissolve matcha sachets: tear, shake over ice, drink. Café-grade iced matcha in seconds.',
         options: [{ name: 'Pack', displayType: 'dropdown', values: [{ value: '10 sachets' }, { value: '30 sachets' }] }],
         variants: [
             { sku: 'MC-ICED-10', priceCents: money(16), isDefault: true, inventoryPolicy: 'continue', optionValues: { Pack: '10 sachets' } },
@@ -655,14 +655,14 @@ const PRODUCTS: Product[] = [
         handle: 'matcha-starter-kit',
         title: 'The Starter Kit',
         description:
-            'Everything to make a proper bowl from day one — a tin of our ceremonial matcha, a handmade bamboo whisk, a bamboo scoop and a wide ceramic bowl, boxed together. The easiest way to begin, and a genuinely lovely thing to give someone who keeps saying they should get into matcha.',
+            'Everything to make a proper bowl from day one: a tin of our ceremonial matcha, a handmade bamboo whisk, a bamboo scoop and a wide ceramic bowl, boxed together. The easiest way to begin, and a genuinely lovely thing to give someone who keeps saying they should get into matcha.',
         status: 'active',
         productType: 'Kit',
         vendor: 'Matcha Club',
         tags: ['kit', 'gift', 'starter', 'tools'],
         categoryHandles: ['kits-tools'],
         collectionHandles: ['everyday-kit', 'gifts', 'club-picks'],
-        seoTitle: 'The Starter Kit — matcha, whisk, scoop & bowl | Matcha Club',
+        seoTitle: 'The Starter Kit: matcha, whisk, scoop & bowl | Matcha Club',
         seoDescription: 'Ceremonial matcha, a bamboo whisk, a scoop and a ceramic bowl, boxed together. The easiest way to start.',
         variants: [{ sku: 'MC-KIT-START', priceCents: money(58), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-kit', isPrimary: true, alt: 'A matcha starter kit' }],
@@ -671,14 +671,14 @@ const PRODUCTS: Product[] = [
         handle: 'bamboo-whisk',
         title: 'Bamboo Whisk (Chasen)',
         description:
-            'A traditional hand-cut bamboo chasen with a hundred fine tines — the tool that turns clumpy powder into a smooth, even froth no spoon or shaker can match. Rest it on a whisk stand to keep its shape and it’ll make a better bowl for months. The one upgrade that changes every cup.',
+            'A traditional hand-cut bamboo chasen with a hundred fine tines: the tool that turns clumpy powder into a smooth, even froth no spoon or shaker can match. Rest it on a whisk stand to keep its shape and it’ll make a better bowl for months. The one upgrade that changes every cup.',
         status: 'active',
         productType: 'Tool',
         vendor: 'Matcha Club',
         tags: ['tools', 'whisk', 'bamboo'],
         categoryHandles: ['kits-tools'],
         collectionHandles: ['everyday-kit', 'gifts'],
-        seoTitle: 'Bamboo Whisk (Chasen) — hand-cut matcha whisk | Matcha Club',
+        seoTitle: 'Bamboo Whisk (Chasen): hand-cut matcha whisk | Matcha Club',
         seoDescription: 'A traditional hand-cut bamboo chasen with a hundred fine tines for a smooth, even matcha froth.',
         variants: [{ sku: 'MC-TOOL-WHISK', priceCents: money(22), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-whisk', isPrimary: true, alt: 'A bamboo matcha whisk' }],
@@ -687,15 +687,15 @@ const PRODUCTS: Product[] = [
         handle: 'travel-shaker-tin',
         title: 'Travel Shaker Tin',
         description:
-            'A slim, leak-proof stainless shaker with a fine internal strainer — add a sachet or a scoop, splash in cold water, shake, and drink from the same tin. Fits a cup holder and a coat pocket, keeps matcha cold for hours, and makes an iced cup anywhere the day takes you.',
+            'A slim, leak-proof stainless shaker with a fine internal strainer. Add a sachet or a scoop, splash in cold water, shake, and drink from the same tin. Fits a cup holder and a coat pocket, keeps matcha cold for hours, and makes an iced cup anywhere the day takes you.',
         status: 'active',
         productType: 'Tool',
         vendor: 'Matcha Club',
         tags: ['tools', 'travel', 'shaker', 'iced'],
         categoryHandles: ['kits-tools'],
         collectionHandles: ['everyday-kit'],
-        seoTitle: 'Travel Shaker Tin — leak-proof matcha shaker | Matcha Club',
-        seoDescription: 'A slim leak-proof stainless shaker with a fine strainer — make and drink an iced matcha anywhere.',
+        seoTitle: 'Travel Shaker Tin: leak-proof matcha shaker | Matcha Club',
+        seoDescription: 'A slim leak-proof stainless shaker with a fine strainer. Make and drink an iced matcha anywhere.',
         variants: [{ sku: 'MC-TOOL-SHAKER', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-shaker', isPrimary: true, alt: 'A travel shaker tin' }],
     },
@@ -703,15 +703,15 @@ const PRODUCTS: Product[] = [
         handle: 'subscription',
         title: 'The Club Subscription',
         description:
-            'Fresh matcha on your schedule — pick your tins and how often, and we grind, blend and ship them to match. Rotate the whole shelf or stay with your daily; members get first access to new drops and a standing discount. Skip, swap or cancel any time. The easiest way to keep good matcha in the house.',
+            'Fresh matcha on your schedule. Pick your tins and how often, and we grind, blend and ship them to match. Rotate the whole shelf or stay with your daily; members get first access to new drops and a standing discount. Skip, swap or cancel any time. The easiest way to keep good matcha in the house.',
         status: 'active',
         productType: 'Subscription',
         vendor: 'Matcha Club',
         tags: ['subscription', 'gift', 'club'],
         categoryHandles: ['subscription'],
         collectionHandles: ['club-picks', 'gifts', 'best-sellers'],
-        seoTitle: 'The Club Subscription — fresh matcha, on your schedule | Matcha Club',
-        seoDescription: 'A flexible matcha subscription — choose tins and cadence, get first access to drops. Skip or cancel any time.',
+        seoTitle: 'The Club Subscription: fresh matcha, on your schedule | Matcha Club',
+        seoDescription: 'A flexible matcha subscription. Choose tins and cadence, get first access to drops. Skip or cancel any time.',
         options: [{ name: 'Plan', displayType: 'dropdown', values: [{ value: 'One tin' }, { value: 'Two tins' }] }],
         variants: [
             { sku: 'MC-SUB-1', priceCents: money(22), isDefault: true, inventoryPolicy: 'continue', optionValues: { Plan: 'One tin' } },
@@ -733,7 +733,7 @@ const COMMERCE = {
         {
             handle: 'club-picks',
             name: 'The club’s picks',
-            description: 'Where to start — the drops we’d put in your first box.',
+            description: 'Where to start: the drops we’d put in your first box.',
             type: 'manual',
             featured: true,
             productHandles: ['ceremonial-matcha', 'daily-matcha', 'focus-blend', 'matcha-starter-kit', 'subscription'],
@@ -749,7 +749,7 @@ const COMMERCE = {
         {
             handle: 'matcha-flight',
             name: 'The matcha flight',
-            description: 'Taste across the grades — ceremonial to everyday.',
+            description: 'Taste across the grades: ceremonial to everyday.',
             type: 'manual',
             featured: false,
             productHandles: ['ceremonial-matcha', 'daily-matcha', 'iced-matcha-sachets'],
@@ -757,7 +757,7 @@ const COMMERCE = {
         {
             handle: 'functional',
             name: 'By mood',
-            description: 'Focus, calm and sleep — a blend for the hour.',
+            description: 'Focus, calm and sleep: a blend for the hour.',
             type: 'manual',
             featured: false,
             productHandles: ['focus-blend', 'calm-blend', 'sleep-blend'],
@@ -773,7 +773,7 @@ const COMMERCE = {
         {
             handle: 'gifts',
             name: 'Gifts',
-            description: 'Kits, tools and the club — sorted.',
+            description: 'Kits, tools and the club: sorted.',
             type: 'manual',
             featured: false,
             productHandles: ['matcha-starter-kit', 'bamboo-whisk', 'subscription'],
@@ -799,11 +799,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('A smooth, frothy bowl of matcha is not a matter of luck or expensive powder — it’s technique, and there’s barely any of it to learn. If your matcha comes out clumpy, bitter or thin, it’s almost always one of three things: the water was too hot, the powder wasn’t sifted, or a spoon was standing in for a whisk. Fix those and you’ll make a café-grade bowl at home every time.'),
+                    para('A smooth, frothy bowl of matcha is not a matter of luck or expensive powder: it’s technique, and there’s barely any of it to learn. If your matcha comes out clumpy, bitter or thin, it’s almost always one of three things: the water was too hot, the powder wasn’t sifted, or a spoon was standing in for a whisk. Fix those and you’ll make a café-grade bowl at home every time.'),
                     h2('Sift, cool, whisk'),
-                    para('Start by sifting one teaspoon of matcha through a small strainer into your bowl — this breaks up the clumps that no amount of whisking will fully undo. Add a splash of water just off the boil, around 70°C: boiling water scorches matcha and turns it bitter, so let the kettle rest a minute first. Then whisk briskly in a W or M motion, from the wrist, not in circles — you’re whipping air in, not stirring. Ten to fifteen seconds and you’ll have a fine, even froth.'),
+                    para('Start by sifting one teaspoon of matcha through a small strainer into your bowl. This breaks up the clumps that no amount of whisking will fully undo. Add a splash of water just off the boil, around 70°C: boiling water scorches matcha and turns it bitter, so let the kettle rest a minute first. Then whisk briskly in a W or M motion, from the wrist, not in circles, you’re whipping air in, not stirring. Ten to fifteen seconds and you’ll have a fine, even froth.'),
                     h2('Then build your cup'),
-                    para('Once it’s frothed, you have a base for anything. Top it with hot water for a straight usucha, pour it over ice and cold milk for a latte, or drop it into a smoothie. Use ceremonial grade when you’re drinking it plain and want it sweet and delicate; reach for daily grade when milk and ice are involved and you want the matcha to stand up. Same technique, different cup — and none of it takes longer than the kettle.'),
+                    para('Once it’s frothed, you have a base for anything. Top it with hot water for a straight usucha, pour it over ice and cold milk for a latte, or drop it into a smoothie. Use ceremonial grade when you’re drinking it plain and want it sweet and delicate; reach for daily grade when milk and ice are involved and you want the matcha to stand up. Same technique, different cup, and none of it takes longer than the kettle.'),
                 ],
             },
         },
@@ -819,11 +819,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('People who switch to matcha often describe the same thing: they feel awake and clear for hours, but without the racing, jittery lift of coffee and without the cliff-edge crash that follows it. That’s not marketing — it comes down to how matcha delivers its caffeine, and to a second compound that coffee simply doesn’t have.'),
+                    para('People who switch to matcha often describe the same thing: they feel awake and clear for hours, but without the racing, jittery lift of coffee and without the cliff-edge crash that follows it. That’s not marketing. It comes down to how matcha delivers its caffeine, and to a second compound that coffee simply doesn’t have.'),
                     h2('Slow caffeine, plus L-theanine'),
-                    para('Because you drink the whole ground leaf rather than a quick water extraction, matcha’s caffeine is released more gradually as it digests — a steadier curve instead of a spike. Alongside it, matcha is rich in L-theanine, an amino acid that promotes calm, focused alertness and takes the sharp edge off caffeine’s stimulation. The two together are why matcha feels like “calm energy”: awake and even, rather than wired and then wrung out.'),
+                    para('Because you drink the whole ground leaf rather than a quick water extraction, matcha’s caffeine is released more gradually as it digests: a steadier curve instead of a spike. Alongside it, matcha is rich in L-theanine, an amino acid that promotes calm, focused alertness and takes the sharp edge off caffeine’s stimulation. The two together are why matcha feels like “calm energy”: awake and even, rather than wired and then wrung out.'),
                     h2('How to use it'),
-                    para('A bowl of matcha carries roughly the caffeine of a single espresso, so treat it like one: it’s a brilliant morning and early-afternoon drink, and a poor idea at 9pm. If you’re sensitive, start with our Focus blend, which pairs matcha with a lighter dose of leaf, and keep your last cup before mid-afternoon. Used that way, matcha gives you the steady end of the caffeine spectrum — and none of the part everyone complains about.'),
+                    para('A bowl of matcha carries roughly the caffeine of a single espresso, so treat it like one: it’s a brilliant morning and early-afternoon drink, and a poor idea at 9pm. If you’re sensitive, start with our Focus blend, which pairs matcha with a lighter dose of leaf, and keep your last cup before mid-afternoon. Used that way, matcha gives you the steady end of the caffeine spectrum, and none of the part everyone complains about.'),
                 ],
             },
         },
@@ -834,16 +834,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'What “ceremonial grade” actually means',
-            excerpt: 'It isn’t a legal term, so it gets slapped on anything. Here’s what really separates a ceremonial matcha from a daily one — and when to buy which.',
+            excerpt: 'It isn’t a legal term, so it gets slapped on anything. Here’s what really separates a ceremonial matcha from a daily one, and when to buy which.',
             featuredImage: { $asset: 'post-grade' },
             body: {
                 type: 'doc',
                 content: [
-                    para('“Ceremonial grade” is on nearly every tin of matcha sold, which is a problem, because it isn’t a regulated term — no one is stopping a brand from printing it on a dull, bitter powder. But there is a real difference between grades, and once you know what to look for you can taste it in the bowl and see it in the color.'),
+                    para('“Ceremonial grade” is on nearly every tin of matcha sold, which is a problem, because it isn’t a regulated term: no one is stopping a brand from printing it on a dull, bitter powder. But there is a real difference between grades, and once you know what to look for you can taste it in the bowl and see it in the color.'),
                     h2('Harvest, leaf and grind'),
-                    para('The best matcha comes from the first spring harvest, from young leaves grown under shade for weeks before picking — the shade drives up the chlorophyll and L-theanine that make matcha vivid green and sweet. Those leaves are de-veined and stone-ground slowly into an ultra-fine powder. Later harvests, coarser grinds and more mature leaves give a matcha that’s more astringent, duller in color and cheaper to make. That’s the honest line between a ceremonial and a daily grade: not a label, but the leaf and the care behind it.'),
+                    para('The best matcha comes from the first spring harvest, from young leaves grown under shade for weeks before picking: the shade drives up the chlorophyll and L-theanine that make matcha vivid green and sweet. Those leaves are de-veined and stone-ground slowly into an ultra-fine powder. Later harvests, coarser grinds and more mature leaves give a matcha that’s more astringent, duller in color and cheaper to make. That’s the honest line between a ceremonial and a daily grade: not a label, but the leaf and the care behind it.'),
                     h2('So which should you buy?'),
-                    para('Buy ceremonial when you’re drinking matcha plain — whisked with just water — and want it smooth, sweet and delicate; that’s where the quality is unmistakable. Buy daily grade for lattes, smoothies and iced cups, where milk and ice would drown the subtlety anyway and you want a bolder matcha that punches through. Most regular drinkers keep both: a ceremonial tin for the morning bowl, a daily tin for everything else.'),
+                    para('Buy ceremonial when you’re drinking matcha plain (whisked with just water) and want it smooth, sweet and delicate; that’s where the quality is unmistakable. Buy daily grade for lattes, smoothies and iced cups, where milk and ice would drown the subtlety anyway and you want a bolder matcha that punches through. Most regular drinkers keep both: a ceremonial tin for the morning bowl, a daily tin for everything else.'),
                 ],
             },
         },
@@ -858,7 +858,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Matcha & Tea (Modern)',
     theme: THEME,
     summary:
-        'A complete, working shop for a modern matcha and tea brand: ceremonial and daily matcha with grade and size options, functional focus / calm / sleep blends, grab-and-go iced sachets, a starter kit, a bamboo whisk, a travel shaker and a flexible club subscription, with categories, collections, a bespoke product-forward PDP and a merchandised home page. Bright wellness-modern theme — soft-mint ground, vibrant matcha-green, a punchy coral accent. Shipped as Matcha Club.',
+        'A complete, working shop for a modern matcha and tea brand: ceremonial and daily matcha with grade and size options, functional focus / calm / sleep blends, grab-and-go iced sachets, a starter kit, a bamboo whisk, a travel shaker and a flexible club subscription, with categories, collections, a bespoke product-forward PDP and a merchandised home page. Bright wellness-modern theme, soft-mint ground, vibrant matcha-green, a punchy coral accent. Shipped as Matcha Club.',
     tagline: 'A bright, working storefront for a modern matcha brand.',
     vertical: 'retail',
     industry: 'Matcha & tea brand',
@@ -871,14 +871,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Matcha Club — ceremonial matcha & functional tea, shipped fresh',
+            title: 'Matcha Club: ceremonial matcha & functional tea, shipped fresh',
             description:
-                'Matcha Club is a modern matcha and tea brand — ceremonial and daily matcha, functional focus, calm and sleep blends, iced sachets, kits and a flexible club. Source well, grind small, ship bright.',
+                'Matcha Club is a modern matcha and tea brand: ceremonial and daily matcha, functional focus, calm and sleep blends, iced sachets, kits and a flexible club. Source well, grind small, ship bright.',
         },
         about: {
             title: 'About Matcha Club',
             description:
-                'How Matcha Club sources, grinds and ships — shade-grown leaf, named growers, small batches, and a bright, functional cup made for a busy day.',
+                'How Matcha Club sources, grinds and ships: shade-grown leaf, named growers, small batches, and a bright, functional cup made for a busy day.',
         },
     },
     home: HOME,

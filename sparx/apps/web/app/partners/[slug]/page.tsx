@@ -57,7 +57,7 @@ const TIER_NOTE: Record<string, string> = {
   registered:
     'They applied to the program and we looked at their work before listing them. It is a review of their track record, not a certification exam.',
   informal:
-    'They signed themselves up, which anyone may do. We have not reviewed their work — judge it the way you would any other contractor you were about to hire.',
+    'They signed themselves up, which anyone may do. We have not reviewed their work: judge it the way you would any other contractor you were about to hire.',
 };
 
 export async function generateMetadata({
@@ -67,7 +67,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const p = await fetchPartner(slug);
-  if (!p) return { title: 'Partner — sparx' };
+  if (!p) return { title: 'Partner: sparx' };
 
   const where = partnerLocation(p);
   const kind = KIND_LABEL[p.kind] ?? KIND_LABEL.other;
@@ -83,11 +83,11 @@ export async function generateMetadata({
           `${kind} in the sparx partner directory`,
           where ? ` · ${where}` : '',
           work ? `. Works on ${work}.` : '.',
-          ' Contact them directly — there is no introduction fee.',
+          ' Contact them directly. There is no introduction fee.',
         ].join('');
 
   return {
-    title: `${p.displayName} — sparx partner`,
+    title: `${p.displayName} · sparx partner`,
     description: desc.slice(0, 300),
     alternates: { canonical: `/partners/${p.slug}` },
     openGraph: {
@@ -304,7 +304,7 @@ function WorkBand({ partner: p }: { partner: PartnerProfile }) {
               </Heading>
               <Text className="text-md">
                 They set their own rates and invoice you directly. sparx takes nothing from what you
-                pay them, and makes no introduction — contact them yourself.
+                pay them, and makes no introduction: contact them yourself.
               </Text>
             </div>
           </CardBody>

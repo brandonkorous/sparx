@@ -338,7 +338,7 @@ function ConnectIntegration({
             description={
               fields.length > 0
                 ? 'Copy these across from the other service. We check them and store anything secret encrypted.'
-                : 'This service needs nothing from you to connect — just add it and test it.'
+                : 'This service needs nothing from you to connect. Just add it and test it.'
             }
           >
             {fields.map((field) => (
@@ -510,7 +510,7 @@ function ManageIntegration({
     const ok = await confirm({
       title: `Disconnect ${name}?`,
       description:
-        'Anything that relies on this connection — like live delivery prices or taking payments through it — stops working. Your account with the other service is untouched, and you can connect it again later.',
+        'Anything that relies on this connection (like live delivery prices or taking payments through it) stops working. Your account with the other service is untouched, and you can connect it again later.',
       confirmLabel: 'Disconnect it',
       cancelLabel: 'Keep it connected',
       color: 'danger',
@@ -618,7 +618,7 @@ function ManageIntegration({
           {canEdit && secretFields.length > 0 ? (
             <FormSection
               title="Update its details"
-              description="Paste a fresh value only if you changed it at the other service — leave a box blank to keep what is stored now."
+              description="Paste a fresh value only if you changed it at the other service. Leave a box blank to keep what is stored now."
             >
               {secretFields.map((field) => (
                 <ConfigFieldControl

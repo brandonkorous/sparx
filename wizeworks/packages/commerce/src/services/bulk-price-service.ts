@@ -294,7 +294,7 @@ export async function revertBulkPriceAdjust(
     }
     if (rows[0]!.expiresAt.getTime() < now.getTime()) {
       throw new CommerceValidationError(
-        'This price change can no longer be undone — the 30-minute window has passed.'
+        'This price change can no longer be undone: the 30-minute window has passed.'
       );
     }
 

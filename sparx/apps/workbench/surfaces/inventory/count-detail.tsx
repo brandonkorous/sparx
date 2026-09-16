@@ -194,7 +194,7 @@ function StartCount({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Warehouse className="size-6" aria-hidden />}
               title="You have nowhere to count yet"
-              description="A count is always tied to one place — a shop, a warehouse, a van. Set up at least one location and you can start counting what is on its shelves."
+              description="A count is always tied to one place: a shop, a warehouse, a van. Set up at least one location and you can start counting what is on its shelves."
               actions={
                 <Button
                   size="sm"
@@ -258,7 +258,7 @@ function StartCount({ ctx }: { ctx: SurfaceContext }) {
                 <FieldDescription>
                   {type === 'full'
                     ? 'Every item with stock here is listed for you to count, ready to go.'
-                    : 'You start with an empty list and add the items you want to count as you go — good for a quick spot-check.'}
+                    : 'You start with an empty list and add the items you want to count as you go: good for a quick spot-check.'}
                 </FieldDescription>
               </Field>
 
@@ -731,7 +731,7 @@ function CountSession({
           count.varianceValueCents > 0
             ? `, worth ${formatCents(count.varianceValueCents)} in all`
             : ''
-        }. Your on-hand numbers are corrected straight away and the change is recorded against your name. This cannot be undone — if a figure looks wrong, go back before applying.`,
+        }. Your on-hand numbers are corrected straight away and the change is recorded against your name. This cannot be undone: if a figure looks wrong, go back before applying.`,
         confirmLabel: 'Yes, apply it',
         cancelLabel: 'Go back',
         color: 'danger',
@@ -760,7 +760,7 @@ function CountSession({
     const ok = await confirm({
       title: `Discard ${count.number}?`,
       description:
-        'Nothing on your shelves changes — the quantities you have entered are thrown away and the count is closed. This cannot be undone.',
+        'Nothing on your shelves changes: the quantities you have entered are thrown away and the count is closed. This cannot be undone.',
       confirmLabel: 'Discard it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -950,7 +950,7 @@ function CountSession({
             {editable && count.lineCount > 0 && uncounted > 0 ? (
               <Text className="text-sm">
                 {String(count.lineCount - uncounted)} of {plural(count.lineCount, 'item', 'items')}{' '}
-                counted — enter the rest before you can finish.
+                counted. Enter the rest before you can finish.
               </Text>
             ) : null}
           </section>
@@ -1048,7 +1048,7 @@ function buildNotice(
     case 'approved':
       return {
         tone: 'info',
-        title: 'Approved — ready to apply',
+        title: 'Approved: ready to apply',
         body: 'A manager has signed this off. Apply it to correct your stock numbers to match what was counted.',
       };
     case 'posted':
@@ -1117,7 +1117,7 @@ function LoadedCount({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           description={
             gone
               ? 'It may have been removed. Your stock and its movement history are unaffected.'
-              : 'This is a problem reaching the server. The count is unaffected — it just could not be read just now.'
+              : 'This is a problem reaching the server. The count is unaffected. It just could not be read just now.'
           }
           onRetry={() => {
             void count.refetch();

@@ -157,7 +157,7 @@
     {
       "handle": "full-service-design-consult",
       "name": "Full-service design consultation",
-      "description": "The starting consultation for a complete, managed design project — concept through install.",
+      "description": "The starting consultation for a complete, managed design project: concept through install.",
       "durationMinutes": 90,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -174,7 +174,7 @@
     {
       "handle": "renovation-consult",
       "name": "Renovation consultation",
-      "description": "For kitchens, baths and larger works — we plan the design, the trades and the timeline together.",
+      "description": "For kitchens, baths and larger works. We plan the design, the trades and the timeline together.",
       "durationMinutes": 90,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "furnishing-styling-consult",
       "name": "Furnishing & styling consultation",
-      "description": "Layering the finishing pieces — furniture, textiles and objects that make a room feel complete.",
+      "description": "Layering the finishing pieces: furniture, textiles and objects that make a room feel complete.",
       "durationMinutes": 60,
       "priceCents": 18000,
       "assignmentStrategy": "customer_choice",
@@ -208,7 +208,7 @@
     {
       "handle": "single-room-consult",
       "name": "Single-room consultation",
-      "description": "One room, fully considered — a plan, a palette and the pieces to bring it together.",
+      "description": "One room, fully considered: a plan, a palette and the pieces to bring it together.",
       "durationMinutes": 60,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -225,7 +225,7 @@
     {
       "handle": "in-home-consultation",
       "name": "In-home consultation",
-      "description": "We come to you — walk the space together, take it in, and map what’s possible on the spot.",
+      "description": "We come to you: walk the space together, take it in, and map what’s possible on the spot.",
       "durationMinutes": 90,
       "priceCents": 30000,
       "assignmentStrategy": "customer_choice",

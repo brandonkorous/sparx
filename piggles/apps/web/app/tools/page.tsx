@@ -4,7 +4,7 @@ import { ToolsIndex } from '@/components/marketing/tools/tools-index';
 import { TOOLS } from '@/components/marketing/tools/registry';
 
 const DESCRIPTION =
-  'Seventeen free tools that run in your browser — a favicon maker, QR codes, invoices and quotes, a pricing calculator, color palettes, and the SEO bits nobody explains. No sign-up, no watermark, nothing uploaded.';
+  'Seventeen free tools that run in your browser: a favicon maker, QR codes, invoices and quotes, a pricing calculator, color palettes, and the SEO bits nobody explains. No sign-up, no watermark, nothing uploaded.';
 
 export const metadata: Metadata = {
   title: 'Free tools for small businesses',

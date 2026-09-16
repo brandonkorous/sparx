@@ -199,7 +199,7 @@ const SCHEDULING = {
             handle: 'discovery-call',
             name: 'Discovery call',
             description:
-                'A relaxed 30-minute call to talk through your date, your vision and your budget — no cost, no pressure.',
+                'A relaxed 30-minute call to talk through your date, your vision and your budget: no cost, no pressure.',
             durationMinutes: 30,
             priceCents: 0,
             assignmentStrategy: 'customer_choice',
@@ -210,7 +210,7 @@ const SCHEDULING = {
             handle: 'wedding-floral-consult',
             name: 'Wedding floral consultation',
             description:
-                'A full sit-down for your wedding — ceremony and reception, color story, flowers by season, and a proposal to follow.',
+                'A full sit-down for your wedding: ceremony and reception, color story, flowers by season, and a proposal to follow.',
             durationMinutes: 60,
             priceCents: 5000,
             assignmentStrategy: 'customer_choice',
@@ -221,7 +221,7 @@ const SCHEDULING = {
             handle: 'event-design-consult',
             name: 'Event design consultation',
             description:
-                'Full floral design for showers, galas, launches and dinners — installations, tablescapes, and setup planned end to end.',
+                'Full floral design for showers, galas, launches and dinners: installations, tablescapes, and setup planned end to end.',
             durationMinutes: 60,
             priceCents: 5000,
             assignmentStrategy: 'customer_choice',
@@ -232,7 +232,7 @@ const SCHEDULING = {
             handle: 'bridal-bouquet-consult',
             name: 'Bridal bouquet consultation',
             description:
-                'A focused session for the bouquets — yours and the party’s — with stems, shape and ribbon chosen to suit the day.',
+                'A focused session for the bouquets (yours and the party’s) with stems, shape and ribbon chosen to suit the day.',
             durationMinutes: 45,
             priceCents: 3500,
             assignmentStrategy: 'customer_choice',
@@ -243,7 +243,7 @@ const SCHEDULING = {
             handle: 'celebration-florals-consult',
             name: 'Celebration florals consultation',
             description:
-                'Flowers for the milestones — birthdays, anniversaries, welcome-homes — planned to match the moment and the room.',
+                'Flowers for the milestones (birthdays, anniversaries, welcome-homes) planned to match the moment and the room.',
             durationMinutes: 45,
             priceCents: 3500,
             assignmentStrategy: 'customer_choice',
@@ -254,7 +254,7 @@ const SCHEDULING = {
             handle: 'seasonal-subscription-consult',
             name: 'Seasonal subscription consultation',
             description:
-                'Set up a recurring arrangement for your home or studio — locally grown, always in season, delivered on a rhythm that suits you.',
+                'Set up a recurring arrangement for your home or studio: locally grown, always in season, delivered on a rhythm that suits you.',
             durationMinutes: 30,
             priceCents: 2500,
             assignmentStrategy: 'customer_choice',
@@ -265,7 +265,7 @@ const SCHEDULING = {
             handle: 'custom-arrangement-consult',
             name: 'Custom arrangement consultation',
             description:
-                'A one-off, made-to-order arrangement — a gift, a gesture, a centrepiece — designed around what you have in mind.',
+                'A one-off, made-to-order arrangement (a gift, a gesture, a centrepiece) designed around what you have in mind.',
             durationMinutes: 45,
             priceCents: 3500,
             assignmentStrategy: 'customer_choice',
@@ -281,7 +281,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A lush, romantic bridal bouquet of garden roses and trailing greenery',
         title: 'Flowers for the days you’ll never forget',
-        sub: 'An artful boutique studio for weddings and events — seasonal, locally grown, and designed around your story from the very first bloom.',
+        sub: 'An artful boutique studio for weddings and events: seasonal, locally grown, and designed around your story from the very first bloom.',
         primary: { label: 'Book a consultation', href: '/book' },
         secondary: { label: 'See our work', href: '/book' },
         overlay: 'dark',
@@ -290,7 +290,7 @@ const HOME = [
         items: [
             {
                 title: 'Seasonal & locally grown',
-                body: 'We design with what’s at its best right now, sourced from growers we know — so your flowers are fresher, richer, and truly of the season.',
+                body: 'We design with what’s at its best right now, sourced from growers we know, so your flowers are fresher, richer, and truly of the season.',
             },
             {
                 title: 'Full event design',
@@ -302,13 +302,13 @@ const HOME = [
             },
             {
                 title: 'Delivery & setup',
-                body: 'We deliver, place and style everything ourselves, then quietly return to strike it down — so your day stays entirely yours.',
+                body: 'We deliver, place and style everything ourselves, then quietly return to strike it down, so your day stays entirely yours.',
             },
         ],
     }),
     serviceMenu({
         heading: 'Ways to begin',
-        intro: 'Every project starts with a conversation. Choose the consultation that fits — full details and live availability are on the booking page.',
+        intro: 'Every project starts with a conversation. Choose the consultation that fits: full details and live availability are on the booking page.',
         surface: 'muted',
         columns: 2,
         items: [
@@ -355,18 +355,18 @@ const HOME = [
         alt: 'A sunlit floral studio workbench scattered with stems and ribbon',
         heading: 'Wild, not fussy',
         body: [
-            'We design the way flowers grow — loose, textured, a little untamed — never stiff or symmetrical for its own sake. The result feels gathered that morning, because much of it was.',
+            'We design the way flowers grow (loose, textured, a little untamed) never stiff or symmetrical for its own sake. The result feels gathered that morning, because much of it was.',
             'Working in season keeps every arrangement honest: garden roses in June, dahlias in September, ranunculus in spring. It’s the reason our work always looks like the moment it’s made for.',
         ],
         cta: { label: 'Start with a consultation', href: '/book' },
     }),
     testimonial({
-        quote: 'We handed Wildstem a Pinterest board and a wedding date and got back something better than we could have described. Walking into that reception — the arch, the tables, the light through it all — we both just stopped. It was us, in flowers.',
+        quote: 'We handed Wildstem a Pinterest board and a wedding date and got back something better than we could have described. Walking into that reception (the arch, the tables, the light through it all) we both just stopped. It was us, in flowers.',
         attribution: 'Elena & Marcus, married September 2025',
     }),
     bookingCta({
         title: 'Let’s talk flowers',
-        sub: 'Tell us about your day and we’ll take it from there. Start with a free discovery call — it only takes a minute to book.',
+        sub: 'Tell us about your day and we’ll take it from there. Start with a free discovery call. It only takes a minute to book.',
         cta: { label: 'Book a consultation', href: '/book' },
     }),
 ];
@@ -389,8 +389,8 @@ const ABOUT = [
         alt: 'A lush, romantic bridal bouquet of garden roses and trailing greenery',
         heading: 'About Wildstem Floral',
         body: [
-            'Wildstem began at a single farm stand — a bucket of just-cut stems, sold to neighbours on a Saturday. What grew from it is a small studio devoted to the flowers that mark the biggest days of your life.',
-            'We stayed deliberately boutique so every couple and host works directly with the designer making their flowers. Fewer weddings a season, more attention on each — and arrangements that could only have been made for you.',
+            'Wildstem began at a single farm stand: a bucket of just-cut stems, sold to neighbours on a Saturday. What grew from it is a small studio devoted to the flowers that mark the biggest days of your life.',
+            'We stayed deliberately boutique so every couple and host works directly with the designer making their flowers. Fewer weddings a season, more attention on each, and arrangements that could only have been made for you.',
         ],
         cta: { label: 'Book a consultation', href: '/book' },
     }),
@@ -400,7 +400,7 @@ const ABOUT = [
         items: [
             {
                 title: 'We listen first',
-                body: 'Every project opens with a real conversation — your date, your palette, the feeling you’re after — before a single stem is chosen.',
+                body: 'Every project opens with a real conversation (your date, your palette, the feeling you’re after) before a single stem is chosen.',
             },
             {
                 title: 'We design in season',
@@ -408,7 +408,7 @@ const ABOUT = [
             },
             {
                 title: 'We handle the day',
-                body: 'Delivery, placement, styling and strike-down are ours to manage — you simply arrive to a room already in bloom.',
+                body: 'Delivery, placement, styling and strike-down are ours to manage. You simply arrive to a room already in bloom.',
             },
         ],
     }),
@@ -428,7 +428,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather begin online?',
-        sub: 'Book a free discovery call and we’ll find the right time to talk through your day — no phone tag.',
+        sub: 'Book a free discovery call and we’ll find the right time to talk through your day: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book a consultation', href: '/book' },
     }),
@@ -439,8 +439,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-florist-boutique',
     name: 'Florist (Boutique)',
     summary:
-        'A romantic, editorial site for a wedding & event florist — a soft blush palette over ivory with a sage accent and an elegant serif display, with arrangement photography carrying the page. Installs a working booking flow: consultation types from a free discovery call to full event design, floral designers you book by name with their own hours, and an event booking-deposit policy. Ships as "Wildstem Floral", an artful boutique studio for weddings and celebrations.',
-    tagline: 'An artful, editorial template for wedding & event florists — book consultations online from day one.',
+        'A romantic, editorial site for a wedding & event florist: a soft blush palette over ivory with a sage accent and an elegant serif display, with arrangement photography carrying the page. Installs a working booking flow: consultation types from a free discovery call to full event design, floral designers you book by name with their own hours, and an event booking-deposit policy. Ships as "Wildstem Floral", an artful boutique studio for weddings and celebrations.',
+    tagline: 'An artful, editorial template for wedding & event florists. Book consultations online from day one.',
     industry: 'Florist',
     sortWeight: 18,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -449,9 +449,9 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Wildstem Floral — wedding & event florist',
+            title: 'Wildstem Floral: wedding & event florist',
             description:
-                'Wildstem Floral is an artful boutique studio for wedding and event flowers — seasonal, locally grown, designed around your day. Book a consultation online.',
+                'Wildstem Floral is an artful boutique studio for wedding and event flowers: seasonal, locally grown, designed around your day. Book a consultation online.',
         },
     },
     home: HOME,

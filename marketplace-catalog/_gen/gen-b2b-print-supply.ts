@@ -167,7 +167,7 @@ function hero(): Node {
                                     text: 'Media, ink and blanks that run clean, priced for the shop.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Inkyard is a trade supplier to print shops, sign makers and decorators. We stock the vinyl, banner, ink and sublimation blanks that keep your presses and plotters running — by the roll, box and case, at trade prices, out the door next day.',
+                                    text: 'Inkyard is a trade supplier to print shops, sign makers and decorators. We stock the vinyl, banner, ink and sublimation blanks that keep your presses and plotters running: by the roll, box and case, at trade prices, out the door next day.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -244,7 +244,7 @@ function tradeTermsBand(): Node {
                                 text: 'Built for the way a print shop buys',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Open a trade account and you buy the way a working shop should — by the roll and the case, at wholesale rates, on terms. No retail markups, no waiting a week for a roll of banner.',
+                                text: 'Open a trade account and you buy the way a working shop should: by the roll and the case, at wholesale rates, on terms. No retail markups, no waiting a week for a roll of banner.',
                             }),
                         ],
                     }),
@@ -253,7 +253,7 @@ function tradeTermsBand(): Node {
                             card('Trade pricing', 'Per-unit wholesale rates with bulk breaks that deepen as your order grows. Buy media by the case and every roll lands cheaper.'),
                             card('Net-30 terms', 'Approved accounts print now and pay later on net-30. Keep the plotter fed and the presses loaded without tying up the card on every run.'),
                             card('Next-day dispatch', 'In-stock media, ink and blanks ship the same or next business day, so a jammed job is never waiting on a roll that has not left our shelf.'),
-                            card('Color-matched & backed', 'A named account manager who knows your printers, your profiles and your standing order — and helps color-match a spot when a brand job demands it.'),
+                            card('Color-matched & backed', 'A named account manager who knows your printers, your profiles and your standing order, and helps color-match a spot when a brand job demands it.'),
                         ],
                     }),
                     el('a', 'btn btn-primary btn-lg w-fit', { attrs: { href: '/contact' }, text: 'Open a trade account' }),
@@ -303,7 +303,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.vinyl-htv', layout: 'carousel', heading: 'Vinyl & HTV, always in stock' }),
     editorialBand({
         heading: 'One supplier, one invoice, one account manager',
-        lead: 'Stop chasing a vinyl house, an ink house and a blanks house on three separate orders. Consolidate your consumables onto one trade account — one catalog to buy from, one statement to reconcile, and one person who picks up the phone when a roll is short.',
+        lead: 'Stop chasing a vinyl house, an ink house and a blanks house on three separate orders. Consolidate your consumables onto one trade account. One catalog to buy from, one statement to reconcile, and one person who picks up the phone when a roll is short.',
         assetId: 'print-band-trade',
         cta: 'Open a trade account',
         href: '/contact',
@@ -349,7 +349,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & terms' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'The price shown is the per-unit list rate. Trade accounts unlock bulk breaks — deeper per-roll and per-case pricing at a full box, a pallet, or a standing order — set for your account in your dashboard.',
+                                        text: 'The price shown is the per-unit list rate. Trade accounts unlock bulk breaks: deeper per-roll and per-case pricing at a full box, a pallet, or a standing order. Set for your account in your dashboard.',
                                     }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
                                         text: 'Approved accounts buy on net-30. Not set up yet? Open a trade account and we will price your regular media, ink and blanks and get you on terms.',
@@ -395,11 +395,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The catalog',
-        'Every line we stock — cast vinyl and HTV, banner and board, wide-format and dye-sub ink, and sublimation blanks, sold by the roll, box and case. Filter by line or sort by price; trade accounts see their contract pricing at checkout.'
+        'Every line we stock: cast vinyl and HTV, banner and board, wide-format and dye-sub ink, and sublimation blanks, sold by the roll, box and case. Filter by line or sort by price; trade accounts see their contract pricing at checkout.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The catalog grouped the way a shop actually buys — best sellers, new lines just in, the everyday print-shop essentials, signage media, the sublimation station, and the rolls you reorder on a schedule.'),
+    pageMasthead('Collections', 'The catalog grouped the way a shop actually buys: best sellers, new lines just in, the everyday print-shop essentials, signage media, the sublimation station, and the rolls you reorder on a schedule.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search the catalog', 'Know the roll width, the ink profile, or the blank you need? Search the whole catalog and the field notes below.'),
@@ -425,7 +425,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Field notes' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Practical guidance from the trade counter — how to pick the right vinyl, get clean sublimation transfers, and stock a media room so a job never waits on a roll. Written for the people running the presses, not for a catalog.',
+                        text: 'Practical guidance from the trade counter: how to pick the right vinyl, get clean sublimation transfers, and stock a media room so a job never waits on a roll. Written for the people running the presses, not for a catalog.',
                     }),
                 ],
             }),
@@ -442,13 +442,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl', { text: 'About Inkyard' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Inkyard Trade Supply is a wholesale supplier to the print trade. We stock the media, ink and blanks that keep a sign shop, a wide-format printer or a garment decorator running — and we sell them to the trade by the roll, box and case, at wholesale, on terms.',
+                        text: 'Inkyard Trade Supply is a wholesale supplier to the print trade. We stock the media, ink and blanks that keep a sign shop, a wide-format printer or a garment decorator running, and we sell them to the trade by the roll, box and case, at wholesale, on terms.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We built the business around one idea: a working shop should not have to chase three suppliers, eat retail markups, or lose a Friday deadline to a backordered roll of banner. One catalog, one account, one invoice, and media that is actually on the shelf when you order it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No minimum-order gymnastics, no mystery lead times, no ink that ships out of profile. Just clean-running media, priced fairly and out the door next day — the boring reliability a shop is built on.',
+                        text: 'No minimum-order gymnastics, no mystery lead times, no ink that ships out of profile. Just clean-running media, priced fairly and out the door next day: the boring reliability a shop is built on.',
                     }),
                 ],
             }),
@@ -536,9 +536,9 @@ const unitItem = (opts: {
 const PRODUCTS: Product[] = [
     {
         handle: 'cast-sign-vinyl-roll',
-        title: 'Cast Sign Vinyl — 30 in Roll',
+        title: 'Cast Sign Vinyl: 30 in Roll',
         description:
-            'Premium 2-mil cast vinyl for vehicle wraps, decals and long-term outdoor signage — conformable, 7-year outdoor durability, with an air-release adhesive that lays down bubble-free. 30" x 50 yd roll. MOQ 1 roll. Pick gloss for pop or matte for a wrapped-satin finish.',
+            'Premium 2-mil cast vinyl for vehicle wraps, decals and long-term outdoor signage: conformable, 7-year outdoor durability, with an air-release adhesive that lays down bubble-free. 30" x 50 yd roll. MOQ 1 roll. Pick gloss for pop or matte for a wrapped-satin finish.',
         status: 'active',
         productType: 'Vinyl',
         vendor: VENDOR,
@@ -556,9 +556,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'heat-transfer-vinyl-roll',
-        title: 'Heat-Transfer Vinyl — 20 in Roll',
+        title: 'Heat-Transfer Vinyl: 20 in Roll',
         description:
-            'PU heat-transfer vinyl for garment decoration — thin, matte, and stretchable, with a hot-peel carrier that weeds clean and layers without bulk. 20" x 5 yd roll. MOQ 3 rolls — buy the colors your jobs run and keep the press fed. Pick your color.',
+            'PU heat-transfer vinyl for garment decoration: thin, matte, and stretchable, with a hot-peel carrier that weeds clean and layers without bulk. 20" x 5 yd roll. MOQ 3 rolls, buy the colors your jobs run and keep the press fed. Pick your color.',
         status: 'active',
         productType: 'HTV',
         vendor: VENDOR,
@@ -577,9 +577,9 @@ const PRODUCTS: Product[] = [
     },
     unitItem({
         handle: 'application-tape-roll',
-        title: 'Application Transfer Tape — 24 in Roll',
+        title: 'Application Transfer Tape: 24 in Roll',
         description:
-            'Medium-tack paper application tape for transferring cut vinyl to the surface clean and straight — lays flat, releases without lifting the graphic, and takes a squeegee without tearing. 24" x 100 yd roll. MOQ 2 rolls. The consumable every sign job burns through.',
+            'Medium-tack paper application tape for transferring cut vinyl to the surface clean and straight: lays flat, releases without lifting the graphic, and takes a squeegee without tearing. 24" x 100 yd roll. MOQ 2 rolls. The consumable every sign job burns through.',
         price: 42,
         sku: 'IYD-VIN-APPTAPE-24',
         productType: 'Application tape',
@@ -592,9 +592,9 @@ const PRODUCTS: Product[] = [
     }),
     {
         handle: 'scrim-banner-media-roll',
-        title: 'Scrim Banner Media — 54 in Roll',
+        title: 'Scrim Banner Media: 54 in Roll',
         description:
-            'Matte scrim vinyl banner media for wide-format eco-solvent and latex printers — a tough polyester-reinforced base that takes ink sharp and grommets without cracking. 54" x 164 ft roll. MOQ 1 roll. Pick the weight your job needs — 13oz for indoor and short runs, 15oz for outdoor and wind.',
+            'Matte scrim vinyl banner media for wide-format eco-solvent and latex printers: a tough polyester-reinforced base that takes ink sharp and grommets without cracking. 54" x 164 ft roll. MOQ 1 roll. Pick the weight your job needs, 13oz for indoor and short runs, 15oz for outdoor and wind.',
         status: 'active',
         productType: 'Banner media',
         vendor: VENDOR,
@@ -612,9 +612,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'overlaminate-film-roll',
-        title: 'Overlaminate Film — 30 in Roll',
+        title: 'Overlaminate Film: 30 in Roll',
         description:
-            'Cast overlaminate to protect printed wraps and decals from UV, abrasion and wash — optically clear, conformable to match the print vinyl, with an air-release adhesive for a clean lamination. 30" x 50 yd roll. MOQ 1 roll. Match gloss to gloss or matte for a low-glare finish.',
+            'Cast overlaminate to protect printed wraps and decals from UV, abrasion and wash: optically clear, conformable to match the print vinyl, with an air-release adhesive for a clean lamination. 30" x 50 yd roll. MOQ 1 roll. Match gloss to gloss or matte for a low-glare finish.',
         status: 'active',
         productType: 'Laminate',
         vendor: VENDOR,
@@ -632,9 +632,9 @@ const PRODUCTS: Product[] = [
     },
     unitItem({
         handle: 'foam-board-pack',
-        title: 'Foam Board, 32 x 40 in — Pack of 25',
+        title: 'Foam Board, 32 x 40 in: Pack of 25',
         description:
-            'White-faced 3/16" foam board for mounted prints, presentation signage and short-run point-of-sale — rigid, lightweight, and cuts clean on a plotter or a straightedge. Pack of 25 sheets, 32" x 40". MOQ 1 pack. The mount-and-display board a sign shop keeps on hand.',
+            'White-faced 3/16" foam board for mounted prints, presentation signage and short-run point-of-sale: rigid, lightweight, and cuts clean on a plotter or a straightedge. Pack of 25 sheets, 32" x 40". MOQ 1 pack. The mount-and-display board a sign shop keeps on hand.',
         price: 84,
         sku: 'IYD-BRD-FOAM-3240',
         productType: 'Board',
@@ -647,9 +647,9 @@ const PRODUCTS: Product[] = [
     }),
     unitItem({
         handle: 'eco-solvent-ink-set',
-        title: 'Eco-Solvent Ink — CMYK Set',
+        title: 'Eco-Solvent Ink: CMYK Set',
         description:
-            'A four-color CMYK set of eco-solvent ink for wide-format printers — bright, weatherproof, and profiled for banner, vinyl and film, in 440 mL cartridges that run clean without clogging heads. Set of 4 (C, M, Y, K). MOQ 1 set. Keep a spare set on the shelf so a color-out never stops a job.',
+            'A four-color CMYK set of eco-solvent ink for wide-format printers: bright, weatherproof, and profiled for banner, vinyl and film, in 440 mL cartridges that run clean without clogging heads. Set of 4 (C, M, Y, K). MOQ 1 set. Keep a spare set on the shelf so a color-out never stops a job.',
         price: 168,
         sku: 'IYD-INK-ECO-CMYK',
         productType: 'Ink',
@@ -662,9 +662,9 @@ const PRODUCTS: Product[] = [
     }),
     unitItem({
         handle: 'dye-sublimation-ink-set',
-        title: 'Dye-Sublimation Ink — CMYK Set',
+        title: 'Dye-Sublimation Ink: CMYK Set',
         description:
-            'A four-color CMYK set of dye-sublimation ink for transfer printing onto polyester and coated blanks — high color yield, sharp gradients, and a stable formula that sublimates evenly at press temperature. Set of 4 x 1 L bottles. MOQ 1 set. The ink behind every mug, tumbler and poly tee.',
+            'A four-color CMYK set of dye-sublimation ink for transfer printing onto polyester and coated blanks: high color yield, sharp gradients, and a stable formula that sublimates evenly at press temperature. Set of 4 x 1 L bottles. MOQ 1 set. The ink behind every mug, tumbler and poly tee.',
         price: 142,
         sku: 'IYD-INK-SUBLI-CMYK',
         productType: 'Ink',
@@ -677,9 +677,9 @@ const PRODUCTS: Product[] = [
     }),
     {
         handle: 'sublimation-blank-mugs-case',
-        title: 'Sublimation Blank Mugs — Case of 36',
+        title: 'Sublimation Blank Mugs: Case of 36',
         description:
-            'White polymer-coated ceramic blanks for dye-sublimation, a case of 36 — an even coating that takes a full-wrap transfer edge to edge with bright, wash-durable color. MOQ 1 case. Pick the size your line presses — the everyday 11oz or the roomier 15oz.',
+            'White polymer-coated ceramic blanks for dye-sublimation, a case of 36: an even coating that takes a full-wrap transfer edge to edge with bright, wash-durable color. MOQ 1 case. Pick the size your line presses, the everyday 11oz or the roomier 15oz.',
         status: 'active',
         productType: 'Blank',
         vendor: VENDOR,
@@ -699,7 +699,7 @@ const PRODUCTS: Product[] = [
         handle: 'shop-starter-media-kit',
         title: 'Shop Starter Media Kit',
         description:
-            'A curated kit of the media a new sign or print shop runs out of first — a roll of cast vinyl, a roll of application tape, a roll of banner, and a set of HTV colors, packed together and priced below the sum of the rolls. MOQ 1 kit. The fastest way to stock a floor from empty.',
+            'A curated kit of the media a new sign or print shop runs out of first: a roll of cast vinyl, a roll of application tape, a roll of banner, and a set of HTV colors, packed together and priced below the sum of the rolls. MOQ 1 kit. The fastest way to stock a floor from empty.',
         price: 269,
         sku: 'IYD-KIT-STARTER',
         productType: 'Kit',
@@ -708,7 +708,7 @@ const PRODUCTS: Product[] = [
         tags: ['kit', 'starter', 'bundle', 'media'],
         asset: 'prod-starter-kit',
         seoTitle: 'Shop Starter Media Kit | Inkyard Trade Supply',
-        seoDescription: 'A curated starter kit of essential print-shop media — cast vinyl, application tape, banner and HTV, priced below the sum.',
+        seoDescription: 'A curated starter kit of essential print-shop media: cast vinyl, application tape, banner and HTV, priced below the sum.',
     }),
 ];
 
@@ -789,13 +789,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Every sign shop keeps two families of vinyl on the shelf, and the fastest way to a callback is grabbing the wrong one. Cast and calendered vinyl look alike on the roll, cut alike on the plotter, and weed alike on the bench — but they are made differently, they cost differently, and they last differently. Match the film to the job and the graphic outlives the warranty; mismatch it and it shrinks, lifts or fades before the invoice is paid.'),
+                    para('Every sign shop keeps two families of vinyl on the shelf, and the fastest way to a callback is grabbing the wrong one. Cast and calendered vinyl look alike on the roll, cut alike on the plotter, and weed alike on the bench, but they are made differently, they cost differently, and they last differently. Match the film to the job and the graphic outlives the warranty; mismatch it and it shrinks, lifts or fades before the invoice is paid.'),
                     h2('Cast vinyl: thin, conformable, long-life'),
-                    para('Cast vinyl is poured as a liquid and cured thin — around 2 mil — with almost no memory, so it conforms into rivets and compound curves and stays put. That is why it is the film for vehicle wraps, long-term outdoor decals and anything with a 5-to-7-year life. It costs more per roll, and it is worth every cent on a job that has to survive the weather and the wash.'),
+                    para('Cast vinyl is poured as a liquid and cured thin (around 2 mil) with almost no memory, so it conforms into rivets and compound curves and stays put. That is why it is the film for vehicle wraps, long-term outdoor decals and anything with a 5-to-7-year life. It costs more per roll, and it is worth every cent on a job that has to survive the weather and the wash.'),
                     h2('Calendered vinyl: thicker, cheaper, short-to-mid term'),
-                    para('Calendered vinyl is squeezed through rollers, which leaves it thicker — 3 to 4 mil — and gives it a memory that wants to shrink back over time. That is fine for flat, short-to-mid-term work: interior signage, banners of decals, event graphics, anything under a couple of years on a flat surface. Do not put it on a curve or leave it in the sun for five years and expect it to behave.'),
+                    para('Calendered vinyl is squeezed through rollers, which leaves it thicker (3 to 4 mil) and gives it a memory that wants to shrink back over time. That is fine for flat, short-to-mid-term work: interior signage, banners of decals, event graphics, anything under a couple of years on a flat surface. Do not put it on a curve or leave it in the sun for five years and expect it to behave.'),
                     h2('Laminate the ones that have to last'),
-                    para('Whichever film you cut, a printed graphic that faces weather or wash wants an overlaminate over it — matched cast-over-cast for a wrap, a value laminate for flat work. It is the cheapest insurance in the shop: a few dollars of film that turns a two-year print into a five-year one and keeps the callback off your calendar.'),
+                    para('Whichever film you cut, a printed graphic that faces weather or wash wants an overlaminate over it: matched cast-over-cast for a wrap, a value laminate for flat work. It is the cheapest insurance in the shop: a few dollars of film that turns a two-year print into a five-year one and keeps the callback off your calendar.'),
                 ],
             },
         },
@@ -806,18 +806,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Getting clean sublimation transfers, every press',
-            excerpt: 'Ghosting, dull color and banding are almost never the blank — they are time, temperature and pressure. Here is how to dial a heat press so every transfer lands sharp.',
+            excerpt: 'Ghosting, dull color and banding are almost never the blank. They are time, temperature and pressure. Here is how to dial a heat press so every transfer lands sharp.',
             featuredImage: { $asset: 'post-sublimation' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Dye-sublimation is unforgiving in a very specific way: when it goes right the color is brilliant and permanent, and when it goes wrong you get ghosting, washed-out tones or a scorched blank — and you rarely get a second try on the same piece. The good news is that the variables are few and they are all controllable. Get time, temperature and pressure repeatable and the press stops being a gamble.'),
+                    para('Dye-sublimation is unforgiving in a very specific way: when it goes right the color is brilliant and permanent, and when it goes wrong you get ghosting, washed-out tones or a scorched blank, and you rarely get a second try on the same piece. The good news is that the variables are few and they are all controllable. Get time, temperature and pressure repeatable and the press stops being a gamble.'),
                     h2('Time and temperature: match the substrate'),
-                    para('Sublimation happens when the ink turns to gas and bonds into a polyester or a polymer coating, and that only happens in a window of heat and time. A ceramic mug wants a different dwell than a poly tee or a hard aluminium panel — follow the blank supplier’s numbers, not a single setting for everything. Too cool or too short and the color is muddy and under-developed; too hot or too long and you scorch the coating and yellow the whites.'),
+                    para('Sublimation happens when the ink turns to gas and bonds into a polyester or a polymer coating, and that only happens in a window of heat and time. A ceramic mug wants a different dwell than a poly tee or a hard aluminium panel: follow the blank supplier’s numbers, not a single setting for everything. Too cool or too short and the color is muddy and under-developed; too hot or too long and you scorch the coating and yellow the whites.'),
                     h2('Pressure and contact: even is everything'),
-                    para('The transfer only develops where the paper touches the blank under pressure. Uneven pressure — a warped platen, a lump under the shirt, a mug press out of adjustment — gives you sharp color in one spot and a fade in the next. Check that the press closes evenly, use a nomex pad or a pillow to level a garment, and make sure the paper is taped so it cannot shift and double-image.'),
+                    para('The transfer only develops where the paper touches the blank under pressure. Uneven pressure (a warped platen, a lump under the shirt, a mug press out of adjustment) gives you sharp color in one spot and a fade in the next. Check that the press closes evenly, use a nomex pad or a pillow to level a garment, and make sure the paper is taped so it cannot shift and double-image.'),
                     h2('Kill the ghost: no movement, manage the moisture'),
-                    para('Ghosting — a faint second image offset from the first — is the paper moving as the press opens and the gas still venting. Tape the transfer down, lift the press cleanly, and pre-press a garment for a few seconds to drive off moisture before you lay the paper. Sort those three things and your reject pile all but disappears, which is the difference between a profitable sublimation line and a frustrating one.'),
+                    para('Ghosting (a faint second image offset from the first) is the paper moving as the press opens and the gas still venting. Tape the transfer down, lift the press cleanly, and pre-press a garment for a few seconds to drive off moisture before you lay the paper. Sort those three things and your reject pile all but disappears, which is the difference between a profitable sublimation line and a frustrating one.'),
                 ],
             },
         },
@@ -833,13 +833,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('A print shop lives and dies on turnaround, and nothing kills turnaround like discovering the banner roll is empty with a job on the printer and a deadline at four. Media is the one thing you should never run out of, and keeping it stocked does not take software or a dedicated storekeeper — it takes a min/max system and the discipline to follow it.'),
+                    para('A print shop lives and dies on turnaround, and nothing kills turnaround like discovering the banner roll is empty with a job on the printer and a deadline at four. Media is the one thing you should never run out of, and keeping it stocked does not take software or a dedicated storekeeper. It takes a min/max system and the discipline to follow it.'),
                     h2('Set a min and a max for every roll'),
-                    para('For each line you print — banner, cast vinyl, HTV colors, laminate — decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover what you print over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full — enough to buy at a case or pallet price without turning the rack into dead capital. Drop to the min, order back up to the max. That is the whole system.'),
+                    para('For each line you print: banner, cast vinyl, HTV colors, laminate, decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover what you print over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full, enough to buy at a case or pallet price without turning the rack into dead capital. Drop to the min, order back up to the max. That is the whole system.'),
                     h2('Label the rack, not your memory'),
                     para('Write the line, the width, the min and the max on the rack itself. When anyone can see at a glance that the 54-inch banner is below its min, ordering stops depending on one person remembering on a busy day. A two-roll trick makes it simpler still: when the front roll runs out, that is the signal to reorder, and the back roll carries you until the case lands.'),
                     h2('Put the fast movers on a standing order'),
-                    para('The media you burn on a predictable schedule — banner, application tape, your house HTV colors, CMYK ink — does not need re-deciding every month. Put it on a standing order with your supplier and it arrives before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable rolls take care of themselves.'),
+                    para('The media you burn on a predictable schedule (banner, application tape, your house HTV colors, CMYK ink) does not need re-deciding every month. Put it on a standing order with your supplier and it arrives before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable rolls take care of themselves.'),
                 ],
             },
         },
@@ -854,7 +854,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Print & Sign Supply (B2B / Wholesale)',
     theme: THEME,
     summary:
-        'A complete, working wholesale shop for a print, signage & sublimation trade supplier: a real catalogue sold by the roll, box and case — cast vinyl & HTV, banner & board, eco-solvent & dye-sub ink, and sublimation blanks — with pack quantities, MOQs, categories, collections, a bespoke trade PDP (per-unit pricing, bulk breaks, net-30), and a full merchandised home page. Clean CMYK-adjacent theme — cool paper, press-ink primary, a magenta signal accent. Shipped as Inkyard Trade Supply.',
+        'A complete, working wholesale shop for a print, signage & sublimation trade supplier: a real catalogue sold by the roll, box and case, cast vinyl & HTV, banner & board, eco-solvent & dye-sub ink, and sublimation blanks, with pack quantities, MOQs, categories, collections, a bespoke trade PDP (per-unit pricing, bulk breaks, net-30), and a full merchandised home page. Clean CMYK-adjacent theme, cool paper, press-ink primary, a magenta signal accent. Shipped as Inkyard Trade Supply.',
     tagline: 'A wholesale storefront built for the print trade.',
     vertical: 'b2b',
     industry: 'Print, signage & sublimation supply',
@@ -867,17 +867,17 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Inkyard Trade Supply — print, signage & sublimation distributor',
+            title: 'Inkyard Trade Supply. Print, signage & sublimation distributor',
             description:
-                'Inkyard is a trade supplier to print shops and sign makers — cast vinyl, HTV, banner media, wide-format & dye-sub ink and sublimation blanks by the roll and case, at trade prices, with net-30 terms and next-day dispatch. Open a trade account.',
+                'Inkyard is a trade supplier to print shops and sign makers: cast vinyl, HTV, banner media, wide-format & dye-sub ink and sublimation blanks by the roll and case, at trade prices, with net-30 terms and next-day dispatch. Open a trade account.',
         },
         about: {
             title: 'About Inkyard Trade Supply',
             description:
-                'How Inkyard stocks, prices and ships — one catalog, one account, one invoice, wholesale media by the roll and case, and stock that is actually on the shelf when you order it.',
+                'How Inkyard stocks, prices and ships. One catalog, one account, one invoice, wholesale media by the roll and case, and stock that is actually on the shelf when you order it.',
         },
         contact: {
-            title: 'Open a trade account — Inkyard Trade Supply',
+            title: 'Open a trade account: Inkyard Trade Supply',
             description:
                 'Set up a trade account with Inkyard: wholesale per-unit pricing, bulk breaks, net-30 terms and a dedicated account manager. Wholesale enquiries and bulk media quotes start here.',
         },

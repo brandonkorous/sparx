@@ -155,7 +155,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New request — hold Shift to open alongside, Alt for a new window"
+            title="New request: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('crm.ticket.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -219,7 +219,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<LifeBuoy className="size-6" aria-hidden />}
             title="Could not load the support queue"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             actions={
               <Button
                 size="sm"
@@ -251,7 +251,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No open requests',
               description:
-                'Requests land here when a customer emails you, fills in a form, or starts a live chat — and you can add one by hand for anything that came in another way. Every one gets a reply time based on the hours you work.',
+                'Requests land here when a customer emails you, fills in a form, or starts a live chat, and you can add one by hand for anything that came in another way. Every one gets a reply time based on the hours you work.',
             }}
           />
         ) : (

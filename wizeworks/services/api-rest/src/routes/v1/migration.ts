@@ -234,7 +234,7 @@ const migrationRoutes: FastifyPluginAsync = async (app) => {
     const connector = connectorForVendor(input.vendor);
     if (connector === undefined) {
       throw badRequest(
-        `${input.vendor} has no live connection — bring your files across instead, which works the same way from the second step on.`
+        `${input.vendor} has no live connection: bring your files across instead, which works the same way from the second step on.`
       );
     }
 
@@ -364,7 +364,7 @@ const migrationRoutes: FastifyPluginAsync = async (app) => {
 
     if (accepted.length === 0) {
       throw badRequest(
-        `Nothing in this file can be imported yet — it carries ${skipped
+        `Nothing in this file can be imported yet: it carries ${skipped
           .map((s) => ENTITY_LABEL[s.entity as CanonicalEntity].many.toLowerCase())
           .join(' and ')}, and the modules for those are turned off.`
       );
@@ -440,7 +440,7 @@ const migrationRoutes: FastifyPluginAsync = async (app) => {
 
     if (created.length === 0) {
       throw badRequest(
-        'Nothing in this file can be imported as it stands — every row has a problem that has to be fixed first.'
+        'Nothing in this file can be imported as it stands: every row has a problem that has to be fixed first.'
       );
     }
 
@@ -686,7 +686,7 @@ const migrationRoutes: FastifyPluginAsync = async (app) => {
       cancelled: result.count,
       note:
         result.count === 0
-          ? 'Nothing left to cancel — every part of this migration had already started.'
+          ? 'Nothing left to cancel: every part of this migration had already started.'
           : `${result.count} part${result.count === 1 ? '' : 's'} of this migration were stopped before they began. Anything already running was left to finish.`,
     });
   });

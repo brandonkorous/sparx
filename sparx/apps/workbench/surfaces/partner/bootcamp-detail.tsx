@@ -233,6 +233,15 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     if (isNew) {
       create.mutate(input, {
         onSuccess: (result) => {
+          // Rebased BEFORE the pane swap. `target: 'replace'` changes this
+          // pane's params in place rather than remounting it, so the load
+          // effect never runs again and a baseline left at EMPTY keeps the pane
+          // dirty forever: an unsaved dot on the tab, "Not saved" in the status
+          // bar, and a leave-guard asking whether to discard a record that is
+          // safely written. Same rebase the update path below already does, and
+          // the same one `staff/person-writes.ts` and `crm/object-type-detail`
+          // spell out in their own comments.
+          setBaseline(form);
           ctx.open('partner.bootcamp.detail', { id: result.id }, { target: 'replace' });
           afterPaneChange(() => {
             toast.add({
@@ -518,7 +527,7 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               />
               <FieldDescription>
-                Headings, lists, and links are welcome — this shows on the public bootcamp page.
+                Headings, lists, and links are welcome. This shows on the public bootcamp page.
               </FieldDescription>
             </Field>
             <Field>

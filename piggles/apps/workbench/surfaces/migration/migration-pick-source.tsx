@@ -43,7 +43,7 @@ export function PickSource({ vendor, reading, readError, onFile, onConnect }: Pi
         </Heading>
         <Text>
           {vendor?.connector == null
-            ? 'Drop the export your current platform made. We read it right here on your own machine and tell you what is in it — nothing is sent anywhere until you say so.'
+            ? 'Drop the export your current platform made. We read it right here on your own machine and tell you what is in it. Nothing is sent anywhere until you say so.'
             : `Two ways in, and they end up in the same place. Connect to ${vendor.name} and we fetch it for you, or drop an export in if you would rather. Either way you see exactly what will happen before anything is saved.`}
         </Text>
       </div>
@@ -84,7 +84,7 @@ export function PickSource({ vendor, reading, readError, onFile, onConnect }: Pi
         <Icon glyph={faFileArrowUp} className="size-8" aria-hidden />
         <span className="flex flex-col gap-1">
           <Text className="font-medium">Choose a file, or drop one here</Text>
-          <Text className="text-sm">CSV, XML or JSON — whatever your platform gave you.</Text>
+          <Text className="text-sm">CSV, XML or JSON: whatever your platform gave you.</Text>
         </span>
         <input
           ref={inputRef}

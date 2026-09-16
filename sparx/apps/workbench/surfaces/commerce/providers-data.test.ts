@@ -45,7 +45,7 @@ const MANUAL = gateway({
 describe('gatewayState', () => {
   it('says a live card gateway is taking payments', () => {
     const state = gatewayState(gateway({}), config({}), undefined);
-    expect(state.label).toBe('Active — taking payments');
+    expect(state.label).toBe('Active: taking payments');
     expect(state.tone).toBe('success');
   });
 
@@ -56,7 +56,7 @@ describe('gatewayState', () => {
   it('never claims a gateway with no online checkout is taking payments', () => {
     const state = gatewayState(MANUAL, config({ gatewayId: 'manual' }), undefined);
     expect(state.label).not.toContain('taking payments');
-    expect(state.label).toBe('Active — no card payments');
+    expect(state.label).toBe('Active: no card payments');
   });
 
   it('colors "active and charging" differently from "active and charging nothing"', () => {
@@ -86,7 +86,7 @@ describe('gatewayState', () => {
 
   it('separates chosen-but-not-ready from active', () => {
     const state = gatewayState(gateway({}), config({ isActive: false }), undefined);
-    expect(state.label).toBe('Chosen — add your keys to go live');
+    expect(state.label).toBe('Chosen: add your keys to go live');
     expect(state.tone).toBe('info');
   });
 
@@ -95,7 +95,7 @@ describe('gatewayState', () => {
       gatewayId: 'square',
       hasSecrets: true,
     } as never);
-    expect(state.label).toBe('Keys saved — not your active provider');
+    expect(state.label).toBe('Keys saved, not your active provider');
   });
 });
 

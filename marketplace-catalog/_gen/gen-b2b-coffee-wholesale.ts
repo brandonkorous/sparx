@@ -167,7 +167,7 @@ function hero(): Node {
                   text: 'The roaster behind your counter.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Foundry Coffee Trade supplies cafés, offices and restaurants with coffee roasted to order — beans by the trade bag, filter and capsule programs, syrups, cups and the machines to run them. Trade pricing, weekly standing orders and a real account manager who knows your bar.',
+                  text: 'Foundry Coffee Trade supplies cafés, offices and restaurants with coffee roasted to order: beans by the trade bag, filter and capsule programs, syrups, cups and the machines to run them. Trade pricing, weekly standing orders and a real account manager who knows your bar.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -277,7 +277,7 @@ function wholesalePartnerBand(): Node {
                 text: 'Wholesale, run like a partnership',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Opening an account takes a short call and a first order. From there you get trade pricing that improves with volume, a standing order that keeps your bar stocked, and a named account manager who picks up the phone — not a ticket queue.',
+                text: 'Opening an account takes a short call and a first order. From there you get trade pricing that improves with volume, a standing order that keeps your bar stocked, and a named account manager who picks up the phone, not a ticket queue.',
               }),
             ],
           }),
@@ -285,7 +285,7 @@ function wholesalePartnerBand(): Node {
             children: [
               partnerBenefit({
                 heading: 'Trade pricing & breaks',
-                body: 'Wholesale rates from your first case, with per-kilo breaks as your order grows. See your account price at checkout — no haggling, no hidden list.',
+                body: 'Wholesale rates from your first case, with per-kilo breaks as your order grows. See your account price at checkout: no haggling, no hidden list.',
               }),
               partnerBenefit({
                 heading: 'Weekly standing orders',
@@ -293,7 +293,7 @@ function wholesalePartnerBand(): Node {
               }),
               partnerBenefit({
                 heading: 'Barista training',
-                body: 'We dial in your espresso on your machine and train your team to hold it through the rush — on install, and any time you take on new staff.',
+                body: 'We dial in your espresso on your machine and train your team to hold it through the rush: on install, and any time you take on new staff.',
               }),
               partnerBenefit({
                 heading: 'Equipment & servicing',
@@ -330,7 +330,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Trade favourites' }),
   editorialBand({
     heading: 'Roasted to order, in trade volumes',
-    lead: 'We roast on a production drum and cup every batch before it ships, so a café ordering fifty kilos gets the same coffee we tasted on the sample table. Consistent week to week is the whole job — a house espresso that drifts is a bar full of remakes.',
+    lead: 'We roast on a production drum and cup every batch before it ships, so a café ordering fifty kilos gets the same coffee we tasted on the sample table. Consistent week to week is the whole job: a house espresso that drifts is a bar full of remakes.',
     assetId: 'band-roastery',
     cta: 'How we roast for trade',
     href: '/blog/dialling-in-for-your-cafe',
@@ -380,7 +380,7 @@ function pdpBuyRegion(): Node {
                     text: 'Trade pricing & standing orders',
                   }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'Wholesale accounts see per-case trade pricing with per-kilo breaks as volume grows, and can put any line on a weekly or fortnightly standing order — adjust, skip or pause it any time. Approved accounts invoice net-30. Everything is roasted to order and freight-packed fresh, and your account manager is a phone call away if you need to change a delivery.',
+                    text: 'Wholesale accounts see per-case trade pricing with per-kilo breaks as volume grows, and can put any line on a weekly or fortnightly standing order: adjust, skip or pause it any time. Approved accounts invoice net-30. Everything is roasted to order and freight-packed fresh, and your account manager is a phone call away if you need to change a delivery.',
                   }),
                 ],
               }),
@@ -419,13 +419,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The trade catalogue',
-    'Everything we supply to the trade — beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables and equipment. Prices shown are trade rates; sign in to see your account pricing and put any line on a standing order.'
+    'Everything we supply to the trade: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables and equipment. Prices shown are trade rates; sign in to see your account pricing and put any line on a standing order.'
   ),
 ];
 const COLLECTIONS: Node[] = [
   pageMasthead(
     'Programs & bundles',
-    'The catalogue grouped the way a bar actually orders it — new-crop coffees, the café essentials starter, the office program, and everything to open a new site.'
+    'The catalogue grouped the way a bar actually orders it: new-crop coffees, the café essentials starter, the office program, and everything to open a new site.'
   ),
 ];
 const SEARCH: Node[] = [
@@ -452,7 +452,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The trade journal' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Notes from the roastery for the people running the bar — dialling in a house espresso, getting the most out of a standing order, and keeping your equipment honest. Practical, made for a working café.',
+            text: 'Notes from the roastery for the people running the bar: dialling in a house espresso, getting the most out of a standing order, and keeping your equipment honest. Practical, made for a working café.',
           }),
         ],
       }),
@@ -469,7 +469,7 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Foundry Coffee Trade' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Foundry started as a wholesale roaster with one delivery van and a handful of cafés who wanted coffee they could stand behind. It grew the way trade relationships do — one bar, one standing order, one dialled-in espresso at a time — and it still runs on the same promise: roast well, supply reliably, and answer the phone.',
+            text: 'Foundry started as a wholesale roaster with one delivery van and a handful of cafés who wanted coffee they could stand behind. It grew the way trade relationships do (one bar, one standing order, one dialled-in espresso at a time) and it still runs on the same promise: roast well, supply reliably, and answer the phone.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We buy green coffee from importers and farms we can name and pay above the commodity rate, because a supply chain that pays growers fairly is the only one that stays consistent season to season. Then we roast to order in production batches, cup every one, and freight it fresh so your hopper gets what we tasted.',
@@ -490,7 +490,7 @@ const CONTACT: Node[] = [
   // `mailto:` to a placeholder domain, which was the only way to reach the business.
   contactSection({
     heading: 'Open a wholesale account',
-    intro: 'Tell us about your café, office or restaurant — how much coffee you go through, what you pour now, and when you would want a first delivery. A real person on the trade team will come back with account pricing, samples and a plan to get you dialled in.',
+    intro: 'Tell us about your café, office or restaurant: how much coffee you go through, what you pour now, and when you would want a first delivery. A real person on the trade team will come back with account pricing, samples and a plan to get you dialled in.',
     submitLabel: 'Email the trade team',
   }),
 ];
@@ -601,7 +601,7 @@ const PRODUCTS: Product[] = [
     handle: 'house-espresso',
     title: 'Foundry House Espresso',
     description:
-      'The workhorse behind hundreds of bars — a chocolatey, syrupy blend built for volume, forgiving on the grinder and heavy enough to cut through milk without disappearing. Consistent batch to batch so your baristas dial in once and hold it through the rush. Minimum first order 6 x 1kg; per-kilo price improves at 5kg.',
+      'The workhorse behind hundreds of bars: a chocolatey, syrupy blend built for volume, forgiving on the grinder and heavy enough to cut through milk without disappearing. Consistent batch to batch so your baristas dial in once and hold it through the rush. Minimum first order 6 x 1kg; per-kilo price improves at 5kg.',
     price1kg: 27,
     price5kg: 122,
     sku: 'FDY-ESP-HOUSE',
@@ -609,14 +609,14 @@ const PRODUCTS: Product[] = [
     collections: ['new-crop', 'cafe-essentials', 'espresso-program', 'opening-a-cafe'],
     tags: ['espresso', 'blend', 'wholesale', 'cafe'],
     asset: 'prod-house-espresso',
-    seoTitle: 'Foundry House Espresso — wholesale espresso beans | Foundry Coffee Trade',
+    seoTitle: 'Foundry House Espresso: wholesale espresso beans | Foundry Coffee Trade',
     seoDescription: 'A chocolatey, milk-friendly house espresso built for café volume. Trade bags by the 1kg and 5kg, per-kilo breaks.',
   }),
   wholesaleBag({
     handle: 'colombia-filter',
-    title: 'Colombia Huila — Filter',
+    title: 'Colombia Huila. Filter',
     description:
-      'A clean, sweet washed Colombia for batch brew and pour-over — milk chocolate, red apple and caramel, medium-bodied and easy to sell all day. The house filter for cafés and the go-to for office batch machines. Minimum first order 6 x 1kg; per-kilo price improves at 5kg.',
+      'A clean, sweet washed Colombia for batch brew and pour-over: milk chocolate, red apple and caramel, medium-bodied and easy to sell all day. The house filter for cafés and the go-to for office batch machines. Minimum first order 6 x 1kg; per-kilo price improves at 5kg.',
     price1kg: 29,
     price5kg: 131,
     sku: 'FDY-FIL-COL',
@@ -624,14 +624,14 @@ const PRODUCTS: Product[] = [
     collections: ['new-crop', 'cafe-essentials', 'office-program'],
     tags: ['filter', 'single-origin', 'colombia', 'wholesale'],
     asset: 'prod-colombia-filter',
-    seoTitle: 'Colombia Huila Filter — wholesale filter beans | Foundry Coffee Trade',
+    seoTitle: 'Colombia Huila Filter: wholesale filter beans | Foundry Coffee Trade',
     seoDescription: 'A sweet, balanced washed Colombia for batch brew and pour-over. Trade bags by the 1kg and 5kg.',
   }),
   wholesaleBag({
     handle: 'decaf',
     title: 'Nightshift Decaf',
     description:
-      'A sugarcane-process decaf that pours like the real thing — cocoa, roasted almond and dried cherry, with none of the flat papery note decaf is known for. The one your evening service and office breakroom actually reorder. Minimum first order 4 x 1kg; per-kilo price improves at 5kg.',
+      'A sugarcane-process decaf that pours like the real thing: cocoa, roasted almond and dried cherry, with none of the flat papery note decaf is known for. The one your evening service and office breakroom actually reorder. Minimum first order 4 x 1kg; per-kilo price improves at 5kg.',
     price1kg: 29,
     price5kg: 131,
     sku: 'FDY-DEC-NS',
@@ -639,21 +639,21 @@ const PRODUCTS: Product[] = [
     collections: ['office-program'],
     tags: ['decaf', 'wholesale', 'cafe', 'office'],
     asset: 'prod-decaf',
-    seoTitle: 'Nightshift Decaf — wholesale decaf beans | Foundry Coffee Trade',
+    seoTitle: 'Nightshift Decaf: wholesale decaf beans | Foundry Coffee Trade',
     seoDescription: 'A genuinely good sugarcane-process decaf for café and office. Trade bags by the 1kg and 5kg.',
   }),
   {
     handle: 'filter-packs-case',
-    title: 'Filter Sachets — Case of 100',
+    title: 'Filter Sachets: Case of 100',
     description:
-      'Pre-portioned, freshly ground filter sachets for offices, hotel rooms and back-of-house — one sachet per pot, no grinder, no waste, no guesswork. A case of 100 x 60g sachets of the Colombia filter, nitrogen-flushed for freshness. The easiest coffee program to run where there is no barista.',
+      'Pre-portioned, freshly ground filter sachets for offices, hotel rooms and back-of-house. One sachet per pot, no grinder, no waste, no guesswork. A case of 100 x 60g sachets of the Colombia filter, nitrogen-flushed for freshness. The easiest coffee program to run where there is no barista.',
     status: 'active',
     productType: 'Filter coffee',
     vendor: VENDOR,
     tags: ['filter', 'sachets', 'office', 'wholesale'],
     categoryHandles: ['filter-capsules'],
     collectionHandles: ['office-program', 'cafe-essentials'],
-    seoTitle: 'Filter Sachets, case of 100 — wholesale filter coffee | Foundry Coffee Trade',
+    seoTitle: 'Filter Sachets, case of 100: wholesale filter coffee | Foundry Coffee Trade',
     seoDescription: 'Pre-portioned 60g filter sachets, case of 100, for offices and back-of-house. Nitrogen-flushed, roasted to order.',
     variants: [{ sku: 'FDY-FILPK-100', priceCents: money(48), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-filter-packs', isPrimary: true, alt: 'A case of filter coffee sachets' }],
@@ -662,14 +662,14 @@ const PRODUCTS: Product[] = [
     handle: 'capsules',
     title: 'Compostable Capsules',
     description:
-      'Our house espresso in a fully compostable capsule for offices, meeting rooms and hotel suites — the coffee people actually like, in the format that needs no training. Compatible with standard domestic and office machines. Order by the box of 50 or the trade case of 200.',
+      'Our house espresso in a fully compostable capsule for offices, meeting rooms and hotel suites: the coffee people actually like, in the format that needs no training. Compatible with standard domestic and office machines. Order by the box of 50 or the trade case of 200.',
     status: 'active',
     productType: 'Coffee capsules',
     vendor: VENDOR,
     tags: ['capsules', 'office', 'compostable', 'wholesale'],
     categoryHandles: ['filter-capsules'],
     collectionHandles: ['office-program'],
-    seoTitle: 'Compostable Coffee Capsules — wholesale | Foundry Coffee Trade',
+    seoTitle: 'Compostable Coffee Capsules: wholesale | Foundry Coffee Trade',
     seoDescription: 'House espresso in a compostable capsule for offices and hotels. Box of 50 or trade case of 200.',
     options: [
       { name: 'Pack', displayType: 'dropdown', values: [{ value: 'Box of 50' }, { value: 'Case of 200' }] },
@@ -682,16 +682,16 @@ const PRODUCTS: Product[] = [
   },
   {
     handle: 'flavour-syrups',
-    title: 'Flavour Syrups — Case of 6',
+    title: 'Flavour Syrups: Case of 6',
     description:
-      'The three flavours a café actually sells — vanilla, caramel and hazelnut — in 1L pump bottles, a case of six. Clean, not cloying, and made to hold up in milk. Mix the case across flavours or keep it to one; either way it ships with pumps.',
+      'The three flavours a café actually sells (vanilla, caramel and hazelnut) in 1L pump bottles, a case of six. Clean, not cloying, and made to hold up in milk. Mix the case across flavours or keep it to one; either way it ships with pumps.',
     status: 'active',
     productType: 'Syrup',
     vendor: VENDOR,
     tags: ['syrup', 'extras', 'cafe', 'wholesale'],
     categoryHandles: ['syrups-extras'],
     collectionHandles: ['cafe-essentials'],
-    seoTitle: 'Flavour Syrups, case of 6 — wholesale café syrups | Foundry Coffee Trade',
+    seoTitle: 'Flavour Syrups, case of 6: wholesale café syrups | Foundry Coffee Trade',
     seoDescription: 'Vanilla, caramel and hazelnut syrups in 1L pump bottles, a case of six. Made to hold up in milk.',
     options: [
       {
@@ -710,7 +710,7 @@ const PRODUCTS: Product[] = [
   },
   {
     handle: 'takeaway-cups',
-    title: 'Branded Takeaway Cups — Case of 1000',
+    title: 'Branded Takeaway Cups: Case of 1000',
     description:
       'Double-wall takeaway cups that hold heat without a sleeve, printed with your logo or left plain, lids included. A case of 1000 in the size your bar runs on. Set up your artwork once with your account manager and reorder in a click. Minimum print run one case per size.',
     status: 'active',
@@ -719,7 +719,7 @@ const PRODUCTS: Product[] = [
     tags: ['cups', 'disposables', 'branded', 'cafe', 'wholesale'],
     categoryHandles: ['syrups-extras'],
     collectionHandles: ['cafe-essentials', 'espresso-program', 'opening-a-cafe'],
-    seoTitle: 'Branded Takeaway Cups, case of 1000 — wholesale | Foundry Coffee Trade',
+    seoTitle: 'Branded Takeaway Cups, case of 1000: wholesale | Foundry Coffee Trade',
     seoDescription: 'Double-wall takeaway cups with lids, printed or plain, case of 1000. 8, 12 and 16oz.',
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '8oz' }, { value: '12oz' }, { value: '16oz' }] },
@@ -735,14 +735,14 @@ const PRODUCTS: Product[] = [
     handle: 'commercial-grinder',
     title: 'On-Demand Espresso Grinder',
     description:
-      'A commercial on-demand grinder built for a busy bar — flat burrs, a dosing display and a hopper that keeps up with back-to-back service. Supplied, installed and dialled in on your beans, with servicing and loan cover available on a wholesale account. The single biggest upgrade to a café’s cup.',
+      'A commercial on-demand grinder built for a busy bar: flat burrs, a dosing display and a hopper that keeps up with back-to-back service. Supplied, installed and dialled in on your beans, with servicing and loan cover available on a wholesale account. The single biggest upgrade to a café’s cup.',
     status: 'active',
     productType: 'Equipment',
     vendor: VENDOR,
     tags: ['equipment', 'grinder', 'espresso', 'wholesale'],
     categoryHandles: ['equipment'],
     collectionHandles: ['espresso-program', 'opening-a-cafe'],
-    seoTitle: 'On-Demand Espresso Grinder — commercial café equipment | Foundry Coffee Trade',
+    seoTitle: 'On-Demand Espresso Grinder: commercial café equipment | Foundry Coffee Trade',
     seoDescription: 'A commercial flat-burr on-demand espresso grinder, supplied, installed and serviced on a wholesale account.',
     variants: [{ sku: 'FDY-EQ-GRINDER', priceCents: money(1290), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-grinder', isPrimary: true, alt: 'A commercial on-demand espresso grinder' }],
@@ -751,14 +751,14 @@ const PRODUCTS: Product[] = [
     handle: 'trade-sampler',
     title: 'Trade Tasting Box',
     description:
-      'The way to choose before you commit — a sampler of our house espresso, the Colombia filter and the seasonal single origin, each a 250g bag, with dialling-in notes for every one. Cup them on your own machine with your own team, then build your program from what your bar actually pours.',
+      'The way to choose before you commit: a sampler of our house espresso, the Colombia filter and the seasonal single origin, each a 250g bag, with dialling-in notes for every one. Cup them on your own machine with your own team, then build your program from what your bar actually pours.',
     status: 'active',
     productType: 'Sampler',
     vendor: VENDOR,
     tags: ['sampler', 'trade', 'wholesale', 'tasting'],
     categoryHandles: ['wholesale-beans'],
     collectionHandles: ['new-crop'],
-    seoTitle: 'Trade Tasting Box — wholesale coffee samples | Foundry Coffee Trade',
+    seoTitle: 'Trade Tasting Box: wholesale coffee samples | Foundry Coffee Trade',
     seoDescription: 'A sampler of house espresso, Colombia filter and the seasonal single origin, with dialling-in notes. Choose before you commit.',
     variants: [{ sku: 'FDY-SAMPLE-BOX', priceCents: money(45), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-sampler', isPrimary: true, alt: 'A trade tasting box of sample bags' }],
@@ -767,15 +767,15 @@ const PRODUCTS: Product[] = [
     handle: 'standing-order',
     title: 'Weekly Standing Order',
     description:
-      'A recurring trade delivery that keeps your bar stocked without a phone call every week — set your regular lines and quantities and we roast and freight them on your schedule. Skip a week, change quantities or pause any time from your account. The price shown is a representative starter; your account manager builds it to your real order.',
+      'A recurring trade delivery that keeps your bar stocked without a phone call every week. Set your regular lines and quantities and we roast and freight them on your schedule. Skip a week, change quantities or pause any time from your account. The price shown is a representative starter; your account manager builds it to your real order.',
     status: 'active',
     productType: 'Standing order',
     vendor: VENDOR,
     tags: ['standing-order', 'subscription', 'wholesale', 'recurring'],
     categoryHandles: ['wholesale-beans'],
     collectionHandles: ['cafe-essentials', 'office-program'],
-    seoTitle: 'Weekly Standing Order — recurring wholesale coffee delivery | Foundry Coffee Trade',
-    seoDescription: 'A recurring trade delivery built to your order — skip, adjust or pause any time. Roasted to order every cycle.',
+    seoTitle: 'Weekly Standing Order: recurring wholesale coffee delivery | Foundry Coffee Trade',
+    seoDescription: 'A recurring trade delivery built to your order: skip, adjust or pause any time. Roasted to order every cycle.',
     options: [
       { name: 'Frequency', displayType: 'dropdown', values: [{ value: 'Weekly' }, { value: 'Fortnightly' }] },
     ],
@@ -851,16 +851,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Dialling in a house espresso for a busy bar',
-      excerpt: 'A repeatable way to set up an espresso and keep it there through service — the version we run when we install a new account.',
+      excerpt: 'A repeatable way to set up an espresso and keep it there through service: the version we run when we install a new account.',
       featuredImage: { $asset: 'post-dialling' },
       body: {
         type: 'doc',
         content: [
           para('A café does not need a competition recipe; it needs an espresso that tastes right on the first shot of the morning and the two-hundredth of the afternoon. When we install a new wholesale account, this is the process we run with the team, and it is the one we leave behind on a card by the machine.'),
           h2('Start from a target, not a number'),
-          para('Pick a dose your basket is built for — say 18 grams in, 36 out — and a shot time in the high twenties of seconds. Those are starting points, not laws. Pull a shot, taste it in milk (because that is what you sell), and adjust ONE thing: grind finer if it is sour and thin, coarser if it is bitter and dry. Change grind, not dose, until the flavour lands; a bar that chases three variables at once never holds any of them.'),
+          para('Pick a dose your basket is built for (say 18 grams in, 36 out) and a shot time in the high twenties of seconds. Those are starting points, not laws. Pull a shot, taste it in milk (because that is what you sell), and adjust ONE thing: grind finer if it is sour and thin, coarser if it is bitter and dry. Change grind, not dose, until the flavour lands; a bar that chases three variables at once never holds any of them.'),
           h2('Hold it through the day'),
-          para('Coffee grinds differently as the room warms and the beans age off roast, so the setting that was right at 7am drifts by lunch. Re-check at the two obvious inflection points — mid-morning and after the lunch rush — and nudge the grind a notch if the shot time has wandered. Log the setting each morning. Fresh, consistent beans roasted to order do most of the work here; a stable coffee is the difference between two grind tweaks a day and twenty.'),
+          para('Coffee grinds differently as the room warms and the beans age off roast, so the setting that was right at 7am drifts by lunch. Re-check at the two obvious inflection points (mid-morning and after the lunch rush) and nudge the grind a notch if the shot time has wandered. Log the setting each morning. Fresh, consistent beans roasted to order do most of the work here; a stable coffee is the difference between two grind tweaks a day and twenty.'),
           para('If a shot ever tastes wrong and the grind looks right, check the basics before you chase the grinder: a clean group head, a dry basket, a firm level tamp, and beans that are within their window. Nine times out of ten it is one of those, not the recipe.'),
         ],
       },
@@ -872,17 +872,17 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Getting the most from a standing order',
-      excerpt: 'A standing order is the quietest way to keep a bar stocked — here is how to set one that fits your real trade and never leaves you short.',
+      excerpt: 'A standing order is the quietest way to keep a bar stocked. Here is how to set one that fits your real trade and never leaves you short.',
       featuredImage: { $asset: 'post-standing' },
       body: {
         type: 'doc',
         content: [
-          para('The most common supply problem we see is not price — it is running out mid-service on a Saturday, or a storeroom full of coffee going stale because someone over-ordered to be safe. A standing order fixes both when it is set to your real numbers, and it takes ten minutes to get right.'),
+          para('The most common supply problem we see is not price. It is running out mid-service on a Saturday, or a storeroom full of coffee going stale because someone over-ordered to be safe. A standing order fixes both when it is set to your real numbers, and it takes ten minutes to get right.'),
           h2('Size it to a week of cups'),
           para('Work back from how many drinks you actually pour. A rough rule: a kilo of espresso makes around 140 doubles, so a bar doing 200 coffees a day needs roughly ten kilos a week with a little headroom. Set the standing order a touch under your peak and top up with a one-off when a big week is coming, rather than carrying weeks of stock that ages on the shelf.'),
           h2('Use skip and adjust'),
-          para('Trade is not flat, so your delivery should not be either. Going quiet for a public holiday or a slow January? Skip a cycle or drop the quantity from your account in a couple of taps — the schedule bends around your calendar instead of the other way round. Catering a big event? Add the extra to the next delivery so it arrives freshly roasted, not pulled from a back-room hoard.'),
-          para('Because every cycle is roasted to order, what turns up is always fresh — the standing order is a schedule, not a stockpile. Your account manager can rebuild it any time your trade shifts; that is what it is there for.'),
+          para('Trade is not flat, so your delivery should not be either. Going quiet for a public holiday or a slow January? Skip a cycle or drop the quantity from your account in a couple of taps: the schedule bends around your calendar instead of the other way round. Catering a big event? Add the extra to the next delivery so it arrives freshly roasted, not pulled from a back-room hoard.'),
+          para('Because every cycle is roasted to order, what turns up is always fresh: the standing order is a schedule, not a stockpile. Your account manager can rebuild it any time your trade shifts; that is what it is there for.'),
         ],
       },
     },
@@ -898,11 +898,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Great beans cannot rescue a dirty machine, and the fastest way to make a café’s coffee worse is to skip the cleaning. None of this is hard — it is a routine, and once it is a habit the equipment stops being a source of surprises.'),
+          para('Great beans cannot rescue a dirty machine, and the fastest way to make a café’s coffee worse is to skip the cleaning. None of this is hard. It is a routine, and once it is a habit the equipment stops being a source of surprises.'),
           h2('Daily and weekly'),
           para('Every day: backflush the espresso machine with water at close, wipe the group seals, empty and rinse the grinder hopper, and brush the grinds off the chute. Every week: backflush with detergent, soak the portafilters and baskets, and run a grinder clean through the burrs. Ten minutes a night and half an hour on a quiet morning is the whole cost, and it pays back in shots that taste the way they should.'),
           h2('When to call us'),
-          para('Burrs wear. When your grind setting keeps creeping finer to hold the same shot time, or the grind looks uneven and dusty, the burrs are near the end of their life and it is time for a service — not a bag of blame on the beans. On a wholesale account that service is booked through us, and if a machine has to come out we cover you with loan gear so the bar never goes dark.'),
+          para('Burrs wear. When your grind setting keeps creeping finer to hold the same shot time, or the grind looks uneven and dusty, the burrs are near the end of their life and it is time for a service, not a bag of blame on the beans. On a wholesale account that service is booked through us, and if a machine has to come out we cover you with loan gear so the bar never goes dark.'),
           para('Clean equipment, sharp burrs and coffee within its window: get those three right and the espresso looks after itself. Get any one wrong and no recipe will save it.'),
         ],
       },
@@ -918,7 +918,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Coffee Roaster (Wholesale)',
   theme: THEME,
   summary:
-    'A complete, working wholesale shop for a trade coffee roaster: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables, a commercial grinder, a trade sampler and a weekly standing order — with categories, collections, a buyer-framed PDP (trade pricing, standing orders, net-30) and a merchandised home page. Industrial roastery theme — cool graphite ground, deep espresso, burnt copper. Shipped as Foundry Coffee Trade.',
+    'A complete, working wholesale shop for a trade coffee roaster: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables, a commercial grinder, a trade sampler and a weekly standing order, with categories, collections, a buyer-framed PDP (trade pricing, standing orders, net-30) and a merchandised home page. Industrial roastery theme, cool graphite ground, deep espresso, burnt copper. Shipped as Foundry Coffee Trade.',
   tagline: 'A working trade storefront for a wholesale coffee roaster.',
   vertical: 'b2b',
   industry: 'Wholesale coffee roaster',
@@ -931,14 +931,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Foundry Coffee Trade — wholesale coffee for cafés, offices and restaurants',
+      title: 'Foundry Coffee Trade: wholesale coffee for cafés, offices and restaurants',
       description:
-        'Foundry Coffee Trade is a wholesale roaster supplying cafés, offices and restaurants — beans, filter and capsule programs, syrups, cups and equipment, on trade pricing with standing orders and net-30.',
+        'Foundry Coffee Trade is a wholesale roaster supplying cafés, offices and restaurants: beans, filter and capsule programs, syrups, cups and equipment, on trade pricing with standing orders and net-30.',
     },
     about: {
       title: 'About Foundry Coffee Trade',
       description:
-        'How Foundry roasts and supplies the trade — roasted to order, named farms, trade pricing, standing orders, barista training, equipment servicing and net-30 terms.',
+        'How Foundry roasts and supplies the trade: roasted to order, named farms, trade pricing, standing orders, barista training, equipment servicing and net-30 terms.',
     },
   },
   home: HOME,

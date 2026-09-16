@@ -208,7 +208,7 @@ const SCHEDULING = {
       handle: 'engagement-session',
       name: 'Engagement session',
       description:
-        'A golden-hour hour-and-a-half together — a warm-up in front of the camera and photographs you’ll actually use.',
+        'A golden-hour hour-and-a-half together: a warm-up in front of the camera and photographs you’ll actually use.',
       durationMinutes: 90,
       priceCents: 45000,
       assignmentStrategy: 'customer_choice',
@@ -247,7 +247,7 @@ const SCHEDULING = {
       handle: 'bridal-session',
       name: 'Bridal session',
       description:
-        'A slow, portrait-led morning in your gown — a trial run and a set of timeless images before the day itself.',
+        'A slow, portrait-led morning in your gown: a trial run and a set of timeless images before the day itself.',
       durationMinutes: 90,
       priceCents: 55000,
       assignmentStrategy: 'customer_choice',
@@ -260,7 +260,7 @@ const SCHEDULING = {
       handle: 'full-day-wedding-consult',
       name: 'Full-day wedding consult',
       description:
-        'A planning session for the whole wedding day — timeline, light and coverage, so nothing is left to chance.',
+        'A planning session for the whole wedding day: timeline, light and coverage, so nothing is left to chance.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -291,7 +291,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A couple embracing in warm golden-hour light in a summer field',
     title: 'Your love, in the golden hour',
-    sub: 'Warm, film-inspired wedding and engagement photography — the quiet in-between moments, the way the day actually felt, kept for good.',
+    sub: 'Warm, film-inspired wedding and engagement photography: the quiet in-between moments, the way the day actually felt, kept for good.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See the work', href: '/book' },
     overlay: 'dark',
@@ -300,15 +300,15 @@ const HOME = [
     items: [
       {
         title: 'Film and digital, together',
-        body: 'We shoot both — the softness and grain of film for the moments that matter, digital for the light that won’t wait.',
+        body: 'We shoot both: the softness and grain of film for the moments that matter, digital for the light that won’t wait.',
       },
       {
         title: 'Unhurried and candid',
-        body: 'Very little posing. We stay close, keep quiet, and let the day unfold — so what you get back is real, not arranged.',
+        body: 'Very little posing. We stay close, keep quiet, and let the day unfold, so what you get back is real, not arranged.',
       },
       {
         title: 'Full-day coverage',
-        body: 'From the first nervous morning look to the last song, we’re there for all of it — no clock-watching, no gaps.',
+        body: 'From the first nervous morning look to the last song, we’re there for all of it: no clock-watching, no gaps.',
       },
       {
         title: 'Heirloom albums',
@@ -318,7 +318,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Ways to begin',
-    intro: 'Every couple starts with a free consultation. Choose what fits, and we’ll take it from there — live availability is on the booking page.',
+    intro: 'Every couple starts with a free consultation. Choose what fits, and we’ll take it from there: live availability is on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -368,13 +368,13 @@ const HOME = [
     heading: 'We photograph the story, not just the schedule',
     body: [
       'A wedding isn’t a shot list. It’s your grandmother’s hand on your shoulder, the look you share before the doors open, the friend who can’t stop laughing during the toast.',
-      'So we work gently and stay close, following the day as it happens. You forget we’re there — and months later you open the gallery and feel it all again, exactly as it was.',
+      'So we work gently and stay close, following the day as it happens. You forget we’re there, and months later you open the gallery and feel it all again, exactly as it was.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
   teamRow({
     heading: 'The photographers',
-    intro: 'Book by name — you’ll meet your photographer at the consultation and they’ll be with you on the day.',
+    intro: 'Book by name: you’ll meet your photographer at the consultation and they’ll be with you on the day.',
     members: [
       {
         name: 'Rowan Ellis',
@@ -395,18 +395,18 @@ const HOME = [
         role: 'Photographer',
         image: url(IMG.mateo),
         alt: 'Mateo Reyes, photographer',
-        bio: 'Engagement shoots and the album room — he’ll help you turn a gallery into something you hold.',
+        bio: 'Engagement shoots and the album room: he’ll help you turn a gallery into something you hold.',
       },
     ],
   }),
   testimonial({
-    quote: 'We barely noticed the camera all day, and then the photos arrived and we both cried. It’s our whole wedding — the light, the nerves, the joy — exactly how it felt.',
+    quote: 'We barely noticed the camera all day, and then the photos arrived and we both cried. It’s our whole wedding (the light, the nerves, the joy) exactly how it felt.',
     attribution: 'Amara & Josh, married summer 2025',
     surface: 'muted',
   }),
   bookingCta({
     title: 'Let’s reserve your date',
-    sub: 'Start with a free consultation. Tell us about your day, meet your photographer, and see live availability — it takes about a minute.',
+    sub: 'Start with a free consultation. Tell us about your day, meet your photographer, and see live availability. It takes about a minute.',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
 ];
@@ -429,8 +429,8 @@ const ABOUT = [
     alt: 'A couple embracing in warm golden-hour light in a summer field',
     heading: 'About Golden Hour Studio',
     body: [
-      'We started Golden Hour Studio because we believe a wedding deserves to be remembered the way it was lived — warm, a little imperfect, and full of feeling. Not stiff, not staged.',
-      'We shoot on film and digital both, work quietly, and chase the last good light of the day. What you get back isn’t a highlight reel — it’s your story, honestly told, made to outlast us all.',
+      'We started Golden Hour Studio because we believe a wedding deserves to be remembered the way it was lived: warm, a little imperfect, and full of feeling. Not stiff, not staged.',
+      'We shoot on film and digital both, work quietly, and chase the last good light of the day. What you get back isn’t a highlight reel: it’s your story, honestly told, made to outlast us all.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -478,7 +478,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Start with a free consultation online — pick a time that suits you and we’ll see you soon.',
+    sub: 'Start with a free consultation online. Pick a time that suits you and we’ll see you soon.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -489,9 +489,9 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-photo-wedding',
   name: 'Wedding Photography',
   summary:
-    'An imagery-led wedding & engagement photography site — a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as "Golden Hour Studio".',
+    'An imagery-led wedding & engagement photography site: a warm, film-inspired palette of soft gold, cream and dusty rose over an elegant serif display, with golden-hour photography carrying every page. Installs a working booking flow: free consultations and paid sessions booked online, three photographers you reserve by name with their own hours, and a deposit policy for holding a wedding date. Ships as "Golden Hour Studio".',
   tagline:
-    'A warm, film-inspired template for wedding photographers — book consultations online from day one.',
+    'A warm, film-inspired template for wedding photographers. Book consultations online from day one.',
   industry: 'Photography',
   sortWeight: 60,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -500,7 +500,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Golden Hour Studio — film-inspired wedding photography',
+      title: 'Golden Hour Studio: film-inspired wedding photography',
       description:
         'Golden Hour Studio is a warm, film-inspired wedding and engagement photographer. Book a free consultation with your photographer online.',
     },

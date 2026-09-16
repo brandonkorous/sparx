@@ -69,7 +69,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<MapPin className="size-6" aria-hidden />}
           title="Could not load your places"
-          description="This is a problem reaching the server. Nothing is affected — the list just could not be read just now."
+          description="This is a problem reaching the server. Nothing is affected: the list just could not be read just now."
           actions={
             <Button
               size="sm"
@@ -105,7 +105,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           firstRun={{
             title: 'No places yet',
             description:
-              'Add the premises you serve customers from — your shop, your clinic, your studio. Your people, your services and your bookings are each filed against one.',
+              'Add the premises you serve customers from. Your shop, your clinic, your studio. Your people, your services and your bookings are each filed against one.',
             actions: (
               <Button
                 size="sm"
@@ -190,7 +190,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add a place — hold Shift to open alongside, Alt for a new window"
+            title="Add a place: hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
             <Plus className="size-4" aria-hidden />

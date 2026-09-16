@@ -85,14 +85,14 @@
     {
       "handle": "heavyweight-tee",
       "title": "Heavyweight Tee",
-      "description": "A 6.0 oz ring-spun cotton tee with real body — the blank for retail-quality merch, heavy prints and anything that has to feel like more than a promo shirt. Side-seamed, shoulder-taped, with a tight, smooth face that lays ink down flat.",
+      "description": "A 6.0 oz ring-spun cotton tee with real body: the blank for retail-quality merch, heavy prints and anything that has to feel like more than a promo shirt. Side-seamed, shoulder-taped, with a tight, smooth face that lays ink down flat.",
       "status": "active",
       "productType": "T-shirt",
       "vendor": "Blankstock",
       "tags": ["tee", "heavyweight", "6oz", "ring-spun", "screenprint"],
       "categoryHandles": ["tees"],
       "collectionHandles": ["best-sellers", "core-tees", "print-ready-kit"],
-      "seoTitle": "Heavyweight Tee — 6.0 oz blank for decorators | Blankstock",
+      "seoTitle": "Heavyweight Tee: 6.0 oz blank for decorators | Blankstock",
       "seoDescription": "A 6.0 oz ring-spun, side-seamed blank tee built for retail-quality prints. Sold by the case, priced per unit.",
       "options": [
         {
@@ -377,14 +377,14 @@
     {
       "handle": "ringspun-tee",
       "title": "Ringspun Tee",
-      "description": "A 4.3 oz combed ring-spun tee — soft, light and fashion-fit, the everyday blank for fine-line prints and DTG. Thinner than the heavyweight without going sheer, with a smooth face that holds detail. The volume workhorse of the shelf.",
+      "description": "A 4.3 oz combed ring-spun tee: soft, light and fashion-fit, the everyday blank for fine-line prints and DTG. Thinner than the heavyweight without going sheer, with a smooth face that holds detail. The volume workhorse of the shelf.",
       "status": "active",
       "productType": "T-shirt",
       "vendor": "Blankstock",
       "tags": ["tee", "ringspun", "4.3oz", "dtg", "fashion-fit"],
       "categoryHandles": ["tees"],
       "collectionHandles": ["new-blanks", "core-tees"],
-      "seoTitle": "Ringspun Tee — 4.3 oz soft blank for DTG & fine prints | Blankstock",
+      "seoTitle": "Ringspun Tee: 4.3 oz soft blank for DTG & fine prints | Blankstock",
       "seoDescription": "A soft 4.3 oz combed ring-spun blank tee, fashion-fit, ideal for DTG and fine-line prints. Priced per unit.",
       "options": [
         {
@@ -669,14 +669,14 @@
     {
       "handle": "long-sleeve-tee",
       "title": "Long-Sleeve Tee",
-      "description": "A 5.5 oz long-sleeve tee with rib cuffs that hold their shape through a wash — a print surface front, back and down both sleeves. Side-seamed and set-in, the same clean face as the heavyweight for full-coverage jobs.",
+      "description": "A 5.5 oz long-sleeve tee with rib cuffs that hold their shape through a wash: a print surface front, back and down both sleeves. Side-seamed and set-in, the same clean face as the heavyweight for full-coverage jobs.",
       "status": "active",
       "productType": "T-shirt",
       "vendor": "Blankstock",
       "tags": ["tee", "long-sleeve", "5.5oz", "ring-spun"],
       "categoryHandles": ["tees"],
       "collectionHandles": ["core-tees"],
-      "seoTitle": "Long-Sleeve Tee — 5.5 oz blank | Blankstock",
+      "seoTitle": "Long-Sleeve Tee: 5.5 oz blank | Blankstock",
       "seoDescription": "A 5.5 oz side-seamed long-sleeve blank with rib cuffs and a clean print face front, back and sleeves.",
       "options": [
         {
@@ -913,15 +913,15 @@
     {
       "handle": "tank-top",
       "title": "Tank Top",
-      "description": "A 4.2 oz ring-spun tank with a clean, deep armhole and bound neck and straps — the summer-drop and gym blank. Smooth face for a crisp front print, side-seamed so it sits flat on the platen.",
+      "description": "A 4.2 oz ring-spun tank with a clean, deep armhole and bound neck and straps: the summer-drop and gym blank. Smooth face for a crisp front print, side-seamed so it sits flat on the platen.",
       "status": "active",
       "productType": "Tank top",
       "vendor": "Blankstock",
       "tags": ["tank", "4.2oz", "ring-spun", "summer"],
       "categoryHandles": ["tees"],
       "collectionHandles": ["new-blanks", "core-tees"],
-      "seoTitle": "Tank Top — 4.2 oz ring-spun blank | Blankstock",
-      "seoDescription": "A 4.2 oz side-seamed ring-spun blank tank with bound neck and straps — the summer and gym blank.",
+      "seoTitle": "Tank Top: 4.2 oz ring-spun blank | Blankstock",
+      "seoDescription": "A 4.2 oz side-seamed ring-spun blank tank with bound neck and straps: the summer and gym blank.",
       "options": [
         {
           "name": "Color",
@@ -1157,15 +1157,15 @@
     {
       "handle": "pullover-hoodie",
       "title": "Pullover Hoodie",
-      "description": "An 8.5 oz fleece pullover hoodie — brushed inside, dense enough for a heavy front print, with a double-lined hood, split kangaroo pocket and rib cuffs and hem. The blank that carries a whole winter drop.",
+      "description": "An 8.5 oz fleece pullover hoodie: brushed inside, dense enough for a heavy front print, with a double-lined hood, split kangaroo pocket and rib cuffs and hem. The blank that carries a whole winter drop.",
       "status": "active",
       "productType": "Hoodie",
       "vendor": "Blankstock",
       "tags": ["hoodie", "fleece", "8.5oz", "pullover"],
       "categoryHandles": ["fleece"],
       "collectionHandles": ["best-sellers", "new-blanks", "fleece-weights", "print-ready-kit"],
-      "seoTitle": "Pullover Hoodie — 8.5 oz fleece blank | Blankstock",
-      "seoDescription": "An 8.5 oz brushed-fleece pullover hoodie blank with a double-lined hood — built for heavy front prints.",
+      "seoTitle": "Pullover Hoodie: 8.5 oz fleece blank | Blankstock",
+      "seoDescription": "An 8.5 oz brushed-fleece pullover hoodie blank with a double-lined hood: built for heavy front prints.",
       "options": [
         {
           "name": "Color",
@@ -1401,15 +1401,15 @@
     {
       "handle": "crewneck-sweatshirt",
       "title": "Crewneck Sweatshirt",
-      "description": "An 8.0 oz fleece crewneck — the clean-canvas fleece, no hood, no pocket, just a smooth brushed-back panel front and back for embroidery or a big print. Set-in sleeves, rib collar, cuffs and hem that keep their shape.",
+      "description": "An 8.0 oz fleece crewneck: the clean-canvas fleece, no hood, no pocket, just a smooth brushed-back panel front and back for embroidery or a big print. Set-in sleeves, rib collar, cuffs and hem that keep their shape.",
       "status": "active",
       "productType": "Sweatshirt",
       "vendor": "Blankstock",
       "tags": ["crewneck", "fleece", "8oz", "embroidery"],
       "categoryHandles": ["fleece"],
       "collectionHandles": ["fleece-weights"],
-      "seoTitle": "Crewneck Sweatshirt — 8.0 oz fleece blank | Blankstock",
-      "seoDescription": "An 8.0 oz brushed-fleece crewneck blank — a clean front and back panel for embroidery or a big print.",
+      "seoTitle": "Crewneck Sweatshirt: 8.0 oz fleece blank | Blankstock",
+      "seoDescription": "An 8.0 oz brushed-fleece crewneck blank: a clean front and back panel for embroidery or a big print.",
       "options": [
         {
           "name": "Color",
@@ -1652,8 +1652,8 @@
       "tags": ["cap", "headwear", "structured", "embroidery", "snapback"],
       "categoryHandles": ["headwear"],
       "collectionHandles": ["new-blanks", "best-sellers", "headwear-bags"],
-      "seoTitle": "Structured Cap — six-panel blank for embroidery | Blankstock",
-      "seoDescription": "A structured mid-profile six-panel blank cap with a snap back — a clean, firm face for embroidery.",
+      "seoTitle": "Structured Cap: six-panel blank for embroidery | Blankstock",
+      "seoDescription": "A structured mid-profile six-panel blank cap with a snap back: a clean, firm face for embroidery.",
       "options": [
         {
           "name": "Color",
@@ -1720,14 +1720,14 @@
     {
       "handle": "cotton-tote",
       "title": "Cotton Tote",
-      "description": "A 6 oz cotton canvas tote with reinforced handles and a flat, boxy front — a large, forgiving print area for a one-color logo or a full-bleed job. The add-on blank that lifts an order value and moves at events.",
+      "description": "A 6 oz cotton canvas tote with reinforced handles and a flat, boxy front: a large, forgiving print area for a one-color logo or a full-bleed job. The add-on blank that lifts an order value and moves at events.",
       "status": "active",
       "productType": "Bag",
       "vendor": "Blankstock",
       "tags": ["tote", "bag", "canvas", "6oz"],
       "categoryHandles": ["bags"],
       "collectionHandles": ["new-blanks", "headwear-bags", "print-ready-kit"],
-      "seoTitle": "Cotton Tote — 6 oz canvas blank | Blankstock",
+      "seoTitle": "Cotton Tote: 6 oz canvas blank | Blankstock",
       "seoDescription": "A 6 oz cotton canvas blank tote with reinforced handles and a large flat print area. Priced per unit.",
       "options": [
         {

@@ -473,8 +473,8 @@ function StockLine({
       <span className="text-base-content inline-flex flex-wrap items-center gap-1.5 text-sm font-medium">
         <span className="bg-info h-2 w-2 rounded-full" />
         {preorder.availableAt
-          ? `Preorder — ships ${formatArrival(preorder.availableAt, locale)}`
-          : 'Preorder — shipping date to be confirmed'}
+          ? `Preorder: ships ${formatArrival(preorder.availableAt, locale)}`
+          : 'Preorder: shipping date to be confirmed'}
         {preorder.availabilityNote ? (
           <span className="text-base-content font-normal">· {preorder.availabilityNote}</span>
         ) : null}

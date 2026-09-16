@@ -606,7 +606,7 @@ export function classificationAdvice(abc: AbcClass, xyz: XyzClass | null): strin
     if (abc === 'B') {
       return 'Middling value, and too few selling days so far to judge whether demand is steady. Leave the reorder level as it is for now.';
     }
-    return 'Little money in it and too little history to judge. Nothing to do — it will classify itself once it starts moving.';
+    return 'Little money in it and too little history to judge. Nothing to do. It will classify itself once it starts moving.';
   }
   if (abc === 'A' && xyz === 'X') {
     return 'Your best line and easy to predict. Keep a tight reorder point, a modest cushion, and count it monthly.';
@@ -615,7 +615,7 @@ export function classificationAdvice(abc: AbcClass, xyz: XyzClass | null): strin
     return 'Valuable but uneven. Worth a bigger cushion than the numbers alone suggest, and worth counting monthly.';
   }
   if (abc === 'A') {
-    return 'Valuable and unpredictable — the hardest kind to hold. Order little and often rather than in bulk, and count it monthly.';
+    return 'Valuable and unpredictable: the hardest kind to hold. Order little and often rather than in bulk, and count it monthly.';
   }
   if (abc === 'B' && xyz === 'X') {
     return 'Steady and worth a fair amount. Let the reorder point run itself and count it quarterly.';

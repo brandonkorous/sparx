@@ -124,7 +124,7 @@ export function installEngagementMailSink(logger: Logger): void {
         } catch (err) {
           logger.warn(
             { tenantId: mail.tenantId, err },
-            'crm-engagement-mail: mailbox send failed — falling back to the sending domain'
+            'crm-engagement-mail: mailbox send failed, falling back to the sending domain'
           );
         }
       }

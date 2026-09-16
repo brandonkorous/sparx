@@ -124,7 +124,7 @@ export function useActivityToasts(items: ActivityItem[], ready: boolean) {
           title: 'Things are happening',
           description:
             sales > 0
-              ? `${String(fresh.length)} new events — ${String(sales)} sales among them.`
+              ? `${String(fresh.length)} new events, ${String(sales)} sales among them.`
               : `${String(fresh.length)} new events across your business.`,
           type: 'success',
         });

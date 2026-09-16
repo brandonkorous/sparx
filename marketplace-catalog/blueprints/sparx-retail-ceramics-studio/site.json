@@ -299,7 +299,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -727,8 +727,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Kiln & Clay — handmade stoneware, thrown to order",
-      "seoDescription": "Kiln & Clay is a small pottery studio making thrown-and-glazed stoneware for the table and the home — mugs, bowls, plates, vases and planters, each made to order in three studio glazes.",
+      "seoTitle": "Kiln & Clay: handmade stoneware, thrown to order",
+      "seoDescription": "Kiln & Clay is a small pottery studio making thrown-and-glazed stoneware for the table and the home: mugs, bowls, plates, vases and planters, each made to order in three studio glazes.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -776,7 +776,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Kiln & Clay is a small pottery studio. We throw every piece on the wheel, glaze it by hand and fire it in our own kiln — so what lands on your table was shaped by someone, not stamped out by a machine."
+                          "Kiln & Clay is a small pottery studio. We throw every piece on the wheel, glaze it by hand and fire it in our own kiln, so what lands on your table was shaped by someone, not stamped out by a machine."
                         ],
                         "id": "ae38dd5f-6ca8-4b5c-877e-bf75b7c4cea6",
                         "ord": "a1"
@@ -1233,7 +1233,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every piece passes through a lot of hands — and every pair of them is ours. We centre the clay on the wheel, trim the foot when it’s leather-hard, glaze it by hand and fire it twice. Days of work go into a mug you’ll reach for every morning."
+                          "Every piece passes through a lot of hands, and every pair of them is ours. We centre the clay on the wheel, trim the foot when it’s leather-hard, glaze it by hand and fire it twice. Days of work go into a mug you’ll reach for every morning."
                         ],
                         "id": "9990f1fe-d848-4b4d-bf9c-82bc5d3f53e0",
                         "ord": "a1"
@@ -1507,7 +1507,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Because a person made it, a person shows in it — a glaze that pools a little deeper on one side, a rim that carries the maker’s mark. We don’t hide that. It’s the difference between something you own and something you love."
+                          "Because a person made it, a person shows in it: a glaze that pools a little deeper on one side, a rim that carries the maker’s mark. We don’t hide that. It’s the difference between something you own and something you love."
                         ],
                         "id": "7b1ffe6b-9e04-4863-98c5-b74b6c40dc36",
                         "ord": "a1"
@@ -1542,7 +1542,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Kiln & Clay",
+      "seoTitle": "Shop: Kiln & Clay",
       "seoDescription": "Browse everything Kiln & Clay makes, with prices and options at a glance. Ceramics studio.",
       "root": {
         "kind": "element",
@@ -1574,7 +1574,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we’re making right now — mugs and tumblers to drink from, plates and bowls to eat off, vases and planters for the rest of the house. Filter by room or glaze; each piece is thrown, glazed and fired by hand, and made to order."
+                      "Everything we’re making right now: mugs and tumblers to drink from, plates and bowls to eat off, vases and planters for the rest of the house. Filter by room or glaze; each piece is thrown, glazed and fired by hand, and made to order."
                     ],
                     "id": "e4431436-b681-4447-9a7d-4856967e3007",
                     "ord": "a1"
@@ -1602,7 +1602,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Kiln & Clay",
+      "seoTitle": "Collections: Kiln & Clay",
       "seoDescription": "Explore the collections at Kiln & Clay, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1634,7 +1634,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The work grouped the way people actually shop — the newest pieces off the wheel, a set that dresses the everyday table, the drinkware, and gift-ready pairs and sets."
+                      "The work grouped the way people actually shop: the newest pieces off the wheel, a set that dresses the everyday table, the drinkware, and gift-ready pairs and sets."
                     ],
                     "id": "effb2424-a0a6-4888-8bed-e186fae9e32d",
                     "ord": "a1"
@@ -1662,7 +1662,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Kiln & Clay",
+      "seoTitle": "Your cart: Kiln & Clay",
       "seoDescription": "Review what is in your cart and check out securely at Kiln & Clay.",
       "root": {
         "kind": "element",
@@ -1722,7 +1722,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Kiln & Clay",
+      "seoTitle": "Search: Kiln & Clay",
       "seoDescription": "Search Kiln & Clay for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1782,7 +1782,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Kiln & Clay",
+      "seoTitle": "Journal: Kiln & Clay",
       "seoDescription": "Stories, guides and notes from Kiln & Clay.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the wheel — how a piece is made, what the glazes are and why they vary, and how to look after handmade ceramics so they last for years. Plain and useful, no pottery mystique."
+                      "Notes from the wheel: how a piece is made, what the glazes are and why they vary, and how to look after handmade ceramics so they last for years. Plain and useful, no pottery mystique."
                     ],
                     "id": "443589ae-9709-4649-bece-1f4d050b567e",
                     "ord": "a1"
@@ -1948,7 +1948,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Kiln & Clay",
-      "seoDescription": "A one-studio pottery: how Kiln & Clay throws, trims, glazes and fires every piece by hand — honest forms, quiet glazes, made to be used every day.",
+      "seoDescription": "A one-studio pottery: how Kiln & Clay throws, trims, glazes and fires every piece by hand, honest forms, quiet glazes, made to be used every day.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1979,7 +1979,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Kiln & Clay began with one secondhand wheel in a spare room and a stubborn idea: that the things you use every day should be worth using. We started making mugs for friends, then for a local café, and it grew the slow way — one firing at a time."
+                      "Kiln & Clay began with one secondhand wheel in a spare room and a stubborn idea: that the things you use every day should be worth using. We started making mugs for friends, then for a local café, and it grew the slow way. One firing at a time."
                     ],
                     "id": "9c6b792b-3f01-484d-b6b6-14efb3b40f67",
                     "ord": "a1"
@@ -1989,7 +1989,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything is still made in-house, by us. We throw on the wheel, trim by hand, mix our own glazes from raw materials, and fire twice in a kiln we load ourselves. Nothing is outsourced and nothing is mass-produced — the studio can only make so much, and that’s the point."
+                      "Everything is still made in-house, by us. We throw on the wheel, trim by hand, mix our own glazes from raw materials, and fire twice in a kiln we load ourselves. Nothing is outsourced and nothing is mass-produced: the studio can only make so much, and that’s the point."
                     ],
                     "id": "c2cf8d1c-273c-4221-9ff1-0531862445d5",
                     "ord": "a2"
@@ -2019,8 +2019,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Kiln & Clay",
-      "seoDescription": "Get in touch with Kiln & Clay — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Kiln & Clay",
+      "seoDescription": "Get in touch with Kiln & Clay: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2056,7 +2056,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A question about a piece, a custom commission, or a wholesale enquiry for your shop or café? Tell us what you have in mind and one of us — the people who actually make the work — will write back."
+                          "A question about a piece, a custom commission, or a wholesale enquiry for your shop or café? Tell us what you have in mind and one of us (the people who actually make the work) will write back."
                         ],
                         "id": "a57d763e-16f1-4586-b9a9-67092d694c10",
                         "ord": "a1"
@@ -2327,8 +2327,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Kiln & Clay",
-      "seoDescription": "Product details at Kiln & Clay — ceramics studio, with options and pricing.",
+      "seoTitle": "Product: Kiln & Clay",
+      "seoDescription": "Product details at Kiln & Clay: ceramics studio, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2691,7 +2691,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Each piece is thrown and glazed to order, so allow two to three weeks before it ships. Small variations in glaze, tone and size are the mark of a handmade object — yours will be a little different from the photo, and entirely its own."
+                              "Each piece is thrown and glazed to order, so allow two to three weeks before it ships. Small variations in glaze, tone and size are the mark of a handmade object: yours will be a little different from the photo, and entirely its own."
                             ],
                             "id": "40b31f79-a3af-4319-8a40-8644667e19d1",
                             "ord": "a1"

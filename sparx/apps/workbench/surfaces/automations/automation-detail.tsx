@@ -106,7 +106,7 @@ function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation
         afterPaneChange(() => {
           toast.add({
             title: 'Editable copy created',
-            description: 'Change it however you like — the original is untouched.',
+            description: 'Change it however you like: the original is untouched.',
             type: 'success',
           });
         });
@@ -179,7 +179,7 @@ function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation
               <AlertTitle>Managed by sparx</AlertTitle>
               <AlertDescription>
                 This automation is looked after by sparx, so it can’t be changed here. To make your
-                own version, use “Duplicate to edit” — it copies everything into a rule you own and
+                own version, use “Duplicate to edit”. It copies everything into a rule you own and
                 can change freely, and the original keeps running untouched.
               </AlertDescription>
             </AlertContent>

@@ -122,7 +122,7 @@ function SupplierCard({
     void (async () => {
       const ok = await confirm({
         title: `Pull ${product.title} from ${link.supplier.name} again?`,
-        description: `Their name, description, photos and cost for this product are copied over the top of what is here now. Anything you have rewritten yourself — a better description, your own photos — is replaced. Your selling price is worked out again from their new cost using the rule you set for this supplier.`,
+        description: `Their name, description, photos and cost for this product are copied over the top of what is here now. Anything you have rewritten yourself (a better description, your own photos) is replaced. Your selling price is worked out again from their new cost using the rule you set for this supplier.`,
         confirmLabel: 'Pull it again',
         cancelLabel: 'Leave it as it is',
         color: 'warning',
@@ -162,7 +162,7 @@ function SupplierCard({
       {link.supplier.disconnected ? (
         <Text className="text-sm">
           This supplier has been disconnected, so nothing here updates any more and orders will not
-          reach them. {product.title} is still on sale — take it off sale, or connect the supplier
+          reach them. {product.title} is still on sale: take it off sale, or connect the supplier
           again, before someone buys something nobody will ship.
         </Text>
       ) : null}
@@ -358,7 +358,7 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
                     size="sm"
                     icon={<Icon glyph={faBoxCheck} className="size-6" aria-hidden />}
                     title="You ship this one yourself"
-                    description={`${product.title} is not linked to any supplier, so when someone buys it you pick it, pack it and post it. That is how most products work — nothing is missing here.`}
+                    description={`${product.title} is not linked to any supplier, so when someone buys it you pick it, pack it and post it. That is how most products work. Nothing is missing here.`}
                   />
                   {orphanedStamp ? (
                     <Text className="text-sm">
@@ -369,7 +369,7 @@ export function ProductDropshipSurface({ ctx }: { ctx: SurfaceContext }) {
                   ) : null}
                   <Text className="text-sm">
                     To have someone else ship it, connect that supplier and bring the product in
-                    from their catalog — a product becomes dropshipped by being imported, not by
+                    from their catalog: a product becomes dropshipped by being imported, not by
                     being flagged.
                   </Text>
                 </FormSection>

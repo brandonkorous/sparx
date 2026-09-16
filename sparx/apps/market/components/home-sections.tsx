@@ -146,7 +146,7 @@ const TRUST_ITEMS = [
     icon: Store,
     color: 'primary',
     title: 'Independent sellers',
-    text: 'Every shop is a real, verified maker — never a faceless reseller.',
+    text: 'Every shop is a real, verified maker, never a faceless reseller.',
   },
   {
     icon: ShieldCheck,

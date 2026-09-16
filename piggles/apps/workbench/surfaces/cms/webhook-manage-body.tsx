@@ -85,7 +85,7 @@ export function ManageBody(props: ManageBodyProps) {
     const ok = await confirm({
       title: `Delete “${webhook.name}”?`,
       description:
-        'This removes it for good and its signing secret with it. Notifications stop being sent to its address immediately. This cannot be undone — to only stop them for now, turn Send notifications off instead.',
+        'This removes it for good and its signing secret with it. Notifications stop being sent to its address immediately. This cannot be undone: to only stop them for now, turn Send notifications off instead.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',

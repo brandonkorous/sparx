@@ -167,7 +167,7 @@ function hero(): Node {
                                     text: 'The good stuff, up front.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Volume is a modern bookshop for people who love a great cover and an even better story. We read widely, put the best of it face-out, and make it dead simple to find your next favourite — no snobbery, no overwhelm.',
+                                    text: 'Volume is a modern bookshop for people who love a great cover and an even better story. We read widely, put the best of it face-out, and make it dead simple to find your next favourite: no snobbery, no overwhelm.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -260,7 +260,7 @@ const HOME: Node[] = [
     categoryTiles(),
     editorialBand({
         heading: 'Picked by people, not a chart',
-        lead: 'Every book on our front table has been read by someone on the team, with a one-line note that tells you exactly who it’s for. It’s the modern version of asking a friend with great taste — quick, honest, and almost always right.',
+        lead: 'Every book on our front table has been read by someone on the team, with a one-line note that tells you exactly who it’s for. It’s the modern version of asking a friend with great taste: quick, honest, and almost always right.',
         assetId: 'vol-band-picks',
         cta: 'See this month’s picks',
         href: '/blog/what-were-reading-now',
@@ -270,7 +270,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.nonfiction', layout: 'carousel', heading: 'In nonfiction' }),
     editorialBand({
         heading: 'A book you’ll love, every month',
-        lead: 'Tell us what you’re into and the Volume subscription does the rest: one hand-picked book on your doorstep each month, wrapped, with a note on why we chose it. Pause, swap or cancel whenever — no lock-in, ever.',
+        lead: 'Tell us what you’re into and the Volume subscription does the rest: one hand-picked book on your doorstep each month, wrapped, with a note on why we chose it. Pause, swap or cancel whenever, no lock-in, ever.',
         assetId: 'vol-band-sub',
         cta: 'Start a subscription',
         href: '/shop/volume-reading-subscription',
@@ -315,7 +315,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-accent', { text: 'If you liked…' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Not sure it’s for you? Every book here comes with a real recommendation, and we’re happy to talk you into — or out of — anything. Drop a note with your order and we’ll tell you what to read next. A person, not an algorithm.',
+                                        text: 'Not sure it’s for you? Every book here comes with a real recommendation, and we’re happy to talk you into (or out of) anything. Drop a note with your order and we’ll tell you what to read next. A person, not an algorithm.',
                                     }),
                                 ],
                             }),
@@ -354,14 +354,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'All books',
-        'Everything on the shelves right now — new releases, fiction, nonfiction and books for young readers, plus a few good things for the readers in your life. Filter by shelf or sort however you like; the covers do a lot of the talking.'
+        'Everything on the shelves right now: new releases, fiction, nonfiction and books for young readers, plus a few good things for the readers in your life. Filter by shelf or sort however you like; the covers do a lot of the talking.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The books grouped the way we actually display them — just-landed new releases, the team’s current picks, the fiction and nonfiction shelves, the kids’ corner, and gifts for readers.'),
+    pageMasthead('Collections', 'The books grouped the way we actually display them. Just-landed new releases, the team’s current picks, the fiction and nonfiction shelves, the kids’ corner, and gifts for readers.'),
 ];
 const SEARCH: Node[] = [
-    pageMasthead('Search Volume', 'After a specific title, author or subject? Search the whole shop and the journal below — and if we haven’t got it in, we can almost always order it for you.'),
+    pageMasthead('Search Volume', 'After a specific title, author or subject? Search the whole shop and the journal below, and if we haven’t got it in, we can almost always order it for you.'),
 ];
 const CART: Node[] = [
     el('section', 'bg-base-100 @container px-6 pt-16 pb-6', {
@@ -370,7 +370,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your bag' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping over $40, and we’ll gift-wrap anything for free — just say so in the notes. Orders are packed by hand at the shop, usually the same day, and always with care.',
+                        text: 'Free shipping over $40, and we’ll gift-wrap anything for free. Just say so in the notes. Orders are packed by hand at the shop, usually the same day, and always with care.',
                     }),
                 ],
             }),
@@ -384,7 +384,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Volume journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'What we’re reading, reading lists worth keeping, and the odd honest take on the book world — written by the people who put the covers face-out. Short, useful, no homework.',
+                        text: 'What we’re reading, reading lists worth keeping, and the odd honest take on the book world: written by the people who put the covers face-out. Short, useful, no homework.',
                     }),
                 ],
             }),
@@ -401,13 +401,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Volume' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Volume started with a simple frustration: brilliant books, buried spine-out on crowded shelves, impossible to find unless you already knew to look. So we built the opposite — a bright, uncluttered shop where the best of what we read faces out, with a plain note on who it’s for and why it’s worth your time.',
+                        text: 'Volume started with a simple frustration: brilliant books, buried spine-out on crowded shelves, impossible to find unless you already knew to look. So we built the opposite, a bright, uncluttered shop where the best of what we read faces out, with a plain note on who it’s for and why it’s worth your time.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We stock small presses and big houses alike, because a great book is a great book whoever printed it. We just won’t pretend to love something to shift a stack. Our picks are read cover to cover before they earn a spot on the front table, and we stand behind every one.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No overwhelm, no gatekeeping, no book we couldn’t tell you something true about. Just a well-lit room full of things worth reading — and someone on hand who’s read them.',
+                        text: 'No overwhelm, no gatekeeping, no book we couldn’t tell you something true about. Just a well-lit room full of things worth reading, and someone on hand who’s read them.',
                     }),
                 ],
             }),
@@ -422,7 +422,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'Chasing a title, planning an event, or stuck on a gift for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back — recommending books is genuinely our favourite part.',
+        intro: 'Chasing a title, planning an event, or stuck on a gift for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back: recommending books is genuinely our favourite part.',
         submitLabel: 'Email the shop',
     }),
 ];
@@ -507,7 +507,7 @@ const PRODUCTS: Product[] = [
         title: 'The Glass Orchard',
         author: 'Ada Sorensen',
         description:
-            'A luminous novel about three sisters who inherit a failing greenhouse and the secret their late father grew inside it. Sorensen writes like sunlight through glass — warm, exact, quietly dazzling. The new release the whole team fought over first, and our clearest pick of the season.',
+            'A luminous novel about three sisters who inherit a failing greenhouse and the secret their late father grew inside it. Sorensen writes like sunlight through glass: warm, exact, quietly dazzling. The new release the whole team fought over first, and our clearest pick of the season.',
         price: 19,
         sku: 'VOL-GLASS',
         categories: ['new-releases', 'fiction'],
@@ -522,7 +522,7 @@ const PRODUCTS: Product[] = [
         title: 'Northbound',
         author: 'Cass Merrin',
         description:
-            'A propulsive literary thriller about a night-train guard who realises the same passenger has boarded every run for a month. Merrin keeps the screws turning without ever cheating you — taut, atmospheric, and impossible to put down past chapter three. Clear your evening.',
+            'A propulsive literary thriller about a night-train guard who realises the same passenger has boarded every run for a month. Merrin keeps the screws turning without ever cheating you: taut, atmospheric, and impossible to put down past chapter three. Clear your evening.',
         price: 18,
         sku: 'VOL-NORTH',
         categories: ['new-releases', 'fiction'],
@@ -537,7 +537,7 @@ const PRODUCTS: Product[] = [
         title: 'Static & Signal',
         author: 'Priya Anand',
         description:
-            'Twelve stories about connection in a wired world — a help-line worker, a viral stranger, a marriage conducted mostly in read receipts. Anand is funny and precise and never cruel, and this is the collection we hand to people who claim they don’t read short stories.',
+            'Twelve stories about connection in a wired world: a help-line worker, a viral stranger, a marriage conducted mostly in read receipts. Anand is funny and precise and never cruel, and this is the collection we hand to people who claim they don’t read short stories.',
         price: 17,
         sku: 'VOL-STATIC',
         categories: ['fiction'],
@@ -552,7 +552,7 @@ const PRODUCTS: Product[] = [
         title: 'The Attention Diet',
         author: 'Rowan Vesper',
         description:
-            'A clear, refreshingly un-preachy look at what our attention is actually worth and how to spend it better — grounded in real research, written like a good conversation. No shame, no ten-step app detox, just a smarter way to think about the thing everyone’s selling. The nonfiction we keep re-ordering.',
+            'A clear, refreshingly un-preachy look at what our attention is actually worth and how to spend it better: grounded in real research, written like a good conversation. No shame, no ten-step app detox, just a smarter way to think about the thing everyone’s selling. The nonfiction we keep re-ordering.',
         price: 23,
         sku: 'VOL-ATTN',
         categories: ['new-releases', 'nonfiction'],
@@ -567,7 +567,7 @@ const PRODUCTS: Product[] = [
         title: 'Deep Time, Bright Water',
         author: 'Malik Osei',
         description:
-            'A geologist’s love letter to rivers — how they carve deep time into a landscape, and what they carry of us downstream. Osei braids field science with memoir so gracefully you barely notice you’re learning, and you’ll never look at a stream the same way. Genuinely readable science at its best.',
+            'A geologist’s love letter to rivers: how they carve deep time into a landscape, and what they carry of us downstream. Osei braids field science with memoir so gracefully you barely notice you’re learning, and you’ll never look at a stream the same way. Genuinely readable science at its best.',
         price: 25,
         sku: 'VOL-DEEP',
         categories: ['nonfiction'],
@@ -575,14 +575,14 @@ const PRODUCTS: Product[] = [
         tags: ['nonfiction', 'science', 'nature'],
         asset: 'prod-deep-time',
         seoTitle: 'Deep Time, Bright Water by Malik Osei | Volume Books',
-        seoDescription: 'A geologist’s love letter to rivers — field science braided with memoir. Readable science at its best.',
+        seoDescription: 'A geologist’s love letter to rivers: field science braided with memoir. Readable science at its best.',
     }),
     book({
         handle: 'otto-and-the-midnight-library',
         title: 'Otto and the Midnight Library',
         author: 'Lena Brightwater',
         description:
-            'A gorgeous picture book about a small bear who discovers the library comes alive after closing time — and that the quietest reader can be the bravest hero. Brightwater’s art glows, and the read-aloud rhythm is a bedtime dream. For ages 3–7, and for any grown-up who loves a library.',
+            'A gorgeous picture book about a small bear who discovers the library comes alive after closing time, and that the quietest reader can be the bravest hero. Brightwater’s art glows, and the read-aloud rhythm is a bedtime dream. For ages 3–7, and for any grown-up who loves a library.',
         price: 15,
         sku: 'VOL-OTTO',
         categories: ['kids'],
@@ -611,14 +611,14 @@ const PRODUCTS: Product[] = [
         handle: 'volume-enamel-pin-set',
         title: 'Volume Reader Pin Set',
         description:
-            'Three hard-enamel pins for the shelf-proud reader — a tiny stack of books, an open cover, and our little "V" mark — on a printed backing card that’s a small gift in itself. Bright, sturdy, and cheerfully collectable. The easy add-on that makes any order feel like a treat.',
+            'Three hard-enamel pins for the shelf-proud reader (a tiny stack of books, an open cover, and our little "V" mark) on a printed backing card that’s a small gift in itself. Bright, sturdy, and cheerfully collectable. The easy add-on that makes any order feel like a treat.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Volume Books',
         tags: ['gift', 'pin', 'accessory'],
         categoryHandles: ['gifts'],
         collectionHandles: ['gifts-for-readers'],
-        seoTitle: 'Volume Reader Pin Set — three enamel pins | Volume Books',
+        seoTitle: 'Volume Reader Pin Set: three enamel pins | Volume Books',
         seoDescription: 'Three bright hard-enamel pins for the shelf-proud reader, on a printed backing card. A cheerful little gift.',
         variants: [{ sku: 'VOL-PINS', priceCents: money(14), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-pins', isPrimary: true, alt: 'A set of three enamel reading pins on a card' }],
@@ -627,14 +627,14 @@ const PRODUCTS: Product[] = [
         handle: 'clip-reading-light',
         title: 'Clip Reading Light',
         description:
-            'A slim, rechargeable clip-on light that warms up or cools down to suit the page — bright enough to read by, dim enough not to wake anyone. Clamps onto a paperback or a hardcover without marking it, folds flat, and runs for weeks on a charge. The gift every night-owl reader secretly wants.',
+            'A slim, rechargeable clip-on light that warms up or cools down to suit the page: bright enough to read by, dim enough not to wake anyone. Clamps onto a paperback or a hardcover without marking it, folds flat, and runs for weeks on a charge. The gift every night-owl reader secretly wants.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Volume Books',
         tags: ['gift', 'reading-light', 'accessory'],
         categoryHandles: ['gifts'],
         collectionHandles: ['gifts-for-readers'],
-        seoTitle: 'Clip Reading Light — warm/cool rechargeable book light | Volume Books',
+        seoTitle: 'Clip Reading Light: warm/cool rechargeable book light | Volume Books',
         seoDescription: 'A slim rechargeable clip-on reading light, warm or cool, bright enough to read by and dim enough not to wake anyone.',
         variants: [{ sku: 'VOL-LIGHT', priceCents: money(26), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-light', isPrimary: true, alt: 'A slim clip-on reading light on an open book' }],
@@ -643,14 +643,14 @@ const PRODUCTS: Product[] = [
         handle: 'volume-reading-subscription',
         title: 'Volume Reading Subscription',
         description:
-            'One hand-picked book on your doorstep every month — tell us what you’re into and we choose something we’d actually press on you, wrap it, and post it with a note on why. Fiction, nonfiction, or a bit of both; pause, swap or cancel any time. The gift that keeps someone reading widely all year.',
+            'One hand-picked book on your doorstep every month. Tell us what you’re into and we choose something we’d actually press on you, wrap it, and post it with a note on why. Fiction, nonfiction, or a bit of both; pause, swap or cancel any time. The gift that keeps someone reading widely all year.',
         status: 'active',
         productType: 'Subscription',
         vendor: 'Volume Books',
         tags: ['subscription', 'gift', 'book-club'],
         categoryHandles: ['gifts'],
         collectionHandles: ['gifts-for-readers', 'staff-picks'],
-        seoTitle: 'Volume Reading Subscription — a hand-picked book, monthly | Volume Books',
+        seoTitle: 'Volume Reading Subscription: a hand-picked book, monthly | Volume Books',
         seoDescription: 'A hand-picked book on your doorstep every month, wrapped with a note on why we chose it. Pause or cancel any time.',
         options: [
             { name: 'Reading', displayType: 'dropdown', values: [{ value: 'Fiction' }, { value: 'Nonfiction' }, { value: 'Surprise me' }] },
@@ -737,16 +737,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'What we’re reading now',
-            excerpt: 'The books on our front table this month, and the one-line reason each earned its spot. Steal our taste — that’s what it’s there for.',
+            excerpt: 'The books on our front table this month, and the one-line reason each earned its spot. Steal our taste: that’s what it’s there for.',
             featuredImage: { $asset: 'post-new-releases' },
             body: {
                 type: 'doc',
                 content: [
                     para('A staff pick at Volume isn’t whatever a publisher paid to stack by the door, and it isn’t a bestseller chart doing the thinking for us. It’s one person on the team saying, in a single honest line, "I read this, I loved it, and here’s who it’s for." Here’s what’s facing out this month, and why.'),
                     h2('The one we fought over'),
-                    para('The Glass Orchard got the front-and-centre spot the day it arrived — a luminous novel about three sisters and a failing greenhouse that reads like sunlight through glass. If you like a family story that’s warm without being soft, start here. Pair it with Static & Signal, twelve funny, precise stories that will convert anyone who swears they don’t read short fiction.'),
+                    para('The Glass Orchard got the front-and-centre spot the day it arrived: a luminous novel about three sisters and a failing greenhouse that reads like sunlight through glass. If you like a family story that’s warm without being soft, start here. Pair it with Static & Signal, twelve funny, precise stories that will convert anyone who swears they don’t read short fiction.'),
                     h2('For the nonfiction shelf'),
-                    para('The Attention Diet is the book we can’t stop pressing on people — a clear, un-preachy look at what our attention is actually worth, with none of the shame. Follow it with Deep Time, Bright Water if you want science that reads like a memoir, or hand either to the person on your list who "doesn’t really read nonfiction." They will, after this.'),
+                    para('The Attention Diet is the book we can’t stop pressing on people: a clear, un-preachy look at what our attention is actually worth, with none of the shame. Follow it with Deep Time, Bright Water if you want science that reads like a memoir, or hand either to the person on your list who "doesn’t really read nonfiction." They will, after this.'),
                 ],
             },
         },
@@ -757,16 +757,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to actually read more this year',
-            excerpt: 'No 100-book challenge, no guilt. A few small, genuinely useful habits from people who read for a living — and one shortcut we might be biased about.',
+            excerpt: 'No 100-book challenge, no guilt. A few small, genuinely useful habits from people who read for a living, and one shortcut we might be biased about.',
             featuredImage: { $asset: 'post-reading-year' },
             body: {
                 type: 'doc',
                 content: [
                     para('Every January the internet tells you to read fifty books, then makes you feel bad in March for reading four. We think that’s backwards. Reading more isn’t a target to hit; it’s a handful of small frictions to remove. Here’s what actually works, from a shop full of people who read constantly and still fall off the wagon.'),
                     h2('Make the next book easy to reach'),
-                    para('The single biggest lever is having the right book already in your hand when you have a spare ten minutes. Keep one going in every place you wait — a paperback in your bag, something on your phone, a picture book by the kids’ bed. And give yourself permission to quit a book that isn’t working; the fastest way to read more is to stop finishing things out of duty.'),
+                    para('The single biggest lever is having the right book already in your hand when you have a spare ten minutes. Keep one going in every place you wait: a paperback in your bag, something on your phone, a picture book by the kids’ bed. And give yourself permission to quit a book that isn’t working; the fastest way to read more is to stop finishing things out of duty.'),
                     h2('Let someone else choose sometimes'),
-                    para('Decision fatigue kills more reading streaks than busyness does. When you can’t face picking, let a bookseller do it — that’s literally the job. Our monthly subscription exists for exactly this: one hand-picked book lands each month, wrapped, with a note on why, and you just… read it. No browsing, no overwhelm, no lapsed streak. Yes, we’re biased. We’re also right.'),
+                    para('Decision fatigue kills more reading streaks than busyness does. When you can’t face picking, let a bookseller do it: that’s literally the job. Our monthly subscription exists for exactly this: one hand-picked book lands each month, wrapped, with a note on why, and you just… read it. No browsing, no overwhelm, no lapsed streak. Yes, we’re biased. We’re also right.'),
                 ],
             },
         },
@@ -777,16 +777,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Why a bookshop still matters',
-            excerpt: 'The same book costs about the same everywhere. What changes is everything around it — the person, the room, and where your money goes next.',
+            excerpt: 'The same book costs about the same everywhere. What changes is everything around it: the person, the room, and where your money goes next.',
             featuredImage: { $asset: 'post-modern-bookshop' },
             body: {
                 type: 'doc',
                 content: [
                     para('Let’s be straight about the thing everyone’s thinking: yes, you can usually get these books cheaper, faster, and without leaving the sofa. We’re not going to pretend otherwise, and we’re not going to guilt-trip you about it. What we’ll argue is that the number on the back cover isn’t the whole cost, and the book isn’t the whole thing you’re buying.'),
                     h2('You’re buying taste, not just a title'),
-                    para('A recommendation engine can tell you what people who bought this also bought. It can’t finish a novel, sit with it for a day, and decide who in your life needs it. That’s what our picks are — a real person’s taste, made useful, with a name behind it. Come in undecided and you’ll leave with something better than what you came for, more often than not. That’s the whole trick, and no amount of software has cracked it yet.'),
+                    para('A recommendation engine can tell you what people who bought this also bought. It can’t finish a novel, sit with it for a day, and decide who in your life needs it. That’s what our picks are: a real person’s taste, made useful, with a name behind it. Come in undecided and you’ll leave with something better than what you came for, more often than not. That’s the whole trick, and no amount of software has cracked it yet.'),
                     h2('Where the money goes next'),
-                    para('A dollar spent here stays close to home a lot longer than a dollar spent in a warehouse three states away. It pays the booksellers who read the books, keeps the lights on in a room you can actually stand in, and funds the author nights, the school orders and the kids’ story hour that no marketplace will ever bother to run. A good bookshop is quiet infrastructure for a reading town — and it only exists if people choose to use it.'),
+                    para('A dollar spent here stays close to home a lot longer than a dollar spent in a warehouse three states away. It pays the booksellers who read the books, keeps the lights on in a room you can actually stand in, and funds the author nights, the school orders and the kids’ story hour that no marketplace will ever bother to run. A good bookshop is quiet infrastructure for a reading town, and it only exists if people choose to use it.'),
                 ],
             },
         },
@@ -801,7 +801,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Modern Bookshop',
     theme: THEME,
     summary:
-        'A complete, working shop for a bright, contemporary bookshop: a real catalogue of new releases, fiction, nonfiction and books for young readers, plus an enamel-pin set, a clip reading light and a monthly reading subscription — with categories, collections, a bespoke cover-forward PDP and a full merchandised home page led by new releases. Crisp modern theme — a near-white ground, a confident blue, a coral accent, a clean grotesk display. Shipped as Volume Books.',
+        'A complete, working shop for a bright, contemporary bookshop: a real catalogue of new releases, fiction, nonfiction and books for young readers, plus an enamel-pin set, a clip reading light and a monthly reading subscription, with categories, collections, a bespoke cover-forward PDP and a full merchandised home page led by new releases. Crisp modern theme, a near-white ground, a confident blue, a coral accent, a clean grotesk display. Shipped as Volume Books.',
     tagline: 'A bright, working storefront for a modern bookshop.',
     vertical: 'retail',
     industry: 'Modern bookshop',
@@ -814,14 +814,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Volume Books — a modern bookshop with the good stuff up front',
+            title: 'Volume Books: a modern bookshop with the good stuff up front',
             description:
-                'Volume is a bright, contemporary bookshop — new releases, fiction and nonfiction, books for young readers, and a monthly reading subscription. The best of what we read, faced out, with a note on why.',
+                'Volume is a bright, contemporary bookshop: new releases, fiction and nonfiction, books for young readers, and a monthly reading subscription. The best of what we read, faced out, with a note on why.',
         },
         about: {
             title: 'About Volume Books',
             description:
-                'How Volume chooses and displays books — small presses and big houses alike, the best of what we read faced out, and a real recommendation on everything, with none of the overwhelm.',
+                'How Volume chooses and displays books: small presses and big houses alike, the best of what we read faced out, and a real recommendation on everything, with none of the overwhelm.',
         },
     },
     home: HOME,

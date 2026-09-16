@@ -128,7 +128,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Life happens — just give us 24 hours to reschedule and we’ll move your slot, no charge. We send a reminder the day before and two hours ahead so it never sneaks up on you.',
+        'Life happens. Just give us 24 hours to reschedule and we’ll move your slot, no charge. We send a reminder the day before and two hours ahead so it never sneaks up on you.',
     },
     {
       handle: 'no-show',
@@ -137,7 +137,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Production and hour-long sessions hold both an instructor and a room, so we ask for 24 hours’ notice to move them. No deposit — but two no-shows and we’ll ask you to call to rebook so the room stays open for everyone.',
+        'Production and hour-long sessions hold both an instructor and a room, so we ask for 24 hours’ notice to move them. No deposit, but two no-shows and we’ll ask you to call to rebook so the room stays open for everyone.',
     },
   ],
   resources: [
@@ -182,7 +182,7 @@ const SCHEDULING = {
       handle: 'trial-lesson',
       name: 'Book a trial lesson',
       description:
-        'Your first lesson, on any instrument — meet an instructor, plug in, and play. Thirty minutes to feel the room, talk about where you want to go, and see if we’re your studio. No commitment after.',
+        'Your first lesson, on any instrument: meet an instructor, plug in, and play. Thirty minutes to feel the room, talk about where you want to go, and see if we’re your studio. No commitment after.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -196,7 +196,7 @@ const SCHEDULING = {
       handle: 'guitar-lesson',
       name: 'Guitar lesson',
       description:
-        'Electric or acoustic, first chord or first solo. Real technique built around the songs you actually want to play — riffs, rhythm, tone and the theory that makes it click.',
+        'Electric or acoustic, first chord or first solo. Real technique built around the songs you actually want to play: riffs, rhythm, tone and the theory that makes it click.',
       durationMinutes: 45,
       priceCents: 5500,
       assignmentStrategy: 'customer_choice',
@@ -210,7 +210,7 @@ const SCHEDULING = {
       handle: 'vocal-lesson',
       name: 'Vocal lesson',
       description:
-        'Find your range and your voice. Breath, pitch, tone and stage confidence — pop, R&B, rock or musical theatre, built around the tracks you love to sing.',
+        'Find your range and your voice. Breath, pitch, tone and stage confidence: pop, R&B, rock or musical theatre, built around the tracks you love to sing.',
       durationMinutes: 45,
       priceCents: 5500,
       assignmentStrategy: 'customer_choice',
@@ -224,7 +224,7 @@ const SCHEDULING = {
       handle: 'bass-lesson',
       name: 'Bass lesson',
       description:
-        'Lock in with the drums and hold the whole thing down. Groove, timing, note choice and the pocket — the instrument that makes a band feel good.',
+        'Lock in with the drums and hold the whole thing down. Groove, timing, note choice and the pocket: the instrument that makes a band feel good.',
       durationMinutes: 45,
       priceCents: 5500,
       assignmentStrategy: 'customer_choice',
@@ -238,7 +238,7 @@ const SCHEDULING = {
       handle: 'music-production-lesson',
       name: 'Music production & beat-making',
       description:
-        'Build a track from nothing in a real production suite — beats, sampling, arrangement, mixing. Learn your DAW hands-on and walk out with something that sounds like you.',
+        'Build a track from nothing in a real production suite: beats, sampling, arrangement, mixing. Learn your DAW hands-on and walk out with something that sounds like you.',
       durationMinutes: 60,
       priceCents: 7500,
       bufferAfterMin: 10,
@@ -253,7 +253,7 @@ const SCHEDULING = {
       handle: 'songwriting-session',
       name: 'Songwriting session',
       description:
-        'Turn ideas into finished songs. Melody, lyrics, structure and hooks — write with someone who’s released records and knows how to get you unstuck.',
+        'Turn ideas into finished songs. Melody, lyrics, structure and hooks. Write with someone who’s released records and knows how to get you unstuck.',
       durationMinutes: 60,
       priceCents: 6500,
       bufferAfterMin: 10,
@@ -268,7 +268,7 @@ const SCHEDULING = {
       handle: 'performance-coaching',
       name: 'Performance coaching',
       description:
-        'Get ready for the stage. Setlists, presence, nerves and working a room — prep for a gig, an audition or an open mic with a coach who’s played them all.',
+        'Get ready for the stage. Setlists, presence, nerves and working a room: prep for a gig, an audition or an open mic with a coach who’s played them all.',
       durationMinutes: 60,
       priceCents: 6500,
       bufferAfterMin: 10,
@@ -286,7 +286,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Plug in. Play the songs you love.',
-    sub: 'A modern lessons studio for guitar, vocals, bass, production and songwriting — for teens and adults who want to actually make music, not just practise scales. Start with a trial.',
+    sub: 'A modern lessons studio for guitar, vocals, bass, production and songwriting, for teens and adults who want to actually make music, not just practise scales. Start with a trial.',
     primary: { label: 'Book a trial lesson', href: '/book' },
     secondary: { label: 'See lessons', href: '/book' },
     surface: 'primary',
@@ -295,7 +295,7 @@ const HOME = [
     items: [
       {
         title: 'Working-musician instructors',
-        body: 'You learn from people who gig, record and release — not from a textbook. Real players who’ve done the thing you’re trying to do.',
+        body: 'You learn from people who gig, record and release, not from a textbook. Real players who’ve done the thing you’re trying to do.',
       },
       {
         title: 'Real gear, a real studio',
@@ -307,7 +307,7 @@ const HOME = [
       },
       {
         title: 'Online or in person',
-        body: 'Book the room or link up from home — same instructor, same plan. Lessons flex around school, work and everything else.',
+        body: 'Book the room or link up from home: same instructor, same plan. Lessons flex around school, work and everything else.',
       },
     ],
   }),
@@ -317,7 +317,7 @@ const HOME = [
     surface: 'muted',
     columns: 3,
     items: [
-      { name: 'Book a trial lesson', priceCents: 0, durationMin: 30, desc: 'Any instrument — meet a teacher and play. Free.' },
+      { name: 'Book a trial lesson', priceCents: 0, durationMin: 30, desc: 'Any instrument: meet a teacher and play. Free.' },
       { name: 'Guitar lesson', priceCents: 5500, durationMin: 45, desc: 'Electric or acoustic, riffs to solos.' },
       { name: 'Vocal lesson', priceCents: 5500, durationMin: 45, desc: 'Range, tone and stage confidence.' },
       { name: 'Bass lesson', priceCents: 5500, durationMin: 45, desc: 'Groove, timing and the pocket.' },
@@ -331,14 +331,14 @@ const HOME = [
     alt: 'A production suite with a mixing desk, monitors and a mic booth',
     heading: 'A studio, not a spare room',
     body: [
-      'Amp Room is a proper space — a live room stacked with amps for playing loud, and a full production suite with a mixing desk, studio monitors and a vocal booth for making records.',
+      'Amp Room is a proper space: a live room stacked with amps for playing loud, and a full production suite with a mixing desk, studio monitors and a vocal booth for making records.',
       'It means your production lesson happens on the same gear the pros use, and your first take can end up being a real recording. You’re making music here, not just taking a class.',
     ],
     cta: { label: 'Book studio time', href: '/book' },
   }),
   teamRow({
     heading: 'Your instructors',
-    intro: 'Book by name — the same person every week, someone who plays the music you want to make.',
+    intro: 'Book by name: the same person every week, someone who plays the music you want to make.',
     members: [
       { name: 'Jules Kade', role: 'Guitar · Bass · Songwriting', image: url(IMG.jules), alt: 'Jules Kade, guitar, bass & songwriting instructor', bio: 'Toured guitarist and session player. Gets beginners playing real songs fast, and pushes players who’ve plateaued.' },
       { name: 'Nova Reyes', role: 'Vocals · Songwriting · Performance', image: url(IMG.nova), alt: 'Nova Reyes, vocals, songwriting & performance coach', bio: 'Released artist and vocal coach. Builds range and confidence, then gets you stage-ready for the gig.' },
@@ -352,7 +352,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Your first lesson is free',
-    sub: 'Pick an instrument, choose a time, meet your instructor. The trial’s on us — see where it goes.',
+    sub: 'Pick an instrument, choose a time, meet your instructor. The trial’s on us: see where it goes.',
     cta: { label: 'Book a trial lesson', href: '/book' },
   }),
 ];
@@ -375,8 +375,8 @@ const ABOUT = [
     alt: 'A live room with amps, a drum kit and warm stage lighting',
     heading: 'About Amp Room',
     body: [
-      'We started Amp Room because the way most people are taught music is backwards — years of scales before you’re allowed to play anything you like. So we flipped it: you play real songs from lesson one, and the technique comes with them.',
-      'It’s a contemporary studio for guitar, vocals, bass, production and songwriting — teens and adults, total beginners and returning players. Real gear, working-musician teachers, and a room that makes you want to keep showing up.',
+      'We started Amp Room because the way most people are taught music is backwards: years of scales before you’re allowed to play anything you like. So we flipped it: you play real songs from lesson one, and the technique comes with them.',
+      'It’s a contemporary studio for guitar, vocals, bass, production and songwriting: teens and adults, total beginners and returning players. Real gear, working-musician teachers, and a room that makes you want to keep showing up.',
     ],
     cta: { label: 'Book a trial lesson', href: '/book' },
   }),
@@ -405,7 +405,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Ready to play?',
-    sub: 'Book your free trial online and see live times — pick an instrument, pick a slot, we’ll take it from there.',
+    sub: 'Book your free trial online and see live times. Pick an instrument, pick a slot, we’ll take it from there.',
     surface: 'muted',
     cta: { label: 'Book a trial lesson', href: '/book' },
   }),
@@ -416,8 +416,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-music-studio',
   name: 'Music Studio (Contemporary)',
   summary:
-    'A cool, creative music-lessons studio site — a dark charcoal-violet palette, an electric-violet primary and a modern sharp sans. Installs a working online booking flow: a free trial lesson plus guitar, vocals, bass, production, songwriting and performance lessons; three working-musician instructors booked by name; and two studio rooms — one a production suite — as bookable resources. Ships as "Amp Room", a contemporary lessons studio.',
-  tagline: 'A modern, creative template for music-lessons studios — book trials online from day one.',
+    'A cool, creative music-lessons studio site: a dark charcoal-violet palette, an electric-violet primary and a modern sharp sans. Installs a working online booking flow: a free trial lesson plus guitar, vocals, bass, production, songwriting and performance lessons; three working-musician instructors booked by name; and two studio rooms (one a production suite) as bookable resources. Ships as "Amp Room", a contemporary lessons studio.',
+  tagline: 'A modern, creative template for music-lessons studios. Book trials online from day one.',
   industry: 'Music lessons',
   sortWeight: 49,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -426,9 +426,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Amp Room — contemporary music lessons',
+      title: 'Amp Room: contemporary music lessons',
       description:
-        'Amp Room is a modern music-lessons studio for guitar, vocals, bass, production and songwriting — teens and adults, beginners to gigging players. Book a free trial lesson online.',
+        'Amp Room is a modern music-lessons studio for guitar, vocals, bass, production and songwriting: teens and adults, beginners to gigging players. Book a free trial lesson online.',
     },
   },
   home: HOME,

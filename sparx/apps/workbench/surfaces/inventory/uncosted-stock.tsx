@@ -114,8 +114,8 @@ export function UncostedStockSurface() {
     return (
       <div className={COLUMN}>
         <Text>
-          {plural(stock.data?.total ?? 0, 'thing', 'things')} on your shelves —{' '}
-          {plural(stock.data?.uncostedUnits ?? 0, 'unit', 'units')} in all — have never had a cost
+          {plural(stock.data?.total ?? 0, 'thing', 'things')} on your shelves,{' '}
+          {plural(stock.data?.uncostedUnits ?? 0, 'unit', 'units')} in all, have never had a cost
           recorded, so they count as nothing in every figure about what your stock is worth. Put in
           what one of each cost you and those figures become real. The biggest holdings are first,
           so filling in the top few fixes most of the number.

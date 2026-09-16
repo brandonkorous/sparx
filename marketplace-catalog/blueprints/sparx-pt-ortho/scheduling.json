@@ -14,7 +14,7 @@
       "depositType": "card_hold",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Evaluations and post-op sessions hold a full slot with a therapist and a room, so we keep a card on file — nothing is charged unless you miss the visit or cancel with less than 24 hours’ notice."
+      "policyText": "Evaluations and post-op sessions hold a full slot with a therapist and a room, so we keep a card on file. Nothing is charged unless you miss the visit or cancel with less than 24 hours’ notice."
     }
   ],
   "resources": [
@@ -168,7 +168,7 @@
     {
       "handle": "initial-evaluation",
       "name": "Initial evaluation",
-      "description": "A full one-on-one assessment — we pinpoint what’s driving the pain or limitation, then build the plan to get you back to doing what you love.",
+      "description": "A full one-on-one assessment. We pinpoint what’s driving the pain or limitation, then build the plan to get you back to doing what you love.",
       "durationMinutes": 60,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "follow-up-session",
       "name": "Follow-up session",
-      "description": "A hands-on treatment and progression visit — we advance your program as you get stronger and keep you moving forward.",
+      "description": "A hands-on treatment and progression visit. We advance your program as you get stronger and keep you moving forward.",
       "durationMinutes": 45,
       "priceCents": 9500,
       "assignmentStrategy": "customer_choice",
@@ -214,7 +214,7 @@
     {
       "handle": "sports-rehab-session",
       "name": "Sports rehab session",
-      "description": "Loaded, sport-specific rehab to rebuild strength, power and control — the work that gets you back on the field and keeps you there.",
+      "description": "Loaded, sport-specific rehab to rebuild strength, power and control: the work that gets you back on the field and keeps you there.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -260,7 +260,7 @@
     {
       "handle": "dry-needling-session",
       "name": "Dry-needling session",
-      "description": "Precise needling to release stubborn trigger points and switch tight, guarded muscles back on — often the fastest way to unlock a plateau.",
+      "description": "Precise needling to release stubborn trigger points and switch tight, guarded muscles back on, often the fastest way to unlock a plateau.",
       "durationMinutes": 30,
       "priceCents": 9000,
       "bufferAfterMin": 5,
@@ -284,7 +284,7 @@
     {
       "handle": "post-op-rehab",
       "name": "Post-op rehab",
-      "description": "Guided recovery after surgery — a careful, progressive program that protects the repair and rebuilds your strength and mobility step by step.",
+      "description": "Guided recovery after surgery: a careful, progressive program that protects the repair and rebuilds your strength and mobility step by step.",
       "durationMinutes": 60,
       "priceCents": 13000,
       "assignmentStrategy": "customer_choice",
@@ -307,7 +307,7 @@
     {
       "handle": "movement-screen",
       "name": "Movement screen",
-      "description": "A free screen of how you actually move under load — we find the weak link and tell you straight whether we’re the right team to fix it. No pressure.",
+      "description": "A free screen of how you actually move under load. We find the weak link and tell you straight whether we’re the right team to fix it. No pressure.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

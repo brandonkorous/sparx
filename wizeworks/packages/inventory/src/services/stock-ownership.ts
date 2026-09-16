@@ -177,7 +177,7 @@ export async function setStockOwnership(ctx: ServiceContext, rawInput: unknown):
     // close a period.
     if (input.ownership === 'consignment' && !input.ownerSupplierId && !input.ownerCustomerId) {
       throw new InventoryValidationError(
-        'Consigned stock needs an owner — somebody is owed for it when it sells.',
+        'Consigned stock needs an owner: somebody is owed for it when it sells.',
         [{ field: 'ownerSupplierId', message: 'Name the supplier or the customer.' }]
       );
     }

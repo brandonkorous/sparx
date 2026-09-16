@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Please give at least 24 hours’ notice to reschedule or cancel — life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+      "policyText": "Please give at least 24 hours’ notice to reschedule or cancel: life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
     },
     {
       "handle": "therapy-no-show",
@@ -156,7 +156,7 @@
     {
       "handle": "individual-session",
       "name": "Individual therapy session",
-      "description": "A standard one-to-one video session — a calm, confidential hour to work through what’s on your mind.",
+      "description": "A standard one-to-one video session: a calm, confidential hour to work through what’s on your mind.",
       "durationMinutes": 50,
       "priceCents": 14000,
       "assignmentStrategy": "customer_choice",
@@ -173,7 +173,7 @@
     {
       "handle": "stress-burnout-session",
       "name": "Stress & burnout session",
-      "description": "Focused support for chronic stress, overwhelm and burnout — practical tools alongside space to actually breathe.",
+      "description": "Focused support for chronic stress, overwhelm and burnout: practical tools alongside space to actually breathe.",
       "durationMinutes": 50,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -190,7 +190,7 @@
     {
       "handle": "professional-wellness-session",
       "name": "Therapy for professionals",
-      "description": "Coaching-informed therapy for high-demand careers — pressure, perfectionism and work-life balance, on a schedule that fits.",
+      "description": "Coaching-informed therapy for high-demand careers: pressure, perfectionism and work-life balance, on a schedule that fits.",
       "durationMinutes": 45,
       "priceCents": 14500,
       "assignmentStrategy": "customer_choice",

@@ -72,7 +72,7 @@ function BlueprintCard({
     <button
       type="button"
       className="card bg-base-100 border-base-300 hover:border-module focus-visible:border-module flex cursor-pointer flex-col overflow-hidden border text-left transition-colors"
-      title="Open this design — hold Shift to open alongside, Alt for a new window"
+      title="Open this design: hold Shift to open alongside, Alt for a new window"
       onClick={onOpen}
     >
       {blueprint.preview ? (

@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Forge & Fold — handmade jewelry in silver and bronze",
-      "seoDescription": "Forge & Fold is a one-person jewelry workshop — rings, earrings, necklaces and cuffs forged, stamped and set by hand in recycled sterling silver and bronze. No two pieces the same.",
+      "seoTitle": "Forge & Fold: handmade jewelry in silver and bronze",
+      "seoDescription": "Forge & Fold is a one-person jewelry workshop: rings, earrings, necklaces and cuffs forged, stamped and set by hand in recycled sterling silver and bronze. No two pieces the same.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -799,7 +799,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Forge & Fold is a one-person jewelry workshop. Every piece is hammered, stamped and set by hand in recycled sterling silver and bronze — so no two are ever exactly alike, and yours carries the marks of the hands that made it."
+                          "Forge & Fold is a one-person jewelry workshop. Every piece is hammered, stamped and set by hand in recycled sterling silver and bronze, so no two are ever exactly alike, and yours carries the marks of the hands that made it."
                         ],
                         "id": "47dcd87d-f6f0-4921-8d8c-8335c39d02a0",
                         "ord": "a1"
@@ -1256,7 +1256,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Nothing here is cast in a hundred at a time. Each piece is forged, hammered and stamped by hand, then oxidised and finished at the bench — the little irregularities are the point, not a flaw. When you wear one, you can see where the hammer landed."
+                          "Nothing here is cast in a hundred at a time. Each piece is forged, hammered and stamped by hand, then oxidised and finished at the bench: the little irregularities are the point, not a flaw. When you wear one, you can see where the hammer landed."
                         ],
                         "id": "9c8dbc96-2f6d-47a8-b5a2-d61f4c06669c",
                         "ord": "a1"
@@ -1530,7 +1530,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Because every piece is made by hand from raw metal — and set with rough-cut, one-of-a-kind stones — the one you order is genuinely yours. Solid recycled silver and bronze, built to be worn hard, patina and all, and repaired at the bench for as long as you own it."
+                          "Because every piece is made by hand from raw metal (and set with rough-cut, one-of-a-kind stones) the one you order is genuinely yours. Solid recycled silver and bronze, built to be worn hard, patina and all, and repaired at the bench for as long as you own it."
                         ],
                         "id": "ecdfe932-c341-410d-8945-f317c17964a6",
                         "ord": "a1"
@@ -1565,7 +1565,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Forge & Fold",
+      "seoTitle": "Shop: Forge & Fold",
       "seoDescription": "Browse everything Forge & Fold makes, with prices and options at a glance. Artisan jeweler.",
       "root": {
         "kind": "element",
@@ -1597,7 +1597,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every piece the workshop makes, in recycled sterling silver and bronze — rings, earrings, necklaces and cuffs. Filter by metal or category, or sort however you like; all of it is forged, stamped and set by hand, and made to order."
+                      "Every piece the workshop makes, in recycled sterling silver and bronze: rings, earrings, necklaces and cuffs. Filter by metal or category, or sort however you like; all of it is forged, stamped and set by hand, and made to order."
                     ],
                     "id": "e68584cf-6aa3-46d2-b649-53fd260ddb20",
                     "ord": "a1"
@@ -1625,7 +1625,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Forge & Fold",
+      "seoTitle": "Collections: Forge & Fold",
       "seoDescription": "Explore the collections at Forge & Fold, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1657,7 +1657,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The pieces grouped the way people actually shop — the newest work off the bench, the everyday metal you’ll reach for daily, the true one-of-a-kind pieces set with rough stones, and gifts that land every time."
+                      "The pieces grouped the way people actually shop: the newest work off the bench, the everyday metal you’ll reach for daily, the true one-of-a-kind pieces set with rough stones, and gifts that land every time."
                     ],
                     "id": "165b3a83-9e2f-4082-a5bc-ffa94bceb0f8",
                     "ord": "a1"
@@ -1685,7 +1685,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Forge & Fold",
+      "seoTitle": "Your cart: Forge & Fold",
       "seoDescription": "Review what is in your cart and check out securely at Forge & Fold.",
       "root": {
         "kind": "element",
@@ -1717,7 +1717,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping over $75, a cloth pouch with every order, and 30-day returns on anything unworn. Each piece is made to order by hand, so give it about a week at the bench before it ships — worth the wait for something no one else has."
+                      "Free shipping over $75, a cloth pouch with every order, and 30-day returns on anything unworn. Each piece is made to order by hand, so give it about a week at the bench before it ships: worth the wait for something no one else has."
                     ],
                     "id": "6b62d00a-b13d-4ff6-9fe0-46e4b07a51ad",
                     "ord": "a1"
@@ -1745,7 +1745,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Forge & Fold",
+      "seoTitle": "Search: Forge & Fold",
       "seoDescription": "Search Forge & Fold for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1805,7 +1805,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Forge & Fold",
+      "seoTitle": "Journal: Forge & Fold",
       "seoDescription": "Stories, guides and notes from Forge & Fold.",
       "root": {
         "kind": "element",
@@ -1837,7 +1837,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the workshop — how a piece is forged from raw metal, what silver and bronze actually do over time, and how to care for handmade jewelry so it only gets better. Plain, honest, no jargon."
+                      "Notes from the workshop: how a piece is forged from raw metal, what silver and bronze actually do over time, and how to care for handmade jewelry so it only gets better. Plain, honest, no jargon."
                     ],
                     "id": "978c1b2f-89fe-433d-97f3-16be659772d9",
                     "ord": "a1"
@@ -1971,7 +1971,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Forge & Fold",
-      "seoDescription": "How Forge & Fold works — one maker, one bench, raw recycled metal and rough-cut stones, hammered and set by hand, and repaired for life.",
+      "seoDescription": "How Forge & Fold works. One maker, one bench, raw recycled metal and rough-cut stones, hammered and set by hand, and repaired for life.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2002,7 +2002,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Forge & Fold began at a scarred wooden bench in a rented corner of a shared studio, with a hammer, a torch, and a stubborn preference for making things the slow way. It hasn’t really changed. Every piece still starts as a length of raw metal and gets hammered, filed, stamped and set entirely by hand — one maker, one bench, one piece at a time."
+                      "Forge & Fold began at a scarred wooden bench in a rented corner of a shared studio, with a hammer, a torch, and a stubborn preference for making things the slow way. It hasn’t really changed. Every piece still starts as a length of raw metal and gets hammered, filed, stamped and set entirely by hand. One maker, one bench, one piece at a time."
                     ],
                     "id": "291b1e4d-8497-40af-a51c-ecda52921c75",
                     "ord": "a1"
@@ -2022,7 +2022,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "What that means for you: jewelry with real weight and a real story, made to be worn hard and to wear in beautifully. And because it was made here by hand, it can be mended here by hand — bring anything I’ve made back to the bench any time, for as long as you own it."
+                      "What that means for you: jewelry with real weight and a real story, made to be worn hard and to wear in beautifully. And because it was made here by hand, it can be mended here by hand. Bring anything I’ve made back to the bench any time, for as long as you own it."
                     ],
                     "id": "bf4a94b8-1a6c-4e0f-b28e-6726dea94ba5",
                     "ord": "a3"
@@ -2042,8 +2042,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Forge & Fold",
-      "seoDescription": "Get in touch with Forge & Fold — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Forge & Fold",
+      "seoDescription": "Get in touch with Forge & Fold: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2079,7 +2079,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A question about a piece, a custom commission, a resize, or a repair? Tell me what you’re after and I’ll write back myself — it’s just me at the bench, so give it a day or two."
+                          "A question about a piece, a custom commission, a resize, or a repair? Tell me what you’re after and I’ll write back myself: it’s just me at the bench, so give it a day or two."
                         ],
                         "id": "1c886557-0226-4c81-945b-8c1c8e84ec26",
                         "ord": "a1"
@@ -2350,8 +2350,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Forge & Fold",
-      "seoDescription": "Product details at Forge & Fold — artisan jeweler, with options and pricing.",
+      "seoTitle": "Product: Forge & Fold",
+      "seoDescription": "Product details at Forge & Fold: artisan jeweler, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2714,7 +2714,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Forged, stamped and finished by hand in recycled sterling silver or bronze — so yours will have its own small variations. Made to order in about a week, wrapped in a cloth pouch, and repaired at the bench for as long as you own it. Not right? Send it back unworn within 30 days."
+                              "Forged, stamped and finished by hand in recycled sterling silver or bronze, so yours will have its own small variations. Made to order in about a week, wrapped in a cloth pouch, and repaired at the bench for as long as you own it. Not right? Send it back unworn within 30 days."
                             ],
                             "id": "16d2a944-fdc9-467f-aee5-487ff5dac7cf",
                             "ord": "a1"

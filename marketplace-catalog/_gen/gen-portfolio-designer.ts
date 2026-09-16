@@ -68,7 +68,7 @@ interface Asset {
 }
 
 const ASSETS: Asset[] = [
-    { id: 'ledger-hero', url: src('ledger-hero'), alt: 'A designer’s workspace — a laptop, a notebook and a wall of interface sketches' },
+    { id: 'ledger-hero', url: src('ledger-hero'), alt: 'A designer’s workspace: a laptop, a notebook and a wall of interface sketches' },
     { id: 'ledger-atlas', url: src('ledger-atlas'), alt: 'A financial dashboard redesign shown across desktop and mobile' },
     { id: 'ledger-north', url: src('ledger-north'), alt: 'A healthcare booking flow, a sequence of clean mobile screens' },
     { id: 'ledger-kiln', url: src('ledger-kiln'), alt: 'A design-system component library laid out as a swatch grid' },
@@ -99,7 +99,7 @@ function heroBand(): Node {
                                 { text: 'Product designer who ships.' }
                             ),
                             el('p', 'max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl', {
-                                text: 'I’m Sasha Rourke — I design product interfaces and the systems behind them, from the first sketch to the shipped release. Twelve years, mostly fintech and health, always end to end.',
+                                text: 'I’m Sasha Rourke: I design product interfaces and the systems behind them, from the first sketch to the shipped release. Twelve years, mostly fintech and health, always end to end.',
                             }),
                         ],
                     }),
@@ -230,7 +230,7 @@ function selectedWorkBand(): Node {
                         alt: 'A design-system component library laid out as a swatch grid',
                         meta: 'Design systems · 2025',
                         title: 'One system, five product teams',
-                        blurb: 'Kiln’s five squads were each rebuilding the same buttons. I built the shared system — tokens, components, and the docs that made teams actually adopt it.',
+                        blurb: 'Kiln’s five squads were each rebuilding the same buttons. I built the shared system: tokens, components, and the docs that made teams actually adopt it.',
                         metric: '4×',
                         metricLabel: 'faster to ship a new screen',
                         href: '/blog/kiln-design-system',
@@ -261,7 +261,7 @@ function approachBand(): Node {
                         children: [
                             card(
                                 'Product design',
-                                'End-to-end interface design — flows, wireframes, high-fidelity screens, and the prototype that proves them before a line of code is written.',
+                                'End-to-end interface design: flows, wireframes, high-fidelity screens, and the prototype that proves them before a line of code is written.',
                             ),
                             card(
                                 'Design systems',
@@ -269,7 +269,7 @@ function approachBand(): Node {
                             ),
                             card(
                                 'Research & testing',
-                                'I test with real users early and often — usability sessions, quick prototypes, and honest readouts that change what we build next.',
+                                'I test with real users early and often: usability sessions, quick prototypes, and honest readouts that change what we build next.',
                             ),
                         ],
                     }),
@@ -316,7 +316,7 @@ const WORK: Node[] = [
                         { text: 'Selected work' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Case studies from the last few years — fintech, health, and the design systems underneath them. Each opens to the full story: the brief, the work, and what changed.',
+                        text: 'Case studies from the last few years: fintech, health, and the design systems underneath them. Each opens to the full story: the brief, the work, and what changed.',
                     }),
                 ],
             }),
@@ -415,10 +415,10 @@ const ABOUT: Node[] = [
                                 text: 'About Sasha',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'I’m a product designer with twelve years of shipping real software — most of it in fintech and healthcare, where getting the details right actually matters to the person on the other end of the screen.',
+                                text: 'I’m a product designer with twelve years of shipping real software. Most of it in fintech and healthcare, where getting the details right actually matters to the person on the other end of the screen.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'I work end to end: the research that frames the problem, the flows and screens that solve it, and the design system that keeps a whole team consistent as they build. I care most about the boring parts done well — the empty states, the error messages, the second-time-through experience.',
+                                text: 'I work end to end: the research that frames the problem, the flows and screens that solve it, and the design system that keeps a whole team consistent as they build. I care most about the boring parts done well, the empty states, the error messages, the second-time-through experience.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
                                 text: 'Before going independent I led design at two venture-backed products and one very large bank. Now I take on a handful of projects a year, usually as the senior designer a team is missing.',
@@ -459,7 +459,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Let’s work together',
-        intro: 'I’m available for select product-design and design-systems work. A good brief tells me the problem you’re solving, who for, and roughly when you need it — but a rough idea is a fine place to start too.',
+        intro: 'I’m available for select product-design and design-systems work. A good brief tells me the problem you’re solving, who for, and roughly when you need it, but a rough idea is a fine place to start too.',
         submitLabel: 'Email me',
         secondary: { label: 'See the work first', href: '/work' },
     }),
@@ -496,20 +496,20 @@ const CONTENT = [
         body: {
             title: 'Rebuilding the Atlas trading dashboard',
             excerpt:
-                'A dense pro-trader dashboard, rebuilt from the information architecture up — then codified into the component library the whole product now runs on.',
+                'A dense pro-trader dashboard, rebuilt from the information architecture up, then codified into the component library the whole product now runs on.',
             featuredImage: { $asset: 'ledger-atlas' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Role: Lead product designer. Timeline: five months. Team: two engineers, one PM, and me. Atlas is a trading platform for professionals who live in the product all day — and their dashboard had grown, screen by screen, into something nobody could take in at a glance.'),
+                    para('Role: Lead product designer. Timeline: five months. Team: two engineers, one PM, and me. Atlas is a trading platform for professionals who live in the product all day, and their dashboard had grown, screen by screen, into something nobody could take in at a glance.'),
                     h2('The problem'),
-                    para('Support tickets told the story: traders were missing price alerts, opening the wrong positions, and asking where features had gone. Nothing was broken, exactly — there was just too much on screen, arranged by which team shipped it rather than by what a trader needs to see first.'),
-                    para('I started by mapping every element on the dashboard to a real question a trader asks — “where is my money”, “what changed”, “what do I do next” — and found that a third of the interface answered no question at all.'),
+                    para('Support tickets told the story: traders were missing price alerts, opening the wrong positions, and asking where features had gone. Nothing was broken, exactly. There was just too much on screen, arranged by which team shipped it rather than by what a trader needs to see first.'),
+                    para('I started by mapping every element on the dashboard to a real question a trader asks (“where is my money”, “what changed”, “what do I do next”) and found that a third of the interface answered no question at all.'),
                     h2('What we did'),
-                    para('We rebuilt the layout around those three questions, in that order: positions and P&L up top, a live change feed in the middle, and actions where the eye lands last. Density stayed high — pros want density — but it became legible density, with a clear type scale and a single accent doing the signalling.'),
+                    para('We rebuilt the layout around those three questions, in that order: positions and P&L up top, a live change feed in the middle, and actions where the eye lands last. Density stayed high (pros want density) but it became legible density, with a clear type scale and a single accent doing the signalling.'),
                     para('Then we codified it. Every element became a token or a component in a shared library, documented with the rules for when to use it, so the next feature would extend the system instead of fighting it.'),
                     h2('The outcome'),
-                    para('Support tickets about the dashboard fell 38% in the first quarter after launch. Just as important, the team shipped the next three features on top of the new system with no design debt — the library held. The dashboard is now the reference every other Atlas surface is being rebuilt against.'),
+                    para('Support tickets about the dashboard fell 38% in the first quarter after launch. Just as important, the team shipped the next three features on top of the new system with no design debt: the library held. The dashboard is now the reference every other Atlas surface is being rebuilt against.'),
                 ],
             },
         },
@@ -533,10 +533,10 @@ const CONTENT = [
                     h2('The problem'),
                     para('The old flow had nine steps and asked for insurance details before it showed a single available time. Analytics showed people dropping at every stage; the call centre picked up the slack, and the phones were always busy. The flow had been designed around the clinic’s data model, not the patient’s question, which is simply: when can I be seen?'),
                     h2('What we did'),
-                    para('We rebuilt it around that question. Three steps: pick a reason, pick a time, confirm who you are. Everything the clinic needed but the patient didn’t care about moved to the end or got inferred. We rewrote every label in plain language — no “member ID”, no “provider”, just words a worried person reads correctly on the first pass.'),
+                    para('We rebuilt it around that question. Three steps: pick a reason, pick a time, confirm who you are. Everything the clinic needed but the patient didn’t care about moved to the end or got inferred. We rewrote every label in plain language, no “member ID”, no “provider”, just words a worried person reads correctly on the first pass.'),
                     para('Then we tested it, with eight real patients across two rounds, and fixed the three places they hesitated before it ever shipped.'),
                     h2('The outcome'),
-                    para('Booking completion rose 61%, and call-centre volume for appointments dropped enough that the clinics reassigned two staff to follow-up care. The plain-language pass turned out to matter as much as the step count — the words were doing the work.'),
+                    para('Booking completion rose 61%, and call-centre volume for appointments dropped enough that the clinics reassigned two staff to follow-up care. The plain-language pass turned out to matter as much as the step count: the words were doing the work.'),
                 ],
             },
         },
@@ -551,19 +551,19 @@ const CONTENT = [
         body: {
             title: 'One system, five product teams',
             excerpt:
-                'Kiln’s five squads were each rebuilding the same buttons. I built the shared system — and, more importantly, made teams want to adopt it.',
+                'Kiln’s five squads were each rebuilding the same buttons. I built the shared system, and, more importantly, made teams want to adopt it.',
             featuredImage: { $asset: 'ledger-kiln' },
             body: {
                 type: 'doc',
                 content: [
                     para('Role: Design systems lead. Timeline: six months, then ongoing. Kiln had grown to five product squads, and every one of them had quietly built its own version of the same components. The product looked like five products.'),
                     h2('The problem'),
-                    para('A design system had been attempted before and ignored — it existed as a Figma file nobody opened, because adopting it was more work than not adopting it. The technical problem was easy; the human one was the whole job.'),
+                    para('A design system had been attempted before and ignored. It existed as a Figma file nobody opened, because adopting it was more work than not adopting it. The technical problem was easy; the human one was the whole job.'),
                     h2('What we did'),
-                    para('I built the system as tokens first — color, type, spacing, radius — so a team could get 80% of the look by changing nothing but their theme file. Then components on top, each shipped in both Figma and code, so a designer and an engineer were never working from different sources. And documentation that answered “which one do I use” in one screen, because that is the question people actually have.'),
+                    para('I built the system as tokens first (color, type, spacing, radius) so a team could get 80% of the look by changing nothing but their theme file. Then components on top, each shipped in both Figma and code, so a designer and an engineer were never working from different sources. And documentation that answered “which one do I use” in one screen, because that is the question people actually have.'),
                     para('The adoption lever was making the system the path of least resistance: new screens started from system components by default, and I sat with each squad for a sprint to migrate their first flow together.'),
                     h2('The outcome'),
-                    para('Teams now ship a new screen about four times faster than before, and the product reads as one product again. The system has its own small backlog and two contributors from other squads — the surest sign it’s alive rather than imposed.'),
+                    para('Teams now ship a new screen about four times faster than before, and the product reads as one product again. The system has its own small backlog and two contributors from other squads: the surest sign it’s alive rather than imposed.'),
                 ],
             },
         },
@@ -585,11 +585,11 @@ const CONTENT = [
                 content: [
                     para('Role: Product designer. Timeline: two months. Fathom is a product-analytics tool, and its power was also its problem: a blank, capable canvas that new users stared at without knowing where to begin.'),
                     h2('The problem'),
-                    para('Activation data was blunt but clear — people who built one useful report in their first session stuck around; people who didn’t, left. Most didn’t, because the distance from empty state to first insight was too far and completely unguided.'),
+                    para('Activation data was blunt but clear: people who built one useful report in their first session stuck around; people who didn’t, left. Most didn’t, because the distance from empty state to first insight was too far and completely unguided.'),
                     h2('What we did'),
                     para('We designed a short, skippable onboarding that used the user’s own connected data, not a demo dataset, to walk them to one real report about their own product. A checklist made progress visible, each step produced something they could keep, and the whole thing got out of the way the moment they wanted to explore on their own.'),
                     h2('The outcome'),
-                    para('New users now reach a saved, useful report in a median of just under five minutes, and week-one activation rose by roughly a third. The onboarding is the tenant’s first taste of the product doing something for them — and it earns the exploration that follows.'),
+                    para('New users now reach a saved, useful report in a median of just under five minutes, and week-one activation rose by roughly a third. The onboarding is the tenant’s first taste of the product doing something for them, and it earns the exploration that follows.'),
                 ],
             },
         },
@@ -603,7 +603,7 @@ const SPEC: PortfolioSiteSpec = {
     key: 'sparx-portfolio-designer',
     name: 'Designer Portfolio',
     summary:
-        'A hire-me portfolio for a product / UX / design-systems designer: a plain-spoken statement hero, selected work as outcome-led rows, a short “how I work” band, and case-study pages that walk the brief, the work and the result. Restraint over decoration — the typography and the thinking do the work. Dressed in a cool near-white theme carried by one electric signal-blue. Shipped as Sasha Rourke.',
+        'A hire-me portfolio for a product / UX / design-systems designer: a plain-spoken statement hero, selected work as outcome-led rows, a short “how I work” band, and case-study pages that walk the brief, the work and the result. Restraint over decoration, the typography and the thinking do the work. Dressed in a cool near-white theme carried by one electric signal-blue. Shipped as Sasha Rourke.',
     tagline: 'A case-study-led portfolio for a product & UX designer.',
     industry: 'Product & UX designer',
     requiresModules: ['builder', 'cms', 'email'],
@@ -617,12 +617,12 @@ const SPEC: PortfolioSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Sasha Rourke — product & UX designer',
+            title: 'Sasha Rourke: product & UX designer',
             description:
-                'Sasha Rourke is an independent product designer working across fintech and healthcare — selected work, case studies, and how to start a project.',
+                'Sasha Rourke is an independent product designer working across fintech and healthcare: selected work, case studies, and how to start a project.',
         },
         about: {
-            title: 'About Sasha Rourke — product designer',
+            title: 'About Sasha Rourke: product designer',
             description:
                 'Twelve years shipping product in fintech and healthcare, end to end: research, interface design, and the design systems that keep a team consistent.',
         },

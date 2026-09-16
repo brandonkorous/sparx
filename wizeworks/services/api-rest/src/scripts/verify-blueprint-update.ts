@@ -55,7 +55,7 @@ function check(name: string, cond: boolean, detail?: unknown): void {
     console.log(`  ✓ ${name}`);
   } else {
     failures += 1;
-    console.log(`  ✗ ${name}${detail !== undefined ? ` — ${JSON.stringify(detail)}` : ''}`);
+    console.log(`  ✗ ${name}${detail !== undefined ? `: ${JSON.stringify(detail)}` : ''}`);
   }
 }
 
@@ -230,7 +230,7 @@ async function main(): Promise<void> {
         );
       }
     } else {
-      console.log('   (blueprint has no product — skipping commerce check D)');
+      console.log('   (blueprint has no product: skipping commerce check D)');
     }
   } finally {
     // ── cleanup ──────────────────────────────────────────────────────────────────

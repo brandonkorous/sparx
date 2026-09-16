@@ -97,7 +97,7 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<FileText className="size-6" aria-hidden />}
             title="Could not load your quotes"
-            description="This is a problem reaching the server. Your quotes are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your quotes are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

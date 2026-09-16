@@ -108,7 +108,7 @@ function mapRow(item: unknown, cfg: ApiConfig, log: Logger): FeedRow | null {
 
   const quantity = toNum(getPath(item, cfg.quantityField));
   if (quantity === null) {
-    log.warn({ sku }, 'inventory-worker: API row has no numeric quantity — skipping');
+    log.warn({ sku }, 'inventory-worker: API row has no numeric quantity, skipping');
     return null;
   }
 

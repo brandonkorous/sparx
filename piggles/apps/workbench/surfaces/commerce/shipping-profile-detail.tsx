@@ -295,8 +295,8 @@ function ProfileEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              Group together products that ship the same way — bulky freight, anything needing a
-              signature — so you can price their delivery on its own. You add products to the group
+              Group together products that ship the same way (bulky freight, anything needing a
+              signature) so you can price their delivery on its own. You add products to the group
               from each product later.
             </Text>
           ) : null}

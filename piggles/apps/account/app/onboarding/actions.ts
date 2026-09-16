@@ -83,7 +83,7 @@ export async function completeOnboarding(
   const session = await requireSession();
   const businessName = text(formData, 'businessName');
 
-  if (!businessName) return { error: 'Your business needs a name — you can change it later.' };
+  if (!businessName) return { error: 'Your business needs a name. You can change it later.' };
   if (businessName.length > 120) return { error: 'That name is a little too long.' };
 
   // The answer is validated against the real group list rather than trusted:

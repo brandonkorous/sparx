@@ -38,7 +38,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'square',
     description:
-      'A vertical card — cover image, heading, supporting text, and an action. The workhorse content block.',
+      'A vertical card: cover image, heading, supporting text, and an action. The workhorse content block.',
     surfaces: ['page', 'site'],
     tags: ['card', 'tile', 'panel', 'product', 'article', 'data-display'],
     tree: el(
@@ -62,7 +62,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
               bound(
                 atom('Text', 'text-sm text-base-content', {
                   variant: 'body',
-                  text: 'Everything you need for the long haul — sealed bearings, a reinforced frame, and a five-year warranty.',
+                  text: 'Everything you need for the long haul: sealed bearings, a reinforced frame, and a five-year warranty.',
                 }),
                 'product.description'
               ),
@@ -91,12 +91,12 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
   // ── Card (horizontal) — image beside content, stacks when narrow ─────────────
   entry({
     key: 'card_horizontal',
-    name: 'Card — horizontal',
+    name: 'Card: horizontal',
     category: 'data-display',
     kind: 'common',
     icon: 'rectangle-horizontal',
     description:
-      'A side-by-side card — image left, content right — that collapses to a stack on narrow containers.',
+      'A side-by-side card (image left, content right) that collapses to a stack on narrow containers.',
     surfaces: ['page', 'site'],
     tags: ['card', 'horizontal', 'media', 'list', 'data-display'],
     tree: el(
@@ -140,7 +140,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'bar-chart-3',
     description:
-      'A row of key figures — value over label — that wraps from three columns to one on narrow containers.',
+      'A row of key figures (value over label) that wraps from three columns to one on narrow containers.',
     surfaces: ['page', 'site'],
     tags: ['stats', 'metrics', 'kpi', 'figures', 'data-display'],
     tree: el(
@@ -222,7 +222,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'chevron-down',
     description:
-      'A stack of expandable panels built on native disclosure — no scripting. The chevron rotates as each opens.',
+      'A stack of expandable panels built on native disclosure: no scripting. The chevron rotates as each opens.',
     surfaces: ['page', 'site'],
     tags: ['accordion', 'faq', 'disclosure', 'expand', 'collapse', 'data-display'],
     tree: el(
@@ -237,7 +237,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
           ),
           accordionItem(
             'Can I bring my own domain?',
-            'Yes. Point your domain at us and we issue and renew the certificate automatically — no manual DNS juggling.',
+            'Yes. Point your domain at us and we issue and renew the certificate automatically: no manual DNS juggling.',
             false
           ),
           accordionItem(
@@ -304,7 +304,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'git-commit-vertical',
     description:
-      'A vertical activity timeline — dotted markers on a connecting rail with dated entries.',
+      'A vertical activity timeline: dotted markers on a connecting rail with dated entries.',
     surfaces: ['page', 'site'],
     tags: ['timeline', 'activity', 'history', 'feed', 'log', 'data-display'],
     tree: el('ol', 'flex w-full flex-col', {
@@ -342,7 +342,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'messages-square',
     description:
-      'A short conversation — incoming bubble on the left, outgoing on the right, each with sender and time.',
+      'A short conversation: incoming bubble on the left, outgoing on the right, each with sender and time.',
     surfaces: ['page', 'site'],
     tags: ['chat', 'message', 'conversation', 'bubble', 'support', 'data-display'],
     tree: el('div', 'flex w-full flex-col gap-4', {
@@ -386,7 +386,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
                   'div',
                   'rounded-box rounded-br-sm bg-primary px-4 py-2.5 text-sm text-primary-content',
                   {
-                    text: 'Just restocked this morning — want me to set two aside for you?',
+                    text: 'Just restocked this morning: want me to set two aside for you?',
                   }
                 ),
               ],
@@ -447,7 +447,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'gallery-horizontal',
     description:
-      'A horizontal scroll-snap rail of cards — swipe or scroll to advance, no scripting required.',
+      'A horizontal scroll-snap rail of cards: swipe or scroll to advance, no scripting required.',
     surfaces: ['page', 'site'],
     tags: ['carousel', 'slider', 'scroll', 'gallery', 'snap', 'data-display'],
     tree: el('div', 'flex w-full snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2', {
@@ -468,7 +468,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'chevrons-down-up',
     description:
-      'A single native disclosure that reveals more detail on click — a tidy "show more".',
+      'A single native disclosure that reveals more detail on click: a tidy "show more".',
     surfaces: ['page', 'site'],
     tags: ['collapse', 'show more', 'disclosure', 'expand', 'details', 'data-display'],
     tree: el('details', 'group w-full rounded-box border border-base-200 bg-base-100 p-5', {
@@ -488,7 +488,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
         ),
         atom('Text', 'mt-3 text-sm text-base-content', {
           variant: 'body',
-          text: 'Orders ship within one business day. Returns are accepted within 30 days in original condition — we cover return shipping on defects.',
+          text: 'Orders ship within one business day. Returns are accepted within 30 days in original condition. We cover return shipping on defects.',
         }),
       ],
     }),
@@ -502,7 +502,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'list',
     description:
-      'A semantic term/detail list for record attributes — label left, value right, ruled between rows.',
+      'A semantic term/detail list for record attributes: label left, value right, ruled between rows.',
     surfaces: ['page', 'site'],
     tags: ['description', 'detail', 'attributes', 'spec', 'key value', 'data-display'],
     tree: el(
@@ -527,7 +527,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'list-checks',
     description:
-      'A vertical list of benefits, each led by a check icon — for plan inclusions and spec highlights.',
+      'A vertical list of benefits, each led by a check icon, for plan inclusions and spec highlights.',
     surfaces: ['page', 'site'],
     tags: ['features', 'benefits', 'checklist', 'inclusions', 'list', 'data-display'],
     tree: el('ul', 'flex w-full flex-col gap-3', {

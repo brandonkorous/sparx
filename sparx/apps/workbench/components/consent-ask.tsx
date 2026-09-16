@@ -81,7 +81,7 @@ export function ConsentAsk() {
       toast.add({
         title: 'That did not save',
         description:
-          'Your answer was not recorded. Try again — nothing is being collected either way.',
+          'Your answer was not recorded. Try again. Nothing is being collected either way.',
         type: 'error',
       });
     }

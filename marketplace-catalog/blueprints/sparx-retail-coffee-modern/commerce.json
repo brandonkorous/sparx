@@ -85,14 +85,14 @@
     {
       "handle": "ethiopia-yirgacheffe",
       "title": "Ethiopia Yirgacheffe",
-      "description": "A washed Yirgacheffe roasted light — the archetype of a bright, clean Ethiopia. Jasmine and bergamot on the nose, lemon-tea acidity, a delicate, sparkling finish. The pour-over that tastes like a place, not just like coffee.",
+      "description": "A washed Yirgacheffe roasted light: the archetype of a bright, clean Ethiopia. Jasmine and bergamot on the nose, lemon-tea acidity, a delicate, sparkling finish. The pour-over that tastes like a place, not just like coffee.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Meridian Coffee",
       "tags": ["single-origin", "ethiopia", "washed", "light-roast"],
       "categoryHandles": ["single-origin"],
       "collectionHandles": ["fresh", "single-origins"],
-      "seoTitle": "Ethiopia Yirgacheffe — washed single-origin coffee | Meridian",
+      "seoTitle": "Ethiopia Yirgacheffe: washed single-origin coffee | Meridian",
       "seoDescription": "A bright, floral washed Ethiopia Yirgacheffe, roasted light. Jasmine, bergamot and lemon-tea acidity.",
       "options": [
         {
@@ -191,15 +191,15 @@
     {
       "handle": "kenya-nyeri",
       "title": "Kenya Nyeri",
-      "description": "A washed Kenya from Nyeri County — the coffee that converts people who think they don’t like light roasts. Blackcurrant, ripe tomato and a juicy, structured acidity, with a syrupy weight that fills the cup. Loud, in the best way.",
+      "description": "A washed Kenya from Nyeri County: the coffee that converts people who think they don’t like light roasts. Blackcurrant, ripe tomato and a juicy, structured acidity, with a syrupy weight that fills the cup. Loud, in the best way.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Meridian Coffee",
       "tags": ["single-origin", "kenya", "washed", "light-roast"],
       "categoryHandles": ["single-origin"],
       "collectionHandles": ["fresh", "single-origins"],
-      "seoTitle": "Kenya Nyeri — washed single-origin coffee | Meridian",
-      "seoDescription": "A juicy, structured washed Kenya from Nyeri — blackcurrant, ripe tomato and syrupy body. Roasted light.",
+      "seoTitle": "Kenya Nyeri: washed single-origin coffee | Meridian",
+      "seoDescription": "A juicy, structured washed Kenya from Nyeri: blackcurrant, ripe tomato and syrupy body. Roasted light.",
       "options": [
         {
           "name": "Size",
@@ -297,15 +297,15 @@
     {
       "handle": "colombia-narino",
       "title": "Colombia Nariño",
-      "description": "A washed Colombia from the high slopes of Nariño — the easy, everyone-likes-it single origin. Red apple, caramel and toasted almond, medium-bodied and sweet, equally good black or with milk. The reliable one.",
+      "description": "A washed Colombia from the high slopes of Nariño: the easy, everyone-likes-it single origin. Red apple, caramel and toasted almond, medium-bodied and sweet, equally good black or with milk. The reliable one.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Meridian Coffee",
       "tags": ["single-origin", "colombia", "washed", "medium-roast"],
       "categoryHandles": ["single-origin"],
       "collectionHandles": ["single-origins", "best-sellers"],
-      "seoTitle": "Colombia Nariño — washed single-origin coffee | Meridian",
-      "seoDescription": "A sweet, balanced washed Colombia from Nariño — red apple, caramel and toasted almond. Roasted medium.",
+      "seoTitle": "Colombia Nariño: washed single-origin coffee | Meridian",
+      "seoDescription": "A sweet, balanced washed Colombia from Nariño: red apple, caramel and toasted almond. Roasted medium.",
       "options": [
         {
           "name": "Size",
@@ -403,15 +403,15 @@
     {
       "handle": "signal-blend",
       "title": "Signal Blend",
-      "description": "Our everyday blend and the coffee we drink most — a clean Latin American base lifted by a bright East African top note. Chocolate, orange and brown sugar, medium-bodied and forgiving. Great in a filter, great in a press, great half-asleep.",
+      "description": "Our everyday blend and the coffee we drink most: a clean Latin American base lifted by a bright East African top note. Chocolate, orange and brown sugar, medium-bodied and forgiving. Great in a filter, great in a press, great half-asleep.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Meridian Coffee",
       "tags": ["blend", "everyday", "medium-roast"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["fresh", "blends", "best-sellers"],
-      "seoTitle": "Signal Blend — everyday coffee | Meridian",
-      "seoDescription": "A clean, sweet everyday blend — chocolate, orange and brown sugar. Works in any brewer. Roasted medium.",
+      "seoTitle": "Signal Blend: everyday coffee | Meridian",
+      "seoDescription": "A clean, sweet everyday blend: chocolate, orange and brown sugar. Works in any brewer. Roasted medium.",
       "options": [
         {
           "name": "Size",
@@ -509,15 +509,15 @@
     {
       "handle": "type-01-espresso",
       "title": "Type 01 Espresso",
-      "description": "A modern espresso built for clarity, not char — a touch fuller than our filter roasts but still bright underneath. Pulls a syrupy, cocoa-and-red-fruit shot that holds its own in milk without turning to ash. Dialed for the home machine.",
+      "description": "A modern espresso built for clarity, not char: a touch fuller than our filter roasts but still bright underneath. Pulls a syrupy, cocoa-and-red-fruit shot that holds its own in milk without turning to ash. Dialed for the home machine.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Meridian Coffee",
       "tags": ["blend", "espresso", "medium-dark-roast"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["blends", "best-sellers"],
-      "seoTitle": "Type 01 Espresso — modern espresso blend | Meridian",
-      "seoDescription": "A bright, syrupy modern espresso — cocoa and red fruit, holds up in milk. Roasted medium-dark.",
+      "seoTitle": "Type 01 Espresso: modern espresso blend | Meridian",
+      "seoDescription": "A bright, syrupy modern espresso: cocoa and red fruit, holds up in milk. Roasted medium-dark.",
       "options": [
         {
           "name": "Size",
@@ -615,15 +615,15 @@
     {
       "handle": "offgrid-decaf",
       "title": "Off-Grid Decaf",
-      "description": "A Swiss-water decaf that actually tastes like coffee — Colombian beans, chemical-free process, and a roast that keeps the sweetness in. Milk chocolate, baked apple and a soft nutty finish. The evening cup that won’t keep you up.",
+      "description": "A Swiss-water decaf that actually tastes like coffee: Colombian beans, chemical-free process, and a roast that keeps the sweetness in. Milk chocolate, baked apple and a soft nutty finish. The evening cup that won’t keep you up.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Meridian Coffee",
       "tags": ["decaf", "swiss-water", "medium-roast"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["blends"],
-      "seoTitle": "Off-Grid Decaf — Swiss-water decaf coffee | Meridian",
-      "seoDescription": "A genuinely good Swiss-water decaf — milk chocolate, baked apple and a nutty finish. Roasted medium.",
+      "seoTitle": "Off-Grid Decaf: Swiss-water decaf coffee | Meridian",
+      "seoDescription": "A genuinely good Swiss-water decaf: milk chocolate, baked apple and a nutty finish. Roasted medium.",
       "options": [
         {
           "name": "Size",
@@ -721,15 +721,15 @@
     {
       "handle": "steeped-coffee",
       "title": "Steeped Coffee (8-pack)",
-      "description": "Single-serve steep bags — like tea, but real specialty coffee. Tear one open, drop it in a mug, pour hot water and wait five minutes for a clean, full cup. No machine, no grinder, no mess. The travel, office and camp answer, filled with the Signal Blend.",
+      "description": "Single-serve steep bags, like tea, but real specialty coffee. Tear one open, drop it in a mug, pour hot water and wait five minutes for a clean, full cup. No machine, no grinder, no mess. The travel, office and camp answer, filled with the Signal Blend.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Meridian Coffee",
       "tags": ["ready-to-brew", "single-serve", "travel"],
       "categoryHandles": ["ready-to-brew"],
       "collectionHandles": ["fresh", "best-sellers"],
-      "seoTitle": "Steeped Coffee, 8-pack — single-serve steep bags | Meridian",
-      "seoDescription": "Single-serve coffee steep bags — real specialty coffee, no machine. Filled with the Signal Blend.",
+      "seoTitle": "Steeped Coffee, 8-pack: single-serve steep bags | Meridian",
+      "seoDescription": "Single-serve coffee steep bags: real specialty coffee, no machine. Filled with the Signal Blend.",
       "variants": [
         {
           "sku": "MER-STEEP-8",
@@ -749,14 +749,14 @@
     {
       "handle": "precision-grinder",
       "title": "Precision Hand Grinder",
-      "description": "A hand grinder with 38mm conical burrs and stepped adjustment — even, repeatable grounds from espresso to French press, without the noise or the price of a benchtop machine. Matte steel, glass catch, built to outlast a few coffee machines.",
+      "description": "A hand grinder with 38mm conical burrs and stepped adjustment: even, repeatable grounds from espresso to French press, without the noise or the price of a benchtop machine. Matte steel, glass catch, built to outlast a few coffee machines.",
       "status": "active",
       "productType": "Equipment",
       "vendor": "Meridian Coffee",
       "tags": ["gear", "brewing", "grinder"],
       "categoryHandles": ["brew-gear"],
       "collectionHandles": ["brew-gear", "starter-kit"],
-      "seoTitle": "Precision Hand Grinder — 38mm conical burrs | Meridian",
+      "seoTitle": "Precision Hand Grinder: 38mm conical burrs | Meridian",
       "seoDescription": "A quiet, repeatable hand grinder with 38mm conical burrs, from espresso to French press.",
       "variants": [
         {
@@ -777,14 +777,14 @@
     {
       "handle": "flat-bottom-dripper",
       "title": "Flat-Bottom Dripper",
-      "description": "A flat-bottom ceramic dripper that’s far more forgiving than a cone — the even bed pulls a balanced, repeatable cup even when your pour isn’t perfect. Holds heat, pours clean, and uses standard basket filters. The easiest way into great pour-over.",
+      "description": "A flat-bottom ceramic dripper that’s far more forgiving than a cone: the even bed pulls a balanced, repeatable cup even when your pour isn’t perfect. Holds heat, pours clean, and uses standard basket filters. The easiest way into great pour-over.",
       "status": "active",
       "productType": "Equipment",
       "vendor": "Meridian Coffee",
       "tags": ["gear", "brewing", "pour-over"],
       "categoryHandles": ["brew-gear"],
       "collectionHandles": ["brew-gear", "starter-kit"],
-      "seoTitle": "Flat-Bottom Dripper — forgiving pour-over brewer | Meridian",
+      "seoTitle": "Flat-Bottom Dripper: forgiving pour-over brewer | Meridian",
       "seoDescription": "A flat-bottom ceramic dripper for a balanced, repeatable pour-over. Uses standard basket filters.",
       "variants": [
         {
@@ -805,15 +805,15 @@
     {
       "handle": "subscription",
       "title": "Coffee Subscription",
-      "description": "Freshly roasted coffee on your schedule — choose one or two bags and how often, and we roast and ship to match. Rotate through the single origins or lock in the Signal Blend; skip, swap or cancel any week. The easiest way to always have great coffee on the counter.",
+      "description": "Freshly roasted coffee on your schedule. Choose one or two bags and how often, and we roast and ship to match. Rotate through the single origins or lock in the Signal Blend; skip, swap or cancel any week. The easiest way to always have great coffee on the counter.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Meridian Coffee",
       "tags": ["subscription", "gift"],
       "categoryHandles": ["subscription"],
       "collectionHandles": ["fresh", "best-sellers"],
-      "seoTitle": "Coffee Subscription — freshly roasted, on your schedule | Meridian",
-      "seoDescription": "A flexible coffee subscription — pick one or two bags and a cadence; skip, swap or cancel any week.",
+      "seoTitle": "Coffee Subscription: freshly roasted, on your schedule | Meridian",
+      "seoDescription": "A flexible coffee subscription. Pick one or two bags and a cadence; skip, swap or cancel any week.",
       "options": [
         {
           "name": "Bags",

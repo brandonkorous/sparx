@@ -15,7 +15,7 @@
       "depositAmountCents": 1500,
       "cancellationWindowHours": 48,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over — it only keeps a no-show from taking a groomer’s whole afternoon."
+      "policyText": "Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over. It only keeps a no-show from taking a groomer’s whole afternoon."
     }
   ],
   "resources": [
@@ -211,7 +211,7 @@
   "services": [
     {
       "handle": "bath-brush-small",
-      "name": "Bath & brush — small dog",
+      "name": "Bath & brush: small dog",
       "description": "A warm bath, a gentle towel-and-cage-free blow dry, a brush-out, ears and a spritz. For dogs up to about 25 lb.",
       "durationMinutes": 45,
       "priceCents": 4000,
@@ -234,8 +234,8 @@
     },
     {
       "handle": "bath-brush-large",
-      "name": "Bath & brush — large dog",
-      "description": "The same gentle bath, brush-out and cage-free dry, sized for the big kids — dogs over about 50 lb.",
+      "name": "Bath & brush: large dog",
+      "description": "The same gentle bath, brush-out and cage-free dry, sized for the big kids: dogs over about 50 lb.",
       "durationMinutes": 75,
       "priceCents": 6500,
       "assignmentStrategy": "any_available",
@@ -257,7 +257,7 @@
     },
     {
       "handle": "full-groom-small",
-      "name": "Full groom — small dog",
+      "name": "Full groom: small dog",
       "description": "Bath, full haircut to the style you like, nails, ears, paw tidy and a bandana. For dogs up to about 25 lb.",
       "durationMinutes": 90,
       "priceCents": 7500,
@@ -281,8 +281,8 @@
     },
     {
       "handle": "full-groom-large",
-      "name": "Full groom — large dog",
-      "description": "The whole works — bath, breed or freestyle cut, nails, ears and paws — for the big dogs over about 50 lb. Never rushed.",
+      "name": "Full groom: large dog",
+      "description": "The whole works (bath, breed or freestyle cut, nails, ears and paws) for the big dogs over about 50 lb. Never rushed.",
       "durationMinutes": 120,
       "priceCents": 11500,
       "bufferAfterMin": 15,
@@ -330,7 +330,7 @@
     {
       "handle": "deshed-treatment",
       "name": "De-shed treatment",
-      "description": "A deep bath, a shed-loosening conditioner and a thorough undercoat brush-out — the fix for tumbleweeds of fur at home.",
+      "description": "A deep bath, a shed-loosening conditioner and a thorough undercoat brush-out: the fix for tumbleweeds of fur at home.",
       "durationMinutes": 90,
       "priceCents": 8000,
       "bufferAfterMin": 10,
@@ -354,7 +354,7 @@
     {
       "handle": "nail-trim",
       "name": "Nail trim & tidy",
-      "description": "A quick, calm nail trim with a file-smooth finish — add a teeth-brushing on the day if you like. No appointment marathon.",
+      "description": "A quick, calm nail trim with a file-smooth finish. Add a teeth-brushing on the day if you like. No appointment marathon.",
       "durationMinutes": 45,
       "priceCents": 2000,
       "assignmentStrategy": "any_available",

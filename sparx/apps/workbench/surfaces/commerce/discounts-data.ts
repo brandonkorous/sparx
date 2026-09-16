@@ -157,7 +157,7 @@ export function discountState(discount: {
     return {
       label: 'Not live',
       tone: 'info',
-      detail: 'Saved but switched off — no order gets this discount until you turn it on.',
+      detail: 'Saved but switched off: no order gets this discount until you turn it on.',
     };
   }
   const now = Date.now();
@@ -178,7 +178,7 @@ export function discountState(discount: {
   return {
     label: 'Live',
     tone: 'success',
-    detail: 'Working now — qualifying orders get this discount at checkout.',
+    detail: 'Working now: qualifying orders get this discount at checkout.',
   };
 }
 

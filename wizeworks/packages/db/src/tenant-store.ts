@@ -49,7 +49,7 @@ export const tenantStore = {
     const id = storage.getStore()?.tenantId;
     if (!id) {
       throw new Error(
-        'tenantStore: no tenant in context — a tenant-scoped operation ran outside tenantStore.run(). ' +
+        'tenantStore: no tenant in context, a tenant-scoped operation ran outside tenantStore.run(). ' +
           'This is a fail-closed guard against unscoped cross-tenant queries.'
       );
     }

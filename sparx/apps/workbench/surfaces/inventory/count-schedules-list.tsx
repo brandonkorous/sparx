@@ -115,7 +115,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<ClipboardCheck className="size-6" aria-hidden />}
           title="Could not load your counting schedules"
-          description="This is a problem reaching the server. Nothing has changed — the list just could not be read right now."
+          description="This is a problem reaching the server. Nothing has changed: the list just could not be read right now."
         />
       );
     }
@@ -131,7 +131,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<CalendarClock className="size-6" aria-hidden />}
           title="No counting schedules yet"
-          description="A schedule is what turns counting from something you mean to do into something that happens. The usual setup is three: your top-value stock every month, the middle every quarter, and the long tail once a year — between them they cover everything for a fraction of the effort of a full stocktake."
+          description="A schedule is what turns counting from something you mean to do into something that happens. The usual setup is three: your top-value stock every month, the middle every quarter, and the long tail once a year: between them they cover everything for a fraction of the effort of a full stocktake."
           actions={
             <Button
               color="module"

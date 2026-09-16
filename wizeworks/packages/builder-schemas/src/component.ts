@@ -306,7 +306,7 @@ export const CreateComponentInput = z
     propSpec: PropSpecListSchema.default([]),
   })
   .refine((v) => v.tree !== undefined || v.silicaTree !== undefined, {
-    message: 'A piece needs a design — provide silicaTree.',
+    message: 'A piece needs a design: provide silicaTree.',
     path: ['silicaTree'],
   });
 export type CreateComponentInput = z.infer<typeof CreateComponentInput>;

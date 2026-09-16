@@ -233,7 +233,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
             title="Could not load payouts"
-            description="Something went wrong reaching the server. Your deposits are unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Your deposits are unaffected. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -247,7 +247,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               filtering
                 ? 'Try a different combination, or switch both filters back to All.'
-                : "When card sales settle, the deposits that land in your bank will be listed here — each one broken down by the sales it's made of. Cash, checks and account payments don't appear here: they're money you've received, not a deposit that arrives."
+                : "When card sales settle, the deposits that land in your bank will be listed here, each one broken down by the sales it's made of. Cash, checks and account payments don't appear here: they're money you've received, not a deposit that arrives."
             }
           />
         ) : (

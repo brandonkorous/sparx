@@ -56,7 +56,7 @@ export function ToolsIndex() {
             Seventeen small tools. <span className="text-primary">No sign-up, no catch.</span>
           </>
         }
-        lede="The odd jobs that come up when you are running a business — a favicon, an invoice, a QR code for the table, the sum you always redo on the back of an envelope. All free, all in your browser, and none of them asking for an email address first."
+        lede="The odd jobs that come up when you are running a business: a favicon, an invoice, a QR code for the table, the sum you always redo on the back of an envelope. All free, all in your browser, and none of them asking for an email address first."
         figure={
           <PigglesMascot
             intent="welcome"
@@ -70,7 +70,7 @@ export function ToolsIndex() {
           className={buttonClasses({ color: 'primary', size: 'lg' })}
           href={accountUrl('signup', 'tools-hub')}
         >
-          Get Piggles — {PRICE_LABEL}/month
+          Get Piggles for {PRICE_LABEL}/month
         </a>
         {/* No `color` at all. It was pinned to `neutral`, which is Brandon's
             call every time (root RULE #4) — and an uncolored `.btn` resolves to
@@ -95,7 +95,7 @@ export function ToolsIndex() {
             <p className="text-lg">
               Because they are advertising, and we would rather advertise by being useful than by
               following you around the internet. You will use one, it will do the job, and some
-              small number of people will remember the name later — when the thing they need is
+              small number of people will remember the name later, when the thing they need is
               bigger than a browser tab.
             </p>
             <p className="text-lg">
@@ -104,8 +104,8 @@ export function ToolsIndex() {
               make one invoice here and never come back, the arrangement worked exactly as intended.
             </p>
             <p className="text-lg">
-              The product these come from is Piggles: fifteen apps for running a small business —
-              your website, your customers, your stock, your money — for {PRICE_LABEL} a month with
+              The product these come from is Piggles: fifteen apps for running a small business
+              (your website, your customers, your stock, your money) for {PRICE_LABEL} a month with
               everything included. These seventeen are the corners of it that fit in a page.
             </p>
           </div>

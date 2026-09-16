@@ -58,7 +58,7 @@ function classify(records: string[] | null, error: string | undefined, re: RegEx
  *  the resolver simply did not answer sends them to publish a second copy of a
  *  record they already have. */
 function checkLine(label: string, result: CheckResult): ToolResultLine {
-  if (result.status === 'found') return { label, value: `Found — ${result.record ?? 'published'}` };
+  if (result.status === 'found') return { label, value: `Found: ${result.record ?? 'published'}` };
   if (result.status === 'missing') return { label, value: 'Not published' };
   if (result.status === 'error')
     return { label, value: `We could not read this one (${result.error ?? 'lookup failed'})` };
@@ -76,7 +76,7 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
         ) : null}
         {result.status === 'missing' ? (
           <Alert color="danger" variant="soft" size="sm">
-            No {label} record published — generate one on the left.
+            No {label} record published: generate one on the left.
           </Alert>
         ) : null}
         {result.error ? (
@@ -123,13 +123,13 @@ export function DeliverabilityTool() {
       ...(results && cleanDomain(domain)
         ? [
             { label: 'Domain checked', value: cleanDomain(domain) },
-            checkLine('SPF — authorized senders', results.spf),
-            checkLine('DKIM — message signature', results.dkim),
-            checkLine('DMARC — failure policy', results.dmarc),
+            checkLine('SPF: authorized senders', results.spf),
+            checkLine('DKIM: message signature', results.dkim),
+            checkLine('DMARC: failure policy', results.dmarc),
           ]
         : []),
-      { label: 'SPF record — host @ (root)', value: spfRecord },
-      { label: 'DMARC record — host _dmarc', value: dmarcRecord },
+      { label: 'SPF record: host @ (root)', value: spfRecord },
+      { label: 'DMARC record: host _dmarc', value: dmarcRecord },
     ],
     note: 'Add both as TXT records wherever your domain is managed. Leave DMARC on monitor for a couple of weeks and read the reports before you tighten it, or you can start bouncing your own mail. DKIM is not here because your email provider generates that one for you.',
   });
@@ -242,16 +242,16 @@ export function DeliverabilityTool() {
         <Panel title="Results">
           {results ? (
             <List className="bg-transparent [&_.list-row]:px-0">
-              <ResultRow label="SPF" full="SPF — authorized senders" result={results.spf} />
-              <ResultRow label="DKIM" full="DKIM — message signature" result={results.dkim} />
-              <ResultRow label="DMARC" full="DMARC — failure policy" result={results.dmarc} />
+              <ResultRow label="SPF" full="SPF: authorized senders" result={results.spf} />
+              <ResultRow label="DKIM" full="DKIM: message signature" result={results.dkim} />
+              <ResultRow label="DMARC" full="DMARC: failure policy" result={results.dmarc} />
             </List>
           ) : (
             <EmptyResults />
           )}
           <Alert color="info" size="sm">
             DKIM lives at a selector your provider chooses (e.g. <code>google._domainkey</code>). If
-            DKIM shows as missing, try a different selector — your provider lists it in their setup
+            DKIM shows as missing, try a different selector. Your provider lists it in their setup
             docs.
           </Alert>
         </Panel>
@@ -275,7 +275,7 @@ function RecordOut({ host, record }: { host: string; record: string }) {
   return (
     <div className="flex flex-col gap-2">
       <span className="text-sm">
-        Add a TXT record — host <code className="font-mono">{host}</code>:
+        Add a TXT record: host <code className="font-mono">{host}</code>:
       </span>
       <CodeBlock height="none">{record}</CodeBlock>
       <div>

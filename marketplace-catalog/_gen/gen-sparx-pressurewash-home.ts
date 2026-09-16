@@ -69,7 +69,7 @@ const ASSETS: Asset[] = [
   {
     id: IMG.hero,
     url: src('blastmaster-hero'),
-    alt: 'A driveway freshly pressure-washed to a clean, bright grey — the dirty half still visible',
+    alt: 'A driveway freshly pressure-washed to a clean, bright grey: the dirty half still visible',
   },
   {
     id: IMG.transformation,
@@ -151,7 +151,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Maintenance plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. We confirm your first service the day before, then keep your home on the same schedule automatically.',
+        'Maintenance plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. We confirm your first service the day before, then keep your home on the same schedule automatically.',
     },
   ],
   resources: [
@@ -182,7 +182,7 @@ const SCHEDULING = {
       handle: 'free-quote',
       name: 'Free washing quote',
       description:
-        'We stop by, walk your property, and send a clear flat-rate quote — no pressure, no obligation. The fastest way to get started.',
+        'We stop by, walk your property, and send a clear flat-rate quote: no pressure, no obligation. The fastest way to get started.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -193,7 +193,7 @@ const SCHEDULING = {
       handle: 'driveway-cleaning',
       name: 'Driveway & concrete cleaning',
       description:
-        'High-pressure surface cleaning that lifts years of dirt, oil, algae and tire marks — concrete, pavers and walkways brought back to bright, even and new.',
+        'High-pressure surface cleaning that lifts years of dirt, oil, algae and tire marks: concrete, pavers and walkways brought back to bright, even and new.',
       durationMinutes: 90,
       priceCents: 15900,
       assignmentStrategy: 'any_available',
@@ -204,7 +204,7 @@ const SCHEDULING = {
       handle: 'house-soft-wash',
       name: 'House soft-wash',
       description:
-        'A gentle, low-pressure soft-wash that safely strips grime, mildew and green off siding, stucco and brick — deep-clean results without ever blasting your home.',
+        'A gentle, low-pressure soft-wash that safely strips grime, mildew and green off siding, stucco and brick: deep-clean results without ever blasting your home.',
       durationMinutes: 120,
       priceCents: 29900,
       assignmentStrategy: 'any_available',
@@ -215,7 +215,7 @@ const SCHEDULING = {
       handle: 'deck-patio-cleaning',
       name: 'Deck & patio cleaning',
       description:
-        'Wood, composite and stone cleaned at the right pressure for the surface — greyed decks freshened and patios cleared of moss and buildup, ready to enjoy.',
+        'Wood, composite and stone cleaned at the right pressure for the surface: greyed decks freshened and patios cleared of moss and buildup, ready to enjoy.',
       durationMinutes: 90,
       priceCents: 22900,
       assignmentStrategy: 'any_available',
@@ -226,7 +226,7 @@ const SCHEDULING = {
       handle: 'roof-soft-wash',
       name: 'Roof soft-wash',
       description:
-        'A no-pressure treatment that kills and removes the black streaks and moss on your roof without damaging shingles — the safe way to get years of curb appeal back.',
+        'A no-pressure treatment that kills and removes the black streaks and moss on your roof without damaging shingles: the safe way to get years of curb appeal back.',
       durationMinutes: 150,
       priceCents: 39900,
       assignmentStrategy: 'any_available',
@@ -248,7 +248,7 @@ const SCHEDULING = {
       handle: 'full-exterior-package',
       name: 'Full exterior package',
       description:
-        'The whole house done in one visit — house soft-wash, driveway, walkways and patio — and set up on an annual refresh so it stays looking new year after year.',
+        'The whole house done in one visit (house soft-wash, driveway, walkways and patio) and set up on an annual refresh so it stays looking new year after year.',
       durationMinutes: 180,
       priceCents: 74900,
       assignmentStrategy: 'any_available',
@@ -262,9 +262,9 @@ const SCHEDULING = {
 const HOME = [
   photoHero({
     image: url(IMG.hero),
-    alt: 'A driveway freshly pressure-washed to a clean, bright grey — the dirty half still visible',
+    alt: 'A driveway freshly pressure-washed to a clean, bright grey: the dirty half still visible',
     title: 'Make it look new again',
-    sub: 'Driveways, siding, decks and roofs washed the safe way — with a clear flat-rate quote up front and results you can see the moment we’re done.',
+    sub: 'Driveways, siding, decks and roofs washed the safe way, with a clear flat-rate quote up front and results you can see the moment we’re done.',
     primary: { label: 'Get a free quote', href: '/book' },
     secondary: { label: 'See what we clean', href: '/book' },
     overlay: 'dark',
@@ -273,19 +273,19 @@ const HOME = [
     items: [
       {
         title: 'Soft-wash safe for your home',
-        body: 'We match the pressure to the surface — gentle soft-wash on siding and roofs, real power where concrete can take it. Deep-clean results, zero damage.',
+        body: 'We match the pressure to the surface: gentle soft-wash on siding and roofs, real power where concrete can take it. Deep-clean results, zero damage.',
       },
       {
         title: 'Licensed & fully insured',
-        body: 'A real, insured local company on your property — not a truck that shows up once and disappears with your deposit.',
+        body: 'A real, insured local company on your property, not a truck that shows up once and disappears with your deposit.',
       },
       {
         title: 'Upfront flat quotes',
-        body: 'One clear price before we start — no hourly surprises, no add-ons at the end. You always know exactly what it costs.',
+        body: 'One clear price before we start: no hourly surprises, no add-ons at the end. You always know exactly what it costs.',
       },
       {
         title: 'Satisfaction guaranteed',
-        body: 'If a spot isn’t right, we come back and make it right. You don’t pay to be happy — being happy is the whole job.',
+        body: 'If a spot isn’t right, we come back and make it right. You don’t pay to be happy: being happy is the whole job.',
       },
     ],
   }),
@@ -295,11 +295,11 @@ const HOME = [
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Free washing quote', priceCents: 0, durationMin: 30, desc: 'We walk your property and send a flat-rate price — no obligation.' },
-      { name: 'Driveway & concrete', priceCents: 15900, durationMin: 90, desc: 'Oil, algae and tire marks lifted — bright, even and new.' },
+      { name: 'Free washing quote', priceCents: 0, durationMin: 30, desc: 'We walk your property and send a flat-rate price: no obligation.' },
+      { name: 'Driveway & concrete', priceCents: 15900, durationMin: 90, desc: 'Oil, algae and tire marks lifted: bright, even and new.' },
       { name: 'House soft-wash', priceCents: 29900, durationMin: 120, desc: 'Grime, mildew and green safely stripped off siding.' },
       { name: 'Deck & patio', priceCents: 22900, durationMin: 90, desc: 'Wood, composite and stone cleaned at the right pressure.' },
-      { name: 'Roof soft-wash', priceCents: 39900, durationMin: 150, desc: 'Black streaks and moss gone — no damage to shingles.' },
+      { name: 'Roof soft-wash', priceCents: 39900, durationMin: 150, desc: 'Black streaks and moss gone: no damage to shingles.' },
       { name: 'Gutter clean & brighten', priceCents: 12900, durationMin: 60, desc: 'Cleared to flow, plus the tiger-stripe stains wiped away.' },
     ],
     cta: { label: 'Get your free quote', href: '/book' },
@@ -309,17 +309,17 @@ const HOME = [
     alt: 'A house exterior mid soft-wash, one side dingy and one side bright and clean',
     heading: 'The before-and-after you’ll want to show off',
     body: [
-      'There’s a moment on every job — the clean line where the dirty half meets the fresh half — and it never stops being satisfying. Green turns to bright siding, grey concrete comes back, black streaks vanish off the roof.',
-      'That transformation is the whole point. We finish, walk it with you, and you get to see your home look the way it did the day you moved in — sometimes better.',
+      'There’s a moment on every job (the clean line where the dirty half meets the fresh half) and it never stops being satisfying. Green turns to bright siding, grey concrete comes back, black streaks vanish off the roof.',
+      'That transformation is the whole point. We finish, walk it with you, and you get to see your home look the way it did the day you moved in: sometimes better.',
     ],
     cta: { label: 'Book your transformation', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your crew',
-    intro: 'The same friendly, careful faces on your property each visit — people who take real pride in a clean line.',
+    intro: 'The same friendly, careful faces on your property each visit: people who take real pride in a clean line.',
     members: [
       { name: 'Marcus Vance', role: 'Lead technician', image: url(IMG.marcus), alt: 'Marcus Vance, lead pressure-wash technician', bio: 'Driveways, walkways and whole-house jobs. Marcus runs a tidy, on-time route and never leaves a streak.' },
-      { name: 'Dana Whitfield', role: 'Soft-wash & roof specialist', image: url(IMG.dana), alt: 'Dana Whitfield, soft-wash & roof specialist', bio: 'Low-pressure siding and roof treatments — the safe, gentle side of getting your home spotless.' },
+      { name: 'Dana Whitfield', role: 'Soft-wash & roof specialist', image: url(IMG.dana), alt: 'Dana Whitfield, soft-wash & roof specialist', bio: 'Low-pressure siding and roof treatments: the safe, gentle side of getting your home spotless.' },
       { name: 'Ty Okafor', role: 'Deck & patio technician', image: url(IMG.ty), alt: 'Ty Okafor, deck & patio technician', bio: 'Wood, composite and stone brought back to life, with an eye for detail on every board and seam.' },
     ],
   }),
@@ -352,7 +352,7 @@ const ABOUT = [
     alt: 'A Blast Master technician soft-washing siding with a low-pressure wand on a sunny morning',
     heading: 'About Blast Master Pressure Washing',
     body: [
-      'Blast Master started with a simple belief: your home should look cared for, and getting it clean shouldn’t mean risking damage or chasing a vague bill. So we do it the right way — the right pressure for every surface, a flat price up front, and a finish we’re proud to stand behind.',
+      'Blast Master started with a simple belief: your home should look cared for, and getting it clean shouldn’t mean risking damage or chasing a vague bill. So we do it the right way, the right pressure for every surface, a flat price up front, and a finish we’re proud to stand behind.',
       'We’re a local, licensed and insured crew that treats every property like our own. The same faces each visit, honest quotes you can count on, and a standing promise to make it right if it isn’t.',
     ],
     cta: { label: 'Get a free quote', href: '/book' },
@@ -361,8 +361,8 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'The right pressure, every surface', body: 'Soft-wash for siding and roofs, real power for concrete. We never blast something that can’t take it — and we get it cleaner anyway.' },
-      { title: 'One clear, flat price', body: 'You know what the job costs before we start — no hourly meter, no surprise add-ons, no haggling at the door.' },
+      { title: 'The right pressure, every surface', body: 'Soft-wash for siding and roofs, real power for concrete. We never blast something that can’t take it, and we get it cleaner anyway.' },
+      { title: 'One clear, flat price', body: 'You know what the job costs before we start: no hourly meter, no surprise add-ons, no haggling at the door.' },
       { title: 'Guaranteed, every job', body: 'If something’s not right, we come back and fix it. Your home looking new is the whole point of the visit.' },
     ],
   }),
@@ -381,7 +381,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Get a free quote and see the next available days online — no phone tag, no waiting on a callback.',
+    sub: 'Get a free quote and see the next available days online: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Get a free quote', href: '/book' },
   }),
@@ -392,8 +392,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-pressurewash-home',
   name: 'Pressure Washing (Home)',
   summary:
-    'A bright, satisfying residential pressure & soft washing site — a vivid aqua palette on a crisp near-white ground, built around booking a free quote online. Installs a working flow: a $0 quote booking, driveway, house soft-wash, deck, roof and gutter services plus a full-exterior package, and three techs you book with their own hours. Ships as "Blast Master Pressure Washing" — make it look new again.',
-  tagline: 'A bright residential pressure-washing template — book a free quote from day one.',
+    'A bright, satisfying residential pressure & soft washing site: a vivid aqua palette on a crisp near-white ground, built around booking a free quote online. Installs a working flow: a $0 quote booking, driveway, house soft-wash, deck, roof and gutter services plus a full-exterior package, and three techs you book with their own hours. Ships as "Blast Master Pressure Washing". Make it look new again.',
+  tagline: 'A bright residential pressure-washing template. Book a free quote from day one.',
   industry: 'Pressure washing',
   sortWeight: 8,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -402,9 +402,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Blast Master Pressure Washing — driveways, siding & roofs',
+      title: 'Blast Master Pressure Washing: driveways, siding & roofs',
       description:
-        'Blast Master Pressure Washing cleans driveways, siding, decks and roofs the safe way — soft-wash where it matters, flat-rate quotes up front. Licensed, insured, and easy to book online. Get a free quote.',
+        'Blast Master Pressure Washing cleans driveways, siding, decks and roofs the safe way: soft-wash where it matters, flat-rate quotes up front. Licensed, insured, and easy to book online. Get a free quote.',
     },
   },
   home: HOME,

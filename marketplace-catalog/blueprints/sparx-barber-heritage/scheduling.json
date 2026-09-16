@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 12,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Walk in or book ahead — either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out."
+      "policyText": "Walk in or book ahead. Either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out."
     },
     {
       "handle": "no-show",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 180, 60],
-      "policyText": "The shave and the full combo hold your barber for the better part of an hour. No deposit — just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook."
+      "policyText": "The shave and the full combo hold your barber for the better part of an hour. No deposit. Just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook."
     }
   ],
   "resources": [

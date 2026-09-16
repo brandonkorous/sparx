@@ -122,7 +122,7 @@ export function AddItems({
         </Heading>
         <Text className="text-sm">
           Searches what already has stock at this location. For anything else, use the scanner box
-          above — typing a code there works too.
+          above: typing a code there works too.
         </Text>
       </div>
 

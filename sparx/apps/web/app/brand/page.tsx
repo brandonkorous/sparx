@@ -14,12 +14,12 @@ import { NotSection } from '@/components/marketing/brand/not-section';
 import { DownloadsSection } from '@/components/marketing/brand/downloads-section';
 
 export const metadata: Metadata = {
-  title: 'Brand — sparx',
+  title: 'Brand: sparx',
   description:
-    'The sparx brand system: the lowercase wordmark (the “x” is always sparx Ember), the spark mark, sparky the mascot, the module color system, the Geist type scale, the voice, and the usage rules — plus press-ready logo downloads.',
+    'The sparx brand system: the lowercase wordmark (the “x” is always sparx Ember), the spark mark, sparky the mascot, the module color system, the Geist type scale, the voice, and the usage rules: plus press-ready logo downloads.',
   alternates: { canonical: '/brand' },
   openGraph: {
-    title: 'Brand — sparx',
+    title: 'Brand: sparx',
     description:
       'The sparx wordmark, color system, type scale, voice, and usage rules. Press-ready logo assets included.',
     url: 'https://sparx.works/brand',

@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,7 +750,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Latitude Coffee Club — single-origin coffee, roasted to order",
+      "seoTitle": "Latitude Coffee Club: single-origin coffee, roasted to order",
       "seoDescription": "Latitude Coffee Club sends a fresh single-origin harvest to your door each month, roasted to order, with the story of the farm that grew it.",
       "root": {
         "kind": "element",
@@ -1081,7 +1081,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "From your first order to a fresh bag at your door, the whole club is three simple steps — and you can pause or cancel any time."
+                          "From your first order to a fresh bag at your door, the whole club is three simple steps, and you can pause or cancel any time."
                         ],
                         "id": "52b202c6-1459-4765-b38c-d3dc77d11cba",
                         "ord": "a1"
@@ -1125,7 +1125,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Pick your grind — whole bean, filter, espresso or Aeropress — and how long you would like to ride along. That is the whole set-up."
+                              "Pick your grind (whole bean, filter, espresso or Aeropress) and how long you would like to ride along. That is the whole set-up."
                             ],
                             "id": "1b3500d7-ff77-411d-98c3-6a30540a02ee",
                             "ord": "a2"
@@ -1264,7 +1264,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We buy whole harvests direct from growers along the bean belt — Ethiopia, Colombia, Kenya — and pay above the fair-trade floor for the pick of the crop. When you know who grew it and how, the coffee simply tastes better."
+                          "We buy whole harvests direct from growers along the bean belt (Ethiopia, Colombia, Kenya) and pay above the fair-trade floor for the pick of the crop. When you know who grew it and how, the coffee simply tastes better."
                         ],
                         "id": "befadfe1-df80-4185-968c-9435f7454c6a",
                         "ord": "a1"
@@ -1526,7 +1526,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "Every plan sends a new single-origin harvest, roasted to order and shipped free. The longer you stay, the more you save — and you are never locked in."
+                          "Every plan sends a new single-origin harvest, roasted to order and shipped free. The longer you stay, the more you save, and you are never locked in."
                         ],
                         "id": "f9e9d9e1-4fa8-4c21-a06b-5f71763eb5ba",
                         "ord": "a1"
@@ -1849,7 +1849,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base font-medium text-base-content",
-                            "children": ["No commitment — try a single origin first."],
+                            "children": ["No commitment. Try a single origin first."],
                             "id": "58288405-06c1-4ea7-94fc-f12db7f783ae",
                             "ord": "a3"
                           },
@@ -1920,7 +1920,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Great beans are only half the cup. A ceramic dripper, the right grind and a slow, patient pour turn a good bag into the best coffee you will make all week — and every box tells you exactly how."
+                          "Great beans are only half the cup. A ceramic dripper, the right grind and a slow, patient pour turn a good bag into the best coffee you will make all week, and every box tells you exactly how."
                         ],
                         "id": "43abed9c-d46c-4fe4-a7c0-028a3e4c158a",
                         "ord": "a1"
@@ -2295,7 +2295,7 @@
                             "tag": "p",
                             "class": "text-base text-base-content",
                             "children": [
-                              "Whole bean, filter, espresso or Aeropress — ground to order the day it leaves the roastery."
+                              "Whole bean, filter, espresso or Aeropress: ground to order the day it leaves the roastery."
                             ],
                             "id": "32222e02-87fa-4eab-8a03-59d8343d8bdf",
                             "ord": "a1"
@@ -2518,7 +2518,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Latitude Coffee Club",
+      "seoTitle": "Shop: Latitude Coffee Club",
       "seoDescription": "Browse everything Latitude Coffee Club makes, with prices and options at a glance. Coffee subscription & roastery.",
       "root": {
         "kind": "element",
@@ -2550,7 +2550,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every coffee Latitude currently roasts — this month’s single origins, the everyday blends, decaf, brew gear and gifts — filtered and sorted however you like. Roasted to order, shipped free, never older than it should be."
+                      "Every coffee Latitude currently roasts (this month’s single origins, the everyday blends, decaf, brew gear and gifts) filtered and sorted however you like. Roasted to order, shipped free, never older than it should be."
                     ],
                     "id": "8af345a6-7956-4ccc-9fcd-98745fd0f51b",
                     "ord": "a1"
@@ -2578,7 +2578,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Latitude Coffee Club",
+      "seoTitle": "Collections: Latitude Coffee Club",
       "seoDescription": "Explore the collections at Latitude Coffee Club, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2610,7 +2610,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "This month’s single origins, the everyday blends, decaf, the brew gear that finishes the cup and gifts to pass it on — gathered into shelves so you can start wherever your morning does."
+                      "This month’s single origins, the everyday blends, decaf, the brew gear that finishes the cup and gifts to pass it on: gathered into shelves so you can start wherever your morning does."
                     ],
                     "id": "394609b8-68c6-434b-95b8-25084ac15f1a",
                     "ord": "a1"
@@ -2638,7 +2638,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Latitude Coffee Club",
+      "seoTitle": "Your cart: Latitude Coffee Club",
       "seoDescription": "Review what is in your cart and check out securely at Latitude Coffee Club.",
       "root": {
         "kind": "element",
@@ -2670,7 +2670,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Nothing here is roasted until you order it — every bag is roasted to order and shipped free within 48 hours, no threshold to clear. Choose a club plan and it simply renews each month at the price you picked; pause or cancel any time, no questions."
+                      "Nothing here is roasted until you order it: every bag is roasted to order and shipped free within 48 hours, no threshold to clear. Choose a club plan and it simply renews each month at the price you picked; pause or cancel any time, no questions."
                     ],
                     "id": "ee336078-168b-405e-b771-d04ad50d501e",
                     "ord": "a1"
@@ -2698,7 +2698,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Latitude Coffee Club",
+      "seoTitle": "Search: Latitude Coffee Club",
       "seoDescription": "Search Latitude Coffee Club for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2730,7 +2730,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "After a particular origin, a roast level, or a piece of gear you saw in a box? Search the whole shelf and the Journal below — by country, by tasting note, by name."
+                      "After a particular origin, a roast level, or a piece of gear you saw in a box? Search the whole shelf and the Journal below: by country, by tasting note, by name."
                     ],
                     "id": "b65a13bb-085b-4700-a7ac-d44e5b52beaf",
                     "ord": "a1"
@@ -2758,7 +2758,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Latitude Coffee Club",
+      "seoTitle": "Journal: Latitude Coffee Club",
       "seoDescription": "Stories, guides and notes from Latitude Coffee Club.",
       "root": {
         "kind": "element",
@@ -2790,7 +2790,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Origin stories from the bean belt and notes from the roastery — who grew this month’s coffee, how we roast it, and the small things that turn a good bag into the best cup you make all week."
+                      "Origin stories from the bean belt and notes from the roastery, who grew this month’s coffee, how we roast it, and the small things that turn a good bag into the best cup you make all week."
                     ],
                     "id": "67e563f3-ff60-48db-9ce7-2c5a69738f11",
                     "ord": "a1"
@@ -2955,7 +2955,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Latitude Coffee Club started with a simple frustration: most coffee at home tastes of nowhere. It is roasted months ago, blended to hide where it came from, and it lands on your shelf a stranger. We wanted the opposite — coffee you could taste a place in, and know the people behind."
+                      "Latitude Coffee Club started with a simple frustration: most coffee at home tastes of nowhere. It is roasted months ago, blended to hide where it came from, and it lands on your shelf a stranger. We wanted the opposite, coffee you could taste a place in, and know the people behind."
                     ],
                     "id": "88e331d2-dade-48ff-b67e-6a97ffd05450",
                     "ord": "a1"
@@ -2965,7 +2965,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "So every month we follow the harvest around the bean belt and buy a single origin at its peak, direct from the growers. We roast it to order in small batches at our own roastery, grind it the way you brew, and ship it within two days — with a card that tells you whose farm it came from and how this year’s crop turned out."
+                      "So every month we follow the harvest around the bean belt and buy a single origin at its peak, direct from the growers. We roast it to order in small batches at our own roastery, grind it the way you brew, and ship it within two days, with a card that tells you whose farm it came from and how this year’s crop turned out."
                     ],
                     "id": "2fa5fb72-6b67-4905-8c0a-57d70ae51039",
                     "ord": "a2"
@@ -2975,7 +2975,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "That is the whole club. No lock-in, no filler, no coffee older than it should be — just a new origin at your door each month, and the story that makes it taste like more than a cup."
+                      "That is the whole club. No lock-in, no filler, no coffee older than it should be. Just a new origin at your door each month, and the story that makes it taste like more than a cup."
                     ],
                     "id": "7e7cb53e-c81a-4863-bef1-89bc09158045",
                     "ord": "a3"
@@ -2995,8 +2995,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Latitude Coffee Club",
-      "seoDescription": "Get in touch with Latitude Coffee Club — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Latitude Coffee Club",
+      "seoDescription": "Get in touch with Latitude Coffee Club: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -3032,7 +3032,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A question about a plan, a grind, or which origin to start with? A real person on the team reads every message and answers straight — usually the same day, always over a fresh cup."
+                          "A question about a plan, a grind, or which origin to start with? A real person on the team reads every message and answers straight, usually the same day, always over a fresh cup."
                         ],
                         "id": "be9ec1bb-126b-4b4e-b724-7cdf212f98b9",
                         "ord": "a1"
@@ -3303,8 +3303,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Latitude Coffee Club",
-      "seoDescription": "Product details at Latitude Coffee Club — coffee subscription & roastery, with options and pricing.",
+      "seoTitle": "Product: Latitude Coffee Club",
+      "seoDescription": "Product details at Latitude Coffee Club: coffee subscription & roastery, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -3448,7 +3448,7 @@
                             "tag": "p",
                             "class": "text-base font-medium text-primary-content",
                             "children": [
-                              "Roasted to order, ground the way you brew, and shipped free — every bag and every plan."
+                              "Roasted to order, ground the way you brew, and shipped free: every bag and every plan."
                             ],
                             "id": "7f7b31e5-06fb-4b0a-a2f8-641a3b9eece8",
                             "ord": "a0"

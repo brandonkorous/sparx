@@ -133,7 +133,7 @@ export function OgTool() {
           <Field label="Accent color">
             <HexColorField value={accent} onChange={setAccent} label="Accent color" />
           </Field>
-          <Field label="Logo" hint="Optional — sits in the top-right corner.">
+          <Field label="Logo" hint="Optional: sits in the top-right corner.">
             {logo ? (
               <div className="flex items-center gap-3">
                 <img src={logo} alt="" height={36} className="max-h-9 w-auto object-contain" />

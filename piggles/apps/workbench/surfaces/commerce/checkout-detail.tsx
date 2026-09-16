@@ -122,7 +122,7 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             error={error}
             noun="checkout"
             title="Could not load this checkout"
-            description="This is a problem reaching the server. The session itself is unaffected — nothing has been changed or lost."
+            description="This is a problem reaching the server. The session itself is unaffected. Nothing has been changed or lost."
             onRetry={() => {
               void refetch();
             }}
@@ -143,7 +143,7 @@ export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
             title="This checkout is no longer here"
-            description="It may have been completed into an order or cleared away after timing out. Nothing is wrong — there is just nothing to show."
+            description="It may have been completed into an order or cleared away after timing out. Nothing is wrong. There is just nothing to show."
           />
         </div>
       </div>

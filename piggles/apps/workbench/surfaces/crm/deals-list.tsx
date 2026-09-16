@@ -317,7 +317,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New deal — hold Shift to open alongside, Alt for a new window"
+            title="New deal: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('crm.deal.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -401,7 +401,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faBullseye} className="size-6" aria-hidden />}
             title="Could not load your deals"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -412,7 +412,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faColumns3} className="size-6" aria-hidden />}
             title="No pipeline to show a board for"
-            description="A board needs a pipeline — the named steps a deal moves through, from first contact to won or lost. Set one up and every deal gets a column to sit in."
+            description="A board needs a pipeline: the named steps a deal moves through, from first contact to won or lost. Set one up and every deal gets a column to sit in."
             actions={
               <Button
                 size="sm"
@@ -433,7 +433,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               icon: <Icon glyph={faBullseye} className="size-6" aria-hidden />,
               title: 'No deals match those filters',
               description:
-                'Try a different word, or change the filters — closed deals are hidden unless you ask for them.',
+                'Try a different word, or change the filters: closed deals are hidden unless you ask for them.',
             }}
             firstRun={{
               title: 'No deals yet',
@@ -605,7 +605,7 @@ function LostReasonDialog({
           <DialogTitle>Why was this lost?</DialogTitle>
           <DialogDescription>
             You are moving <strong>{deal.title}</strong> to {stage.name}. A sentence now is worth
-            more than a guess in six months — it is the only part of a lost deal nobody can work out
+            more than a guess in six months. It is the only part of a lost deal nobody can work out
             later.
           </DialogDescription>
 

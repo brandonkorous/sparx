@@ -134,7 +134,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Longer wellness and senior visits are booked as protected time with your vet. If you need to change one, 24 hours’ notice keeps it free — repeated same-day no-shows may carry a small fee so the room stays open for another pet who needs it.',
+        'Longer wellness and senior visits are booked as protected time with your vet. If you need to change one, 24 hours’ notice keeps it free: repeated same-day no-shows may carry a small fee so the room stays open for another pet who needs it.',
     },
   ],
   resources: [
@@ -186,7 +186,7 @@ const SCHEDULING = {
       handle: 'wellness-visit',
       name: 'Wellness visit',
       description:
-        'An unhurried preventive check-up — nose to tail, vaccines if they’re due, and a calm conversation about how your pet is doing at home.',
+        'An unhurried preventive check-up: nose to tail, vaccines if they’re due, and a calm conversation about how your pet is doing at home.',
       durationMinutes: 30,
       priceCents: 6500,
       assignmentStrategy: 'customer_choice',
@@ -200,7 +200,7 @@ const SCHEDULING = {
       handle: 'new-patient-consult',
       name: 'New patient consult',
       description:
-        'A relaxed first meeting for you and your pet — we review history, get to know each other with no rush, and set a plan together. Always free.',
+        'A relaxed first meeting for you and your pet. We review history, get to know each other with no rush, and set a plan together. Always free.',
       durationMinutes: 45,
       priceCents: 0,
       bufferAfterMin: 10,
@@ -215,7 +215,7 @@ const SCHEDULING = {
       handle: 'nutrition-consult',
       name: 'Nutrition consult',
       description:
-        'A sit-down about food, weight and gut health — honest, practical guidance tailored to your dog or cat, with no upsell. Free introductory session.',
+        'A sit-down about food, weight and gut health: honest, practical guidance tailored to your dog or cat, with no upsell. Free introductory session.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -243,7 +243,7 @@ const SCHEDULING = {
       handle: 'senior-wellness',
       name: 'Senior wellness',
       description:
-        'Extra time and care for older pets — mobility, comfort and quality of life, plus the bloodwork and screening that catch changes early.',
+        'Extra time and care for older pets: mobility, comfort and quality of life, plus the bloodwork and screening that catch changes early.',
       durationMinutes: 60,
       priceCents: 14000,
       bufferAfterMin: 10,
@@ -258,7 +258,7 @@ const SCHEDULING = {
       handle: 'telehealth-consult',
       name: 'Telehealth consult',
       description:
-        'A quick video visit for questions, follow-ups and small worries — real advice from your vet without a car ride or a stressed carrier.',
+        'A quick video visit for questions, follow-ups and small worries: real advice from your vet without a car ride or a stressed carrier.',
       durationMinutes: 20,
       priceCents: 4000,
       assignmentStrategy: 'customer_choice',
@@ -272,7 +272,7 @@ const SCHEDULING = {
       handle: 'integrative-consult',
       name: 'Integrative consult',
       description:
-        'A whole-pet session that blends conventional medicine with supportive therapies — for chronic issues, recovery, or simply thriving longer.',
+        'A whole-pet session that blends conventional medicine with supportive therapies, for chronic issues, recovery, or simply thriving longer.',
       durationMinutes: 45,
       priceCents: 9500,
       bufferAfterMin: 10,
@@ -292,7 +292,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, sunlit veterinary studio with a relaxed dog resting on a soft mat',
     title: 'Calm, modern care for the pets you love',
-    sub: 'A fear-free, whole-pet practice for dogs and cats — preventive medicine, nutrition and gentle, unhurried visits that leave everyone a little calmer.',
+    sub: 'A fear-free, whole-pet practice for dogs and cats: preventive medicine, nutrition and gentle, unhurried visits that leave everyone a little calmer.',
     primary: { label: 'Book a visit', href: '/book' },
     secondary: { label: 'See our care', href: '/book' },
     overlay: 'dark',
@@ -305,7 +305,7 @@ const HOME = [
       },
       {
         title: 'Preventive & integrative',
-        body: 'We treat the whole animal — conventional medicine paired with nutrition and supportive care, aimed at keeping pets well, not just fixing what’s broken.',
+        body: 'We treat the whole animal: conventional medicine paired with nutrition and supportive care, aimed at keeping pets well, not just fixing what’s broken.',
       },
       {
         title: 'Unhurried visits',
@@ -313,7 +313,7 @@ const HOME = [
       },
       {
         title: 'Plans & telehealth',
-        body: 'Wellness plans that spread care across the year, plus video visits for the small questions — so help is there without the stressful trip.',
+        body: 'Wellness plans that spread care across the year, plus video visits for the small questions, so help is there without the stressful trip.',
       },
     ],
   }),
@@ -336,16 +336,16 @@ const HOME = [
     heading: 'The whole pet, at their pace',
     body: [
       'Fauna was built around one idea: a calmer visit is a better visit. Our team is fear-free certified, which means treats before needles, quiet rooms, and never forcing an anxious animal through something they’re not ready for.',
-      'It’s a whole-pet way of working — we look at nutrition, comfort and behaviour alongside the medicine, because the goal isn’t just treating illness. It’s helping your dog or cat thrive for years.',
+      'It’s a whole-pet way of working. We look at nutrition, comfort and behaviour alongside the medicine, because the goal isn’t just treating illness. It’s helping your dog or cat thrive for years.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
   }),
   teamRow({
     heading: 'The vets you’ll see',
-    intro: 'Book by name — you and your pet get to know the same faces over time.',
+    intro: 'Book by name. You and your pet get to know the same faces over time.',
     members: [
       { name: 'Dr. Wren Delgado', role: 'Integrative & wellness', image: url(IMG.wren), alt: 'Dr. Wren Delgado, integrative & wellness veterinarian', bio: 'Preventive and integrative medicine, with a soft spot for nutrition and gut health.' },
-      { name: 'Dr. Sol Okafor', role: 'Primary care', image: url(IMG.sol), alt: 'Dr. Sol Okafor, primary-care veterinarian', bio: 'Everyday exams, sick visits and senior care — calm hands and straight answers.' },
+      { name: 'Dr. Sol Okafor', role: 'Primary care', image: url(IMG.sol), alt: 'Dr. Sol Okafor, primary-care veterinarian', bio: 'Everyday exams, sick visits and senior care: calm hands and straight answers.' },
       { name: 'Dr. Marisol Reyes', role: 'Wellness & telehealth', image: url(IMG.marisol), alt: 'Dr. Marisol Reyes, wellness & telehealth veterinarian', bio: 'Wellness visits and video consults, so small worries get answered fast.' },
     ],
   }),
@@ -379,7 +379,7 @@ const ABOUT = [
     alt: 'A calm, sunlit veterinary studio with a relaxed dog resting on a soft mat',
     heading: 'About Fauna Veterinary',
     body: [
-      'We opened Fauna to practice the kind of medicine we always wanted for our own animals — calm, thorough, and centred on the whole pet rather than a single problem.',
+      'We opened Fauna to practice the kind of medicine we always wanted for our own animals: calm, thorough, and centred on the whole pet rather than a single problem.',
       'That means fear-free handling as the default, real time in every appointment, and honest guidance on food, prevention and comfort. Fewer stressed visits, healthier pets, and owners who actually understand the plan.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
@@ -388,9 +388,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we care',
     items: [
-      { title: 'Fear-free first', body: 'Every visit is paced for your pet — treats, patience and gentle handling, never a wrestling match.' },
+      { title: 'Fear-free first', body: 'Every visit is paced for your pet: treats, patience and gentle handling, never a wrestling match.' },
       { title: 'Prevention over patching', body: 'Wellness plans, nutrition and early screening keep problems small, so care costs less and pets feel better.' },
-      { title: 'Clear, honest plans', body: 'You’ll always leave knowing what we found, what it means, and what it costs — no jargon, no pressure.' },
+      { title: 'Clear, honest plans', body: 'You’ll always leave knowing what we found, what it means, and what it costs: no jargon, no pressure.' },
     ],
   }),
 ];
@@ -408,7 +408,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your pet’s time online — no phone tag, no hold music.',
+    sub: 'See live availability and reserve your pet’s time online: no phone tag, no hold music.',
     surface: 'muted',
     cta: { label: 'Book a visit', href: '/book' },
   }),
@@ -419,8 +419,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-vet-modern',
   name: 'Veterinary (Modern)',
   summary:
-    'A calm, modern veterinary-wellness site — a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as "Fauna Veterinary", a whole-pet, fear-free practice for dogs and cats.',
-  tagline: 'A calm, fear-free template for modern vet practices — book online from day one.',
+    'A calm, modern veterinary-wellness site: a sage-and-cream palette, a refined serif display and soft, unhurried photography. Installs a working booking flow for fear-free care: real appointment types (wellness, nutrition, telehealth, senior), three vets you book by name plus two calm exam rooms as resources, and a wellness-plan policy. Ships as "Fauna Veterinary", a whole-pet, fear-free practice for dogs and cats.',
+  tagline: 'A calm, fear-free template for modern vet practices. Book online from day one.',
   industry: 'Veterinary',
   sortWeight: 61,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -429,9 +429,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Fauna Veterinary — calm, fear-free pet care',
+      title: 'Fauna Veterinary: calm, fear-free pet care',
       description:
-        'Fauna Veterinary is a modern, fear-free practice for dogs and cats — wellness visits, nutrition, senior care and telehealth. Book your vet online.',
+        'Fauna Veterinary is a modern, fear-free practice for dogs and cats: wellness visits, nutrition, senior care and telehealth. Book your vet online.',
     },
   },
   home: HOME,

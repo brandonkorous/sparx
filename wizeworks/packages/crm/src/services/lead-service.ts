@@ -137,7 +137,7 @@ export async function openFormDeal(ctx: ServiceContext, input: OpenFormDealInput
     pipelineId: pipeline.id,
     stageId: entryStage.id,
     customerId: sub.customerId,
-    title: `${formLabel} — ${who}`,
+    title: `${formLabel}: ${who}`,
     source: 'form',
     metadata: { formSubmissionId: input.submissionId },
   });
@@ -189,7 +189,7 @@ export async function openFormRequest(
   const formLabel = firstNonBlank([sub.formName], 'Website enquiry');
 
   await ticketService.create(ctx, {
-    subject: `${formLabel} — ${who}`,
+    subject: `${formLabel}: ${who}`,
     // Their actual words. Without this the queue shows a row that says only
     // which form it came from, and somebody has to go and find what was asked.
     description: sub.message?.trim() ? sub.message.trim() : null,

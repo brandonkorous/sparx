@@ -53,7 +53,7 @@ export function AnalyticsCard() {
       if (!response.ok) throw new Error(String(response.status));
       await queryClient.invalidateQueries({ queryKey: PREFERENCES_KEY });
       toast.add({
-        title: analytics ? 'Thank you — that helps' : 'Analytics is off',
+        title: analytics ? 'Thank you, that helps' : 'Analytics is off',
         description: analytics
           ? 'It takes effect the next time this page loads.'
           : 'Nothing more will be collected. Anything already collected stays until it ages out.',
@@ -73,7 +73,7 @@ export function AnalyticsCard() {
   return (
     <FormSection
       title="Product analytics"
-      description="Which screens get opened and how long things take to load — never sold, never used for advertising, and not how we bill you."
+      description="Which screens get opened and how long things take to load, never sold, never used for advertising, and not how we bill you."
     >
       {consent === undefined ? (
         <InlineWaiting label="Reading your answer…" />

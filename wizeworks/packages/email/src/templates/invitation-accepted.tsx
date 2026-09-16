@@ -39,7 +39,7 @@ export function InvitationAcceptedEmail({
     >
       <EmailDisplayHeading>{who} joined the team</EmailDisplayHeading>
       <EmailParagraph>
-        {inviterName ? `Hi ${inviterName}, ` : ''}good news — <strong>{who}</strong> accepted your
+        {inviterName ? `Hi ${inviterName}, ` : ''}good news: <strong>{who}</strong> accepted your
         invitation and now has access to <strong>{orgName}</strong> on {platform}
         {inviteeName ? ` (${inviteeEmail})` : ''}.
       </EmailParagraph>

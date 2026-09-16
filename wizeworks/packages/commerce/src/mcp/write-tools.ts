@@ -70,7 +70,7 @@ const CreateProductWithPriceInput = z.object({
 const createProduct: McpToolDefinition = {
   name: 'create_product',
   description:
-    'Create a product AND its default (priced) variant in one call — the sellable listing an agent means by "add a product". Requires `title` and `priceCents`; `sku` is derived from the handle when omitted. Defaults to status `draft` — pass `active`, or call publish_product after, to put it on the live site. Multi-variant products (sizes/colors) are set up through the variant surface after this call.',
+    'Create a product AND its default (priced) variant in one call: the sellable listing an agent means by "add a product". Requires `title` and `priceCents`; `sku` is derived from the handle when omitted. Defaults to status `draft`: pass `active`, or call publish_product after, to put it on the live site. Multi-variant products (sizes/colors) are set up through the variant surface after this call.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateProductWithPriceInput,
@@ -120,7 +120,7 @@ const UpdateProductArgs = z.object({
 const updateProduct: McpToolDefinition = {
   name: 'update_product',
   description:
-    "Edit an existing product: title, description, status, handle, tags, vendor, product type, SEO, and its category/collection/site links. Send only the fields you want to change — anything you omit is left untouched — inside `patch`. To change the PRICE, use update_variant: price lives on the product's variant. Setting status to `active` publishes it to the live site; `archived` withdraws it.",
+    "Edit an existing product: title, description, status, handle, tags, vendor, product type, SEO, and its category/collection/site links. Send only the fields you want to change (anything you omit is left untouched) inside `patch`. To change the PRICE, use update_variant: price lives on the product's variant. Setting status to `active` publishes it to the live site; `archived` withdraws it.",
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateProductArgs,
@@ -143,7 +143,7 @@ const UpdateVariantArgs = z.object({
 const updateVariant: McpToolDefinition = {
   name: 'update_variant',
   description:
-    "Edit one variant of a product — its price (`priceCents`), compare-at price, SKU, barcode, cost, weight, and stock policy. This is where a product's PRICE lives: `create_product` returns the `variantId` of the default variant it made, and get_product lists a product's variants. Send only the fields you want to change; pass null to clear a compare-at price, cost, or barcode.",
+    "Edit one variant of a product. Its price (`priceCents`), compare-at price, SKU, barcode, cost, weight, and stock policy. This is where a product's PRICE lives: `create_product` returns the `variantId` of the default variant it made, and get_product lists a product's variants. Send only the fields you want to change; pass null to clear a compare-at price, cost, or barcode.",
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateVariantArgs,
@@ -177,7 +177,7 @@ const SetProductImageInput = z.object({
 const setProductImage: McpToolDefinition = {
   name: 'set_product_image',
   description:
-    "Attach an image to a product and, by default, make it the product's main photo — the picture shown on its card on the site and product page. Get the `mediaAssetId` from set_image_from_url (an existing hosted/Unsplash URL) or upload_image first, then pass it here with the product's id. Pass `primary: false` to add an extra gallery shot without changing the main photo. A product with no image renders as a blank placeholder, so this is part of finishing any product an agent creates.",
+    "Attach an image to a product and, by default, make it the product's main photo: the picture shown on its card on the site and product page. Get the `mediaAssetId` from set_image_from_url (an existing hosted/Unsplash URL) or upload_image first, then pass it here with the product's id. Pass `primary: false` to add an extra gallery shot without changing the main photo. A product with no image renders as a blank placeholder, so this is part of finishing any product an agent creates.",
   scope: 'write:commerce',
   confirmation: true,
   input: SetProductImageInput,
@@ -261,7 +261,7 @@ const grantAccountCredit: McpToolDefinition = {
 const createSubscription: McpToolDefinition = {
   name: 'create_subscription',
   description:
-    'Create a subscription for a customer — the items, schedule (interval), and delivery details. Normally subscriptions start at checkout; this is the admin-side create for setting one up directly.',
+    'Create a subscription for a customer: the items, schedule (interval), and delivery details. Normally subscriptions start at checkout; this is the admin-side create for setting one up directly.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateSubscriptionInput,
@@ -289,7 +289,7 @@ const updateSubscriptionSchedule: McpToolDefinition = {
 const changeSubscriptionPaymentMethod: McpToolDefinition = {
   name: 'change_subscription_payment_method',
   description:
-    'Point a repeat order at a different saved card, or switch it to being invoiced instead of auto-charged. Use this when a customer’s card expired or was replaced — it also clears a “payment failed” state and retries straight away, so the subscription does not have to be cancelled and set up again.',
+    'Point a repeat order at a different saved card, or switch it to being invoiced instead of auto-charged. Use this when a customer’s card expired or was replaced. It also clears a “payment failed” state and retries straight away, so the subscription does not have to be canceled and set up again.',
   scope: 'write:commerce',
   confirmation: true,
   input: ChangeSubscriptionPaymentMethodInput,
@@ -376,7 +376,7 @@ const applyMarkup: McpToolDefinition = {
 const setSurcharge: McpToolDefinition = {
   name: 'set_surcharge',
   description:
-    'Create a surcharge rule (e.g. a credit-card processing fee) — type (percentage/flat), value, payment methods, and label. Surcharging laws vary by jurisdiction; confirm the merchant intends this.',
+    'Create a surcharge rule (e.g. a credit-card processing fee). Type (percentage/flat), value, payment methods, and label. Surcharging laws vary by jurisdiction; confirm the merchant intends this.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateSurchargeRuleInput,

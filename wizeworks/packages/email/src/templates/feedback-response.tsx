@@ -51,7 +51,7 @@ export function FeedbackResponseEmail({
       <EmailParagraph>{recipientName ? `Hi ${recipientName},` : 'Hi there,'}</EmailParagraph>
       <EmailParagraph>
         Thanks for taking the time to share this. {responderName} got back to you
-        {statusLabel ? ' — with an update' : ''}:
+        {statusLabel ? ', with an update' : ''}:
       </EmailParagraph>
 
       <EmailSectionLabel>Your feedback</EmailSectionLabel>
@@ -68,5 +68,5 @@ export function FeedbackResponseEmail({
 }
 
 export function feedbackResponseSubject(feedbackTitle: string): string {
-  return `Re: your feedback — ${feedbackTitle}`;
+  return `Re: your feedback, ${feedbackTitle}`;
 }

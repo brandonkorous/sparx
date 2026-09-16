@@ -81,7 +81,7 @@ export const APPS: readonly PigglesAppDef[] = [
   {
     id: 'site',
     label: 'My Site',
-    purpose: 'Your website — pages, design and branding',
+    purpose: 'Your website: pages, design and branding',
     group: 'web',
     navOrder: 20,
     defaultEnabled: true,

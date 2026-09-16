@@ -161,7 +161,7 @@ function hero(): Node {
                                     text: 'Fine jewelry, made to be worn every day.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Aurelia is a small jewelry house working in solid 14k gold and sterling silver — pieces designed to be layered, kept, and passed on. No plating, no fillers, no fast-fashion metal that greens your skin by summer.',
+                                    text: 'Aurelia is a small jewelry house working in solid 14k gold and sterling silver: pieces designed to be layered, kept, and passed on. No plating, no fillers, no fast-fashion metal that greens your skin by summer.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -263,7 +263,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.rings', layout: 'carousel', heading: 'The ring edit' }),
     editorialBand({
         heading: 'Wrapped, ready to give',
-        lead: 'Every order arrives in a linen-lined box with a card you can write yourself — no printed price in sight. Free engraving on rings and pendants, and a lifetime of complimentary cleaning and re-polishing, always.',
+        lead: 'Every order arrives in a linen-lined box with a card you can write yourself: no printed price in sight. Free engraving on rings and pendants, and a lifetime of complimentary cleaning and re-polishing, always.',
         assetId: 'aurelia-band-gift',
         cta: 'Shop gifts',
         href: '/collections',
@@ -347,13 +347,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The collection',
-        'Every piece we make, in solid 14k gold and sterling silver — rings, necklaces, earrings and bracelets. Filter by metal or category, or sort however you like; all of it is hallmarked, hand-finished, and made to be worn every day.'
+        'Every piece we make, in solid 14k gold and sterling silver: rings, necklaces, earrings and bracelets. Filter by metal or category, or sort however you like; all of it is hallmarked, hand-finished, and made to be worn every day.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'The pieces grouped the way people actually shop — this season’s new arrivals, the everyday gold you’ll reach for daily, the signature statement pieces, and rings made to mark a moment.'
+        'The pieces grouped the way people actually shop. This season’s new arrivals, the everyday gold you’ll reach for daily, the signature statement pieces, and rings made to mark a moment.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -366,7 +366,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your bag' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free insured shipping over $100, a linen gift box with every order, and 30-day returns on anything unworn. Every piece is solid metal and hallmarked — a keepsake, not a fast-fashion buy.',
+                        text: 'Free insured shipping over $100, a linen gift box with every order, and 30-day returns on anything unworn. Every piece is solid metal and hallmarked: a keepsake, not a fast-fashion buy.',
                     }),
                 ],
             }),
@@ -380,7 +380,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Aurelia journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the bench — how to choose between gold and silver, how to care for solid metal, and how to find your ring size at home. Plain, honest, no jargon.',
+                        text: 'Notes from the bench: how to choose between gold and silver, how to care for solid metal, and how to find your ring size at home. Plain, honest, no jargon.',
                     }),
                 ],
             }),
@@ -400,7 +400,7 @@ const ABOUT: Node[] = [
                         text: 'Aurelia began at a single bench, with one jeweler tired of watching plated high-street pieces tarnish and snap within a year. The idea was simple, and it hasn’t changed: work only in solid metal, keep the designs quiet enough to wear forever, and price them so a good piece isn’t once-in-a-lifetime.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Everything is made in small runs in our own workshop — cast, filed, set and polished by hand, then hallmarked. We buy recycled gold and silver, source stones we can trace, and repair anything we’ve made for as long as you own it.',
+                        text: 'Everything is made in small runs in our own workshop: cast, filed, set and polished by hand, then hallmarked. We buy recycled gold and silver, source stones we can trace, and repair anything we’ve made for as long as you own it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'No plating that wears through, no mystery alloys, no piece that isn’t what the stamp inside says it is. Just solid jewelry, made with care, meant to be kept.',
@@ -418,7 +418,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'A question about a piece, a custom commission, sizing, or a repair? Tell us what you’re after and a real jeweler — not a bot — will write you back.',
+        intro: 'A question about a piece, a custom commission, sizing, or a repair? Tell us what you’re after and a real jeweler (not a bot) will write you back.',
         submitLabel: 'Email the workshop',
     }),
 ];
@@ -460,7 +460,7 @@ interface Product {
 // silver, priced apart because the metal genuinely is (gold is the reference price; silver
 // is a fraction of it). Ring sizes are a dropdown. A birthstone is a dropdown of months.
 const RING_SIZES = ['5', '6', '7', '8', '9'];
-const BIRTHSTONES = ['January — Garnet', 'April — White Topaz', 'July — Ruby', 'October — Opal', 'December — Blue Topaz'];
+const BIRTHSTONES = ['January: Garnet', 'April: White Topaz', 'July: Ruby', 'October: Opal', 'December: Blue Topaz'];
 
 const metalOption: OptionDecl = {
     name: 'Metal',
@@ -572,33 +572,33 @@ const PRODUCTS: Product[] = [
         handle: 'oval-signet-ring',
         title: 'Oval Signet Ring',
         description:
-            'A classic oval-face signet with a softly domed top, polished to a mirror or brushed matte on request — the ring you engrave with an initial, a date, or nothing at all. Substantial without being heavy, and just as good stacked as worn alone.',
+            'A classic oval-face signet with a softly domed top, polished to a mirror or brushed matte on request: the ring you engrave with an initial, a date, or nothing at all. Substantial without being heavy, and just as good stacked as worn alone.',
         goldPrice: 285,
         sku: 'AUR-SIGNET',
         collections: ['new-arrivals', 'best-sellers', 'everyday-gold'],
         tags: ['ring', 'signet', 'engravable'],
         asset: 'aurelia-prod-signet',
-        seoTitle: 'Oval Signet Ring — solid 14k gold or silver | Aurelia',
+        seoTitle: 'Oval Signet Ring: solid 14k gold or silver | Aurelia',
         seoDescription: 'A classic engravable oval signet ring in solid 14k gold or sterling silver. Polished or brushed.',
     }),
     ring({
         handle: 'stacking-ring-trio',
         title: 'Stacking Ring Trio',
         description:
-            'Three fine bands — a plain round, a hammered facet and a tiny bezel-set stone — designed to be worn together or split across fingers. Buy the set to start a stack, then keep adding; they’re made to sit flush against each other without catching.',
+            'Three fine bands (a plain round, a hammered facet and a tiny bezel-set stone) designed to be worn together or split across fingers. Buy the set to start a stack, then keep adding; they’re made to sit flush against each other without catching.',
         goldPrice: 195,
         sku: 'AUR-STACK',
         collections: ['everyday-gold', 'best-sellers'],
         tags: ['ring', 'stacking', 'set'],
         asset: 'aurelia-prod-stacking',
-        seoTitle: 'Stacking Ring Trio — set of three fine bands | Aurelia',
-        seoDescription: 'A set of three fine stacking rings in solid 14k gold or sterling silver — plain, hammered and bezel-set.',
+        seoTitle: 'Stacking Ring Trio. Set of three fine bands | Aurelia',
+        seoDescription: 'A set of three fine stacking rings in solid 14k gold or sterling silver: plain, hammered and bezel-set.',
     }),
     piece({
         handle: 'petite-pendant-necklace',
         title: 'Petite Pendant Necklace',
         description:
-            'A small solid pendant on a delicate 16–18" adjustable chain — the everyday necklace that layers with anything and never needs taking off. Wear it alone for a clean line, or as the shortest layer under longer chains.',
+            'A small solid pendant on a delicate 16–18" adjustable chain: the everyday necklace that layers with anything and never needs taking off. Wear it alone for a clean line, or as the shortest layer under longer chains.',
         goldPrice: 165,
         sku: 'AUR-PENDANT',
         productType: 'Necklace',
@@ -606,14 +606,14 @@ const PRODUCTS: Product[] = [
         collections: ['new-arrivals', 'everyday-gold', 'gifts'],
         tags: ['necklace', 'pendant', 'layering'],
         asset: 'aurelia-prod-pendant',
-        seoTitle: 'Petite Pendant Necklace — solid gold or silver | Aurelia',
+        seoTitle: 'Petite Pendant Necklace: solid gold or silver | Aurelia',
         seoDescription: 'A small solid pendant on a fine adjustable chain, in 14k gold or sterling silver. Made to layer.',
     }),
     piece({
         handle: 'everyday-hoop-earrings',
         title: 'Everyday Hoop Earrings',
         description:
-            'The hoop you put in and forget about — a lightweight 15mm solid hoop with a secure hinged closure, smooth enough to sleep in and small enough for the office. The pair most people never take out once they own them.',
+            'The hoop you put in and forget about: a lightweight 15mm solid hoop with a secure hinged closure, smooth enough to sleep in and small enough for the office. The pair most people never take out once they own them.',
         goldPrice: 145,
         sku: 'AUR-HOOP',
         productType: 'Earrings',
@@ -621,7 +621,7 @@ const PRODUCTS: Product[] = [
         collections: ['everyday-gold', 'best-sellers'],
         tags: ['earrings', 'hoops', 'everyday'],
         asset: 'aurelia-prod-hoops',
-        seoTitle: 'Everyday Hoop Earrings — solid 14k gold or silver | Aurelia',
+        seoTitle: 'Everyday Hoop Earrings: solid 14k gold or silver | Aurelia',
         seoDescription: 'Lightweight 15mm solid hoop earrings with a secure hinged closure, in 14k gold or sterling silver.',
     }),
     piece({
@@ -636,21 +636,21 @@ const PRODUCTS: Product[] = [
         collections: ['the-signature-edit', 'gifts'],
         tags: ['bracelet', 'tennis', 'sapphire'],
         asset: 'aurelia-prod-tennis',
-        seoTitle: 'Classic Tennis Bracelet — white sapphire line | Aurelia',
+        seoTitle: 'Classic Tennis Bracelet: white sapphire line | Aurelia',
         seoDescription: 'A hand-set line of round white sapphires with a double-locking clasp, in solid 14k gold or sterling silver.',
     }),
     {
         handle: 'birthstone-necklace',
         title: 'Birthstone Necklace',
         description:
-            'A single bezel-set birthstone on a fine chain — pick the month that means something and we set the stone to match. The gift that lands every time: personal without being fussy, and worn far past the birthday it marks.',
+            'A single bezel-set birthstone on a fine chain. Pick the month that means something and we set the stone to match. The gift that lands every time: personal without being fussy, and worn far past the birthday it marks.',
         status: 'active',
         productType: 'Necklace',
         vendor: 'Aurelia',
         tags: ['necklace', 'birthstone', 'personalized', 'gift'],
         categoryHandles: ['necklaces'],
         collectionHandles: ['gifts', 'new-arrivals'],
-        seoTitle: 'Birthstone Necklace — bezel-set, solid gold or silver | Aurelia',
+        seoTitle: 'Birthstone Necklace: bezel-set, solid gold or silver | Aurelia',
         seoDescription: 'A single bezel-set birthstone on a fine chain, set to your month, in solid 14k gold or sterling silver.',
         options: [metalOption, birthstoneOption],
         variants: [
@@ -676,7 +676,7 @@ const PRODUCTS: Product[] = [
         handle: 'smooth-cuff-bracelet',
         title: 'Smooth Cuff Bracelet',
         description:
-            'A solid open cuff with a clean, unadorned curve — the piece that reads as expensive precisely because there’s nothing on it. Gently springs to slip on over the wrist and holds its shape for years; polished bright or brushed soft.',
+            'A solid open cuff with a clean, unadorned curve: the piece that reads as expensive precisely because there’s nothing on it. Gently springs to slip on over the wrist and holds its shape for years; polished bright or brushed soft.',
         goldPrice: 240,
         sku: 'AUR-CUFF',
         productType: 'Bracelet',
@@ -684,20 +684,20 @@ const PRODUCTS: Product[] = [
         collections: ['everyday-gold', 'the-signature-edit'],
         tags: ['bracelet', 'cuff', 'minimal'],
         asset: 'aurelia-prod-cuff',
-        seoTitle: 'Smooth Cuff Bracelet — solid 14k gold or silver | Aurelia',
+        seoTitle: 'Smooth Cuff Bracelet: solid 14k gold or silver | Aurelia',
         seoDescription: 'A solid open cuff with a clean unadorned curve, in 14k gold or sterling silver. Polished or brushed.',
     }),
     ring({
         handle: 'solitaire-ring',
         title: 'The Solitaire',
         description:
-            'A single brilliant-cut lab-grown white sapphire raised in a slim six-prong setting, on a fine tapered band that lets the stone stand alone. The engagement-style ring for people who want the look, the sparkle and the meaning — without the small mortgage.',
+            'A single brilliant-cut lab-grown white sapphire raised in a slim six-prong setting, on a fine tapered band that lets the stone stand alone. The engagement-style ring for people who want the look, the sparkle and the meaning, without the small mortgage.',
         goldPrice: 1250,
         sku: 'AUR-SOLITAIRE',
         collections: ['engagement', 'the-signature-edit'],
         tags: ['ring', 'solitaire', 'engagement', 'sapphire'],
         asset: 'aurelia-prod-solitaire',
-        seoTitle: 'The Solitaire — engagement-style ring | Aurelia',
+        seoTitle: 'The Solitaire: engagement-style ring | Aurelia',
         seoDescription: 'A brilliant-cut white sapphire in a six-prong solitaire setting on a fine tapered band, in solid gold or silver.',
     }),
 ];
@@ -737,7 +737,7 @@ const COMMERCE = {
         {
             handle: 'the-signature-edit',
             name: 'The signature edit',
-            description: 'The statement pieces — a little more of everything.',
+            description: 'The statement pieces: a little more of everything.',
             type: 'manual',
             featured: false,
             productHandles: ['classic-tennis-bracelet', 'smooth-cuff-bracelet', 'solitaire-ring'],
@@ -774,16 +774,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Gold or silver: how to actually choose',
-            excerpt: 'Not a taste test — a practical guide to skin tone, upkeep, budget and how the two metals age, so you buy the one you’ll wear.',
+            excerpt: 'Not a taste test: a practical guide to skin tone, upkeep, budget and how the two metals age, so you buy the one you’ll wear.',
             featuredImage: { $asset: 'aurelia-post-metals' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The gold-versus-silver question gets treated as a matter of taste, but most of the answer is practical. Both of ours are solid metal — 14k gold and .925 sterling silver, never plated — so neither will wear through or turn your skin green. The difference is in tone, upkeep, budget, and how each one ages.'),
+                    para('The gold-versus-silver question gets treated as a matter of taste, but most of the answer is practical. Both of ours are solid metal: 14k gold and .925 sterling silver, never plated, so neither will wear through or turn your skin green. The difference is in tone, upkeep, budget, and how each one ages.'),
                     h2('Tone and how they age'),
-                    para('Warm skin tones tend to sit beautifully against gold; cooler tones against silver — but the honest answer is to hold each to your wrist in daylight and trust your eye. In wear, 14k gold barely changes: it keeps its color for decades with almost no effort. Sterling silver naturally tarnishes to a soft grey over time, which some people love as patina and others polish back to bright in seconds with a cloth.'),
+                    para('Warm skin tones tend to sit beautifully against gold; cooler tones against silver, but the honest answer is to hold each to your wrist in daylight and trust your eye. In wear, 14k gold barely changes: it keeps its color for decades with almost no effort. Sterling silver naturally tarnishes to a soft grey over time, which some people love as patina and others polish back to bright in seconds with a cloth.'),
                     h2('Budget, and mixing the two'),
-                    para('Gold costs more because it genuinely is more — our silver versions run a little over half the price of the same piece in gold, which makes silver a lovely way to try a design before committing. And the old rule about never mixing metals is gone: a gold signet next to a silver band reads as considered now, not careless. Buy the metal you’ll actually reach for, and layer freely.'),
+                    para('Gold costs more because it genuinely is more. Our silver versions run a little over half the price of the same piece in gold, which makes silver a lovely way to try a design before committing. And the old rule about never mixing metals is gone: a gold signet next to a silver band reads as considered now, not careless. Buy the metal you’ll actually reach for, and layer freely.'),
                 ],
             },
         },
@@ -794,16 +794,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Caring for solid gold and silver',
-            excerpt: 'Solid metal is forgiving, but a few small habits keep it looking new — here’s the whole routine, and the two things to actually avoid.',
+            excerpt: 'Solid metal is forgiving, but a few small habits keep it looking new: here’s the whole routine, and the two things to actually avoid.',
             featuredImage: { $asset: 'aurelia-post-care' },
             body: {
                 type: 'doc',
                 content: [
                     para('One of the quiet luxuries of solid jewelry is how little it asks of you. There’s no plating to wear through, so a scratch polishes out and a piece can be worn hard for years. Still, a few small habits keep gold bright and silver from tarnishing faster than it needs to.'),
                     h2('The everyday routine'),
-                    para('Put jewelry on last — after lotion, perfume and hairspray, which are the main things that dull a finish. Take rings off for the gym, the garden and the washing-up; it’s knocks and grit, not water, that do the damage. A quick rub with a soft cloth after wear is enough most days. Once a month, warm water, a drop of dish soap and a soft brush brings everything back — then dry it properly before it goes away.'),
+                    para('Put jewelry on last: after lotion, perfume and hairspray, which are the main things that dull a finish. Take rings off for the gym, the garden and the washing-up; it’s knocks and grit, not water, that do the damage. A quick rub with a soft cloth after wear is enough most days. Once a month, warm water, a drop of dish soap and a soft brush brings everything back, then dry it properly before it goes away.'),
                     h2('Storing it, and what to avoid'),
-                    para('Store pieces separately so they don’t scratch each other — a lined box or even individual soft pouches. Silver keeps best sealed away from air, which is why a little zip bag slows tarnish dramatically. The two things to genuinely avoid: chlorine (take rings off before a pool or hot tub) and abrasive "polishing" pastes on anything with stones. When in doubt, send it to us — cleaning and re-polishing anything we made is free, for life.'),
+                    para('Store pieces separately so they don’t scratch each other: a lined box or even individual soft pouches. Silver keeps best sealed away from air, which is why a little zip bag slows tarnish dramatically. The two things to genuinely avoid: chlorine (take rings off before a pool or hot tub) and abrasive "polishing" pastes on anything with stones. When in doubt, send it to us, cleaning and re-polishing anything we made is free, for life.'),
                 ],
             },
         },
@@ -814,16 +814,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to find your ring size at home',
-            excerpt: 'No jeweler, no gadget — a piece of string, a ruler, and two rules that stop you sizing wrong. Plus what to do if you land between sizes.',
+            excerpt: 'No jeweler, no gadget: a piece of string, a ruler, and two rules that stop you sizing wrong. Plus what to do if you land between sizes.',
             featuredImage: { $asset: 'aurelia-post-sizing' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Ordering a ring online feels like a gamble, but sizing at home is genuinely simple — and more reliable than guessing in a shop on a cold day. All you need is a strip of paper or string, a ruler, and a couple of minutes.'),
+                    para('Ordering a ring online feels like a gamble, but sizing at home is genuinely simple, and more reliable than guessing in a shop on a cold day. All you need is a strip of paper or string, a ruler, and a couple of minutes.'),
                     h2('The string method'),
-                    para('Wrap a thin strip of paper snugly around the base of the finger, mark where it overlaps, and lay it flat against a millimetre ruler. That length is your finger’s circumference; match it to our size chart. Measure the actual finger the ring will live on — hands differ left to right — and do it at the end of the day, when fingers are at their largest, never first thing in the morning or straight after cold water.'),
+                    para('Wrap a thin strip of paper snugly around the base of the finger, mark where it overlaps, and lay it flat against a millimetre ruler. That length is your finger’s circumference; match it to our size chart. Measure the actual finger the ring will live on (hands differ left to right) and do it at the end of the day, when fingers are at their largest, never first thing in the morning or straight after cold water.'),
                     h2('Between sizes, and wide bands'),
-                    para('If you land between two sizes, size up: a fraction loose is comfortable, a fraction tight is unwearable. Wide bands sit more snugly than thin ones, so go up a half size for anything chunky like the signet. Still unsure? Order two sizes, keep the one that fits and send the other back free — or come in and we’ll size you properly. And every ring we make can be resized once for free within the first year.'),
+                    para('If you land between two sizes, size up: a fraction loose is comfortable, a fraction tight is unwearable. Wide bands sit more snugly than thin ones, so go up a half size for anything chunky like the signet. Still unsure? Order two sizes, keep the one that fits and send the other back free, or come in and we’ll size you properly. And every ring we make can be resized once for free within the first year.'),
                 ],
             },
         },
@@ -838,7 +838,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Fine Jeweler',
     theme: THEME,
     summary:
-        'A complete, working shop for a fine & demi-fine jeweler: a real catalogue of solid 14k gold and sterling silver pieces — a signet, stacking rings, a pendant, hoops, a tennis bracelet, a birthstone necklace, a cuff and a solitaire — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Precious, restrained theme — a bone/ivory ground, near-black ink, an antique-gold accent, a serif display. Shipped as Aurelia.',
+        'A complete, working shop for a fine & demi-fine jeweler: a real catalogue of solid 14k gold and sterling silver pieces, a signet, stacking rings, a pendant, hoops, a tennis bracelet, a birthstone necklace, a cuff and a solitaire, with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Precious, restrained theme, a bone/ivory ground, near-black ink, an antique-gold accent, a serif display. Shipped as Aurelia.',
     tagline: 'A precious, working storefront for a fine jeweler.',
     vertical: 'retail',
     industry: 'Fine jeweler',
@@ -851,14 +851,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Aurelia — fine jewelry in solid gold and silver',
+            title: 'Aurelia: fine jewelry in solid gold and silver',
             description:
-                'Aurelia is a small jewelry house working only in solid 14k gold and sterling silver — rings, necklaces, earrings and bracelets, hand-finished and made to be worn every day.',
+                'Aurelia is a small jewelry house working only in solid 14k gold and sterling silver: rings, necklaces, earrings and bracelets, hand-finished and made to be worn every day.',
         },
         about: {
             title: 'About Aurelia',
             description:
-                'How Aurelia designs, casts and finishes solid-metal jewelry — recycled gold and silver, traceable stones, hand-set and hallmarked, repaired for life.',
+                'How Aurelia designs, casts and finishes solid-metal jewelry: recycled gold and silver, traceable stones, hand-set and hallmarked, repaired for life.',
         },
     },
     home: HOME,

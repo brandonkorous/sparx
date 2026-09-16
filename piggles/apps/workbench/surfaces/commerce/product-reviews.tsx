@@ -187,7 +187,7 @@ function ReviewCard({
     void (async () => {
       const ok = await confirm({
         title: `Delete ${author}'s review?`,
-        description: `Their words, their star rating and any photos they attached are removed for good, and ${product.title}'s overall rating is worked out again without them. If you only want it off your website, hide it instead — hiding can be undone.`,
+        description: `Their words, their star rating and any photos they attached are removed for good, and ${product.title}'s overall rating is worked out again without them. If you only want it off your website, hide it instead: hiding can be undone.`,
         confirmLabel: 'Delete it',
         cancelLabel: 'Keep it',
         color: 'danger',
@@ -254,7 +254,7 @@ function ReviewCard({
 
       {replying ? (
         <ReplyBox
-          placeholder="Reply to this review — everyone reading it will see what you write."
+          placeholder="Reply to this review. Everyone reading it will see what you write."
           initial={review.response ?? ''}
           busy={respond.isPending}
           sendLabel={review.response ? 'Update reply' : 'Post reply'}
@@ -388,7 +388,7 @@ function QuestionCard({ question, productId }: { question: ProductQuestion; prod
 
       {answering ? (
         <ReplyBox
-          placeholder="Answer this question — it appears on the product's page under their question."
+          placeholder="Answer this question. It appears on the product's page under their question."
           busy={answer.isPending}
           sendLabel="Post answer"
           onCancel={() => {

@@ -209,7 +209,7 @@ export function validateActionTree(actions: unknown, depth = 1, prefix = ''): Ac
     if (depth >= MAX_ACTION_DEPTH) {
       issues.push({
         path: at,
-        message: `branches can only nest ${String(MAX_ACTION_DEPTH - 1)} deep — move this into its own rule`,
+        message: `branches can only nest ${String(MAX_ACTION_DEPTH - 1)} deep: move this into its own rule`,
       });
       return;
     }

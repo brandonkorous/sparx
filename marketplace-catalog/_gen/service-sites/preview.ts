@@ -66,7 +66,7 @@ const SITE_APP_DIR = join(repoRoot, 'wizeworks', 'apps', 'site');
 function previewCssEntry(slug: string): string {
   if (!existsSync(SITE_APP_DIR)) {
     throw new Error(
-      `Preview CSS needs the site app at ${SITE_APP_DIR} — it is the package that resolves ` +
+      `Preview CSS needs the site app at ${SITE_APP_DIR}: it is the package that resolves ` +
         `tailwindcss and @wizeworks/silicaui. That directory does not exist. If the app has ` +
         `moved, update SITE_APP_DIR and the '../../packages/silica-catalog/...' paths below, ` +
         `which are resolved relative to it.`
@@ -205,7 +205,7 @@ export async function writeServicePreview(
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${spec.brand.businessName} — ${spec.name} preview</title>
+<title>${spec.brand.businessName}: ${spec.name} preview</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="${fontsHref(heading, body)}" />

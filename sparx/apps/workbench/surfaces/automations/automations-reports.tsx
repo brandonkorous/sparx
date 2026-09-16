@@ -238,7 +238,7 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Heading>
                 <Text className="text-sm">
                   How often your automations ran, and how reliably. A skipped run means the
-                  conditions no longer matched — it is not counted against the success rate.
+                  conditions no longer matched. It is not counted against the success rate.
                 </Text>
               </div>
 

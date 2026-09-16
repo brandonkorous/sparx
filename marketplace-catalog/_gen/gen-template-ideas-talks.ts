@@ -120,7 +120,7 @@ function heroBand(): Node {
                         },
                     ),
                     el('p', 'max-w-2xl text-xl leading-relaxed text-base-content', {
-                        text: 'The Commons is a nonprofit stage for public thinking — talks and essays from the people worth listening to, gathered in one place and kept free for everyone. Pull up a chair.',
+                        text: 'The Commons is a nonprofit stage for public thinking: talks and essays from the people worth listening to, gathered in one place and kept free for everyone. Pull up a chair.',
                     }),
                     el('div', 'flex flex-col gap-4 @2xl:flex-row', {
                         children: [
@@ -171,7 +171,7 @@ function talkGrid(): Node {
                                 text: 'Talks worth watching',
                             }),
                             el('p', 'max-w-2xl text-lg text-base-content', {
-                                text: 'Curated from the stage — an idea, a person, and the time to make the case.',
+                                text: 'Curated from the stage: an idea, a person, and the time to make the case.',
                             }),
                         ],
                     }),
@@ -277,7 +277,7 @@ function eventsBand(): Node {
                                 '24',
                                 'Sep',
                                 'The Commons 2026: an evening of talks',
-                                'Six speakers, one stage, one long night of ideas — our flagship gathering, open to members and the curious alike.',
+                                'Six speakers, one stage, one long night of ideas. Our flagship gathering, open to members and the curious alike.',
                                 'Chicago · 6pm CT',
                             ),
                             event(
@@ -309,7 +309,7 @@ function missionBand(): Node {
             el('div', 'mx-auto flex w-full max-w-3xl flex-col items-start gap-6', {
                 children: [
                     el('h2', 'text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl', {
-                        text: 'Ideas are worth sharing — help us keep them free',
+                        text: 'Ideas are worth sharing: help us keep them free',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'Every talk on The Commons is free to watch, and it stays that way because members pay for the room, the recording and the years of archive behind it. Join them, or take a little of the stage home with you.',
@@ -425,7 +425,7 @@ const JOURNAL: Node[] = [
                         text: 'The Commons Journal',
                     }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Talks and essays from the stage — the ideas, the people behind them, and the notes we could not fit into an evening.',
+                        text: 'Talks and essays from the stage: the ideas, the people behind them, and the notes we could not fit into an evening.',
                     }),
                 ],
             }),
@@ -447,7 +447,7 @@ const ABOUT: Node[] = [
                         text: 'The Commons is a nonprofit dedicated to a simple idea: that a good idea, given a stage and an honest hour, can change how someone sees the world. We find people worth listening to, give them the room to make their case, and keep the recording free for anyone who wants to watch.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We take no money from anyone who would rather we not say something. Our talks and essays are paid for by members and supporters, which is the only arrangement that lets a stage stay genuinely open — to the unfashionable idea, the quiet expert, and the argument that needs more than a headline to land.',
+                        text: 'We take no money from anyone who would rather we not say something. Our talks and essays are paid for by members and supporters, which is the only arrangement that lets a stage stay genuinely open: to the unfashionable idea, the quiet expert, and the argument that needs more than a headline to land.',
                     }),
                 ],
             }),
@@ -496,7 +496,7 @@ interface Product {
 const PRODUCTS: Product[] = [
     {
         handle: 'commons-membership',
-        title: 'The Commons Membership — annual',
+        title: 'The Commons Membership: annual',
         description:
             'The membership that keeps the stage free. Members fund the recordings and the archive, get the members-only salons, and hear about new talks first. The single most useful thing you can do to keep ideas in the open.',
         status: 'active',
@@ -505,14 +505,14 @@ const PRODUCTS: Product[] = [
         tags: ['membership', 'subscription', 'support'],
         categoryHandles: ['membership'],
         collectionHandles: ['featured'],
-        seoTitle: 'The Commons Membership — annual support',
+        seoTitle: 'The Commons Membership: annual support',
         seoDescription: 'Annual membership that keeps every talk free: the archive, the salons, and early access.',
         variants: [{ sku: 'CMN-MEM-ANNUAL', priceCents: money(90), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'membership', isPrimary: true, alt: 'An audience seated in a warm-lit hall' }],
     },
     {
         handle: 'ideas-worth-the-room',
-        title: 'Ideas Worth the Room — the anthology',
+        title: 'Ideas Worth the Room: the anthology',
         description:
             'Twenty of the talks that defined our first years, transcribed and set in print with the speakers’ own notes in the margins. A hardback you can read in an afternoon and argue with for a year.',
         status: 'active',
@@ -521,7 +521,7 @@ const PRODUCTS: Product[] = [
         tags: ['book', 'anthology'],
         categoryHandles: ['books'],
         collectionHandles: ['featured'],
-        seoTitle: 'Ideas Worth the Room — the anthology | The Commons',
+        seoTitle: 'Ideas Worth the Room: the anthology | The Commons',
         seoDescription: 'A hardback anthology of twenty defining talks, transcribed with the speakers’ own notes.',
         variants: [{ sku: 'CMN-BOOK-ANTH', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'anthology', isPrimary: true, alt: 'The Ideas Worth the Room anthology' }],
@@ -537,7 +537,7 @@ const PRODUCTS: Product[] = [
         tags: ['notebook', 'stationery'],
         categoryHandles: ['books'],
         collectionHandles: ['featured'],
-        seoTitle: 'The Commons Notebook — cloth-bound, 160 pages',
+        seoTitle: 'The Commons Notebook: cloth-bound, 160 pages',
         seoDescription: 'A cloth-bound notebook with 160 numbered pages, a ribbon, and a small masthead.',
         variants: [{ sku: 'CMN-NOTEBOOK', priceCents: money(18), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'notebook', isPrimary: true, alt: 'The Commons cloth-bound notebook' }],
@@ -583,7 +583,7 @@ const AUTHORS = [
     {
         slug: 'mira-halvorsen',
         displayName: 'Mira Halvorsen',
-        bio: 'Mira Halvorsen is a designer who builds things meant to outlast their makers — buildings, tools and institutions. She teaches that the first question of any design is who gets to use it in a hundred years.',
+        bio: 'Mira Halvorsen is a designer who builds things meant to outlast their makers: buildings, tools and institutions. She teaches that the first question of any design is who gets to use it in a hundred years.',
         avatarAssetId: 'speaker-halvorsen',
     },
 ];
@@ -604,12 +604,12 @@ const CONTENT = [
         body: {
             title: 'The quiet power of doing less',
             excerpt:
-                'We treat a full calendar as proof of a full life. In this talk, Ada Okonkwo makes the case that most of what we call productivity is just motion — and that the hardest, most valuable skill is choosing what not to do.',
+                'We treat a full calendar as proof of a full life. In this talk, Ada Okonkwo makes the case that most of what we call productivity is just motion, and that the hardest, most valuable skill is choosing what not to do.',
             featuredImage: { $asset: 'talk-doing-less' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Ask someone how they are and they will tell you how busy they are, as if the two were the same answer. We have built a culture that reads a packed day as evidence of a well-lived one — and it is quietly making us worse at the things that actually matter.'),
+                    para('Ask someone how they are and they will tell you how busy they are, as if the two were the same answer. We have built a culture that reads a packed day as evidence of a well-lived one, and it is quietly making us worse at the things that actually matter.'),
                     h2('Motion is not progress'),
                     para('Most of what fills a day is motion: the reply that could have waited, the meeting that could have been a sentence, the task we do because it is easy and visible rather than because it is important. Motion feels like progress because it is tiring, and we have learned to trust tiredness as a signal. It is not one.'),
                     h2('The skill is subtraction'),
@@ -629,14 +629,14 @@ const CONTENT = [
         body: {
             title: 'What a river taught me about time',
             excerpt:
-                'Ren Castellano spent a year walking the length of one river, from spring to sea. What he found was less a lesson about water than about time — how slowly the important things move, and how much we miss by hurrying.',
+                'Ren Castellano spent a year walking the length of one river, from spring to sea. What he found was less a lesson about water than about time: how slowly the important things move, and how much we miss by hurrying.',
             featuredImage: { $asset: 'talk-river-time' },
             body: {
                 type: 'doc',
                 content: [
                     para('A river looks like it is in a hurry, and it is not. The water moving past your feet has been on its way for weeks, and the valley it cut took longer than any of us can picture. I spent a year walking one river from its spring to the sea, and it slowly rearranged how I think about time.'),
                     h2('The slow work is the real work'),
-                    para('Everything a river does that matters — the canyon, the delta, the bend that moves a mile in a century — it does slowly, at a pace no single day would ever reveal. We are built to notice the flood and ignore the erosion, and so we mistake the dramatic for the important. The river is almost never dramatic. It is almost always working.'),
+                    para('Everything a river does that matters (the canyon, the delta, the bend that moves a mile in a century) it does slowly, at a pace no single day would ever reveal. We are built to notice the flood and ignore the erosion, and so we mistake the dramatic for the important. The river is almost never dramatic. It is almost always working.'),
                     h2('You cannot rush a season'),
                     para('There is no version of the walk where I get to the sea faster by wanting it more. The river ignores urgency completely, and there is something enormously freeing in spending time with a thing that cannot be hurried. It gives you permission to let your own slow work be slow.'),
                     para('When people ask what the river taught me, they want a tidy sentence. Here is the closest one I have: the things that will still matter in a hundred years are moving at exactly the speed they should be. Our impatience is the only thing that is early.'),
@@ -654,16 +654,16 @@ const CONTENT = [
         body: {
             title: 'Designing for the next hundred years',
             excerpt:
-                'Most of what we build is designed to be replaced. Mira Halvorsen asks what changes when you design instead for the person who will use the thing in a century — and why that question makes better objects, buildings and institutions today.',
+                'Most of what we build is designed to be replaced. Mira Halvorsen asks what changes when you design instead for the person who will use the thing in a century, and why that question makes better objects, buildings and institutions today.',
             featuredImage: { $asset: 'talk-hundred-years' },
             body: {
                 type: 'doc',
                 content: [
-                    para('We design almost everything to be replaced. The phone is built for three years, the building for thirty, the software for whenever the next version ships. Planned replacement is not a scandal — it is just the default — but it quietly shapes everything we make into something a little disposable.'),
+                    para('We design almost everything to be replaced. The phone is built for three years, the building for thirty, the software for whenever the next version ships. Planned replacement is not a scandal (it is just the default) but it quietly shapes everything we make into something a little disposable.'),
                     h2('The hundred-year user'),
-                    para('I ask my students to design for a person who will use the thing in a hundred years — someone they will never meet, in a world they cannot predict. It sounds like an impossible constraint. In practice it is clarifying. You stop optimising for the launch and start asking what will still make sense, still be repairable, still be legible, long after the trend that produced it is forgotten.'),
+                    para('I ask my students to design for a person who will use the thing in a hundred years. Someone they will never meet, in a world they cannot predict. It sounds like an impossible constraint. In practice it is clarifying. You stop optimising for the launch and start asking what will still make sense, still be repairable, still be legible, long after the trend that produced it is forgotten.'),
                     h2('Longevity is a kindness'),
-                    para('A thing built to last is a kindness to a stranger. It says: someone before you thought about you. The best old buildings, tools and institutions all carry that quality — they were made by people who assumed the future would arrive and tried to leave it something worth having.'),
+                    para('A thing built to last is a kindness to a stranger. It says: someone before you thought about you. The best old buildings, tools and institutions all carry that quality. They were made by people who assumed the future would arrive and tried to leave it something worth having.'),
                     para('You do not need a hundred-year budget to design this way. You need the hundred-year question, asked early, out loud, before the first decision hardens. Ask it, and watch how much of the disposable falls away on its own.'),
                 ],
             },
@@ -679,16 +679,16 @@ const CONTENT = [
         body: {
             title: 'The math of second chances',
             excerpt:
-                'A single failure tells you almost nothing. Ada Okonkwo walks through the simple probability that explains why our instinct to judge people on one bad outcome is not just unkind — it is statistically wrong.',
+                'A single failure tells you almost nothing. Ada Okonkwo walks through the simple probability that explains why our instinct to judge people on one bad outcome is not just unkind. It is statistically wrong.',
             featuredImage: { $asset: 'talk-second-chances' },
             body: {
                 type: 'doc',
                 content: [
                     para('We are quick to draw a line through a single point. Someone fails once and we treat it as data about who they are, when the mathematics says a single outcome is one of the least informative things you can observe.'),
                     h2('One point is not a line'),
-                    para('Any outcome is a mix of skill, effort and luck, and from a single result you genuinely cannot separate them. The same coin that just came up tails is not a worse coin than the one that came up heads. Judging a person on one attempt is drawing a line through one point — and a line through one point can go anywhere you already wanted it to.'),
+                    para('Any outcome is a mix of skill, effort and luck, and from a single result you genuinely cannot separate them. The same coin that just came up tails is not a worse coin than the one that came up heads. Judging a person on one attempt is drawing a line through one point, and a line through one point can go anywhere you already wanted it to.'),
                     h2('The case for another try'),
-                    para('This is not a soft argument, it is a statistical one: the second attempt is where the signal lives. Give people another try and their true ability starts to show through the noise. Systems that offer second chances are not being generous so much as being accurate — they are collecting the data that a first impression threw away.'),
+                    para('This is not a soft argument, it is a statistical one: the second attempt is where the signal lives. Give people another try and their true ability starts to show through the noise. Systems that offer second chances are not being generous so much as being accurate. They are collecting the data that a first impression threw away.'),
                     para('So the next time you are tempted to close the book on someone after one bad chapter, remember that you are working with a sample size of one. The honest thing to do with a sample of one is to keep reading.'),
                 ],
             },
@@ -728,7 +728,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-ideas-talks',
     name: 'Ideas & Talks',
     summary:
-        'A video-forward home for an ideas-and-talks nonprofit — a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.',
+        'A video-forward home for an ideas-and-talks nonprofit: a big idea-statement hero over a grid of talk cards, a themes browse, a live journal of essays, and a bespoke bylined talk page, in a clean warm-white one-coral theme. Modelled on the talks-hub archetype; shipped as The Commons. Ships a light membership store (an annual membership, an anthology, a notebook) to demonstrate content + commerce together.',
     tagline: 'A talks-hub template for a nonprofit that shares ideas and asks for support.',
     vertical: 'content',
     industry: 'Ideas, talks & public thinking',
@@ -743,14 +743,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'The Commons — ideas and talks, free for everyone',
+            title: 'The Commons: ideas and talks, free for everyone',
             description:
-                'The Commons is a nonprofit stage for public thinking — talks and essays from people worth listening to, gathered in one place and kept free for everyone.',
+                'The Commons is a nonprofit stage for public thinking: talks and essays from people worth listening to, gathered in one place and kept free for everyone.',
         },
         about: {
-            title: 'About The Commons — a nonprofit stage for ideas',
+            title: 'About The Commons: a nonprofit stage for ideas',
             description:
-                'Who The Commons is and how it is paid for — member-funded talks and essays that keep an open stage free of anyone who would rather we stay quiet.',
+                'Who The Commons is and how it is paid for: member-funded talks and essays that keep an open stage free of anyone who would rather we stay quiet.',
         },
     },
     home: HOME,

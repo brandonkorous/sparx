@@ -179,7 +179,7 @@ function CategoryEditor({
             <AlertDescription>
               Every cost already filed under {category.name} moves to{' '}
               {kindLabel(kind).toLowerCase()} too, so your profit figures for past periods will
-              change. That is usually what you want when a category was filed wrongly — just know it
+              change. That is usually what you want when a category was filed wrongly. Just know it
               is not only going forward.
             </AlertDescription>
           </AlertContent>
@@ -346,7 +346,7 @@ export function CategoriesSurface() {
             <Alert color="danger" variant="soft">
               <AlertContent>
                 <AlertDescription>
-                  Could not load your categories. The server could not be reached — your categories
+                  Could not load your categories. The server could not be reached. Your categories
                   are unaffected.
                 </AlertDescription>
               </AlertContent>
@@ -498,7 +498,7 @@ export function CategoriesSurface() {
                 <Text className="text-sm">
                   Cost of the work comes off first, and what is left is what the work itself made.
                   Wages and running costs come off after that, and what is left then is what you
-                  actually kept. Filing a cost in the wrong group does not change your bottom line —
+                  actually kept. Filing a cost in the wrong group does not change your bottom line,
                   but it does change whether a job looks worth doing.
                 </Text>
               </div>

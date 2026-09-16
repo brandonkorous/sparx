@@ -158,7 +158,7 @@ function hero(): Node {
                   text: 'Roasted this week, not last month.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Cairn is a small-batch coffee roaster. We buy green coffee from farms we can name, roast it in tens of pounds, and ship it within days — so it reaches you tasting like the roaster meant it to.',
+                  text: 'Cairn is a small-batch coffee roaster. We buy green coffee from farms we can name, roast it in tens of pounds, and ship it within days, so it reaches you tasting like the roaster meant it to.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -251,7 +251,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'This week’s roasts' }),
   editorialBand({
     heading: 'Small batches, on purpose',
-    lead: 'We roast in tens of pounds, not thousands, on a drum roaster we run by ear and by nose. Every batch is cupped before it ships — if it isn’t what we tasted on the sample table, it doesn’t go in a bag.',
+    lead: 'We roast in tens of pounds, not thousands, on a drum roaster we run by ear and by nose. Every batch is cupped before it ships: if it isn’t what we tasted on the sample table, it doesn’t go in a bag.',
     assetId: 'coffee-band-roast',
     cta: 'How we roast',
     href: '/blog/how-we-roast',
@@ -260,7 +260,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.category.single-origin', layout: 'carousel', heading: 'Single origin' }),
   editorialBand({
     heading: 'Coffee, handled',
-    lead: 'A subscription is the easy way to never run out: pick a bag, pick how often, and it arrives freshly roasted on your schedule. Skip, swap or cancel any time — no lock-in, ever.',
+    lead: 'A subscription is the easy way to never run out: pick a bag, pick how often, and it arrives freshly roasted on your schedule. Skip, swap or cancel any time, no lock-in, ever.',
     assetId: 'coffee-band-sub',
     cta: 'Start a subscription',
     href: '/shop/subscription',
@@ -344,11 +344,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'Shop coffee',
-    'Every coffee we’re roasting right now — single origins, blends, decaf, and the gear to brew them. Filter by roast or origin, or sort however you like; all of it ships freshly roasted to order.'
+    'Every coffee we’re roasting right now: single origins, blends, decaf, and the gear to brew them. Filter by roast or origin, or sort however you like; all of it ships freshly roasted to order.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The coffees grouped the way people actually shop — this week’s roasts, the everyday blends, the bright single origins, and starter kits for a new brew method.'),
+  pageMasthead('Collections', 'The coffees grouped the way people actually shop. This week’s roasts, the everyday blends, the bright single origins, and starter kits for a new brew method.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search Cairn', 'Looking for an origin, a roast level, or a brewing guide? Search the whole shop and the journal below.'),
@@ -360,7 +360,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not sure it’s for you? Tell us and we’ll make it right — coffee should be a pleasure, not a gamble.',
+            text: 'Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not sure it’s for you? Tell us and we’ll make it right: coffee should be a pleasure, not a gamble.',
           }),
         ],
       }),
@@ -374,7 +374,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Cairn journal' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Notes from the roastery — how we roast, how to brew it at home, and where the coffee actually comes from. Plain, useful, no coffee snobbery.',
+            text: 'Notes from the roastery: how we roast, how to brew it at home, and where the coffee actually comes from. Plain, useful, no coffee snobbery.',
           }),
         ],
       }),
@@ -391,7 +391,7 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Cairn' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Cairn started as a drum roaster in a garage and a standing order from a few neighbours who were tired of stale supermarket coffee. It grew the slow way — one bag, one café, one farmer relationship at a time — and it still runs on the same idea: buy well, roast small, ship fast.',
+            text: 'Cairn started as a drum roaster in a garage and a standing order from a few neighbours who were tired of stale supermarket coffee. It grew the slow way (one bag, one café, one farmer relationship at a time) and it still runs on the same idea: buy well, roast small, ship fast.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We buy green coffee from importers and farms we can name, and we pay above the commodity rate because the people who grow it deserve a living from it. Then we roast in small batches, cup every one, and only bag what tastes the way it did on the sample table.',
@@ -494,84 +494,84 @@ const PRODUCTS: Product[] = [
     handle: 'ethiopia-guji',
     title: 'Ethiopia Guji',
     description:
-      'A washed Ethiopia from the Guji highlands — bright and floral, with jasmine on the nose and a clean, tea-like finish. The one to reach for when you want coffee that tastes like a place, not just like coffee.',
+      'A washed Ethiopia from the Guji highlands: bright and floral, with jasmine on the nose and a clean, tea-like finish. The one to reach for when you want coffee that tastes like a place, not just like coffee.',
     price: 21,
     sku: 'CAIRN-ETH-GUJI',
     categories: ['single-origin'],
     collections: ['this-week', 'single-origins'],
     tags: ['single-origin', 'ethiopia', 'washed', 'light-roast'],
     asset: 'prod-ethiopia',
-    seoTitle: 'Ethiopia Guji — washed single-origin coffee | Cairn',
+    seoTitle: 'Ethiopia Guji: washed single-origin coffee | Cairn',
     seoDescription: 'A bright, floral washed Ethiopia from the Guji highlands, roasted light. Jasmine and stone fruit.',
   }),
   bag({
     handle: 'colombia-huila',
     title: 'Colombia Huila',
     description:
-      'A washed Colombia from smallholders in Huila — the crowd-pleaser of the shelf. Milk chocolate, red apple and caramel, medium-bodied and endlessly easy to drink, black or with milk.',
+      'A washed Colombia from smallholders in Huila: the crowd-pleaser of the shelf. Milk chocolate, red apple and caramel, medium-bodied and endlessly easy to drink, black or with milk.',
     price: 19,
     sku: 'CAIRN-COL-HUILA',
     categories: ['single-origin'],
     collections: ['this-week', 'single-origins'],
     tags: ['single-origin', 'colombia', 'washed', 'medium-roast'],
     asset: 'prod-colombia',
-    seoTitle: 'Colombia Huila — washed single-origin coffee | Cairn',
-    seoDescription: 'A sweet, balanced washed Colombia — milk chocolate, red apple and caramel. Roasted medium.',
+    seoTitle: 'Colombia Huila: washed single-origin coffee | Cairn',
+    seoDescription: 'A sweet, balanced washed Colombia: milk chocolate, red apple and caramel. Roasted medium.',
   }),
   bag({
     handle: 'house-blend',
     title: 'Cairn House Blend',
     description:
-      'Our everyday blend and the coffee we drink most — a balance of Latin American and East African beans that’s sweet, round and forgiving. Great in a filter, great in a French press, great half-asleep at 6am.',
+      'Our everyday blend and the coffee we drink most: a balance of Latin American and East African beans that’s sweet, round and forgiving. Great in a filter, great in a French press, great half-asleep at 6am.',
     price: 17,
     sku: 'CAIRN-HOUSE',
     categories: ['blends'],
     collections: ['this-week', 'blends', 'best-sellers'],
     tags: ['blend', 'everyday', 'medium-roast'],
     asset: 'prod-house-blend',
-    seoTitle: 'Cairn House Blend — everyday coffee | Cairn',
+    seoTitle: 'Cairn House Blend: everyday coffee | Cairn',
     seoDescription: 'A sweet, round, forgiving everyday blend that works in any brewer. Roasted medium.',
   }),
   bag({
     handle: 'espresso-roast',
     title: 'Foundry Espresso',
     description:
-      'A blend built for the machine — a touch darker, syrupy and chocolatey, with a heavy body that stands up to milk without disappearing. Pulls a sweet, forgiving shot and makes a flat white you’ll want twice.',
+      'A blend built for the machine: a touch darker, syrupy and chocolatey, with a heavy body that stands up to milk without disappearing. Pulls a sweet, forgiving shot and makes a flat white you’ll want twice.',
     price: 18,
     sku: 'CAIRN-ESPRESSO',
     categories: ['blends'],
     collections: ['blends', 'best-sellers'],
     tags: ['blend', 'espresso', 'dark-roast'],
     asset: 'prod-espresso',
-    seoTitle: 'Foundry Espresso — espresso blend | Cairn',
+    seoTitle: 'Foundry Espresso: espresso blend | Cairn',
     seoDescription: 'A syrupy, chocolatey espresso blend with a heavy body that stands up to milk. Roasted dark.',
   }),
   bag({
     handle: 'decaf',
     title: 'Nightcap Decaf',
     description:
-      'A sugarcane-process decaf that actually tastes like coffee — cocoa, roasted almond and a little dried cherry, with none of the flat, papery thing decaf is famous for. The 4pm cup that won’t keep you up.',
+      'A sugarcane-process decaf that actually tastes like coffee: cocoa, roasted almond and a little dried cherry, with none of the flat, papery thing decaf is famous for. The 4pm cup that won’t keep you up.',
     price: 18,
     sku: 'CAIRN-DECAF',
     categories: ['blends'],
     collections: ['blends'],
     tags: ['decaf', 'medium-roast'],
     asset: 'prod-decaf',
-    seoTitle: 'Nightcap Decaf — sugarcane-process decaf coffee | Cairn',
-    seoDescription: 'A genuinely good sugarcane-process decaf — cocoa, almond and dried cherry. Roasted medium.',
+    seoTitle: 'Nightcap Decaf: sugarcane-process decaf coffee | Cairn',
+    seoDescription: 'A genuinely good sugarcane-process decaf: cocoa, almond and dried cherry. Roasted medium.',
   }),
   {
     handle: 'pour-over-dripper',
     title: 'Ceramic Pour-Over Dripper',
     description:
-      'A single-cup ceramic dripper that holds heat and pours clean — the simplest way to make café-quality coffee at home. Pairs with standard cone filters; no gadgets, no power, no fuss.',
+      'A single-cup ceramic dripper that holds heat and pours clean: the simplest way to make café-quality coffee at home. Pairs with standard cone filters; no gadgets, no power, no fuss.',
     status: 'active',
     productType: 'Equipment',
     vendor: 'Cairn Coffee Roasters',
     tags: ['gear', 'brewing', 'pour-over'],
     categoryHandles: ['gear'],
     collectionHandles: ['gear', 'starter-kit'],
-    seoTitle: 'Ceramic Pour-Over Dripper — brew gear | Cairn',
+    seoTitle: 'Ceramic Pour-Over Dripper: brew gear | Cairn',
     seoDescription: 'A single-cup ceramic pour-over dripper that holds heat and pours clean.',
     variants: [{ sku: 'CAIRN-GEAR-DRIPPER', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-dripper', isPrimary: true, alt: 'A ceramic pour-over dripper' }],
@@ -580,14 +580,14 @@ const PRODUCTS: Product[] = [
     handle: 'pour-over-filters',
     title: 'Pour-Over Filters (100)',
     description:
-      'A hundred natural paper filters for the cone dripper — unbleached, so there’s no papery taste to rinse out. The consumable you always forget to reorder, so put it on the subscription.',
+      'A hundred natural paper filters for the cone dripper: unbleached, so there’s no papery taste to rinse out. The consumable you always forget to reorder, so put it on the subscription.',
     status: 'active',
     productType: 'Equipment',
     vendor: 'Cairn Coffee Roasters',
     tags: ['gear', 'brewing', 'filters'],
     categoryHandles: ['gear'],
     collectionHandles: ['gear', 'starter-kit'],
-    seoTitle: 'Pour-Over Filters, 100 pack — brew gear | Cairn',
+    seoTitle: 'Pour-Over Filters, 100 pack: brew gear | Cairn',
     seoDescription: 'A hundred unbleached natural paper filters for a cone pour-over dripper.',
     variants: [{ sku: 'CAIRN-GEAR-FILTERS', priceCents: money(9), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-filters', isPrimary: true, alt: 'A pack of pour-over filters' }],
@@ -596,14 +596,14 @@ const PRODUCTS: Product[] = [
     handle: 'stoneware-mug',
     title: 'Cairn Stoneware Mug',
     description:
-      'A heavy, hand-glazed stoneware mug that keeps coffee hot and feels right in the hand. Made in small runs by a local pottery, so no two glazes are exactly the same. 10oz — the size of a proper morning cup.',
+      'A heavy, hand-glazed stoneware mug that keeps coffee hot and feels right in the hand. Made in small runs by a local pottery, so no two glazes are exactly the same. 10oz: the size of a proper morning cup.',
     status: 'active',
     productType: 'Equipment',
     vendor: 'Cairn Coffee Roasters',
     tags: ['gear', 'mug', 'ceramics'],
     categoryHandles: ['gear'],
     collectionHandles: ['gear'],
-    seoTitle: 'Cairn Stoneware Mug — 10oz coffee mug | Cairn',
+    seoTitle: 'Cairn Stoneware Mug: 10oz coffee mug | Cairn',
     seoDescription: 'A heavy hand-glazed stoneware coffee mug, 10oz, made in small runs by a local pottery.',
     variants: [{ sku: 'CAIRN-GEAR-MUG', priceCents: money(24), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-mug', isPrimary: true, alt: 'A stoneware coffee mug' }],
@@ -612,15 +612,15 @@ const PRODUCTS: Product[] = [
     handle: 'subscription',
     title: 'Coffee Subscription',
     description:
-      'Freshly roasted coffee on your schedule — pick a size and how often, and we roast and ship it to match. Rotate through single origins or stick with the house blend; skip, swap or cancel any time. The easiest way to never run out.',
+      'Freshly roasted coffee on your schedule. Pick a size and how often, and we roast and ship it to match. Rotate through single origins or stick with the house blend; skip, swap or cancel any time. The easiest way to never run out.',
     status: 'active',
     productType: 'Subscription',
     vendor: 'Cairn Coffee Roasters',
     tags: ['subscription', 'gift'],
     categoryHandles: ['subscription'],
     collectionHandles: ['this-week', 'best-sellers'],
-    seoTitle: 'Coffee Subscription — freshly roasted, on your schedule | Cairn',
-    seoDescription: 'A flexible coffee subscription — pick a size and cadence; skip, swap or cancel any time.',
+    seoTitle: 'Coffee Subscription: freshly roasted, on your schedule | Cairn',
+    seoDescription: 'A flexible coffee subscription. Pick a size and cadence; skip, swap or cancel any time.',
     options: [
       { name: 'Plan', displayType: 'dropdown', values: [{ value: 'One bag' }, { value: 'Two bags' }] },
     ],
@@ -709,11 +709,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Roasting green coffee is closer to cooking than most people expect. You’re applying heat over time and chasing a set of chemical reactions — the same browning that happens to toast and caramel — and stopping at exactly the right moment for the coffee in front of you. A minute too long or fifteen degrees too hot, and a bright, floral Ethiopia turns into a flat, roasty sameness.'),
+          para('Roasting green coffee is closer to cooking than most people expect. You’re applying heat over time and chasing a set of chemical reactions (the same browning that happens to toast and caramel) and stopping at exactly the right moment for the coffee in front of you. A minute too long or fifteen degrees too hot, and a bright, floral Ethiopia turns into a flat, roasty sameness.'),
           h2('Small batches, by ear and by nose'),
           para('We roast in tens of pounds on a drum roaster, and we run it by ear and by nose as much as by the numbers. You learn to hear first crack, to smell the turn from grassy to sweet, and to pull the batch before it tips into bitterness. That kind of attention doesn’t scale to thousand-pound loads, which is exactly why we don’t roast them.'),
           h2('Cupped before it ships'),
-          para('Every batch is cupped — brewed and tasted on a table — before a single bag goes out. If it isn’t what we tasted when we bought the coffee, it doesn’t ship. Sometimes that means re-roasting; occasionally it means an apology to whoever was waiting. It always means the bag on your shelf tastes like it was supposed to.'),
+          para('Every batch is cupped (brewed and tasted on a table) before a single bag goes out. If it isn’t what we tasted when we bought the coffee, it doesn’t ship. Sometimes that means re-roasting; occasionally it means an apology to whoever was waiting. It always means the bag on your shelf tastes like it was supposed to.'),
         ],
       },
     },
@@ -731,9 +731,9 @@ const CONTENT = [
         content: [
           para('A good pour-over doesn’t need a chemistry set. It needs fresh coffee, a burr grind, hot-but-not-boiling water, and a bit of patience. Here’s the version we actually use on a weekday morning.'),
           h2('The recipe'),
-          para('Use about a 1-to-16 ratio — say 25 grams of coffee to 400 grams of water. Grind medium, like coarse sand. Rinse the filter, add the coffee, and pour twice the coffee’s weight in water to start — that’s the bloom. Wait thirty seconds while it puffs up and releases gas, then pour the rest in slow, steady circles, keeping the bed level. The whole thing should finish in about three minutes.'),
+          para('Use about a 1-to-16 ratio: say 25 grams of coffee to 400 grams of water. Grind medium, like coarse sand. Rinse the filter, add the coffee, and pour twice the coffee’s weight in water to start, that’s the bloom. Wait thirty seconds while it puffs up and releases gas, then pour the rest in slow, steady circles, keeping the bed level. The whole thing should finish in about three minutes.'),
           h2('If it tastes off'),
-          para('Sour and thin means under-extracted — grind finer or pour slower. Bitter and dry means over-extracted — grind coarser or pour a touch faster. Change one thing at a time, and taste. Two or three cups in, you’ll have it dialled for that coffee, and it’ll be the same every morning after.'),
+          para('Sour and thin means under-extracted: grind finer or pour slower. Bitter and dry means over-extracted, grind coarser or pour a touch faster. Change one thing at a time, and taste. Two or three cups in, you’ll have it dialled for that coffee, and it’ll be the same every morning after.'),
         ],
       },
     },
@@ -749,9 +749,9 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Most coffee is sold as a commodity — bought and priced with no reference to who grew it or how good it is. We buy the other way: specific lots, from farms and washing stations we can name, through importers who’ve built long relationships with the growers.'),
+          para('Most coffee is sold as a commodity: bought and priced with no reference to who grew it or how good it is. We buy the other way: specific lots, from farms and washing stations we can name, through importers who’ve built long relationships with the growers.'),
           h2('Why we pay above the market'),
-          para('Coffee at altitude, picked ripe and processed with care, costs more to produce than the commodity price rewards. If we want farmers to keep growing it — and to keep improving it — they have to make a living from it. Paying above the market isn’t charity; it’s how the good coffee keeps existing.'),
+          para('Coffee at altitude, picked ripe and processed with care, costs more to produce than the commodity price rewards. If we want farmers to keep growing it (and to keep improving it), they have to make a living from it. Paying above the market isn’t charity; it’s how the good coffee keeps existing.'),
           h2('What that gets you'),
           para('Traceability, for one: when you can name the farm, you can taste the difference a region and a process make, season after season. And consistency: the same growers, treated well, come back with the same lots year on year. The name on the bag is a promise that someone, somewhere, was paid fairly to grow something worth roasting.'),
         ],
@@ -768,7 +768,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Coffee Roaster (Craft)',
   theme: THEME,
   summary:
-    'A complete, working shop for a small-batch coffee roaster: a real catalogue of single-origin bags, blends, decaf, brew gear and a flexible subscription, with categories, collections, a bespoke coffee-shop PDP and a full merchandised home page. Warm roastery theme — cream paper, deep coffee-brown, a terracotta accent. Shipped as Cairn Coffee Roasters.',
+    'A complete, working shop for a small-batch coffee roaster: a real catalogue of single-origin bags, blends, decaf, brew gear and a flexible subscription, with categories, collections, a bespoke coffee-shop PDP and a full merchandised home page. Warm roastery theme, cream paper, deep coffee-brown, a terracotta accent. Shipped as Cairn Coffee Roasters.',
   tagline: 'A warm, working storefront for a craft coffee roaster.',
   vertical: 'retail',
   industry: 'Coffee roaster',
@@ -781,14 +781,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'Cairn Coffee Roasters — small-batch coffee, roasted to order',
+      title: 'Cairn Coffee Roasters: small-batch coffee, roasted to order',
       description:
-        'Cairn is a small-batch coffee roaster — single origins, blends and a flexible subscription, roasted to order and shipped within days. Buy well, roast small, ship fast.',
+        'Cairn is a small-batch coffee roaster: single origins, blends and a flexible subscription, roasted to order and shipped within days. Buy well, roast small, ship fast.',
     },
     about: {
       title: 'About Cairn Coffee Roasters',
       description:
-        'How Cairn buys, roasts and ships — small batches, named farms, fair prices, and coffee that tastes the way the roaster meant it to.',
+        'How Cairn buys, roasts and ships: small batches, named farms, fair prices, and coffee that tastes the way the roaster meant it to.',
     },
   },
   home: HOME,

@@ -28,16 +28,16 @@ const SERVER_INFO = { name: 'sparx-mcp', version: '1.0.0' } as const;
 // default to the tenant's PRIMARY site, so an agent that never targets a site can
 // overwrite the wrong one (this happened). Keep it short and imperative.
 const SERVER_INSTRUCTIONS = [
-  'This server manages one tenant — its content, commerce, CRM, email, and one or more SITES (web properties).',
-  'MULTISITE — READ FIRST: a tenant can own MORE THAN ONE site. Before you create or edit any page, theme, ' +
+  'This server manages one tenant. Its content, commerce, CRM, email, and one or more SITES (web properties).',
+  'MULTISITE. READ FIRST: a tenant can own MORE THAN ONE site. Before you create or edit any page, theme, ' +
     'layout, or site setting, call `list_sites` and pass the intended site’s `id` as the `propertyId` argument. ' +
-    'Omitting `propertyId` silently targets the tenant’s PRIMARY site — which overwrites the wrong site if you ' +
+    'Omitting `propertyId` silently targets the tenant’s PRIMARY site, which overwrites the wrong site if you ' +
     'meant a different one.',
-  'Site-editing tools echo the resolved `site` ({id, name, isPrimary}) in their result — always confirm it is the ' +
+  'Site-editing tools echo the resolved `site` ({id, name, isPrimary}) in their result: always confirm it is the ' +
     'site you intended before continuing.',
   'Builder pages author the page BODY (create_builder_page / update_builder_page). The header/footer/nav is the ' +
     'SILICA FRAME, a different system with a different node contract: read `describe_silica_authoring`, then ' +
-    'get_silica_frame → set_silica_frame → publish_silica_site. There is no `update_builder_layout` — it was removed ' +
+    'get_silica_frame → set_silica_frame → publish_silica_site. There is no `update_builder_layout`: it was removed ' +
     'because it wrote columns the live site does not render. Set page SEO inline via the page document’s ' +
     'seoTitle/seoDescription. Give a site its own look with a saved theme (create_saved_theme → apply_saved_theme) ' +
     'rather than editing a shared preset. Changes are DRAFTs until published.',
@@ -183,7 +183,7 @@ async function dispatch(
           type: 'text',
           text:
             `forbidden: this credential is limited to a single site, and ${tool.name} ` +
-            `cannot yet be limited to one — it would read across every site this ` +
+            `cannot yet be limited to one: it would read across every site this ` +
             `account owns. Use a tenant-wide key if that is genuinely intended.`,
         },
       ],

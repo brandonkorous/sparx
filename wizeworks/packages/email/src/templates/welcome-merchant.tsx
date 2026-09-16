@@ -34,7 +34,7 @@ export function WelcomeMerchantEmail({
   const platform = usePlatform();
   return (
     <PlatformEmailLayout
-      preview="Your account's ready — three quick steps and you're online."
+      preview="Your account's ready: three quick steps and you're online."
       footerLinks={
         platform.url
           ? [
@@ -50,13 +50,13 @@ export function WelcomeMerchantEmail({
         {name ? `, ${name}` : ''}.
       </EmailDisplayHeading>
       <EmailLead>
-        Everything you need to run your business online — a website, a store, a mailing list — now
+        Everything you need to run your business online (a website, a store, a mailing list) now
         lives in one place.
       </EmailLead>
       {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
       <EmailParagraph>
         Your site is live on {platform.name}. There&rsquo;s no rush, but here&rsquo;s the quickest
-        path to getting it ready — most people are up and running in about ten minutes.
+        path to getting it ready. Most people are up and running in about ten minutes.
       </EmailParagraph>
 
       <EmailSteps
@@ -67,12 +67,12 @@ export function WelcomeMerchantEmail({
           },
           {
             title: 'Add your first page',
-            description: 'Start from a ready-made template or a blank canvas — no code, ever.',
+            description: 'Start from a ready-made template or a blank canvas: no code, ever.',
           },
           {
             title: 'Turn on what you need',
             description:
-              'A store, a blog, bookings, email. Switch on only what you use — you pay for nothing else.',
+              'A store, a blog, bookings, email. Switch on only what you use. You pay for nothing else.',
           },
         ]}
       />
@@ -81,7 +81,7 @@ export function WelcomeMerchantEmail({
 
       {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
       <EmailParagraph flush>
-        Glad you&rsquo;re here. Reply to this email anytime — a real person reads it.
+        Glad you&rsquo;re here. Reply to this email anytime: a real person reads it.
       </EmailParagraph>
     </PlatformEmailLayout>
   );

@@ -137,7 +137,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
             description: result.skipped
               .map(
                 (skip) =>
-                  `${entityLabel(skip.entity, skip.rows)} — the ${skip.module} module is switched off.`
+                  `${entityLabel(skip.entity, skip.rows)}: the ${skip.module} module is switched off.`
               )
               .join(' '),
             type: 'info',

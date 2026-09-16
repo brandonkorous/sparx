@@ -80,7 +80,7 @@ export function CollectionMembers({
             />
             <FieldDescription>
               {isRules
-                ? 'You describe what belongs — say, everything under a set price from a certain brand — and matching products are pulled in automatically, and drop out again when they stop matching.'
+                ? 'You describe what belongs (say, everything under a set price from a certain brand) and matching products are pulled in automatically, and drop out again when they stop matching.'
                 : 'You choose each product by hand. Good for a curated set that will not change on its own.'}
             </FieldDescription>
           </Field>
@@ -118,7 +118,7 @@ export function CollectionMembers({
           {!isNew && collection ? (
             <Text className="text-sm">
               {collection.productCount === 0
-                ? 'No products match these conditions yet — or the last check has not run. Membership is worked out in the background after you save.'
+                ? 'No products match these conditions yet, or the last check has not run. Membership is worked out in the background after you save.'
                 : `${String(collection.productCount)} product${collection.productCount === 1 ? '' : 's'} matched when membership was last worked out. It refreshes in the background after a change.`}
             </Text>
           ) : null}

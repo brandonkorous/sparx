@@ -21,7 +21,7 @@ export const COMMERCE_HIGH_VALUE_ORDER_ALERT: SystemAutomationSpec = {
   actions: [
     {
       type: 'email.send_internal',
-      config: { subject: 'High-value order — {{order.number}} · ${{order.total}}' },
+      config: { subject: 'High-value order: {{order.number}} · ${{order.total}}' },
     },
   ],
   locked: false,
@@ -38,7 +38,7 @@ export const COMMERCE_LOW_INVENTORY_ALERT: SystemAutomationSpec = {
   actions: [
     {
       type: 'email.send_internal',
-      config: { subject: 'Low inventory — {{product.title}} · {{inventory.quantity}} remaining' },
+      config: { subject: 'Low inventory: {{product.title}} · {{inventory.quantity}} remaining' },
     },
   ],
   locked: false,
@@ -54,7 +54,8 @@ export const COMMERCE_LOW_INVENTORY_ALERT: SystemAutomationSpec = {
  *  subscribed to it. `email.send_internal` is PLATFORM-level, so a commerce-only
  *  tenant with no email module still gets it. */
 export const COMMERCE_RETURN_REQUESTED_ALERT: SystemAutomationSpec = {
-  name: 'Return requested — staff alert',
+  name: 'Return requested: staff alert',
+  previousNames: ['Return requested — staff alert'],
   description: 'Emails staff when a customer asks to send something back.',
   trigger: { kind: 'event', eventType: 'return.requested' },
   conditions: { logic: 'AND', conditions: [] },
@@ -62,7 +63,7 @@ export const COMMERCE_RETURN_REQUESTED_ALERT: SystemAutomationSpec = {
     {
       type: 'email.send_internal',
       config: {
-        subject: 'Return requested — {{order.number}} · wants a {{return.preferredOutcome}}',
+        subject: 'Return requested: {{order.number}} · wants a {{return.preferredOutcome}}',
       },
     },
   ],
@@ -73,14 +74,15 @@ export const COMMERCE_RETURN_REQUESTED_ALERT: SystemAutomationSpec = {
 /** Log a CRM note on the customer when a refund is issued, so the account timeline
  *  reflects it without a human re-entering it. */
 export const COMMERCE_REFUND_CRM_NOTE: SystemAutomationSpec = {
-  name: 'Refund issued — CRM note',
+  name: 'Refund issued: CRM note',
+  previousNames: ['Refund issued — CRM note'],
   description: 'Adds a note to the customer’s CRM timeline when an order is refunded.',
   trigger: { kind: 'event', eventType: 'order.refunded' },
   conditions: { logic: 'AND', conditions: [] },
   actions: [
     {
       type: 'crm.add_note',
-      config: { note: 'Refund issued — {{order.number}} · ${{order.refundTotal}}' },
+      config: { note: 'Refund issued: {{order.number}} · ${{order.refundTotal}}' },
     },
   ],
   locked: false,
@@ -95,7 +97,7 @@ export const COMMERCE_REFUND_CRM_NOTE: SystemAutomationSpec = {
 export const COMMERCE_ABANDONED_CART_NUDGE: SystemAutomationSpec = {
   name: 'Abandoned cart nudge',
   description:
-    'Emails a shopper once their cart has been sitting long enough to count as abandoned — the wait is the one you set in Selling settings.',
+    'Emails a shopper once their cart has been sitting long enough to count as abandoned: the wait is the one you set in Selling settings.',
   trigger: {
     kind: 'schedule',
     schedule: { cadence: 'interval', everyMinutes: 15 },
@@ -143,7 +145,8 @@ export const COMMERCE_ABANDONED_CART_NUDGE: SystemAutomationSpec = {
  *  is the entire handover. Later mails told her the order was delivered, cancelled
  *  or refunded; none told her it had been placed. */
 export const COMMERCE_ORDER_CONFIRMATION_EMAIL: SystemAutomationSpec = {
-  name: 'Order confirmation — email',
+  name: 'Order confirmation: email',
+  previousNames: ['Order confirmation — email'],
   description: 'Emails the customer their order confirmation as soon as the order is placed.',
   trigger: { kind: 'event', eventType: 'order.placed' },
   conditions: {
@@ -177,7 +180,8 @@ export const COMMERCE_ORDER_CONFIRMATION_EMAIL: SystemAutomationSpec = {
  *  carrier is checked. `order.delivered` fires for a collection too, and the
  *  delivered notice is the one that belongs there. */
 export const COMMERCE_SHIPPING_CONFIRMATION_EMAIL: SystemAutomationSpec = {
-  name: 'Shipping confirmation — email',
+  name: 'Shipping confirmation: email',
+  previousNames: ['Shipping confirmation — email'],
   description: 'Emails the customer their tracking details as soon as an order ships.',
   trigger: { kind: 'event', eventType: 'order.fulfilled' },
   conditions: {
@@ -198,7 +202,8 @@ export const COMMERCE_SHIPPING_CONFIRMATION_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_ORDER_DELIVERED_EMAIL: SystemAutomationSpec = {
-  name: 'Order delivered — email',
+  name: 'Order delivered: email',
+  previousNames: ['Order delivered — email'],
   description: 'Emails the customer when their order is marked delivered.',
   trigger: { kind: 'event', eventType: 'order.delivered' },
   conditions: {
@@ -216,7 +221,8 @@ export const COMMERCE_ORDER_DELIVERED_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_ORDER_CANCELLED_EMAIL: SystemAutomationSpec = {
-  name: 'Order cancelled — email',
+  name: 'Order cancelled: email',
+  previousNames: ['Order cancelled — email'],
   description: 'Emails the customer when their order is cancelled.',
   trigger: { kind: 'event', eventType: 'order.cancelled' },
   conditions: {
@@ -234,7 +240,8 @@ export const COMMERCE_ORDER_CANCELLED_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_ORDER_REFUNDED_EMAIL: SystemAutomationSpec = {
-  name: 'Order refunded — email',
+  name: 'Order refunded: email',
+  previousNames: ['Order refunded — email'],
   description: 'Emails the customer when a refund is issued for their order.',
   trigger: { kind: 'event', eventType: 'order.refunded' },
   conditions: {
@@ -252,7 +259,8 @@ export const COMMERCE_ORDER_REFUNDED_EMAIL: SystemAutomationSpec = {
 };
 
 export const COMMERCE_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
-  name: 'Payment failed — email',
+  name: 'Payment failed: email',
+  previousNames: ['Payment failed — email'],
   description: 'Emails the customer when their order payment fails, so they can retry.',
   trigger: { kind: 'event', eventType: 'order.payment_failed' },
   conditions: {

@@ -84,20 +84,20 @@ export const COLOR_GROUPS: ColorGroup[] = [
     label: 'Paper and ink',
     // Three layers, nearest FIRST. silica paints the themed surface `base-100`
     // and Card uses it too, so 100 is what you look at and 200/300 sit behind it.
-    hint: 'The layers your site is built from, nearest first — and the words on them.',
+    hint: 'The layers your site is built from, nearest first, and the words on them.',
     roles: [
       {
         token: '--color-base-100',
         label: 'Main surface',
         short: 'Surface',
-        hint: 'The highest layer — the page and the cards on it.',
+        hint: 'The highest layer: the page and the cards on it.',
         sample: 'bg-base-100 text-base-content',
       },
       {
         token: '--color-base-200',
         label: 'Second layer',
         short: 'Behind',
-        hint: 'Behind the main surface — sunken panels and shading.',
+        hint: 'Behind the main surface: sunken panels and shading.',
         sample: 'bg-base-200 text-base-content',
       },
       {
@@ -213,7 +213,7 @@ export const SCALAR_GROUPS: { group: string; label: string; hint: string }[] = [
   {
     group: 'radius',
     label: 'Corners',
-    hint: 'How round everything is — square and formal, or soft and friendly.',
+    hint: 'How round everything is: square and formal, or soft and friendly.',
   },
   {
     group: 'form',
@@ -330,7 +330,7 @@ export interface SwatchTile {
 }
 
 const INK_HINT =
-  'The words that sit on this color. We pick one that reads clearly — change it if you want something else.';
+  'The words that sit on this color. We pick one that reads clearly. Change it if you want something else.';
 
 /**
  * Just the fill, for the tile that is about the color rather than the words.
@@ -375,7 +375,7 @@ export function tilesOf(role: ColorRole): SwatchTile[] {
     fill,
     {
       token: role.contentToken,
-      label: `${role.label} — the words on it`,
+      label: `${role.label}: the words on it`,
       short: `${role.short} text`,
       hint: INK_HINT,
       sample: role.sample,

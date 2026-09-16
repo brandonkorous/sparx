@@ -133,7 +133,7 @@ function judge(
   if (current !== undefined) {
     return {
       state: 'already',
-      message: `Already moved — it goes to ${current}. Change it on the Old links screen.`,
+      message: `Already moved: it goes to ${current}. Change it on the Old links screen.`,
     };
   }
   return { state: 'ready', message: null };

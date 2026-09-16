@@ -60,14 +60,14 @@ async function previewOne(slug: string): Promise<void> {
 
   if (!bp.site?.frame?.root || !Array.isArray(bp.site.pages)) {
     throw new Error(
-      `preview-showcase: ${slug} has no captured site (frame + pages) — this renderer is ` +
+      `preview-showcase: ${slug} has no captured site (frame + pages). This renderer is ` +
         'for the showcase family; a reference template previews through its own generator.'
     );
   }
 
   const { path } = await writeSitePreview({
     slug,
-    title: `${bp.brand.businessName} — ${bp.name} preview`,
+    title: `${bp.brand.businessName}: ${bp.name} preview`,
     businessName: bp.brand.businessName,
     frameRoot: bp.site.frame.root,
     pages: bp.site.pages,

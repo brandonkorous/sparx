@@ -13,7 +13,7 @@ import { Band } from '../band';
 const RESOURCES: { t: string; d: string }[] = [
   {
     t: 'Every client in one login',
-    d: 'Your own dashboard lists every client account you have access to, and you move between them without signing out. The client invites you and can revoke it whenever they like — you never hold their password.',
+    d: 'Your own dashboard lists every client account you have access to, and you move between them without signing out. The client invites you and can revoke it whenever they like. You never hold their password.',
   },
   {
     t: 'The pitch, already written',

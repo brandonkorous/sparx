@@ -170,7 +170,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('commerce.discount.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Add a discount — hold Shift to open alongside, Alt for a new window',
+          title: 'Add a discount: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <div className="w-40 shrink-0">
@@ -221,7 +221,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faPercent} className="size-6" aria-hidden />}
             title="Could not load your discounts"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading discounts…" />
@@ -237,7 +237,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No discounts yet',
               description:
-                'A discount reduces the price at checkout — with a code shoppers type, or automatically on any order that qualifies. Add your first one to get started.',
+                'A discount reduces the price at checkout, with a code shoppers type, or automatically on any order that qualifies. Add your first one to get started.',
             }}
           />
         ) : (

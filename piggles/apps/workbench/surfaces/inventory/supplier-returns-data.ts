@@ -5,7 +5,7 @@
 //
 // The reason a return needs a record rather than an adjustment is the money.
 // Writing off six broken pumps tells the ledger the truth about the shelf and
-// nothing at all about the £900 the supplier owes — after which that credit is
+// nothing at all about the $900 the supplier owes — after which that credit is
 // remembered by one person, in their head, until they leave.
 //
 // So two facts are recorded separately. The EXPECTATION when the goods go, and
@@ -210,7 +210,7 @@ export function returnStatusLabel(status: string): string {
     case 'draft':
       return 'Being put together';
     case 'sent':
-      return 'Gone back — waiting for credit';
+      return 'Gone back: waiting for credit';
     case 'credited':
       return 'Credited';
     case 'closed':
@@ -241,7 +241,7 @@ export const RETURN_REASONS = [
   { value: 'damaged', label: 'Arrived damaged' },
   { value: 'wrong_item', label: 'Wrong item sent' },
   { value: 'quality', label: 'Not good enough' },
-  { value: 'overstock', label: 'Too many — sending some back' },
+  { value: 'overstock', label: 'Too many: sending some back' },
   { value: 'expired', label: 'Out of date' },
   { value: 'recall', label: 'Recalled by the supplier' },
   { value: 'other', label: 'Something else' },

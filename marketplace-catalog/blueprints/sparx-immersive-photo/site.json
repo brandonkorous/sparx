@@ -299,7 +299,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -727,8 +727,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Wayfarer — a travel & photography journal",
-      "seoDescription": "Wayfarer is an independent travel and photography journal — long-scroll photo stories and reported features from the field, with signed prints of the work.",
+      "seoTitle": "Wayfarer: a travel & photography journal",
+      "seoDescription": "Wayfarer is an independent travel and photography journal: long-scroll photo stories and reported features from the field, with signed prints of the work.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1001,7 +1001,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A long scroll through one week above the tree line — the road up, the water on the way down, and the forest that swallowed the last of the light."
+                          "A long scroll through one week above the tree line: the road up, the water on the way down, and the forest that swallowed the last of the light."
                         ],
                         "id": "332fdae4-e60a-4e76-b798-ac07c00b4ba3",
                         "ord": "a2"
@@ -1126,7 +1126,7 @@
                                         "tag": "p",
                                         "class": "text-base leading-relaxed text-base-content",
                                         "children": [
-                                          "Everything that fell as snow up here leaves as this — a single white thread over black rock, moving so fast a half-second exposure turns it to smoke."
+                                          "Everything that fell as snow up here leaves as this: a single white thread over black rock, moving so fast a half-second exposure turns it to smoke."
                                         ],
                                         "id": "a8b9f147-aa0c-437b-895c-2f4187843214",
                                         "ord": "a1"
@@ -1438,7 +1438,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Wayfarer",
+      "seoTitle": "Shop: Wayfarer",
       "seoDescription": "Browse everything Wayfarer makes, with prices and options at a glance. Travel & photography.",
       "root": {
         "kind": "element",
@@ -1496,7 +1496,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Wayfarer",
+      "seoTitle": "Collections: Wayfarer",
       "seoDescription": "Explore the collections at Wayfarer, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1537,7 +1537,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Wayfarer",
+      "seoTitle": "Your cart: Wayfarer",
       "seoDescription": "Review what is in your cart and check out securely at Wayfarer.",
       "root": {
         "kind": "element",
@@ -1578,7 +1578,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Wayfarer",
+      "seoTitle": "Search: Wayfarer",
       "seoDescription": "Search Wayfarer for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1619,7 +1619,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Wayfarer",
+      "seoTitle": "Journal: Wayfarer",
       "seoDescription": "Stories, guides and notes from Wayfarer.",
       "root": {
         "kind": "element",
@@ -1659,7 +1659,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Long-scroll photo stories and reported features from the field — travel, nature, the night sky, and the craft of making a picture worth the walk."
+                      "Long-scroll photo stories and reported features from the field: travel, nature, the night sky, and the craft of making a picture worth the walk."
                     ],
                     "id": "138ff426-6ce7-4755-bb17-aac0e84a21a6",
                     "ord": "a2"
@@ -1792,8 +1792,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Wayfarer — an independent photo journal",
-      "seoDescription": "Who Wayfarer is and how it works — a small circle of photographers and writers who go slowly, sell prints, and take no sponsored trips.",
+      "seoTitle": "About Wayfarer: an independent photo journal",
+      "seoDescription": "Who Wayfarer is and how it works: a small circle of photographers and writers who go slowly, sell prints, and take no sponsored trips.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1824,7 +1824,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Wayfarer is an independent travel and photography journal. We go slowly, on foot where we can, and we come back with pictures and the writing that earns them — the road it took to get there, the hour the light was worth waiting for, and the people we met along the way."
+                      "Wayfarer is an independent travel and photography journal. We go slowly, on foot where we can, and we come back with pictures and the writing that earns them: the road it took to get there, the hour the light was worth waiting for, and the people we met along the way."
                     ],
                     "id": "238f53d3-6e8d-4159-8708-c7253d090438",
                     "ord": "a1"
@@ -1834,7 +1834,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We work with a small circle of photographers and writers, and we sell prints of the work so the next expedition pays for itself. No sponsored trips, no press junkets — just the places, seen properly."
+                      "We work with a small circle of photographers and writers, and we sell prints of the work so the next expedition pays for itself. No sponsored trips, no press junkets. Just the places, seen properly."
                     ],
                     "id": "da08c392-9643-43be-befb-d99ccdee2494",
                     "ord": "a2"
@@ -1854,8 +1854,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Wayfarer",
-      "seoDescription": "Get in touch with Wayfarer — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Wayfarer",
+      "seoDescription": "Get in touch with Wayfarer: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2162,8 +2162,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Article — Wayfarer",
-      "seoDescription": "A story from Wayfarer — the writing, the reporting and the notes behind it.",
+      "seoTitle": "Article: Wayfarer",
+      "seoDescription": "A story from Wayfarer: the writing, the reporting and the notes behind it.",
       "root": {
         "kind": "element",
         "tag": "div",

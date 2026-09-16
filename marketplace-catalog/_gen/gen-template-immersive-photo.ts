@@ -219,7 +219,7 @@ function photoEssayBand(): Node {
                                 text: 'The high passes, chapter by chapter',
                             }),
                             el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                                text: 'A long scroll through one week above the tree line — the road up, the water on the way down, and the forest that swallowed the last of the light.',
+                                text: 'A long scroll through one week above the tree line: the road up, the water on the way down, and the forest that swallowed the last of the light.',
                             }),
                         ],
                     }),
@@ -235,7 +235,7 @@ function photoEssayBand(): Node {
                                 'essay-falls',
                                 'A waterfall in long exposure over dark rock',
                                 'Where the snow goes',
-                                'Everything that fell as snow up here leaves as this — a single white thread over black rock, moving so fast a half-second exposure turns it to smoke.',
+                                'Everything that fell as snow up here leaves as this: a single white thread over black rock, moving so fast a half-second exposure turns it to smoke.',
                             ),
                             chapter(
                                 'essay-forest',
@@ -355,7 +355,7 @@ const JOURNAL: Node[] = [
                         text: 'Places, seen properly',
                     }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Long-scroll photo stories and reported features from the field — travel, nature, the night sky, and the craft of making a picture worth the walk.',
+                        text: 'Long-scroll photo stories and reported features from the field: travel, nature, the night sky, and the craft of making a picture worth the walk.',
                     }),
                 ],
             }),
@@ -374,10 +374,10 @@ const ABOUT: Node[] = [
                         text: 'About Wayfarer',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Wayfarer is an independent travel and photography journal. We go slowly, on foot where we can, and we come back with pictures and the writing that earns them — the road it took to get there, the hour the light was worth waiting for, and the people we met along the way.',
+                        text: 'Wayfarer is an independent travel and photography journal. We go slowly, on foot where we can, and we come back with pictures and the writing that earns them: the road it took to get there, the hour the light was worth waiting for, and the people we met along the way.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We work with a small circle of photographers and writers, and we sell prints of the work so the next expedition pays for itself. No sponsored trips, no press junkets — just the places, seen properly.',
+                        text: 'We work with a small circle of photographers and writers, and we sell prints of the work so the next expedition pays for itself. No sponsored trips, no press junkets. Just the places, seen properly.',
                     }),
                 ],
             }),
@@ -426,7 +426,7 @@ interface Product {
 const PRODUCTS: Product[] = [
     {
         handle: 'atacama-at-dawn-print',
-        title: 'Atacama at Dawn — fine-art print',
+        title: 'Atacama at Dawn: fine-art print',
         description:
             'The cover frame, printed the way we would hang it: a museum-grade archival pigment print on cotton rag, the desert mountains going from blue to gold in the first minute of light. Signed and numbered, shipped flat.',
         status: 'active',
@@ -435,23 +435,23 @@ const PRODUCTS: Product[] = [
         tags: ['print', 'landscape', 'travel'],
         categoryHandles: ['prints'],
         collectionHandles: ['featured'],
-        seoTitle: 'Atacama at Dawn — signed fine-art print | Wayfarer',
+        seoTitle: 'Atacama at Dawn: signed fine-art print | Wayfarer',
         seoDescription: 'A signed, numbered archival pigment print of the Atacama at first light, on cotton rag.',
         variants: [{ sku: 'WYF-PRT-ATACAMA', priceCents: money(180), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'print-atacama', isPrimary: true, alt: 'A fine-art print of a mountain lake at dawn' }],
     },
     {
         handle: 'the-last-glacier-print',
-        title: 'The Last Glacier — fine-art print',
+        title: 'The Last Glacier: fine-art print',
         description:
-            'From the Rockies photo story: a green glacial valley under a thinning field of ice. An archival pigment print on cotton rag, signed and numbered — a record of a place that will not look this way for long.',
+            'From the Rockies photo story: a green glacial valley under a thinning field of ice. An archival pigment print on cotton rag, signed and numbered, a record of a place that will not look this way for long.',
         status: 'active',
         productType: 'Print',
         vendor: 'Wayfarer',
         tags: ['print', 'landscape', 'conservation'],
         categoryHandles: ['prints'],
         collectionHandles: ['featured'],
-        seoTitle: 'The Last Glacier — signed fine-art print | Wayfarer',
+        seoTitle: 'The Last Glacier: signed fine-art print | Wayfarer',
         seoDescription: 'A signed, numbered archival print of a glacial valley in the Rockies, on cotton rag.',
         variants: [{ sku: 'WYF-PRT-GLACIER', priceCents: money(180), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'print-glacier', isPrimary: true, alt: 'A fine-art print of a green glacial valley' }],
@@ -467,14 +467,14 @@ const PRODUCTS: Product[] = [
         tags: ['gear', 'bag', 'field'],
         categoryHandles: ['gear'],
         collectionHandles: ['featured'],
-        seoTitle: 'Wayfarer Field Bag — weatherproof camera bag',
+        seoTitle: 'Wayfarer Field Bag: weatherproof camera bag',
         seoDescription: 'A weatherproof waxed-canvas camera field bag: a body, three lenses, and a tripod on the side.',
         variants: [{ sku: 'WYF-BAG-FIELD', priceCents: money(145), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'gear-bag', isPrimary: true, alt: 'A weatherproof camera field bag' }],
     },
     {
         handle: 'latitudes-photobook',
-        title: 'Latitudes — a photobook',
+        title: 'Latitudes: a photobook',
         description:
             'Five years of the journal, edited down to one hundred and twenty photographs and the short essays that go with them. A heavyweight linen-bound book, printed and sewn to last longer than the trips it remembers.',
         status: 'active',
@@ -483,7 +483,7 @@ const PRODUCTS: Product[] = [
         tags: ['book', 'photobook'],
         categoryHandles: ['books'],
         collectionHandles: [],
-        seoTitle: 'Latitudes — a Wayfarer photobook',
+        seoTitle: 'Latitudes: a Wayfarer photobook',
         seoDescription: 'A linen-bound photobook: one hundred and twenty photographs from five years of the journal.',
         variants: [{ sku: 'WYF-BOOK-LATITUDES', priceCents: money(65), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'book-latitudes', isPrimary: true, alt: 'A hardback photobook on a table' }],
@@ -524,7 +524,7 @@ const AUTHORS = [
     {
         slug: 'caleb-mora',
         displayName: 'Caleb Mora',
-        bio: 'Caleb Mora is a wildlife and documentary photographer drawn to the edges — glaciers, tidelines, the last of a thing. He photographs slowly and returns to the same places for years to see what has changed.',
+        bio: 'Caleb Mora is a wildlife and documentary photographer drawn to the edges: glaciers, tidelines, the last of a thing. He photographs slowly and returns to the same places for years to see what has changed.',
         avatarAssetId: 'author-mora',
     },
     {
@@ -556,7 +556,7 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('You do not go to the Atacama for the middle of the day. From ten until four it is flat, white, and merciless — a moonscape that a camera flattens further. You go for the two hours at each end, and you plan the whole trip around them.'),
+                    para('You do not go to the Atacama for the middle of the day. From ten until four it is flat, white, and merciless: a moonscape that a camera flattens further. You go for the two hours at each end, and you plan the whole trip around them.'),
                     h2('The drive out'),
                     para('It is four hours from the nearest town to the salt flat we wanted, most of it on a road that is a road only by agreement. We left at two to have light to spare, and spent the drive watching the mountains change color in the mirror as the sun came round behind them.'),
                     h2('The minute it all turns'),
@@ -581,12 +581,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('A glacier does not disappear all at once. It thins, it retreats up its own valley, it leaves a bathtub ring of bare rock where it used to reach — and then one summer the last of it is just a field of dirty ice too small to move, and the word on the map stops being true.'),
+                    para('A glacier does not disappear all at once. It thins, it retreats up its own valley, it leaves a bathtub ring of bare rock where it used to reach, and then one summer the last of it is just a field of dirty ice too small to move, and the word on the map stops being true.'),
                     h2('What the valley remembers'),
                     para('You can read the whole retreat from the valley floor. The trees stop at the line the ice held a century ago; the rock above it is still raw. Between the two is the story of a warming told in stripes, and it is faster than the stripes suggest.'),
                     h2('Why photograph it'),
                     para('There is an argument that photographing a vanishing thing beautifully lets people mourn it instead of fighting for it. I take the other side: you protect what you have looked at properly, and most people will never stand here. So we bring it back, at the size it deserves, while it is still a glacier and not a memory.'),
-                    para('We will walk up again next year, from the same spot, and photograph what the summer left. That is the whole method — return, compare, and refuse to look away.'),
+                    para('We will walk up again next year, from the same spot, and photograph what the summer left. That is the whole method: return, compare, and refuse to look away.'),
                 ],
             },
         },
@@ -608,10 +608,10 @@ const CONTENT = [
                 content: [
                     para('When snow falls on an ice sheet it never fully melts; it packs down under the snow of the next year, and the next, trapping a little bubble of the air it fell through. Drill down far enough and you are pulling up a straw of frozen time, one year to a layer, with the atmosphere sealed inside.'),
                     h2('Reading a bubble of old air'),
-                    para('In a cold room kept at twenty below, technicians cut a core into sections and crush them under vacuum to let the ancient air out, then measure what was in it. Carbon dioxide, methane, the isotopes that stand in for temperature — a full weather report from a year before there were people to file one.'),
+                    para('In a cold room kept at twenty below, technicians cut a core into sections and crush them under vacuum to let the ancient air out, then measure what was in it. Carbon dioxide, methane, the isotopes that stand in for temperature: a full weather report from a year before there were people to file one.'),
                     h2('Why it matters now'),
                     para('The record is what lets anyone say today’s numbers are unusual. For eight hundred thousand years the carbon dioxide stayed inside a band; in the last two centuries it left the band entirely. The ice does not argue; it simply remembers, and the remembering is the evidence.'),
-                    para('The cores are photographed under polarised light before they are destroyed to be read — which is how a chart of the deep past also turns out to be quietly, strangely beautiful.'),
+                    para('The cores are photographed under polarised light before they are destroyed to be read, which is how a chart of the deep past also turns out to be quietly, strangely beautiful.'),
                 ],
             },
         },
@@ -631,7 +631,7 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('People assume astrophotography needs a telescope and a mountain. The core of it needs neither — a camera that shoots raw, the widest fast lens you own, a tripod, and a sky far enough from a town that you can see the band of the Milky Way with your own eyes. Everything else is technique.'),
+                    para('People assume astrophotography needs a telescope and a mountain. The core of it needs neither: a camera that shoots raw, the widest fast lens you own, a tripod, and a sky far enough from a town that you can see the band of the Milky Way with your own eyes. Everything else is technique.'),
                     h2('The exposure, plainly'),
                     para('Open the lens as wide as it goes, push the sensitivity up until the sky is bright but not grainy, and hold the shutter open just long enough that the stars stay points and do not smear into little arcs. On a wide lens that is around twenty seconds. Focus by hand on the brightest star, and check the back of the camera at full zoom before you trust it.'),
                     h2('Then do it a lot'),
@@ -660,7 +660,7 @@ const CONTENT = [
                     h2('What the detours gave us'),
                     para('A terraced hillside of rice going gold, worked by a man who has farmed it for sixty years and photographed his hands more willingly than his face. A hot spring at the end of a valley with one inn and no phone signal. A festival we walked into by accident and left three hours later, full of food no one would let us pay for.'),
                     h2('The case for going slowly'),
-                    para('You cannot photograph a place you are driving through at speed; you can only photograph the idea of it you arrived with. Slowness is not a luxury in this work — it is the method. The picture is always down the road you almost did not take, talking to the person you almost did not stop for.'),
+                    para('You cannot photograph a place you are driving through at speed; you can only photograph the idea of it you arrived with. Slowness is not a luxury in this work. It is the method. The picture is always down the road you almost did not take, talking to the person you almost did not stop for.'),
                     para('We came back with fewer landmarks than a fast trip would have and far more of the island itself, which was the whole point.'),
                 ],
             },
@@ -675,7 +675,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-immersive-photo',
     name: 'Immersive Photo',
     summary:
-        'An immersive, photo-led journal on a near-black cinematic ground where the photography carries all the color — a full-bleed photo cover, a photo-forward feed, a chaptered photo-essay band, and a bespoke photo-forward article reader, lit by one luminous solar-amber accent. Modelled on the immersive-photojournalism archetype; shipped as Wayfarer, a travel & photography journal. Ships a light store (fine-art prints, field gear, a photobook) to demonstrate content + commerce together.',
+        'An immersive, photo-led journal on a near-black cinematic ground where the photography carries all the color: a full-bleed photo cover, a photo-forward feed, a chaptered photo-essay band, and a bespoke photo-forward article reader, lit by one luminous solar-amber accent. Modelled on the immersive-photojournalism archetype; shipped as Wayfarer, a travel & photography journal. Ships a light store (fine-art prints, field gear, a photobook) to demonstrate content + commerce together.',
     tagline: 'A dark, image-led template for a journal that photographs and sells prints.',
     vertical: 'content',
     industry: 'Travel & photography',
@@ -690,14 +690,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Wayfarer — a travel & photography journal',
+            title: 'Wayfarer: a travel & photography journal',
             description:
-                'Wayfarer is an independent travel and photography journal — long-scroll photo stories and reported features from the field, with signed prints of the work.',
+                'Wayfarer is an independent travel and photography journal: long-scroll photo stories and reported features from the field, with signed prints of the work.',
         },
         about: {
-            title: 'About Wayfarer — an independent photo journal',
+            title: 'About Wayfarer: an independent photo journal',
             description:
-                'Who Wayfarer is and how it works — a small circle of photographers and writers who go slowly, sell prints, and take no sponsored trips.',
+                'Who Wayfarer is and how it works: a small circle of photographers and writers who go slowly, sell prints, and take no sponsored trips.',
         },
     },
     home: HOME,

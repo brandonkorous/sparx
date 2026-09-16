@@ -204,7 +204,7 @@ export function HandoverSection({
       description={describe(plan, stillToFulfil)}
       isPending={fulfillments.isPending}
       isError={fulfillments.isError}
-      errorText="We could not load the deliveries just now. Anything already shipped is unaffected — try reopening this order in a moment."
+      errorText="We could not load the deliveries just now. Anything already shipped is unaffected. Try reopening this order in a moment."
       emptyText={
         plan.collected
           ? 'This order has not been collected yet.'

@@ -120,7 +120,7 @@ export async function handleCatalogSync(
 ): Promise<void> {
   const targets = await resolveTargets(tenantId);
   if (targets.length === 0) {
-    log.debug({ productId }, 'channel-sync: no connected channel with an adapter — skipping');
+    log.debug({ productId }, 'channel-sync: no connected channel with an adapter, skipping');
     return;
   }
   const product = await buildChannelProduct(tenantId, productId, log);
@@ -164,7 +164,7 @@ export async function handleCatalogRemoval(
     })
   );
   if (mappings.length === 0) {
-    log.debug({ productId }, 'channel-sync: product not listed on any channel — skipping');
+    log.debug({ productId }, 'channel-sync: product not listed on any channel, skipping');
     return;
   }
 
@@ -214,7 +214,7 @@ export async function handleInventorySync(
     })
   );
   if (mappings.length === 0) {
-    log.debug({ variantId }, 'channel-sync: variant not listed on any channel — skipping');
+    log.debug({ variantId }, 'channel-sync: variant not listed on any channel, skipping');
     return;
   }
 
@@ -265,7 +265,7 @@ export async function handleFulfillmentSync(
   );
   // Only channel-sourced orders carry an externalId — native orders never push.
   if (!order?.source || !order.externalId) {
-    log.debug({ orderId }, 'channel-sync: not a channel order — skipping fulfillment push');
+    log.debug({ orderId }, 'channel-sync: not a channel order, skipping fulfillment push');
     return;
   }
 
@@ -274,7 +274,7 @@ export async function handleFulfillmentSync(
   if (!target?.adapter.pushFulfillment) {
     log.debug(
       { orderId, channel: order.source },
-      'channel-sync: channel has no fulfillment push (feed channel / not connected) — skipping'
+      'channel-sync: channel has no fulfillment push (feed channel / not connected), skipping'
     );
     return;
   }
@@ -283,7 +283,7 @@ export async function handleFulfillmentSync(
   if (!fulfillment?.trackingNumber) {
     log.debug(
       { orderId, channel: order.source },
-      'channel-sync: order fulfilled without tracking yet — skipping push'
+      'channel-sync: order fulfilled without tracking yet, skipping push'
     );
     return;
   }

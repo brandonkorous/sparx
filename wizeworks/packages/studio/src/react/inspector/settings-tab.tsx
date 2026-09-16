@@ -262,7 +262,7 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
           }}
         />
         <FieldDescription>
-          Give this part a short name and any button can jump straight to it — put the name after a{' '}
+          Give this part a short name and any button can jump straight to it. Put the name after a{' '}
           <code>#</code> in its Goes to box, like <code>#cakes</code>.
         </FieldDescription>
       </Field>
@@ -318,7 +318,7 @@ export function SettingsTab({ node }: { node: AddressableNode }) {
             apply('Rename layer', [{ kind: 'node.setLabel', id, value: value || undefined }]);
           }}
         />
-        <FieldDescription>Only you see this — it makes the Layers list readable.</FieldDescription>
+        <FieldDescription>Only you see this. It makes the Layers list readable.</FieldDescription>
       </Field>
 
       {/* A host lock has no unlock here on purpose: the platform pinned it, and an

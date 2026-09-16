@@ -23,7 +23,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   // ── Alert (info) — neutral, informational notice ─────────────────────────────
   entry({
     key: 'alert_info',
-    name: 'Alert — info',
+    name: 'Alert: info',
     category: 'feedback',
     kind: 'common',
     icon: 'info',
@@ -41,7 +41,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   // ── Alert (success) — confirms a completed action ────────────────────────────
   entry({
     key: 'alert_success',
-    name: 'Alert — success',
+    name: 'Alert: success',
     category: 'feedback',
     kind: 'common',
     icon: 'circle-check',
@@ -52,14 +52,14 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
       'success',
       'circle-check',
       'All set',
-      'Your order was placed successfully — a receipt is on its way to your inbox.'
+      'Your order was placed successfully: a receipt is on its way to your inbox.'
     ),
   }),
 
   // ── Alert (warning) — needs attention, not yet broken ────────────────────────
   entry({
     key: 'alert_warning',
-    name: 'Alert — warning',
+    name: 'Alert: warning',
     category: 'feedback',
     kind: 'common',
     icon: 'triangle-alert',
@@ -70,7 +70,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
       'warning',
       'triangle-alert',
       'Almost out of stock',
-      'Only a few items remain — check out soon to avoid missing this size.'
+      'Only a few items remain. Check out soon to avoid missing this size.'
     ),
   }),
 
@@ -78,7 +78,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   // NOTE: the token is `danger`, never `error`.
   entry({
     key: 'alert_danger',
-    name: 'Alert — danger',
+    name: 'Alert: danger',
     category: 'feedback',
     kind: 'common',
     icon: 'circle-x',
@@ -269,7 +269,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'message-square',
     description:
-      'A small label that appears above a trigger on hover, using a CSS group — no JavaScript.',
+      'A small label that appears above a trigger on hover, using a CSS group: no JavaScript.',
     surfaces: ['page', 'site'],
     tags: ['tooltip', 'hint', 'popover', 'hover', 'help', 'feedback'],
     tree: el('div', 'flex w-full items-center justify-center p-8', {
@@ -306,7 +306,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'inbox',
     description:
-      'A centered placeholder for an empty list — icon, heading, guidance, and a primary action.',
+      'A centered placeholder for an empty list: icon, heading, guidance, and a primary action.',
     surfaces: ['page', 'site'],
     tags: ['empty', 'placeholder', 'no-results', 'zero', 'blank', 'feedback'],
     tree: el(
@@ -339,7 +339,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   // ── Banner CTA — full-width highlight strip with a message + action ──────────
   entry({
     key: 'banner_cta',
-    name: 'Banner — call to action',
+    name: 'Banner: call to action',
     category: 'feedback',
     kind: 'common',
     icon: 'megaphone',

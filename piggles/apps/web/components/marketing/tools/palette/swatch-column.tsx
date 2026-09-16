@@ -105,7 +105,7 @@ export function SwatchColumn({
           <span>
             <span className="block font-mono text-base font-bold">{role ?? 'spare'}</span>
             <span className="block text-sm font-semibold">
-              {role ? ROLE_JOBS[role] : 'No job — yours to use'}
+              {role ? ROLE_JOBS[role] : 'No job: yours to use'}
             </span>
           </span>
           {/* Locked has to read without hovering — it is state, not a control. */}

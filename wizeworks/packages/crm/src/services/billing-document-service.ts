@@ -82,6 +82,17 @@ export interface BillingDocumentListItem extends BillingDocument {
   sentAt: string | null;
 }
 
+/**
+ * Midnight UTC of the current date.
+ *
+ * "Past due" is a question about DATES, not instants: a bill due today is not
+ * late at 3pm. Everything else in AR settles this through `daysPastDue`; a
+ * query cannot call that per row, so it compares against the same boundary.
+ */
+function startOfUtcToday(now: Date = new Date()): Date {
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+}
+
 export async function list(
   ctx: ServiceContext,
   rawFilter: unknown = {}
@@ -119,6 +130,36 @@ export async function list(
           }
         : {}),
       ...(filter.status ? { status: filter.status } : {}),
+      // IS IT LATE? Asked of the due date, never of the status column.
+      //
+      // `status` is written by `recomputeTotals`, which runs when something is
+      // DONE to a document — a line, a payment, a void. A due date passing is
+      // not something being done, so nothing writes it, and `status = 'overdue'`
+      // returns only the documents that happened to be touched after they went
+      // late. The B2B dunning scan re-marks its own accounts (every late B2B
+      // invoice on the dev database is correctly `overdue`); a shop billing an
+      // ordinary customer has nothing doing that for it.
+      //
+      // Measured before this existed: 54 documents / $51,456.69 genuinely past
+      // due, of which `status = 'overdue'` found 30 / $26,983.76. The aging
+      // report on the same platform got it right all along, because it derives
+      // from `dueAt` — so the two screens answered one question two ways,
+      // $24,472.93 apart.
+      //
+      // `status in (unpaid|partial|overdue)` rather than ignoring status
+      // entirely: paid and void documents have a due date in the past too, and
+      // neither is money anybody is waiting for. Matches the aging report's own
+      // filter exactly, which is the point.
+      ...(filter.pastDue
+        ? {
+            status: { in: ['unpaid', 'partial', 'overdue'] },
+            balance: { gt: 0 },
+            // A document due TODAY is not late. Comparing instants makes it late
+            // partway through its own due date — the trap `daysPastDue` exists
+            // to avoid, applied here to the query.
+            dueAt: { not: null, lt: startOfUtcToday() },
+          }
+        : {}),
       // WAS IT ACTUALLY SENT? There is no `sent_at` column — the send route
       // records it in the metadata bag — so this asks whether that key is
       // present. `not: Prisma.DbNull` rather than a JSON equality, because the
@@ -386,7 +427,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Do
     }
     if (workflow.stages.length === 0) {
       throw new CrmValidationError(
-        'This workflow has no stages — add a stage before creating a document.'
+        'This workflow has no stages. Add a stage before creating a document.'
       );
     }
     // Resolve the starting stage: the one supplied (must belong to the workflow)

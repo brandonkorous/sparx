@@ -79,7 +79,7 @@ describe('every email content block renders', () => {
         preheader: 'A short preheader line',
       })
         .filter((c) => c.level === 'error' && !c.detail.includes(AUTHOR_SUPPLIED))
-        .map((c) => `${item.key} · ${c.id} — ${c.title}: ${c.detail}`);
+        .map((c) => `${item.key} · ${c.id}: ${c.title}: ${c.detail}`);
     });
     // Joined, not an array compare: a failure then prints the findings themselves
     // rather than "expected [ …(3) ] to deeply equal []".

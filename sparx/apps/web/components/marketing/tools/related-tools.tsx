@@ -17,7 +17,7 @@ export function RelatedTools({ currentSlug }: { currentSlug: string }) {
             <span className="text-primary">.</span>
           </Heading>
           <Text variant="lead" className="max-w-3xl">
-            Every one of them runs entirely in your browser — free, no account, nothing uploaded.
+            Every one of them runs entirely in your browser: free, no account, nothing uploaded.
           </Text>
         </div>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

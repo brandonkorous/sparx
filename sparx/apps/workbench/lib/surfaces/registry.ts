@@ -38,7 +38,17 @@ export interface SurfaceContext {
   readonly params: SurfaceParams;
   /** Open another surface. Use `target: 'beside'` for the preview/companion pattern. */
   open: (surface: string, params?: SurfaceParams, options?: OpenOptions) => void;
-  /** Retitle this pane's tab — e.g. once the entity's real name loads. */
+  /**
+   * Name this pane after the RECORD it is showing, once that name loads —
+   * "INV-000004", a customer's own product title, "About us · page check".
+   *
+   * NOT for the screen's own name. That belongs in the catalog `title`, which is
+   * the one place a screen is renamed; passing it here instead pins the tab to
+   * one spelling and takes the pane out of `resolveTitle`. Fifty-two surfaces
+   * did it — the page-check pane among them, which titled every open check
+   * "Page check" and made three of them indistinguishable — so a title equal to
+   * the surface's own is now discarded (`isOwnStaticTitle`) rather than stored.
+   */
   setTitle: (title: string) => void;
   /** Close this pane. Runs the dirty-guard first. */
   close: () => void;
@@ -192,6 +202,27 @@ export function listedSurfaces(): SurfaceDefinition[] {
 
 export function resolveTitle(definition: SurfaceDefinition, params: SurfaceParams): string {
   return typeof definition.title === 'function' ? definition.title(params) : definition.title;
+}
+
+/**
+ * Is this title just the surface's own name, handed back?
+ *
+ * `PaneDescriptor.title` means "the OPERATOR renamed this tab", and it outranks
+ * the registry — right for a record's name ("INV-000004"), wrong for the screen's
+ * own. A surface that writes its catalog title into it pins that tab to one
+ * spelling and cuts the pane out of `resolveTitle`, the one place a screen is
+ * renamed. It is how this console's cart pane came to be titled from two places
+ * at once, and how the Piggles console shipped four Social tabs reading "Inbox",
+ * "Approvals", "Cadence" and "Connections" while its rail, launcher and command
+ * palette called the same four screens something else entirely.
+ *
+ * A FUNCTION title is never an own-name. It exists to name a record, so there is
+ * nothing static to match and the question does not apply.
+ */
+export function isOwnStaticTitle(surfaceKey: string, title: string): boolean {
+  const definition = getSurface(surfaceKey);
+  if (!definition || typeof definition.title === 'function') return false;
+  return definition.title === title || resolveTitle(definition, {}) === title;
 }
 
 /**

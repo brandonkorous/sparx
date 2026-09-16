@@ -7,7 +7,7 @@ import { OfficialWordmark } from './assets';
 const LADDER = [20, 28, 40, 56] as const;
 
 const SPEC: { label: string; value: string; copy?: boolean }[] = [
-  { label: 'Lettercase', value: 'lowercase — sparx', copy: false },
+  { label: 'Lettercase', value: 'lowercase: sparx', copy: false },
   { label: 'The “x”', value: '#e04631', copy: true },
   { label: 'Tracking', value: '-0.03em', copy: true },
   { label: 'Minimum size', value: '16px tall', copy: false },
@@ -15,12 +15,12 @@ const SPEC: { label: string; value: string; copy?: boolean }[] = [
 ];
 
 const RULES = [
-  'The wordmark is all-lowercase — “sparx”, never “Sparx”. The leading “s” is not capitalized.',
+  'The wordmark is all-lowercase: “sparx”, never “Sparx”. The leading “s” is not capitalized.',
   'On color surfaces the “x” is always sparx Ember, never neutral.',
-  'Need one color? Use the black or white variant — the “x” stays distinct at 50% opacity.',
+  'Need one color? Use the black or white variant: the “x” stays distinct at 50% opacity.',
   'Never set the wordmark below 16px tall.',
   'Keep clear space equal to the height of the “x” on every side.',
-  'Don’t re-letter, condense, or substitute the letterforms — use an official asset.',
+  'Don’t re-letter, condense, or substitute the letterforms. Use an official asset.',
 ];
 
 export function WordmarkSection() {
@@ -34,7 +34,7 @@ export function WordmarkSection() {
               The wordmark. <span>The “x” always sparks</span>
             </>
           }
-          lede="Lowercase sparx, with one detail doing the work: the “x” carries sparx Ember — the instant of ignition the brand is named for. The vector lockup is the canonical artwork, and the live UI renders the very same paths."
+          lede="Lowercase sparx, with one detail doing the work: the “x” carries sparx Ember: the instant of ignition the brand is named for. The vector lockup is the canonical artwork, and the live UI renders the very same paths."
         />
         <Showcase />
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -94,7 +94,7 @@ function ClearSpacePanel() {
         <OfficialWordmark className="w-[min(240px,60vw)]" />
       </div>
       <Text size={13.5}>
-        The dashed frame marks the minimum clear space — the height of the “x” on all sides. Below{' '}
+        The dashed frame marks the minimum clear space: the height of the “x” on all sides. Below{' '}
         <strong>16px</strong> tall the “x” loses its color contrast; switch to the mark instead.
       </Text>
     </Panel>

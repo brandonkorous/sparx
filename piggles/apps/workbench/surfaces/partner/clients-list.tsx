@@ -32,10 +32,10 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 function accessDescription(client: PartnerClient): string {
   if (client.referred && client.managed) {
-    return 'You referred them and you manage their account — full access, and they earn you commission.';
+    return 'You referred them and you manage their account: full access, and they earn you commission.';
   }
   if (client.managed) {
-    return 'You manage their account — they added you as a consultant, so you can work inside it.';
+    return 'You manage their account. They added you as a consultant, so you can work inside it.';
   }
   if (client.firstPaymentAt) {
     return `They signed up under your link and first paid on ${formatDate(client.firstPaymentAt)}.`;

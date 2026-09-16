@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Fuel Performance Nutrition — sports dietitians",
+      "seoTitle": "Fuel Performance Nutrition: sports dietitians",
       "seoDescription": "Fuel Performance Nutrition is a sports & performance nutrition practice: data-driven fueling plans, body-composition testing and sport-specific consults with board-certified sports dietitians. Book online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Sports dietitians who turn how you eat into how you perform — data-driven fueling built around your sport, your training load and your next start line."
+                      "Sports dietitians who turn how you eat into how you perform: data-driven fueling built around your sport, your training load and your next start line."
                     ],
                     "id": "6547f2a0-53f6-4754-9554-0fa1222d91af",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Board-certified specialists in sports nutrition — not influencers or apps. Real credentials, real practice, working with athletes at every level."
+                              "Board-certified specialists in sports nutrition, not influencers or apps. Real credentials, real practice, working with athletes at every level."
                             ],
                             "id": "0cfe63a5-a263-4c51-be82-acd908d77833",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Endurance, strength or team — the fueling changes completely. You get a protocol for how you actually train and compete, not a one-size handout."
+                              "Endurance, strength or team: the fueling changes completely. You get a protocol for how you actually train and compete, not a one-size handout."
                             ],
                             "id": "83b4f6d9-5910-4ee9-ac57-fe74c026b197",
                             "ord": "a1"
@@ -1217,7 +1217,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We start with measurement — training load, current intake, body composition and your competition calendar — because a plan built on guesses fails at exactly the wrong moment."
+                          "We start with measurement (training load, current intake, body composition and your competition calendar) because a plan built on guesses fails at exactly the wrong moment."
                         ],
                         "id": "d008ce20-863d-492a-b65d-f91e1ad6021f",
                         "ord": "a1"
@@ -1227,7 +1227,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "From there it’s a protocol you can execute: carbs matched to session type, protein and recovery timed to your blocks, hydration and race-day fueling rehearsed before it matters. Then we check the data and adjust — every season is an experiment we run with you."
+                          "From there it’s a protocol you can execute: carbs matched to session type, protein and recovery timed to your blocks, hydration and race-day fueling rehearsed before it matters. Then we check the data and adjust, every season is an experiment we run with you."
                         ],
                         "id": "d3d1844f-bb7c-4304-8ab8-3e67328a447a",
                         "ord": "a2"
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — the specialist who fits your sport, one-to-one, every session."
+                          "Book by name: the specialist who fits your sport, one-to-one, every session."
                         ],
                         "id": "7ccaef4d-5c5d-4339-9fc1-5eb54e8f7eaf",
                         "ord": "a1"
@@ -1501,7 +1501,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I bonked every long run and blamed my legs. Casey rebuilt my fueling around the actual numbers and I took nine minutes off my marathon PR — first time I ever finished strong. Turns out it was never my legs.”"
+                      "“I bonked every long run and blamed my legs. Casey rebuilt my fueling around the actual numbers and I took nine minutes off my marathon PR: first time I ever finished strong. Turns out it was never my legs.”"
                     ],
                     "id": "0921db54-b247-44ac-a503-13f18724e911",
                     "ord": "a0"
@@ -1576,7 +1576,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Fuel Performance Nutrition",
+      "seoTitle": "Book: Fuel Performance Nutrition",
       "seoDescription": "See what Fuel Performance Nutrition offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1700,7 +1700,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "a0f6bab5-1d53-4449-ac09-0cc45283b6dc",
                         "ord": "a1"
@@ -1732,7 +1732,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Reschedule or cancel with at least 24 hours’ notice — plans move, and we get it. We send a reminder the day before and two hours ahead so nothing slips."
+                              "Reschedule or cancel with at least 24 hours’ notice: plans move, and we get it. We send a reminder the day before and two hours ahead so nothing slips."
                             ],
                             "id": "31d06e9c-1089-4882-8a78-5a05c1e80d80",
                             "ord": "a1"
@@ -1769,7 +1769,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Your dietitian blocks the full session for you. Cancel inside 24 hours or miss it without notice and a no-show fee applies — one heads-up, then it’s the policy for everyone’s time."
+                              "Your dietitian blocks the full session for you. Cancel inside 24 hours or miss it without notice and a no-show fee applies. One heads-up, then it’s the policy for everyone’s time."
                             ],
                             "id": "e4dba87e-a83a-45b6-8e88-493ff91b7124",
                             "ord": "a1"
@@ -1807,7 +1807,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Fuel Performance Nutrition",
+      "seoTitle": "About: Fuel Performance Nutrition",
       "seoDescription": "Who Fuel Performance Nutrition is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1856,7 +1856,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Fuel because too many athletes train like professionals and eat like an afterthought — leaving real performance on the table for want of a plan built on evidence."
+                          "We started Fuel because too many athletes train like professionals and eat like an afterthought: leaving real performance on the table for want of a plan built on evidence."
                         ],
                         "id": "7d238317-081c-4059-b874-2705f14c1a19",
                         "ord": "a1"
@@ -1866,7 +1866,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we do it the other way around: measure first, build a protocol you can execute, then track the data and adjust. No fad diets, no guilt, no generic handouts — just fueling engineered for how you actually train and compete."
+                          "So we do it the other way around: measure first, build a protocol you can execute, then track the data and adjust. No fad diets, no guilt, no generic handouts. Just fueling engineered for how you actually train and compete."
                         ],
                         "id": "2e32ec8f-5927-45bd-b01f-590a49cc5e44",
                         "ord": "a2"
@@ -1944,7 +1944,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every athlete starts with a real baseline — training load, intake, body composition and calendar. The plan comes from your numbers, not a template."
+                              "Every athlete starts with a real baseline: training load, intake, body composition and calendar. The plan comes from your numbers, not a template."
                             ],
                             "id": "fe60c2e2-0ebb-43ac-b961-888d27bea4fc",
                             "ord": "a1"
@@ -2026,7 +2026,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Fuel Performance Nutrition",
+      "seoTitle": "Visit: Fuel Performance Nutrition",
       "seoDescription": "Where to find Fuel Performance Nutrition, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2063,7 +2063,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Fuel Performance Nutrition will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Fuel Performance Nutrition will get back to you, usually the same day."
                         ],
                         "id": "8c2bc831-29cc-4bac-a244-c1c7c43f8118",
                         "ord": "a1"
@@ -2515,7 +2515,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your consult online — in person in Austin or virtual anywhere. No phone tag."
+                      "See live availability and reserve your consult online: in person in Austin or virtual anywhere. No phone tag."
                     ],
                     "id": "b44d7148-7f59-448c-82b9-a7ef6f9f7f28",
                     "ord": "a1"

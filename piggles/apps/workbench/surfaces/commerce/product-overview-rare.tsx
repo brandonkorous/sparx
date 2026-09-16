@@ -26,7 +26,7 @@ export function ProductRareMoves({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Text className="text-sm">
           {retired
-            ? 'This product is retired. Bringing it back puts it in your working catalog again — it stays off sale until you say otherwise.'
+            ? 'This product is retired. Bringing it back puts it in your working catalog again. It stays off sale until you say otherwise.'
             : 'Retiring takes it off your website and out of your working catalog without deleting anything. You can bring it back at any time.'}
         </Text>
         <Button

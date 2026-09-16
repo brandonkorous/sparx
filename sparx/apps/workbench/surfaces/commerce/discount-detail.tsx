@@ -392,7 +392,7 @@ function DiscountEditor({
     const ok = await confirm({
       title: `Retire ${discount.name}?`,
       description:
-        'This switches the discount off for good — it stops applying immediately and cannot be reopened. Its record of how many times it was used is kept. To pause it temporarily instead, keep it and remove its end date another time.',
+        'This switches the discount off for good. It stops applying immediately and cannot be reopened. Its record of how many times it was used is kept. To pause it temporarily instead, keep it and remove its end date another time.',
       confirmLabel: 'Retire this discount',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -472,7 +472,7 @@ function DiscountEditor({
                 <AlertTitle>This is a {TYPE_LABELS[draft.type].toLowerCase()}</AlertTitle>
                 <AlertDescription>
                   That kind of offer is set up with product choices this screen does not show. You
-                  can still edit its name, code, schedule and limits here — the offer itself is kept
+                  can still edit its name, code, schedule and limits here: the offer itself is kept
                   exactly as it is.
                 </AlertDescription>
               </AlertContent>
@@ -498,7 +498,7 @@ function DiscountEditor({
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  For you — how you tell one discount from another.
+                  For you: how you tell one discount from another.
                 </FieldDescription>
               )}
             </Field>
@@ -541,7 +541,7 @@ function DiscountEditor({
               <FieldDescription>
                 {draft.hasCode
                   ? 'Only orders that enter this code get the discount.'
-                  : 'The discount applies on its own — no code needed.'}
+                  : 'The discount applies on its own: no code needed.'}
               </FieldDescription>
             </Field>
 
@@ -824,7 +824,7 @@ function DiscountEditor({
               <FieldDescription>
                 {draft.combine
                   ? 'A shopper can use this alongside other offers on the same order.'
-                  : 'This is used on its own — no other discount stacks with it.'}
+                  : 'This is used on its own: no other discount stacks with it.'}
               </FieldDescription>
             </Field>
           </FormSection>
@@ -861,7 +861,7 @@ function DiscountEditor({
 
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Retiring switches this discount off for good — it cannot be reopened afterwards.
+                  Retiring switches this discount off for good. It cannot be reopened afterwards.
                 </Text>
                 <Button
                   size="sm"

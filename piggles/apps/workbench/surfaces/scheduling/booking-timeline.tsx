@@ -67,8 +67,8 @@ export function BookingTimeline({ bookingId, timezone }: BookingTimelineProps) {
   if (entries.length === 0) {
     return (
       <Text className="text-sm">
-        No changes yet. Everything that happens to this booking — confirming it, moving it,
-        cancelling it — is recorded here.
+        No changes yet. Everything that happens to this booking (confirming it, moving it, canceling
+        it) is recorded here.
       </Text>
     );
   }

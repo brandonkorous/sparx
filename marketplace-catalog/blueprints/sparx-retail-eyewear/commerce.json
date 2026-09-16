@@ -69,7 +69,7 @@
     {
       "handle": "home-try-on",
       "name": "Start here",
-      "description": "Try five at home, free — and keep them cared for.",
+      "description": "Try five at home, free, and keep them cared for.",
       "type": "manual",
       "featured": true,
       "productHandles": ["home-try-on", "care-kit"]
@@ -79,14 +79,14 @@
     {
       "handle": "ashby",
       "title": "Ashby",
-      "description": "A slim round frame in lightweight metal — the quiet all-rounder that suits almost everyone. Sculpted nose pads and spring hinges keep it comfortable all day, and the keyhole bridge gives it a bit of vintage character without shouting about it.",
+      "description": "A slim round frame in lightweight metal: the quiet all-rounder that suits almost everyone. Sculpted nose pads and spring hinges keep it comfortable all day, and the keyhole bridge gives it a bit of vintage character without shouting about it.",
       "status": "active",
       "productType": "Eyewear",
       "vendor": "Frame & Lens",
       "tags": ["optical", "round", "metal", "unisex"],
       "categoryHandles": ["optical"],
       "collectionHandles": ["new-arrivals", "optical-frames", "best-sellers"],
-      "seoTitle": "Ashby — round metal optical frames | Frame & Lens",
+      "seoTitle": "Ashby: round metal optical frames | Frame & Lens",
       "seoDescription": "A slim, lightweight round metal frame with spring hinges and a keyhole bridge. Prescription or blue-light.",
       "options": [
         {
@@ -192,7 +192,7 @@
       "tags": ["optical", "rectangle", "acetate", "bold"],
       "categoryHandles": ["optical"],
       "collectionHandles": ["new-arrivals", "optical-frames"],
-      "seoTitle": "Marlowe — bold acetate optical frames | Frame & Lens",
+      "seoTitle": "Marlowe: bold acetate optical frames | Frame & Lens",
       "seoDescription": "A bold rectangular Italian-acetate frame in hand-finished tortoise, matte black or crystal. Prescription or blue-light.",
       "options": [
         {
@@ -291,14 +291,14 @@
     {
       "handle": "juno",
       "title": "Juno",
-      "description": "A modern cat-eye with a soft upsweep — flattering, feminine and never fussy. Lifted outer corners open up the face and the low-set hinges keep the silhouette clean. A little bit of an occasion, in a frame you can wear every day.",
+      "description": "A modern cat-eye with a soft upsweep: flattering, feminine and never fussy. Lifted outer corners open up the face and the low-set hinges keep the silhouette clean. A little bit of an occasion, in a frame you can wear every day.",
       "status": "active",
       "productType": "Eyewear",
       "vendor": "Frame & Lens",
       "tags": ["optical", "cat-eye", "acetate"],
       "categoryHandles": ["optical"],
       "collectionHandles": ["optical-frames", "best-sellers"],
-      "seoTitle": "Juno — cat-eye optical frames | Frame & Lens",
+      "seoTitle": "Juno: cat-eye optical frames | Frame & Lens",
       "seoDescription": "A soft, modern cat-eye in Italian acetate with a flattering upsweep. Prescription or blue-light.",
       "options": [
         {
@@ -397,15 +397,15 @@
     {
       "handle": "quill",
       "title": "Quill",
-      "description": "A barely-there frame in Japanese titanium — you forget you’re wearing it. Half the weight of acetate, flexible enough to survive real life, and hypoallergenic for anyone who reacts to cheaper metals. The choice when you want your glasses to disappear.",
+      "description": "A barely-there frame in Japanese titanium. You forget you’re wearing it. Half the weight of acetate, flexible enough to survive real life, and hypoallergenic for anyone who reacts to cheaper metals. The choice when you want your glasses to disappear.",
       "status": "active",
       "productType": "Eyewear",
       "vendor": "Frame & Lens",
       "tags": ["optical", "titanium", "rimless", "lightweight"],
       "categoryHandles": ["optical"],
       "collectionHandles": ["optical-frames"],
-      "seoTitle": "Quill — titanium optical frames | Frame & Lens",
-      "seoDescription": "A featherlight, flexible Japanese-titanium frame — hypoallergenic and barely there. Prescription or blue-light.",
+      "seoTitle": "Quill: titanium optical frames | Frame & Lens",
+      "seoDescription": "A featherlight, flexible Japanese-titanium frame: hypoallergenic and barely there. Prescription or blue-light.",
       "options": [
         {
           "name": "Color",
@@ -503,14 +503,14 @@
     {
       "handle": "ridley",
       "title": "Ridley Readers",
-      "description": "A proper pair of reading glasses, not a chemist’s afterthought. The same acetate and hinges as our optical line, glazed with magnified reading lenses in the strength you choose — so the pair on your bedside table looks as good as the one on your face.",
+      "description": "A proper pair of reading glasses, not a chemist’s afterthought. The same acetate and hinges as our optical line, glazed with magnified reading lenses in the strength you choose, so the pair on your bedside table looks as good as the one on your face.",
       "status": "active",
       "productType": "Eyewear",
       "vendor": "Frame & Lens",
       "tags": ["reading", "acetate", "optical"],
       "categoryHandles": ["optical"],
       "collectionHandles": ["optical-frames"],
-      "seoTitle": "Ridley Readers — designer reading glasses | Frame & Lens",
+      "seoTitle": "Ridley Readers: designer reading glasses | Frame & Lens",
       "seoDescription": "Well-made reading glasses in Italian acetate, glazed to the reading strength you choose. Tortoise, black or crystal.",
       "options": [
         {
@@ -669,15 +669,15 @@
     {
       "handle": "coast",
       "title": "Coast",
-      "description": "A slim keyhole sunglass with a retro edge and full UV400 protection — bright, clear and light on the face. Add polarised lenses to cut glare off water and roads, or take them prescription so you finally stop squinting through borrowed shades.",
+      "description": "A slim keyhole sunglass with a retro edge and full UV400 protection: bright, clear and light on the face. Add polarised lenses to cut glare off water and roads, or take them prescription so you finally stop squinting through borrowed shades.",
       "status": "active",
       "productType": "Eyewear",
       "vendor": "Frame & Lens",
       "tags": ["sunglasses", "uv400", "acetate"],
       "categoryHandles": ["sunglasses"],
       "collectionHandles": ["new-arrivals", "sunglasses", "best-sellers"],
-      "seoTitle": "Coast — keyhole sunglasses | Frame & Lens",
-      "seoDescription": "A slim keyhole sunglass with UV400 protection — classic tint, polarised or prescription. Tortoise, black or crystal.",
+      "seoTitle": "Coast: keyhole sunglasses | Frame & Lens",
+      "seoDescription": "A slim keyhole sunglass with UV400 protection: classic tint, polarised or prescription. Tortoise, black or crystal.",
       "options": [
         {
           "name": "Color",
@@ -805,15 +805,15 @@
     {
       "handle": "dune",
       "title": "Dune",
-      "description": "An oversized sunglass that means it — generous coverage, a strong brow line and lenses dark enough for real sun. Substantial without being heavy, thanks to a hollow-core acetate. The pair you reach for on the brightest days and the longest drives.",
+      "description": "An oversized sunglass that means it: generous coverage, a strong brow line and lenses dark enough for real sun. Substantial without being heavy, thanks to a hollow-core acetate. The pair you reach for on the brightest days and the longest drives.",
       "status": "active",
       "productType": "Eyewear",
       "vendor": "Frame & Lens",
       "tags": ["sunglasses", "oversized", "uv400"],
       "categoryHandles": ["sunglasses"],
       "collectionHandles": ["sunglasses"],
-      "seoTitle": "Dune — oversized sunglasses | Frame & Lens",
-      "seoDescription": "An oversized sunglass with generous coverage and UV400 lenses — classic, polarised or prescription. Tortoise, black or honey.",
+      "seoTitle": "Dune: oversized sunglasses | Frame & Lens",
+      "seoDescription": "An oversized sunglass with generous coverage and UV400 lenses: classic, polarised or prescription. Tortoise, black or honey.",
       "options": [
         {
           "name": "Color",
@@ -948,8 +948,8 @@
       "tags": ["blue-light", "screen", "acetate"],
       "categoryHandles": ["blue-light"],
       "collectionHandles": ["blue-light", "best-sellers"],
-      "seoTitle": "Focus — blue-light glasses | Frame & Lens",
-      "seoDescription": "Blue-light filtering screen glasses that cut glare and eye strain — plano or prescription. Tortoise, black or crystal.",
+      "seoTitle": "Focus: blue-light glasses | Frame & Lens",
+      "seoDescription": "Blue-light filtering screen glasses that cut glare and eye strain: plano or prescription. Tortoise, black or crystal.",
       "options": [
         {
           "name": "Color",
@@ -1047,14 +1047,14 @@
     {
       "handle": "home-try-on",
       "title": "Home Try-On Kit",
-      "description": "Choose any five frames and we’ll send them to you to try for five days — free, with return shipping included and no deposit taken. Wear them, photograph them, ask everyone you know. Keep the one you love and send the rest back; you only pay when you order the real pair, glazed to your prescription.",
+      "description": "Choose any five frames and we’ll send them to you to try for five days: free, with return shipping included and no deposit taken. Wear them, photograph them, ask everyone you know. Keep the one you love and send the rest back; you only pay when you order the real pair, glazed to your prescription.",
       "status": "active",
       "productType": "Service",
       "vendor": "Frame & Lens",
       "tags": ["home-try-on", "free", "service"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["home-try-on", "new-arrivals"],
-      "seoTitle": "Home Try-On Kit — five frames, five days, free | Frame & Lens",
+      "seoTitle": "Home Try-On Kit: five frames, five days, free | Frame & Lens",
       "seoDescription": "Try any five Frame & Lens frames at home for five days, free, with return shipping included. No deposit.",
       "variants": [
         {
@@ -1075,14 +1075,14 @@
     {
       "handle": "care-kit",
       "title": "Care Kit",
-      "description": "Everything to keep a pair looking new — a microfibre cloth, an alcohol-free lens spray that won’t strip your coatings, and a slim hard case that actually fits in a bag. The small kit that makes good glasses last for years.",
+      "description": "Everything to keep a pair looking new: a microfibre cloth, an alcohol-free lens spray that won’t strip your coatings, and a slim hard case that actually fits in a bag. The small kit that makes good glasses last for years.",
       "status": "active",
       "productType": "Accessory",
       "vendor": "Frame & Lens",
       "tags": ["accessories", "care", "case"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["home-try-on"],
-      "seoTitle": "Care Kit — lens cloth, spray & case | Frame & Lens",
+      "seoTitle": "Care Kit: lens cloth, spray & case | Frame & Lens",
       "seoDescription": "A microfibre cloth, alcohol-free lens spray and a slim hard case to keep your glasses looking new.",
       "variants": [
         {
@@ -1096,7 +1096,7 @@
         {
           "assetId": "prod-care",
           "isPrimary": true,
-          "alt": "A care kit — cloth, spray and hard case"
+          "alt": "A care kit: cloth, spray and hard case"
         }
       ]
     }

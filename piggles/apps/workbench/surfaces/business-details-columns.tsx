@@ -27,7 +27,7 @@ export function BusinessMainColumn({
     <>
       <FormSection
         title="Business"
-        description="Who you are as a business. This is what gets printed on invoices, receipts and purchase orders — it is not the name of any of your sites."
+        description="Who you are as a business. This is what gets printed on invoices, receipts and purchase orders. It is not the name of any of your sites."
       >
         {/* No placeholder. Every placeholder in this form is a FORMAT hint
             ("Suite, unit, floor", "US", "USD") and a business name has no

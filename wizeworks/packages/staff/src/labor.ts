@@ -120,7 +120,7 @@ export async function deriveLaborForPeriod(
         {
           propertyId: site.propertyId,
           categoryId: wages.id,
-          description: `Wages — ${name}, ${key}`,
+          description: `Wages: ${name}, ${key}`,
           amountCents: site.amountCents,
           currency: 'USD',
           taxCents: 0,

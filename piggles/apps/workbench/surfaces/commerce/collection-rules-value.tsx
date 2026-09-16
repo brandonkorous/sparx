@@ -33,7 +33,7 @@ export function ValueEditor({
     return (
       <Text className="text-sm @lg:pt-2">
         {predicate.op === 'low_stock'
-          ? 'A size counts as running low once it reaches the reorder point set for it under Stock. There is no fixed number here — change that point and this group follows.'
+          ? 'A size counts as running low once it reaches the reorder point set for it under Stock. There is no fixed number here. Change that point and this group follows.'
           : 'No value needed.'}
       </Text>
     );
@@ -119,7 +119,7 @@ export function ValueEditor({
       items={suggestions}
       value={predicate.value as string}
       placeholder="Type or choose a value"
-      emptyMessage="No match — type your own."
+      emptyMessage="No match. Type your own."
       aria-label="Value to match"
       onValueChange={(next) => {
         onChange({ ...predicate, value: next } as CollectionPredicate);

@@ -45,7 +45,7 @@ describe('shipped default emails only use canvas-renderable merge tokens', () =>
     const offenders = DEFAULT_EMAIL_TEMPLATES.flatMap((t) =>
       [...new Set(tokensIn(t.doc))]
         .filter((token) => !CANVAS_RENDERABLE.test(token))
-        .map((token) => `${t.key} — ${token}`)
+        .map((token) => `${t.key}: ${token}`)
     );
     // Joined so a failure prints the offending tokens themselves.
     expect(offenders.join('\n')).toBe('');

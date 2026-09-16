@@ -103,7 +103,7 @@ function heroBand(): Node {
                                 { text: 'Buildings and spaces that know why they exist.' }
                             ),
                             el('p', 'max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl', {
-                                text: 'I’m Nadia Rehman — an architect and spatial designer working across homes, civic buildings, cultural spaces and workplaces. Every project starts with the question of what the place is for, and holds that answer from the first sketch to the last detail.',
+                                text: 'I’m Nadia Rehman: an architect and spatial designer working across homes, civic buildings, cultural spaces and workplaces. Every project starts with the question of what the place is for, and holds that answer from the first sketch to the last detail.',
                             }),
                             el('div', 'flex flex-wrap items-center gap-3', {
                                 children: [
@@ -211,7 +211,7 @@ function projectGridBand(): Node {
                                 { text: 'Selected projects' }
                             ),
                             el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                                text: 'Four recent buildings, one from each field the practice works in. Each opens to the full sheet — the site, the idea, and how it was made.',
+                                text: 'Four recent buildings, one from each field the practice works in. Each opens to the full sheet: the site, the idea, and how it was made.',
                             }),
                         ],
                     }),
@@ -282,7 +282,7 @@ function practiceBand(): Node {
                         children: [
                             card(
                                 'Architecture',
-                                'New buildings and thoughtful additions — houses, halls and cultural spaces designed from their structure and light out, not their surface in.',
+                                'New buildings and thoughtful additions: houses, halls and cultural spaces designed from their structure and light out, not their surface in.',
                             ),
                             card(
                                 'Interiors',
@@ -290,11 +290,11 @@ function practiceBand(): Node {
                             ),
                             card(
                                 'Masterplanning',
-                                'How a site holds more than one building — routes, thresholds and public space that make a place legible before a visitor has read a single sign.',
+                                'How a site holds more than one building: routes, thresholds and public space that make a place legible before a visitor has read a single sign.',
                             ),
                             card(
                                 'Exhibition',
-                                'Temporary and civic installations where the brief is a story, not a programme — pavilions and displays that teach a space how to be read.',
+                                'Temporary and civic installations where the brief is a story, not a programme: pavilions and displays that teach a space how to be read.',
                             ),
                         ],
                     }),
@@ -455,13 +455,13 @@ const ABOUT: Node[] = [
                                 text: 'About Nadia',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'I’m an architect and spatial designer, and I run a small practice out of Lisbon. For over a decade I’ve worked across scales — a single house, a civic hall, the reuse of an old foundry, a workplace fit-out — and the thread through all of it is a stubborn interest in why a place exists before what it looks like.',
+                                text: 'I’m an architect and spatial designer, and I run a small practice out of Lisbon. For over a decade I’ve worked across scales (a single house, a civic hall, the reuse of an old foundry, a workplace fit-out) and the thread through all of it is a stubborn interest in why a place exists before what it looks like.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'I keep the studio deliberately small so I can stay on the drawing and on site. That means the person you brief is the person who resolves the junction detail, and it means every project is designed from its structure, light and use outward — not decorated after the fact.',
+                                text: 'I keep the studio deliberately small so I can stay on the drawing and on site. That means the person you brief is the person who resolves the junction detail, and it means every project is designed from its structure, light and use outward, not decorated after the fact.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Before founding the studio I worked at two international practices on cultural and civic buildings, and I still teach a design studio one term a year. I take on a handful of projects at a time, and I care most about the parts a photograph never shows — the threshold, the section, the way a room meets the light at four in the afternoon.',
+                                text: 'Before founding the studio I worked at two international practices on cultural and civic buildings, and I still teach a design studio one term a year. I take on a handful of projects at a time, and I care most about the parts a photograph never shows: the threshold, the section, the way a room meets the light at four in the afternoon.',
                             }),
                             // A selected-clients line — collaborators, not logos (no third-party marks).
                             el('div', 'flex flex-col gap-3 border-t border-base-300 pt-6', {
@@ -516,7 +516,7 @@ const CONTACT: Node[] = [
     contactSection({
         heading: 'Start a project',
         intro: [
-            'I’m taking on a small number of new projects. A good first enquiry tells me the site or building, who it’s for, roughly what you hope to do, and when you’d like to start — but if you only have a plot and an idea, that’s a fine place to begin too.',
+            'I’m taking on a small number of new projects. A good first enquiry tells me the site or building, who it’s for, roughly what you hope to do, and when you’d like to start, but if you only have a plot and an idea, that’s a fine place to begin too.',
             'I’ll usually reply within a few days to say whether it’s a good fit and to suggest a first conversation. New work generally begins two to three months out.',
         ],
         submitLabel: 'Email the studio',
@@ -530,7 +530,7 @@ const AUTHORS = [
     {
         slug: 'nadia-rehman',
         displayName: 'Nadia Rehman',
-        bio: 'Nadia Rehman is an architect and spatial designer, and the founder of Rehman Studio in Lisbon. She works across houses, civic buildings, cultural spaces and workplaces — from the masterplan to the door handle — and still teaches a design studio one term a year.',
+        bio: 'Nadia Rehman is an architect and spatial designer, and the founder of Rehman Studio in Lisbon. She works across houses, civic buildings, cultural spaces and workplaces (from the masterplan to the door handle) and still teaches a design studio one term a year.',
         avatarAssetId: 'atlas-portrait',
     },
 ];
@@ -555,20 +555,20 @@ const CONTENT = [
         body: {
             title: 'Casa Mirador',
             excerpt:
-                'A hillside house that treats the view as a room you earn — board-formed concrete anchored to the slope, opening only where the landscape asks it to.',
+                'A hillside house that treats the view as a room you earn: board-formed concrete anchored to the slope, opening only where the landscape asks it to.',
             featuredImage: { $asset: 'atlas-mirador' },
             body: {
                 type: 'doc',
                 content: [
                     para('Year 2026 · Role Lead architect · Location Lisbon · Scope Full design, concept to completion.'),
-                    para('Casa Mirador is a family house on a steep south-facing slope above the Tagus. The clients had lived with the view from a caravan on the plot for two summers before they briefed it, so they knew exactly which minutes of the day mattered — and they did not want a glass box that surrendered all of them at once.'),
+                    para('Casa Mirador is a family house on a steep south-facing slope above the Tagus. The clients had lived with the view from a caravan on the plot for two summers before they briefed it, so they knew exactly which minutes of the day mattered, and they did not want a glass box that surrendered all of them at once.'),
                     h2('The site'),
-                    para('The slope falls nearly a full storey across the footprint, and the best light arrives late and low. Rather than cut a flat pad and perch a house on it, we let the building step with the ground — three half-levels tied to a single board-formed concrete spine that does the structural work and the retaining at once.'),
+                    para('The slope falls nearly a full storey across the footprint, and the best light arrives late and low. Rather than cut a flat pad and perch a house on it, we let the building step with the ground: three half-levels tied to a single board-formed concrete spine that does the structural work and the retaining at once.'),
                     para('The concrete is not a finish choice so much as a site strategy: the same wall that holds the hill back becomes the thermal mass that carries the house through a hot afternoon and a cool night with almost no mechanical help.'),
                     h2('The idea'),
-                    para('The house withholds the view and then gives it. You arrive at the top, in shadow, against solid concrete; the landscape is entirely hidden. Only as you descend through the plan does the wall open — first a slot, then a room, then the full terrace where the whole valley is finally in front of you. The view is the reward at the end of the sequence, not the first thing you see.'),
+                    para('The house withholds the view and then gives it. You arrive at the top, in shadow, against solid concrete; the landscape is entirely hidden. Only as you descend through the plan does the wall open: first a slot, then a room, then the full terrace where the whole valley is finally in front of you. The view is the reward at the end of the sequence, not the first thing you see.'),
                     h2('The making'),
-                    para('Board-formed concrete is unforgiving — every joint and tie is permanent — so we built a full-height sample panel on site and cast three test pours before the first real wall. The timber boards were milled from a single batch to keep the grain consistent, and the crew poured in the early morning to slow the cure. What you read as a quiet monolith is the product of a very loud few weeks of getting it exactly right.'),
+                    para('Board-formed concrete is unforgiving (every joint and tie is permanent) so we built a full-height sample panel on site and cast three test pours before the first real wall. The timber boards were milled from a single batch to keep the grain consistent, and the crew poured in the early morning to slow the cure. What you read as a quiet monolith is the product of a very loud few weeks of getting it exactly right.'),
                 ],
             },
         },
@@ -583,18 +583,18 @@ const CONTENT = [
         body: {
             title: 'Riverside Civic Hall',
             excerpt:
-                'A public hall built around its threshold — a deep colonnade and a generous forecourt that make the building legible as everyone’s before anyone reads the sign.',
+                'A public hall built around its threshold: a deep colonnade and a generous forecourt that make the building legible as everyone’s before anyone reads the sign.',
             featuredImage: { $asset: 'atlas-civic' },
             body: {
                 type: 'doc',
                 content: [
                     para('Year 2025 · Role Design lead · Location Porto · Scope Architecture & public realm.'),
-                    para('Riverside Civic Hall replaces a tired municipal annexe on the riverfront with a building that had to do an unusual amount of civic work: register offices, a council chamber, a public exhibition floor, and — the part the brief kept coming back to — somewhere the city could simply gather. Won in open competition for the City of Porto.'),
+                    para('Riverside Civic Hall replaces a tired municipal annexe on the riverfront with a building that had to do an unusual amount of civic work: register offices, a council chamber, a public exhibition floor, and (the part the brief kept coming back to) somewhere the city could simply gather. Won in open competition for the City of Porto.'),
                     h2('The site'),
-                    para('The plot sits between a busy embankment road and the water, on ground that floods in the worst winters. We lifted the occupied floors a full storey and gave the flood level back to the city as a sheltered, hard-wearing public room — a deep colonnade that runs the length of the building and a forecourt that steps down to the quay.'),
+                    para('The plot sits between a busy embankment road and the water, on ground that floods in the worst winters. We lifted the occupied floors a full storey and gave the flood level back to the city as a sheltered, hard-wearing public room: a deep colonnade that runs the length of the building and a forecourt that steps down to the quay.'),
                     h2('The idea'),
                     para('A civic building earns its name at the threshold, not in the chamber. So the whole design argument is the edge: the colonnade is deliberately oversized, deep enough to hold a market, a protest or a wedding party, and it belongs to the street whether or not the offices behind it are open. You are inside the building, under its roof and among its columns, before you have decided to enter it.'),
-                    para('Above that public base, the offices and chamber are calm and frankly ordinary — good daylight, plain materials, nothing shouting. The generosity is spent where the public actually is.'),
+                    para('Above that public base, the offices and chamber are calm and frankly ordinary: good daylight, plain materials, nothing shouting. The generosity is spent where the public actually is.'),
                     h2('The making'),
                     para('The colonnade is precast concrete, its columns cast off site to a tolerance we could never have hit in a flood-prone excavation, then stitched to an in-situ deck. Getting the column rhythm right took the longest: too wide and the forecourt felt exposed, too tight and it read as a fence. We mocked up three full bays at scale on the quay before we committed.'),
                 ],
@@ -611,20 +611,20 @@ const CONTENT = [
         body: {
             title: 'Foundry Arts Centre',
             excerpt:
-                'A disused iron foundry turned arts centre — the old shed kept honest and legible, a new gallery inserted as a clearly separate, quiet room inside it.',
+                'A disused iron foundry turned arts centre: the old shed kept honest and legible, a new gallery inserted as a clearly separate, quiet room inside it.',
             featuredImage: { $asset: 'atlas-foundry' },
             body: {
                 type: 'doc',
                 content: [
                     para('Year 2024 · Role Project architect · Location Bilbao · Scope Adaptive reuse & interiors.'),
-                    para('The Foundry was a nineteenth-century iron works that had sat empty for thirty years — a magnificent riveted-steel shed with a leaking roof and a floor that had reverted to weeds. The Bilbao Arts Trust wanted a home for exhibitions and residencies that felt found, not built, and could not afford to erase what was already there.'),
+                    para('The Foundry was a nineteenth-century iron works that had sat empty for thirty years: a magnificent riveted-steel shed with a leaking roof and a floor that had reverted to weeds. The Bilbao Arts Trust wanted a home for exhibitions and residencies that felt found, not built, and could not afford to erase what was already there.'),
                     h2('The site'),
-                    para('The shed’s value was entirely in its structure: the exposed roof trusses, the travelling crane rail, the scale of a space built to move molten iron. Everything else — later partitions, a mezzanine, decades of accreted services — was noise. The first six weeks on site were mostly subtraction, taking the building back to the frame that mattered.'),
+                    para('The shed’s value was entirely in its structure: the exposed roof trusses, the travelling crane rail, the scale of a space built to move molten iron. Everything else (later partitions, a mezzanine, decades of accreted services) was noise. The first six weeks on site were mostly subtraction, taking the building back to the frame that mattered.'),
                     h2('The idea'),
                     para('We resisted the obvious move of climate-controlling the whole volume, which would have meant sealing and lining the very structure worth keeping. Instead the gallery is a building-within-a-building: a calm, sealed, precisely conditioned room set down inside the shed like a piece of equipment, leaving the trusses and the crane rail in raw, un-heated air around it.'),
-                    para('So the visitor reads two things at once and never confuses them — the honest industrial shell, and the quiet new room the art actually lives in. The old and the new touch as little as possible and are never dressed up to match.'),
+                    para('So the visitor reads two things at once and never confuses them: the honest industrial shell, and the quiet new room the art actually lives in. The old and the new touch as little as possible and are never dressed up to match.'),
                     h2('The making'),
-                    para('The inserted gallery is a steel-framed box on its own foundations, structurally independent of the fragile old frame, which let us survey and stabilise the trusses without a deadline hanging over the conservation work. The junction where new meets old is a deliberate shadow gap — a finger’s width of daylight that says, plainly, these are two different buildings.'),
+                    para('The inserted gallery is a steel-framed box on its own foundations, structurally independent of the fragile old frame, which let us survey and stabilise the trusses without a deadline hanging over the conservation work. The junction where new meets old is a deliberate shadow gap: a finger’s width of daylight that says, plainly, these are two different buildings.'),
                 ],
             },
         },
@@ -639,7 +639,7 @@ const CONTENT = [
         body: {
             title: 'Meridian Workspace',
             excerpt:
-                'A workplace fit-out built on daylight and oak instead of open-plan sprawl — a floor of real rooms that give a small company room to think.',
+                'A workplace fit-out built on daylight and oak instead of open-plan sprawl: a floor of real rooms that give a small company room to think.',
             featuredImage: { $asset: 'atlas-meridian' },
             body: {
                 type: 'doc',
@@ -647,11 +647,11 @@ const CONTENT = [
                     para('Year 2025 · Role Lead architect · Location Lisbon · Scope Workplace & fit-out.'),
                     para('Meridian is a forty-person research group that had outgrown a generic open-plan floor where nobody could hear themselves think. The brief was not more desks; it was a place that could hold quiet, concentrated work and still bring the whole group together without a scramble for the one bookable room.'),
                     h2('The site'),
-                    para('A single deep floor with glazing on two sides and a dead, dark core — the classic office problem. The whole design turns on getting daylight into the middle: we pulled the enclosed rooms away from the windows and into the core, so the good light stays shared and the desks all sit within reach of a real window.'),
+                    para('A single deep floor with glazing on two sides and a dead, dark core: the classic office problem. The whole design turns on getting daylight into the middle: we pulled the enclosed rooms away from the windows and into the core, so the good light stays shared and the desks all sit within reach of a real window.'),
                     h2('The idea'),
-                    para('Open-plan promises flexibility and mostly delivers noise. We gave Meridian a floor of actual rooms instead — a graded set, from a silent focus room to a big table that seats everyone — arranged so you can find the right amount of company for the task in hand without booking anything. The building does the acoustic work so people don’t have to negotiate it.'),
+                    para('Open-plan promises flexibility and mostly delivers noise. We gave Meridian a floor of actual rooms instead (a graded set, from a silent focus room to a big table that seats everyone) arranged so you can find the right amount of company for the task in hand without booking anything. The building does the acoustic work so people don’t have to negotiate it.'),
                     h2('The making'),
-                    para('The rooms are defined by a single system of white-oak joinery — the same detail language for a door, a storage wall and a glazed partition — fabricated off site and installed in ten days over a holiday shutdown so the team never lost a working week. Because one detail repeats everywhere, the floor reads as calm and whole rather than fitted-out in pieces.'),
+                    para('The rooms are defined by a single system of white-oak joinery (the same detail language for a door, a storage wall and a glazed partition) fabricated off site and installed in ten days over a holiday shutdown so the team never lost a working week. Because one detail repeats everywhere, the floor reads as calm and whole rather than fitted-out in pieces.'),
                 ],
             },
         },
@@ -665,7 +665,7 @@ const SPEC: PortfolioSiteSpec = {
     key: 'sparx-portfolio-studio',
     name: 'Studio / Architect Portfolio',
     summary:
-        'A hire-me portfolio for an architect & spatial designer: a statement hero over a large-format project image, a structured grid of project tiles, a sober practice band, and project sheets that open with the facts — Year, Role, Location, Scope — then tell the site, the idea and the making. Range shown with precision. Dressed in a bone-and-concrete theme carried by one burnt-amber signal and a cool slate for the facts. Shipped as Nadia Rehman.',
+        'A hire-me portfolio for an architect & spatial designer: a statement hero over a large-format project image, a structured grid of project tiles, a sober practice band, and project sheets that open with the facts (Year, Role, Location, Scope) then tell the site, the idea and the making. Range shown with precision. Dressed in a bone-and-concrete theme carried by one burnt-amber signal and a cool slate for the facts. Shipped as Nadia Rehman.',
     tagline: 'A facts-driven portfolio for an architect & spatial designer.',
     industry: 'Architect & spatial designer',
     requiresModules: ['builder', 'cms', 'email'],
@@ -679,14 +679,14 @@ const SPEC: PortfolioSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Nadia Rehman — architect & spatial designer',
+            title: 'Nadia Rehman: architect & spatial designer',
             description:
-                'Nadia Rehman is an architect and spatial designer in Lisbon working across homes, civic buildings, cultural spaces and workplaces — selected work, project sheets, and how to start a project.',
+                'Nadia Rehman is an architect and spatial designer in Lisbon working across homes, civic buildings, cultural spaces and workplaces: selected work, project sheets, and how to start a project.',
         },
         about: {
-            title: 'About Nadia Rehman — architect & spatial designer',
+            title: 'About Nadia Rehman: architect & spatial designer',
             description:
-                'A small Lisbon practice working from the masterplan to the door handle across residential, civic, cultural and workplace projects — the person, the approach, and the studio at a glance.',
+                'A small Lisbon practice working from the masterplan to the door handle across residential, civic, cultural and workplace projects: the person, the approach, and the studio at a glance.',
         },
     },
     home: HOME,

@@ -24,7 +24,7 @@ export function ReportsLoadFailed() {
     <EmptyState
       icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
       title="Could not load your reports"
-      description="This is a problem reaching the server. Your stock and its history are unaffected — the figures just could not be worked out just now."
+      description="This is a problem reaching the server. Your stock and its history are unaffected: the figures just could not be worked out just now."
     />
   );
 }

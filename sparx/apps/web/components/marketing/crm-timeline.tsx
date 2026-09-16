@@ -45,7 +45,7 @@ const EVENTS: Event[] = [
     module: 'crm',
     title: 'Call logged',
     actor: 'staff · Maya',
-    desc: 'Walked through the bedding-set sizes — wants to reorder for a guest room.',
+    desc: 'Walked through the bedding-set sizes: wants to reorder for a guest room.',
     time: '2 days ago · 11:40 AM',
     icon: 'phone',
   },
@@ -70,7 +70,7 @@ const EVENTS: Event[] = [
 const PINS = [
   {
     title: 'Auto-logged, every module',
-    body: 'Orders, shipments, email opens and clicks, quotes, invoices, logins — written by the system as events fire.',
+    body: 'Orders, shipments, email opens and clicks, quotes, invoices, logins: written by the system as events fire.',
   },
   {
     title: 'Add yours by hand',
@@ -92,7 +92,7 @@ export function CrmTimeline() {
         // "Every interaction, in order, logged for you" named the feature; this
         // names what the reader no longer has to do.
         headline="From here on, it writes itself"
-        lede="Nobody has to remember to log anything. Orders, deliveries, opened emails, quotes, invoices and sign-ins land on the customer’s page the moment they happen, whichever part of sparx did them. Add a call or a note by hand when it matters — and nothing ever overwrites anything, so a correction shows up as the next line rather than erasing what it corrected."
+        lede="Nobody has to remember to log anything. Orders, deliveries, opened emails, quotes, invoices and sign-ins land on the customer’s page the moment they happen, whichever part of sparx did them. Add a call or a note by hand when it matters, and nothing ever overwrites anything, so a correction shows up as the next line rather than erasing what it corrected."
       />
       <div className="mkt-frame-grid mt-[52px]">
         <ol className="relative list-none">

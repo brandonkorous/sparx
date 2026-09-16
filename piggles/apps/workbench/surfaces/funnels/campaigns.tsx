@@ -109,7 +109,7 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
             ? {
                 label: 'New campaign',
                 icon: faPlus,
-                title: 'Start a new campaign — hold Shift to open alongside, Alt for a new window',
+                title: 'Start a new campaign. Hold Shift to open alongside, Alt for a new window',
                 onClick: (event) => {
                   openCampaign('new', event);
                 },

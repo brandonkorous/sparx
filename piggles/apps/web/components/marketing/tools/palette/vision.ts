@@ -15,7 +15,7 @@ export const VISIONS: Record<Vision, { label: string; blurb: string }> = {
   normal: { label: 'Normal vision', blurb: 'The palette as most people see it.' },
   deutan: {
     label: 'Green-blind',
-    blurb: 'Deuteranopia — the most common, about 1 man in 16. Reds and greens converge.',
+    blurb: 'Deuteranopia: the most common, about 1 man in 16. Reds and greens converge.',
   },
   protan: {
     label: 'Red-blind',

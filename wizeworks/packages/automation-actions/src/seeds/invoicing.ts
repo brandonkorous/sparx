@@ -122,7 +122,8 @@ export const INVOICING_OVERDUE_7: SystemAutomationSpec = {
 
 /** Second overdue notice — 14 days past due. */
 export const INVOICING_OVERDUE_14: SystemAutomationSpec = {
-  name: 'Invoice overdue (14 days — second notice)',
+  name: 'Invoice overdue (14 days: second notice)',
+  previousNames: ['Invoice overdue (14 days — second notice)'],
   description: 'Emails the customer a second notice when an invoice is 14 days overdue.',
   trigger: {
     kind: 'schedule',
@@ -142,7 +143,8 @@ export const INVOICING_OVERDUE_14: SystemAutomationSpec = {
 
 /** Final overdue notice — 30 days past due. */
 export const INVOICING_OVERDUE_30: SystemAutomationSpec = {
-  name: 'Invoice overdue (30 days — final notice)',
+  name: 'Invoice overdue (30 days: final notice)',
+  previousNames: ['Invoice overdue (30 days — final notice)'],
   description: 'Emails the customer a final notice when an invoice is 30 days overdue.',
   trigger: {
     kind: 'schedule',
@@ -165,7 +167,8 @@ export const INVOICING_OVERDUE_30: SystemAutomationSpec = {
  *  receipt too), which is why this doesn't share the `USER_INVOICE` guard the
  *  dunning seeds above use. */
 export const INVOICING_RECEIPT_ON_PAID: SystemAutomationSpec = {
-  name: 'Payment received — send receipt',
+  name: 'Payment received: send receipt',
+  previousNames: ['Payment received — send receipt'],
   description: 'Emails the customer a receipt when a billing document is paid in full.',
   trigger: { kind: 'event', eventType: 'crm.billing_document.paid' },
   conditions: { logic: 'AND', conditions: [HAS_EMAIL] },
@@ -182,7 +185,8 @@ export const INVOICING_RECEIPT_ON_PAID: SystemAutomationSpec = {
 /** When a billing document reaches a committed (customer-approved) stage, open a
  *  task to advance it. Scoped to user-authored workflows, not the B2B AR ledger. */
 export const INVOICING_ESTIMATE_APPROVED_TASK: SystemAutomationSpec = {
-  name: 'Estimate approved — advance task',
+  name: 'Estimate approved: advance task',
+  previousNames: ['Estimate approved — advance task'],
   description:
     'Opens a task to advance the document when a user-authored billing document is approved (reaches a committed stage).',
   trigger: { kind: 'event', eventType: 'crm.billing_document.stage_changed' },
@@ -197,7 +201,7 @@ export const INVOICING_ESTIMATE_APPROVED_TASK: SystemAutomationSpec = {
     {
       type: 'crm.create_task',
       config: {
-        title: 'Advance to next stage — {{invoice.number}}',
+        title: 'Advance to next stage: {{invoice.number}}',
         assigneeField: 'invoice.assignedUserId',
         dueInDays: 0,
       },

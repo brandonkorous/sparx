@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Lacquer — a modern nail studio",
+      "seoTitle": "Lacquer: a modern nail studio",
       "seoDescription": "Lacquer is a calm, gallery-clean nail studio for precise manicures, long-wear gel and hand-painted art. Book your artist online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A quiet, gallery-clean studio for precise manicures, long-wear gel and hand-painted art — color that does the talking."
+                      "A quiet, gallery-clean studio for precise manicures, long-wear gel and hand-painted art: color that does the talking."
                     ],
                     "id": "28953ac4-41c7-432c-9a18-fb77b69f5c9f",
                     "ord": "a1"
@@ -1206,7 +1206,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Fresh files and buffers every time, thorough tool sterilisation, and gentle, better-for-you formulas — care you don’t have to ask for."
+                              "Fresh files and buffers every time, thorough tool sterilisation, and gentle, better-for-you formulas: care you don’t have to ask for."
                             ],
                             "id": "4eafeab7-4ae1-4e06-9e51-1c2cabf00055",
                             "ord": "a1"
@@ -1233,7 +1233,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We book realistic slots so nothing is rushed. Straight lines, clean cuticles and an even finish — the details that read as “done well”."
+                              "We book realistic slots so nothing is rushed. Straight lines, clean cuticles and an even finish: the details that read as “done well”."
                             ],
                             "id": "53ea6e90-4a6e-4807-acf5-87fa89c2dd4d",
                             "ord": "a1"
@@ -1260,7 +1260,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Bring a reference or a vague idea. Our artists design to your hands, not a pre-set sheet — one nail or a full editorial set."
+                              "Bring a reference or a vague idea. Our artists design to your hands, not a pre-set sheet. One nail or a full editorial set."
                             ],
                             "id": "391b2388-ab54-44fb-912f-be0210078014",
                             "ord": "a1"
@@ -1395,7 +1395,7 @@
                         "kind": "element",
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
-                        "children": ["Book by name — you’ll sit with the same hands each visit."],
+                        "children": ["Book by name: you’ll sit with the same hands each visit."],
                         "id": "2520a1ae-67a5-401a-aff3-c5164e0f7945",
                         "ord": "a1"
                       }
@@ -1563,7 +1563,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Negative space, chrome and modern french — quiet, precise art."
+                                  "Negative space, chrome and modern french: quiet, precise art."
                                 ],
                                 "id": "43831a50-9be5-4b23-b588-f823b21ecad1",
                                 "ord": "a2"
@@ -1678,7 +1678,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Lacquer",
+      "seoTitle": "Book: Lacquer",
       "seoDescription": "See what Lacquer offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1802,7 +1802,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "f815b4c8-dc0d-48cf-9296-b14062906f29",
                         "ord": "a1"
@@ -1872,7 +1872,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Lacquer",
+      "seoTitle": "About: Lacquer",
       "seoDescription": "Who Lacquer is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1921,7 +1921,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Lacquer to do nails the way a gallery hangs a picture — on a clean, quiet wall, with nothing competing for the eye but the work itself."
+                          "We opened Lacquer to do nails the way a gallery hangs a picture: on a clean, quiet wall, with nothing competing for the eye but the work itself."
                         ],
                         "id": "1f0fc568-7a88-4421-bea4-0b44b00cc030",
                         "ord": "a1"
@@ -2036,7 +2036,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Single-use files and buffers, hospital-grade tool sterilisation, and gentle formulas — the standard, not an upgrade."
+                              "Single-use files and buffers, hospital-grade tool sterilisation, and gentle formulas: the standard, not an upgrade."
                             ],
                             "id": "00c8fb14-a461-47d6-88ac-36c3d1d22d94",
                             "ord": "a1"
@@ -2091,7 +2091,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Lacquer",
+      "seoTitle": "Visit: Lacquer",
       "seoDescription": "Where to find Lacquer, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2128,7 +2128,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Lacquer will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Lacquer will get back to you, usually the same day."
                         ],
                         "id": "429adf3e-a6cd-4f26-bfe8-70d73178b8a2",
                         "ord": "a1"
@@ -2578,7 +2578,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your time online — no phone tag."
+                      "See live availability and reserve your time online: no phone tag."
                     ],
                     "id": "882c8f3e-6c8a-4074-8335-3680edf5bb56",
                     "ord": "a1"

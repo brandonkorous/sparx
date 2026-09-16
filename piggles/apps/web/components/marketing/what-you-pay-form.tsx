@@ -82,7 +82,7 @@ function BillField({
           className="w-28 text-right tabular-nums"
           inputMode="decimal"
           placeholder="$0"
-          aria-label={`${row.label} — what it costs you a month`}
+          aria-label={`${row.label}: what it costs you a month`}
           value={bill.amount}
           onChange={(e) => onAmount(e.target.value)}
         />

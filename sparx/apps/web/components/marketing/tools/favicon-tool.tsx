@@ -104,7 +104,7 @@ export function FaviconTool() {
       setImg(image);
       setAppName((prev) => (prev === 'My App' ? prettyName(file.name) : prev));
     } catch {
-      toast.error('Could not read that image — try a PNG, SVG, JPG, or WebP.');
+      toast.error('Could not read that image. Try a PNG, SVG, JPG, or WebP.');
     }
   };
 
@@ -127,7 +127,7 @@ export function FaviconTool() {
           />
           <Text size={13}>
             PNG, SVG, JPG, or WebP. A square image of at least 512×512 looks best. Everything is
-            processed in your browser — the file never leaves your device.
+            processed in your browser: the file never leaves your device.
           </Text>
         </Panel>
 

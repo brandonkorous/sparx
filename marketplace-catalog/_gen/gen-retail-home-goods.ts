@@ -164,7 +164,7 @@ function hero(): Node {
                                     text: 'Warm rooms, made to last.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Hearth & Hollow makes the honest, tactile pieces a home is actually built from — washed linen, hand-thrown stoneware, real wool. Chosen for how they feel and how they age, not for a season. Buy once, live with it for years.',
+                                    text: 'Hearth & Hollow makes the honest, tactile pieces a home is actually built from: washed linen, hand-thrown stoneware, real wool. Chosen for how they feel and how they age, not for a season. Buy once, live with it for years.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -257,7 +257,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New this season' }),
     editorialBand({
         heading: 'Made by hand, made to keep',
-        lead: 'Our stoneware is thrown on a wheel, our linen is washed until it goes soft, and our wool is spun from real fleece. We work with small makers who put their name to what they make — so the piece that arrives is one you’ll still want in ten years.',
+        lead: 'Our stoneware is thrown on a wheel, our linen is washed until it goes soft, and our wool is spun from real fleece. We work with small makers who put their name to what they make, so the piece that arrives is one you’ll still want in ten years.',
         assetId: 'home-band-craft',
         cta: 'How it’s made',
         href: '/blog/why-we-wash-our-linen',
@@ -266,7 +266,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.table', layout: 'carousel', heading: 'Set a better table' }),
     editorialBand({
         heading: 'The things you keep',
-        lead: 'A home isn’t furnished in a weekend — it’s gathered, one considered piece at a time. Start with the things you touch every day: the sheets you sleep in, the mug you reach for, the throw that lives on the sofa. Get those right and the rest follows.',
+        lead: 'A home isn’t furnished in a weekend: it’s gathered, one considered piece at a time. Start with the things you touch every day: the sheets you sleep in, the mug you reach for, the throw that lives on the sofa. Get those right and the rest follows.',
         assetId: 'home-band-care',
         cta: 'Shop living',
         href: '/shop',
@@ -311,7 +311,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Made to live with' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Natural materials, made in small runs — so every piece has its own character, and no two are exactly alike. Cared for simply, they only get better with use. Free returns within 30 days if it isn’t right for your space.',
+                                        text: 'Natural materials, made in small runs, so every piece has its own character, and no two are exactly alike. Cared for simply, they only get better with use. Free returns within 30 days if it isn’t right for your space.',
                                     }),
                                 ],
                             }),
@@ -350,11 +350,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop everything',
-        'The whole collection in one place — bedding, tableware, textiles, lighting, storage and scent. Filter by room or sort however you like; every piece is made in small runs from natural materials and built to be lived with.'
+        'The whole collection in one place: bedding, tableware, textiles, lighting, storage and scent. Filter by room or sort however you like; every piece is made in small runs from natural materials and built to be lived with.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The pieces grouped the way people actually shop — what’s new this season, the ones people keep coming back for, and edits for the bedroom, the table and the living room.'),
+    pageMasthead('Collections', 'The pieces grouped the way people actually shop: what’s new this season, the ones people keep coming back for, and edits for the bedroom, the table and the living room.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Hearth & Hollow', 'Looking for a color, a material, or something for a particular room? Search the whole shop and the journal below.'),
@@ -366,7 +366,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping on orders over $95, carefully packed to arrive safely. Not quite right for your space? Send it back within 30 days — we want you to love it, not just keep it.',
+                        text: 'Free shipping on orders over $95, carefully packed to arrive safely. Not quite right for your space? Send it back within 30 days. We want you to love it, not just keep it.',
                     }),
                 ],
             }),
@@ -380,7 +380,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Hearth & Hollow journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the workshop and the home — where our materials come from, how to style them, and how to care for the pieces so they last. Plain, useful, no fuss.',
+                        text: 'Notes from the workshop and the home: where our materials come from, how to style them, and how to care for the pieces so they last. Plain, useful, no fuss.',
                     }),
                 ],
             }),
@@ -397,13 +397,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Hearth & Hollow' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Hearth & Hollow began with a simple frustration: it was easy to buy homeware and hard to buy homeware worth keeping. So we started small — a run of washed linen, a batch of thrown mugs — with makers we’d met in person and materials we could stand behind.',
+                        text: 'Hearth & Hollow began with a simple frustration: it was easy to buy homeware and hard to buy homeware worth keeping. So we started small (a run of washed linen, a batch of thrown mugs) with makers we’d met in person and materials we could stand behind.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We still work the same way. Everything we sell is made in small quantities from natural materials — real linen, real wool, real clay and wood — by workshops we know by name. We’d rather offer one honest version of a thing than a wall of nearly-the-same, and we’d rather it lasted a decade than a season.',
+                        text: 'We still work the same way. Everything we sell is made in small quantities from natural materials (real linen, real wool, real clay and wood) by workshops we know by name. We’d rather offer one honest version of a thing than a wall of nearly-the-same, and we’d rather it lasted a decade than a season.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No throwaway trends, no mystery materials, no pieces designed to be replaced next year. Just warm, tactile, well-made things for the rooms you actually live in — chosen to age well and be handed on.',
+                        text: 'No throwaway trends, no mystery materials, no pieces designed to be replaced next year. Just warm, tactile, well-made things for the rooms you actually live in: chosen to age well and be handed on.',
                     }),
                 ],
             }),
@@ -418,7 +418,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'Questions about a material, help styling a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you — usually within a day.',
+        intro: 'Questions about a material, help styling a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you, usually within a day.',
         submitLabel: 'Email us',
     }),
 ];
@@ -546,7 +546,7 @@ const PRODUCTS: Product[] = [
         handle: 'stonewashed-linen-duvet-set',
         title: 'Stonewashed Linen Duvet Set',
         description:
-            'A duvet cover and two pillowcases in pure French flax linen, washed until it’s soft the very first night — no breaking-in required. Breathable in summer, warm in winter, and it only gets better with every wash. The bed you look forward to.',
+            'A duvet cover and two pillowcases in pure French flax linen, washed until it’s soft the very first night: no breaking-in required. Breathable in summer, warm in winter, and it only gets better with every wash. The bed you look forward to.',
         price: 189,
         sku: 'HH-BED-LINEN',
         productType: 'Bedding',
@@ -555,14 +555,14 @@ const PRODUCTS: Product[] = [
         tags: ['linen', 'bedding', 'bedroom'],
         colors: ['Oatmeal', 'Clay', 'Fog', 'Sage'],
         asset: 'prod-linen-duvet',
-        seoTitle: 'Stonewashed Linen Duvet Set — pure French flax | Hearth & Hollow',
+        seoTitle: 'Stonewashed Linen Duvet Set: pure French flax | Hearth & Hollow',
         seoDescription: 'A soft-washed pure linen duvet set that’s cool in summer, warm in winter, and better with every wash.',
     }),
     colored({
         handle: 'lambswool-waffle-throw',
         title: 'Lambswool Waffle Throw',
         description:
-            'A generously sized throw woven from pure lambswool in an open waffle weave — light to drape but genuinely warm, with a soft fringe at each end. The one that lives on the arm of the sofa and gets pulled over you by seven every evening.',
+            'A generously sized throw woven from pure lambswool in an open waffle weave: light to drape but genuinely warm, with a soft fringe at each end. The one that lives on the arm of the sofa and gets pulled over you by seven every evening.',
         price: 119,
         sku: 'HH-LIV-THROW',
         productType: 'Textiles',
@@ -571,14 +571,14 @@ const PRODUCTS: Product[] = [
         tags: ['wool', 'throw', 'living-room'],
         colors: ['Heather Grey', 'Rust', 'Ecru'],
         asset: 'prod-wool-throw',
-        seoTitle: 'Lambswool Waffle Throw — pure wool blanket | Hearth & Hollow',
+        seoTitle: 'Lambswool Waffle Throw: pure wool blanket | Hearth & Hollow',
         seoDescription: 'A light, warm waffle-weave throw in pure lambswool with a soft fringe. Made for the sofa.',
     }),
     colored({
         handle: 'hand-thrown-dinner-set',
         title: 'Hand-Thrown Dinner Set',
         description:
-            'A four-place stoneware set — dinner plates, side plates and bowls — thrown by hand and finished in a soft reactive glaze, so no two pieces are exactly alike. Heavy in the right way, dishwasher-safe, and made to be used every day rather than saved for good.',
+            'A four-place stoneware set (dinner plates, side plates and bowls) thrown by hand and finished in a soft reactive glaze, so no two pieces are exactly alike. Heavy in the right way, dishwasher-safe, and made to be used every day rather than saved for good.',
         price: 145,
         sku: 'HH-TAB-DINNER',
         productType: 'Tableware',
@@ -595,7 +595,7 @@ const PRODUCTS: Product[] = [
         handle: 'ceramic-column-table-lamp',
         title: 'Ceramic Column Table Lamp',
         description:
-            'A substantial ceramic base turned in a single column and topped with a natural linen shade — the warm pool of light a room needs after dark. Fully wired with an in-line switch and rated for a standard bulb; the kind of lamp you move from house to house.',
+            'A substantial ceramic base turned in a single column and topped with a natural linen shade: the warm pool of light a room needs after dark. Fully wired with an in-line switch and rated for a standard bulb; the kind of lamp you move from house to house.',
         price: 165,
         sku: 'HH-LIV-LAMP',
         productType: 'Lighting',
@@ -605,13 +605,13 @@ const PRODUCTS: Product[] = [
         colors: ['Chalk', 'Clay'],
         asset: 'prod-table-lamp',
         seoTitle: 'Ceramic Column Table Lamp with Linen Shade | Hearth & Hollow',
-        seoDescription: 'A turned ceramic column table lamp with a natural linen shade — warm, substantial light for any room.',
+        seoDescription: 'A turned ceramic column table lamp with a natural linen shade: warm, substantial light for any room.',
     }),
     colored({
         handle: 'waffle-hand-towels',
         title: 'Waffle Hand Towels (Set of 2)',
         description:
-            'A pair of waffle-weave cotton hand towels that dry fast and only get more absorbent with washing — none of the heavy, damp thickness of ordinary towelling. Long enough to fold properly over a rail, and finished with a simple hanging loop.',
+            'A pair of waffle-weave cotton hand towels that dry fast and only get more absorbent with washing: none of the heavy, damp thickness of ordinary towelling. Long enough to fold properly over a rail, and finished with a simple hanging loop.',
         price: 34,
         sku: 'HH-BAT-TOWEL',
         productType: 'Bath',
@@ -627,7 +627,7 @@ const PRODUCTS: Product[] = [
         handle: 'seagrass-storage-basket',
         title: 'Seagrass Storage Basket',
         description:
-            'A hand-woven seagrass basket with sturdy side handles — the good-looking answer to the pile of blankets, the kindling, the kids’ toys. Holds its shape, softens a room, and hides the clutter you don’t want on show. Choose the size for the job.',
+            'A hand-woven seagrass basket with sturdy side handles: the good-looking answer to the pile of blankets, the kindling, the kids’ toys. Holds its shape, softens a room, and hides the clutter you don’t want on show. Choose the size for the job.',
         sku: 'HH-LIV-BASKET',
         productType: 'Storage',
         categories: ['living'],
@@ -640,13 +640,13 @@ const PRODUCTS: Product[] = [
         ],
         asset: 'prod-basket',
         seoTitle: 'Hand-Woven Seagrass Storage Basket | Hearth & Hollow',
-        seoDescription: 'A hand-woven seagrass storage basket with side handles, in two sizes — good-looking storage that hides the clutter.',
+        seoDescription: 'A hand-woven seagrass storage basket with side handles, in two sizes: good-looking storage that hides the clutter.',
     }),
     choices({
         handle: 'reed-diffuser',
         title: 'Reed Diffuser',
         description:
-            'A quiet, steady scent for a hallway or a bathroom — natural rattan reeds in a hand-blown glass bottle, no flame, no fuss. Each fill lasts around three months; flip the reeds when you want it stronger. A grown-up alternative to anything synthetic and sweet.',
+            'A quiet, steady scent for a hallway or a bathroom: natural rattan reeds in a hand-blown glass bottle, no flame, no fuss. Each fill lasts around three months; flip the reeds when you want it stronger. A grown-up alternative to anything synthetic and sweet.',
         sku: 'HH-DEC-DIFFUSER',
         productType: 'Home Fragrance',
         categories: ['decor'],
@@ -659,14 +659,14 @@ const PRODUCTS: Product[] = [
             { value: 'Warm Amber', price: 42 },
         ],
         asset: 'prod-diffuser',
-        seoTitle: 'Reed Diffuser — natural home fragrance | Hearth & Hollow',
-        seoDescription: 'A flame-free reed diffuser in hand-blown glass — a quiet, natural scent that lasts around three months.',
+        seoTitle: 'Reed Diffuser: natural home fragrance | Hearth & Hollow',
+        seoDescription: 'A flame-free reed diffuser in hand-blown glass: a quiet, natural scent that lasts around three months.',
     }),
     single({
         handle: 'olive-wood-serving-board',
         title: 'Olive Wood Serving Board',
         description:
-            'A single slab of olive wood, oiled and finished by hand, with the grain running wild the way only olive does — so every board is one of a kind. Big enough for a proper spread of bread and cheese, and handsome enough to leave out on the counter.',
+            'A single slab of olive wood, oiled and finished by hand, with the grain running wild the way only olive does, so every board is one of a kind. Big enough for a proper spread of bread and cheese, and handsome enough to leave out on the counter.',
         price: 68,
         sku: 'HH-TAB-BOARD',
         productType: 'Tableware',
@@ -674,14 +674,14 @@ const PRODUCTS: Product[] = [
         collections: ['the-table', 'gifting'],
         tags: ['wood', 'serving', 'board', 'gift'],
         asset: 'prod-serving-board',
-        seoTitle: 'Olive Wood Serving Board — hand-finished | Hearth & Hollow',
+        seoTitle: 'Olive Wood Serving Board: hand-finished | Hearth & Hollow',
         seoDescription: 'A one-of-a-kind hand-finished olive wood serving board for bread, cheese and everything in between.',
     }),
     colored({
         handle: 'speckled-stoneware-mugs',
         title: 'Speckled Stoneware Mugs (Set of 4)',
         description:
-            'Four generously sized mugs in speckled stoneware, with a comfortable pull-handle and a matte-glazed body that keeps its warmth. The everyday cup you’ll reach for over any other — sturdy, stackable, and just as at home with morning coffee as evening tea.',
+            'Four generously sized mugs in speckled stoneware, with a comfortable pull-handle and a matte-glazed body that keeps its warmth. The everyday cup you’ll reach for over any other: sturdy, stackable, and just as at home with morning coffee as evening tea.',
         price: 52,
         sku: 'HH-TAB-MUGS',
         productType: 'Tableware',
@@ -697,7 +697,7 @@ const PRODUCTS: Product[] = [
         handle: 'boucle-cushion-cover',
         title: 'Bouclé Cushion Cover',
         description:
-            'A deeply textured bouclé cushion cover with a hidden zip and a plump feather-blend feel — the quick way to warm up a sofa or dress a bed. Made to a generous 20-inch square; add one for texture, or a pair for a considered, put-together look.',
+            'A deeply textured bouclé cushion cover with a hidden zip and a plump feather-blend feel: the quick way to warm up a sofa or dress a bed. Made to a generous 20-inch square; add one for texture, or a pair for a considered, put-together look.',
         price: 48,
         sku: 'HH-LIV-CUSHION',
         productType: 'Textiles',
@@ -707,7 +707,7 @@ const PRODUCTS: Product[] = [
         colors: ['Ecru', 'Clay', 'Moss'],
         asset: 'prod-cushion',
         seoTitle: 'Bouclé Cushion Cover, 20-inch | Hearth & Hollow',
-        seoDescription: 'A deeply textured 20-inch bouclé cushion cover with a hidden zip — the quick way to warm up a room.',
+        seoDescription: 'A deeply textured 20-inch bouclé cushion cover with a hidden zip: the quick way to warm up a room.',
     }),
 ];
 
@@ -783,16 +783,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Why we wash our linen',
-            excerpt: 'New linen can feel stiff and look flat. Ours doesn’t — because we put it through a stone wash before it ever reaches you. Here’s what that does, and why it matters.',
+            excerpt: 'New linen can feel stiff and look flat. Ours doesn’t, because we put it through a stone wash before it ever reaches you. Here’s what that does, and why it matters.',
             featuredImage: { $asset: 'post-linen' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Linen is one of the oldest fabrics we still make, spun from the fibres of the flax plant. It’s naturally strong, breathable and temperature-regulating — cool against the skin in summer, insulating in winter. But new, unwashed linen has a reputation for being stiff and a little scratchy, and that reputation is fair. The softness people love takes time to arrive on its own.'),
+                    para('Linen is one of the oldest fabrics we still make, spun from the fibres of the flax plant. It’s naturally strong, breathable and temperature-regulating: cool against the skin in summer, insulating in winter. But new, unwashed linen has a reputation for being stiff and a little scratchy, and that reputation is fair. The softness people love takes time to arrive on its own.'),
                     h2('What a stone wash actually does'),
-                    para('So we don’t make you wait. Before it’s cut and sewn, our linen is tumbled in a wash with natural stones, which breaks down the stiffness in the fibres and relaxes the weave. The result is fabric that’s soft and supple from the very first night — with the gently lived-in, slightly crumpled look that’s the whole point of linen, rather than a crisp hotel finish that fights you.'),
+                    para('So we don’t make you wait. Before it’s cut and sewn, our linen is tumbled in a wash with natural stones, which breaks down the stiffness in the fibres and relaxes the weave. The result is fabric that’s soft and supple from the very first night, with the gently lived-in, slightly crumpled look that’s the whole point of linen, rather than a crisp hotel finish that fights you.'),
                     h2('It only gets better'),
-                    para('Unlike synthetics, which degrade with washing, linen improves. Each trip through the machine relaxes it a little further, so the sheets you sleep in this year will be softer next year and softer still the year after. Treated simply — a warm wash, a low tumble or a line dry — a good linen set will outlast almost everything else in the cupboard. That’s why we start with the wash: it’s the difference between homeware you tolerate and homeware you love from day one.'),
+                    para('Unlike synthetics, which degrade with washing, linen improves. Each trip through the machine relaxes it a little further, so the sheets you sleep in this year will be softer next year and softer still the year after. Treated simply (a warm wash, a low tumble or a line dry) a good linen set will outlast almost everything else in the cupboard. That’s why we start with the wash: it’s the difference between homeware you tolerate and homeware you love from day one.'),
                 ],
             },
         },
@@ -808,11 +808,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The best-looking tables aren’t the most matched ones. A table set entirely from a single boxed service can read as stiff — like a showroom rather than a home. The trick to a table that looks gathered and relaxed is to build it in layers, and to lean on pieces that are handsome enough to leave out and sturdy enough to use every day.'),
+                    para('The best-looking tables aren’t the most matched ones. A table set entirely from a single boxed service can read as stiff, like a showroom rather than a home. The trick to a table that looks gathered and relaxed is to build it in layers, and to lean on pieces that are handsome enough to leave out and sturdy enough to use every day.'),
                     h2('Start with the everyday pieces'),
-                    para('Begin with your hard-working ceramics — the dinner plates and bowls you reach for without thinking. Hand-thrown stoneware in a soft, reactive glaze does a lot of the work here, because the small variations from piece to piece give a table warmth that a flawless, machine-made set never will. Keep the palette calm — oat, ash, clay — and let the food bring the color.'),
+                    para('Begin with your hard-working ceramics: the dinner plates and bowls you reach for without thinking. Hand-thrown stoneware in a soft, reactive glaze does a lot of the work here, because the small variations from piece to piece give a table warmth that a flawless, machine-made set never will. Keep the palette calm (oat, ash, clay) and let the food bring the color.'),
                     h2('Layer in texture, not clutter'),
-                    para('From there, add texture rather than more objects: a washed-linen runner instead of a full cloth, a wooden board down the middle for bread or cheese, a couple of speckled mugs already out. Skip the tightly-folded napkins and the centrepiece that blocks the conversation. The aim isn’t a photograph — it’s a table that looks like people are about to sit down and enjoy themselves, because they are.'),
+                    para('From there, add texture rather than more objects: a washed-linen runner instead of a full cloth, a wooden board down the middle for bread or cheese, a couple of speckled mugs already out. Skip the tightly-folded napkins and the centrepiece that blocks the conversation. The aim isn’t a photograph, it’s a table that looks like people are about to sit down and enjoy themselves, because they are.'),
                 ],
             },
         },
@@ -823,16 +823,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Caring for wool and linen',
-            excerpt: 'Natural materials are far easier to look after than people fear — and cared for simply, they’ll outlast anything synthetic. A short, honest guide.',
+            excerpt: 'Natural materials are far easier to look after than people fear, and cared for simply, they’ll outlast anything synthetic. A short, honest guide.',
             featuredImage: { $asset: 'post-care' },
             body: {
                 type: 'doc',
                 content: [
                     para('There’s a myth that natural materials are precious and high-maintenance. In our experience it’s the opposite: wool and linen are forgiving, self-cleaning to a degree, and built to last decades if you treat them kindly. The main thing is to be gentle with heat and honest about how little they actually need.'),
                     h2('Wool likes air more than water'),
-                    para('Wool naturally resists dirt and odour, so a throw or a cushion rarely needs washing — a good airing outside will freshen it more effectively than a machine. When something does need cleaning, use a cool, gentle wool cycle or hand wash, never hot water, and always dry flat rather than hanging, so the weight of the water doesn’t stretch it out of shape. Never wring it; press the water out instead.'),
+                    para('Wool naturally resists dirt and odour, so a throw or a cushion rarely needs washing: a good airing outside will freshen it more effectively than a machine. When something does need cleaning, use a cool, gentle wool cycle or hand wash, never hot water, and always dry flat rather than hanging, so the weight of the water doesn’t stretch it out of shape. Never wring it; press the water out instead.'),
                     h2('Linen just gets softer'),
-                    para('Linen is even simpler. Wash it warm rather than hot, with a mild detergent and no fabric softener — softener coats the fibres and stops them breathing, which is the whole reason you bought linen. A low tumble leaves it with that relaxed, lived-in look; a line dry is gentler still. Skip the ironing unless you like it crisp. Do that much and both will reward you for years — which, after all, is the point of buying them once and buying them well.'),
+                    para('Linen is even simpler. Wash it warm rather than hot, with a mild detergent and no fabric softener: softener coats the fibres and stops them breathing, which is the whole reason you bought linen. A low tumble leaves it with that relaxed, lived-in look; a line dry is gentler still. Skip the ironing unless you like it crisp. Do that much and both will reward you for years, which, after all, is the point of buying them once and buying them well.'),
                 ],
             },
         },
@@ -847,7 +847,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Home Goods (Homeware)',
     theme: THEME,
     summary:
-        'A complete, working shop for a considered homeware brand: a real catalogue of washed linen bedding, a wool throw, hand-thrown tableware, lighting, storage, scent and serving pieces, with categories, collections, a bespoke homeware PDP and a full merchandised home page. Warm, tactile theme — a linen ground, a grounded terracotta primary and a soft sage accent. Shipped as Hearth & Hollow.',
+        'A complete, working shop for a considered homeware brand: a real catalogue of washed linen bedding, a wool throw, hand-thrown tableware, lighting, storage, scent and serving pieces, with categories, collections, a bespoke homeware PDP and a full merchandised home page. Warm, tactile theme, a linen ground, a grounded terracotta primary and a soft sage accent. Shipped as Hearth & Hollow.',
     tagline: 'A warm, working storefront for a considered homeware brand.',
     vertical: 'retail',
     industry: 'Home goods & homeware',
@@ -860,14 +860,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Hearth & Hollow — considered homeware, made to last',
+            title: 'Hearth & Hollow: considered homeware, made to last',
             description:
-                'Hearth & Hollow makes warm, tactile homeware from natural materials — washed linen, hand-thrown ceramics, real wool — in small runs, built to be lived with for years.',
+                'Hearth & Hollow makes warm, tactile homeware from natural materials (washed linen, hand-thrown ceramics, real wool) in small runs, built to be lived with for years.',
         },
         about: {
             title: 'About Hearth & Hollow',
             description:
-                'Why Hearth & Hollow makes homeware the slow way — small runs, natural materials, makers we know by name, and pieces designed to age well and be handed on.',
+                'Why Hearth & Hollow makes homeware the slow way: small runs, natural materials, makers we know by name, and pieces designed to age well and be handed on.',
         },
     },
     home: HOME,

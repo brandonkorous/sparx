@@ -53,7 +53,7 @@ const uploadImage: MediaMcpTool = {
   description:
     `Upload an image (raw bytes) into the tenant's media library and get a URL to place on a site. The image ` +
     `is stored and transcoded to optimised web variants. Use the returned \`url\` as a Builder Image node's \`src\` ` +
-    `or a Section \`bgImage\`. Allowed types: ${allowedMimeList}. Max ${maxKiB} KiB (optimise/downscale first — web ` +
+    `or a Section \`bgImage\`. Allowed types: ${allowedMimeList}. Max ${maxKiB} KiB (optimise/downscale first: web ` +
     `images should be small; for a larger or already-hosted image use set_image_from_url instead).`,
   scope: 'write:builder',
   confirmation: false,
@@ -68,7 +68,7 @@ const uploadImage: MediaMcpTool = {
       .string()
       .min(1)
       .max(127)
-      .describe(`The image content type — one of: ${allowedMimeList}.`),
+      .describe(`The image content type: one of: ${allowedMimeList}.`),
     filename: z.string().min(1).max(255).describe('A filename for the asset, e.g. "hero.webp".'),
     alt: z.string().max(500).optional().describe('Alt text (accessibility + SEO).'),
     width: z.number().int().positive().optional().describe('Intrinsic pixel width, if known.'),
@@ -93,10 +93,10 @@ const setImageFromUrl: MediaMcpTool = {
   name: 'set_image_from_url',
   description:
     `Reference an existing image by URL (or a small data:image/... URI) as a media asset, without uploading bytes. ` +
-    `The server does NOT fetch the URL — the site visitor's browser does — so use a publicly reachable https URL. ` +
+    `The server does NOT fetch the URL (the site visitor's browser does) so use a publicly reachable https URL. ` +
     `Use the returned \`url\` as a Builder Image node's \`src\` or a Section \`bgImage\`. Only http(s) and ` +
     `data:image/ references are accepted (other schemes are refused). For a data: URI the reference must be under ` +
-    `1024 chars — larger images must be uploaded with upload_image.`,
+    `1024 chars: larger images must be uploaded with upload_image.`,
   scope: 'write:builder',
   confirmation: false,
   input: z.object({
@@ -138,7 +138,7 @@ const maxProxiedMB = MAX_PROXIED_UPLOAD_BYTES / (1024 * 1024);
 const createImageUploadTool: MediaMcpTool = {
   name: 'create_image_upload',
   description:
-    `Start a real image upload WITHOUT sending the bytes through this tool call — use THIS for actual photos and ` +
+    `Start a real image upload WITHOUT sending the bytes through this tool call. Use THIS for actual photos and ` +
     `screenshots. (upload_image inlines base64, which corrupts anything but a tiny image; set_image_from_url is for an ` +
     `already-hosted URL.) Returns an \`uploadUrl\` you PUT the raw bytes to out of band, e.g. ` +
     `\`curl -X PUT --data-binary @shot.jpg -H "content-type: image/jpeg" "<uploadUrl>"\`, plus \`imageUrl\` to use as a ` +
@@ -153,7 +153,7 @@ const createImageUploadTool: MediaMcpTool = {
       .string()
       .min(1)
       .max(127)
-      .describe(`The image content type — one of: ${allowedMimeList}.`),
+      .describe(`The image content type: one of: ${allowedMimeList}.`),
     byteSize: z
       .number()
       .int()
@@ -172,7 +172,7 @@ const createImageUploadTool: MediaMcpTool = {
 const deleteImageTool: MediaMcpTool = {
   name: 'delete_image',
   description:
-    `Delete an image from the tenant's media library by its asset id. Soft-delete — an operator can recover it. ` +
+    `Delete an image from the tenant's media library by its asset id. Soft-delete: an operator can recover it. ` +
     `REFUSES if the image is still referenced by any page/product/entry (detach it there first, then retry). ` +
     `The assetId is the one returned by upload_image / create_image_upload / set_image_from_url.`,
   scope: 'write:builder',

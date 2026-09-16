@@ -33,7 +33,7 @@ const M = getModuleColor('cms');
 // ── HERO ──────────────────────────────────────────────────────────────────────
 export function CmsHero() {
   const lede =
-    'sparx CMS is a calm, fast place to publish — a block editor, a media library, structured content, and SEO that does its homework. It runs standalone: a publisher, a docs site, or a portfolio needs no shop. Render it on a hosted sparx site, or pull it headless through the API.';
+    'sparx CMS is a calm, fast place to publish: a block editor, a media library, structured content, and SEO that does its homework. It runs standalone: a publisher, a docs site, or a portfolio needs no shop. Render it on a hosted sparx site, or pull it headless through the API.';
   const chips = ['standalone, no shop', 'structured content', 'SEO built in', 'REST + GraphQL'];
   return (
     <section className={`${M.bg} bg-soft px-page pt-20 pb-28`}>
@@ -155,7 +155,7 @@ export function CmsLifecycle() {
   const stages = [
     {
       title: 'Write',
-      body: 'A distraction-free block editor. Autosave every 30 seconds; the last 10 revisions kept and any one restorable — write freely, never lose a word.',
+      body: 'A distraction-free block editor. Autosave every 30 seconds; the last 10 revisions kept and any one restorable. Write freely, never lose a word.',
     },
     {
       title: 'Hand it off',
@@ -167,7 +167,7 @@ export function CmsLifecycle() {
     },
     {
       title: 'Ship',
-      body: 'Live on your domain, in the sitemap, with JSON-LD and an RSS entry. Change the slug later and a 301 redirect is created for you — no link rot.',
+      body: 'Live on your domain, in the sitemap, with JSON-LD and an RSS entry. Change the slug later and a 301 redirect is created for you: no link rot.',
     },
   ];
   return (
@@ -175,7 +175,7 @@ export function CmsLifecycle() {
       <SectionHeader
         accent={M.color}
         headline="From blank page to live, in order"
-        lede="Every page and post moves the same calm path — write, hand it off, set the date, ship. Autosave and revisions ride along the whole way, so nothing is ever lost between drafts."
+        lede="Every page and post moves the same calm path. Write, hand it off, set the date, ship. Autosave and revisions ride along the whole way, so nothing is ever lost between drafts."
       />
       <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s, i) => (
@@ -219,7 +219,7 @@ export function CmsStructured() {
       <SectionHeader
         accent={M.color}
         headline="Model your content, not just paragraphs"
-        lede="A blog is one shape; a case study, a recipe, or a team profile is another. Define your own content types with typed fields and sparx generates the editing form — then serves it back as clean, typed JSON over the same API."
+        lede="A blog is one shape; a case study, a recipe, or a team profile is another. Define your own content types with typed fields and sparx generates the editing form, then serves it back as clean, typed JSON over the same API."
       />
       <div className="mt-13 grid grid-cols-1 items-stretch gap-6 md:grid-cols-2">
         <SchemaPanel fields={fields} />
@@ -299,7 +299,7 @@ export function CmsEditor() {
     {
       n: 'C',
       title: 'Internal links',
-      body: 'Link to any page, post, product, or collection — with a nofollow option for external.',
+      body: 'Link to any page, post, product, or collection, with a nofollow option for external.',
     },
     {
       n: 'D',
@@ -312,7 +312,7 @@ export function CmsEditor() {
       <SectionHeader
         accent={M.color}
         headline="An editor that gets out of the way"
-        lede="Built on a real rich-text engine — type, format, embed, link. No nested-popover maze, no mystery markup underneath. Everything alongside is a capability you get on day one."
+        lede="Built on a real rich-text engine. Type, format, embed, link. No nested-popover maze, no mystery markup underneath. Everything alongside is a capability you get on day one."
       />
       <div className="mkt-frame-grid mt-13">
         <Cycle
@@ -422,7 +422,7 @@ export function CmsSeoAudit() {
       <SectionHeader
         accent={M.color}
         headline="SEO that checks its own work"
-        lede="Every page gets a live audit as you write — not a report you run later. Title and meta lengths, a unique H1, alt text, internal links, and word count, each scored before you publish. Sitemaps and JSON-LD generate themselves."
+        lede="Every page gets a live audit as you write, not a report you run later. Title and meta lengths, a unique H1, alt text, internal links, and word count, each scored before you publish. Sitemaps and JSON-LD generate themselves."
       />
       <div className="mkt-seo-grid mt-13">
         <div
@@ -436,7 +436,7 @@ export function CmsSeoAudit() {
           </span>
           <span className="font-sans text-sm">
             Live SEO score on &ldquo;Pour-over basics.&rdquo; Fix the one warning and it&rsquo;s a
-            clean 100 — all before this post ever goes live.
+            clean 100. All before this post ever goes live.
           </span>
         </div>
         <div className="border-base-300 bg-base-100 overflow-hidden rounded-xl border">

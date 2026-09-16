@@ -192,7 +192,7 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
                   <Heading level={2} className="text-lg font-semibold">
                     Already good
                   </Heading>
-                  <Text className="text-sm">Nothing to do here — these are set up correctly.</Text>
+                  <Text className="text-sm">Nothing to do here. These are set up correctly.</Text>
                 </div>
                 <ul>
                   {alreadyGood.map((check) => (

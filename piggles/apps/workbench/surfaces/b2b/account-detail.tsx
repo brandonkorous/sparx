@@ -80,7 +80,7 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 const STATUS_OPTIONS: { value: AccountStatus; label: string }[] = [
   { value: 'active', label: 'Open for orders' },
-  { value: 'credit_hold', label: 'On credit hold — no new orders until paid' },
+  { value: 'credit_hold', label: 'On credit hold: no new orders until paid' },
   { value: 'suspended', label: 'Suspended' },
   { value: 'inactive', label: 'Closed' },
 ];
@@ -168,7 +168,7 @@ function AccountLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             error={accountQuery.error}
             noun="account"
             title="Could not load this account"
-            description="This is a problem reaching the server. The account itself is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. The account itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void accountQuery.refetch();
             }}
@@ -390,7 +390,7 @@ function AccountEditor({
       value: tier.id,
       label: tier.name,
     }));
-    return [{ value: '', label: 'No tier — normal prices' }, ...items];
+    return [{ value: '', label: 'No tier: normal prices' }, ...items];
   }, [tiersQuery.data]);
 
   const state = account ? accountState(account.status) : null;
@@ -518,7 +518,7 @@ function AccountEditor({
           {/* 2 — How they buy */}
           <FormSection
             title="How they buy"
-            description="The prices and terms this business gets — set once here instead of on every order."
+            description="The prices and terms this business gets. Set once here instead of on every order."
           >
             <Field>
               <FieldLabel>Price tier</FieldLabel>
@@ -538,7 +538,7 @@ function AccountEditor({
                 }
               />
               <FieldDescription>
-                A named discount level — trade, distributor, key account — set up under Price tiers.
+                A named discount level (trade, distributor, key account) set up under Price tiers.
                 Leave it on normal prices to charge them the same as everyone else.
               </FieldDescription>
             </Field>
@@ -562,7 +562,7 @@ function AccountEditor({
                 />
                 <FieldDescription>
                   {account && account.creditLimitCents > 0
-                    ? `They've used ${formatCents(account.creditUsedCents)} of this — ${formatCents(account.creditRemainingCents)} left.`
+                    ? `They've used ${formatCents(account.creditUsedCents)} of this, with ${formatCents(account.creditRemainingCents)} left.`
                     : 'The most they can owe you at once on terms. Leave at zero for no credit.'}
                 </FieldDescription>
               </Field>
@@ -874,7 +874,7 @@ function ContactsSection({ accountId }: { accountId: string }) {
         </Text>
       ) : active.length === 0 && inactive.length === 0 ? (
         <Text className="text-sm">
-          No one is set up to order for this account yet. Add someone below — they must already be a
+          No one is set up to order for this account yet. Add someone below. They must already be a
           customer of yours.
         </Text>
       ) : (

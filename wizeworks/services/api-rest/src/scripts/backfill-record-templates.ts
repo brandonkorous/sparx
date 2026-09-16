@@ -210,7 +210,7 @@ async function restamp(c: Candidate): Promise<void> {
 
 async function main(): Promise<void> {
   console.log(
-    APPLY ? 'APPLYING — re-stamping unedited record pages.\n' : 'DRY RUN — nothing written.\n'
+    APPLY ? 'APPLYING: re-stamping unedited record pages.\n' : 'DRY RUN. Nothing written.\n'
   );
   if (ONLY_TENANT) console.log(`filtered to tenant: ${ONLY_TENANT}`);
   if (ONLY_TYPE) console.log(`filtered to record type: ${ONLY_TYPE}`);
@@ -232,7 +232,7 @@ async function main(): Promise<void> {
     const tenants = new Set(group.map((c) => c.tenantId)).size;
     const verdict = group.every((c) => c.staleFps.every((fp) => factory.has(fp)))
       ? 'FACTORY → re-stamp'
-      : 'review (singleton — not written; --include-fingerprint to opt in)';
+      : 'review (singleton, not written; --include-fingerprint to opt in)';
     console.log(
       `fingerprint ${key}  ·  ${group.length} page(s), ${tenants} tenant(s)  ·  ${verdict}`
     );

@@ -26,7 +26,7 @@ export function LookPicker({
     <div>
       <h2 className="text-xl font-bold">How should it look?</h2>
       <p className="mt-1 text-base">
-        Every one is a complete working site — shop, journal, bookings and all. You can rewrite any
+        Every one is a complete working site: shop, journal, bookings and all. You can rewrite any
         of it once you are in.
       </p>
 

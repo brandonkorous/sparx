@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Cardinal Supply — heavyweight graphic streetwear, dropped weekly",
-      "seoDescription": "Cardinal Supply makes loud, heavyweight graphic streetwear — hand-printed tees, 400gsm fleece and utility bottoms in small weekly drops that never restock. Wear it loud.",
+      "seoTitle": "Cardinal Supply: heavyweight graphic streetwear, dropped weekly",
+      "seoDescription": "Cardinal Supply makes loud, heavyweight graphic streetwear: hand-printed tees, 400gsm fleece and utility bottoms in small weekly drops that never restock. Wear it loud.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -790,7 +790,7 @@
                         "kind": "element",
                         "tag": "p",
                         "class": "text-sm font-bold uppercase tracking-widest text-primary-content",
-                        "children": ["Drop 07 — live now"],
+                        "children": ["Drop 07: live now"],
                         "id": "6e276df8-fe89-49b5-ab12-64936561458a",
                         "ord": "a0"
                       },
@@ -807,7 +807,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-primary-content",
                         "children": [
-                          "Cardinal Supply is heavyweight graphics for people who do not do quiet. Small runs, bold prints, built to take a beating — designed in the studio, printed by hand, gone when they are gone."
+                          "Cardinal Supply is heavyweight graphics for people who do not do quiet. Small runs, bold prints, built to take a beating: designed in the studio, printed by hand, gone when they are gone."
                         ],
                         "id": "d0676b10-d8de-4297-90f4-2574e5fe18b1",
                         "ord": "a2"
@@ -1247,7 +1247,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-neutral-content",
                     "children": [
-                      "We drop in small batches, weekly. No restocks, no reruns — when a print sells through, it is retired for good. Get on the list and you will know the second the next one lands."
+                      "We drop in small batches, weekly. No restocks, no reruns, when a print sells through, it is retired for good. Get on the list and you will know the second the next one lands."
                     ],
                     "id": "1f71dbca-daf3-447d-bfcf-e9a4898ced79",
                     "ord": "a1"
@@ -1517,7 +1517,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Everything runs a proper weight — 240gsm tees, 400gsm fleece — cut boxy and printed with plastisol inks that crack the way you want them to, not the way that falls off in the wash. This is stuff made to get worn hard and worn often."
+                          "Everything runs a proper weight (240gsm tees, 400gsm fleece) cut boxy and printed with plastisol inks that crack the way you want them to, not the way that falls off in the wash. This is stuff made to get worn hard and worn often."
                         ],
                         "id": "bfcc368f-501c-46fa-8bd0-ba73f2c40627",
                         "ord": "a1"
@@ -1585,7 +1585,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Drops are small and they do not come back. If a piece is in stock, it is because it is still in stock — that is the whole game. Follow the list, move fast, and never explain the fit to anyone."
+                          "Drops are small and they do not come back. If a piece is in stock, it is because it is still in stock. That is the whole game. Follow the list, move fast, and never explain the fit to anyone."
                         ],
                         "id": "0614a75b-40c3-45ab-8504-d1dee124157a",
                         "ord": "a1"
@@ -1620,7 +1620,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Cardinal Supply",
+      "seoTitle": "Shop: Cardinal Supply",
       "seoDescription": "Browse everything Cardinal Supply makes, with prices and options at a glance. Streetwear label.",
       "root": {
         "kind": "element",
@@ -1652,7 +1652,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every piece we are running right now — graphic tees, heavyweight fleece, cargo bottoms, outerwear and accessories. Filter by category or size, sort however you like. When it sells through, it is gone, so do not sit on it."
+                      "Every piece we are running right now: graphic tees, heavyweight fleece, cargo bottoms, outerwear and accessories. Filter by category or size, sort however you like. When it sells through, it is gone, so do not sit on it."
                     ],
                     "id": "a30ce814-865e-439f-ad67-2f0c26acf950",
                     "ord": "a1"
@@ -1680,7 +1680,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Cardinal Supply",
+      "seoTitle": "Collections: Cardinal Supply",
       "seoDescription": "Explore the collections at Cardinal Supply, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1712,7 +1712,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The gear grouped the way you actually shop it — the latest drop, the pieces everyone is copping, the graphics, the fleece and the bottoms. Start wherever your fit needs work."
+                      "The gear grouped the way you actually shop it: the latest drop, the pieces everyone is copping, the graphics, the fleece and the bottoms. Start wherever your fit needs work."
                     ],
                     "id": "c033c75d-a5dc-4911-bc2a-7f994b7f7188",
                     "ord": "a1"
@@ -1740,7 +1740,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Cardinal Supply",
+      "seoTitle": "Your cart: Cardinal Supply",
       "seoDescription": "Review what is in your cart and check out securely at Cardinal Supply.",
       "root": {
         "kind": "element",
@@ -1772,7 +1772,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping over $75, and every order ships within two days. Sizing not sure? Free 30-day returns on unworn gear — grab two sizes and send back the one that misses."
+                      "Free shipping over $75, and every order ships within two days. Sizing not sure? Free 30-day returns on unworn gear: grab two sizes and send back the one that misses."
                     ],
                     "id": "0536d9cb-ef9e-40cd-b6b1-f801dad3a4c6",
                     "ord": "a1"
@@ -1800,7 +1800,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Cardinal Supply",
+      "seoTitle": "Search: Cardinal Supply",
       "seoDescription": "Search Cardinal Supply for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1860,7 +1860,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Cardinal Supply",
+      "seoTitle": "Journal: Cardinal Supply",
       "seoDescription": "Stories, guides and notes from Cardinal Supply.",
       "root": {
         "kind": "element",
@@ -1892,7 +1892,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Behind the drops — how a print goes from sketch to rack, how our stuff fits, and how to keep heavyweight gear looking new. No filler, no gatekeeping."
+                      "Behind the drops: how a print goes from sketch to rack, how our stuff fits, and how to keep heavyweight gear looking new. No filler, no gatekeeping."
                     ],
                     "id": "ebf1c93c-733a-42cf-9823-0904013f3291",
                     "ord": "a1"
@@ -2025,7 +2025,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Cardinal Supply — loud, heavy, hand-printed",
+      "seoTitle": "About Cardinal Supply: loud, heavy, hand-printed",
       "seoDescription": "How Cardinal Supply works: designed in-house, screen-printed by hand on heavyweight blanks, released in small weekly drops that never come back. No logo tax, no filler.",
       "root": {
         "kind": "element",
@@ -2057,7 +2057,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Cardinal Supply started with one screen, one squeegee and a garage full of blank tees. We were sick of graphic gear that looked hard online and fell apart in a month — thin blanks, prints that peeled, the same recycled design on everything. So we made the opposite."
+                      "Cardinal Supply started with one screen, one squeegee and a garage full of blank tees. We were sick of graphic gear that looked hard online and fell apart in a month: thin blanks, prints that peeled, the same recycled design on everything. So we made the opposite."
                     ],
                     "id": "1851d61c-08d9-4846-9883-4c4a423378ac",
                     "ord": "a1"
@@ -2067,7 +2067,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every drop is designed in-house and printed by hand in small runs on heavyweight blanks we choose ourselves. We would rather sell out of a hundred good pieces than warehouse a thousand mediocre ones — which is why nothing here gets restocked, and why the fit is worth moving fast for."
+                      "Every drop is designed in-house and printed by hand in small runs on heavyweight blanks we choose ourselves. We would rather sell out of a hundred good pieces than warehouse a thousand mediocre ones, which is why nothing here gets restocked, and why the fit is worth moving fast for."
                     ],
                     "id": "59d7331c-86c0-4048-bb46-39cef60e6056",
                     "ord": "a2"
@@ -2097,8 +2097,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Cardinal Supply",
-      "seoDescription": "Get in touch with Cardinal Supply — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Cardinal Supply",
+      "seoDescription": "Get in touch with Cardinal Supply: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2134,7 +2134,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Question on a size, a fix on an order, or a wholesale/stockist enquiry? Hit us up and a real person from the crew will get back to you fast — usually same day."
+                          "Question on a size, a fix on an order, or a wholesale/stockist enquiry? Hit us up and a real person from the crew will get back to you fast, usually same day."
                         ],
                         "id": "32b85f36-6944-474e-a749-319721523034",
                         "ord": "a1"
@@ -2405,8 +2405,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Cardinal Supply",
-      "seoDescription": "Product details at Cardinal Supply — streetwear label, with options and pricing.",
+      "seoTitle": "Product: Cardinal Supply",
+      "seoDescription": "Product details at Cardinal Supply: streetwear label, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2769,7 +2769,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Cut boxy for a relaxed, modern fit — if you like it closer, size down; if you like it draped, stay true. Heavyweight cotton that softens with every wash and holds its shape. Model is 6ft in a size L."
+                              "Cut boxy for a relaxed, modern fit: if you like it closer, size down; if you like it draped, stay true. Heavyweight cotton that softens with every wash and holds its shape. Model is 6ft in a size L."
                             ],
                             "id": "517f6d39-04d4-4aec-90d2-022e830e7f54",
                             "ord": "a1"

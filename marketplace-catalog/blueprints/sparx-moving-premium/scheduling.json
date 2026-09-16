@@ -123,7 +123,7 @@
     {
       "handle": "consultation",
       "name": "In-home consultation",
-      "description": "A complimentary walk-through of your home — we take stock of what’s moving, talk timeline and options, and build a precise, honest estimate.",
+      "description": "A complimentary walk-through of your home. We take stock of what’s moving, talk timeline and options, and build a precise, honest estimate.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -140,7 +140,7 @@
     {
       "handle": "virtual-estimate",
       "name": "Virtual video estimate",
-      "description": "A complimentary video call — walk us through your home on your phone and we’ll prepare a detailed written estimate, no visit required.",
+      "description": "A complimentary video call: walk us through your home on your phone and we’ll prepare a detailed written estimate, no visit required.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -157,7 +157,7 @@
     {
       "handle": "long-distance-consult",
       "name": "Long-distance & interstate consultation",
-      "description": "For a cross-country or interstate move — we plan the route, the timeline and the logistics, and assign a dedicated manager for the whole journey.",
+      "description": "For a cross-country or interstate move. We plan the route, the timeline and the logistics, and assign a dedicated manager for the whole journey.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -174,7 +174,7 @@
     {
       "handle": "white-glove-packing-consult",
       "name": "White-glove packing consultation",
-      "description": "Plan full-service, room-by-room packing — every item wrapped, boxed and inventoried by our crew, so you never lift a thing.",
+      "description": "Plan full-service, room-by-room packing: every item wrapped, boxed and inventoried by our crew, so you never lift a thing.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "fine-art-move-consult",
       "name": "Fine-art & antiques consultation",
-      "description": "For paintings, sculpture, pianos and heirlooms — custom crating, climate care and a specialist manager who handles the irreplaceable.",
+      "description": "For paintings, sculpture, pianos and heirlooms: custom crating, climate care and a specialist manager who handles the irreplaceable.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -208,7 +208,7 @@
     {
       "handle": "corporate-relocation-consult",
       "name": "Corporate & executive relocation",
-      "description": "A managed relocation for an executive or a team — coordinated timelines, discreet handling and a single point of contact from start to finish.",
+      "description": "A managed relocation for an executive or a team: coordinated timelines, discreet handling and a single point of contact from start to finish.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -225,7 +225,7 @@
     {
       "handle": "storage-consult",
       "name": "Storage & warehousing consultation",
-      "description": "Short- or long-term storage between moves — secure, climate-controlled and fully inventoried, with delivery on your schedule.",
+      "description": "Short- or long-term storage between moves: secure, climate-controlled and fully inventoried, with delivery on your schedule.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

@@ -436,7 +436,7 @@ function LocationEditor({
                 <FieldStatus status="error">{codeError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  A short label for this place, printed on shelf tickets and paperwork — letters,
+                  A short label for this place, printed on shelf tickets and paperwork: letters,
                   numbers and dashes, up to fifteen. It must be different from your other locations.
                 </FieldDescription>
               )}
@@ -467,7 +467,7 @@ function LocationEditor({
 
           <FormSection
             title="Where it is"
-            description="The address stock lives at. It appears on paperwork and helps work out shipping. A place that keeps no physical stock — like a supplier that ships direct — can leave most of this blank."
+            description="The address stock lives at. It appears on paperwork and helps work out shipping. A place that keeps no physical stock (like a supplier that ships direct) can leave most of this blank."
           >
             <Field>
               <FieldLabel>Street address</FieldLabel>
@@ -566,7 +566,7 @@ function LocationEditor({
                   }
                 />
                 <FieldDescription>
-                  The two-letter country code — GB for the United Kingdom, US for the United States,
+                  The two-letter country code: GB for the United Kingdom, US for the United States,
                   DE for Germany.
                 </FieldDescription>
               </Field>
@@ -624,7 +624,7 @@ function LocationEditor({
                   This location is in use
                 </Text>
                 <Text as="span" className="text-sm">
-                  Switch this off to close the location without removing it — it keeps its history
+                  Switch this off to close the location without removing it. It keeps its history
                   but takes no new stock, and disappears from the everyday list. Turn it back on any
                   time.
                 </Text>

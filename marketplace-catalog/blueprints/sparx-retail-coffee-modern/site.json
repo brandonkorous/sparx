@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Meridian Coffee — modern specialty coffee, roasted to order",
-      "seoDescription": "Meridian is a modern specialty roaster — clean single origins, blends, a Swiss-water decaf and a flexible subscription, roasted to order and shipped within days. Coffee, dialed in.",
+      "seoTitle": "Meridian Coffee: modern specialty coffee, roasted to order",
+      "seoDescription": "Meridian is a modern specialty roaster: clean single origins, blends, a Swiss-water decaf and a flexible subscription, roasted to order and shipped within days. Coffee, dialed in.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -796,7 +796,7 @@
                         "tag": "p",
                         "class": "max-w-md text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Meridian is a modern specialty roaster. We source clean, high-grown coffees, roast them to order in small batches, and ship within days — so every cup lands bright, sweet and exactly as intended."
+                          "Meridian is a modern specialty roaster. We source clean, high-grown coffees, roast them to order in small batches, and ship within days, so every cup lands bright, sweet and exactly as intended."
                         ],
                         "id": "ba1cc90f-9b12-4d02-8a9f-d8121e4b6c49",
                         "ord": "a1"
@@ -938,7 +938,7 @@
                         "tag": "p",
                         "class": "text-base leading-relaxed text-base-content",
                         "children": [
-                          "A subscription that flexes with you — no lock-in, no minimum, no games."
+                          "A subscription that flexes with you: no lock-in, no minimum, no games."
                         ],
                         "id": "7e8304c5-2cd8-4481-91f0-a85aed0bda19",
                         "ord": "a1"
@@ -1364,7 +1364,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every coffee is profiled on a sample roaster, logged batch by batch, and cupped before it ships. We chase clarity — the notes on the bag are the notes in the cup, not a wish list."
+                          "Every coffee is profiled on a sample roaster, logged batch by batch, and cupped before it ships. We chase clarity: the notes on the bag are the notes in the cup, not a wish list."
                         ],
                         "id": "7d262168-2ecc-4743-9412-aa52633f99bc",
                         "ord": "a1"
@@ -1631,7 +1631,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Pick a coffee and a cadence and we roast it fresh to match your schedule. Rotate through single origins or lock in the Signal Blend — skip, swap or cancel any week from your account."
+                      "Pick a coffee and a cadence and we roast it fresh to match your schedule. Rotate through single origins or lock in the Signal Blend: skip, swap or cancel any week from your account."
                     ],
                     "id": "0d1094ed-213c-4544-9550-015f4e7053e9",
                     "ord": "a1"
@@ -1662,7 +1662,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Meridian Coffee",
+      "seoTitle": "Shop: Meridian Coffee",
       "seoDescription": "Browse everything Meridian Coffee makes, with prices and options at a glance. Coffee roaster.",
       "root": {
         "kind": "element",
@@ -1694,7 +1694,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we’re roasting right now — single origins, blends, a Swiss-water decaf, single-serve steep bags and the gear to brew them. Filter by roast or origin, sort however you like; all of it ships freshly roasted to order."
+                      "Everything we’re roasting right now: single origins, blends, a Swiss-water decaf, single-serve steep bags and the gear to brew them. Filter by roast or origin, sort however you like; all of it ships freshly roasted to order."
                     ],
                     "id": "1a49afd2-68b2-4144-ac19-172e33db1505",
                     "ord": "a1"
@@ -1722,7 +1722,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Meridian Coffee",
+      "seoTitle": "Collections: Meridian Coffee",
       "seoDescription": "Explore the collections at Meridian Coffee, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1754,7 +1754,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The coffees grouped the way people actually shop — fresh off the roaster, the everyday best sellers, the bright single origins, and starter kits for a new setup."
+                      "The coffees grouped the way people actually shop: fresh off the roaster, the everyday best sellers, the bright single origins, and starter kits for a new setup."
                     ],
                     "id": "dc1fbede-8f5d-4d59-8517-2e4ac1532d73",
                     "ord": "a1"
@@ -1782,7 +1782,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Meridian Coffee",
+      "seoTitle": "Your cart: Meridian Coffee",
       "seoDescription": "Review what is in your cart and check out securely at Meridian Coffee.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not what you hoped for? Tell us and we’ll make it right — good coffee should never be a gamble."
+                      "Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not what you hoped for? Tell us and we’ll make it right: good coffee should never be a gamble."
                     ],
                     "id": "ce7420ad-fc15-4134-a329-ff41e7a5f92b",
                     "ord": "a1"
@@ -1842,7 +1842,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Meridian Coffee",
+      "seoTitle": "Search: Meridian Coffee",
       "seoDescription": "Search Meridian Coffee for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1902,7 +1902,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Meridian Coffee",
+      "seoTitle": "Journal: Meridian Coffee",
       "seoDescription": "Stories, guides and notes from Meridian Coffee.",
       "root": {
         "kind": "element",
@@ -1934,7 +1934,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Clear, useful notes from the roastery — how to dial in a cup, why water matters more than you think, and where the coffee actually comes from. No snobbery, just what works."
+                      "Clear, useful notes from the roastery: how to dial in a cup, why water matters more than you think, and where the coffee actually comes from. No snobbery, just what works."
                     ],
                     "id": "9ae042fe-6bc4-4085-910a-c3e44a3e0396",
                     "ord": "a1"
@@ -2068,7 +2068,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Meridian Coffee",
-      "seoDescription": "How Meridian sources, roasts and ships — clean high-grown lots, small-batch profiling, fair prices, and coffee that tastes exactly as intended, cup after cup.",
+      "seoDescription": "How Meridian sources, roasts and ships: clean high-grown lots, small-batch profiling, fair prices, and coffee that tastes exactly as intended, cup after cup.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2099,7 +2099,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Meridian began with a sample roaster, a refractometer, and a stubborn belief that great coffee should be repeatable — not a lucky bag once in a while, but the same bright, sweet cup every single morning."
+                      "Meridian began with a sample roaster, a refractometer, and a stubborn belief that great coffee should be repeatable, not a lucky bag once in a while, but the same bright, sweet cup every single morning."
                     ],
                     "id": "4275fbf3-8b70-4c97-a0c4-451c204e90ac",
                     "ord": "a1"
@@ -2119,7 +2119,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No mystery blends, no roast dates you can’t find, no coffee older than it should be. Just precise, modern coffee — sourced with care and roasted to order for the way you actually brew."
+                      "No mystery blends, no roast dates you can’t find, no coffee older than it should be. Just precise, modern coffee: sourced with care and roasted to order for the way you actually brew."
                     ],
                     "id": "b0ecbe73-8493-4a00-994b-16784c7df36e",
                     "ord": "a3"
@@ -2139,8 +2139,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Meridian Coffee",
-      "seoDescription": "Get in touch with Meridian Coffee — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Meridian Coffee",
+      "seoDescription": "Get in touch with Meridian Coffee: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2447,8 +2447,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Meridian Coffee",
-      "seoDescription": "Product details at Meridian Coffee — coffee roaster, with options and pricing.",
+      "seoTitle": "Product: Meridian Coffee",
+      "seoDescription": "Product details at Meridian Coffee: coffee roaster, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

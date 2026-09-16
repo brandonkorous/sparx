@@ -140,7 +140,7 @@ export const schedulingPresets: ModulePreset[] = [
     slug: 'salon-spa',
     name: 'Salon & spa',
     description:
-      'A starter booking setup for a salon or spa — cut, color, and manicure appointments, a stylist resource, and a 24-hour cancellation policy with a late-cancel fee.',
+      'A starter booking setup for a salon or spa: cut, color, and manicure appointments, a stylist resource, and a 24-hour cancellation policy with a late-cancel fee.',
     iconKey: 'scissors',
     tags: ['salon', 'spa', 'beauty', 'appointments'],
     policy: {
@@ -197,7 +197,7 @@ export const schedulingPresets: ModulePreset[] = [
     slug: 'professional-consults',
     name: 'Professional consultations',
     description:
-      'A starter setup for consultants and professional services — a free discovery call, a paid strategy session, and a follow-up, with a consultant resource and a 24-hour policy.',
+      'A starter setup for consultants and professional services: a free discovery call, a paid strategy session, and a follow-up, with a consultant resource and a 24-hour policy.',
     iconKey: 'briefcase',
     tags: ['consulting', 'professional', 'services', 'appointments'],
     policy: {
@@ -245,7 +245,7 @@ export const schedulingPresets: ModulePreset[] = [
     slug: 'fitness-classes',
     name: 'Fitness & classes',
     description:
-      'A starter setup for a studio or gym — group fitness and yoga classes with seats, plus 1-on-1 personal training, a studio space resource, and a 12-hour cancellation policy.',
+      'A starter setup for a studio or gym: group fitness and yoga classes with seats, plus 1-on-1 personal training, a studio space resource, and a 12-hour cancellation policy.',
     iconKey: 'dumbbell',
     tags: ['fitness', 'gym', 'classes', 'studio'],
     policy: {
@@ -305,7 +305,7 @@ export const schedulingPresets: ModulePreset[] = [
     slug: 'florist-workshops',
     name: 'Florist workshops & consultations',
     description:
-      'A starter booking setup for a flower shop — evening and weekend workshops sold by the seat, plus wedding and sympathy consultations, a workshop bench resource, and a 48-hour policy with a deposit on wedding work.',
+      'A starter booking setup for a flower shop: evening and weekend workshops sold by the seat, plus wedding and sympathy consultations, a workshop bench resource, and a 48-hour policy with a deposit on wedding work.',
     iconKey: 'flower',
     tags: ['florist', 'flowers', 'workshops', 'weddings'],
     policy: {
@@ -322,7 +322,7 @@ export const schedulingPresets: ModulePreset[] = [
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 240],
       policyText:
-        'Workshop places can be moved or cancelled up to 48 hours before — after that the flowers are already cut and ordered for you. Wedding consultations take a deposit that comes off your final quote.',
+        'Workshop places can be moved or canceled up to 48 hours before: after that the flowers are already cut and ordered for you. Wedding consultations take a deposit that comes off your final quote.',
       lateCancelFeeType: 'fixed',
       lateCancelFeeValue: 2500,
     },

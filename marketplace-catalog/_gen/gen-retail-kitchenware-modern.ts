@@ -157,7 +157,7 @@ function hero(): Node {
                                     text: 'Beautifully engineered tools for the modern kitchen.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Edge designs a short, considered range of kitchen tools — ceramic nonstick cookware, a precision kettle, a clean knife set — where every detail earns its place. Nothing fussy, nothing loud. Just the pieces you reach for, made to look as good on the counter as they perform on the stove.',
+                                    text: 'Edge designs a short, considered range of kitchen tools (ceramic nonstick cookware, a precision kettle, a clean knife set) where every detail earns its place. Nothing fussy, nothing loud. Just the pieces you reach for, made to look as good on the counter as they perform on the stove.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -250,7 +250,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New this season' }),
     editorialBand({
         heading: 'Designed, not decorated',
-        lead: 'We start every piece with the way you actually use it — the angle of a handle, the weight in the hand, the way a lid sits. Then we take everything else away. What’s left is a tool that feels obvious the first time you pick it up, and right for years after.',
+        lead: 'We start every piece with the way you actually use it: the angle of a handle, the weight in the hand, the way a lid sits. Then we take everything else away. What’s left is a tool that feels obvious the first time you pick it up, and right for years after.',
         assetId: 'ek-band-design',
         cta: 'How we design',
         href: '/blog/design-for-the-counter',
@@ -259,7 +259,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.cookware', layout: 'carousel', heading: 'Cookware' }),
     editorialBand({
         heading: 'Precision, quietly',
-        lead: 'Even heat across the whole base. A kettle you can set to the exact degree. A scale that reads to the gram. The clever engineering is on the inside — the outside stays calm, so it disappears into your kitchen instead of shouting over it.',
+        lead: 'Even heat across the whole base. A kettle you can set to the exact degree. A scale that reads to the gram. The clever engineering is on the inside: the outside stays calm, so it disappears into your kitchen instead of shouting over it.',
         assetId: 'ek-band-engineered',
         cta: 'What’s inside the range',
         href: '/blog/small-kitchen-edit',
@@ -304,7 +304,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Designed to be kept' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Every Edge piece is engineered for daily use and backed by a ten-year guarantee. Parts you can replace, finishes that don’t date, and a range that fits together — buy one thing now and it still matches the next thing you add.',
+                                        text: 'Every Edge piece is engineered for daily use and backed by a ten-year guarantee. Parts you can replace, finishes that don’t date, and a range that fits together: buy one thing now and it still matches the next thing you add.',
                                     }),
                                 ],
                             }),
@@ -343,11 +343,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop the range',
-        'The whole Edge range in one place — ceramic nonstick cookware, a precision kettle, a modern knife set, prep and storage. Filter by kind or material, or sort however you like; every piece is designed to work together and built to be used every day.'
+        'The whole Edge range in one place: ceramic nonstick cookware, a precision kettle, a modern knife set, prep and storage. Filter by kind or material, or sort however you like; every piece is designed to work together and built to be used every day.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The range grouped the way people actually build a kitchen — what’s new, the pieces everyone starts with, the cookware and prep edits, and sets that fit together from day one.'),
+    pageMasthead('Collections', 'The range grouped the way people actually build a kitchen: what’s new, the pieces everyone starts with, the cookware and prep edits, and sets that fit together from day one.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Edge', 'Looking for a pan, a kettle, or a care guide? Search the whole range and the journal below.'),
@@ -359,7 +359,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping on orders over $75, and every piece carries a ten-year guarantee. Not the right fit for your kitchen? Send it back within 60 days — we’d rather you have the tool you’ll actually use.',
+                        text: 'Free shipping on orders over $75, and every piece carries a ten-year guarantee. Not the right fit for your kitchen? Send it back within 60 days: we’d rather you have the tool you’ll actually use.',
                     }),
                 ],
             }),
@@ -373,7 +373,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Field notes' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the studio — how our nonstick actually works, the short list of tools that replaces a cluttered drawer, and why we design for the counter you live with. Plain, useful, no jargon.',
+                        text: 'Notes from the studio: how our nonstick actually works, the short list of tools that replaces a cluttered drawer, and why we design for the counter you live with. Plain, useful, no jargon.',
                     }),
                 ],
             }),
@@ -390,13 +390,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Edge' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Edge began with a simple frustration: kitchen shops are full of things designed to be bought, not used. Fifteen-piece sets you never open, gadgets that live in a drawer, finishes that look tired in a year. We wanted the opposite — a short, considered range where every piece is thought through and nothing is filler.',
+                        text: 'Edge began with a simple frustration: kitchen shops are full of things designed to be bought, not used. Fifteen-piece sets you never open, gadgets that live in a drawer, finishes that look tired in a year. We wanted the opposite, a short, considered range where every piece is thought through and nothing is filler.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We’re a small studio of designers and cooks. We prototype in our own kitchens, test until the awkward details are gone, and only ship a piece when it feels obvious to use. The clever engineering — even-heat bases, precise temperature control, a ceramic nonstick with nothing nasty in it — sits on the inside; the outside stays calm and quiet.',
+                        text: 'We’re a small studio of designers and cooks. We prototype in our own kitchens, test until the awkward details are gone, and only ship a piece when it feels obvious to use. The clever engineering: even-heat bases, precise temperature control, a ceramic nonstick with nothing nasty in it, sits on the inside; the outside stays calm and quiet.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'The whole range is built to fit together and to last. A ten-year guarantee, replaceable parts, and a look that doesn’t date — so the first thing you buy still belongs beside the tenth. Fewer, better, designed to be kept.',
+                        text: 'The whole range is built to fit together and to last. A ten-year guarantee, replaceable parts, and a look that doesn’t date, so the first thing you buy still belongs beside the tenth. Fewer, better, designed to be kept.',
                     }),
                 ],
             }),
@@ -411,7 +411,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'A question about a piece, help choosing where to start, or a wedding-registry order? Tell us what you’re cooking toward and a real person at the studio will point you to the right tool — not the most expensive one.',
+        intro: 'A question about a piece, help choosing where to start, or a wedding-registry order? Tell us what you’re cooking toward and a real person at the studio will point you to the right tool, not the most expensive one.',
         submitLabel: 'Email the studio',
     }),
 ];
@@ -456,15 +456,15 @@ const PRODUCTS: Product[] = [
         handle: 'ceramic-nonstick-pan-set',
         title: 'Ceramic Nonstick Pan Set',
         description:
-            'The three pans that cover almost everything — an 8-inch frypan, a 10-inch skillet and a 3-quart sauté with a glass lid, all with our mineral-ceramic nonstick and a fully clad aluminium body for fast, even heat. No PFAS, no flaking, oven-safe, and light enough to flip. The set to build a kitchen around.',
+            'The three pans that cover almost everything: an 8-inch frypan, a 10-inch skillet and a 3-quart sauté with a glass lid, all with our mineral-ceramic nonstick and a fully clad aluminium body for fast, even heat. No PFAS, no flaking, oven-safe, and light enough to flip. The set to build a kitchen around.',
         status: 'active',
         productType: 'Cookware set',
         vendor: VENDOR,
         tags: ['cookware', 'ceramic', 'nonstick', 'pan-set', 'pfas-free'],
         categoryHandles: ['cookware', 'sets'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'the-essentials', 'cookware-edit'],
-        seoTitle: 'Ceramic Nonstick Pan Set — 3 piece, PFAS-free | Edge',
-        seoDescription: 'A three-piece ceramic nonstick pan set with a clad aluminium body for even heat — frypan, skillet and lidded sauté.',
+        seoTitle: 'Ceramic Nonstick Pan Set: 3 piece, PFAS-free | Edge',
+        seoDescription: 'A three-piece ceramic nonstick pan set with a clad aluminium body for even heat: frypan, skillet and lidded sauté.',
         options: [
             {
                 name: 'Color',
@@ -491,8 +491,8 @@ const PRODUCTS: Product[] = [
         tags: ['cookware', 'ceramic', 'nonstick', 'frypan', 'pfas-free'],
         categoryHandles: ['cookware'],
         collectionHandles: ['best-sellers', 'the-essentials', 'cookware-edit'],
-        seoTitle: 'Ceramic Nonstick Frypan — PFAS-free | Edge',
-        seoDescription: 'A mineral-ceramic nonstick frypan on a clad aluminium base — even heat, clean pour, oven-safe to 450°F.',
+        seoTitle: 'Ceramic Nonstick Frypan: PFAS-free | Edge',
+        seoDescription: 'A mineral-ceramic nonstick frypan on a clad aluminium base: even heat, clean pour, oven-safe to 450°F.',
         options: [
             { name: 'Size', displayType: 'dropdown', values: [{ value: '8-inch' }, { value: '10-inch' }, { value: '12-inch' }] },
         ],
@@ -507,14 +507,14 @@ const PRODUCTS: Product[] = [
         handle: 'precision-kettle',
         title: 'Precision Pour Kettle',
         description:
-            'A gooseneck electric kettle you can set to the exact degree — from a gentle 130°F for delicate tea to a full boil — with a hold setting that keeps it there. The thin, curved spout gives you a slow, controlled pour for coffee or matcha, and the whole thing sits on a slim digital base that stays out of the way.',
+            'A gooseneck electric kettle you can set to the exact degree (from a gentle 130°F for delicate tea to a full boil) with a hold setting that keeps it there. The thin, curved spout gives you a slow, controlled pour for coffee or matcha, and the whole thing sits on a slim digital base that stays out of the way.',
         status: 'active',
         productType: 'Appliance',
         vendor: VENDOR,
         tags: ['appliance', 'kettle', 'gooseneck', 'variable-temperature'],
         categoryHandles: ['cookware'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'the-essentials'],
-        seoTitle: 'Precision Pour Kettle — variable-temperature gooseneck | Edge',
+        seoTitle: 'Precision Pour Kettle: variable-temperature gooseneck | Edge',
         seoDescription: 'A gooseneck electric kettle with to-the-degree temperature control and a hold setting for coffee and tea.',
         variants: [{ sku: 'EDGE-KETTLE', priceCents: money(95), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'ek-prod-kettle', isPrimary: true, alt: 'A precision gooseneck kettle with a digital base' }],
@@ -523,15 +523,15 @@ const PRODUCTS: Product[] = [
         handle: 'precision-knife-set',
         title: 'Precision Knife Set',
         description:
-            'The three knives that do the work of a whole block — an 8-inch chef’s, a 5-inch utility, and a paring knife, in a single high-carbon stainless steel with a clean, handle-less bolster and a comfortable oval grip. Laser-checked edges, a full tang, and a magnetic walnut stand that shows them off instead of hiding them.',
+            'The three knives that do the work of a whole block: an 8-inch chef’s, a 5-inch utility, and a paring knife, in a single high-carbon stainless steel with a clean, handle-less bolster and a comfortable oval grip. Laser-checked edges, a full tang, and a magnetic walnut stand that shows them off instead of hiding them.',
         status: 'active',
         productType: 'Knife set',
         vendor: VENDOR,
         tags: ['tools', 'knives', 'knife-set', 'stainless-steel'],
         categoryHandles: ['tools', 'sets'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'the-essentials'],
-        seoTitle: 'Precision Knife Set — 3 piece with stand | Edge',
-        seoDescription: 'A three-piece high-carbon stainless knife set — chef’s, utility and paring — with a magnetic walnut stand.',
+        seoTitle: 'Precision Knife Set: 3 piece with stand | Edge',
+        seoDescription: 'A three-piece high-carbon stainless knife set (chef’s, utility and paring) with a magnetic walnut stand.',
         variants: [{ sku: 'EDGE-KNIFESET', priceCents: money(175), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'ek-prod-knife-set', isPrimary: true, alt: 'A three-piece modern knife set on a light board' }],
     },
@@ -539,15 +539,15 @@ const PRODUCTS: Product[] = [
         handle: 'nesting-prep-bowls',
         title: 'Nesting Prep Bowls',
         description:
-            'A set of five prep bowls that nest down to almost nothing and come in a calm, matte finish — from a tiny spice bowl to a big mixing bowl. Silicone bases so they don’t skate on the counter, pour spouts on the larger sizes, and snap-on lids so a prepped bowl goes straight into the fridge. The set that quietly speeds up every dinner.',
+            'A set of five prep bowls that nest down to almost nothing and come in a calm, matte finish: from a tiny spice bowl to a big mixing bowl. Silicone bases so they don’t skate on the counter, pour spouts on the larger sizes, and snap-on lids so a prepped bowl goes straight into the fridge. The set that quietly speeds up every dinner.',
         status: 'active',
         productType: 'Prep',
         vendor: VENDOR,
         tags: ['prep', 'bowls', 'mixing', 'nesting'],
         categoryHandles: ['prep'],
         collectionHandles: ['best-sellers', 'prep-edit', 'gift-ready'],
-        seoTitle: 'Nesting Prep Bowls — 5 piece with lids | Edge',
-        seoDescription: 'A five-piece nesting prep-bowl set in a matte finish — non-slip bases, pour spouts and snap-on lids.',
+        seoTitle: 'Nesting Prep Bowls: 5 piece with lids | Edge',
+        seoDescription: 'A five-piece nesting prep-bowl set in a matte finish: non-slip bases, pour spouts and snap-on lids.',
         options: [
             {
                 name: 'Color',
@@ -566,14 +566,14 @@ const PRODUCTS: Product[] = [
         handle: 'digital-kitchen-scale',
         title: 'Digital Kitchen Scale',
         description:
-            'A slim scale that reads to the gram under a single seamless glass top — no seams to trap flour, no buttons to gum up. It weighs up to 5 kilos, tares with a tap, and switches between grams and ounces, then wipes clean and slides into a drawer. The quiet upgrade that makes baking and coffee actually repeatable.',
+            'A slim scale that reads to the gram under a single seamless glass top: no seams to trap flour, no buttons to gum up. It weighs up to 5 kilos, tares with a tap, and switches between grams and ounces, then wipes clean and slides into a drawer. The quiet upgrade that makes baking and coffee actually repeatable.',
         status: 'active',
         productType: 'Prep',
         vendor: VENDOR,
         tags: ['prep', 'scale', 'digital', 'baking'],
         categoryHandles: ['prep'],
         collectionHandles: ['the-essentials', 'prep-edit', 'gift-ready'],
-        seoTitle: 'Digital Kitchen Scale — 5 kg, gram-accurate | Edge',
+        seoTitle: 'Digital Kitchen Scale: 5 kg, gram-accurate | Edge',
         seoDescription: 'A slim gram-accurate kitchen scale with a seamless glass top, tap tare and a 5 kg capacity.',
         variants: [{ sku: 'EDGE-SCALE', priceCents: money(39), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'ek-prod-scale', isPrimary: true, alt: 'A slim digital kitchen scale with a glass top' }],
@@ -582,15 +582,15 @@ const PRODUCTS: Product[] = [
         handle: 'silicone-tool-set',
         title: 'Silicone Utensil Set',
         description:
-            'The five tools you actually use — a spoon, a slotted spoon, a spatula, a turner and a ladle — in one seamless piece of heat-safe silicone over a solid steel core, so nothing scratches your nonstick and nothing traps grime in a joint. Firm enough to lift a full ladle, soft enough to fold egg whites. Dishwasher-safe and good to 500°F.',
+            'The five tools you actually use (a spoon, a slotted spoon, a spatula, a turner and a ladle) in one seamless piece of heat-safe silicone over a solid steel core, so nothing scratches your nonstick and nothing traps grime in a joint. Firm enough to lift a full ladle, soft enough to fold egg whites. Dishwasher-safe and good to 500°F.',
         status: 'active',
         productType: 'Tool',
         vendor: VENDOR,
         tags: ['tools', 'utensils', 'silicone', 'heat-safe'],
         categoryHandles: ['tools'],
         collectionHandles: ['prep-edit', 'gift-ready'],
-        seoTitle: 'Silicone Utensil Set — 5 piece, nonstick-safe | Edge',
-        seoDescription: 'A five-piece seamless silicone utensil set over a steel core — nonstick-safe, heat-safe to 500°F, dishwasher-safe.',
+        seoTitle: 'Silicone Utensil Set: 5 piece, nonstick-safe | Edge',
+        seoDescription: 'A five-piece seamless silicone utensil set over a steel core: nonstick-safe, heat-safe to 500°F, dishwasher-safe.',
         options: [
             {
                 name: 'Color',
@@ -609,15 +609,15 @@ const PRODUCTS: Product[] = [
         handle: 'composite-cutting-board',
         title: 'Composite Cutting Board',
         description:
-            'A board that’s kind to your knives and easy on you — a dense wood-fibre composite that’s gentler than bamboo, won’t split or warp, and goes in the dishwasher when a wooden board can’t. A juice groove around the edge, a slim profile, and grippy feet so it stays put. Handsome enough to serve on, tough enough to prep on all week.',
+            'A board that’s kind to your knives and easy on you: a dense wood-fibre composite that’s gentler than bamboo, won’t split or warp, and goes in the dishwasher when a wooden board can’t. A juice groove around the edge, a slim profile, and grippy feet so it stays put. Handsome enough to serve on, tough enough to prep on all week.',
         status: 'active',
         productType: 'Prep',
         vendor: VENDOR,
         tags: ['prep', 'cutting-board', 'composite', 'dishwasher-safe'],
         categoryHandles: ['prep'],
         collectionHandles: ['prep-edit', 'gift-ready'],
-        seoTitle: 'Composite Cutting Board — dishwasher-safe | Edge',
-        seoDescription: 'A dense wood-fibre composite cutting board — knife-friendly, warp-proof, dishwasher-safe, with a juice groove.',
+        seoTitle: 'Composite Cutting Board: dishwasher-safe | Edge',
+        seoDescription: 'A dense wood-fibre composite cutting board: knife-friendly, warp-proof, dishwasher-safe, with a juice groove.',
         options: [
             { name: 'Size', displayType: 'dropdown', values: [{ value: 'Small' }, { value: 'Large' }] },
         ],
@@ -631,15 +631,15 @@ const PRODUCTS: Product[] = [
         handle: 'modular-storage-set',
         title: 'Modular Storage Set',
         description:
-            'A ten-piece set of borosilicate glass containers on one footprint — the same base size in three depths, so they stack square in the fridge and nest flat in the cupboard. Airtight bamboo-and-silicone lids, oven- and freezer-safe glass, and a lid that comes clean without a scrub. The upgrade that finally makes your leftovers look like a plan.',
+            'A ten-piece set of borosilicate glass containers on one footprint: the same base size in three depths, so they stack square in the fridge and nest flat in the cupboard. Airtight bamboo-and-silicone lids, oven- and freezer-safe glass, and a lid that comes clean without a scrub. The upgrade that finally makes your leftovers look like a plan.',
         status: 'active',
         productType: 'Storage set',
         vendor: VENDOR,
         tags: ['prep', 'storage', 'glass', 'modular', 'sets'],
         categoryHandles: ['prep', 'sets'],
         collectionHandles: ['new-arrivals', 'prep-edit', 'gift-ready'],
-        seoTitle: 'Modular Storage Set — 10 piece borosilicate glass | Edge',
-        seoDescription: 'A ten-piece modular glass storage set — one footprint, three depths, airtight lids, oven- and freezer-safe.',
+        seoTitle: 'Modular Storage Set: 10 piece borosilicate glass | Edge',
+        seoDescription: 'A ten-piece modular glass storage set. One footprint, three depths, airtight lids, oven- and freezer-safe.',
         variants: [{ sku: 'EDGE-STORAGE', priceCents: money(69), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'ek-prod-storage', isPrimary: true, alt: 'A set of modular glass storage containers with lids' }],
     },
@@ -696,7 +696,7 @@ const COMMERCE = {
         {
             handle: 'gift-ready',
             name: 'Gift ready',
-            description: 'The ones worth wrapping — for new homes and good cooks.',
+            description: 'The ones worth wrapping, for new homes and good cooks.',
             type: 'manual',
             featured: false,
             productHandles: ['nesting-prep-bowls', 'silicone-tool-set', 'composite-cutting-board', 'modular-storage-set', 'digital-kitchen-scale'],
@@ -716,17 +716,17 @@ const CONTENT = [
         slug: 'ceramic-nonstick-explained',
         status: 'published',
         body: {
-            title: 'How ceramic nonstick actually works — and how to keep it',
+            title: 'How ceramic nonstick actually works, and how to keep it',
             excerpt: 'Ceramic nonstick isn’t a coating you baby, but it isn’t indestructible either. Here’s what it is, why we chose it, and the two habits that make it last for years.',
             featuredImage: { $asset: 'ek-post-nonstick' },
             body: {
                 type: 'doc',
                 content: [
-                    para('“Nonstick” has meant a lot of things over the years, and not all of them good. The old slick coatings did their job but were built on PFAS chemistry — the “forever chemicals” nobody wants flaking into dinner. Ceramic nonstick is a different idea entirely: a thin, glass-like mineral layer, cured onto the pan, that food slides off because the surface is genuinely smooth rather than chemically slippery. No PFAS, no PFOA, nothing to worry about at high heat.'),
+                    para('“Nonstick” has meant a lot of things over the years, and not all of them good. The old slick coatings did their job but were built on PFAS chemistry: the “forever chemicals” nobody wants flaking into dinner. Ceramic nonstick is a different idea entirely: a thin, glass-like mineral layer, cured onto the pan, that food slides off because the surface is genuinely smooth rather than chemically slippery. No PFAS, no PFOA, nothing to worry about at high heat.'),
                     h2('Why we build it on clad aluminium'),
-                    para('A nonstick surface is only as good as the metal under it. A cheap ceramic pan is a stamped aluminium disc that hot-spots and warps, and the moment it warps, the coating stops making even contact and starts to fail. Ours is fully clad — aluminium bonded through the whole body, not just the base — so heat spreads evenly and the surface stays flat. Even heat is what lets you cook on medium instead of blasting the pan, and cooking on medium is most of why the surface lasts.'),
+                    para('A nonstick surface is only as good as the metal under it. A cheap ceramic pan is a stamped aluminium disc that hot-spots and warps, and the moment it warps, the coating stops making even contact and starts to fail. Ours is fully clad (aluminium bonded through the whole body, not just the base) so heat spreads evenly and the surface stays flat. Even heat is what lets you cook on medium instead of blasting the pan, and cooking on medium is most of why the surface lasts.'),
                     h2('The two habits that keep it'),
-                    para('First: keep the heat moderate. Ceramic doesn’t need a screaming-hot pan to release food, and overheating an empty pan is the fastest way to dull any nonstick. Preheat on medium, add a little fat, and you’re set. Second: use soft tools and skip the abrasives — a silicone spatula, a soft sponge, no metal and no scouring pads. Let a hot pan cool before it hits water, hand-wash when you can, and store it with a liner if you stack it. Do that, and a ceramic pan stays slick for years instead of months.'),
+                    para('First: keep the heat moderate. Ceramic doesn’t need a screaming-hot pan to release food, and overheating an empty pan is the fastest way to dull any nonstick. Preheat on medium, add a little fat, and you’re set. Second: use soft tools and skip the abrasives, a silicone spatula, a soft sponge, no metal and no scouring pads. Let a hot pan cool before it hits water, hand-wash when you can, and store it with a liner if you stack it. Do that, and a ceramic pan stays slick for years instead of months.'),
                 ],
             },
         },
@@ -742,11 +742,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Open most kitchen drawers and you’ll find the same thing: a garlic press used twice, an avocado slicer, an egg separator, and one good knife buried under all of it. Single-use gadgets are sold on a moment of “oh, clever” and then live in the way for a decade. A well-designed kitchen is the opposite — a small number of tools, each of which quietly does five things.'),
+                    para('Open most kitchen drawers and you’ll find the same thing: a garlic press used twice, an avocado slicer, an egg separator, and one good knife buried under all of it. Single-use gadgets are sold on a moment of “oh, clever” and then live in the way for a decade. A well-designed kitchen is the opposite, a small number of tools, each of which quietly does five things.'),
                     h2('The five that earn their place'),
-                    para('A chef’s knife handles almost every cut; a paring knife covers the small, close work the big blade can’t. One good ceramic frypan does eggs, sears, sautés and a quick sauce. A set of nesting prep bowls turns a chaotic counter into a calm one — everything measured out before the heat goes on. A digital scale makes baking and coffee actually repeatable. And one flexible silicone spatula-slash-turner moves everything without scratching a thing. That’s it. That’s a kitchen.'),
+                    para('A chef’s knife handles almost every cut; a paring knife covers the small, close work the big blade can’t. One good ceramic frypan does eggs, sears, sautés and a quick sauce. A set of nesting prep bowls turns a chaotic counter into a calm one. Everything measured out before the heat goes on. A digital scale makes baking and coffee actually repeatable. And one flexible silicone spatula-slash-turner moves everything without scratching a thing. That’s it. That’s a kitchen.'),
                     h2('Buy for the job, not the moment'),
-                    para('The test for any tool is simple: will you reach for it every week, and does it do more than one thing? If the answer to either is no, it’s a drawer-filler dressed up as a solution. Spend the gadget money on fewer, better pieces that fit together and last, and the kitchen gets calmer and the cooking gets easier. Less stuff, more cooking — that’s the whole idea.'),
+                    para('The test for any tool is simple: will you reach for it every week, and does it do more than one thing? If the answer to either is no, it’s a drawer-filler dressed up as a solution. Spend the gadget money on fewer, better pieces that fit together and last, and the kitchen gets calmer and the cooking gets easier. Less stuff, more cooking, that’s the whole idea.'),
                 ],
             },
         },
@@ -757,16 +757,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Why we design for the counter, not the cupboard',
-            excerpt: 'Most kitchen tools are designed to be photographed, then hidden. We design the opposite way — for the things you leave out and see every day.',
+            excerpt: 'Most kitchen tools are designed to be photographed, then hidden. We design the opposite way, for the things you leave out and see every day.',
             featuredImage: { $asset: 'ek-post-counter' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A lot of kitchenware is designed for the box it’s sold in — a bright color, a busy shape, a feature list printed on the shrink-wrap. It looks great on a shelf and wrong on your counter. We design from the other end: the tools you use most are the ones you leave out, so we make them for the counter you live with, not the cupboard they hide in.'),
+                    para('A lot of kitchenware is designed for the box it’s sold in: a bright color, a busy shape, a feature list printed on the shrink-wrap. It looks great on a shelf and wrong on your counter. We design from the other end: the tools you use most are the ones you leave out, so we make them for the counter you live with, not the cupboard they hide in.'),
                     h2('Calm on the outside, clever on the inside'),
-                    para('That means restraint where you can see it. Muted, matte finishes that don’t shout or date. Shapes that sit quietly next to a plant and a coffee jar. Handles at angles that feel right in the hand rather than dramatic in a photo. The engineering we’re proud of — the clad base, the to-the-degree kettle, the seamless silicone over a steel core — lives on the inside, doing the work without asking for attention.'),
+                    para('That means restraint where you can see it. Muted, matte finishes that don’t shout or date. Shapes that sit quietly next to a plant and a coffee jar. Handles at angles that feel right in the hand rather than dramatic in a photo. The engineering we’re proud of (the clad base, the to-the-degree kettle, the seamless silicone over a steel core) lives on the inside, doing the work without asking for attention.'),
                     h2('A range that belongs together'),
-                    para('Designing for the counter also means designing as a family. Every piece shares a palette and a language, so the pan you buy this year still belongs beside the bowls you add next year. Nothing clashes, nothing looks orphaned, and a kitchen built one piece at a time still looks like it was planned. When your tools are calm and consistent, the counter feels finished — and a finished-feeling kitchen is a nicer place to cook.'),
+                    para('Designing for the counter also means designing as a family. Every piece shares a palette and a language, so the pan you buy this year still belongs beside the bowls you add next year. Nothing clashes, nothing looks orphaned, and a kitchen built one piece at a time still looks like it was planned. When your tools are calm and consistent, the counter feels finished, and a finished-feeling kitchen is a nicer place to cook.'),
                 ],
             },
         },
@@ -781,7 +781,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Kitchenware (Modern)',
     theme: THEME,
     summary:
-        'A complete, working shop for a modern kitchen-design studio: a real catalogue of ceramic nonstick cookware, a precision kettle, a clean knife set, nesting prep bowls, a digital scale, silicone tools and modular storage, with categories, collections, a bespoke PDP and a full merchandised home page. Sleek modern theme — crisp cool-grey ground, near-black controls, an electric cobalt accent, clean grotesk type. Shipped as Edge.',
+        'A complete, working shop for a modern kitchen-design studio: a real catalogue of ceramic nonstick cookware, a precision kettle, a clean knife set, nesting prep bowls, a digital scale, silicone tools and modular storage, with categories, collections, a bespoke PDP and a full merchandised home page. Sleek modern theme, crisp cool-grey ground, near-black controls, an electric cobalt accent, clean grotesk type. Shipped as Edge.',
     tagline: 'A sleek, working storefront for a modern kitchen-design studio.',
     vertical: 'retail',
     industry: 'Kitchenware & small appliances',
@@ -794,14 +794,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Edge — beautifully engineered tools for the modern kitchen',
+            title: 'Edge: beautifully engineered tools for the modern kitchen',
             description:
-                'Edge is a modern kitchen-design studio — ceramic nonstick cookware, a precision kettle and a clean knife set, all designed as one range and built to be kept.',
+                'Edge is a modern kitchen-design studio: ceramic nonstick cookware, a precision kettle and a clean knife set, all designed as one range and built to be kept.',
         },
         about: {
             title: 'About Edge',
             description:
-                'Why Edge makes fewer, better kitchen tools — a short considered range, calm design, clever engineering on the inside, and a ten-year guarantee on every piece.',
+                'Why Edge makes fewer, better kitchen tools: a short considered range, calm design, clever engineering on the inside, and a ten-year guarantee on every piece.',
         },
     },
     home: HOME,

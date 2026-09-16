@@ -41,7 +41,7 @@ export function HoursSection({
   const drop = async (entry: TimeEntry) => {
     const ok = await confirm({
       title: 'Delete these hours?',
-      description: `${formatMinutes(entry.minutes)} on ${formatDate(entry.workedOn)} will be removed. If the work happened but the figure is wrong, correct it instead — deleting it means nobody is paid for that time.`,
+      description: `${formatMinutes(entry.minutes)} on ${formatDate(entry.workedOn)} will be removed. If the work happened but the figure is wrong, correct it instead: deleting it means nobody is paid for that time.`,
       confirmLabel: 'Delete them',
       cancelLabel: 'Keep them',
       color: 'danger',

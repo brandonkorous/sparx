@@ -67,7 +67,7 @@ export default function WorkbenchError({
           </h1>
           <p className="mt-2 text-base">
             {stale
-              ? 'This tab was left open across an update. Reload to load the latest version — your panel arrangement comes back.'
+              ? 'This tab was left open across an update. Reload to load the latest version. Your panel arrangement comes back.'
               : 'Something unexpected happened. Try again, and if it keeps happening, reload to start fresh.'}
           </p>
         </div>

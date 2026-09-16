@@ -1,7 +1,7 @@
 /** The least glamorous thing a brand has to survive, and the one every business
  *  sends most often. A palette that only works on a hero is half a palette. */
 const LINES: [string, string, string][] = [
-  ['Kitchen fit — cabinetry', '1', '$3,400.00'],
+  ['Kitchen fit: cabinetry', '1', '$3,400.00'],
   ['Worktop, installed', '1', '$1,150.00'],
   ['Waste removal', '2', '$180.00'],
 ];

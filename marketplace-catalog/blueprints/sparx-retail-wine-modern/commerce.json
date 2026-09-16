@@ -98,7 +98,7 @@
     {
       "handle": "gifting",
       "name": "Worth gifting",
-      "description": "Sets, cases and the club — for the generous.",
+      "description": "Sets, cases and the club, for the generous.",
       "type": "manual",
       "featured": false,
       "productHandles": ["wine-club", "dinner-party-six", "housewarming-gift-set"]
@@ -108,15 +108,15 @@
     {
       "handle": "weeknight-house-red",
       "title": "Weeknight House Red",
-      "description": "The bottle we reach for most and the one we recommend first. A soft, juicy 750ml red — ripe black cherry, plum and a little cocoa, low on tannin and easy to love. Great on its own, better with pizza, and honestly farmed at a price that makes it a habit.",
+      "description": "The bottle we reach for most and the one we recommend first. A soft, juicy 750ml red: ripe black cherry, plum and a little cocoa, low on tannin and easy to love. Great on its own, better with pizza, and honestly farmed at a price that makes it a habit.",
       "status": "active",
       "productType": "Red wine",
       "vendor": "Coupe",
       "tags": ["red", "easy-drinking", "everyday", "value"],
       "categoryHandles": ["reds"],
       "collectionHandles": ["crowd-pleasers", "under-20"],
-      "seoTitle": "Weeknight House Red — easy everyday red wine | Coupe",
-      "seoDescription": "A soft, juicy everyday red — black cherry, plum and cocoa, low tannin and easy to love. 750ml.",
+      "seoTitle": "Weeknight House Red: easy everyday red wine | Coupe",
+      "seoDescription": "A soft, juicy everyday red: black cherry, plum and cocoa, low tannin and easy to love. 750ml.",
       "variants": [
         {
           "sku": "COUPE-RED-HOUSE-01",
@@ -143,8 +143,8 @@
       "tags": ["red", "full-bodied", "dinner"],
       "categoryHandles": ["reds"],
       "collectionHandles": ["new-this-month", "crowd-pleasers"],
-      "seoTitle": "Big Swing Bold Red — full-bodied red wine | Coupe",
-      "seoDescription": "A full-bodied dinner red — dark berry, black pepper and a savoury, structured finish. 750ml.",
+      "seoTitle": "Big Swing Bold Red: full-bodied red wine | Coupe",
+      "seoDescription": "A full-bodied dinner red: dark berry, black pepper and a savoury, structured finish. 750ml.",
       "variants": [
         {
           "sku": "COUPE-RED-BOLD-01",
@@ -164,15 +164,15 @@
     {
       "handle": "poolside-crisp-white",
       "title": "Poolside Crisp White",
-      "description": "Sunshine in a 750ml bottle. Bright, dry and thirst-quenching, with green apple, citrus and a clean snap that begs for a proper chill. The white you open on the first warm day and keep opening all summer — and it loves a plate of anything from the sea.",
+      "description": "Sunshine in a 750ml bottle. Bright, dry and thirst-quenching, with green apple, citrus and a clean snap that begs for a proper chill. The white you open on the first warm day and keep opening all summer, and it loves a plate of anything from the sea.",
       "status": "active",
       "productType": "White wine",
       "vendor": "Coupe",
       "tags": ["white", "crisp", "dry", "chillable"],
       "categoryHandles": ["whites-rose"],
       "collectionHandles": ["new-this-month", "chill-and-pour", "under-20"],
-      "seoTitle": "Poolside Crisp White — bright, dry white wine | Coupe",
-      "seoDescription": "A bright, dry, thirst-quenching white — green apple, citrus and a clean snap. Serve it cold. 750ml.",
+      "seoTitle": "Poolside Crisp White: bright, dry white wine | Coupe",
+      "seoDescription": "A bright, dry, thirst-quenching white: green apple, citrus and a clean snap. Serve it cold. 750ml.",
       "variants": [
         {
           "sku": "COUPE-WHITE-01",
@@ -192,15 +192,15 @@
     {
       "handle": "sunday-rose",
       "title": "Sunday Rosé",
-      "description": "A dry, pale 750ml rosé with none of the sweetness the color gets blamed for. Wild strawberry, pink grapefruit and a fresh, savoury finish — the house pour from the first warm afternoon to the last. Brunch approved, picnic essential.",
+      "description": "A dry, pale 750ml rosé with none of the sweetness the color gets blamed for. Wild strawberry, pink grapefruit and a fresh, savoury finish: the house pour from the first warm afternoon to the last. Brunch approved, picnic essential.",
       "status": "active",
       "productType": "Rosé wine",
       "vendor": "Coupe",
       "tags": ["rose", "dry", "chillable"],
       "categoryHandles": ["whites-rose"],
       "collectionHandles": ["new-this-month", "chill-and-pour", "crowd-pleasers"],
-      "seoTitle": "Sunday Rosé — dry pale rosé wine | Coupe",
-      "seoDescription": "A dry, pale rosé — wild strawberry, pink grapefruit and a fresh, savoury finish. 750ml.",
+      "seoTitle": "Sunday Rosé: dry pale rosé wine | Coupe",
+      "seoDescription": "A dry, pale rosé: wild strawberry, pink grapefruit and a fresh, savoury finish. 750ml.",
       "variants": [
         {
           "sku": "COUPE-ROSE-01",
@@ -220,15 +220,15 @@
     {
       "handle": "confetti-petnat",
       "title": "Confetti Pét-Nat",
-      "description": "The fun one. A cloudy, crown-capped 750ml sparkler finished the old way — bone-dry, gently fizzy and impossible not to smile at. Green apple, lemon and a little bready funk. The bottle that turns a regular Tuesday into a small celebration.",
+      "description": "The fun one. A cloudy, crown-capped 750ml sparkler finished the old way: bone-dry, gently fizzy and impossible not to smile at. Green apple, lemon and a little bready funk. The bottle that turns a regular Tuesday into a small celebration.",
       "status": "active",
       "productType": "Sparkling wine",
       "vendor": "Coupe",
       "tags": ["pet-nat", "sparkling", "dry", "chillable", "fun"],
       "categoryHandles": ["bubbles"],
       "collectionHandles": ["new-this-month", "chill-and-pour", "party-starters"],
-      "seoTitle": "Confetti Pét-Nat — dry sparkling wine | Coupe",
-      "seoDescription": "A bone-dry, gently fizzy pét-nat — green apple, lemon and a little bready funk. 750ml.",
+      "seoTitle": "Confetti Pét-Nat: dry sparkling wine | Coupe",
+      "seoDescription": "A bone-dry, gently fizzy pét-nat: green apple, lemon and a little bready funk. 750ml.",
       "variants": [
         {
           "sku": "COUPE-BUB-PETNAT-01",
@@ -248,15 +248,15 @@
     {
       "handle": "off-duty-non-alc-fizz",
       "title": "Off-Duty Non-Alc Fizz",
-      "description": "A grown-up alcohol-free 750ml sparkling for the nights you are not drinking but still want something in the good glass. Properly dry and gently fizzy, with white peach, elderflower and a citrus snap — none of the cloying sweetness most non-alc falls into.",
+      "description": "A grown-up alcohol-free 750ml sparkling for the nights you are not drinking but still want something in the good glass. Properly dry and gently fizzy, with white peach, elderflower and a citrus snap: none of the cloying sweetness most non-alc falls into.",
       "status": "active",
       "productType": "Non-alcoholic",
       "vendor": "Coupe",
       "tags": ["non-alc", "sparkling", "dry", "alcohol-free"],
       "categoryHandles": ["bubbles"],
       "collectionHandles": ["new-this-month", "party-starters", "under-20"],
-      "seoTitle": "Off-Duty Non-Alc Fizz — alcohol-free sparkling | Coupe",
-      "seoDescription": "A grown-up alcohol-free sparkling — dry, gently fizzy, white peach and elderflower. 750ml.",
+      "seoTitle": "Off-Duty Non-Alc Fizz: alcohol-free sparkling | Coupe",
+      "seoDescription": "A grown-up alcohol-free sparkling: dry, gently fizzy, white peach and elderflower. 750ml.",
       "variants": [
         {
           "sku": "COUPE-NONALC-01",
@@ -276,15 +276,15 @@
     {
       "handle": "wine-club",
       "title": "Coupe Wine Club",
-      "description": "Let us do the choosing. Every month we hand-pick a set of bottles to match the season and your taste, tuck in tasting notes and a pairing or two, and send them chilled-friendly to your door. Three bottles or six, and you can skip, swap or cancel any time — no lock-in, ever. The easiest way to always have something good open.",
+      "description": "Let us do the choosing. Every month we hand-pick a set of bottles to match the season and your taste, tuck in tasting notes and a pairing or two, and send them chilled-friendly to your door. Three bottles or six, and you can skip, swap or cancel any time: no lock-in, ever. The easiest way to always have something good open.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Coupe",
       "tags": ["wine-club", "subscription", "gift"],
       "categoryHandles": ["club"],
       "collectionHandles": ["new-this-month", "crowd-pleasers", "gifting"],
-      "seoTitle": "Coupe Wine Club — hand-picked wine, monthly | Coupe",
-      "seoDescription": "A flexible monthly wine club — three or six hand-picked bottles with tasting notes. Skip, swap or cancel any time.",
+      "seoTitle": "Coupe Wine Club: hand-picked wine, monthly | Coupe",
+      "seoDescription": "A flexible monthly wine club: three or six hand-picked bottles with tasting notes. Skip, swap or cancel any time.",
       "options": [
         {
           "name": "Plan",
@@ -329,15 +329,15 @@
     {
       "handle": "dinner-party-six",
       "title": "Dinner Party Mixed Six",
-      "description": "A ready-made line-up for a table full of friends — six bottles, our pick, at a better price than buying them one by one. Choose a mix of colors to cover every course, all reds for a hearty night, or whites and bubbles for something lighter. We swap the picks every month.",
+      "description": "A ready-made line-up for a table full of friends: six bottles, our pick, at a better price than buying them one by one. Choose a mix of colors to cover every course, all reds for a hearty night, or whites and bubbles for something lighter. We swap the picks every month.",
       "status": "active",
       "productType": "Mixed case",
       "vendor": "Coupe",
       "tags": ["mixed-case", "value", "gift", "party"],
       "categoryHandles": ["cases"],
       "collectionHandles": ["crowd-pleasers", "party-starters", "gifting"],
-      "seoTitle": "Dinner Party Mixed Six — curated wine case | Coupe",
-      "seoDescription": "A curated six-bottle case at a better price — mixed colors, all reds, or whites and bubbles.",
+      "seoTitle": "Dinner Party Mixed Six: curated wine case | Coupe",
+      "seoDescription": "A curated six-bottle case at a better price: mixed colors, all reds, or whites and bubbles.",
       "options": [
         {
           "name": "Selection",
@@ -393,15 +393,15 @@
     {
       "handle": "housewarming-gift-set",
       "title": "The Housewarming Gift Set",
-      "description": "The present that never misses. A bright bottle of bubbles and a crowd-pleasing red, wrapped and ready with a hand-written note and a card of tasting notes. Pick a message at checkout and we will send it straight to them — the easy win for a new home, a thank-you or a just-because.",
+      "description": "The present that never misses. A bright bottle of bubbles and a crowd-pleasing red, wrapped and ready with a hand-written note and a card of tasting notes. Pick a message at checkout and we will send it straight to them: the easy win for a new home, a thank-you or a just-because.",
       "status": "active",
       "productType": "Gift set",
       "vendor": "Coupe",
       "tags": ["gift", "gift-set", "bubbles", "red"],
       "categoryHandles": ["cases"],
       "collectionHandles": ["gifting", "party-starters"],
-      "seoTitle": "The Housewarming Gift Set — wine gift | Coupe",
-      "seoDescription": "A wrapped wine gift set — a bottle of bubbles and a crowd-pleasing red, with a hand-written note.",
+      "seoTitle": "The Housewarming Gift Set: wine gift | Coupe",
+      "seoDescription": "A wrapped wine gift set: a bottle of bubbles and a crowd-pleasing red, with a hand-written note.",
       "options": [
         {
           "name": "Message",

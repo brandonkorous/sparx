@@ -167,7 +167,7 @@ function EmailStatus({
   if (error) return <span className="text-error">{error}</span>;
   if (dirty) return <span>Not saved yet</span>;
   if (unpublished && publishedAt === null) {
-    return <span>Saved, but never published — there is nothing here to send yet.</span>;
+    return <span>Saved, but never published. There is nothing here to send yet.</span>;
   }
   if (unpublished) return <span>Saved. Recipients still get the last published version.</span>;
   return <span>Saved. This is what recipients get.</span>;

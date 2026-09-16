@@ -430,7 +430,7 @@ export async function create(
   // dropping them — a wizard that fed them in would think they saved.
   if (input.options.length > 0 || input.variants.length > 0) {
     throw new CommerceValidationError(
-      'Options and variants are managed via variantService — Phase 1.2'
+      'Options and variants are managed via variantService: Phase 1.2'
     );
   }
 
@@ -672,7 +672,7 @@ export async function update(
         });
         if (manualCount !== input.collectionIds.length) {
           throw new CommerceValidationError(
-            'Some collectionIds are unknown or rules-driven — a product can only be added by hand to a manual collection. Change the collection’s rule instead.',
+            'Some collectionIds are unknown or rules-driven: a product can only be added by hand to a manual collection. Change the collection’s rule instead.',
             [{ field: 'collectionIds', message: 'Unknown or rules-driven collection' }]
           );
         }

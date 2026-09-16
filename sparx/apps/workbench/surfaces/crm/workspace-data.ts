@@ -54,7 +54,7 @@ export const MATCH_RULES: {
     value: 'phone',
     label: 'The same phone number',
     description:
-      'Nearly always the same person — shared office lines and family mobiles are real but rare.',
+      'Nearly always the same person: shared office lines and family mobiles are real but rare.',
     confidence: 90,
   },
   {

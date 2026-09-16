@@ -436,7 +436,7 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
     // The quote the shopper saw is gone (rates changed, or a carrier dropped it).
     // Refuse rather than silently charging nothing for shipping.
     throw new CommerceValidationError(
-      'That shipping option is no longer available — please choose a shipping method again.'
+      'That shipping option is no longer available: please choose a shipping method again.'
     );
   }
 
@@ -552,7 +552,7 @@ export async function submitPayment(ctx: ServiceContext, rawInput: unknown): Pro
       });
       if (account?.paymentTerms === 'prepay') {
         throw new CommerceValidationError(
-          'This account is set up for prepayment — pay by card to complete your order.'
+          'This account is set up for prepayment. Pay by card to complete your order.'
         );
       }
     }
@@ -662,7 +662,7 @@ export interface CreatePaymentIntentResult {
  */
 const NO_PAYMENTS_MESSAGE =
   'This shop cannot take card payments online just yet, so the order cannot be finished here. ' +
-  'Nothing has been charged. Get in touch with the shop to arrange it — their details are on this site.';
+  'Nothing has been charged. Get in touch with the shop to arrange it. Their details are on this site.';
 
 /**
  * How this shop can be paid, as the storefront needs to know it.
@@ -940,11 +940,11 @@ export async function complete(
       }
       if (account.status === 'credit_hold') {
         throw new CommerceValidationError(
-          'Account is on credit hold — payment required before placing new orders'
+          'Account is on credit hold: payment required before placing new orders'
         );
       }
       if (account.status === 'suspended') {
-        throw new CommerceValidationError('Account is suspended — contact your account manager');
+        throw new CommerceValidationError('Account is suspended: contact your account manager');
       }
       const available = Number(account.creditLimit) - Number(account.creditUsed);
       const orderDollars = session.totalCents / 100;

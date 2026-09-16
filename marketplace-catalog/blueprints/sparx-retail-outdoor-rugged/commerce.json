@@ -56,7 +56,7 @@
     {
       "handle": "layering-system",
       "name": "The layering system",
-      "description": "Base, mid and shell — dialled to work together.",
+      "description": "Base, mid and shell: dialled to work together.",
       "type": "manual",
       "featured": false,
       "productHandles": ["ridgeline-merino-crew", "summit-down-hoody", "alpine-hardshell-jacket"]
@@ -95,7 +95,7 @@
       "tags": ["apparel", "shell", "waterproof", "hardshell"],
       "categoryHandles": ["apparel"],
       "collectionHandles": ["new-arrivals", "layering-system", "best-sellers"],
-      "seoTitle": "Alpine Hardshell Jacket — 3-layer waterproof shell | Ridgeline Supply",
+      "seoTitle": "Alpine Hardshell Jacket: 3-layer waterproof shell | Ridgeline Supply",
       "seoDescription": "A seam-taped 3-layer waterproof hardshell with pit zips and a helmet-compatible hood. Packs into its own pocket.",
       "options": [
         {
@@ -254,14 +254,14 @@
     {
       "handle": "summit-down-hoody",
       "title": "Summit Down Hoody",
-      "description": "A featherweight 800-fill down hoody that packs to the size of a water bottle and lofts back to full warmth in seconds. Responsibly-sourced down, a windproof ripstop face, and a hood that fits under a shell — the insulation layer you throw on the moment you stop moving.",
+      "description": "A featherweight 800-fill down hoody that packs to the size of a water bottle and lofts back to full warmth in seconds. Responsibly-sourced down, a windproof ripstop face, and a hood that fits under a shell: the insulation layer you throw on the moment you stop moving.",
       "status": "active",
       "productType": "Apparel",
       "vendor": "Ridgeline Supply",
       "tags": ["apparel", "insulation", "down", "midlayer"],
       "categoryHandles": ["apparel"],
       "collectionHandles": ["new-arrivals", "layering-system"],
-      "seoTitle": "Summit Down Hoody — 800-fill packable down | Ridgeline Supply",
+      "seoTitle": "Summit Down Hoody: 800-fill packable down | Ridgeline Supply",
       "seoDescription": "A featherweight 800-fill down hoody with a windproof face and a shell-compatible hood. Packs to bottle size.",
       "options": [
         {
@@ -427,7 +427,7 @@
       "tags": ["apparel", "base-layer", "merino"],
       "categoryHandles": ["apparel"],
       "collectionHandles": ["layering-system", "best-sellers"],
-      "seoTitle": "Ridgeline Merino Crew — 100% merino base layer | Ridgeline Supply",
+      "seoTitle": "Ridgeline Merino Crew: 100% merino base layer | Ridgeline Supply",
       "seoDescription": "A soft, odour-resistant 100% merino base layer with flatlock seams that wicks and dries fast.",
       "options": [
         {
@@ -593,7 +593,7 @@
       "tags": ["packs", "backpack", "daypack"],
       "categoryHandles": ["packs"],
       "collectionHandles": ["new-arrivals", "best-sellers", "packs-and-carry", "trail-essentials"],
-      "seoTitle": "Trailhead 38 Backpack — 38L pack | Ridgeline Supply",
+      "seoTitle": "Trailhead 38 Backpack: 38L pack | Ridgeline Supply",
       "seoDescription": "A ventilated 38L pack with a roll-top lid and hipbelt pockets, built from recycled ripstop. Fast overnights to long days.",
       "options": [
         {
@@ -657,7 +657,7 @@
       "tags": ["packs", "dry-bag", "waterproof"],
       "categoryHandles": ["packs"],
       "collectionHandles": ["packs-and-carry", "trail-essentials"],
-      "seoTitle": "Fathom Roll-Top Dry Bag — welded waterproof stuff sack | Ridgeline Supply",
+      "seoTitle": "Fathom Roll-Top Dry Bag: welded waterproof stuff sack | Ridgeline Supply",
       "seoDescription": "A fully welded TPU roll-top dry bag in 10, 20 and 30L. Keeps kit bone-dry through crossings and downpours.",
       "options": [
         {
@@ -714,14 +714,14 @@
     {
       "handle": "switchback-trail-socks",
       "title": "Switchback Trail Socks",
-      "description": "A merino-blend hiking sock with cushioning exactly where boots rub and none where they don’t — a proper toe box, a supportive arch band, and a seamless toe so nothing raises a blister at mile fifteen. They wick, they don’t stink, and they keep their shape wash after wash. Buy three pairs; you’ll want them.",
+      "description": "A merino-blend hiking sock with cushioning exactly where boots rub and none where they don’t: a proper toe box, a supportive arch band, and a seamless toe so nothing raises a blister at mile fifteen. They wick, they don’t stink, and they keep their shape wash after wash. Buy three pairs; you’ll want them.",
       "status": "active",
       "productType": "Socks",
       "vendor": "Ridgeline Supply",
       "tags": ["accessories", "socks", "footwear", "merino"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["best-sellers", "trail-essentials"],
-      "seoTitle": "Switchback Trail Socks — cushioned merino hiking socks | Ridgeline Supply",
+      "seoTitle": "Switchback Trail Socks: cushioned merino hiking socks | Ridgeline Supply",
       "seoDescription": "A merino-blend hiking sock with targeted cushioning, an arch band and a seamless toe. Wicks and stays put.",
       "options": [
         {
@@ -785,7 +785,7 @@
       "tags": ["gear", "bottle", "hydration"],
       "categoryHandles": ["gear"],
       "collectionHandles": ["best-sellers", "trail-essentials"],
-      "seoTitle": "Vault Insulated Bottle — double-walled stainless | Ridgeline Supply",
+      "seoTitle": "Vault Insulated Bottle: double-walled stainless | Ridgeline Supply",
       "seoDescription": "A powder-coated double-walled stainless bottle in 18 and 32oz with a leak-proof one-handed lid.",
       "options": [
         {
@@ -838,7 +838,7 @@
       "tags": ["gear", "headlamp", "lighting"],
       "categoryHandles": ["gear"],
       "collectionHandles": ["new-arrivals", "trail-essentials"],
-      "seoTitle": "Beacon 400 Headlamp — 400-lumen rechargeable | Ridgeline Supply",
+      "seoTitle": "Beacon 400 Headlamp: 400-lumen rechargeable | Ridgeline Supply",
       "seoDescription": "A 400-lumen USB-C rechargeable headlamp with a red night mode, lock-out and an IPX7 rain-proof housing.",
       "variants": [
         {
@@ -866,7 +866,7 @@
       "tags": ["gear", "trekking-poles", "hiking"],
       "categoryHandles": ["gear"],
       "collectionHandles": ["new-arrivals", "packs-and-carry"],
-      "seoTitle": "Ascent Carbon Trekking Poles — collapsible pair | Ridgeline Supply",
+      "seoTitle": "Ascent Carbon Trekking Poles: collapsible pair | Ridgeline Supply",
       "seoDescription": "A pair of collapsible carbon trekking poles with quick-flip locks, cork grips and swappable tips.",
       "variants": [
         {

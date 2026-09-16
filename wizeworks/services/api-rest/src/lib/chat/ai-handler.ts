@@ -39,7 +39,7 @@ import type { AiProvider } from './types.js';
 
 const CONFIDENCE_THRESHOLD = 0.8;
 const HANDOFF_MESSAGE =
-  "Thanks! I've passed this along to our team — someone will follow up shortly.";
+  "Thanks! I've passed this along to our team. Someone will follow up shortly.";
 
 // Tool-use loop bounds (docs/113 §3.4). Each turn the model either calls a
 // lookup tool or `respond`; we cap the round-trips so a confused model can't
@@ -243,7 +243,7 @@ async function buildGrounding(tenantId: string, propertyId: string | null): Prom
     siteName,
     products: products.map((p) => {
       const desc = p.description ? stripHtml(p.description).slice(0, 120) : '';
-      return desc ? p.title + ' — ' + desc : p.title;
+      return desc ? p.title + ': ' + desc : p.title;
     }),
     pages: pages.map((p) => p.title),
   };
@@ -277,7 +277,7 @@ function buildSystemPrompt(g: GroundingDto, persona: string | null): string {
       ].join('\n\n');
   return [
     intro,
-    'You have lookup tools — use them to fetch real products, prices, availability, services, and store info before answering; never guess specifics. When you have what you need (or determine you cannot answer), you MUST call the `respond` tool — never answer in plain text, even for a simple question. Set confidence between 0 and 1 for how sure you are the answer is correct and grounded — be honest, low confidence beats a wrong answer. For order/account/refund specifics, or anything the tools cannot resolve, set escalate to true so a human takes over.',
+    'You have lookup tools: use them to fetch real products, prices, availability, services, and store info before answering; never guess specifics. When you have what you need (or determine you cannot answer), you MUST call the `respond` tool: never answer in plain text, even for a simple question. Set confidence between 0 and 1 for how sure you are the answer is correct and grounded: be honest, low confidence beats a wrong answer. For order/account/refund specifics, or anything the tools cannot resolve, set escalate to true so a human takes over.',
     catalog,
     info,
   ]

@@ -74,7 +74,7 @@ describe('a 412 is the real "somebody else got there first"', () => {
       apiError(
         412,
         'PRECONDITION_FAILED',
-        'If-Match precondition failed — entry was modified by someone else. Reload before retrying.'
+        'If-Match precondition failed: entry was modified by someone else. Reload before retrying.'
       )
     );
 
@@ -85,7 +85,7 @@ describe('a 412 is the real "somebody else got there first"', () => {
     expect(failure.message).not.toContain('precondition');
   });
 
-  it("never asks her to report it — this one is nobody's fault and hers to redo", () => {
+  it("never asks her to report it. This one is nobody's fault and hers to redo", () => {
     const failure = describeWriteFailure(apiError(412, 'PRECONDITION_FAILED', 'x'));
     expect(failure.showReference).toBe(false);
   });

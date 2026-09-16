@@ -114,7 +114,7 @@ const CONNECT_STEPS: { title: string; body: string }[] = [
   },
   {
     title: productCopy('ai.mcp.title', 'Add sparx to your AI app'),
-    body: 'Paste the key into your app as an MCP connection — the standard way AI apps plug into other services.',
+    body: 'Paste the key into your app as an MCP connection: the standard way AI apps plug into other services.',
   },
   {
     title: 'Put it to work',
@@ -179,7 +179,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
     return (
       <div className={COLUMN}>
         <Text>
-          Connect your own AI app — Claude, ChatGPT, or Microsoft Copilot — so it can work with your
+          Connect your own AI app (Claude, ChatGPT, or Microsoft Copilot) so it can work with your
           live business data. This page shows how that connection is being used, and helps you set
           one up.
         </Text>
@@ -250,7 +250,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : feed.length === 0 ? (
               <div className="p-4">
                 <Text className="text-sm">
-                  Nothing yet — this shows a live trail once an app connects.
+                  Nothing yet. This shows a live trail once an app connects.
                 </Text>
               </div>
             ) : (
@@ -351,7 +351,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
             title="Instructions"
             description={productCopy(
               'ai.instructions.summary',
-              "The voice and rules Piggles follows when it writes for you using your own AI account — like your site's chat personality."
+              "The voice and rules Piggles follows when it writes for you using your own AI account, like your site's chat personality."
             )}
             cta="Open Instructions"
             onOpen={(event) => {
@@ -361,7 +361,7 @@ export function AiOverviewSurface({ ctx }: { ctx: SurfaceContext }) {
           <AreaLink
             icon={<Icon glyph={faWrench} className="text-module size-5" aria-hidden />}
             title="Permissions"
-            description="What an AI app you've connected may look up or change in your business — switch off anything it shouldn't reach."
+            description="What an AI app you've connected may look up or change in your business. Switch off anything it shouldn't reach."
             cta="Open Permissions"
             onOpen={(event) => {
               open('ai.tools', event);

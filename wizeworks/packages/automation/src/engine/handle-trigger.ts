@@ -99,7 +99,7 @@ export async function handleTrigger(
         if (!parsed.success) {
           deps.logger.warn(
             { automationId: a.id },
-            'automation: invalid stored conditions — skipping'
+            'automation: invalid stored conditions, skipping'
           );
           continue;
         }

@@ -508,8 +508,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Iris Bellamy — writer",
-      "seoDescription": "Iris Bellamy is a writer on the coast — essays and reporting on work, cities and attention. Selected writing, a fortnightly newsletter, and how to commission her.",
+      "seoTitle": "Iris Bellamy: writer",
+      "seoDescription": "Iris Bellamy is a writer on the coast: essays and reporting on work, cities and attention. Selected writing, a fortnightly newsletter, and how to commission her.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -557,7 +557,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
                     "children": [
-                      "I write long and short — reported features, first-person essays, and a fortnightly newsletter — about how we spend our days: the work we do, the places we do it in, and the small daily fight to keep our attention our own. Fifteen years at it, most of them freelance, always following the question rather than the beat."
+                      "I write long and short (reported features, first-person essays, and a fortnightly newsletter) about how we spend our days: the work we do, the places we do it in, and the small daily fight to keep our attention our own. Fifteen years at it, most of them freelance, always following the question rather than the beat."
                     ],
                     "id": "c14905c1-dd61-41af-ad61-419b109196e1",
                     "ord": "a1"
@@ -627,7 +627,7 @@
                                 "tag": "p",
                                 "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                                 "children": [
-                                  "On the small, stubborn rituals we build around work — and what they quietly protect us from."
+                                  "On the small, stubborn rituals we build around work, and what they quietly protect us from."
                                 ],
                                 "id": "17ef0b7b-d632-4615-b52b-2103e6ba77ca",
                                 "ord": "a2"
@@ -771,7 +771,7 @@
                                 "tag": "p",
                                 "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                                 "children": [
-                                  "A fortnightly letter — this issue, on the difference between being interrupted and being distracted."
+                                  "A fortnightly letter. This issue, on the difference between being interrupted and being distracted."
                                 ],
                                 "id": "431cc5de-6658-4ff4-bbd2-db079243d545",
                                 "ord": "a2"
@@ -921,7 +921,7 @@
                       {
                         "kind": "element",
                         "tag": "span",
-                        "children": ["For commissions, pitches and the newsletter — "],
+                        "children": ["For commissions, pitches and the newsletter: "],
                         "id": "4b128e1c-ce87-4793-9aad-e6c611d70e5d",
                         "ord": "a0"
                       },
@@ -962,8 +962,8 @@
       "name": "Work",
       "kind": "singleton",
       "slug": "work",
-      "seoTitle": "Work — Iris Bellamy",
-      "seoDescription": "Selected projects and case studies by Iris Bellamy — the work, the thinking, and the outcome.",
+      "seoTitle": "Work: Iris Bellamy",
+      "seoDescription": "Selected projects and case studies by Iris Bellamy: the work, the thinking, and the outcome.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -994,7 +994,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Essays, reporting, criticism and the newsletter — the last few years of it, most recent first. Each piece opens to the full read."
+                      "Essays, reporting, criticism and the newsletter: the last few years of it, most recent first. Each piece opens to the full read."
                     ],
                     "id": "aabab3e7-079f-42d3-b0cf-6caac4659739",
                     "ord": "a1"
@@ -1127,8 +1127,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Iris Bellamy — essayist & reporter",
-      "seoDescription": "Fifteen years of essays and reported features on ordinary working life — from a coastal news desk to the magazines, plus The Long Field newsletter.",
+      "seoTitle": "About Iris Bellamy: essayist & reporter",
+      "seoDescription": "Fifteen years of essays and reported features on ordinary working life: from a coastal news desk to the magazines, plus The Long Field newsletter.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1174,7 +1174,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I started on the local desk of a coastal paper, covering council meetings and closing shops, and I never quite left that world behind — the reporting I care about most is still close to the ground, spent with people doing the work that keeps a place standing. The essays grew out of the reporting: the questions that were too slow, or too personal, for a news page."
+                          "I started on the local desk of a coastal paper, covering council meetings and closing shops, and I never quite left that world behind: the reporting I care about most is still close to the ground, spent with people doing the work that keeps a place standing. The essays grew out of the reporting: the questions that were too slow, or too personal, for a news page."
                         ],
                         "id": "092b725f-3172-46f4-be10-3ac9093b5333",
                         "ord": "a2"
@@ -1184,7 +1184,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "These days I write to commission for a handful of magazines, review the occasional novel, and send The Long Field — a fortnightly newsletter about work, cities and the strange economics of attention — to a few thousand readers who put up with me. I write slowly, edit hard, and believe the second draft is where the writing actually happens."
+                          "These days I write to commission for a handful of magazines, review the occasional novel, and send The Long Field: a fortnightly newsletter about work, cities and the strange economics of attention, to a few thousand readers who put up with me. I write slowly, edit hard, and believe the second draft is where the writing actually happens."
                         ],
                         "id": "7575ba0d-2ee3-4c5f-b42f-962375eeca49",
                         "ord": "a3"
@@ -1380,8 +1380,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Iris Bellamy",
-      "seoDescription": "Start a project with Iris Bellamy — availability, what a good brief looks like, and where to reach them.",
+      "seoTitle": "Contact: Iris Bellamy",
+      "seoDescription": "Start a project with Iris Bellamy: availability, what a good brief looks like, and where to reach them.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1417,7 +1417,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I’m open to commissions and I read every pitch. Essays, reported features, criticism — if there’s a story you think I’m the right person to tell, write and tell me why."
+                          "I’m open to commissions and I read every pitch. Essays, reported features, criticism. If there’s a story you think I’m the right person to tell, write and tell me why."
                         ],
                         "id": "3f36a443-e9a9-47fb-a631-0a02880b9578",
                         "ord": "a1"
@@ -1427,7 +1427,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A useful note tells me the idea, roughly how long it wants to be, and when you’d need it. A half-formed idea is a perfectly good place to begin — most of mine start that way."
+                          "A useful note tells me the idea, roughly how long it wants to be, and when you’d need it. A half-formed idea is a perfectly good place to begin. Most of mine start that way."
                         ],
                         "id": "37a686ed-d741-46e9-94e0-0f50ab5789ab",
                         "ord": "a2"
@@ -1437,7 +1437,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Or subscribe to The Long Field — a fortnightly letter on work and attention, and the quietest way to keep up with what I’m writing."
+                          "Or subscribe to The Long Field: a fortnightly letter on work and attention, and the quietest way to keep up with what I’m writing."
                         ],
                         "id": "d26b7e8b-184f-4bb5-8d52-c46f3300339e",
                         "ord": "a3"
@@ -1719,8 +1719,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Project — Iris Bellamy",
-      "seoDescription": "A project by Iris Bellamy — the brief, the process, and the result, in one case study.",
+      "seoTitle": "Project: Iris Bellamy",
+      "seoDescription": "A project by Iris Bellamy: the brief, the process, and the result, in one case study.",
       "root": {
         "kind": "element",
         "tag": "div",

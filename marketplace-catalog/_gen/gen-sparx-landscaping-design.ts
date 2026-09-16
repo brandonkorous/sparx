@@ -175,7 +175,7 @@ const SCHEDULING = {
       handle: 'design-consultation',
       name: 'Design consultation',
       description:
-        'A relaxed on-site walk-through of your property — your goals, your budget, and what’s possible. No charge, no pressure.',
+        'A relaxed on-site walk-through of your property. Your goals, your budget, and what’s possible. No charge, no pressure.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -208,7 +208,7 @@ const SCHEDULING = {
       handle: 'hardscape-patio-consult',
       name: 'Hardscape & patio consultation',
       description:
-        'Patios, walls, walkways and fire features — we walk the space, talk materials and lay out a plan and estimate.',
+        'Patios, walls, walkways and fire features. We walk the space, talk materials and lay out a plan and estimate.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -219,7 +219,7 @@ const SCHEDULING = {
       handle: 'planting-plan-consult',
       name: 'Planting plan consultation',
       description:
-        'A garden built for your light, soil and climate — four-season interest, sensible upkeep, and plants that thrive.',
+        'A garden built for your light, soil and climate: four-season interest, sensible upkeep, and plants that thrive.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -241,7 +241,7 @@ const SCHEDULING = {
       handle: 'outdoor-living-consult',
       name: 'Outdoor living design engagement',
       description:
-        'Kitchens, pergolas, lighting and living spaces — a design engagement for the yard you actually want to spend evenings in.',
+        'Kitchens, pergolas, lighting and living spaces: a design engagement for the yard you actually want to spend evenings in.',
       durationMinutes: 75,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -257,7 +257,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A lush, layered garden with a stone terrace at golden hour',
     title: 'The yard you keep meaning to build',
-    sub: 'Verdant Grounds designs and builds landscapes worth coming home to — considered design, real craftsmanship, and plantings that only get better with time.',
+    sub: 'Verdant Grounds designs and builds landscapes worth coming home to: considered design, real craftsmanship, and plantings that only get better with time.',
     primary: { label: 'Book a design consultation', href: '/book' },
     secondary: { label: 'See our work', href: '/book' },
     overlay: 'dark',
@@ -266,7 +266,7 @@ const HOME = [
     items: [
       {
         title: 'Design that fits your yard',
-        body: 'Every project starts with a custom design drawn for your space, your light and how you actually want to live outside — never a copy-paste plan.',
+        body: 'Every project starts with a custom design drawn for your space, your light and how you actually want to live outside, never a copy-paste plan.',
       },
       {
         title: 'Licensed, insured crews',
@@ -284,7 +284,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Where a project begins',
-    intro: 'Every engagement opens with a conversation on your property. Consultations and estimates are free — full design engagements hold a deposit that’s credited toward your plan.',
+    intro: 'Every engagement opens with a conversation on your property. Consultations and estimates are free: full design engagements hold a deposit that’s credited toward your plan.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -314,13 +314,13 @@ const HOME = [
     alt: 'A landscape designer marking up a planting plan on site',
     heading: 'From first walk-through to finished yard',
     body: [
-      'We start on your property, not in a showroom — walking the space, learning how you live outside, and understanding the light, grade and soil we’re working with.',
-      'From there we draw a scaled design and 3D renderings so you can see the whole yard before a single stone is set. Once it’s right, our own licensed crews build it — hardscape, planting and irrigation, start to finish.',
+      'We start on your property, not in a showroom: walking the space, learning how you live outside, and understanding the light, grade and soil we’re working with.',
+      'From there we draw a scaled design and 3D renderings so you can see the whole yard before a single stone is set. Once it’s right, our own licensed crews build it: hardscape, planting and irrigation, start to finish.',
     ],
     cta: { label: 'Start your design', href: '/book' },
   }),
   testimonial({
-    quote: 'They handed us a 3D plan of our own backyard before they touched a shovel. What they built looks exactly like the rendering — only better in person.',
+    quote: 'They handed us a 3D plan of our own backyard before they touched a shovel. What they built looks exactly like the rendering. Only better in person.',
     attribution: 'The Okafor family, clients since 2024',
     surface: 'muted',
   }),
@@ -349,8 +349,8 @@ const ABOUT = [
     alt: 'A finished backyard with mature plantings and a seating area',
     heading: 'About Verdant Grounds',
     body: [
-      'Verdant Grounds is a design-and-build landscape studio. We’re the rare firm that draws the plan and builds it too — so the vision on paper is the yard you actually get, with no handoffs and no finger-pointing.',
-      'We founded the studio on a simple idea: a landscape should be designed for the people who live with it, built to last, and beautiful in every season — not just the week it’s planted.',
+      'Verdant Grounds is a design-and-build landscape studio. We’re the rare firm that draws the plan and builds it too, so the vision on paper is the yard you actually get, with no handoffs and no finger-pointing.',
+      'We founded the studio on a simple idea: a landscape should be designed for the people who live with it, built to last, and beautiful in every season, not just the week it’s planted.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -359,7 +359,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'Design first, always', body: 'Nothing gets built until there’s a plan you love. We design for your light, grade and how you want to use the space.' },
-      { title: 'One accountable crew', body: 'Our own licensed, insured teams handle hardscape, planting and irrigation — one point of responsibility from first cut to final walk-through.' },
+      { title: 'One accountable crew', body: 'Our own licensed, insured teams handle hardscape, planting and irrigation. One point of responsibility from first cut to final walk-through.' },
       { title: 'Built to endure', body: 'Proper base prep, healthy plant stock and a warranty behind it. We build the yard to still look right in ten years, not ten weeks.' },
     ],
   }),
@@ -378,7 +378,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a consultation online — no phone tag, and you’ll pick the designer who fits your project.',
+    sub: 'See live availability and reserve a consultation online: no phone tag, and you’ll pick the designer who fits your project.',
     surface: 'muted',
     cta: { label: 'Book a design consultation', href: '/book' },
   }),
@@ -389,8 +389,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-landscaping-design',
   name: 'Landscaping (Design & Build)',
   summary:
-    'A premium landscape design-and-build site — a lush cream-and-emerald palette with a warm terracotta accent and a refined serif display, led by finished-project photography. Installs a working booking flow for free consultations and estimates: a real consult menu (design, hardscape, planting, irrigation, outdoor living), three designers you book by name with their own hours, and a design-deposit policy for full engagements. Ships as "Verdant Grounds".',
-  tagline: 'A lush, portfolio-led template for landscape design & build firms — book consultations online from day one.',
+    'A premium landscape design-and-build site: a lush cream-and-emerald palette with a warm terracotta accent and a refined serif display, led by finished-project photography. Installs a working booking flow for free consultations and estimates: a real consult menu (design, hardscape, planting, irrigation, outdoor living), three designers you book by name with their own hours, and a design-deposit policy for full engagements. Ships as "Verdant Grounds".',
+  tagline: 'A lush, portfolio-led template for landscape design & build firms. Book consultations online from day one.',
   industry: 'Landscaping',
   sortWeight: 54,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -399,9 +399,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Verdant Grounds — landscape design & build',
+      title: 'Verdant Grounds: landscape design & build',
       description:
-        'Verdant Grounds designs and builds custom landscapes — patios, planting, irrigation and outdoor living. Book a free design consultation online.',
+        'Verdant Grounds designs and builds custom landscapes: patios, planting, irrigation and outdoor living. Book a free design consultation online.',
     },
   },
   home: HOME,

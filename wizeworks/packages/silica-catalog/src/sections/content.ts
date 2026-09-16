@@ -103,7 +103,7 @@ export function glossary(): Node {
         term('Movement', 'How much a piece swells or shrinks as the air around it changes.'),
         term(
           'Scribing',
-          'Cutting a piece to follow a wall that is not straight — which is all of them.'
+          'Cutting a piece to follow a wall that is not straight, which is all of them.'
         ),
         term('Carcass', 'The box of a unit, before the door and the worktop go on.'),
       ],

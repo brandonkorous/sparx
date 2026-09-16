@@ -412,7 +412,7 @@ export const SERIAL_STATUSES: { value: string; label: string; describe: string }
   { value: 'reserved', label: 'Set aside', describe: 'Held for a particular order' },
   { value: 'sold', label: 'Sold', describe: 'Gone out to a customer' },
   { value: 'returned', label: 'Returned', describe: 'Came back from a customer' },
-  { value: 'scrapped', label: 'Scrapped', describe: 'Thrown away — no longer usable' },
+  { value: 'scrapped', label: 'Scrapped', describe: 'Thrown away: no longer usable' },
   { value: 'lost', label: 'Lost', describe: 'Cannot be found' },
 ];
 

@@ -266,7 +266,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.records', layout: 'carousel', heading: 'New on vinyl' }),
     editorialBand({
         heading: 'One record a month, chosen for you',
-        lead: 'Wax Club is a record in the mail every month — a new pressing or a reissue we think you should hear, matched to the genres you love. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing.',
+        lead: 'Wax Club is a record in the mail every month: a new pressing or a reissue we think you should hear, matched to the genres you love. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing.',
         assetId: 'rec-band-club',
         cta: 'Join Wax Club',
         href: '/products/wax-club',
@@ -311,7 +311,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Shipped in a proper mailer' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Every record ships in a rigid LP mailer with corner protection, checked for warps and seam splits before it leaves the counter. Local? Reserve online and collect from the shop — we’ll hold it behind the register for a week.',
+                                        text: 'Every record ships in a rigid LP mailer with corner protection, checked for warps and seam splits before it leaves the counter. Local? Reserve online and collect from the shop: we’ll hold it behind the register for a week.',
                                     }),
                                 ],
                             }),
@@ -350,11 +350,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The crates',
-        'Everything on the shelves right now — new pressings, hand-picked reissues, the turntables and gear to play them, and the odd bit of merch. Filter by genre or sort however you like; every record is checked and played before it’s filed.'
+        'Everything on the shelves right now: new pressings, hand-picked reissues, the turntables and gear to play them, and the odd bit of merch. Filter by genre or sort however you like; every record is checked and played before it’s filed.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The bins grouped the way crate-diggers actually shop — this month’s new arrivals, the staff picks, the jazz and soul corner, the electronic wall, and a starter kit if you’re just getting the deck set up.'),
+    pageMasthead('Collections', 'The bins grouped the way crate-diggers actually shop. This month’s new arrivals, the staff picks, the jazz and soul corner, the electronic wall, and a starter kit if you’re just getting the deck set up.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Third Side', 'Hunting a title, an artist, a genre or a brush for your records? Search the whole shop and the journal below.'),
@@ -380,7 +380,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The liner notes' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from behind the counter — what just landed, what we can’t stop playing, and how to keep your records sounding like the day you bought them. No gatekeeping, no snobbery.',
+                        text: 'Notes from behind the counter: what just landed, what we can’t stop playing, and how to keep your records sounding like the day you bought them. No gatekeeping, no snobbery.',
                     }),
                 ],
             }),
@@ -397,10 +397,10 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Third Side' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Third Side started as a milk crate of records at a weekend market and a stubborn belief that an album is meant to be heard front to back. It grew the slow way — one regular, one recommendation, one trade-in at a time — into a shop with real racks and a turntable always spinning behind the counter.',
+                        text: 'Third Side started as a milk crate of records at a weekend market and a stubborn belief that an album is meant to be heard front to back. It grew the slow way (one regular, one recommendation, one trade-in at a time) into a shop with real racks and a turntable always spinning behind the counter.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We stock across every genre because good music doesn’t care about your shelf labels. New pressings, clean reissues, the occasional rare copy that walks in the door — all of it checked for warps and splits, all of it played before it’s filed. If we wouldn’t take it home, it doesn’t go in the bin.',
+                        text: 'We stock across every genre because good music doesn’t care about your shelf labels. New pressings, clean reissues, the occasional rare copy that walks in the door. All of it checked for warps and splits, all of it played before it’s filed. If we wouldn’t take it home, it doesn’t go in the bin.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'No mystery grades, no gouging on the good stuff, no attitude if you’re buying your first record. Just a shop that still believes the third side of a double LP is worth flipping to.',
@@ -478,7 +478,7 @@ const lp = (opts: {
     seoDescription: string;
 }): Product => ({
     handle: opts.handle,
-    title: `${opts.title} — ${opts.artist}`,
+    title: `${opts.title}: ${opts.artist}`,
     description: opts.description,
     status: 'active',
     productType: 'Vinyl record',
@@ -502,13 +502,13 @@ const PRODUCTS: Product[] = [
         title: 'Neon Meridian',
         artist: 'Violet Transit',
         description:
-            'A neon-lit debut of widescreen synth-pop — arpeggios that sprint, choruses built for the drive home, and a low end you’ll feel through the floor. Sequenced as one continuous night, side A to side B, the way the band meant it.',
+            'A neon-lit debut of widescreen synth-pop: arpeggios that sprint, choruses built for the drive home, and a low end you’ll feel through the floor. Sequenced as one continuous night, side A to side B, the way the band meant it.',
         price: 28,
         sku: 'TSR-LP-NEON',
         collections: ['new-arrivals', 'staff-picks', 'electronic'],
         tags: ['electronic', 'synth-pop', 'new-arrival', 'color-vinyl'],
         asset: 'prod-neon-meridian',
-        seoTitle: 'Violet Transit — Neon Meridian (LP) | Third Side Records',
+        seoTitle: 'Violet Transit: Neon Meridian (LP) | Third Side Records',
         seoDescription: 'The widescreen synth-pop debut from Violet Transit, on 180g vinyl. Limited color pressing available.',
     }),
     lp({
@@ -516,13 +516,13 @@ const PRODUCTS: Product[] = [
         title: 'Paper Cathedral',
         artist: 'The Hollow Coast',
         description:
-            'Big, reverb-soaked indie rock that builds like weather — quiet verses, guitars that break the roof off by the last chorus. The kind of record you put on loud with the windows open. Their best yet, and it isn’t close.',
+            'Big, reverb-soaked indie rock that builds like weather: quiet verses, guitars that break the roof off by the last chorus. The kind of record you put on loud with the windows open. Their best yet, and it isn’t close.',
         price: 26,
         sku: 'TSR-LP-PAPER',
         collections: ['new-arrivals', 'best-sellers'],
         tags: ['indie-rock', 'alternative', 'new-arrival'],
         asset: 'prod-paper-cathedral',
-        seoTitle: 'The Hollow Coast — Paper Cathedral (LP) | Third Side Records',
+        seoTitle: 'The Hollow Coast: Paper Cathedral (LP) | Third Side Records',
         seoDescription: 'Reverb-soaked indie rock from The Hollow Coast, pressed on 180g vinyl.',
     }),
     lp({
@@ -530,13 +530,13 @@ const PRODUCTS: Product[] = [
         title: 'Midnight Ledger',
         artist: 'Cole Ambrose Trio',
         description:
-            'A late-night piano-trio session cut straight to tape — brushed drums, a walking bass you can lean on, and playing that leaves room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room.',
+            'A late-night piano-trio session cut straight to tape: brushed drums, a walking bass you can lean on, and playing that leaves room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room.',
         price: 34,
         sku: 'TSR-LP-MIDNIGHT',
         collections: ['new-arrivals', 'staff-picks', 'jazz-soul'],
         tags: ['jazz', 'audiophile', 'reissue'],
         asset: 'prod-midnight-ledger',
-        seoTitle: 'Cole Ambrose Trio — Midnight Ledger (LP) | Third Side Records',
+        seoTitle: 'Cole Ambrose Trio: Midnight Ledger (LP) | Third Side Records',
         seoDescription: 'A late-night piano-trio session on audiophile 180g vinyl. Brushed drums, walking bass, room to breathe.',
     }),
     lp({
@@ -544,13 +544,13 @@ const PRODUCTS: Product[] = [
         title: 'Static Gospel',
         artist: 'Rue Delacroix',
         description:
-            'Soul with grit under its fingernails — horns that punch, an organ that simmers, and a voice that sounds like it’s been up all night and has something to tell you. Warm, analogue, and impossible to sit still to.',
+            'Soul with grit under its fingernails: horns that punch, an organ that simmers, and a voice that sounds like it’s been up all night and has something to tell you. Warm, analogue, and impossible to sit still to.',
         price: 27,
         sku: 'TSR-LP-STATIC',
         collections: ['new-arrivals', 'staff-picks', 'jazz-soul'],
         tags: ['soul', 'funk', 'new-arrival'],
         asset: 'prod-static-gospel',
-        seoTitle: 'Rue Delacroix — Static Gospel (LP) | Third Side Records',
+        seoTitle: 'Rue Delacroix: Static Gospel (LP) | Third Side Records',
         seoDescription: 'Gritty, horn-driven soul from Rue Delacroix on 180g vinyl.',
     }),
     lp({
@@ -558,20 +558,20 @@ const PRODUCTS: Product[] = [
         title: 'Chrome Orchard',
         artist: 'Fever Signal',
         description:
-            'Angular post-punk with a pulse — motorik drums, a bassline that never lets up, and guitars filed to a point. Ten tracks, not a spare second among them. Play it once and you’ll flip it straight back over.',
+            'Angular post-punk with a pulse: motorik drums, a bassline that never lets up, and guitars filed to a point. Ten tracks, not a spare second among them. Play it once and you’ll flip it straight back over.',
         price: 29,
         sku: 'TSR-LP-CHROME',
         collections: ['new-arrivals', 'electronic'],
         tags: ['post-punk', 'alternative', 'color-vinyl'],
         asset: 'prod-chrome-orchard',
-        seoTitle: 'Fever Signal — Chrome Orchard (LP) | Third Side Records',
+        seoTitle: 'Fever Signal: Chrome Orchard (LP) | Third Side Records',
         seoDescription: 'Angular, motorik post-punk from Fever Signal on 180g vinyl. Limited color pressing available.',
     }),
     {
         handle: 'tt-01-turntable',
         title: 'Third Side TT-01 Belt-Drive Turntable',
         description:
-            'The deck we set up for people getting back into records — a belt-drive turntable with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. Solid plinth, adjustable feet, and a counterweight that’s actually easy to set. Sounds far better than it has any right to at the price.',
+            'The deck we set up for people getting back into records: a belt-drive turntable with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. Solid plinth, adjustable feet, and a counterweight that’s actually easy to set. Sounds far better than it has any right to at the price.',
         status: 'active',
         productType: 'Equipment',
         vendor: 'Third Side Records',
@@ -579,7 +579,7 @@ const PRODUCTS: Product[] = [
         categoryHandles: ['gear'],
         collectionHandles: ['best-sellers', 'starter-kit'],
         seoTitle: 'Third Side TT-01 Belt-Drive Turntable | Third Side Records',
-        seoDescription: 'A belt-drive turntable with a pre-mounted cartridge and built-in preamp — plug-and-play into powered speakers or an amp.',
+        seoDescription: 'A belt-drive turntable with a pre-mounted cartridge and built-in preamp: plug-and-play into powered speakers or an amp.',
         variants: [{ sku: 'TSR-GEAR-TT01', priceCents: money(349), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-turntable', isPrimary: true, alt: 'The Third Side belt-drive turntable' }],
     },
@@ -587,14 +587,14 @@ const PRODUCTS: Product[] = [
         handle: 'cork-slipmat',
         title: 'Cork Slipmat',
         description:
-            'A natural cork slipmat that grips the record and tightens up the low end — a small upgrade you’ll hear on the first play. Fits any standard 12-inch platter. Cheap enough to buy two and keep one clean.',
+            'A natural cork slipmat that grips the record and tightens up the low end: a small upgrade you’ll hear on the first play. Fits any standard 12-inch platter. Cheap enough to buy two and keep one clean.',
         status: 'active',
         productType: 'Equipment',
         vendor: 'Third Side Records',
         tags: ['gear', 'slipmat', 'accessory'],
         categoryHandles: ['gear'],
         collectionHandles: ['starter-kit'],
-        seoTitle: 'Cork Slipmat — turntable accessory | Third Side Records',
+        seoTitle: 'Cork Slipmat: turntable accessory | Third Side Records',
         seoDescription: 'A natural cork slipmat that grips the record and tightens the low end. Fits any 12-inch platter.',
         variants: [{ sku: 'TSR-GEAR-MAT', priceCents: money(18), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-slipmat', isPrimary: true, alt: 'A cork turntable slipmat' }],
@@ -603,14 +603,14 @@ const PRODUCTS: Product[] = [
         handle: 'groove-care-kit',
         title: 'Groove Care Cleaning Kit',
         description:
-            'Everything to keep your records quiet — an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a microfibre cloth, in a tin that lives next to the deck. Two minutes before a play and the pops and crackle mostly disappear.',
+            'Everything to keep your records quiet: an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a microfibre cloth, in a tin that lives next to the deck. Two minutes before a play and the pops and crackle mostly disappear.',
         status: 'active',
         productType: 'Equipment',
         vendor: 'Third Side Records',
         tags: ['gear', 'cleaning', 'care'],
         categoryHandles: ['gear'],
         collectionHandles: ['starter-kit'],
-        seoTitle: 'Groove Care Cleaning Kit — record care | Third Side Records',
+        seoTitle: 'Groove Care Cleaning Kit: record care | Third Side Records',
         seoDescription: 'An anti-static brush, alcohol-free fluid and a microfibre cloth to keep your records quiet.',
         variants: [{ sku: 'TSR-GEAR-CARE', priceCents: money(34), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-cleaning-kit', isPrimary: true, alt: 'A record-cleaning kit with brush and fluid' }],
@@ -619,7 +619,7 @@ const PRODUCTS: Product[] = [
         handle: 'crate-digger-tote',
         title: 'Crate-Digger Canvas Tote',
         description:
-            'A heavy 16oz canvas tote sized to carry a dozen LPs home without the corners going soft — flat bottom, reinforced straps, screen-printed with the shop mark. The bag you’ll grab on the way out the door every time.',
+            'A heavy 16oz canvas tote sized to carry a dozen LPs home without the corners going soft: flat bottom, reinforced straps, screen-printed with the shop mark. The bag you’ll grab on the way out the door every time.',
         status: 'active',
         productType: 'Merch',
         vendor: 'Third Side Records',
@@ -633,16 +633,16 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'wax-club',
-        title: 'Wax Club — Monthly Vinyl Subscription',
+        title: 'Wax Club: Monthly Vinyl Subscription',
         description:
-            'One record in the mail every month, chosen by the people behind the counter to match the genres you love — a new pressing or a reissue we think you should hear, with the liner-note card that tells you why. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing.',
+            'One record in the mail every month, chosen by the people behind the counter to match the genres you love: a new pressing or a reissue we think you should hear, with the liner-note card that tells you why. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing.',
         status: 'active',
         productType: 'Subscription',
         vendor: 'Third Side Records',
         tags: ['subscription', 'wax-club', 'gift'],
         categoryHandles: ['subscription'],
         collectionHandles: ['best-sellers', 'staff-picks'],
-        seoTitle: 'Wax Club — Monthly Vinyl Subscription | Third Side Records',
+        seoTitle: 'Wax Club: Monthly Vinyl Subscription | Third Side Records',
         seoDescription: 'A hand-picked record in the mail every month, matched to your taste. Skip, swap or cancel any time.',
         options: [
             { name: 'Plan', displayType: 'dropdown', values: [{ value: 'One record' }, { value: 'Two records' }] },
@@ -727,14 +727,14 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Just landed: five records worth flipping to',
-            excerpt: 'A synth-pop debut, a piano trio cut to tape, and a post-punk record that never lets up — here’s what filed into the racks this week.',
+            excerpt: 'A synth-pop debut, a piano trio cut to tape, and a post-punk record that never lets up: here’s what filed into the racks this week.',
             featuredImage: { $asset: 'post-arrivals' },
             body: {
                 type: 'doc',
                 content: [
                     para('Restock day is the best day behind the counter. A pallet comes in, we unbox it onto the back table, and half of it gets played before it ever reaches a bin. Here’s what made this week worth talking about.'),
                     h2('The one to hear loud'),
-                    para('The Hollow Coast’s Paper Cathedral is the record we’ve had on repeat. It builds like weather — hushed verses that break into guitars big enough to take the roof off — and it’s pressed on quiet, heavy vinyl that gives all that reverb somewhere to live. Put it on with the windows open.'),
+                    para('The Hollow Coast’s Paper Cathedral is the record we’ve had on repeat. It builds like weather (hushed verses that break into guitars big enough to take the roof off) and it’s pressed on quiet, heavy vinyl that gives all that reverb somewhere to live. Put it on with the windows open.'),
                     h2('The one for a quiet room'),
                     para('Midnight Ledger, the Cole Ambrose Trio session, is the opposite kind of pleasure: brushed drums, a walking bass, and playing that leaves space between the notes. It’s an audiophile 180g cut, so it rewards a decent stylus and a room without much else going on. A late-night record in the truest sense.'),
                 ],
@@ -752,11 +752,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The little handwritten cards tucked into the sleeves aren’t marketing — they’re just us telling you what we’d take home. A staff pick is a record someone here will personally vouch for, and this month the racks are full of them.'),
-                    h2('Neon Meridian — Violet Transit'),
-                    para('If you grew up on the sound of a synth arpeggio and a chorus built for the highway, this debut is going to hit. It’s sequenced as one continuous night, and it’s best heard that way — side A into side B, no skipping. The limited color pressing is genuinely gorgeous under the lights, too.'),
-                    h2('Static Gospel — Rue Delacroix'),
-                    para('Soul with grit under its fingernails. Punchy horns, a simmering organ, and a voice that sounds like it’s been up all night with something to tell you. Warm, analogue and impossible to sit still to — the record that clears the counter every time we drop the needle on it.'),
+                    para('The little handwritten cards tucked into the sleeves aren’t marketing: they’re just us telling you what we’d take home. A staff pick is a record someone here will personally vouch for, and this month the racks are full of them.'),
+                    h2('Neon Meridian: Violet Transit'),
+                    para('If you grew up on the sound of a synth arpeggio and a chorus built for the highway, this debut is going to hit. It’s sequenced as one continuous night, and it’s best heard that way: side A into side B, no skipping. The limited color pressing is genuinely gorgeous under the lights, too.'),
+                    h2('Static Gospel: Rue Delacroix'),
+                    para('Soul with grit under its fingernails. Punchy horns, a simmering organ, and a voice that sounds like it’s been up all night with something to tell you. Warm, analogue and impossible to sit still to: the record that clears the counter every time we drop the needle on it.'),
                 ],
             },
         },
@@ -767,16 +767,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to keep your records quiet',
-            excerpt: 'Most pops and crackle aren’t damage — they’re dust and static. Two minutes of care before each play makes a bigger difference than any upgrade.',
+            excerpt: 'Most pops and crackle aren’t damage: they’re dust and static. Two minutes of care before each play makes a bigger difference than any upgrade.',
             featuredImage: { $asset: 'post-care' },
             body: {
                 type: 'doc',
                 content: [
-                    para('People spend a fortune chasing a quieter background from their records and skip the two things that actually cause the noise: dust in the groove and a static charge that pulls more of it in. Handle both and most of the crackle disappears — no new cartridge required.'),
+                    para('People spend a fortune chasing a quieter background from their records and skip the two things that actually cause the noise: dust in the groove and a static charge that pulls more of it in. Handle both and most of the crackle disappears, no new cartridge required.'),
                     h2('Before every play'),
-                    para('Give the record a pass with an anti-static carbon-fibre brush while it turns on the platter — hold the bristles lightly in the groove for a rotation or two and let it lift the loose dust. Always hold records by the edge and the label, never the playing surface; the oil from your fingers is what dust sticks to in the first place.'),
+                    para('Give the record a pass with an anti-static carbon-fibre brush while it turns on the platter. Hold the bristles lightly in the groove for a rotation or two and let it lift the loose dust. Always hold records by the edge and the label, never the playing surface; the oil from your fingers is what dust sticks to in the first place.'),
                     h2('Every so often, a proper clean'),
-                    para('When a record’s been passed around or bought second-hand, it’s worth a wet clean — a little alcohol-free fluid, a soft microfibre cloth, wiped with the groove and never across it, then left to dry fully before it goes back in the sleeve. Store everything upright, never stacked flat, and keep the decks out of direct sun. Do that and a record you buy today will still sound right in thirty years.'),
+                    para('When a record’s been passed around or bought second-hand, it’s worth a wet clean: a little alcohol-free fluid, a soft microfibre cloth, wiped with the groove and never across it, then left to dry fully before it goes back in the sleeve. Store everything upright, never stacked flat, and keep the decks out of direct sun. Do that and a record you buy today will still sound right in thirty years.'),
                 ],
             },
         },
@@ -791,7 +791,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Record Shop (Vinyl)',
     theme: THEME,
     summary:
-        'A complete, working shop for an independent record store: a real catalogue of vinyl LPs across genres, a turntable, a slipmat, a record-cleaning kit, a tote and a monthly Wax Club subscription, with categories, collections, a bespoke crate-digger PDP and a full merchandised home page. Moody dark theme — near-black ground, hot-magenta primary, electric-cyan accent; the album covers carry the color. Shipped as Third Side Records.',
+        'A complete, working shop for an independent record store: a real catalogue of vinyl LPs across genres, a turntable, a slipmat, a record-cleaning kit, a tote and a monthly Wax Club subscription, with categories, collections, a bespoke crate-digger PDP and a full merchandised home page. Moody dark theme, near-black ground, hot-magenta primary, electric-cyan accent; the album covers carry the color. Shipped as Third Side Records.',
     tagline: 'A dark, working storefront for an independent record shop.',
     vertical: 'retail',
     industry: 'Record shop',
@@ -804,14 +804,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Third Side Records — an independent record shop for vinyl',
+            title: 'Third Side Records: an independent record shop for vinyl',
             description:
-                'Third Side is an independent record shop — new pressings and hand-picked reissues across every genre, turntables and gear, and a monthly Wax Club subscription. Every record played before it’s shelved.',
+                'Third Side is an independent record shop: new pressings and hand-picked reissues across every genre, turntables and gear, and a monthly Wax Club subscription. Every record played before it’s shelved.',
         },
         about: {
             title: 'About Third Side Records',
             description:
-                'How Third Side buys, checks and files its records — every genre, new pressings and clean reissues, played before they go in the bin. The shop that still believes in the album.',
+                'How Third Side buys, checks and files its records: every genre, new pressings and clean reissues, played before they go in the bin. The shop that still believes in the album.',
         },
     },
     home: HOME,

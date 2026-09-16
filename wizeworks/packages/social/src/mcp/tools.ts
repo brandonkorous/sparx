@@ -83,7 +83,7 @@ const uuid = () => z.string().uuid();
 const listConnections: McpToolDefinition = {
   name: 'list_social_connections',
   description:
-    'List the tenant’s connected social accounts and the publish targets under each (the pages / profiles / boards a post can go to — Facebook Pages, Instagram, Pinterest boards, etc.). Use a target’s `id` as create_social_post → `targets[].targetId`. Only targets with `enabled: true` accept posts. Each connection carries a `propertyId` (the site it speaks for; null = tenant-wide). Connecting a NEW account is not doable here — it needs an OAuth sign-in in the app.',
+    'List the tenant’s connected social accounts and the publish targets under each (the pages / profiles / boards a post can go to: Facebook Pages, Instagram, Pinterest boards, etc.). Use a target’s `id` as create_social_post → `targets[].targetId`. Only targets with `enabled: true` accept posts. Each connection carries a `propertyId` (the site it speaks for; null = tenant-wide). Connecting a NEW account is not doable here: it needs an OAuth sign-in in the app.',
   scope: 'read:social',
   confirmation: false,
   input: z.object({}),
@@ -93,7 +93,7 @@ const listConnections: McpToolDefinition = {
 const checkConnections: McpToolDefinition = {
   name: 'check_social_connections',
   description:
-    'Check whether each connected social account can actually do what this software needs, by comparing the permissions the platform granted against the ones the module asks for. Use this when a post failed for no obvious reason, when an account was just reconnected, or to find out whether a platform has finished reviewing this app. Each result carries a `verdict` (ready / permissions_missing / awaiting_review / reconnect_required / unverifiable) and a plain-language `detail`; `caveat` is set when something about that account makes the answer unreliable. Makes a live call to each platform, so it is slower than list_social_connections — do not use it just to list accounts.',
+    'Check whether each connected social account can actually do what this software needs, by comparing the permissions the platform granted against the ones the module asks for. Use this when a post failed for no obvious reason, when an account was just reconnected, or to find out whether a platform has finished reviewing this app. Each result carries a `verdict` (ready / permissions_missing / awaiting_review / reconnect_required / unverifiable) and a plain-language `detail`; `caveat` is set when something about that account makes the answer unreliable. Makes a live call to each platform, so it is slower than list_social_connections: do not use it just to list accounts.',
   scope: 'read:social',
   confirmation: false,
   input: z.object({ propertyId: uuid().nullable().optional() }),
@@ -149,7 +149,7 @@ const CreatePostSchema = z.object({
 const createPost: McpToolDefinition = {
   name: 'create_social_post',
   description:
-    'Compose a social post as a DRAFT and fan it out to one or more connected targets (accounts). Nothing publishes yet — submit_social_post_for_approval, schedule_social_post, or publish_social_post moves it forward. `targets[].targetId` are social target ids the tenant has connected + enabled.',
+    'Compose a social post as a DRAFT and fan it out to one or more connected targets (accounts). Nothing publishes yet: submit_social_post_for_approval, schedule_social_post, or publish_social_post moves it forward. `targets[].targetId` are social target ids the tenant has connected + enabled.',
   scope: 'write:social',
   confirmation: true,
   input: CreatePostSchema,
@@ -233,7 +233,7 @@ const schedulePost: McpToolDefinition = {
 const approvePost: McpToolDefinition = {
   name: 'approve_social_post',
   description:
-    'Approve a post awaiting review. A future scheduled time → scheduled; otherwise it publishes now. Publishes to real accounts — confirm first.',
+    'Approve a post awaiting review. A future scheduled time → scheduled; otherwise it publishes now. Publishes to real accounts. Confirm first.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({ postId: uuid() }),
@@ -248,7 +248,7 @@ const approvePost: McpToolDefinition = {
 const rejectPost: McpToolDefinition = {
   name: 'reject_social_post',
   description:
-    'Reject a post awaiting review, sending it back to draft for revision. Always give a `note` saying what needs changing — without one the author gets a state change and has to guess.',
+    'Reject a post awaiting review, sending it back to draft for revision. Always give a `note` saying what needs changing, without one the author gets a state change and has to guess.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({ postId: uuid(), note: z.string().max(2000).optional() }),
@@ -261,7 +261,7 @@ const rejectPost: McpToolDefinition = {
 const publishPost: McpToolDefinition = {
   name: 'publish_social_post',
   description:
-    'Publish a post to its connected accounts NOW (arms its targets and hands off to the publish worker). Publishes to real accounts — confirm first.',
+    'Publish a post to its connected accounts NOW (arms its targets and hands off to the publish worker). Publishes to real accounts. Confirm first.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({ postId: uuid() }),
@@ -280,7 +280,7 @@ const publishPost: McpToolDefinition = {
 const updateTargets: McpToolDefinition = {
   name: 'update_social_post_targets',
   description:
-    'Change WHERE a saved post goes and how it reads there — add destinations, remove ones that have not published yet, change a per-destination text override or first comment, or give one destination its own send time. Works until the post starts publishing. `add[].targetId` and `remove[]`/`update[].id` are different ids: `add` takes a social TARGET id (from list_social_connections), `remove`/`update` take the post-target row id (from get_social_post → targets[].id).',
+    'Change WHERE a saved post goes and how it reads there. Add destinations, remove ones that have not published yet, change a per-destination text override or first comment, or give one destination its own send time. Works until the post starts publishing. `add[].targetId` and `remove[]`/`update[].id` are different ids: `add` takes a social TARGET id (from list_social_connections), `remove`/`update` take the post-target row id (from get_social_post → targets[].id).',
   scope: 'write:social',
   confirmation: true,
   input: z.object({
@@ -342,7 +342,7 @@ const updateTargets: McpToolDefinition = {
 const retryTarget: McpToolDefinition = {
   name: 'retry_social_post_target',
   description:
-    'Send ONE failed destination again. Its siblings — including the ones that already went out — are untouched, and a destination that already published cannot be retried. Use when a post is `partially_published`. `postTargetId` is get_social_post → targets[].id. Publishes to a real account — confirm first.',
+    'Send ONE failed destination again. Its siblings (including the ones that already went out) are untouched, and a destination that already published cannot be retried. Use when a post is `partially_published`. `postTargetId` is get_social_post → targets[].id. Publishes to a real account: confirm first.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({ postId: uuid(), postTargetId: uuid() }),
@@ -361,7 +361,7 @@ const retryTarget: McpToolDefinition = {
 const duplicatePost: McpToolDefinition = {
   name: 'duplicate_social_post',
   description:
-    'Copy a post into a fresh DRAFT — same words, pictures, destinations and per-destination wording, with no schedule. Destinations that have been disconnected or turned off are dropped. Nothing publishes.',
+    'Copy a post into a fresh DRAFT: same words, pictures, destinations and per-destination wording, with no schedule. Destinations that have been disconnected or turned off are dropped. Nothing publishes.',
   scope: 'write:social',
   confirmation: false,
   input: z.object({ postId: uuid() }),
@@ -384,7 +384,7 @@ const setEvergreen: McpToolDefinition = {
 const draftFrom: McpToolDefinition = {
   name: 'draft_social_post_from',
   description:
-    'Build a SUGGESTED post from something the business already published — a product, a collection, or a CMS article. Returns `{ body, link, mediaAssetIds, propertyId, … }` to pass into create_social_post; it creates nothing on its own. Saves an agent from re-deriving the title, excerpt, hero image and public URL.',
+    'Build a SUGGESTED post from something the business already published: a product, a collection, or a CMS article. Returns `{ body, link, mediaAssetIds, propertyId, … }` to pass into create_social_post; it creates nothing on its own. Saves an agent from re-deriving the title, excerpt, hero image and public URL.',
   scope: 'read:social',
   confirmation: false,
   input: z.object({
@@ -402,7 +402,7 @@ const draftFrom: McpToolDefinition = {
 const listInbox: McpToolDefinition = {
   name: 'list_social_inbox',
   description:
-    'List inbound activity on the connected accounts — comments on posts, mentions, and reviews (with a 1–5 `rating`). Inbound only; our own replies are thread context, fetched with get_social_inbox_thread. Filter by status (open / replied / archived), kind, or a specific destination.',
+    'List inbound activity on the connected accounts: comments on posts, mentions, and reviews (with a 1–5 `rating`). Inbound only; our own replies are thread context, fetched with get_social_inbox_thread. Filter by status (open / replied / archived), kind, or a specific destination.',
   scope: 'read:social',
   confirmation: false,
   input: z.object({
@@ -428,7 +428,7 @@ const listInbox: McpToolDefinition = {
 const getThread: McpToolDefinition = {
   name: 'get_social_inbox_thread',
   description:
-    'Fetch one conversation in order — both what the person said and anything the business has replied. Use before drafting a reply so an agent answers in context rather than to a single line.',
+    'Fetch one conversation in order. Both what the person said and anything the business has replied. Use before drafting a reply so an agent answers in context rather than to a single line.',
   scope: 'read:social',
   confirmation: false,
   input: z.object({ itemId: uuid() }),
@@ -438,7 +438,7 @@ const getThread: McpToolDefinition = {
 const replyToInbox: McpToolDefinition = {
   name: 'reply_to_social_inbox_item',
   description:
-    'Reply publicly to a comment, mention or review, AS THE BUSINESS, on the platform it came from. The reply is written immediately and sent by a background worker. This is visible to the customer and to everyone else who reads that post — confirm first.',
+    'Reply publicly to a comment, mention or review, AS THE BUSINESS, on the platform it came from. The reply is written immediately and sent by a background worker. This is visible to the customer and to everyone else who reads that post. Confirm first.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({ itemId: uuid(), text: z.string().min(1).max(5000) }),
@@ -457,7 +457,7 @@ const replyToInbox: McpToolDefinition = {
 const setInboxStatus: McpToolDefinition = {
   name: 'set_social_inbox_item_status',
   description:
-    'Archive an inbox item (seen, nothing to do) or put it back in the inbox. Never deletes — a customer’s words are not ours to remove.',
+    'Archive an inbox item (seen, nothing to do) or put it back in the inbox. Never deletes: a customer’s words are not ours to remove.',
   scope: 'write:social',
   confirmation: false,
   input: z.object({ itemId: uuid(), status: z.enum(['open', 'archived']) }),
@@ -483,7 +483,7 @@ const listSlots: McpToolDefinition = {
 const saveSlot: McpToolDefinition = {
   name: 'save_social_posting_slot',
   description:
-    'Create or update a weekly posting time. Omit `id` to create. `timezone` is an IANA zone — a slot is a recurring LOCAL time, so 9am stays 9am across daylight saving. Turning `autoFill` on schedules an evergreen post here when nothing is planned; it never replaces a real post and still respects the approval gate.',
+    'Create or update a weekly posting time. Omit `id` to create. `timezone` is an IANA zone: a slot is a recurring LOCAL time, so 9am stays 9am across daylight saving. Turning `autoFill` on schedules an evergreen post here when nothing is planned; it never replaces a real post and still respects the approval gate.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({
@@ -502,7 +502,7 @@ const saveSlot: McpToolDefinition = {
 const removeSlot: McpToolDefinition = {
   name: 'delete_social_posting_slot',
   description:
-    'Remove a weekly posting time. Posts already scheduled into it are unaffected — only the standing intention goes.',
+    'Remove a weekly posting time. Posts already scheduled into it are unaffected. Only the standing intention goes.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({ slotId: uuid() }),
@@ -548,7 +548,7 @@ const removeHashtags: McpToolDefinition = {
 const bestTime: McpToolDefinition = {
   name: 'get_social_best_time',
   description:
-    'When this business’s own audience actually engages — weekday + local hour buckets ranked by mean engagements, drawn from its published posts and their real numbers, NOT an industry average. Check `confident`: false means there is not enough history yet and `buckets` is empty, in which case say so rather than recommending a time.',
+    'When this business’s own audience actually engages: weekday + local hour buckets ranked by mean engagements, drawn from its published posts and their real numbers, NOT an industry average. Check `confident`: false means there is not enough history yet and `buckets` is empty, in which case say so rather than recommending a time.',
   scope: 'read:social',
   confirmation: false,
   input: z.object({
@@ -564,7 +564,7 @@ const bestTime: McpToolDefinition = {
 const importPosts: McpToolDefinition = {
   name: 'import_social_posts',
   description:
-    'Create many posts at once from CSV text. The first row names the columns: `body` (required), plus optional `when` (a date/time) and `accounts` (destination NAMES, several separated by ";"). A row with a future time goes through the approval gate exactly like any other scheduled post; anything else lands as a draft. Returns per-row problems rather than failing the whole import — set `dryRun` to check a file without creating anything.',
+    'Create many posts at once from CSV text. The first row names the columns: `body` (required), plus optional `when` (a date/time) and `accounts` (destination NAMES, several separated by ";"). A row with a future time goes through the approval gate exactly like any other scheduled post; anything else lands as a draft. Returns per-row problems rather than failing the whole import. Set `dryRun` to check a file without creating anything.',
   scope: 'write:social',
   confirmation: true,
   input: z.object({

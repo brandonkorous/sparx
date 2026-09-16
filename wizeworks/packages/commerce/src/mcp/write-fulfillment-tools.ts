@@ -32,7 +32,7 @@ const uuid = () => z.string().uuid();
 const createShippingZone: McpToolDefinition = {
   name: 'create_shipping_zone',
   description:
-    'Create a shipping zone — a geographic target (countries/regions) that shipping rates attach to. Add rates with create_shipping_rate.',
+    'Create a shipping zone: a geographic target (countries/regions) that shipping rates attach to. Add rates with create_shipping_rate.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateShippingZoneInput,
@@ -42,7 +42,7 @@ const createShippingZone: McpToolDefinition = {
 const updateShippingZone: McpToolDefinition = {
   name: 'update_shipping_zone',
   description:
-    'Edit a shipping zone — name, priority, or geographic targeting. Send only the fields to change.',
+    'Edit a shipping zone. Name, priority, or geographic targeting. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateShippingZoneInput.extend({ zoneId: uuid() }),
@@ -64,7 +64,7 @@ const deleteShippingZone: McpToolDefinition = {
 const createShippingProfile: McpToolDefinition = {
   name: 'create_shipping_profile',
   description:
-    'Create a shipping profile — a rate-group products are assigned to (e.g. "Standard", "Oversized/Freight"). Assign products with assign_products_to_shipping_profile.',
+    'Create a shipping profile: a rate-group products are assigned to (e.g. "Standard", "Oversized/Freight"). Assign products with assign_products_to_shipping_profile.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateShippingProfileInput,
@@ -74,7 +74,7 @@ const createShippingProfile: McpToolDefinition = {
 const updateShippingProfile: McpToolDefinition = {
   name: 'update_shipping_profile',
   description:
-    'Edit a shipping profile — name, description, or allowed carrier services. Send only the fields to change.',
+    'Edit a shipping profile. Name, description, or allowed carrier services. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateShippingProfileInput.extend({ profileId: uuid() }),
@@ -106,7 +106,7 @@ const assignProductsToShippingProfile: McpToolDefinition = {
 const createShippingRate: McpToolDefinition = {
   name: 'create_shipping_rate',
   description:
-    'Create a shipping rate within a zone — flat, weight-based, or price-based — that shoppers see at checkout for that zone.',
+    'Create a shipping rate within a zone (flat, weight-based, or price-based) that shoppers see at checkout for that zone.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateShippingRateInput,
@@ -127,7 +127,7 @@ const deleteShippingRate: McpToolDefinition = {
 const createTaxZone: McpToolDefinition = {
   name: 'create_tax_zone',
   description:
-    'Create a tax zone — a jurisdiction (country/region) with a nexus type that tax rates attach to. Add rates with create_tax_rate.',
+    'Create a tax zone: a jurisdiction (country/region) with a nexus type that tax rates attach to. Add rates with create_tax_rate.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateTaxZoneInput,
@@ -137,7 +137,7 @@ const createTaxZone: McpToolDefinition = {
 const updateTaxZone: McpToolDefinition = {
   name: 'update_tax_zone',
   description:
-    'Edit a tax zone — country, region, nexus type, or registration number. Send only the fields to change.',
+    'Edit a tax zone: country, region, nexus type, or registration number. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateTaxZoneInput.extend({ zoneId: uuid() }),
@@ -218,7 +218,7 @@ const markReturnReceived: McpToolDefinition = {
 const recordReturnInspection: McpToolDefinition = {
   name: 'record_return_inspection',
   description:
-    'Record the inspection outcome for a received return (per-line condition/disposition — restock, damaged, etc.) before refunding.',
+    'Record the inspection outcome for a received return (per-line condition/disposition: restock, damaged, etc.) before refunding.',
   scope: 'write:commerce',
   confirmation: true,
   input: RecordReturnInspectionInput,
@@ -228,7 +228,7 @@ const recordReturnInspection: McpToolDefinition = {
 const issueReturnRefund: McpToolDefinition = {
   name: 'issue_return_refund',
   description:
-    'Issue the refund for a return — amount and method — closing out the RMA. Money movement; the server confirms first.',
+    'Issue the refund for a return (amount and method) closing out the RMA. Money movement; the server confirms first.',
   scope: 'write:commerce',
   confirmation: true,
   input: IssueReturnRefundInput,
@@ -245,7 +245,7 @@ const issueReturnRefund: McpToolDefinition = {
 const fulfillPackage: McpToolDefinition = {
   name: 'fulfill_package',
   description:
-    'Hand a sealed box to shipping: creates the shipping record for exactly what is in that box, so a three-box order gets three tracking numbers rather than one. Set `close` to seal an open box first — the one button a pack bench needs — and `allowPartial` when the box deliberately does not complete the order. Idempotent: a box that already has a shipping record returns it rather than making a second one.',
+    'Hand a sealed box to shipping: creates the shipping record for exactly what is in that box, so a three-box order gets three tracking numbers rather than one. Set `close` to seal an open box first (the one button a pack bench needs) and `allowPartial` when the box deliberately does not complete the order. Idempotent: a box that already has a shipping record returns it rather than making a second one.',
   scope: 'write:commerce',
   confirmation: true,
   input: z.object({

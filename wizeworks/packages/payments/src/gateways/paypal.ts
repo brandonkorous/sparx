@@ -211,7 +211,7 @@ export class PayPalGateway implements PaymentGateway {
   capturePayment(): Promise<PaymentResult> {
     return Promise.resolve({
       success: false,
-      errorMessage: 'paypal captures per-tenant — use captureOrderForTenant',
+      errorMessage: 'paypal captures per-tenant: use captureOrderForTenant',
     });
   }
   cancelPayment(): Promise<PaymentResult> {
@@ -489,7 +489,7 @@ export class PayPalGateway implements PaymentGateway {
     return false;
   }
   parseWebhook(): Promise<ParsedWebhookEvent> {
-    return Promise.reject(new Error('paypal parses per-tenant — use parseWebhookForTenant'));
+    return Promise.reject(new Error('paypal parses per-tenant: use parseWebhookForTenant'));
   }
 
   async parseWebhookForTenant(tenantId: string, event: WebhookEvent): Promise<ParsedWebhookEvent> {

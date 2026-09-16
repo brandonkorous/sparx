@@ -205,7 +205,7 @@ const SCHEDULING = {
             handle: 'comprehensive-exam',
             name: 'Comprehensive eye exam',
             description:
-                'A full vision and eye-health exam with digital retinal imaging — the one that keeps your prescription and your eyes in check.',
+                'A full vision and eye-health exam with digital retinal imaging: the one that keeps your prescription and your eyes in check.',
             durationMinutes: 45,
             priceCents: 12000,
             bufferAfterMin: 10,
@@ -220,7 +220,7 @@ const SCHEDULING = {
             handle: 'contact-lens-exam',
             name: 'Contact lens exam & fitting',
             description:
-                'Everything in the eye exam, plus a fitting and trial lenses — for new wearers or a fresh contact prescription.',
+                'Everything in the eye exam, plus a fitting and trial lenses, for new wearers or a fresh contact prescription.',
             durationMinutes: 60,
             priceCents: 15000,
             bufferAfterMin: 10,
@@ -235,7 +235,7 @@ const SCHEDULING = {
             handle: 'eyewear-styling',
             name: 'Eyewear styling session',
             description:
-                'Sit down with a stylist and try the studio — we’ll pull frames for your face, coloring and how you live, no pressure to buy.',
+                'Sit down with a stylist and try the studio: we’ll pull frames for your face, coloring and how you live, no pressure to buy.',
             durationMinutes: 45,
             priceCents: 0,
             assignmentStrategy: 'customer_choice',
@@ -248,7 +248,7 @@ const SCHEDULING = {
             handle: 'lens-consultation',
             name: 'Premium lens consultation',
             description:
-                'A short sit-down on lenses — thinner high-index, anti-glare, blue-light and progressive options — so your pair works as hard as it looks.',
+                'A short sit-down on lenses (thinner high-index, anti-glare, blue-light and progressive options) so your pair works as hard as it looks.',
             durationMinutes: 30,
             priceCents: 0,
             assignmentStrategy: 'any_available',
@@ -261,7 +261,7 @@ const SCHEDULING = {
             handle: 'frame-trunk-show-appointment',
             name: 'Trunk show appointment',
             description:
-                'A private slot during a visiting designer trunk show — first look at the new collection with a stylist to guide you.',
+                'A private slot during a visiting designer trunk show: first look at the new collection with a stylist to guide you.',
             durationMinutes: 60,
             priceCents: 0,
             requiresApproval: true,
@@ -275,7 +275,7 @@ const SCHEDULING = {
             handle: 'adjustment-repair',
             name: 'Adjustment & minor repair',
             description:
-                'Frames feeling loose or crooked? Drop in for a professional adjustment, nose-pad swap or minor repair — quick and on us.',
+                'Frames feeling loose or crooked? Drop in for a professional adjustment, nose-pad swap or minor repair: quick and on us.',
             durationMinutes: 20,
             priceCents: 0,
             assignmentStrategy: 'any_available',
@@ -288,7 +288,7 @@ const SCHEDULING = {
             handle: 'second-pair-styling',
             name: 'Second-pair styling',
             description:
-                'You’ve got the everyday pair — now the sunglasses, the reading pair or the bold one. A focused session for your next frame.',
+                'You’ve got the everyday pair. Now the sunglasses, the reading pair or the bold one. A focused session for your next frame.',
             durationMinutes: 30,
             priceCents: 0,
             assignmentStrategy: 'customer_choice',
@@ -315,11 +315,11 @@ const HOME = [
         items: [
             {
                 title: 'Independent & designer frames',
-                body: 'A tightly edited wall of labels you won’t find in a chain — acetate, titanium and hand-finished pieces, chosen for design, not shelf space.',
+                body: 'A tightly edited wall of labels you won’t find in a chain: acetate, titanium and hand-finished pieces, chosen for design, not shelf space.',
             },
             {
                 title: 'Precision digital exams',
-                body: 'A full eye-health exam with retinal imaging, read by an optometrist who takes the time — never a five-minute conveyor belt.',
+                body: 'A full eye-health exam with retinal imaging, read by an optometrist who takes the time, never a five-minute conveyor belt.',
             },
             {
                 title: 'Personal styling',
@@ -327,7 +327,7 @@ const HOME = [
             },
             {
                 title: 'Premium lenses, done right',
-                body: 'Thinner high-index, anti-glare and progressive lenses fitted and measured properly — the part that decides how a pair really feels.',
+                body: 'Thinner high-index, anti-glare and progressive lenses fitted and measured properly: the part that decides how a pair really feels.',
             },
         ],
     }),
@@ -339,7 +339,7 @@ const HOME = [
         items: [
             { name: 'Comprehensive eye exam', priceCents: 12000, durationMin: 45, desc: 'Full vision & eye-health exam with digital imaging.' },
             { name: 'Contact lens exam & fitting', priceCents: 15000, durationMin: 60, desc: 'Exam plus a fitting and trial lenses.' },
-            { name: 'Eyewear styling session', priceCents: 0, durationMin: 45, desc: 'A stylist pulls frames for you — no pressure to buy.' },
+            { name: 'Eyewear styling session', priceCents: 0, durationMin: 45, desc: 'A stylist pulls frames for you: no pressure to buy.' },
             { name: 'Premium lens consultation', priceCents: 0, durationMin: 30, desc: 'Find the right lens for how you see and live.' },
         ],
         cta: { label: 'See everything & book', href: '/book' },
@@ -358,7 +358,7 @@ const HOME = [
         alt: 'A minimal charcoal styling counter with a mirror and frame trays',
         heading: 'The studio, not a chain',
         body: [
-            'Iris Optical is a single considered room — a curated wall of frames, two exam rooms and a styling counter where the whole visit slows down.',
+            'Iris Optical is a single considered room: a curated wall of frames, two exam rooms and a styling counter where the whole visit slows down.',
             'That’s the point of a boutique: fewer frames chosen more carefully, an optometrist who isn’t watching the clock, and a stylist who sees the pair before you do.',
         ],
         cta: { label: 'Book your visit', href: '/book' },
@@ -369,7 +369,7 @@ const HOME = [
         members: [
             { name: 'Dr. Lena Okafor', role: 'Optometrist', image: url(IMG.lena), alt: 'Dr. Lena Okafor, optometrist', bio: 'Comprehensive exams and complex contact fittings. Lena founded the studio.' },
             { name: 'Dr. Omar Reyes', role: 'Optometrist', image: url(IMG.omar), alt: 'Dr. Omar Reyes, optometrist', bio: 'Dry-eye, myopia care and a patient, thorough exam room.' },
-            { name: 'June Park', role: 'Eyewear stylist', image: url(IMG.june), alt: 'June Park, eyewear stylist', bio: 'Frame styling and lens fitting — the eye that finds your pair fast.' },
+            { name: 'June Park', role: 'Eyewear stylist', image: url(IMG.june), alt: 'June Park, eyewear stylist', bio: 'Frame styling and lens fitting: the eye that finds your pair fast.' },
             { name: 'Tal Mercer', role: 'Eyewear stylist', image: url(IMG.tal), alt: 'Tal Mercer, eyewear stylist', bio: 'Bold shapes, sunglasses and second pairs. Loves a trunk show.' },
         ],
     }),
@@ -378,7 +378,7 @@ const HOME = [
         alt: 'A curated row of independent acetate and metal frames',
         heading: 'Styling is the whole experience',
         body: [
-            'Most people settle for the first frame that isn’t wrong. A styling session is the opposite — we pull for your face, your coloring and your day, then narrow it down together.',
+            'Most people settle for the first frame that isn’t wrong. A styling session is the opposite. We pull for your face, your coloring and your day, then narrow it down together.',
             'Bring your prescription or get one here first. Either way you leave knowing the pair is right, and why.',
         ],
         reverse: true,
@@ -414,7 +414,7 @@ const ABOUT = [
         alt: 'A sleek eyewear studio wall of designer frames under soft light',
         heading: 'About Iris Optical',
         body: [
-            'We opened Iris Optical to do eyewear the way we always wanted it done — a real exam that isn’t rushed, a curated wall of frames worth the wait, and a stylist who treats choosing them as the good part.',
+            'We opened Iris Optical to do eyewear the way we always wanted it done: a real exam that isn’t rushed, a curated wall of frames worth the wait, and a stylist who treats choosing them as the good part.',
             'No pushy add-ons, no chain-store scripts. Just careful eye care and beautiful, well-fitted glasses you’re glad to be seen in.',
         ],
         cta: { label: 'Book a visit', href: '/book' },
@@ -424,8 +424,8 @@ const ABOUT = [
         heading: 'How we work',
         items: [
             { title: 'The exam comes first', body: 'A full eye-health exam with digital imaging, read by an optometrist who takes the time to explain what they see.' },
-            { title: 'Frames chosen, not stocked', body: 'A small, deliberate collection of independent and designer labels — quality and design over a wall of sameness.' },
-            { title: 'Lenses done properly', body: 'Measured, fitted and matched to how you live — the invisible part that decides how a pair actually feels.' },
+            { title: 'Frames chosen, not stocked', body: 'A small, deliberate collection of independent and designer labels: quality and design over a wall of sameness.' },
+            { title: 'Lenses done properly', body: 'Measured, fitted and matched to how you live: the invisible part that decides how a pair actually feels.' },
         ],
     }),
 ];
@@ -444,7 +444,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability for exams and styling and reserve your time online — no phone tag.',
+        sub: 'See live availability for exams and styling and reserve your time online: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -455,8 +455,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-optometry-boutique',
     name: 'Optometry (Boutique)',
     summary:
-        'A sleek, design-forward optical & eye-care studio site — a deep charcoal palette, a warm brass accent and a refined modern display, with online booking live from day one. Installs a working booking flow: comprehensive and contact-lens exams that pair an optometrist with an exam room, plus personal eyewear-styling appointments with a stylist — real hours, resources and a no-show policy. Ships as "Iris Optical", a boutique eyewear studio.',
-    tagline: 'A sleek, boutique template for optical studios — book exams and styling online from day one.',
+        'A sleek, design-forward optical & eye-care studio site: a deep charcoal palette, a warm brass accent and a refined modern display, with online booking live from day one. Installs a working booking flow: comprehensive and contact-lens exams that pair an optometrist with an exam room, plus personal eyewear-styling appointments with a stylist, real hours, resources and a no-show policy. Ships as "Iris Optical", a boutique eyewear studio.',
+    tagline: 'A sleek, boutique template for optical studios. Book exams and styling online from day one.',
     industry: 'Optometry',
     sortWeight: 43,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -465,7 +465,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Iris Optical — a boutique optical & eyewear studio',
+            title: 'Iris Optical: a boutique optical & eyewear studio',
             description:
                 'Iris Optical is a design-forward optical studio for designer and independent frames, precision eye exams and personal styling. Book an exam or a styling session online.',
         },

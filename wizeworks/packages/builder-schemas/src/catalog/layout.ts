@@ -49,7 +49,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Hero (centered) — full-width band, centered headline + actions ────────────
   entry({
     key: 'hero_centered',
-    name: 'Hero — centered',
+    name: 'Hero: centered',
     category: 'layout',
     kind: 'common',
     icon: 'layout-template',
@@ -67,7 +67,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
             }),
             atom('Text', 'max-w-xl text-lg text-base-content', {
               variant: 'body',
-              text: 'Launch a polished, on-brand site in minutes — no code, no compromises. Everything you publish stays fast, accessible, and yours.',
+              text: 'Launch a polished, on-brand site in minutes: no code, no compromises. Everything you publish stays fast, accessible, and yours.',
             }),
             el('div', 'flex flex-wrap items-center justify-center gap-3 pt-2', {
               children: [
@@ -88,7 +88,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Hero (split) — copy beside an image, stacks on narrow ─────────────────────
   entry({
     key: 'hero_split',
-    name: 'Hero — split',
+    name: 'Hero: split',
     category: 'layout',
     kind: 'common',
     icon: 'columns-2',
@@ -140,7 +140,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Footer (columns) — brand blurb + link columns + copyright row ─────────────
   entry({
     key: 'footer_columns',
-    name: 'Footer — columns',
+    name: 'Footer: columns',
     category: 'layout',
     kind: 'common',
     icon: 'panel-bottom',
@@ -209,7 +209,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Footer (simple) — slim copyright + links row ──────────────────────────────
   entry({
     key: 'footer_simple',
-    name: 'Footer — simple',
+    name: 'Footer: simple',
     category: 'layout',
     kind: 'common',
     icon: 'minus',
@@ -244,12 +244,12 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Divider with label — two rules flanking centered text ─────────────────────
   entry({
     key: 'divider_label',
-    name: 'Divider — labelled',
+    name: 'Divider: labelled',
     category: 'layout',
     kind: 'common',
     icon: 'separator-horizontal',
     description:
-      'A horizontal rule split by a centered label — two flex border lines with a word like "OR" between them.',
+      'A horizontal rule split by a centered label: two flex border lines with a word like "OR" between them.',
     surfaces: ['page', 'site'],
     tags: ['divider', 'separator', 'rule', 'or', 'label', 'layout'],
     tree: el('div', 'flex w-full items-center gap-4', {
@@ -271,7 +271,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'square-dashed',
     description:
-      'A centered section wrapper on the shared content rail — a heading over a body slot. The primitive other components drop into.',
+      'A centered section wrapper on the shared content rail: a heading over a body slot. The primitive other components drop into.',
     surfaces: ['page', 'site'],
     tags: ['section', 'container', 'wrapper', 'rail', 'primitive', 'layout'],
     tree: el('section', 'w-full px-6 py-16', {
@@ -295,7 +295,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Two-column with sidebar — main content + narrower aside ────────────────────
   entry({
     key: 'two_column_sidebar',
-    name: 'Two column — sidebar',
+    name: 'Two column: sidebar',
     category: 'layout',
     kind: 'common',
     icon: 'panel-right',
@@ -316,7 +316,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                 }),
                 atom('Text', 'text-base text-base-content', {
                   variant: 'body',
-                  text: 'The main column carries the primary reading content — articles, documentation, or a product description — while the sidebar holds secondary context.',
+                  text: 'The main column carries the primary reading content (articles, documentation, or a product description) while the sidebar holds secondary context.',
                 }),
                 atom('Text', 'text-base text-base-content', {
                   variant: 'body',
@@ -356,12 +356,12 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
   // ── Grid (three) — responsive 3-up of placeholder panels ──────────────────────
   entry({
     key: 'grid_three',
-    name: 'Grid — three column',
+    name: 'Grid: three column',
     category: 'layout',
     kind: 'common',
     icon: 'layout-grid',
     description:
-      'A responsive three-column grid of panels — one column on narrow, two at medium, three when wide.',
+      'A responsive three-column grid of panels. One column on narrow, two at medium, three when wide.',
     surfaces: ['page', 'site'],
     tags: ['grid', 'three column', 'columns', 'features', 'layout'],
     tree: el('section', 'w-full px-6 py-12', {
@@ -382,7 +382,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                     text: 'Fast by default',
                   }),
                   el('p', 'text-sm text-base-content', {
-                    text: 'Every page ships optimized — images, fonts, and scripts tuned without you lifting a finger.',
+                    text: 'Every page ships optimized: images, fonts, and scripts tuned without you lifting a finger.',
                   }),
                 ],
               }
@@ -420,7 +420,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                     text: 'Modular by design',
                   }),
                   el('p', 'text-sm text-base-content', {
-                    text: 'Turn on storefront, CRM, or email independently — you only pay for what you switch on.',
+                    text: 'Turn on storefront, CRM, or email independently. You only pay for what you switch on.',
                   }),
                 ],
               }
@@ -439,7 +439,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'layout-dashboard',
     description:
-      'A responsive grid of image-over-title cards for a collection, gallery, or catalog — two up at medium, three when wide.',
+      'A responsive grid of image-over-title cards for a collection, gallery, or catalog: two up at medium, three when wide.',
     surfaces: ['page', 'site'],
     tags: ['cards', 'grid', 'gallery', 'collection', 'catalog', 'layout'],
     tree: el('section', 'w-full px-6 py-12', {
@@ -466,7 +466,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'bell-dot',
     description:
-      'A container with a small count badge pinned to its top-right corner — relative box, absolute indicator. The cart / inbox pattern.',
+      'A container with a small count badge pinned to its top-right corner: relative box, absolute indicator. The cart / inbox pattern.',
     surfaces: ['page', 'site'],
     tags: ['indicator', 'badge', 'notification', 'count', 'corner', 'layout'],
     // The real Indicator atom (st-indicator) pins the count badge to the corner of
@@ -491,7 +491,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'link',
     description:
-      'Horizontally joined items that share their seams — here an email input joined to a subscribe button reading as one control.',
+      'Horizontally joined items that share their seams. Here an email input joined to a subscribe button reading as one control.',
     surfaces: ['page', 'site'],
     tags: ['join', 'group', 'input group', 'subscribe', 'attached', 'layout'],
     // The real Join atom (st-join) collapses the inner seam between an Input and a
@@ -514,7 +514,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'arrow-up-to-line',
     description:
-      'A section header bar that sticks to the top of its scroll container — a title and action that stay in view as content moves under them.',
+      'A section header bar that sticks to the top of its scroll container: a title and action that stay in view as content moves under them.',
     surfaces: ['page', 'site'],
     tags: ['sticky', 'header', 'section', 'pinned', 'toolbar', 'layout'],
     tree: el('section', 'w-full', {
@@ -556,7 +556,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'rocket',
     description:
-      'A centered launch (or maintenance) page — a headline, a line of reassurance, and an email-capture row so visitors can be notified when you go live.',
+      'A centered launch (or maintenance) page: a headline, a line of reassurance, and an email-capture row so visitors can be notified when you go live.',
     surfaces: ['page', 'site'],
     tags: ['coming soon', 'launch', 'maintenance', 'waitlist', 'placeholder', 'layout'],
     tree: el(
@@ -601,7 +601,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'circle-help',
     description:
-      'A centered not-found page — a big 404, a friendly explanation, and a button back to the home page.',
+      'A centered not-found page: a big 404, a friendly explanation, and a button back to the home page.',
     surfaces: ['page', 'site'],
     tags: ['404', 'not found', 'error', 'missing', 'layout'],
     tree: el(

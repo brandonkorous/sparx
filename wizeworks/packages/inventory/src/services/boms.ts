@@ -294,7 +294,7 @@ export async function setBomStatus(
     if (input.status === 'active') {
       if (existing.components.length === 0) {
         throw new InventoryValidationError(
-          'A recipe with no components cannot be the one you build to — add what it is made of first.',
+          'A recipe with no components cannot be the one you build to. Add what it is made of first.',
           [{ field: 'status', message: 'no components' }]
         );
       }

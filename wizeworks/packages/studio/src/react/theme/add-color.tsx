@@ -95,7 +95,7 @@ export function AddColor() {
               <FieldError>{problem}</FieldError>
             ) : (
               <FieldDescription>
-                One word, lowercase. It works everywhere the built-in colors do — buttons, badges,
+                One word, lowercase. It works everywhere the built-in colors do: buttons, badges,
                 alerts and the rest.
               </FieldDescription>
             )}
@@ -119,7 +119,7 @@ export function AddColor() {
 function validate(slug: string, doc: ThemeDoc): string | undefined {
   if (!slug) return 'Give it a name.';
   if (!NAME_RE.test(slug)) return 'Letters, numbers and dashes only, starting with a letter.';
-  if (slug.endsWith('-content')) return 'That ending is reserved — the text color is made for you.';
+  if (slug.endsWith('-content')) return 'That ending is reserved: the text color is made for you.';
   if (SURFACE_TOKENS.some((surface) => surface === slug))
     return 'That name belongs to one of the page layers.';
   if (rolesOf(doc.theme).includes(slug)) return 'You already have a color with that name.';

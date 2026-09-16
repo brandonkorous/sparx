@@ -158,7 +158,7 @@ function LocationLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         description={
           missing
             ? 'It was removed, or the link is out of date.'
-            : 'This is a problem reaching the server. The place itself is unaffected — nothing has been lost.'
+            : 'This is a problem reaching the server. The place itself is unaffected. Nothing has been lost.'
         }
         onRetry={() => {
           void refetch();
@@ -414,7 +414,7 @@ function LocationEditor({
 
           <FormSection
             title="Where it is"
-            description="Shown to customers on your booking page. Fill in as much as makes sense — a market stall and a clinic do not need the same lines."
+            description="Shown to customers on your booking page. Fill in as much as makes sense: a market stall and a clinic do not need the same lines."
           >
             <Field>
               <FieldLabel>Street</FieldLabel>
@@ -583,7 +583,7 @@ function LocationEditor({
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
                   {bookings > 0
-                    ? `This place is on ${String(bookings)} booking${bookings === 1 ? '' : 's'}, so it cannot be removed — switch it off above instead.`
+                    ? `This place is on ${String(bookings)} booking${bookings === 1 ? '' : 's'}, so it cannot be removed. Switch it off above instead.`
                     : 'Removing takes this place off your list for good.'}
                 </Text>
                 <Button

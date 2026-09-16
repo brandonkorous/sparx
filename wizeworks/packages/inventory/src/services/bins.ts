@@ -470,7 +470,7 @@ export async function updateBin(
     // routing find it, and type is what makes it not sellable.
     if (existing.isSystem && (input.code !== undefined || input.type !== undefined)) {
       throw new InventoryValidationError(
-        'This shelf was set up for you — its label and kind cannot be changed. You can rename it and set where it falls in the pick order.',
+        'This shelf was set up for you. Its label and kind cannot be changed. You can rename it and set where it falls in the pick order.',
         [{ field: 'code', message: 'Not editable on a system shelf' }]
       );
     }
@@ -668,7 +668,7 @@ export async function moveBetweenBins(
 
   await withTenant(ctx, async (tx) => {
     if (input.fromBinId === input.toBinId) {
-      throw new InventoryValidationError('That is the same shelf — nothing to move.');
+      throw new InventoryValidationError('That is the same shelf. Nothing to move.');
     }
 
     const bins = await tx.inventoryBin.findMany({
@@ -684,7 +684,7 @@ export async function moveBetweenBins(
     if (!from) throw new InventoryNotFoundError('InventoryBin', input.fromBinId);
     if (!to) throw new InventoryNotFoundError('InventoryBin', input.toBinId);
     if (!to.isActive) {
-      throw new InventoryValidationError(`${to.code} is archived — pick a shelf that is in use.`);
+      throw new InventoryValidationError(`${to.code} is archived. Pick a shelf that is in use.`);
     }
     // Across locations is a TRANSFER, not a bin move: it changes both warehouse
     // quantities and needs the in-transit custody the transfer flow provides.
@@ -939,7 +939,7 @@ export async function suggestPutAway(
         fallback,
         level?.onHand ?? 0,
         'default',
-        'No shelf chosen yet — this keeps it recorded until you decide.'
+        'No shelf chosen yet. This keeps it recorded until you decide.'
       );
     }
 

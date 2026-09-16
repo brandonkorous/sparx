@@ -100,7 +100,7 @@ function RelatedCard({
         <EmptyState
           icon={icon}
           title="Could not load this"
-          description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+          description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
         />
       ) : isPending ? (
         <p className="p-4 text-sm" role="status">
@@ -359,7 +359,7 @@ export function CustomerTasksTab({ ctx, customerId }: { ctx: SurfaceContext; cus
       isEmpty={rows.length === 0}
       icon={<ListTodo className="size-6" aria-hidden />}
       emptyTitle="Nothing to do for this customer"
-      emptyDescription="Tasks are the follow-ups you owe this person — “call back”, “send the quote”. Use “Task” in the toolbar and it opens already linked to this customer."
+      emptyDescription="Tasks are the follow-ups you owe this person: “call back”, “send the quote”. Use “Task” in the toolbar and it opens already linked to this customer."
     >
       <Table size="sm" hover>
         <thead>
@@ -437,7 +437,7 @@ export function CustomerSubscriptionsTab({
         isEmpty={rows.length === 0}
         icon={<Repeat className="size-6" aria-hidden />}
         emptyTitle="No repeat orders"
-        emptyDescription="When this customer sets up a subscription — a standing order that renews on its own — it shows here."
+        emptyDescription="When this customer sets up a subscription (a standing order that renews on its own), it shows here."
       >
         <Table size="sm" hover>
           <thead>

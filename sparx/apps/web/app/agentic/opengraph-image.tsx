@@ -16,11 +16,11 @@ const AGENTIC_OG: ModuleOgMeta = {
   headlinePrimary: 'Your own AI,',
   headlineSecondary: 'your live data',
   description:
-    'A first-class MCP server for your business. Point Claude, ChatGPT, or Copilot at live orders, customers, and content — scoped, audited, revocable. Your key, never ours.',
+    'A first-class MCP server for your business. Point Claude, ChatGPT, or Copilot at live orders, customers, and content: scoped, audited, revocable. Your key, never ours.',
   pricing: { price: '$49', period: '/mo', modifier: '+' },
 };
 
-export const alt = 'sparx Agentic — point your own AI at your live business data over MCP.';
+export const alt = 'sparx Agentic: point your own AI at your live business data over MCP.';
 
 export default function Image() {
   return renderModuleOgImage(AGENTIC_OG);

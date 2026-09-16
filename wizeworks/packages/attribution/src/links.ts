@@ -68,11 +68,11 @@ export function buildLink(def: LinkDef): { link: BuiltLink; warnings: string[] }
 
   if (!isValidSource(source)) {
     warnings.push(
-      `${def.label}: unknown utm_source "${source}" — register it in taxonomy.ts or use partner-{name}.`
+      `${def.label}: unknown utm_source "${source}": register it in taxonomy.ts or use partner-{name}.`
     );
   }
   if (!isValidMedium(medium)) {
-    warnings.push(`${def.label}: invalid utm_medium "${medium}" — not in the fixed enum.`);
+    warnings.push(`${def.label}: invalid utm_medium "${medium}", not in the fixed enum.`);
   }
   if (!isValidCampaign(campaign)) {
     warnings.push(`${def.label}: campaign "${campaign}" doesn't match {initiative}-{yyyy-mm}.`);

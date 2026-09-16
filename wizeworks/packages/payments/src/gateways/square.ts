@@ -354,7 +354,7 @@ export class SquareGateway implements PaymentGateway {
     return false;
   }
   parseWebhook(): Promise<ParsedWebhookEvent> {
-    return Promise.reject(new Error('square parses per-tenant — use parseWebhookForTenant'));
+    return Promise.reject(new Error('square parses per-tenant: use parseWebhookForTenant'));
   }
 
   async parseWebhookForTenant(

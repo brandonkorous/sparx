@@ -55,7 +55,7 @@ export function ReportFootnotes({ report }: { report: PageResultsReport | undefi
       ) : null}
       {report.commerce ? (
         <p className="text-base">
-          Sales are credited to the page that brought the buyer to your site that day — not the page
+          Sales are credited to the page that brought the buyer to your site that day, not the page
           they bought from. So your home page can earn credit for a sale that happened three clicks
           later, which is the point: that is the page that did the work.
         </p>

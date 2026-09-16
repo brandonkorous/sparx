@@ -22,7 +22,7 @@ export function ItemCell({ row, sells }: { row: ReorderRow; sells: string | null
         <span className="truncate text-sm @lg:hidden">{locationLabel(row)}</span>
         <span className="truncate text-sm @2xl:hidden">{supplierLabel(row)}</span>
         {sells ? <span className="truncate text-sm @xl:hidden">Sells {sells}</span> : null}
-        {/* The whole calculation in one sentence — what turns "at risk £412"
+        {/* The whole calculation in one sentence — what turns "at risk $412"
             from an assertion into something a buyer can agree with. */}
         {row.reasoning ? <span className="truncate text-sm">{row.reasoning}</span> : null}
       </span>
@@ -57,7 +57,7 @@ export function ChooseCell({
         aria-label={
           suppliable
             ? `Choose ${row.title ?? row.sku ?? 'this item'} to reorder`
-            : 'Cannot order this — it has no supplier yet'
+            : 'Cannot order this: it has no supplier yet'
         }
         checked={checked}
         disabled={!suppliable}
@@ -122,7 +122,7 @@ export function NumberCells({ row, sells }: { row: ReorderRow; sells: string | n
           {cover.label}
         </Badge>
       </td>
-      {/* A number, not a badge. Zero reads as a dash — "£0.00" would look like a
+      {/* A number, not a badge. Zero reads as a dash — "$0.00" would look like a
           measurement of nothing, when it almost always means there is no
           deadline at all. */}
       <td className="text-right font-medium whitespace-nowrap tabular-nums">

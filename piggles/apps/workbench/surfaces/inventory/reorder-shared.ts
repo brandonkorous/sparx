@@ -27,8 +27,8 @@ export function emptyAdvice(
 ): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of a product name or code.');
-  if (locationName) parts.push(`You are only seeing ${locationName} — switch to every location.`);
-  if (supplierName) parts.push(`You are only seeing ${supplierName} — switch to every supplier.`);
+  if (locationName) parts.push(`You are only seeing ${locationName}. Switch to every location.`);
+  if (supplierName) parts.push(`You are only seeing ${supplierName}. Switch to every supplier.`);
   return parts.join(' ');
 }
 

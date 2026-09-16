@@ -71,7 +71,7 @@ function ConnectionRow({
     void (async () => {
       const ok = await confirm({
         title: `Disconnect ${where}?`,
-        description: `This does NOT take your listings down on ${channelName} — they stay live there and people can still buy them. What stops is us keeping them up to date and matching orders from ${channelName} back to your products, so stock will drift. To actually remove the listings, delist them in ${channelName}'s own seller tools first.`,
+        description: `This does NOT take your listings down on ${channelName}: they stay live there and people can still buy them. What stops is us keeping them up to date and matching orders from ${channelName} back to your products, so stock will drift. To actually remove the listings, delist them in ${channelName}'s own seller tools first.`,
         confirmLabel: 'Disconnect it',
         cancelLabel: 'Keep it connected',
         color: 'danger',
@@ -262,7 +262,7 @@ export function ChannelsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               {comingSoon.length > 0 ? (
                 <FormSection
                   title="On the way"
-                  description="Shops that aren't ready to connect yet — they'll light up here when they are, with nothing for you to do."
+                  description="Shops that aren't ready to connect yet: they'll light up here when they are, with nothing for you to do."
                 >
                   <div className="flex flex-col gap-3">
                     {comingSoon.map((entry) => (

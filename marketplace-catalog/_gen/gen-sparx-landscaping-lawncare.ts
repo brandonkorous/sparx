@@ -139,7 +139,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Recurring plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically.',
+        'Recurring plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically.',
     },
   ],
   resources: [
@@ -170,7 +170,7 @@ const SCHEDULING = {
       handle: 'free-quote',
       name: 'Free lawn quote',
       description:
-        'We stop by, walk your yard, and send a clear flat-rate quote — no pressure, no obligation. The fastest way to get started.',
+        'We stop by, walk your yard, and send a clear flat-rate quote: no pressure, no obligation. The fastest way to get started.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -179,7 +179,7 @@ const SCHEDULING = {
     },
     {
       handle: 'lawn-mowing-setup',
-      name: 'Recurring mowing — first visit',
+      name: 'Recurring mowing: first visit',
       description:
         'Sets up your flat-rate mowing plan: mow, string-trim, edge and blow-off, then we keep it on schedule automatically.',
       durationMinutes: 45,
@@ -214,7 +214,7 @@ const SCHEDULING = {
       handle: 'aeration-overseed',
       name: 'Aeration & overseeding',
       description:
-        'Core aeration to relieve compaction plus overseeding to fill thin spots — the once-a-year reset a thick lawn needs.',
+        'Core aeration to relieve compaction plus overseeding to fill thin spots: the once-a-year reset a thick lawn needs.',
       durationMinutes: 90,
       priceCents: 18000,
       assignmentStrategy: 'any_available',
@@ -236,7 +236,7 @@ const SCHEDULING = {
       handle: 'mulch-install',
       name: 'Mulch install',
       description:
-        'Fresh mulch delivered and spread across your beds — clean edges, even depth, and a crisp look that lasts all season.',
+        'Fresh mulch delivered and spread across your beds: clean edges, even depth, and a crisp look that lasts all season.',
       durationMinutes: 120,
       priceCents: 35000,
       assignmentStrategy: 'any_available',
@@ -261,11 +261,11 @@ const HOME = [
     items: [
       {
         title: 'Flat-rate recurring plans',
-        body: 'One clear price per visit — no surprise add-ons, no haggling. You always know exactly what your lawn costs.',
+        body: 'One clear price per visit: no surprise add-ons, no haggling. You always know exactly what your lawn costs.',
       },
       {
         title: 'Licensed & fully insured',
-        body: 'A real, insured local company on your property — not a truck that shows up once and disappears.',
+        body: 'A real, insured local company on your property, not a truck that shows up once and disappears.',
       },
       {
         title: 'Satisfaction guaranteed',
@@ -273,7 +273,7 @@ const HOME = [
       },
       {
         title: 'Easy online scheduling',
-        body: 'Book a free quote or start service in about a minute — pick a day, and we handle the rest.',
+        body: 'Book a free quote or start service in about a minute. Pick a day, and we handle the rest.',
       },
     ],
   }),
@@ -283,7 +283,7 @@ const HOME = [
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Free lawn quote', priceCents: 0, durationMin: 30, desc: 'We walk your yard and send a flat-rate price — no obligation.' },
+      { name: 'Free lawn quote', priceCents: 0, durationMin: 30, desc: 'We walk your yard and send a flat-rate price: no obligation.' },
       { name: 'Recurring mowing', priceCents: 4500, durationMin: 45, desc: 'Mow, trim, edge and blow-off, kept on schedule.' },
       { name: 'Fertilization program', priceCents: 7900, durationMin: 45, desc: 'Season-timed feeding for a thicker, greener lawn.' },
       { name: 'Weed control program', priceCents: 6900, durationMin: 45, desc: 'Targeted treatment so the grass wins.' },
@@ -297,17 +297,17 @@ const HOME = [
     alt: 'A tidy, healthy front lawn edged neatly along the walkway',
     heading: 'Set it and forget it',
     body: [
-      'Sign up once and your lawn runs itself. We show up on the same schedule, mow and maintain it, and text you when we’re done — you never have to call, remember, or chase anyone.',
+      'Sign up once and your lawn runs itself. We show up on the same schedule, mow and maintain it, and text you when we’re done. You never have to call, remember, or chase anyone.',
       'No contracts, no lock-in. You’re billed per completed visit and can pause or cancel any time. It’s the easiest your yard has ever been.',
     ],
     cta: { label: 'Start service', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your crew',
-    intro: 'The same friendly faces on your lawn each visit — people who take real pride in the work.',
+    intro: 'The same friendly faces on your lawn each visit: people who take real pride in the work.',
     members: [
       { name: 'Diego Alvarez', role: 'Crew lead', image: url(IMG.diego), alt: 'Diego Alvarez, crew lead', bio: 'Fifteen years of mowing and cleanups. Diego runs a tight, tidy route.' },
-      { name: 'Sofia Reyes', role: 'Lawn health technician', image: url(IMG.sofia), alt: 'Sofia Reyes, lawn health technician', bio: 'Fertilization, weed control and aeration — the science behind a thick lawn.' },
+      { name: 'Sofia Reyes', role: 'Lawn health technician', image: url(IMG.sofia), alt: 'Sofia Reyes, lawn health technician', bio: 'Fertilization, weed control and aeration: the science behind a thick lawn.' },
       { name: 'Marcus Bell', role: 'Crew lead', image: url(IMG.marcus), alt: 'Marcus Bell, crew lead', bio: 'Mowing and mulch installs with an eye for clean edges and detail.' },
     ],
   }),
@@ -341,7 +341,7 @@ const ABOUT = [
     heading: 'About GreenBlade Lawn Care',
     body: [
       'GreenBlade started with a simple idea: lawn care should be dependable, fairly priced, and completely off your plate. No missed visits, no vague bills, no chasing anyone down.',
-      'We’re a local, licensed and insured crew that treats every yard like our own — the same faces each week, flat-rate plans you can count on, and a standing promise to make it right if it isn’t.',
+      'We’re a local, licensed and insured crew that treats every yard like our own: the same faces each week, flat-rate plans you can count on, and a standing promise to make it right if it isn’t.',
     ],
     cta: { label: 'Get a free quote', href: '/book' },
   }),
@@ -350,7 +350,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'Show up when we say', body: 'A set schedule you can rely on, with a text when we’re on the way and another when the job’s done.' },
-      { title: 'One clear, flat price', body: 'You know what each visit costs before we start — no surprise fees, no upsells, no haggling.' },
+      { title: 'One clear, flat price', body: 'You know what each visit costs before we start: no surprise fees, no upsells, no haggling.' },
       { title: 'Guaranteed, every visit', body: 'If something’s not right, we come back and fix it. Your lawn looking great is the whole job.' },
     ],
   }),
@@ -369,7 +369,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Get a free quote and see the next available days online — no phone tag, no waiting on a callback.',
+    sub: 'Get a free quote and see the next available days online: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Get a free quote', href: '/book' },
   }),
@@ -380,8 +380,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-landscaping-lawncare',
   name: 'Landscaping (Lawn Care)',
   summary:
-    'A bright, friendly lawn-care & maintenance site — a fresh grass-green palette on a crisp near-white ground, built around recurring service and online booking. Installs a working flow: a free-quote booking, flat-rate mowing plus fertilization, weed control, aeration, cleanups and mulch, and three crews you book with their own hours. Ships as "GreenBlade Lawn Care" — a lawn you’re proud of, handled.',
-  tagline: 'A friendly lawn-care template — book a free quote and start service from day one.',
+    'A bright, friendly lawn-care & maintenance site: a fresh grass-green palette on a crisp near-white ground, built around recurring service and online booking. Installs a working flow: a free-quote booking, flat-rate mowing plus fertilization, weed control, aeration, cleanups and mulch, and three crews you book with their own hours. Ships as "GreenBlade Lawn Care", a lawn you’re proud of, handled.',
+  tagline: 'A friendly lawn-care template. Book a free quote and start service from day one.',
   industry: 'Landscaping',
   sortWeight: 53,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -390,9 +390,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'GreenBlade Lawn Care — mowing & lawn maintenance',
+      title: 'GreenBlade Lawn Care: mowing & lawn maintenance',
       description:
-        'GreenBlade Lawn Care keeps your yard looking great with flat-rate mowing, fertilization and weed control on an automatic schedule. Licensed, insured, and easy to book online — get a free quote.',
+        'GreenBlade Lawn Care keeps your yard looking great with flat-rate mowing, fertilization and weed control on an automatic schedule. Licensed, insured, and easy to book online: get a free quote.',
     },
   },
   home: HOME,

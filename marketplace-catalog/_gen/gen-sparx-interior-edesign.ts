@@ -164,7 +164,7 @@ const SCHEDULING = {
             handle: 'free-consult',
             name: 'Free discovery consult',
             description:
-                'A friendly 30-minute video call to talk through your room, your style and what’s possible — no cost, no pressure.',
+                'A friendly 30-minute video call to talk through your room, your style and what’s possible: no cost, no pressure.',
             durationMinutes: 30,
             priceCents: 0,
             assignmentStrategy: 'customer_choice',
@@ -175,7 +175,7 @@ const SCHEDULING = {
             handle: 'single-room-edesign',
             name: 'Single-room e-design',
             description:
-                'A complete online design for one room — a shoppable design board, layout plan and a shopping list you can buy at your own pace.',
+                'A complete online design for one room: a shoppable design board, layout plan and a shopping list you can buy at your own pace.',
             durationMinutes: 60,
             priceCents: 29900,
             assignmentStrategy: 'customer_choice',
@@ -186,7 +186,7 @@ const SCHEDULING = {
             handle: 'color-consult',
             name: 'Color consult',
             description:
-                'Stuck on paint or palette? Bring your room and we’ll land on colors that actually work in your light — with swatches to take away.',
+                'Stuck on paint or palette? Bring your room and we’ll land on colors that actually work in your light, with swatches to take away.',
             durationMinutes: 45,
             priceCents: 12900,
             assignmentStrategy: 'customer_choice',
@@ -197,7 +197,7 @@ const SCHEDULING = {
             handle: 'layout-consult',
             name: 'Layout consult',
             description:
-                'A fresh floor plan for a room that isn’t flowing — furniture placement, traffic and scale, mapped out so it just feels right.',
+                'A fresh floor plan for a room that isn’t flowing: furniture placement, traffic and scale, mapped out so it just feels right.',
             durationMinutes: 45,
             priceCents: 14900,
             assignmentStrategy: 'customer_choice',
@@ -208,7 +208,7 @@ const SCHEDULING = {
             handle: 'room-refresh-package',
             name: 'Room refresh package',
             description:
-                'A budget-friendly refresh that reworks what you own and adds a few well-chosen pieces — a whole new room without starting over.',
+                'A budget-friendly refresh that reworks what you own and adds a few well-chosen pieces: a whole new room without starting over.',
             durationMinutes: 60,
             priceCents: 39900,
             assignmentStrategy: 'customer_choice',
@@ -219,7 +219,7 @@ const SCHEDULING = {
             handle: 'whole-home-consult',
             name: 'Whole-home consult',
             description:
-                'A big-picture session for the whole place — a cohesive palette, a room-by-room plan and a sensible order to tackle it all in.',
+                'A big-picture session for the whole place: a cohesive palette, a room-by-room plan and a sensible order to tackle it all in.',
             durationMinutes: 60,
             priceCents: 24900,
             assignmentStrategy: 'customer_choice',
@@ -230,7 +230,7 @@ const SCHEDULING = {
             handle: 'styling-session',
             name: 'Styling session',
             description:
-                'The finishing touch — shelves, art, textiles and the little details that make a room feel finished and personal.',
+                'The finishing touch: shelves, art, textiles and the little details that make a room feel finished and personal.',
             durationMinutes: 45,
             priceCents: 15900,
             assignmentStrategy: 'customer_choice',
@@ -246,7 +246,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A bright, freshly styled living room with plants and warm textiles',
         title: 'A room you love, designed online',
-        sub: 'Flat-fee interior design for real homes — share your space, get a shoppable design board, and shop the look on your own time.',
+        sub: 'Flat-fee interior design for real homes. Share your space, get a shoppable design board, and shop the look on your own time.',
         primary: { label: 'Book a consult', href: '/book' },
         secondary: { label: 'See packages', href: '/book' },
         overlay: 'dark',
@@ -256,7 +256,7 @@ const HOME = [
         items: [
             {
                 title: '1 · Share your room & style',
-                body: 'Send us photos, your measurements and a few things you love. A quick call gets us on the same page — no jargon, no homework.',
+                body: 'Send us photos, your measurements and a few things you love. A quick call gets us on the same page: no jargon, no homework.',
             },
             {
                 title: '2 · Get a design board',
@@ -270,7 +270,7 @@ const HOME = [
     }),
     serviceMenu({
         heading: 'Flat-fee packages',
-        intro: 'Simple, upfront pricing — pick what your room needs. Full details and live availability are on the booking page.',
+        intro: 'Simple, upfront pricing. Pick what your room needs. Full details and live availability are on the booking page.',
         surface: 'muted',
         columns: 2,
         items: [
@@ -296,28 +296,28 @@ const HOME = [
         alt: 'A color-and-fabric moodboard laid out on a sunny table',
         heading: 'Great design, minus the big price tag',
         body: [
-            'E-design is interior design done online — which means no site visits, no hourly billing and no five-figure quote. You get the same trained eye for a clear, flat fee.',
+            'E-design is interior design done online, which means no site visits, no hourly billing and no five-figure quote. You get the same trained eye for a clear, flat fee.',
             'Because it’s all shoppable, you stay in control: buy the whole board at once or one piece at a time, and swap anything that doesn’t fit the budget.',
         ],
         cta: { label: 'Start your room', href: '/book' },
     }),
     teamRow({
         heading: 'Meet your designers',
-        intro: 'Book by name — you’ll work with the same designer from first call to final board.',
+        intro: 'Book by name: you’ll work with the same designer from first call to final board.',
         surface: 'muted',
         members: [
             { name: 'Rae Whitfield', role: 'Interior designer', image: url(IMG.rae), alt: 'Rae Whitfield, interior designer', bio: 'Color and styling, with a warm, layered look that feels lived-in from day one.' },
-            { name: 'Devon Ellis', role: 'Interior designer', image: url(IMG.devon), alt: 'Devon Ellis, interior designer', bio: 'A layout obsessive — small spaces and awkward rooms are his favourite puzzle.' },
+            { name: 'Devon Ellis', role: 'Interior designer', image: url(IMG.devon), alt: 'Devon Ellis, interior designer', bio: 'A layout obsessive: small spaces and awkward rooms are his favourite puzzle.' },
             { name: 'Priya Nair', role: 'Interior designer', image: url(IMG.priya), alt: 'Priya Nair, interior designer', bio: 'Room refreshes and color, reworking what you already own into something new.' },
         ],
     }),
     testimonial({
-        quote: 'I sent a few photos of my sad living room and got back a plan I could actually afford. It looks like a magazine now — and I bought it piece by piece.',
+        quote: 'I sent a few photos of my sad living room and got back a plan I could actually afford. It looks like a magazine now, and I bought it piece by piece.',
         attribution: 'Hannah, e-design client',
     }),
     bookingCta({
         title: 'Ready to love your space?',
-        sub: 'Start with a free consult — pick a designer, choose a time, and see live availability. It takes about a minute.',
+        sub: 'Start with a free consult. Pick a designer, choose a time, and see live availability. It takes about a minute.',
         cta: { label: 'Book a consult', href: '/book' },
     }),
 ];
@@ -341,7 +341,7 @@ const ABOUT = [
         heading: 'About Room & Co.',
         body: [
             'We started Room & Co. on a simple idea: good interior design shouldn’t be reserved for people building from scratch or writing big cheques. Most of us just want the room we already have to feel better.',
-            'So we do it online, for a flat fee — a real designer, a shoppable plan, and honest advice about what’s worth spending on and what isn’t. Friendly, fresh, and made for everyday homes.',
+            'So we do it online, for a flat fee: a real designer, a shoppable plan, and honest advice about what’s worth spending on and what isn’t. Friendly, fresh, and made for everyday homes.',
         ],
         cta: { label: 'Book a consult', href: '/book' },
     }),
@@ -369,7 +369,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather just get started?',
-        sub: 'Book a free consult online and see live availability — no phone tag, no waiting.',
+        sub: 'Book a free consult online and see live availability: no phone tag, no waiting.',
         surface: 'muted',
         cta: { label: 'Book a consult', href: '/book' },
     }),
@@ -380,8 +380,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-interior-edesign',
     name: 'Interior (E-Design)',
     summary:
-        'A bright, friendly interior-design site for online e-design studios — a warm coral palette, a teal accent and a modern sans, built around a HOW-IT-WORKS story and flat-fee packages. Installs a working booking flow: a real menu of consults and packages (free consult, single-room e-design, color, layout, room refresh), three designers you book by name with their own hours, and shoppable, affordable e-design. Ships as "Room & Co." for everyday homeowners.',
-    tagline: 'A bright, friendly template for online interior e-design — book consults from day one.',
+        'A bright, friendly interior-design site for online e-design studios: a warm coral palette, a teal accent and a modern sans, built around a HOW-IT-WORKS story and flat-fee packages. Installs a working booking flow: a real menu of consults and packages (free consult, single-room e-design, color, layout, room refresh), three designers you book by name with their own hours, and shoppable, affordable e-design. Ships as "Room & Co." for everyday homeowners.',
+    tagline: 'A bright, friendly template for online interior e-design. Book consults from day one.',
     industry: 'Interior design',
     sortWeight: 35,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -390,7 +390,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Room & Co. — online interior e-design',
+            title: 'Room & Co. online interior e-design',
             description:
                 'Room & Co. is friendly, flat-fee interior design done online. Share your room, get a shoppable design board, and book a consult with your designer.',
         },

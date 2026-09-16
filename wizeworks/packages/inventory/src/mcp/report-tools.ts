@@ -43,7 +43,7 @@ const catalog: McpToolDefinition = {
 const run: McpToolDefinition = {
   name: 'run_inventory_report',
   description:
-    'Run any inventory report and get back its rows, a table ready to save as a spreadsheet, and a short summary in plain words. Same code path as the export button and the scheduled email, so the three cannot disagree. Filters are a superset — each report reads the ones that mean something to it and ignores the rest, so passing a date window to a point-in-time report is harmless.',
+    'Run any inventory report and get back its rows, a table ready to save as a spreadsheet, and a short summary in plain words. Same code path as the export button and the scheduled email, so the three cannot disagree. Filters are a superset. Each report reads the ones that mean something to it and ignores the rest, so passing a date window to a point-in-time report is harmless.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -69,7 +69,7 @@ const schedules: McpToolDefinition = {
 const glReconciliation: McpToolDefinition = {
   name: 'get_gl_reconciliation',
   description:
-    'Whether the stock figure and the accounts agree at a given moment, and where they do not. Breaks the difference into the honest categories — goods received but not yet invoiced, invoiced but not yet received, and anything left that is a genuine discrepancy. Use this at period end for "why doesn\'t my inventory account match my stock report".',
+    'Whether the stock figure and the accounts agree at a given moment, and where they do not. Breaks the difference into the honest categories: goods received but not yet invoiced, invoiced but not yet received, and anything left that is a genuine discrepancy. Use this at period end for "why doesn\'t my inventory account match my stock report".',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({

@@ -45,14 +45,14 @@ export async function resolveChannelAuth(
   if (!connection.accessTokenEnc) {
     log.warn(
       { connectionId: connection.id },
-      'channel-sync: connection has no stored token — skipping'
+      'channel-sync: connection has no stored token, skipping'
     );
     return null;
   }
   if (!connection.externalId) {
     log.warn(
       { connectionId: connection.id },
-      'channel-sync: connection has no external account id — needs re-auth, skipping'
+      'channel-sync: connection has no external account id, needs re-auth, skipping'
     );
     return null;
   }
@@ -85,7 +85,7 @@ export async function resolveChannelAuth(
       // token; a real 401 downstream surfaces as a recorded sync error.
       log.error(
         { connectionId: connection.id, err: err instanceof Error ? err.message : String(err) },
-        'channel-sync: token refresh failed — proceeding with the current token'
+        'channel-sync: token refresh failed, proceeding with the current token'
       );
     }
   }

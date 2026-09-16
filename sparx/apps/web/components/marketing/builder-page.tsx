@@ -48,7 +48,7 @@ const B = getModuleColor('builder');
 // ── HERO ──────────────────────────────────────────────────────────────────────
 function BuilderHero() {
   const lede =
-    'Builder is the one module that puts a real website in front of your work — themes, pages, a custom domain, SSL and a global CDN, all handled. Pick a theme, edit it in your browser, point your domain, publish. The same builder serves a one-page portfolio, a 40-post blog, or a 50,000-product catalog — selling is optional.';
+    'Builder is the one module that puts a real website in front of your work: themes, pages, a custom domain, SSL and a global CDN, all handled. Pick a theme, edit it in your browser, point your domain, publish. The same builder serves a one-page portfolio, a 40-post blog, or a 50,000-product catalog, and selling is optional.';
   const chips = [
     'live in 5 minutes',
     'custom domain + SSL',
@@ -112,17 +112,17 @@ function TheArc() {
       body: 'Pick a theme, change the parts that matter, point your domain, publish. No app store, no Zapier, no waiting on a developer to get a real site online.',
       points: [
         'Start from a polished theme, not a blank page',
-        'Edit blocks right in the browser — see it as you type',
+        'Edit blocks right in the browser: see it as you type',
         'Custom domain and SSL provision themselves',
       ],
     },
     {
       title: 'Built to last',
-      body: 'Generate it with AI if you want — but sparx is where the site lives afterward. You maintain and enhance it yourself, for years, in a no-code editor. AI builds it. sparx keeps it.',
+      body: 'Generate it with AI if you want, but sparx is where the site lives afterward. You maintain and enhance it yourself, for years, in a no-code editor. AI builds it. sparx keeps it.',
       points: [
-        'You own the data and the site — export anytime',
+        'You own the data and the site: export anytime',
         'Change anything yourself, no rebuild, no dev on retainer',
-        'Go headless whenever you want — the door is never locked',
+        'Go headless whenever you want: the door is never locked',
       ],
     },
   ];
@@ -132,7 +132,7 @@ function TheArc() {
         <SectionHeader
           accent={B.color}
           headline="Fast to start. Permanent to keep"
-          lede="Most site tools make you choose: quick and disposable, or powerful and painful. Builder is both ends at once. You're live the first afternoon — and the site you stand up today is the one you still run in five years, no rebuild, no developer on retainer."
+          lede="Most site tools make you choose: quick and disposable, or powerful and painful. Builder is both ends at once. You're live the first afternoon, and the site you stand up today is the one you still run in five years, no rebuild, no developer on retainer."
         />
       </div>
       <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -174,15 +174,15 @@ function HowItWorks() {
     },
     {
       title: 'Edit in the browser',
-      body: "Drag, drop, and type directly on the page. Swap copy, images, and sections — every change previews exactly as it'll publish, no separate preview mode to second-guess.",
+      body: "Drag, drop, and type directly on the page. Swap copy, images, and sections: every change previews exactly as it'll publish, no separate preview mode to second-guess.",
     },
     {
       title: 'Point your domain',
-      body: 'Add your custom domain and update one DNS record. Your SSL certificate provisions itself — no separate certificate service, no renewals, no upcharge.',
+      body: 'Add your custom domain and update one DNS record. Your SSL certificate provisions itself: no separate certificate service, no renewals, no upcharge.',
     },
     {
-      title: "Publish — you're live",
-      body: 'Hit publish and your site serves from the global CDN, fast everywhere. Edits go live the moment you publish — nothing to clear, nothing to wait on.',
+      title: "Publish: you're live",
+      body: 'Hit publish and your site serves from the global CDN, fast everywhere. Edits go live the moment you publish. Nothing to clear, nothing to wait on.',
     },
   ];
   return (
@@ -190,7 +190,7 @@ function HowItWorks() {
       <SectionHeader
         accent={B.color}
         headline="Four steps to live"
-        lede="No integration project, no migration weekend. This is the honest path from nothing to a site on your own domain — and it's the same path whether you're publishing a blog or opening a store."
+        lede="No integration project, no migration weekend. This is the honest path from nothing to a site on your own domain, and it's the same path whether you're publishing a blog or opening a store."
       />
       <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((s, i) => (
@@ -214,15 +214,15 @@ function Capabilities() {
   const caps = [
     {
       title: 'Theme-first, yours to bend',
-      body: 'Begin with a designed theme and change exactly what you want — colors, type, layout, sections. Coherent by default, custom when you decide it should be.',
+      body: 'Begin with a designed theme and change exactly what you want: colors, type, layout, sections. Coherent by default, custom when you decide it should be.',
     },
     {
       title: 'Block editor',
-      body: 'Build pages by dragging blocks and editing in place. Every block is responsive and accessible by default — clean markup underneath, no mystery wrappers.',
+      body: 'Build pages by dragging blocks and editing in place. Every block is responsive and accessible by default: clean markup underneath, no mystery wrappers.',
     },
     {
       title: 'Custom domain + automatic SSL',
-      body: 'Bring your own domain and point your DNS. The certificate provisions and renews itself — no separate DNS service, no cert to manage, no extra line on the bill.',
+      body: 'Bring your own domain and point your DNS. The certificate provisions and renews itself: no separate DNS service, no cert to manage, no extra line on the bill.',
     },
     {
       title: 'Served from the edge',
@@ -234,7 +234,7 @@ function Capabilities() {
     },
     {
       title: 'Many sites, one login',
-      body: 'Run several sites from a single sparx account — each with its own domain, theme, and module mix. One bill, switched between in a click.',
+      body: 'Run several sites from a single sparx account. Each with its own domain, theme, and module mix. One bill, switched between in a click.',
     },
   ];
   return (
@@ -242,7 +242,7 @@ function Capabilities() {
       <SectionHeader
         accent={B.color}
         headline="Everything a real site needs"
-        lede="Builder isn't a page widget bolted onto a dashboard. It's the full website layer — the part that renders, hosts, and serves — with the plumbing most tools charge extra for already included."
+        lede="Builder isn't a page widget bolted onto a dashboard. It's the full website layer (the part that renders, hosts, and serves) with the plumbing most tools charge extra for already included."
       />
       <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {caps.map((c) => (
@@ -274,22 +274,22 @@ function CodeOptional() {
     {
       level: 'no code',
       title: 'Pick a component',
-      body: "Choose a ready-made section — a hero, a feature card, a stat row — and it's styled, responsive, and consistent with the rest of your site automatically.",
+      body: "Choose a ready-made section (a hero, a feature card, a stat row) and it's styled, responsive, and consistent with the rest of your site automatically.",
     },
     {
       level: 'no code',
       title: 'Adjust the controls',
-      body: 'Open the inspector and tune spacing, color, size, and layout with real controls — bounded so the choices always stay coherent.',
+      body: 'Open the inspector and tune spacing, color, size, and layout with real controls: bounded so the choices always stay coherent.',
     },
     {
       level: 'light code',
       title: 'Add your own utilities',
-      body: "Reach for a class field and apply your own spacing, color, and layout utilities, drawn from your brand's design system — the muscle memory, none of the chaos.",
+      body: "Reach for a class field and apply your own spacing, color, and layout utilities, drawn from your brand's design system: the muscle memory, none of the chaos.",
     },
     {
       level: 'full code',
       title: 'Write the CSS, or go headless',
-      body: 'When you want total control, write scoped custom CSS — or take the data headless and build the front end yourself. The escape hatch is always there.',
+      body: 'When you want total control, write scoped custom CSS, or take the data headless and build the front end yourself. The escape hatch is always there.',
     },
   ];
   return (
@@ -297,7 +297,7 @@ function CodeOptional() {
       <SectionHeader
         accent={B.color}
         headline="Start with no code. Drop to as much as you want"
-        lede="Builder is no-code by default, but it never traps you there. When you need more control, you take the next step down — and the step after that — without leaving sparx or rebuilding anything. You can go as deep as full code, and you're never locked out of going deeper."
+        lede="Builder is no-code by default, but it never traps you there. When you need more control, you take the next step down (and the step after that), without leaving sparx or rebuilding anything. You can go as deep as full code, and you're never locked out of going deeper."
       />
       <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {rungs.map((r, i) => (
@@ -326,15 +326,15 @@ function BuiltToLast() {
   const cards = [
     {
       title: 'Own your data',
-      body: 'Your content, pages, and records are yours — export the whole thing whenever you want, in formats you can actually use.',
+      body: 'Your content, pages, and records are yours. Export the whole thing whenever you want, in formats you can actually use.',
     },
     {
       title: 'Own your site',
-      body: 'No proprietary trap. The site you build is yours to keep, move, or take headless — sparx hosts it, it never holds it hostage.',
+      body: 'No proprietary trap. The site you build is yours to keep, move, or take headless: sparx hosts it, it never holds it hostage.',
     },
     {
       title: 'Maintain it yourself',
-      body: 'Update copy, swap images, add pages, change the design — all in the no-code editor, no support ticket and no developer required.',
+      body: 'Update copy, swap images, add pages, change the design. All in the no-code editor, no support ticket and no developer required.',
     },
     {
       title: 'No rebuild, no retainer',
@@ -342,11 +342,11 @@ function BuiltToLast() {
     },
     {
       title: 'Headless anytime',
-      body: 'Outgrow the rendered site? Flip to headless and serve the same data through the SDK and API — without recreating a thing.',
+      body: 'Outgrow the rendered site? Flip to headless and serve the same data through the SDK and API, without recreating a thing.',
     },
     {
       title: 'Enhance as you grow',
-      body: 'Turn on more modules — commerce, CMS, CRM, email — and they appear on the same site, the same login, the same bill. The site grows with you.',
+      body: 'Turn on more modules (commerce, CMS, CRM, email) and they appear on the same site, the same login, the same bill. The site grows with you.',
     },
   ];
   return (
@@ -357,7 +357,7 @@ function BuiltToLast() {
           <Spark color={B.color} />
         </Display>
         <Text size={18} className="mt-6 max-w-[640px]">
-          Anything can spit out a website in a minute. The hard part is the years after — keeping it
+          Anything can spit out a website in a minute. The hard part is the years after: keeping it
           current, owning it, never being held hostage by the tool that made it. That&rsquo;s the
           part sparx is built for. Fast to start, permanent to keep.
         </Text>
@@ -390,7 +390,7 @@ function WhatYouCanBuild() {
   const uses = [
     {
       title: 'Portfolio or brochure site',
-      body: 'A few sharp pages, your own domain, online in an afternoon — no checkout, no clutter.',
+      body: 'A few sharp pages, your own domain, online in an afternoon: no checkout, no clutter.',
       runs: 'Builder',
     },
     {
@@ -400,12 +400,12 @@ function WhatYouCanBuild() {
     },
     {
       title: 'Online store',
-      body: "Products, cart, checkout, and orders on a hosted site — add selling the day you're ready, not before.",
+      body: "Products, cart, checkout, and orders on a hosted site. Add selling the day you're ready, not before.",
       runs: 'Builder + Commerce',
     },
     {
       title: 'Booking or service site',
-      body: 'Show your work, take inquiries, and let customers schedule — pages and contact, no shopping cart needed.',
+      body: 'Show your work, take inquiries, and let customers schedule: pages and contact, no shopping cart needed.',
       runs: 'Builder + CRM',
     },
     {
@@ -415,7 +415,7 @@ function WhatYouCanBuild() {
     },
     {
       title: 'Agency, multi-site',
-      body: 'Stand up and manage many client sites from one login — each its own domain, theme, and module mix.',
+      body: 'Stand up and manage many client sites from one login. Each its own domain, theme, and module mix.',
       runs: 'Builder × many sites',
     },
   ];
@@ -424,7 +424,7 @@ function WhatYouCanBuild() {
       <SectionHeader
         accent={B.color}
         headline="Content, commerce, or both"
-        lede="Builder renders the site; the modules you turn on decide what it does. A pure content site with no checkout is just as first-class as a full store — selling is one capability, never the assumption."
+        lede="Builder renders the site; the modules you turn on decide what it does. A pure content site with no checkout is just as first-class as a full store: selling is one capability, never the assumption."
       />
       <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {uses.map((u, i) => (
@@ -465,7 +465,7 @@ function BuilderPricing() {
             </Text>
           </div>
           <Text size={14} className="max-w-[640px]">
-            A flat $10/mo. Builder hosts and serves your site — pages, custom domains, SSL, and the
+            A flat $10/mo. Builder hosts and serves your site: pages, custom domains, SSL, and the
             global CDN, all in. It&rsquo;s a module, not a required base: switch it on when you want
             a hosted sparx site, leave it off and run headless through the API and MCP. One bill
             with everything else, off the moment you stop.
@@ -496,7 +496,7 @@ function BuilderCta() {
           <Spark color={B.color} />
         </Display>
         <Text size={18} className="max-w-[640px]">
-          Pick a theme, point your domain, publish — no developer, no rebuild looming, no contract.
+          Pick a theme, point your domain, publish: no developer, no rebuild looming, no contract.
           The site you start today is yours to keep and grow for years.
         </Text>
         <div className="flex flex-wrap items-center gap-3">

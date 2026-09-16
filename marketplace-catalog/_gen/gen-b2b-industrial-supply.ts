@@ -117,7 +117,7 @@ const ASSETS: Asset[] = [
   { id: 'ind-tile-fasteners', url: src('ind-tile-fasteners'), alt: 'Bins of assorted bolts, nuts and washers' },
   { id: 'ind-tile-abrasives', url: src('ind-tile-abrasives'), alt: 'A stack of cut-off and grinding wheels' },
   { id: 'ind-tile-safety', url: src('ind-tile-safety'), alt: 'Safety glasses and nitrile gloves on a workbench' },
-  { id: 'ind-tile-consumables', url: src('ind-tile-consumables'), alt: 'Bulk shop consumables — rags, tape and cable ties' },
+  { id: 'ind-tile-consumables', url: src('ind-tile-consumables'), alt: 'Bulk shop consumables: rags, tape and cable ties' },
   { id: 'ind-band-trade', url: src('ind-band-trade'), alt: 'A warehouse worker loading pallets onto a forklift' },
   { id: 'prod-fasteners', url: src('prod-fasteners'), alt: 'A Grade 8 fastener assortment box' },
   { id: 'prod-cutoff', url: src('prod-cutoff'), alt: 'A box of 4.5 inch cut-off wheels' },
@@ -163,7 +163,7 @@ function hero(): Node {
                   text: 'The parts your crew needs, in stock and out the door.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Ironworks is a maintenance, repair and operations distributor. We stock the fasteners, abrasives, PPE and shop consumables that keep a floor running — sold by the case, priced for the trade, and dispatched fast.',
+                  text: 'Ironworks is a maintenance, repair and operations distributor. We stock the fasteners, abrasives, PPE and shop consumables that keep a floor running: sold by the case, priced for the trade, and dispatched fast.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -240,7 +240,7 @@ function tradeTermsBand(): Node {
                 text: 'Built for the way trade buyers order',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Open a trade account and you buy the way a business should — by the case, at wholesale rates, on terms. No consumer markups, no runaround.',
+                text: 'Open a trade account and you buy the way a business should: by the case, at wholesale rates, on terms. No consumer markups, no runaround.',
               }),
             ],
           }),
@@ -249,7 +249,7 @@ function tradeTermsBand(): Node {
               card('Trade pricing', 'Per-case wholesale rates with volume breaks that deepen as your order grows. The more the crew burns through, the less each case costs.'),
               card('Net-30 terms', 'Approved accounts order now and pay later on net-30. Keep the floor stocked without tying up the purchasing card on every run.'),
               card('Fast dispatch', 'In-stock lines ship the same or next business day from our warehouse, so a stockout upstairs never idles a job downstairs.'),
-              card('Your account manager', 'A direct line to a real person who knows your shop, your standing order and what you go through — not a ticket queue.'),
+              card('Your account manager', 'A direct line to a real person who knows your shop, your standing order and what you go through, not a ticket queue.'),
             ],
           }),
           el('a', 'btn btn-primary btn-lg w-fit', { attrs: { href: '/contact' }, text: 'Open a trade account' }),
@@ -345,7 +345,7 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & terms' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'The price shown is the per-case list rate. Trade accounts unlock volume breaks — deeper per-case pricing at a pallet, a full skid, or a standing order — set for your account in your dashboard.',
+                    text: 'The price shown is the per-case list rate. Trade accounts unlock volume breaks (deeper per-case pricing at a pallet, a full skid, or a standing order) set for your account in your dashboard.',
                   }),
                   el('p', 'text-base leading-relaxed text-base-content', {
                     text: 'Approved accounts buy on net-30. Not set up yet? Open a trade account and we will price your regular lines and get you on terms.',
@@ -391,11 +391,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The catalog',
-    'Every line we stock — fasteners, abrasives, safety and PPE, and bulk shop consumables, sold by the case. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout.'
+    'Every line we stock: fasteners, abrasives, safety and PPE, and bulk shop consumables, sold by the case. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The catalog grouped the way a purchaser actually buys — best sellers, new lines just in, the shop-floor essentials, safety & PPE, and the bulk consumables you reorder on a schedule.'),
+  pageMasthead('Collections', 'The catalog grouped the way a purchaser actually buys: best sellers, new lines just in, the shop-floor essentials, safety & PPE, and the bulk consumables you reorder on a schedule.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search the catalog', 'Know the SKU, the size, or the spec you need? Search the whole catalog and the field notes below.'),
@@ -421,7 +421,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Field notes' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Practical guidance from the warehouse floor — how to stock an MRO room, pick the right abrasive, and outfit a crew in PPE. Written for the people doing the buying, not for a catalog.',
+            text: 'Practical guidance from the warehouse floor: how to stock an MRO room, pick the right abrasive, and outfit a crew in PPE. Written for the people doing the buying, not for a catalog.',
           }),
         ],
       }),
@@ -438,13 +438,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl', { text: 'About Ironworks' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Ironworks Supply Co. is an industrial MRO distributor. We stock the unglamorous, essential lines that keep a maintenance shop, a fabrication floor or a fleet garage running — and we sell them to the trade by the case, at wholesale, on terms.',
+            text: 'Ironworks Supply Co. is an industrial MRO distributor. We stock the unglamorous, essential lines that keep a maintenance shop, a fabrication floor or a fleet garage running, and we sell them to the trade by the case, at wholesale, on terms.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We built the business around one idea: a working buyer should not have to chase a dozen suppliers, eat consumer markups, or wait a week for a box of cut-off wheels. One catalog, one account, one invoice, and stock that is actually on the shelf when you order it.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the parts, priced fairly and out the door — the boring reliability a shop is built on.',
+            text: 'No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the parts, priced fairly and out the door: the boring reliability a shop is built on.',
           }),
         ],
       }),
@@ -534,7 +534,7 @@ const PRODUCTS: Product[] = [
     handle: 'grade-8-fastener-assortment',
     title: 'Grade 8 Fastener Assortment Box',
     description:
-      '500-piece assortment of zinc-plated hex bolts, nuts and washers in the sizes a shop reaches for daily — 1/4" through 1/2", coarse thread — in a labelled sectioned case. MOQ 1 box. Pick Grade 5 for general assembly or Grade 8 where the load matters.',
+      '500-piece assortment of zinc-plated hex bolts, nuts and washers in the sizes a shop reaches for daily (1/4" through 1/2", coarse thread) in a labelled sectioned case. MOQ 1 box. Pick Grade 5 for general assembly or Grade 8 where the load matters.',
     status: 'active',
     productType: 'Fasteners',
     vendor: VENDOR,
@@ -552,9 +552,9 @@ const PRODUCTS: Product[] = [
   },
   caseItem({
     handle: 'cut-off-wheels-box',
-    title: 'Cut-Off Wheels, 4½ in — Box of 25',
+    title: 'Cut-Off Wheels, 4½ in: Box of 25',
     description:
-      'Type 1 metal cut-off wheels, 4½" x .045" x 7/8" arbor, aluminium-oxide grain for clean, fast cuts in steel and stainless. Box of 25. MOQ 4 boxes — buy the case and keep the grinders fed.',
+      'Type 1 metal cut-off wheels, 4½" x .045" x 7/8" arbor, aluminium-oxide grain for clean, fast cuts in steel and stainless. Box of 25. MOQ 4 boxes: buy the case and keep the grinders fed.',
     price: 34.5,
     sku: 'IWS-ABR-CUTOFF-45',
     productType: 'Abrasives',
@@ -567,7 +567,7 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'grinding-wheels-box',
-    title: 'Grinding Wheels, 4½ in — Box of 25',
+    title: 'Grinding Wheels, 4½ in: Box of 25',
     description:
       'Type 27 depressed-centre grinding wheels, 4½" x 1/4" x 7/8" arbor, for weld dressing and heavy stock removal on steel. Box of 25. MOQ 2 boxes. The everyday wheel a fab shop burns through.',
     price: 42,
@@ -582,9 +582,9 @@ const PRODUCTS: Product[] = [
   }),
   {
     handle: 'nitrile-gloves-case',
-    title: 'Nitrile Gloves, 6-mil — Case of 1000',
+    title: 'Nitrile Gloves, 6-mil: Case of 1000',
     description:
-      'Heavy 6-mil powder-free nitrile gloves with a textured grip — the disposable that holds up to solvents, oils and shop grime without tearing. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size.',
+      'Heavy 6-mil powder-free nitrile gloves with a textured grip: the disposable that holds up to solvents, oils and shop grime without tearing. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size.',
     status: 'active',
     productType: 'Safety',
     vendor: VENDOR,
@@ -603,9 +603,9 @@ const PRODUCTS: Product[] = [
   },
   caseItem({
     handle: 'safety-glasses-case',
-    title: 'Anti-Fog Safety Glasses — Case of 12',
+    title: 'Anti-Fog Safety Glasses: Case of 12',
     description:
-      'Clear anti-fog, anti-scratch safety glasses rated ANSI Z87.1, with a wraparound lens and soft nose bridge crews will actually keep on. Case of 12. MOQ 2 cases — enough to kit out a shift and stock the spares drawer.',
+      'Clear anti-fog, anti-scratch safety glasses rated ANSI Z87.1, with a wraparound lens and soft nose bridge crews will actually keep on. Case of 12. MOQ 2 cases: enough to kit out a shift and stock the spares drawer.',
     price: 47,
     sku: 'IWS-PPE-GLASS-12',
     productType: 'Safety',
@@ -618,9 +618,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'shop-rags-bale',
-    title: 'Reclaimed Cotton Shop Rags — 25 lb Bale',
+    title: 'Reclaimed Cotton Shop Rags: 25 lb Bale',
     description:
-      'Washed, lint-low reclaimed cotton wipers in a compressed 25 lb bale — the workhorse rag for solvents, spills and general clean-up. MOQ 1 bale. Cheaper by the pound than paper and it does not fall apart on the first wipe.',
+      'Washed, lint-low reclaimed cotton wipers in a compressed 25 lb bale: the workhorse rag for solvents, spills and general clean-up. MOQ 1 bale. Cheaper by the pound than paper and it does not fall apart on the first wipe.',
     price: 58,
     sku: 'IWS-CON-RAGS-25',
     productType: 'Consumables',
@@ -633,9 +633,9 @@ const PRODUCTS: Product[] = [
   }),
   {
     handle: 'cable-ties-bag',
-    title: 'Cable Ties — Bag of 1000',
+    title: 'Cable Ties: Bag of 1000',
     description:
-      'UV-stabilised black nylon cable ties, 50 lb tensile, in a bulk bag of 1000 — for loom work, bundling and a hundred fixes a day. MOQ 1 bag. Choose the length your work calls for.',
+      'UV-stabilised black nylon cable ties, 50 lb tensile, in a bulk bag of 1000, for loom work, bundling and a hundred fixes a day. MOQ 1 bag. Choose the length your work calls for.',
     status: 'active',
     productType: 'Consumables',
     vendor: VENDOR,
@@ -653,9 +653,9 @@ const PRODUCTS: Product[] = [
   },
   caseItem({
     handle: 'threadlocker-case',
-    title: 'Medium-Strength Threadlocker — Case of 10',
+    title: 'Medium-Strength Threadlocker: Case of 10',
     description:
-      'Blue medium-strength anaerobic threadlocker in 10 mL bottles, a case of 10 — locks and seals fasteners against vibration yet backs out with hand tools for service. MOQ 1 case. The blue bottle every toolbox needs.',
+      'Blue medium-strength anaerobic threadlocker in 10 mL bottles, a case of 10: locks and seals fasteners against vibration yet backs out with hand tools for service. MOQ 1 case. The blue bottle every toolbox needs.',
     price: 96,
     sku: 'IWS-CON-TLOCK-10',
     productType: 'Consumables',
@@ -668,9 +668,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'duct-tape-case',
-    title: 'Industrial Cloth Duct Tape — Case of 24',
+    title: 'Industrial Cloth Duct Tape: Case of 24',
     description:
-      '11-mil silver cloth duct tape, 2" x 60 yd, a case of 24 rolls — a strong, hand-tearable, weather-resistant tape for seaming, bundling and the fix that has to hold today. MOQ 1 case. Buy the case; you always need more.',
+      '11-mil silver cloth duct tape, 2" x 60 yd, a case of 24 rolls: a strong, hand-tearable, weather-resistant tape for seaming, bundling and the fix that has to hold today. MOQ 1 case. Buy the case; you always need more.',
     price: 72,
     sku: 'IWS-CON-DUCT-24',
     productType: 'Consumables',
@@ -685,7 +685,7 @@ const PRODUCTS: Product[] = [
     handle: 'mro-starter-kit',
     title: 'MRO Shop Starter Kit',
     description:
-      'A curated kit of the consumables a new shop or satellite site runs out of first — a fastener assortment, cut-off wheels, nitrile gloves, shop rags, cable ties and threadlocker, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a floor from empty.',
+      'A curated kit of the consumables a new shop or satellite site runs out of first: a fastener assortment, cut-off wheels, nitrile gloves, shop rags, cable ties and threadlocker, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a floor from empty.',
     price: 149,
     sku: 'IWS-KIT-MRO-STARTER',
     productType: 'Consumables',
@@ -694,7 +694,7 @@ const PRODUCTS: Product[] = [
     tags: ['consumables', 'kit', 'starter', 'bundle'],
     asset: 'prod-mro-kit',
     seoTitle: 'MRO Shop Starter Kit | Ironworks Supply',
-    seoDescription: 'A curated starter kit of essential MRO consumables — fasteners, abrasives, PPE, rags and more, priced below the sum.',
+    seoDescription: 'A curated starter kit of essential MRO consumables: fasteners, abrasives, PPE, rags and more, priced below the sum.',
   }),
 ];
 
@@ -702,7 +702,7 @@ const COMMERCE = {
   categories: [
     { handle: 'fasteners', name: 'Fasteners', description: 'Bolts, nuts, washers and assortments.', featured: true },
     { handle: 'abrasives', name: 'Abrasives', description: 'Cut-off and grinding wheels.', featured: true },
-    { handle: 'safety', name: 'Safety', description: 'PPE — gloves, eye protection and more.', featured: true },
+    { handle: 'safety', name: 'Safety', description: 'PPE: gloves, eye protection and more.', featured: true },
     { handle: 'consumables', name: 'Consumables', description: 'Rags, tape, ties and shop supplies.', featured: true },
   ],
   collections: [
@@ -775,13 +775,13 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('An MRO stockroom exists to do one thing: make sure the part is there the moment someone needs it. Get it wrong and a five-dollar cut-off wheel holds up a five-hundred-dollar-an-hour job. The good news is that keeping it right does not take software or a full-time storekeeper — it takes a min/max system and the discipline to follow it.'),
+          para('An MRO stockroom exists to do one thing: make sure the part is there the moment someone needs it. Get it wrong and a five-dollar cut-off wheel holds up a five-hundred-dollar-an-hour job. The good news is that keeping it right does not take software or a full-time storekeeper. It takes a min/max system and the discipline to follow it.'),
           h2('Set a min and a max for every line'),
-          para('For each consumable, decide two numbers. The MIN is the reorder point — the quantity that should trigger a new order, set high enough to cover your usage over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full — enough to buy at a sensible case or pallet price without turning the shelf into dead capital. When stock drops to the min, you order back up to the max. That is the whole system.'),
+          para('For each consumable, decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover your usage over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full, enough to buy at a sensible case or pallet price without turning the shelf into dead capital. When stock drops to the min, you order back up to the max. That is the whole system.'),
           h2('Label the bin, not your memory'),
           para('Write the line, the SKU, the min and the max on the bin itself. When anyone can see at a glance that the rag bale is below its min, ordering stops depending on one person remembering. A two-bin trick makes it even simpler: when the front bin empties, that is the signal to reorder, and the back bin covers you until the case arrives.'),
           h2('Put the fast movers on a standing order'),
-          para('The lines you burn through on a predictable schedule — gloves, wheels, rags, ties — do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves.'),
+          para('The lines you burn through on a predictable schedule (gloves, wheels, rags, ties) do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves.'),
         ],
       },
     },
@@ -797,13 +797,13 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Walk any fab shop and you will find the two wheels mixed up in the same bin, because from a step back they look alike. They are not. A cut-off wheel is thin and made to work on its edge; a grinding wheel is thick and made to work on its face. Match the wheel to the job and both cut fast and last; mismatch them and you get a slow, hot mess — or a shattered wheel.'),
+          para('Walk any fab shop and you will find the two wheels mixed up in the same bin, because from a step back they look alike. They are not. A cut-off wheel is thin and made to work on its edge; a grinding wheel is thick and made to work on its face. Match the wheel to the job and both cut fast and last; mismatch them and you get a slow, hot mess, or a shattered wheel.'),
           h2('Cut-off wheels: thin, for parting'),
-          para('A cut-off wheel — Type 1, flat, around .045" thick — is for severing stock: cutting bar, pipe, angle and bolt to length. Use its EDGE only. Never lay a cut-off wheel over on its face to grind a weld flat; the thin disc is not built for side load and will crack. When it wears down, retire it — a stub in a full-speed grinder is not worth the risk.'),
+          para('A cut-off wheel. Type 1, flat, around .045" thick: is for severing stock: cutting bar, pipe, angle and bolt to length. Use its EDGE only. Never lay a cut-off wheel over on its face to grind a weld flat; the thin disc is not built for side load and will crack. When it wears down, retire it, a stub in a full-speed grinder is not worth the risk.'),
           h2('Grinding wheels: thick, for dressing'),
-          para('A grinding wheel — Type 27, depressed-centre, around 1/4" thick — is for removing material off a surface: dressing welds, knocking down burrs, blending. Work it on its FACE at a shallow angle, roughly 20 to 30 degrees. It is not made to part stock; try to cut with it and you will burn through the wheel and the patience of everyone nearby.'),
+          para('A grinding wheel (Type 27, depressed-centre, around 1/4" thick) is for removing material off a surface: dressing welds, knocking down burrs, blending. Work it on its FACE at a shallow angle, roughly 20 to 30 degrees. It is not made to part stock; try to cut with it and you will burn through the wheel and the patience of everyone nearby.'),
           h2('Buy both by the case'),
-          para('Because they wear out — that is the job — the only real mistake is running short. Keep a case of each on the shelf, set a reorder point, and nobody ever has to grab the wrong wheel because it was the only one left in the drawer.'),
+          para('Because they wear out (that is the job) the only real mistake is running short. Keep a case of each on the shelf, set a reorder point, and nobody ever has to grab the wrong wheel because it was the only one left in the drawer.'),
         ],
       },
     },
@@ -814,18 +814,18 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'A no-nonsense guide to nitrile gloves and shop PPE',
-      excerpt: 'PPE only protects the crew if they will actually wear it. Here is how to spec gloves and eye protection people keep on — and buy it at a price that does not make you ration it.',
+      excerpt: 'PPE only protects the crew if they will actually wear it. Here is how to spec gloves and eye protection people keep on, and buy it at a price that does not make you ration it.',
       featuredImage: { $asset: 'post-ppe' },
       body: {
         type: 'doc',
         content: [
-          para('The best PPE is the set your crew does not take off. That sounds obvious, but plenty of shops buy protection so thin, so ill-fitting or so scarce that people work around it — and then wonder why the incident rate will not budge. Spec it right and buy it in volume, and the safe choice becomes the easy one.'),
+          para('The best PPE is the set your crew does not take off. That sounds obvious, but plenty of shops buy protection so thin, so ill-fitting or so scarce that people work around it, and then wonder why the incident rate will not budge. Spec it right and buy it in volume, and the safe choice becomes the easy one.'),
           h2('Gloves: mind the mil'),
-          para('For general shop work, a 6-mil nitrile glove is the sweet spot — thick enough to shrug off solvents, oils and swarf without tearing, thin enough to keep the dexterity to actually work. Go powder-free to avoid contaminating surfaces, and get the SIZE right: a glove that is too big snags and slips, one too small tears at the knuckle. Stock medium through extra-large so nobody is stuck with the wrong fit.'),
+          para('For general shop work, a 6-mil nitrile glove is the sweet spot: thick enough to shrug off solvents, oils and swarf without tearing, thin enough to keep the dexterity to actually work. Go powder-free to avoid contaminating surfaces, and get the SIZE right: a glove that is too big snags and slips, one too small tears at the knuckle. Stock medium through extra-large so nobody is stuck with the wrong fit.'),
           h2('Eye protection people keep on'),
-          para('Safety glasses only work on a face. The reasons crews push them up are always the same — they fog, they scratch blind, or they pinch. Spec an anti-fog, anti-scratch lens rated ANSI Z87.1 with a soft nose bridge and a wraparound shape, and most of the excuses disappear. Keep a case in the drawer so a scratched pair gets swapped, not tolerated.'),
+          para('Safety glasses only work on a face. The reasons crews push them up are always the same. They fog, they scratch blind, or they pinch. Spec an anti-fog, anti-scratch lens rated ANSI Z87.1 with a soft nose bridge and a wraparound shape, and most of the excuses disappear. Keep a case in the drawer so a scratched pair gets swapped, not tolerated.'),
           h2('Buy it in volume so you never ration it'),
-          para('The quiet failure mode is running low and rationing — one box of gloves guarded like gold, one pair of glasses shared across a bench. Buy PPE by the case at trade pricing and it is always there, always fresh, and never the thing standing between a worker and doing the job right.'),
+          para('The quiet failure mode is running low and rationing. One box of gloves guarded like gold, one pair of glasses shared across a bench. Buy PPE by the case at trade pricing and it is always there, always fresh, and never the thing standing between a worker and doing the job right.'),
         ],
       },
     },
@@ -840,7 +840,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Industrial Supply (B2B / Wholesale)',
   theme: THEME,
   summary:
-    'A complete, working wholesale shop for an industrial MRO distributor: a real trade catalogue sold by the case — fasteners, abrasives, safety & PPE and bulk consumables — with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30), and a full merchandised home page. Sturdy industrial theme — steel ground, deep navy, safety-amber accent. Shipped as Ironworks Supply Co.',
+    'A complete, working wholesale shop for an industrial MRO distributor: a real trade catalogue sold by the case, fasteners, abrasives, safety & PPE and bulk consumables, with categories, collections, a bespoke trade PDP (per-case pricing, volume breaks, net-30), and a full merchandised home page. Sturdy industrial theme, steel ground, deep navy, safety-amber accent. Shipped as Ironworks Supply Co.',
   tagline: 'A wholesale storefront built for trade buyers.',
   vertical: 'b2b',
   industry: 'Industrial & MRO supply',
@@ -853,17 +853,17 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Ironworks Supply Co. — industrial & MRO distributor',
+      title: 'Ironworks Supply Co. industrial & MRO distributor',
       description:
-        'Ironworks is an industrial MRO distributor — fasteners, abrasives, safety, PPE and bulk consumables sold by the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.',
+        'Ironworks is an industrial MRO distributor: fasteners, abrasives, safety, PPE and bulk consumables sold by the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.',
     },
     about: {
       title: 'About Ironworks Supply Co.',
       description:
-        'How Ironworks stocks, prices and ships — one catalog, one account, one invoice, wholesale by the case, and stock that is actually on the shelf when you order it.',
+        'How Ironworks stocks, prices and ships. One catalog, one account, one invoice, wholesale by the case, and stock that is actually on the shelf when you order it.',
     },
     contact: {
-      title: 'Open a trade account — Ironworks Supply Co.',
+      title: 'Open a trade account: Ironworks Supply Co.',
       description:
         'Set up a trade account with Ironworks: wholesale per-case pricing, volume breaks, net-30 terms and a dedicated account manager. Wholesale enquiries and bulk quotes start here.',
     },

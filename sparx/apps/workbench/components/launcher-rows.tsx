@@ -24,6 +24,54 @@ export function groupEntries(entries: Entry[]): EntryGroup[] {
   return [...map.entries()].map(([group, rows]) => ({ group, rows }));
 }
 
+/**
+ * What the RECORD half of the search has to say, whether or not it found
+ * anything.
+ *
+ * The palette searches two things at once: the screens in this console, and the
+ * records in the business. Only one of them ever spoke. A customer's name that
+ * the business has never heard of returns a list of SCREENS whose words happen
+ * to contain the same letters, and says nothing at all about the customer —
+ * and because the list is not empty, the empty state never fires either. The
+ * only reading left is that the record is in there somewhere.
+ *
+ * So the record half states its own result, always, the moment anything is
+ * typed. "Nothing in your records matches" is an answer. Silence is not.
+ *
+ * It used to name what it looked through, and got that wrong twice over. Saying
+ * "nothing in your ORDERS matches" over a typed PO number told an operator the
+ * orders did not contain it, when it was never searched: the universal index
+ * carried twenty kinds of record and not one of them came from purchasing. The
+ * sentence was corrected to say so out loud, and purchasing has since been
+ * indexed — suppliers, purchase orders, receipts, supplier invoices, returns,
+ * transfers and counts — which made the caveat false in the other direction
+ * (issue 508).
+ *
+ * So it no longer lists anything. A list of what was searched is a promise that
+ * goes stale every time the index grows, and the useful fact is simply that the
+ * record half found nothing and the rows below are screens.
+ */
+export function RecordSearchNote({
+  searching,
+  found,
+  query,
+}: {
+  searching: boolean;
+  found: number;
+  query: string;
+}) {
+  if (!query.trim()) return null;
+  return (
+    <p className="border-base-300 border-t px-3 py-2 text-sm" role="status">
+      {searching
+        ? 'Looking through your records…'
+        : found > 0
+          ? `${String(found)} ${found === 1 ? 'record' : 'records'} matched. The rest are screens.`
+          : `Nothing in your records matches “${query.trim()}”. Everything below is a screen.`}
+    </p>
+  );
+}
+
 export function LauncherEmpty({ searching, typed }: { searching: boolean; typed: boolean }) {
   return (
     <p className="px-3 py-8 text-center text-sm" role="status">
@@ -31,7 +79,7 @@ export function LauncherEmpty({ searching, typed }: { searching: boolean; typed:
         ? 'Searching…'
         : typed
           ? 'Nothing matches that. Try a different word.'
-          : 'Type to search across every module — or pick a screen to open.'}
+          : 'Type to search across every module, or pick a screen to open.'}
     </p>
   );
 }

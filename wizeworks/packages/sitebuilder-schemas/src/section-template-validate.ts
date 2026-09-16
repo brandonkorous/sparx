@@ -216,7 +216,7 @@ function walk(
     case 'Embed':
       issues.push({
         path: at,
-        message: 'Embed is not enabled yet — requires the host allowlist (docs/37 §9)',
+        message: 'Embed is not enabled yet: requires the host allowlist (docs/37 §9)',
       });
       break;
   }

@@ -85,7 +85,7 @@ export const MODULES: ModuleEntry[] = [
     id: 'commerce',
     label: 'Commerce',
     title: 'Cart, checkout, orders.',
-    description: 'Products, payments, tax and shipping. Stripe, PayPal, Klarna — all handled.',
+    description: 'Products, payments, tax and shipping. Stripe, PayPal, Klarna. All handled.',
     price: 49,
     href: '/commerce',
   },
@@ -94,7 +94,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'CMS',
     title: 'Words, media, SEO.',
     description:
-      'Editor, blog, media library, structured content. Works standalone — no Builder required.',
+      'Editor, blog, media library, structured content. Works standalone: no Builder required.',
     price: 49,
     href: '/cms',
   },
@@ -103,7 +103,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'CRM',
     title: 'Customers, pipeline, signal.',
     description:
-      'Activity log, automations, segments — built on your live data, not stitched to it.',
+      'Activity log, automations, segments: built on your live data, not stitched to it.',
     price: 49,
     href: '/crm',
   },
@@ -112,7 +112,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Invoicing',
     title: 'Quotes, invoices, payment links.',
     description:
-      'Send estimates, quotes, and invoices, take card or ACH, track what is paid — tied to the same customers.',
+      'Send estimates, quotes, and invoices, take card or ACH, track what is paid: tied to the same customers.',
     price: 19,
     includedWith: ['Commerce', 'B2B'],
   },
@@ -121,7 +121,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Email',
     title: 'Transactional and marketing.',
     description:
-      'Self-hosted on sparx.email. Your domain, your reputation, flat price — no SendGrid markup.',
+      'Self-hosted on sparx.email. Your domain, your reputation, flat price: no SendGrid markup.',
     price: 29,
     href: '/email',
   },
@@ -135,7 +135,7 @@ export const MODULES: ModuleEntry[] = [
     // required, and don't let "fleet" make this read as an auto-parts product.
     title: 'Wholesale accounts, net terms, fleet.',
     description:
-      'Account pricing, RFQ, quotes, and purchase orders — wholesale on the same engine as retail. Add fleet accounts when your buyers manage equipment.',
+      'Account pricing, RFQ, quotes, and purchase orders: wholesale on the same engine as retail. Add fleet accounts when your buyers manage equipment.',
     price: 99,
     requires: 'Commerce',
     href: '/b2b',
@@ -171,7 +171,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Scheduling',
     title: 'Appointments, classes, bookings.',
     description:
-      'Appointments, classes, reservations, rentals — one engine with deposits, reminders, waitlists.',
+      'Appointments, classes, reservations, rentals. One engine with deposits, reminders, waitlists.',
     price: 29,
     href: '/scheduling',
   },
@@ -183,7 +183,7 @@ export const MODULES: ModuleEntry[] = [
     // (/agentic). The card is the module's front door → /ai.
     title: 'An AI for your customers, and one for you.',
     description:
-      'A concierge that answers your visitors, plus agentic MCP so your own AI reads live data. Bring your own key — never ours.',
+      'A concierge that answers your visitors, plus agentic MCP so your own AI reads live data. Bring your own key, never ours.',
     price: 49,
     href: '/ai',
   },
@@ -192,7 +192,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Finance',
     title: 'What you spent, and what you kept.',
     description:
-      'Track every cost — parts, wages, rent, subscriptions — against what came in, and see which jobs actually made money. Exports clean to QuickBooks, Sage 50 or your accountant. Free with Commerce or B2B.',
+      'Track every cost (parts, wages, rent, subscriptions) against what came in, and see which jobs actually made money. Exports clean to QuickBooks, Sage 50 or your accountant. Free with Commerce or B2B.',
     price: 29,
     includedWith: ['Commerce', 'B2B'],
     href: '/finance',
@@ -205,7 +205,7 @@ export const MODULES: ModuleEntry[] = [
     // one. What it IS: the record that makes the wages line in Finance a derived
     // number instead of one you type in and hope.
     description:
-      'Hours, pay rates, shifts, time off and licence renewals — so the biggest cost in your business stops being a guess. Not payroll: sparx records what people worked and what it cost, and hands the hours to whoever runs yours.',
+      'Hours, pay rates, shifts, time off and license renewals, so the biggest cost in your business stops being a guess. Not payroll: sparx records what people worked and what it cost, and hands the hours to whoever runs yours.',
     price: 29,
     href: '/staff',
   },
@@ -214,7 +214,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Social',
     title: 'One post, every network.',
     description:
-      'Compose once and publish to Facebook, Instagram and Pinterest — pulled from the same products and media, each image auto-cropped to fit, scheduled or posted now. Free with sparx.',
+      'Compose once and publish to Facebook, Instagram and Pinterest: pulled from the same products and media, each image auto-cropped to fit, scheduled or posted now. Free with sparx.',
     price: 0,
     free: true,
     href: '/social',
@@ -224,7 +224,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'SEO',
     title: 'Get found, on every page.',
     description:
-      'Audits every page the platform renders — titles, metadata, redirects, sitemaps. Free with sparx, always on.',
+      'Audits every page the platform renders: titles, metadata, redirects, sitemaps. Free with sparx, always on.',
     price: 0,
     free: true,
   },
@@ -233,7 +233,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Automations',
     title: 'Work that runs itself.',
     description:
-      'Trigger-and-action workflows across your modules — when this happens, do that. Free once any one module is on.',
+      'Trigger-and-action workflows across your modules, when this happens, do that. Free once any one module is on.',
     price: 0,
     free: true,
   },

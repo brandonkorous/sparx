@@ -146,7 +146,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Recurring cleans repeat on the schedule you set — weekly, fortnightly or monthly — with the same cleaner each visit. Skip or reschedule any single clean with 24 hours’ notice; nothing is locked in.',
+        'Recurring cleans repeat on the schedule you set (weekly, fortnightly or monthly) with the same cleaner each visit. Skip or reschedule any single clean with 24 hours’ notice; nothing is locked in.',
     },
   ],
   resources: [
@@ -177,7 +177,7 @@ const SCHEDULING = {
       handle: 'home-walkthrough',
       name: 'Home walkthrough',
       description:
-        'A free, no-pressure visit — in person or over video — to see your home, talk through what matters to you, and quote your first clean. Sensitive to allergies, pets and little ones.',
+        'A free, no-pressure visit (in person or over video) to see your home, talk through what matters to you, and quote your first clean. Sensitive to allergies, pets and little ones.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -188,7 +188,7 @@ const SCHEDULING = {
       handle: 'green-standard-clean',
       name: 'Green standard clean',
       description:
-        'Our everyday clean, done entirely with plant-based, non-toxic products — kitchen, bathrooms, floors and living spaces left fresh, with nothing harsh left behind.',
+        'Our everyday clean, done entirely with plant-based, non-toxic products: kitchen, bathrooms, floors and living spaces left fresh, with nothing harsh left behind.',
       durationMinutes: 120,
       priceCents: 14000,
       assignmentStrategy: 'any_available',
@@ -199,7 +199,7 @@ const SCHEDULING = {
       handle: 'green-deep-clean',
       name: 'Green deep clean',
       description:
-        'A top-to-bottom reset — inside appliances, skirting, tile, the spots that get missed — using the same gentle, low-fume products, ideal for a first visit or a seasonal refresh.',
+        'A top-to-bottom reset (inside appliances, skirting, tile, the spots that get missed) using the same gentle, low-fume products, ideal for a first visit or a seasonal refresh.',
       durationMinutes: 180,
       priceCents: 24000,
       assignmentStrategy: 'any_available',
@@ -210,7 +210,7 @@ const SCHEDULING = {
       handle: 'recurring-setup',
       name: 'Recurring clean setup',
       description:
-        'Set up an ongoing green clean — weekly, fortnightly or monthly — with the same trusted cleaner each time. This first visit gets your home dialled in; the rhythm carries on from there.',
+        'Set up an ongoing green clean (weekly, fortnightly or monthly) with the same trusted cleaner each time. This first visit gets your home dialled in; the rhythm carries on from there.',
       durationMinutes: 120,
       priceCents: 13000,
       assignmentStrategy: 'any_available',
@@ -221,7 +221,7 @@ const SCHEDULING = {
       handle: 'move-out-clean',
       name: 'Move-out clean',
       description:
-        'An empty-home deep clean for the end of a lease or a handover — thorough enough for an inspection, still fully plant-based and safe for the next family to walk into.',
+        'An empty-home deep clean for the end of a lease or a handover: thorough enough for an inspection, still fully plant-based and safe for the next family to walk into.',
       durationMinutes: 240,
       priceCents: 32000,
       assignmentStrategy: 'any_available',
@@ -232,7 +232,7 @@ const SCHEDULING = {
       handle: 'new-baby-nursery-clean',
       name: 'New-baby nursery clean',
       description:
-        'A gentle, fragrance-free clean of the nursery and shared spaces before a baby comes home — no residues, no harsh smells, just a soft, safe room ready for them.',
+        'A gentle, fragrance-free clean of the nursery and shared spaces before a baby comes home: no residues, no harsh smells, just a soft, safe room ready for them.',
       durationMinutes: 90,
       priceCents: 12000,
       assignmentStrategy: 'any_available',
@@ -243,7 +243,7 @@ const SCHEDULING = {
       handle: 'office-green-clean',
       name: 'Office green clean',
       description:
-        'A boutique clean for a small studio or office — desks, kitchens and shared surfaces done with low-fume products your whole team can breathe easy around.',
+        'A boutique clean for a small studio or office: desks, kitchens and shared surfaces done with low-fume products your whole team can breathe easy around.',
       durationMinutes: 150,
       priceCents: 20000,
       assignmentStrategy: 'any_available',
@@ -259,7 +259,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A bright, plant-filled living room, freshly cleaned and calm',
     title: 'A cleaner home, without the harsh stuff',
-    sub: 'Plant-based, non-toxic cleaning for real homes — safe for kids, pets and sensitive noses, and gentle on everything you love.',
+    sub: 'Plant-based, non-toxic cleaning for real homes: safe for kids, pets and sensitive noses, and gentle on everything you love.',
     primary: { label: 'Book a green clean', href: '/book' },
     secondary: { label: 'Book a walkthrough', href: '/book' },
     overlay: 'dark',
@@ -268,7 +268,7 @@ const HOME = [
     items: [
       {
         title: 'Plant-based, non-toxic',
-        body: 'Everything we use is plant-derived and low-fume — no bleach haze, no chemical smell lingering after we leave.',
+        body: 'Everything we use is plant-derived and low-fume: no bleach haze, no chemical smell lingering after we leave.',
       },
       {
         title: 'Safe for kids & pets',
@@ -280,7 +280,7 @@ const HOME = [
       },
       {
         title: 'The same trusted cleaner',
-        body: 'You’ll see the same person each visit — someone who learns your home, your preferences and what to leave alone.',
+        body: 'You’ll see the same person each visit. Someone who learns your home, your preferences and what to leave alone.',
       },
     ],
   }),
@@ -300,7 +300,7 @@ const HOME = [
         name: 'Green deep clean',
         priceCents: 24000,
         durationMin: 180,
-        desc: 'A full reset — appliances, tile, the spots that get missed.',
+        desc: 'A full reset: appliances, tile, the spots that get missed.',
       },
       {
         name: 'Recurring clean setup',
@@ -322,14 +322,14 @@ const HOME = [
     alt: 'Refillable bottles of plant-based, non-toxic cleaning products on a wooden shelf',
     heading: 'Why the products matter',
     body: [
-      'Most cleaning leaves something behind — a chemical smell, a film on the counter, fumes that hang in a closed room for hours. In a home with kids, pets or anyone who reacts to that, it adds up.',
-      'We clean with plant-based products that actually work and don’t off-gas. Same fresh result, none of the residue — so the room you get back is genuinely clean, not just masked.',
+      'Most cleaning leaves something behind: a chemical smell, a film on the counter, fumes that hang in a closed room for hours. In a home with kids, pets or anyone who reacts to that, it adds up.',
+      'We clean with plant-based products that actually work and don’t off-gas. Same fresh result, none of the residue, so the room you get back is genuinely clean, not just masked.',
     ],
     cta: { label: 'Book a green clean', href: '/book' },
   }),
   teamRow({
     heading: 'Who comes to your home',
-    intro: 'Book by name — you’ll see the same cleaner each visit, and they’ll get to know your place.',
+    intro: 'Book by name: you’ll see the same cleaner each visit, and they’ll get to know your place.',
     members: [
       {
         name: 'Rosa Vela',
@@ -343,7 +343,7 @@ const HOME = [
         role: 'Deep-clean specialist',
         image: url(IMG.mara),
         alt: 'Mara Quinn, deep-clean specialist',
-        bio: 'Deep cleans and move-outs — the thorough, get-into-the-corners work, done gently.',
+        bio: 'Deep cleans and move-outs: the thorough, get-into-the-corners work, done gently.',
       },
       {
         name: 'Tavi Okafor',
@@ -386,7 +386,7 @@ const ABOUT = [
     heading: 'About Verdi Clean',
     body: [
       'Verdi Clean started with a simple frustration: cleaning a home shouldn’t mean filling it with fumes and chemicals, especially for families, pets and anyone with sensitive skin or lungs.',
-      'So we built a cleaning service around plant-based products and real care — the kind of clean you can feel good about, delivered by the same trusted person each time.',
+      'So we built a cleaning service around plant-based products and real care: the kind of clean you can feel good about, delivered by the same trusted person each time.',
     ],
     cta: { label: 'Book a green clean', href: '/book' },
   }),
@@ -396,15 +396,15 @@ const ABOUT = [
     items: [
       {
         title: 'Plant-based, always',
-        body: 'Every clean uses non-toxic, low-fume products — never as an add-on or an upgrade. It’s just how we clean.',
+        body: 'Every clean uses non-toxic, low-fume products, never as an add-on or an upgrade. It’s just how we clean.',
       },
       {
         title: 'Your home, your way',
-        body: 'We note what to focus on and what to leave alone — fragile pieces, a napping baby, a nervous dog. It carries over every visit.',
+        body: 'We note what to focus on and what to leave alone: fragile pieces, a napping baby, a nervous dog. It carries over every visit.',
       },
       {
         title: 'Low-waste by habit',
-        body: 'Refillable bottles, washable cloths and careful dosing mean less plastic and less down the drain — better for your home and the water it drains to.',
+        body: 'Refillable bottles, washable cloths and careful dosing mean less plastic and less down the drain: better for your home and the water it drains to.',
       },
     ],
   }),
@@ -423,7 +423,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your clean online — no phone tag, no quote forms to chase.',
+    sub: 'See live availability and reserve your clean online: no phone tag, no quote forms to chase.',
     surface: 'muted',
     cta: { label: 'Book a green clean', href: '/book' },
   }),
@@ -434,8 +434,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-cleaning-eco',
   name: 'Cleaning (Eco)',
   summary:
-    'An eco, plant-based residential and boutique cleaning site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, plant-filled photography. Installs a working booking flow: real green cleans (walkthrough, standard, deep, recurring, move-out, nursery, office), three cleaners you book by name with their own hours, and a non-toxic promise safe for kids, pets and sensitive homes. Ships as "Verdi Clean", a premium green cleaning service.',
-  tagline: 'A natural, non-toxic template for green cleaning services — book online from day one.',
+    'An eco, plant-based residential and boutique cleaning site: a natural sage-and-clay palette on a soft cream ground, refined type and calm, plant-filled photography. Installs a working booking flow: real green cleans (walkthrough, standard, deep, recurring, move-out, nursery, office), three cleaners you book by name with their own hours, and a non-toxic promise safe for kids, pets and sensitive homes. Ships as "Verdi Clean", a premium green cleaning service.',
+  tagline: 'A natural, non-toxic template for green cleaning services. Book online from day one.',
   industry: 'House cleaning',
   sortWeight: 67,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -444,9 +444,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Verdi Clean — eco, plant-based home cleaning',
+      title: 'Verdi Clean: eco, plant-based home cleaning',
       description:
-        'Verdi Clean is a green cleaning service using plant-based, non-toxic products — safe for kids, pets and sensitive homes. Book a green clean or a free walkthrough online.',
+        'Verdi Clean is a green cleaning service using plant-based, non-toxic products: safe for kids, pets and sensitive homes. Book a green clean or a free walkthrough online.',
     },
   },
   home: HOME,

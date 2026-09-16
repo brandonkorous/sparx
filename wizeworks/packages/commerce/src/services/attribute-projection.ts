@@ -105,7 +105,7 @@ function renderMoneyOrNumber(raw: unknown): string {
 
 // Join repeater rows into one string for the individual-bind `attributes.<key>`.
 function summarizeRows(items: AttributeSectionItem[]): string {
-  return items.map((i) => [i.label, i.value].filter(Boolean).join(' — ')).join(', ');
+  return items.map((i) => [i.label, i.value].filter(Boolean).join(': ')).join(', ');
 }
 
 export function projectProductAttributes(

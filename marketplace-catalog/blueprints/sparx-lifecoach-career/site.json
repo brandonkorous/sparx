@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ascend Coaching — career & executive coaching",
-      "seoDescription": "Ascend is a results-focused coaching practice for ambitious professionals — career strategy, executive presence, leadership and interview prep by secure video. Book a free discovery call.",
+      "seoTitle": "Ascend Coaching: career & executive coaching",
+      "seoDescription": "Ascend is a results-focused coaching practice for ambitious professionals: career strategy, executive presence, leadership and interview prep by secure video. Book a free discovery call.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "One-to-one coaching for ambitious professionals — sharpen your executive presence, navigate the next move, and get promoted on purpose. It starts with one honest conversation."
+                      "One-to-one coaching for ambitious professionals: sharpen your executive presence, navigate the next move, and get promoted on purpose. It starts with one honest conversation."
                     ],
                     "id": "154cc52e-ec4d-4e75-8d98-d021caa8e3db",
                     "ord": "a1"
@@ -672,7 +672,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Work with credentialed coaches who’ve sat in the leadership seat — not theorists, but practitioners who’ve led teams and hired for the roles you want."
+                              "Work with credentialed coaches who’ve sat in the leadership seat, not theorists, but practitioners who’ve led teams and hired for the roles you want."
                             ],
                             "id": "5fd75371-656f-4176-8b9d-8b4a0b6ebc71",
                             "ord": "a1"
@@ -699,7 +699,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every session runs on tested models for goal-setting, executive presence and decision-making — structure you can put to work the moment the call ends."
+                              "Every session runs on tested models for goal-setting, executive presence and decision-making: structure you can put to work the moment the call ends."
                             ],
                             "id": "416af830-1d51-42fb-898b-c3eb39409031",
                             "ord": "a1"
@@ -726,7 +726,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "This is coaching built for professionals on the rise — transitions, promotions, first-time leadership and the jump to the executive table."
+                              "This is coaching built for professionals on the rise: transitions, promotions, first-time leadership and the jump to the executive table."
                             ],
                             "id": "717d06c6-4545-4aa5-b53a-d3dd474eefab",
                             "ord": "a1"
@@ -753,7 +753,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Meet by secure video around a real schedule — early mornings and evenings included, so your momentum never waits for a free afternoon."
+                              "Meet by secure video around a real schedule: early mornings and evenings included, so your momentum never waits for a free afternoon."
                             ],
                             "id": "b9686ca1-aaf8-4e36-9fde-30b32abd06c3",
                             "ord": "a1"
@@ -1025,7 +1025,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Walk in ready — positioning, stories and the hard questions."
+                              "Walk in ready: positioning, stories and the hard questions."
                             ],
                             "id": "08470774-2400-4057-8664-abde4fcfc5c8",
                             "ord": "a2"
@@ -1106,7 +1106,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Motivation fades; a system doesn’t. Every engagement starts by naming exactly where you want to be in six months, then reverse-engineers the moves — the conversations, the visibility, the skills — that get you there."
+                          "Motivation fades; a system doesn’t. Every engagement starts by naming exactly where you want to be in six months, then reverse-engineers the moves (the conversations, the visibility, the skills) that get you there."
                         ],
                         "id": "f0caf253-bf8a-422f-b48b-38e59bcc5171",
                         "ord": "a1"
@@ -1181,7 +1181,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with the same coach throughout, someone who learns your goals and holds you to them."
+                          "Book by name: you’ll work with the same coach throughout, someone who learns your goals and holds you to them."
                         ],
                         "id": "24f58918-b42d-403c-8122-b503a9222c9f",
                         "ord": "a1"
@@ -1390,7 +1390,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Six months in, I went from passed over to promoted to director — with a raise I’d never have asked for on my own. The plan made the ask obvious.”"
+                      "“Six months in, I went from passed over to promoted to director, with a raise I’d never have asked for on my own. The plan made the ask obvious.”"
                     ],
                     "id": "e2ac9e51-fe21-4654-92dd-5c86310a2f2f",
                     "ord": "a0"
@@ -1434,7 +1434,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a free 30-minute discovery call — no cost, no pitch, just a clear read on where you are and where you could be. It takes about a minute to book."
+                      "Start with a free 30-minute discovery call: no cost, no pitch, just a clear read on where you are and where you could be. It takes about a minute to book."
                     ],
                     "id": "c7222118-9bea-4c51-8ef9-1513b83e073d",
                     "ord": "a1"
@@ -1465,7 +1465,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Ascend Coaching",
+      "seoTitle": "Book: Ascend Coaching",
       "seoDescription": "See what Ascend Coaching offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1497,7 +1497,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose a session to see live availability, then pick your coach and a time that works for you. New here? Start with the free discovery call — it’s the right first step."
+                      "Choose a session to see live availability, then pick your coach and a time that works for you. New here? Start with the free discovery call: it’s the right first step."
                     ],
                     "id": "d86152d4-da99-4eca-a3b9-d75e1994f60a",
                     "ord": "a1"
@@ -1570,7 +1570,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "416d363a-14e0-43cb-b12c-a33bc4bad53d",
                         "ord": "a1"
@@ -1602,7 +1602,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Please give at least 24 hours’ notice to reschedule or cancel — no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+                              "Please give at least 24 hours’ notice to reschedule or cancel: no charge when you let us know in time. We send a reminder the day before and two hours ahead."
                             ],
                             "id": "6340259c-583c-4fa5-b253-2e29230dc14d",
                             "ord": "a1"
@@ -1677,7 +1677,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Ascend Coaching",
+      "seoTitle": "About: Ascend Coaching",
       "seoDescription": "Who Ascend Coaching is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1726,7 +1726,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Ascend exists for the professionals who know they’re capable of more and are done leaving the next move to chance. We pair ambition with a plan — and a coach who’s been there — so the growth you want stops being someday and starts being scheduled."
+                          "Ascend exists for the professionals who know they’re capable of more and are done leaving the next move to chance. We pair ambition with a plan (and a coach who’s been there) so the growth you want stops being someday and starts being scheduled."
                         ],
                         "id": "b8519217-0efb-4970-8f6d-982937232f73",
                         "ord": "a1"
@@ -1841,7 +1841,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Growth needs someone who’ll tell you the truth — kindly, directly, and with a way forward. That honesty is the whole point."
+                              "Growth needs someone who’ll tell you the truth: kindly, directly, and with a way forward. That honesty is the whole point."
                             ],
                             "id": "974066bc-a25e-4866-aa6b-a8bfaf282914",
                             "ord": "a1"
@@ -1896,7 +1896,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Ascend Coaching",
+      "seoTitle": "Visit: Ascend Coaching",
       "seoDescription": "Where to find Ascend Coaching, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1933,7 +1933,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Ascend Coaching will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Ascend Coaching will get back to you, usually the same day."
                         ],
                         "id": "50b04f6a-164b-48cb-ab5e-827bbd8906b0",
                         "ord": "a1"
@@ -2385,7 +2385,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your free discovery call online — no phone tag, no back-and-forth."
+                      "See live availability and reserve your free discovery call online: no phone tag, no back-and-forth."
                     ],
                     "id": "c148aec3-83c9-41ed-beaf-8854cf3138de",
                     "ord": "a1"

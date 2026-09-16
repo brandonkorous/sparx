@@ -117,7 +117,7 @@ export function startSocialScheduledLoop(
     try {
       await runSocialScheduledTick(logger);
     } catch (err) {
-      logger.error({ err }, 'social-scheduled: tick threw — will retry next interval');
+      logger.error({ err }, 'social-scheduled: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

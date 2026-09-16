@@ -70,7 +70,7 @@ interface Asset {
 }
 
 const ASSETS: Asset[] = [
-    { id: 'silver-hero', url: src('silver-hero'), alt: 'A wide, still landscape at first light — a low horizon and pale, even sky' },
+    { id: 'silver-hero', url: src('silver-hero'), alt: 'A wide, still landscape at first light: a low horizon and pale, even sky' },
     { id: 'silver-tideline', url: src('silver-tideline'), alt: 'The line where a grey sea meets wet sand at low tide, redrawn by the water' },
     { id: 'silver-quiet-rooms', url: src('silver-quiet-rooms'), alt: 'A still life of ordinary objects on a windowsill in soft, raking domestic light' },
     { id: 'silver-north-faces', url: src('silver-north-faces'), alt: 'A weathered portrait of a person who works outdoors, looking just off camera' },
@@ -98,7 +98,7 @@ function heroBand(): Node {
                     el('img', 'aspect-video w-full object-cover', {
                         attrs: {
                             src: assetUrl('silver-hero'),
-                            alt: 'A wide, still landscape at first light — a low horizon and pale, even sky',
+                            alt: 'A wide, still landscape at first light: a low horizon and pale, even sky',
                             loading: 'eager',
                         },
                     }),
@@ -115,7 +115,7 @@ function heroBand(): Node {
                                 { text: 'Photographs that hold still.' }
                             ),
                             el('p', 'max-w-2xl text-lg leading-relaxed text-base-content @2xl:text-xl', {
-                                text: 'Mara Ilić — portrait, landscape and still-life photography, made slowly and in natural light. Selected series below; the rest are on the work page.',
+                                text: 'Mara Ilić: portrait, landscape and still-life photography, made slowly and in natural light. Selected series below; the rest are on the work page.',
                             }),
                             el('div', 'mt-2 flex flex-wrap items-center gap-4', {
                                 children: [
@@ -202,7 +202,7 @@ function selectedSeriesBand(): Node {
                                         text: 'Selected series',
                                     }),
                                     el('p', 'max-w-2xl text-2xl font-normal leading-snug tracking-tight text-base-content @2xl:text-3xl', {
-                                        text: 'Three bodies of work made over the last few years — the coast, the rooms, and the people who live by them.',
+                                        text: 'Three bodies of work made over the last few years: the coast, the rooms, and the people who live by them.',
                                     }),
                                 ],
                             }),
@@ -243,7 +243,7 @@ function statementBand(): Node {
             el('div', 'mx-auto w-full max-w-3xl', {
                 children: [
                     el('p', 'text-2xl font-normal leading-snug tracking-tight text-base-content @2xl:text-4xl', {
-                        text: 'I photograph slowly, in the light that is already there — and I wait for the moment a thing goes quiet enough to hold still.',
+                        text: 'I photograph slowly, in the light that is already there, and I wait for the moment a thing goes quiet enough to hold still.',
                     }),
                 ],
             }),
@@ -259,7 +259,7 @@ function commissionsBand(): Node {
             el('div', 'mx-auto flex w-full max-w-3xl flex-col gap-4', {
                 children: [
                     el('p', 'text-lg leading-relaxed text-base-content @2xl:text-xl', {
-                        text: 'Commissions and print sales by request — portraits, editorial, and a small edition of archival prints from each series.',
+                        text: 'Commissions and print sales by request: portraits, editorial, and a small edition of archival prints from each series.',
                     }),
                     el('a', 'inline-flex w-fit items-center gap-2 text-base font-semibold text-primary', {
                         attrs: { href: '/contact' },
@@ -289,7 +289,7 @@ const WORK: Node[] = [
                         { text: 'Series' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-secondary', {
-                        text: 'Complete bodies of work — landscape, still life and portrait. Each opens to the full series and a short note on where it was made.',
+                        text: 'Complete bodies of work: landscape, still life and portrait. Each opens to the full series and a short note on where it was made.',
                     }),
                 ],
             }),
@@ -389,10 +389,10 @@ const ABOUT: Node[] = [
                                 text: 'About Mara',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'I am a photographer working in portrait, landscape and still life. I make pictures slowly and in the light that is already there — I would rather wait an hour for the weather than change it afterwards.',
+                                text: 'I am a photographer working in portrait, landscape and still life. I make pictures slowly and in the light that is already there: I would rather wait an hour for the weather than change it afterwards.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'My work moves between the coast and the studio: long series made outdoors over a season, and quieter still lifes built from ordinary things on a windowsill. Whatever the subject, I am after the same moment — when a scene settles and goes still enough to hold.',
+                                text: 'My work moves between the coast and the studio: long series made outdoors over a season, and quieter still lifes built from ordinary things on a windowsill. Whatever the subject, I am after the same moment, when a scene settles and goes still enough to hold.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
                                 text: 'I shoot on film and digital, print in editions, and take on a small number of portrait and editorial commissions each year. Work has appeared in independent journals and gallery shows across the north.',
@@ -414,7 +414,7 @@ const ABOUT: Node[] = [
                                         text: 'Working in',
                                     }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Portraiture, landscape and still life — on film and digital, in natural light. Archival pigment prints in small editions.',
+                                        text: 'Portraiture, landscape and still life: on film and digital, in natural light. Archival pigment prints in small editions.',
                                     }),
                                 ],
                             }),
@@ -434,7 +434,7 @@ const CONTACT: Node[] = [
     contactSection({
         heading: 'Commissions & prints',
         intro: [
-            'I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind — the subject, roughly when, and where — and I will write back.',
+            'I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind (the subject, roughly when, and where) and I will write back.',
             'By appointment, on the north coast. Print orders ship worldwide.',
         ],
         submitLabel: 'Write to the studio',
@@ -448,7 +448,7 @@ const AUTHORS = [
     {
         slug: 'mara-ilic',
         displayName: 'Mara Ilić',
-        bio: 'Mara Ilić is a photographer working in portrait, landscape and still life — slowly, in natural light, between the coast and the studio. She prints in small editions and takes a handful of commissions each year.',
+        bio: 'Mara Ilić is a photographer working in portrait, landscape and still life: slowly, in natural light, between the coast and the studio. She prints in small editions and takes a handful of commissions each year.',
         avatarAssetId: 'silver-portrait',
     },
 ];
@@ -473,19 +473,19 @@ const CONTENT = [
         body: {
             title: 'Tideline',
             excerpt:
-                'One winter along a northern coast, photographed at the hour the light arrives — the line where water meets land, redrawn by every tide.',
+                'One winter along a northern coast, photographed at the hour the light arrives: the line where water meets land, redrawn by every tide.',
             featuredImage: { $asset: 'silver-tideline' },
             body: {
                 type: 'doc',
                 content: [
                     para('A series of thirty-one photographs, made over a single winter on a stretch of northern coast a few miles long. Medium-format film, always at first light, always at low water.'),
                     h2('Where'),
-                    para('The same beach, walked at dawn through December, January and February. Nothing dramatic happens there — no cliffs, no surf. Just a wide, patient flat of sand and a grey sea that comes and goes twice a day, leaving a new drawing behind each time.'),
+                    para('The same beach, walked at dawn through December, January and February. Nothing dramatic happens there: no cliffs, no surf. Just a wide, patient flat of sand and a grey sea that comes and goes twice a day, leaving a new drawing behind each time.'),
                     h2('What it is about'),
-                    para('It is about the tideline itself: the exact edge where the water has just been, marked in weed, foam and the small architecture of what the sea sorts and leaves. That line is never the same twice, and it never lasts — the next tide erases it and draws another. I wanted a record of a few of them, held still.'),
+                    para('It is about the tideline itself: the exact edge where the water has just been, marked in weed, foam and the small architecture of what the sea sorts and leaves. That line is never the same twice, and it never lasts, the next tide erases it and draws another. I wanted a record of a few of them, held still.'),
                     para('I worked slowly on purpose. A tripod, a light meter, and the discipline of waiting for the flat minute before the wind picks up and the surface breaks. Most mornings I made one frame, sometimes none. The series is what survived that patience.'),
                     h2('The prints'),
-                    para('Tideline prints as a set of six or as single plates, on cotton rag in an edition of fifteen. The tonal range is narrow by design — a coast this quiet has no place for a black or a bright white, only the long grey in between.'),
+                    para('Tideline prints as a set of six or as single plates, on cotton rag in an edition of fifteen. The tonal range is narrow by design: a coast this quiet has no place for a black or a bright white, only the long grey in between.'),
                 ],
             },
         },
@@ -500,19 +500,19 @@ const CONTENT = [
         body: {
             title: 'Quiet Rooms',
             excerpt:
-                'Still lifes made in borrowed houses, from the ordinary things people leave behind — a study of domestic light and the objects that hold a life.',
+                'Still lifes made in borrowed houses, from the ordinary things people leave behind: a study of domestic light and the objects that hold a life.',
             featuredImage: { $asset: 'silver-quiet-rooms' },
             body: {
                 type: 'doc',
                 content: [
-                    para('An ongoing series of still lifes, each made inside a house I did not live in — rentals, a friend’s empty flat, a family home between owners — using only what was already on the shelves.'),
+                    para('An ongoing series of still lifes, each made inside a house I did not live in (rentals, a friend’s empty flat, a family home between owners) using only what was already on the shelves.'),
                     h2('Where'),
-                    para('Wherever I was staying. The rule was simple: nothing brought in, nothing bought. A windowsill, an afternoon, and whatever the last person left — a glass, a folded cloth, three pears going soft, a comb. I moved things by inches and let the light do the rest.'),
+                    para('Wherever I was staying. The rule was simple: nothing brought in, nothing bought. A windowsill, an afternoon, and whatever the last person left, a glass, a folded cloth, three pears going soft, a comb. I moved things by inches and let the light do the rest.'),
                     h2('What it is about'),
                     para('It is about how ordinary objects hold a life once the person is gone from the room. A still life has always been a quiet argument about time, and a borrowed house makes that argument for you: everything in it is a small evidence of someone, arranged without meaning to be looked at.'),
                     para('The light is the real subject. I only worked in the hour when the sun came in low and raking, when a plain object grows a long shadow and a cheap surface turns to something worth photographing. When the light went flat, I stopped.'),
                     h2('The prints'),
-                    para('Quiet Rooms is printed small — the plates are close to life size, the way you would actually stand to look at the things themselves. An edition of twenty, on warm-toned rag.'),
+                    para('Quiet Rooms is printed small: the plates are close to life size, the way you would actually stand to look at the things themselves. An edition of twenty, on warm-toned rag.'),
                 ],
             },
         },
@@ -527,16 +527,16 @@ const CONTENT = [
         body: {
             title: 'North Faces',
             excerpt:
-                'Portraits of people who work outdoors, made where they work and in the weather they work in — a fisherman, a shepherd, a keeper of a light.',
+                'Portraits of people who work outdoors, made where they work and in the weather they work in: a fisherman, a shepherd, a keeper of a light.',
             featuredImage: { $asset: 'silver-north-faces' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A set of eighteen portraits of people whose work keeps them outside — made on their ground, in their own light, with no studio and no retouching.'),
+                    para('A set of eighteen portraits of people whose work keeps them outside: made on their ground, in their own light, with no studio and no retouching.'),
                     h2('Where'),
                     para('Harbours, hill farms, a lighthouse, a salt works. I went to them rather than asking them to come to me, because a person stands differently on the ground they know. Each sitting took an afternoon: a long conversation first, a few frames near the end, once they had forgotten the camera was there.'),
                     h2('What it is about'),
-                    para('It is about weather written into a face — the particular composure of people who have spent years reading the sky for a living. I did not want anyone smiling for me, and I did not want anyone braced. Just the ordinary, off-camera expression of someone thinking about the tide, or the ewe, or the walk home.'),
+                    para('It is about weather written into a face: the particular composure of people who have spent years reading the sky for a living. I did not want anyone smiling for me, and I did not want anyone braced. Just the ordinary, off-camera expression of someone thinking about the tide, or the ewe, or the walk home.'),
                     para('I shot into whatever light the day gave, and kept it. A flat grey sky is honest light for a working face; it hides nothing and flatters nothing, and that felt right for these particular people.'),
                     h2('The prints'),
                     para('North Faces prints large, at the scale of a real head, in an edition of ten. Each print carries the sitter’s first name and trade, and nothing else.'),
@@ -554,17 +554,17 @@ const CONTENT = [
         body: {
             title: 'Salt',
             excerpt:
-                'A near-white series made on the salt flats at harvest — texture, field and pale, with the horizon deliberately left out.',
+                'A near-white series made on the salt flats at harvest: texture, field and pale, with the horizon deliberately left out.',
             featuredImage: { $asset: 'silver-salt' },
             body: {
                 type: 'doc',
                 content: [
                     para('Twelve photographs made over three days at a working salt lagoon during the summer harvest, when the beds are raked and the pans crust white.'),
                     h2('Where'),
-                    para('A shallow coastal salt works, all straight lines and standing water. I photographed almost straight down, close in, so the pictures lose their scale — a cracked pan could be a foot across or a mile, and the eye cannot tell which.'),
+                    para('A shallow coastal salt works, all straight lines and standing water. I photographed almost straight down, close in, so the pictures lose their scale: a cracked pan could be a foot across or a mile, and the eye cannot tell which.'),
                     h2('What it is about'),
-                    para('It is about the edge of a photograph becoming pure field. With the horizon removed there is nowhere for the eye to rest and no obvious subject — only texture, tone and the faint grid the workers leave. I was interested in how little a landscape can hold and still be a landscape.'),
-                    para('The tonal range is almost gone by design: everything sits in the top of the scale, white on white, separated only by grain and the thinnest shadow. Printing it was the hard part — hold too much and it turns grey; hold too little and the surface disappears.'),
+                    para('It is about the edge of a photograph becoming pure field. With the horizon removed there is nowhere for the eye to rest and no obvious subject. Only texture, tone and the faint grid the workers leave. I was interested in how little a landscape can hold and still be a landscape.'),
+                    para('The tonal range is almost gone by design: everything sits in the top of the scale, white on white, separated only by grain and the thinnest shadow. Printing it was the hard part. Hold too much and it turns grey; hold too little and the surface disappears.'),
                     h2('The prints'),
                     para('Salt prints as a suite of four or as single large plates, on bright rag in an edition of twelve. It is meant to be hung where the wall behind it is white too.'),
                 ],
@@ -595,14 +595,14 @@ const SPEC: PortfolioSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'columns', showCta: false },
     seo: {
         home: {
-            title: 'Mara Ilić — photographer',
+            title: 'Mara Ilić: photographer',
             description:
-                'Mara Ilić is a photographer working in portrait, landscape and still life — selected series, a photographer’s statement, and how to commission work or buy a print.',
+                'Mara Ilić is a photographer working in portrait, landscape and still life: selected series, a photographer’s statement, and how to commission work or buy a print.',
         },
         about: {
-            title: 'About Mara Ilić — photographer',
+            title: 'About Mara Ilić: photographer',
             description:
-                'A photographer working slowly and in natural light, between the coast and the studio — portraiture, landscape and still life, printed in small editions.',
+                'A photographer working slowly and in natural light, between the coast and the studio: portraiture, landscape and still life, printed in small editions.',
         },
     },
     home: HOME,

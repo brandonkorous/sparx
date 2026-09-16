@@ -112,7 +112,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
           label: 'Add a list',
           icon: faPlus,
           onClick: create,
-          title: 'Build a list from scratch — hold Shift to open alongside, Alt for a new window',
+          title: 'Build a list from scratch. Hold Shift to open alongside, Alt for a new window',
         }}
         views={{
           target: '/commerce/fitment',
@@ -137,7 +137,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="Could not load your compatibility lists"
-            description="This is a problem reaching the server. Your lists are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your lists are unaffected. Nothing has been lost."
             onRetry={() => {
               void refetch();
             }}
@@ -151,13 +151,13 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="No lists match that"
-            description="Try part of the list's name or one of its levels — or clear the search to see them all."
+            description="Try part of the list's name or one of its levels, or clear the search to see them all."
           />
         ) : domains.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="No compatibility lists yet"
-            description="A compatibility list lets shoppers filter to just the products that fit what they own — a vehicle, a phone, a machine. Start from a ready-made list, or build your own."
+            description="A compatibility list lets shoppers filter to just the products that fit what they own: a vehicle, a phone, a machine. Start from a ready-made list, or build your own."
             actions={
               <EmptyStateActions>
                 <Button

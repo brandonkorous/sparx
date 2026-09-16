@@ -11,7 +11,7 @@ import { MASCOT_POSES } from '@piggles/mascot';
 export const runtime = 'nodejs';
 export const size = OG_SIZE;
 export const contentType = 'image/png';
-export const alt = `${PRODUCT.name} — the console you run your business from`;
+export const alt = `${PRODUCT.name}: the console you run your business from`;
 
 export default function Image() {
   return renderOg({

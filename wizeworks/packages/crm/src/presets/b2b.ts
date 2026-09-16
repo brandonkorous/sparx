@@ -33,7 +33,7 @@ interface TierDef {
 const WHOLESALE_TIERS: TierDef[] = [
   {
     name: 'Reseller',
-    description: 'Entry wholesale pricing for approved resellers — 10% off list, no minimum.',
+    description: 'Entry wholesale pricing for approved resellers: 10% off list, no minimum.',
     discountType: 'percentage',
     discountValue: 10,
     productScope: 'all',
@@ -41,7 +41,7 @@ const WHOLESALE_TIERS: TierDef[] = [
   },
   {
     name: 'Wholesale',
-    description: 'Standard wholesale pricing — 20% off list on orders of $500 or more.',
+    description: 'Standard wholesale pricing: 20% off list on orders of $500 or more.',
     discountType: 'percentage',
     discountValue: 20,
     productScope: 'all',
@@ -49,7 +49,7 @@ const WHOLESALE_TIERS: TierDef[] = [
   },
   {
     name: 'Distributor',
-    description: 'Volume distributor pricing — 30% off list on orders of $2,500 or more.',
+    description: 'Volume distributor pricing: 30% off list on orders of $2,500 or more.',
     discountType: 'percentage',
     discountValue: 30,
     productScope: 'all',
@@ -63,7 +63,7 @@ const wholesaleTiersPreset: ModulePreset = definePreset({
   kind: 'b2b-pricing',
   name: 'Wholesale pricing tiers',
   description:
-    'A graduated wholesale price book — Reseller, Wholesale, and Distributor tiers with deeper discounts at higher order minimums. Assign accounts to a tier to apply its pricing automatically at checkout.',
+    'A graduated wholesale price book: Reseller, Wholesale, and Distributor tiers with deeper discounts at higher order minimums. Assign accounts to a tier to apply its pricing automatically at checkout.',
   iconKey: 'layers',
   tags: ['b2b', 'wholesale', 'pricing', 'tiers'],
   summary: [

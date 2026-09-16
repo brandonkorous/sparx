@@ -165,7 +165,7 @@ const SCHEDULING = {
     {
       handle: 'strategy-consultation',
       name: 'Strategy consultation',
-      description: 'A complimentary 45-minute call to understand your situation and map where we can add the most value — no obligation.',
+      description: 'A complimentary 45-minute call to understand your situation and map where we can add the most value: no obligation.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -175,7 +175,7 @@ const SCHEDULING = {
     {
       handle: 'tax-strategy-review',
       name: 'Tax strategy review',
-      description: 'A working session on proactive, forward-looking tax planning — entity elections, timing, deductions and multi-year strategy.',
+      description: 'A working session on proactive, forward-looking tax planning: entity elections, timing, deductions and multi-year strategy.',
       durationMinutes: 60,
       priceCents: 45000,
       assignmentStrategy: 'customer_choice',
@@ -195,7 +195,7 @@ const SCHEDULING = {
     {
       handle: 'business-valuation-consult',
       name: 'Business valuation consult',
-      description: 'A defensible valuation conversation for a sale, buy-in, succession or estate — what the business is worth and why.',
+      description: 'A defensible valuation conversation for a sale, buy-in, succession or estate: what the business is worth and why.',
       durationMinutes: 60,
       priceCents: 75000,
       assignmentStrategy: 'customer_choice',
@@ -205,7 +205,7 @@ const SCHEDULING = {
     {
       handle: 'wealth-planning-consult',
       name: 'Wealth planning consult',
-      description: 'A personal-wealth session — investment structure, tax-efficient drawdown and a plan that ties your business and personal finances together.',
+      description: 'A personal-wealth session: investment structure, tax-efficient drawdown and a plan that ties your business and personal finances together.',
       durationMinutes: 60,
       priceCents: 50000,
       assignmentStrategy: 'customer_choice',
@@ -215,7 +215,7 @@ const SCHEDULING = {
     {
       handle: 'retirement-planning-consult',
       name: 'Retirement planning consult',
-      description: 'Retirement and succession modeling — contribution strategy, exit timing and the income you’ll actually live on.',
+      description: 'Retirement and succession modeling: contribution strategy, exit timing and the income you’ll actually live on.',
       durationMinutes: 60,
       priceCents: 45000,
       assignmentStrategy: 'customer_choice',
@@ -225,7 +225,7 @@ const SCHEDULING = {
     {
       handle: 'entity-structuring-consult',
       name: 'Entity structuring consult',
-      description: 'The right structure for what’s next — S-corp vs. C-corp, holding companies and multi-entity design done for the long game.',
+      description: 'The right structure for what’s next: S-corp vs. C-corp, holding companies and multi-entity design done for the long game.',
       durationMinutes: 45,
       priceCents: 45000,
       assignmentStrategy: 'customer_choice',
@@ -241,7 +241,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, glass-walled boardroom at dusk over a city skyline',
     title: 'Advisory that works before the tax bill does',
-    sub: 'Proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners — built around where you’re going, not just what already happened.',
+    sub: 'Proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners: built around where you’re going, not just what already happened.',
     primary: { label: 'Book a strategy consultation', href: '/book' },
     secondary: { label: 'See how we work', href: '/book' },
     overlay: 'darker',
@@ -250,11 +250,11 @@ const HOME = [
     items: [
       {
         title: 'Proactive tax strategy',
-        body: 'We plan the year, not just file it — the moves that lower next April’s bill are made in the months before it, together.',
+        body: 'We plan the year, not just file it: the moves that lower next April’s bill are made in the months before it, together.',
       },
       {
         title: 'A dedicated CPA advisor',
-        body: 'You work with one senior advisor who knows your numbers and your goals — not a rotating desk and a portal ticket.',
+        body: 'You work with one senior advisor who knows your numbers and your goals, not a rotating desk and a portal ticket.',
       },
       {
         title: 'Quarterly business reviews',
@@ -282,22 +282,22 @@ const HOME = [
     alt: 'Advisors reviewing figures around a long table in soft light',
     heading: 'The advisory approach',
     body: [
-      'Most firms show up at tax time to record what already happened. We work the other way around — the strategy is set early, revisited every quarter, and measured against the goals you actually care about.',
+      'Most firms show up at tax time to record what already happened. We work the other way around: the strategy is set early, revisited every quarter, and measured against the goals you actually care about.',
       'The result is fewer surprises, a lower long-run tax burden, and a clear line of sight from this year’s decisions to where the business and your wealth are headed.',
     ],
     cta: { label: 'Book a strategy consultation', href: '/book' },
   }),
   teamRow({
     heading: 'Your advisory team',
-    intro: 'Book by name — you’ll work with the same advisor from the first call onward.',
+    intro: 'Book by name: you’ll work with the same advisor from the first call onward.',
     members: [
       { name: 'Elena Vasquez, CPA', role: 'Managing partner', image: url(IMG.elena), alt: 'Elena Vasquez, CPA and managing partner', bio: 'Tax strategy, entity structuring and valuation for founders and high earners.' },
-      { name: 'Marcus Bell, CPA', role: 'CFO advisory lead', image: url(IMG.marcus), alt: 'Marcus Bell, CPA and CFO advisory lead', bio: 'Outsourced-CFO guidance — forecasting, margins and the decisions behind them.' },
+      { name: 'Marcus Bell, CPA', role: 'CFO advisory lead', image: url(IMG.marcus), alt: 'Marcus Bell, CPA and CFO advisory lead', bio: 'Outsourced-CFO guidance: forecasting, margins and the decisions behind them.' },
       { name: 'Priya Anand, CFP', role: 'Wealth planning director', image: url(IMG.priya), alt: 'Priya Anand, CFP and wealth planning director', bio: 'Wealth, retirement and succession planning that ties business to personal.' },
     ],
   }),
   testimonial({
-    quote: 'They restructured our entities and rebuilt our tax plan in the first quarter. We kept an extra $180K last year — and for the first time I actually understand why.',
+    quote: 'They restructured our entities and rebuilt our tax plan in the first quarter. We kept an extra $180K last year, and for the first time I actually understand why.',
     attribution: 'Daniel R., founder of a $9M services firm',
     surface: 'primary',
   }),
@@ -327,7 +327,7 @@ const ABOUT = [
     heading: 'About Northpoint CPA',
     body: [
       'Northpoint CPA is a modern advisory and wealth practice for established businesses and the people who run them. We pair the rigor of a traditional CPA firm with the forward view of a CFO and the discipline of a private wealth office.',
-      'We took the parts of accounting that clients value — the strategy, the counsel, the person who knows their whole picture — and made them the whole relationship, not the afterthought at year-end.',
+      'We took the parts of accounting that clients value (the strategy, the counsel, the person who knows their whole picture) and made them the whole relationship, not the afterthought at year-end.',
     ],
     cta: { label: 'Book a strategy consultation', href: '/book' },
   }),
@@ -336,7 +336,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'Strategy first', body: 'Every engagement opens with a real conversation about the business, the numbers and where you want to be in three years.' },
-      { title: 'One advisor, whole picture', body: 'Your advisor holds the full view — tax, cash flow, valuation and personal wealth — so the advice is joined-up, never siloed.' },
+      { title: 'One advisor, whole picture', body: 'Your advisor holds the full view (tax, cash flow, valuation and personal wealth) so the advice is joined-up, never siloed.' },
       { title: 'Measured every quarter', body: 'We revisit the plan on a standing quarterly cadence, so strategy keeps pace with the business instead of drifting out of date.' },
     ],
   }),
@@ -356,7 +356,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your complimentary strategy call online — no phone tag.',
+    sub: 'See live availability and reserve your complimentary strategy call online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a strategy consultation', href: '/book' },
   }),
@@ -367,8 +367,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-accounting-advisory',
   name: 'Accounting (Advisory)',
   summary:
-    'A premium CPA advisory and wealth site — a deep-navy palette with a refined gold accent and a data-forward layout. Installs a working consultation-booking flow: a real menu of advisory sessions (tax strategy, CFO advisory, business valuation, wealth and retirement planning), three CPAs and advisors you book by name with their own hours, and a complimentary initial strategy call. Ships as "Northpoint CPA", a modern firm for established businesses and high earners.',
-  tagline: 'A premium, advisory-led template for CPA and wealth firms — book consultations from day one.',
+    'A premium CPA advisory and wealth site: a deep-navy palette with a refined gold accent and a data-forward layout. Installs a working consultation-booking flow: a real menu of advisory sessions (tax strategy, CFO advisory, business valuation, wealth and retirement planning), three CPAs and advisors you book by name with their own hours, and a complimentary initial strategy call. Ships as "Northpoint CPA", a modern firm for established businesses and high earners.',
+  tagline: 'A premium, advisory-led template for CPA and wealth firms. Book consultations from day one.',
   industry: 'Accounting',
   sortWeight: 63,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -377,9 +377,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Northpoint CPA — advisory-led accounting & wealth',
+      title: 'Northpoint CPA: advisory-led accounting & wealth',
       description:
-        'Northpoint CPA is a modern advisory and wealth firm — proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners. Book a strategy consultation online.',
+        'Northpoint CPA is a modern advisory and wealth firm: proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners. Book a strategy consultation online.',
     },
   },
   home: HOME,

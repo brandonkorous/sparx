@@ -138,7 +138,7 @@ function buildView(row: ProgressRow | null, readiness: SetupReadiness): SetupPro
     if (marked && satisfied === false) {
       discrepancy = 'This was marked done, but nothing in your account shows it.';
     } else if (!marked && !state?.skippedAt && satisfied === true) {
-      discrepancy = 'You have already done this somewhere else — tick it off.';
+      discrepancy = 'You have already done this somewhere else: tick it off.';
     }
     return {
       key: definition.key,

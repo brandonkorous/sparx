@@ -181,7 +181,7 @@ const SCHEDULING = {
       handle: 'event-consultation',
       name: 'Event consultation',
       description:
-        'A relaxed sit-down to shape your menu, service style, headcount and budget — no charge, no pressure.',
+        'A relaxed sit-down to shape your menu, service style, headcount and budget: no charge, no pressure.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -216,7 +216,7 @@ const SCHEDULING = {
       handle: 'corporate-event-consult',
       name: 'Corporate event consult',
       description:
-        'Plan catering for a launch, gala or company celebration — service levels, dietary needs and timing.',
+        'Plan catering for a launch, gala or company celebration: service levels, dietary needs and timing.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -227,7 +227,7 @@ const SCHEDULING = {
       handle: 'seasonal-menu-tasting',
       name: 'Seasonal menu tasting',
       description:
-        'Sample the season’s menu — the dishes at their peak right now — and build yours from what you love.',
+        'Sample the season’s menu (the dishes at their peak right now) and build yours from what you love.',
       durationMinutes: 90,
       priceCents: 5000,
       bufferAfterMin: 15,
@@ -239,7 +239,7 @@ const SCHEDULING = {
       handle: 'cocktail-reception-consult',
       name: 'Cocktail reception consult',
       description:
-        'Design a canapé and bar experience — passed bites, grazing stations and pairings for a standing crowd.',
+        'Design a canapé and bar experience: passed bites, grazing stations and pairings for a standing crowd.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -250,7 +250,7 @@ const SCHEDULING = {
       handle: 'large-event-consult',
       name: 'Large event consult',
       description:
-        'For 100+ guests — logistics, staffing, rentals and flow, mapped out with your lead coordinator.',
+        'For 100+ guests: logistics, staffing, rentals and flow, mapped out with your lead coordinator.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -266,7 +266,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A candlelit dinner table set for a seasonal plated event',
     title: 'Dinners worth dressing up for',
-    sub: 'Plated dinners, cocktail receptions and full-service weddings — seasonal menus, cooked from scratch and served like it matters.',
+    sub: 'Plated dinners, cocktail receptions and full-service weddings: seasonal menus, cooked from scratch and served like it matters.',
     primary: { label: 'Book a tasting', href: '/book' },
     secondary: { label: 'See our services', href: '/book' },
     overlay: 'darker',
@@ -279,11 +279,11 @@ const HOME = [
       },
       {
         title: 'Full-service, start to finish',
-        body: 'Chefs, servers, bar, rentals and cleanup — you host and enjoy your own party, we handle the rest.',
+        body: 'Chefs, servers, bar, rentals and cleanup. You host and enjoy your own party, we handle the rest.',
       },
       {
         title: 'Every guest looked after',
-        body: 'Vegetarian, vegan, gluten-free and allergy-aware plates, planned in from the start — never an afterthought.',
+        body: 'Vegetarian, vegan, gluten-free and allergy-aware plates, planned in from the start, never an afterthought.',
       },
       {
         title: 'Weddings & corporate',
@@ -293,11 +293,11 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Tastings & consultations',
-    intro: 'Every event starts here. Book a tasting or a consultation and we’ll build your menu together — the catering is quoted after, once it’s exactly right.',
+    intro: 'Every event starts here. Book a tasting or a consultation and we’ll build your menu together: the catering is quoted after, once it’s exactly right.',
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Event consultation', priceCents: 0, durationMin: 45, desc: 'Shape your menu, style and budget — no charge.' },
+      { name: 'Event consultation', priceCents: 0, durationMin: 45, desc: 'Shape your menu, style and budget: no charge.' },
       { name: 'Wedding tasting', priceCents: 5000, durationMin: 90, desc: 'Taste your wedding menu, course by course.' },
       { name: 'Seasonal menu tasting', priceCents: 5000, durationMin: 90, desc: 'Sample the season’s dishes at their peak.' },
       { name: 'Cocktail reception consult', priceCents: 0, durationMin: 45, desc: 'Design canapés, stations and the bar.' },
@@ -310,7 +310,7 @@ const HOME = [
     heading: 'Cooked from scratch, in season',
     body: [
       'Saffron & Sage started in a home kitchen with one rule we’ve never broken: cook with what’s in season, from people we know, and make it taste like someone cared.',
-      'Nothing arrives pre-made. We build each event’s menu around the week it happens — so a spring wedding and an autumn gala never taste the same, and both taste like the moment they’re in.',
+      'Nothing arrives pre-made. We build each event’s menu around the week it happens, so a spring wedding and an autumn gala never taste the same, and both taste like the moment they’re in.',
     ],
     cta: { label: 'Book a tasting', href: '/book' },
   }),
@@ -356,7 +356,7 @@ const ABOUT = [
     alt: 'A long harvest table dressed for a wedding reception',
     heading: 'About Saffron & Sage',
     body: [
-      'We’re an events kitchen built for the occasions that matter — weddings, milestones, launches and the quiet private dinners in between. Warm, seasonal food, served with the kind of care you’d give your own guests.',
+      'We’re an events kitchen built for the occasions that matter: weddings, milestones, launches and the quiet private dinners in between. Warm, seasonal food, served with the kind of care you’d give your own guests.',
       'Every event begins with a real conversation. We learn who’s coming, what they love and what they can’t eat, then design a menu around your day and the season it lands in. No packages off a shelf.',
     ],
     cta: { label: 'Book a tasting', href: '/book' },
@@ -366,7 +366,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'A tasting first', body: 'You taste before you commit. We sit down, sample the menu and shape it together until it’s exactly your event.' },
-      { title: 'Sourced with intention', body: 'Seasonal produce, local farms and honest ingredients — the short list of things worth building a menu around.' },
+      { title: 'Sourced with intention', body: 'Seasonal produce, local farms and honest ingredients: the short list of things worth building a menu around.' },
       { title: 'Handled end to end', body: 'Staffing, rentals, timing and cleanup are ours to manage, so on the day you get to be a guest at your own table.' },
     ],
   }),
@@ -386,7 +386,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your tasting or consultation online — no phone tag.',
+    sub: 'See live availability and reserve your tasting or consultation online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a tasting', href: '/book' },
   }),
@@ -397,8 +397,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-catering-events',
   name: 'Catering (Events & Weddings)',
   summary:
-    'An elegant events-and-wedding catering site — a warm-cream palette, a deep saffron primary and a sage accent under a Fraunces serif display, with seasonal food photography carrying the page. Installs a working booking flow: tastings and consultations you book online, three event coordinators you book by name with their own hours, and a tasting-deposit policy credited to your event. Ships as "Saffron & Sage Catering", a from-scratch seasonal kitchen for weddings and events.',
-  tagline: 'A refined, seasonal template for events caterers — book tastings online from day one.',
+    'An elegant events-and-wedding catering site: a warm-cream palette, a deep saffron primary and a sage accent under a Fraunces serif display, with seasonal food photography carrying the page. Installs a working booking flow: tastings and consultations you book online, three event coordinators you book by name with their own hours, and a tasting-deposit policy credited to your event. Ships as "Saffron & Sage Catering", a from-scratch seasonal kitchen for weddings and events.',
+  tagline: 'A refined, seasonal template for events caterers. Book tastings online from day one.',
   industry: 'Catering',
   sortWeight: 58,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -407,7 +407,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Saffron & Sage Catering — events & wedding catering',
+      title: 'Saffron & Sage Catering: events & wedding catering',
       description:
         'Saffron & Sage is a from-scratch seasonal caterer for weddings, private dinners and corporate events in Portland. Book a tasting or consultation online.',
     },

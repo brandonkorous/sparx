@@ -14,7 +14,7 @@ export function DocFeedback() {
   if (voted) {
     return (
       <div className="docs-helpful">
-        <span>Thanks for the feedback{voted === 'down' ? ' — we’ll improve this page.' : '!'}</span>
+        <span>Thanks for the feedback{voted === 'down' ? '. We’ll improve this page.' : '!'}</span>
       </div>
     );
   }

@@ -35,14 +35,14 @@ export const PAGE_TEMPLATES: readonly PageTemplate[] = [
     id: 'product-default',
     name: 'Standard product page',
     description:
-      'Buy box, description, fitment, reviews, questions, and a related rail — the built-in product layout.',
+      'Buy box, description, fitment, reviews, questions, and a related rail: the built-in product layout.',
     binding: 'product',
     sections: DEFAULT_TEMPLATES['commerce:product'],
   },
   {
     id: 'collection-default',
     name: 'Standard collection page',
-    description: 'A collection header above the product grid — the built-in collection layout.',
+    description: 'A collection header above the product grid: the built-in collection layout.',
     binding: 'collection',
     sections: DEFAULT_TEMPLATES['commerce:collection'],
   },

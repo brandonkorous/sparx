@@ -123,7 +123,7 @@
     {
       "handle": "event-consultation",
       "name": "Event consultation",
-      "description": "A free, no-pressure call to talk headcount, budget, menu and logistics. Fifteen guests or five hundred — we’ll map it out.",
+      "description": "A free, no-pressure call to talk headcount, budget, menu and logistics. Fifteen guests or five hundred: we’ll map it out.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -140,7 +140,7 @@
     {
       "handle": "bbq-tasting",
       "name": "Signature BBQ tasting",
-      "description": "Come hungry. Brisket, pulled pork, ribs, chicken and the sides that go with them — taste the spread before you book the date.",
+      "description": "Come hungry. Brisket, pulled pork, ribs, chicken and the sides that go with them: taste the spread before you book the date.",
       "durationMinutes": 60,
       "priceCents": 4000,
       "assignmentStrategy": "customer_choice",
@@ -157,7 +157,7 @@
     {
       "handle": "backyard-party-consult",
       "name": "Backyard party consult",
-      "description": "Graduations, birthdays, family reunions — a relaxed sit-down to build a generous flat per-head spread that feeds the whole yard.",
+      "description": "Graduations, birthdays, family reunions: a relaxed sit-down to build a generous flat per-head spread that feeds the whole yard.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -174,7 +174,7 @@
     {
       "handle": "corporate-lunch-consult",
       "name": "Corporate lunch consult",
-      "description": "Team lunches, client meetings and office spreads — dependable drop-off or full-service, on time, with easy per-head pricing.",
+      "description": "Team lunches, client meetings and office spreads: dependable drop-off or full-service, on time, with easy per-head pricing.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -208,7 +208,7 @@
     {
       "handle": "game-day-package-consult",
       "name": "Game-day package consult",
-      "description": "Wings, sliders, brisket nachos and a cooler’s worth of sides — plan the tailgate or watch-party spread that keeps everyone fed.",
+      "description": "Wings, sliders, brisket nachos and a cooler’s worth of sides: plan the tailgate or watch-party spread that keeps everyone fed.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -225,7 +225,7 @@
     {
       "handle": "large-event-consult",
       "name": "Large event consult",
-      "description": "Weddings, company picnics and festivals from 100 guests up — full-service catering, staffing and timing planned end to end.",
+      "description": "Weddings, company picnics and festivals from 100 guests up: full-service catering, staffing and timing planned end to end.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

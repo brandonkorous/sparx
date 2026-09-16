@@ -126,7 +126,7 @@
     {
       "handle": "taper-fade",
       "name": "Taper fade",
-      "description": "A gradual taper around the ears and neckline — sharp, but a touch more grown-in.",
+      "description": "A gradual taper around the ears and neckline: sharp, but a touch more grown-in.",
       "durationMinutes": 45,
       "priceCents": 3800,
       "assignmentStrategy": "customer_choice",
@@ -143,7 +143,7 @@
     {
       "handle": "scissor-cut",
       "name": "Scissor cut",
-      "description": "A scissor-over-comb cut for length and texture on top — no clippers, all shape.",
+      "description": "A scissor-over-comb cut for length and texture on top: no clippers, all shape.",
       "durationMinutes": 45,
       "priceCents": 4200,
       "assignmentStrategy": "customer_choice",
@@ -177,7 +177,7 @@
     {
       "handle": "cut-beard",
       "name": "Cut + beard",
-      "description": "The full reset — a fresh cut and a shaped, lined-up beard in one sitting.",
+      "description": "The full reset: a fresh cut and a shaped, lined-up beard in one sitting.",
       "durationMinutes": 60,
       "priceCents": 5500,
       "bufferAfterMin": 5,
@@ -195,7 +195,7 @@
     {
       "handle": "kids-cut",
       "name": "Kids cut",
-      "description": "A quick, easy cut for the under-12s — in the chair, cleaned up and out the door.",
+      "description": "A quick, easy cut for the under-12s: in the chair, cleaned up and out the door.",
       "durationMinutes": 30,
       "priceCents": 2800,
       "assignmentStrategy": "any_available",
@@ -212,7 +212,7 @@
     {
       "handle": "buzz-hot-towel",
       "name": "Buzz + hot towel",
-      "description": "A one-length buzz finished with a hot-towel neck shave — fast, clean, done right.",
+      "description": "A one-length buzz finished with a hot-towel neck shave: fast, clean, done right.",
       "durationMinutes": 30,
       "priceCents": 3000,
       "assignmentStrategy": "any_available",

@@ -15,7 +15,7 @@
     {
       "handle": "safety",
       "name": "Safety",
-      "description": "PPE — gloves, eye protection and more.",
+      "description": "PPE: gloves, eye protection and more.",
       "featured": true
     },
     {
@@ -97,7 +97,7 @@
     {
       "handle": "grade-8-fastener-assortment",
       "title": "Grade 8 Fastener Assortment Box",
-      "description": "500-piece assortment of zinc-plated hex bolts, nuts and washers in the sizes a shop reaches for daily — 1/4\" through 1/2\", coarse thread — in a labelled sectioned case. MOQ 1 box. Pick Grade 5 for general assembly or Grade 8 where the load matters.",
+      "description": "500-piece assortment of zinc-plated hex bolts, nuts and washers in the sizes a shop reaches for daily (1/4\" through 1/2\", coarse thread) in a labelled sectioned case. MOQ 1 box. Pick Grade 5 for general assembly or Grade 8 where the load matters.",
       "status": "active",
       "productType": "Fasteners",
       "vendor": "Ironworks Supply Co.",
@@ -149,8 +149,8 @@
     },
     {
       "handle": "cut-off-wheels-box",
-      "title": "Cut-Off Wheels, 4½ in — Box of 25",
-      "description": "Type 1 metal cut-off wheels, 4½\" x .045\" x 7/8\" arbor, aluminium-oxide grain for clean, fast cuts in steel and stainless. Box of 25. MOQ 4 boxes — buy the case and keep the grinders fed.",
+      "title": "Cut-Off Wheels, 4½ in: Box of 25",
+      "description": "Type 1 metal cut-off wheels, 4½\" x .045\" x 7/8\" arbor, aluminium-oxide grain for clean, fast cuts in steel and stainless. Box of 25. MOQ 4 boxes: buy the case and keep the grinders fed.",
       "status": "active",
       "productType": "Abrasives",
       "vendor": "Ironworks Supply Co.",
@@ -171,13 +171,13 @@
         {
           "assetId": "prod-cutoff",
           "isPrimary": true,
-          "alt": "Cut-Off Wheels, 4½ in — Box of 25"
+          "alt": "Cut-Off Wheels, 4½ in: Box of 25"
         }
       ]
     },
     {
       "handle": "grinding-wheels-box",
-      "title": "Grinding Wheels, 4½ in — Box of 25",
+      "title": "Grinding Wheels, 4½ in: Box of 25",
       "description": "Type 27 depressed-centre grinding wheels, 4½\" x 1/4\" x 7/8\" arbor, for weld dressing and heavy stock removal on steel. Box of 25. MOQ 2 boxes. The everyday wheel a fab shop burns through.",
       "status": "active",
       "productType": "Abrasives",
@@ -199,14 +199,14 @@
         {
           "assetId": "prod-grinding",
           "isPrimary": true,
-          "alt": "Grinding Wheels, 4½ in — Box of 25"
+          "alt": "Grinding Wheels, 4½ in: Box of 25"
         }
       ]
     },
     {
       "handle": "nitrile-gloves-case",
-      "title": "Nitrile Gloves, 6-mil — Case of 1000",
-      "description": "Heavy 6-mil powder-free nitrile gloves with a textured grip — the disposable that holds up to solvents, oils and shop grime without tearing. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size.",
+      "title": "Nitrile Gloves, 6-mil: Case of 1000",
+      "description": "Heavy 6-mil powder-free nitrile gloves with a textured grip: the disposable that holds up to solvents, oils and shop grime without tearing. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size.",
       "status": "active",
       "productType": "Safety",
       "vendor": "Ironworks Supply Co.",
@@ -269,8 +269,8 @@
     },
     {
       "handle": "safety-glasses-case",
-      "title": "Anti-Fog Safety Glasses — Case of 12",
-      "description": "Clear anti-fog, anti-scratch safety glasses rated ANSI Z87.1, with a wraparound lens and soft nose bridge crews will actually keep on. Case of 12. MOQ 2 cases — enough to kit out a shift and stock the spares drawer.",
+      "title": "Anti-Fog Safety Glasses: Case of 12",
+      "description": "Clear anti-fog, anti-scratch safety glasses rated ANSI Z87.1, with a wraparound lens and soft nose bridge crews will actually keep on. Case of 12. MOQ 2 cases: enough to kit out a shift and stock the spares drawer.",
       "status": "active",
       "productType": "Safety",
       "vendor": "Ironworks Supply Co.",
@@ -291,14 +291,14 @@
         {
           "assetId": "prod-glasses",
           "isPrimary": true,
-          "alt": "Anti-Fog Safety Glasses — Case of 12"
+          "alt": "Anti-Fog Safety Glasses: Case of 12"
         }
       ]
     },
     {
       "handle": "shop-rags-bale",
-      "title": "Reclaimed Cotton Shop Rags — 25 lb Bale",
-      "description": "Washed, lint-low reclaimed cotton wipers in a compressed 25 lb bale — the workhorse rag for solvents, spills and general clean-up. MOQ 1 bale. Cheaper by the pound than paper and it does not fall apart on the first wipe.",
+      "title": "Reclaimed Cotton Shop Rags: 25 lb Bale",
+      "description": "Washed, lint-low reclaimed cotton wipers in a compressed 25 lb bale: the workhorse rag for solvents, spills and general clean-up. MOQ 1 bale. Cheaper by the pound than paper and it does not fall apart on the first wipe.",
       "status": "active",
       "productType": "Consumables",
       "vendor": "Ironworks Supply Co.",
@@ -319,14 +319,14 @@
         {
           "assetId": "prod-rags",
           "isPrimary": true,
-          "alt": "Reclaimed Cotton Shop Rags — 25 lb Bale"
+          "alt": "Reclaimed Cotton Shop Rags: 25 lb Bale"
         }
       ]
     },
     {
       "handle": "cable-ties-bag",
-      "title": "Cable Ties — Bag of 1000",
-      "description": "UV-stabilised black nylon cable ties, 50 lb tensile, in a bulk bag of 1000 — for loom work, bundling and a hundred fixes a day. MOQ 1 bag. Choose the length your work calls for.",
+      "title": "Cable Ties: Bag of 1000",
+      "description": "UV-stabilised black nylon cable ties, 50 lb tensile, in a bulk bag of 1000, for loom work, bundling and a hundred fixes a day. MOQ 1 bag. Choose the length your work calls for.",
       "status": "active",
       "productType": "Consumables",
       "vendor": "Ironworks Supply Co.",
@@ -378,8 +378,8 @@
     },
     {
       "handle": "threadlocker-case",
-      "title": "Medium-Strength Threadlocker — Case of 10",
-      "description": "Blue medium-strength anaerobic threadlocker in 10 mL bottles, a case of 10 — locks and seals fasteners against vibration yet backs out with hand tools for service. MOQ 1 case. The blue bottle every toolbox needs.",
+      "title": "Medium-Strength Threadlocker: Case of 10",
+      "description": "Blue medium-strength anaerobic threadlocker in 10 mL bottles, a case of 10: locks and seals fasteners against vibration yet backs out with hand tools for service. MOQ 1 case. The blue bottle every toolbox needs.",
       "status": "active",
       "productType": "Consumables",
       "vendor": "Ironworks Supply Co.",
@@ -400,14 +400,14 @@
         {
           "assetId": "prod-threadlocker",
           "isPrimary": true,
-          "alt": "Medium-Strength Threadlocker — Case of 10"
+          "alt": "Medium-Strength Threadlocker: Case of 10"
         }
       ]
     },
     {
       "handle": "duct-tape-case",
-      "title": "Industrial Cloth Duct Tape — Case of 24",
-      "description": "11-mil silver cloth duct tape, 2\" x 60 yd, a case of 24 rolls — a strong, hand-tearable, weather-resistant tape for seaming, bundling and the fix that has to hold today. MOQ 1 case. Buy the case; you always need more.",
+      "title": "Industrial Cloth Duct Tape: Case of 24",
+      "description": "11-mil silver cloth duct tape, 2\" x 60 yd, a case of 24 rolls: a strong, hand-tearable, weather-resistant tape for seaming, bundling and the fix that has to hold today. MOQ 1 case. Buy the case; you always need more.",
       "status": "active",
       "productType": "Consumables",
       "vendor": "Ironworks Supply Co.",
@@ -428,14 +428,14 @@
         {
           "assetId": "prod-ducttape",
           "isPrimary": true,
-          "alt": "Industrial Cloth Duct Tape — Case of 24"
+          "alt": "Industrial Cloth Duct Tape: Case of 24"
         }
       ]
     },
     {
       "handle": "mro-starter-kit",
       "title": "MRO Shop Starter Kit",
-      "description": "A curated kit of the consumables a new shop or satellite site runs out of first — a fastener assortment, cut-off wheels, nitrile gloves, shop rags, cable ties and threadlocker, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a floor from empty.",
+      "description": "A curated kit of the consumables a new shop or satellite site runs out of first: a fastener assortment, cut-off wheels, nitrile gloves, shop rags, cable ties and threadlocker, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a floor from empty.",
       "status": "active",
       "productType": "Consumables",
       "vendor": "Ironworks Supply Co.",
@@ -443,7 +443,7 @@
       "categoryHandles": ["consumables"],
       "collectionHandles": ["new-in", "shop-essentials"],
       "seoTitle": "MRO Shop Starter Kit | Ironworks Supply",
-      "seoDescription": "A curated starter kit of essential MRO consumables — fasteners, abrasives, PPE, rags and more, priced below the sum.",
+      "seoDescription": "A curated starter kit of essential MRO consumables: fasteners, abrasives, PPE, rags and more, priced below the sum.",
       "variants": [
         {
           "sku": "IWS-KIT-MRO-STARTER",

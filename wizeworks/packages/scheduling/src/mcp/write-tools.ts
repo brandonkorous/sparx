@@ -29,7 +29,7 @@ import type { McpToolDefinition } from './registry';
 export const createBookingTool: McpToolDefinition = {
   name: 'create_booking',
   description:
-    'Create a booking for a service at a start time (ISO-8601). The engine allocates the required resources per the service strategy and rejects a time that is no longer free (SLOT_UNAVAILABLE) — re-check get_scheduling_availability first. Pass customerId for a known customer, or attendees for a class/group.',
+    'Create a booking for a service at a start time (ISO-8601). The engine allocates the required resources per the service strategy and rejects a time that is no longer free (SLOT_UNAVAILABLE): re-check get_scheduling_availability first. Pass customerId for a known customer, or attendees for a class/group.',
   scope: 'write:scheduling',
   confirmation: true,
   input: CreateBookingInput,
@@ -66,7 +66,7 @@ export const cancelBookingTool: McpToolDefinition = {
 export const createServiceTool: McpToolDefinition = {
   name: 'create_scheduling_service',
   description:
-    'Create a bookable SERVICE — the thing customers book (appointment, class, reservation, or rental). At minimum set `name` and `durationMinutes`; `priceCents` (0 = free), `capacity` (>1 for a class roster), `bookableOnline`, and `requiresApproval` tune it. Pass `propertyId` to scope the service to one site, or omit for a tenant-wide service. This is what makes a site’s /book page show something — an agent setting up a tenant defines its bookable services here.',
+    'Create a bookable SERVICE: the thing customers book (appointment, class, reservation, or rental). At minimum set `name` and `durationMinutes`; `priceCents` (0 = free), `capacity` (>1 for a class roster), `bookableOnline`, and `requiresApproval` tune it. Pass `propertyId` to scope the service to one site, or omit for a tenant-wide service. This is what makes a site’s /book page show something: an agent setting up a tenant defines its bookable services here.',
   scope: 'write:scheduling',
   confirmation: true,
   input: CreateServiceInput,
@@ -76,7 +76,7 @@ export const createServiceTool: McpToolDefinition = {
 export const updateServiceTool: McpToolDefinition = {
   name: 'update_scheduling_service',
   description:
-    'Update a bookable service by `id` — any field (name, duration, price, capacity, bookableOnline, isActive, …). Only the fields you pass change; omit the rest.',
+    'Update a bookable service by `id`: any field (name, duration, price, capacity, bookableOnline, isActive, …). Only the fields you pass change; omit the rest.',
   scope: 'write:scheduling',
   confirmation: true,
   input: UpdateServiceInput,
@@ -86,7 +86,7 @@ export const updateServiceTool: McpToolDefinition = {
 export const deleteServiceTool: McpToolDefinition = {
   name: 'delete_scheduling_service',
   description:
-    'Soft-delete a bookable service by `id` — it stops being offered online, but its historical bookings keep their reference. Use update_scheduling_service with isActive:false to merely pause it instead.',
+    'Soft-delete a bookable service by `id`: it stops being offered online, but its historical bookings keep their reference. Use update_scheduling_service with isActive:false to merely pause it instead.',
   scope: 'write:scheduling',
   confirmation: true,
   input: z.object({ id: z.string().uuid() }),
@@ -109,7 +109,7 @@ export const deleteServiceTool: McpToolDefinition = {
 export const createResourceTool: McpToolDefinition = {
   name: 'create_scheduling_resource',
   description:
-    'Create a bookable RESOURCE — the staff member, room, table, vehicle, or piece of equipment a booking actually occupies. Set `kind` and `name`; `timezone` (IANA, e.g. "America/Denver") should match where the work happens, since weekly hours are read in the resource\'s own zone. Services with no explicit requirements look for a `staff` resource, so that is the kind to create first. A new resource has NO hours yet — follow with set_resource_hours or it will never be offered.',
+    'Create a bookable RESOURCE: the staff member, room, table, vehicle, or piece of equipment a booking actually occupies. Set `kind` and `name`; `timezone` (IANA, e.g. "America/Denver") should match where the work happens, since weekly hours are read in the resource\'s own zone. Services with no explicit requirements look for a `staff` resource, so that is the kind to create first. A new resource has NO hours yet: follow with set_resource_hours or it will never be offered.',
   scope: 'write:scheduling',
   confirmation: true,
   input: CreateResourceInput,
@@ -119,7 +119,7 @@ export const createResourceTool: McpToolDefinition = {
 export const updateResourceTool: McpToolDefinition = {
   name: 'update_scheduling_resource',
   description:
-    'Update a bookable resource by `id` — name, kind, timezone, capacity, skill tags, bookableOnline, isActive, and so on. Only the fields you pass change. Setting `isActive:false` or `bookableOnline:false` immediately withdraws every slot it was the only cover for.',
+    'Update a bookable resource by `id`: name, kind, timezone, capacity, skill tags, bookableOnline, isActive, and so on. Only the fields you pass change. Setting `isActive:false` or `bookableOnline:false` immediately withdraws every slot it was the only cover for.',
   scope: 'write:scheduling',
   confirmation: true,
   input: UpdateResourceInput,
@@ -149,7 +149,7 @@ export const deleteResourceTool: McpToolDefinition = {
 export const createLocationTool: McpToolDefinition = {
   name: 'create_scheduling_location',
   description:
-    'Create a business LOCATION — a physical place customers are served from (shop, clinic, studio, yard). Resources and services are then filed against it. `timezone` should be the IANA zone the place is in. Leave `propertyIds` empty unless the tenant runs several websites and this place only serves some of them.',
+    'Create a business LOCATION: a physical place customers are served from (shop, clinic, studio, yard). Resources and services are then filed against it. `timezone` should be the IANA zone the place is in. Leave `propertyIds` empty unless the tenant runs several websites and this place only serves some of them.',
   scope: 'write:scheduling',
   confirmation: true,
   input: CreateLocation,
@@ -159,7 +159,7 @@ export const createLocationTool: McpToolDefinition = {
 export const updateLocationTool: McpToolDefinition = {
   name: 'update_scheduling_location',
   description:
-    'Update a location by `id` — name, address, timezone, map coordinates, isActive, or which sites it serves. Only the fields you pass change. `isActive:false` is the safe way to retire a place: it stops being offered while every past booking keeps its history.',
+    'Update a location by `id`, name, address, timezone, map coordinates, isActive, or which sites it serves. Only the fields you pass change. `isActive:false` is the safe way to retire a place: it stops being offered while every past booking keeps its history.',
   scope: 'write:scheduling',
   confirmation: true,
   input: UpdateLocationInput,
@@ -169,7 +169,7 @@ export const updateLocationTool: McpToolDefinition = {
 export const deleteLocationTool: McpToolDefinition = {
   name: 'delete_scheduling_location',
   description:
-    'Delete a location by `id`. REFUSED (LOCATION_IN_USE) while any booking references it, because deleting would strip the place off that history — use update_scheduling_location with isActive:false instead. Resources and services filed there simply become unassigned.',
+    'Delete a location by `id`. REFUSED (LOCATION_IN_USE) while any booking references it, because deleting would strip the place off that history. Use update_scheduling_location with isActive:false instead. Resources and services filed there simply become unassigned.',
   scope: 'write:scheduling',
   confirmation: true,
   input: z.object({ id: z.string().uuid() }),
@@ -183,7 +183,7 @@ export const deleteLocationTool: McpToolDefinition = {
 export const setResourceHoursTool: McpToolDefinition = {
   name: 'set_resource_hours',
   description:
-    "Set a resource's recurring weekly hours — the days and times it is open for bookings. REPLACES the whole week in one call, so send every window you want to keep: `dayOfWeek` 0=Sunday..6=Saturday, `startMinute`/`endMinute` as minutes from local midnight (9am = 540, 5pm = 1020). Send two windows on a day to model a lunch break. An empty `windows` array clears the schedule and stops the resource being offered at all. Times are read in the RESOURCE's timezone; `validFrom`/`validTo` (YYYY-MM-DD) bound a seasonal schedule.",
+    "Set a resource's recurring weekly hours: the days and times it is open for bookings. REPLACES the whole week in one call, so send every window you want to keep: `dayOfWeek` 0=Sunday..6=Saturday, `startMinute`/`endMinute` as minutes from local midnight (9am = 540, 5pm = 1020). Send two windows on a day to model a lunch break. An empty `windows` array clears the schedule and stops the resource being offered at all. Times are read in the RESOURCE's timezone; `validFrom`/`validTo` (YYYY-MM-DD) bound a seasonal schedule.",
   scope: 'write:scheduling',
   confirmation: true,
   input: SetAvailabilityWindowsInput,

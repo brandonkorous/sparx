@@ -140,7 +140,7 @@
     {
       "handle": "fine-interior-consult",
       "name": "Fine interior consultation",
-      "description": "A considered plan for a high-end interior — color, sheen, meticulous prep and a flawless finish.",
+      "description": "A considered plan for a high-end interior: color, sheen, meticulous prep and a flawless finish.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -157,7 +157,7 @@
     {
       "handle": "cabinet-refinishing-consult",
       "name": "Cabinet refinishing consultation",
-      "description": "For kitchens and built-ins — we assess the joinery and plan a durable, hand-finished refinish.",
+      "description": "For kitchens and built-ins. We assess the joinery and plan a durable, hand-finished refinish.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -174,7 +174,7 @@
     {
       "handle": "specialty-finish-consult",
       "name": "Specialty finish consultation",
-      "description": "Limewash, Venetian plaster, metallics and hand-glazing — we plan the technique your room calls for.",
+      "description": "Limewash, Venetian plaster, metallics and hand-glazing. We plan the technique your room calls for.",
       "durationMinutes": 75,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "historic-home-consult",
       "name": "Historic-home consultation",
-      "description": "Period-sensitive work on older homes — careful stripping, repair and finishes true to the era.",
+      "description": "Period-sensitive work on older homes: careful stripping, repair and finishes true to the era.",
       "durationMinutes": 90,
       "priceCents": 18000,
       "assignmentStrategy": "customer_choice",
@@ -208,7 +208,7 @@
     {
       "handle": "woodwork-refinishing-consult",
       "name": "Woodwork refinishing consultation",
-      "description": "Trim, staircases, doors and panelling — stripped, repaired and refinished with a hand-rubbed touch.",
+      "description": "Trim, staircases, doors and panelling: stripped, repaired and refinished with a hand-rubbed touch.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -225,7 +225,7 @@
     {
       "handle": "color-finish-consult",
       "name": "Color & finish consultation",
-      "description": "An in-home session on palette, sheen and finish — samples on your walls, in your light.",
+      "description": "An in-home session on palette, sheen and finish: samples on your walls, in your light.",
       "durationMinutes": 60,
       "priceCents": 10000,
       "assignmentStrategy": "customer_choice",

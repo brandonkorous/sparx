@@ -194,7 +194,7 @@
     {
       "handle": "skin-consultation",
       "name": "Skin consultation",
-      "description": "A no-pressure sit-down to read your skin and map a plan — free, and yours to keep.",
+      "description": "A no-pressure sit-down to read your skin and map a plan: free, and yours to keep.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",

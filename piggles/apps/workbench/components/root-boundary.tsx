@@ -61,7 +61,7 @@ export class RootBoundary extends Component<{ children: ReactNode }, { failed: b
                 app. There is nothing to offer but a reload, so the honest thing
                 is to say what it will take with it. */}
             <p className="mt-2 text-base">
-              Something went wrong before the workbench finished loading. Reloading fixes it — your
+              Something went wrong before the workbench finished loading. Reloading fixes it. Your
               panels come back exactly as you left them, though anything you had typed and not saved
               will be gone.
             </p>

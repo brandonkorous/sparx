@@ -177,8 +177,8 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
               Add a sending address
             </Heading>
             <Text>
-              Use a domain you own so your email goes out from your own address — like
-              hello@yourbusiness.com — instead of a generic sparx one. After you add it, we give you
+              Use a domain you own so your email goes out from your own address (like
+              hello@yourbusiness.com) instead of a generic sparx one. After you add it, we give you
               a few records to put at your domain provider to prove it is yours.
             </Text>
           </div>
@@ -207,7 +207,7 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
               />
               {trimmed !== '' && !looksValid ? (
                 <FieldStatus status="error">
-                  Enter a domain like mail.yourbusiness.com — no https:// and no trailing slash.
+                  Enter a domain like mail.yourbusiness.com: no https:// and no trailing slash.
                 </FieldStatus>
               ) : (
                 <FieldDescription>
@@ -243,7 +243,7 @@ function AddSendingAddress({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection title="What happens after this">
             <Text className="text-sm">
-              We give you a short list of records to add at your domain provider — the company you
+              We give you a short list of records to add at your domain provider: the company you
               bought the domain from, such as GoDaddy, Namecheap or Cloudflare. Once they are in,
               press Check now and the address becomes ready to send from.
             </Text>
@@ -472,14 +472,14 @@ function ManageSendingAddress({ ctx, id }: { ctx: SurfaceContext; id: string }) 
           {domain.dnsRecords.length > 0 ? (
             <FormSection
               title="Records to add at your domain provider"
-              description="Your domain provider is whoever you bought the domain from — GoDaddy, Namecheap, Cloudflare and so on. Find the DNS or Records screen there and add these exactly as shown to prove you own this address."
+              description="Your domain provider is whoever you bought the domain from: GoDaddy, Namecheap, Cloudflare and so on. Find the DNS or Records screen there and add these exactly as shown to prove you own this address."
             >
               {domain.dnsRecords.map((record) => (
                 <RecordBlock key={`${record.recordType}-${record.name}`} record={record} />
               ))}
 
               <Text className="text-sm">
-                Changes at a domain provider take a few minutes to spread across the internet —
+                Changes at a domain provider take a few minutes to spread across the internet:
                 occasionally up to a few hours. If Check now does not find them straight away, it is
                 worth waiting and trying again before changing anything.
               </Text>

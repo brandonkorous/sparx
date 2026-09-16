@@ -193,7 +193,7 @@ const SCHEDULING = {
       handle: 'site-assessment',
       name: 'Home site assessment',
       description:
-        'An electrician walks your home, checks your panel and wiring, and maps out what your project needs — the honest starting point for any bigger job.',
+        'An electrician walks your home, checks your panel and wiring, and maps out what your project needs: the honest starting point for any bigger job.',
       durationMinutes: 90,
       priceCents: 9900,
       assignmentStrategy: 'any_available',
@@ -217,7 +217,7 @@ const SCHEDULING = {
       handle: 'free-estimate',
       name: 'Free estimate',
       description:
-        'Have a specific job in mind? Book a no-cost visit and leave with a clear, written price — no surprises, no pressure.',
+        'Have a specific job in mind? Book a no-cost visit and leave with a clear, written price: no surprises, no pressure.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -230,7 +230,7 @@ const SCHEDULING = {
       handle: 'smart-home-consult',
       name: 'Smart-home & automation consult',
       description:
-        'Lighting, switches, sensors and hubs that actually talk to each other. We plan a setup that fits how you live — plainly explained, nothing over-sold.',
+        'Lighting, switches, sensors and hubs that actually talk to each other. We plan a setup that fits how you live: plainly explained, nothing over-sold.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -256,7 +256,7 @@ const SCHEDULING = {
       handle: 'solar-battery-hookup-consult',
       name: 'Solar & battery hookup consult',
       description:
-        'Adding panels or a home battery? We handle the electrical side — the connection, the transfer switch and the inspection — and explain the rebates you qualify for.',
+        'Adding panels or a home battery? We handle the electrical side (the connection, the transfer switch and the inspection) and explain the rebates you qualify for.',
       durationMinutes: 90,
       priceCents: 4900,
       assignmentStrategy: 'any_available',
@@ -286,7 +286,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Wire your home for what’s next',
-    sub: 'EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades — done by certified electricians, for homes and businesses. Book a site assessment and see exactly what your place needs.',
+    sub: 'EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades: done by certified electricians, for homes and businesses. Book a site assessment and see exactly what your place needs.',
     primary: { label: 'Book a site assessment', href: '/book' },
     secondary: { label: 'See visit types', href: '/book' },
     surface: 'primary',
@@ -295,7 +295,7 @@ const HOME = [
     items: [
       {
         title: 'Certified EV & panel specialists',
-        body: 'Wall chargers and breaker-panel upgrades are our core work — sized right, permitted, and inspected, so your home keeps up with your car.',
+        body: 'Wall chargers and breaker-panel upgrades are our core work: sized right, permitted, and inspected, so your home keeps up with your car.',
       },
       {
         title: 'Smart-home & solar, done right',
@@ -303,13 +303,13 @@ const HOME = [
       },
       {
         title: 'Rebates, permits & inspections handled',
-        body: 'We pull the permits, book the inspection, and walk you through the rebates you qualify for — residential or commercial, start to finish.',
+        body: 'We pull the permits, book the inspection, and walk you through the rebates you qualify for: residential or commercial, start to finish.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Book a visit',
-    intro: 'Every project starts with someone on-site. Pick a visit type to see live availability — many are free, and none commit you to anything.',
+    intro: 'Every project starts with someone on-site. Pick a visit type to see live availability: many are free, and none commit you to anything.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -317,7 +317,7 @@ const HOME = [
         name: 'EV charger install consult',
         priceCents: 0,
         durationMin: 45,
-        desc: 'Right-sized home charger, quoted on-site — free.',
+        desc: 'Right-sized home charger, quoted on-site: free.',
       },
       {
         name: 'Home site assessment',
@@ -345,7 +345,7 @@ const HOME = [
     alt: 'An electric car plugged into a wall-mounted home charger',
     heading: 'Is your home ready for an EV?',
     body: [
-      'Most homes can charge an electric car overnight — but only if the panel has room and the charger is wired to match your vehicle. Guess wrong and you get slow charging or a tripped breaker.',
+      'Most homes can charge an electric car overnight, but only if the panel has room and the charger is wired to match your vehicle. Guess wrong and you get slow charging or a tripped breaker.',
       'Our EV consult settles it in one visit: we check your panel’s spare capacity, measure the cable run to where you park, and quote a charger that fits. If the panel needs a little work first, you’ll know before you spend a cent.',
     ],
     cta: { label: 'Book an EV consult', href: '/book' },
@@ -366,14 +366,14 @@ const HOME = [
         role: 'Smart-home & solar specialist',
         image: url(IMG.theo),
         alt: 'Theo Marsh, smart-home and solar specialist',
-        bio: 'Automation, solar tie-ins and home batteries — the connected-home side of the business.',
+        bio: 'Automation, solar tie-ins and home batteries: the connected-home side of the business.',
       },
       {
         name: 'Ruben Diaz',
         role: 'Commercial electrician',
         image: url(IMG.ruben),
         alt: 'Ruben Diaz, commercial electrician',
-        bio: 'Fit-outs, tenant improvements and facility upgrades — the crewed commercial jobs.',
+        bio: 'Fit-outs, tenant improvements and facility upgrades: the crewed commercial jobs.',
       },
     ],
   }),
@@ -417,7 +417,7 @@ const ABOUT = [
     heading: 'About Voltline Electric',
     body: [
       'Voltline started with a simple frustration: too many homes and businesses were being wired for how things used to be, not for EVs, solar, batteries and everything now plugged into the wall. We built the kind of electrical company we wished we could hire.',
-      'We’re a small, certified crew that does the modern work well — chargers, panels, automation, solar tie-ins and commercial fit-outs — and we explain it in plain language, permits and inspections included. No jargon, no upsell, no surprises on the bill.',
+      'We’re a small, certified crew that does the modern work well (chargers, panels, automation, solar tie-ins and commercial fit-outs) and we explain it in plain language, permits and inspections included. No jargon, no upsell, no surprises on the bill.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
   }),
@@ -427,7 +427,7 @@ const ABOUT = [
     items: [
       {
         title: 'Assess before we quote',
-        body: 'Every job starts with someone on-site looking at your actual panel and wiring — so the price you get is the price it costs.',
+        body: 'Every job starts with someone on-site looking at your actual panel and wiring, so the price you get is the price it costs.',
       },
       {
         title: 'Code, permits & inspections',
@@ -455,7 +455,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve an electrician online — pick a visit type, a day and a time, no phone tag.',
+    sub: 'See live availability and reserve an electrician online. Pick a visit type, a day and a time, no phone tag.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -466,8 +466,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-electrician-modern',
   name: 'Electrician (Modern)',
   summary:
-    'A sleek, high-tech electrical-contractor site — a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as "Voltline Electric".',
-  tagline: 'A modern, high-tech template for electricians — book visits online from day one.',
+    'A sleek, high-tech electrical-contractor site: a near-black graphite palette with an electric-blue accent and a bold type-first hero, built for the modern home and business: EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades. Installs a working booking flow: real visit types (site assessment, EV-charger consult, free estimate), three electricians you book by skill with their own hours, and a priority policy for commercial jobs. Ships as "Voltline Electric".',
+  tagline: 'A modern, high-tech template for electricians. Book visits online from day one.',
   industry: 'Electrician',
   sortWeight: 73,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -476,7 +476,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Voltline Electric — a modern electrical contractor',
+      title: 'Voltline Electric: a modern electrical contractor',
       description:
         'Voltline Electric wires the modern home and business: EV chargers, smart-home, solar and battery hookups, and panel upgrades. Book a site assessment or free consult online.',
     },

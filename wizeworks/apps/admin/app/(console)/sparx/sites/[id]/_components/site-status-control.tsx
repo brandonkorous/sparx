@@ -88,7 +88,7 @@ export function SiteStatusControl({
             apply(
               'archived',
               `Archive ${siteName}?`,
-              `Archives ${siteName} — it’s retired from active service but its content is kept. Recorded in the tenant’s account activity; you can reactivate it later.`,
+              `Archives ${siteName}: it’s retired from active service but its content is kept. Recorded in the tenant’s account activity; you can reactivate it later.`,
               'Archive site'
             )
           }

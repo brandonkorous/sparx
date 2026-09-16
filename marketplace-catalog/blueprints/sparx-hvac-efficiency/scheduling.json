@@ -127,7 +127,7 @@
     {
       "handle": "energy-assessment",
       "name": "Home energy assessment",
-      "description": "A room-by-room look at where your home loses heating and cooling — insulation, drafts, ductwork and your current system — with a plain-language report and the changes that would cut your bills the most. The $49 fee comes off any work you book.",
+      "description": "A room-by-room look at where your home loses heating and cooling (insulation, drafts, ductwork and your current system) with a plain-language report and the changes that would cut your bills the most. The $49 fee comes off any work you book.",
       "durationMinutes": 90,
       "priceCents": 4900,
       "bufferAfterMin": 15,
@@ -145,7 +145,7 @@
     {
       "handle": "free-install-estimate",
       "name": "Free install estimate",
-      "description": "Thinking about a new furnace, AC or heat pump? We measure your home, size the system properly and give you a written, no-pressure quote — including any rebates and financing you qualify for. Always free.",
+      "description": "Thinking about a new furnace, AC or heat pump? We measure your home, size the system properly and give you a written, no-pressure quote, including any rebates and financing you qualify for. Always free.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -162,7 +162,7 @@
     {
       "handle": "heat-pump-consult",
       "name": "Heat-pump consultation",
-      "description": "A focused sit-down on whether a heat pump fits your home — how it heats and cools with one efficient system, what it would cost to run, and the rebates that bring it down. Free, and no obligation to buy.",
+      "description": "A focused sit-down on whether a heat pump fits your home: how it heats and cools with one efficient system, what it would cost to run, and the rebates that bring it down. Free, and no obligation to buy.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -179,7 +179,7 @@
     {
       "handle": "efficiency-tune-up",
       "name": "Efficiency tune-up",
-      "description": "A full clean-and-check that keeps your system running at its rated efficiency — cleaner air, quieter operation and lower bills. Cleared coils, fresh filter, calibrated controls and a safety check.",
+      "description": "A full clean-and-check that keeps your system running at its rated efficiency: cleaner air, quieter operation and lower bills. Cleared coils, fresh filter, calibrated controls and a safety check.",
       "durationMinutes": 75,
       "priceCents": 12900,
       "assignmentStrategy": "any_available",
@@ -196,7 +196,7 @@
     {
       "handle": "smart-thermostat-install",
       "name": "Smart thermostat install",
-      "description": "We supply and fit a smart thermostat, wire it to your system and set up the schedule that saves you the most — so your home eases back when you’re out and is comfortable the moment you’re home.",
+      "description": "We supply and fit a smart thermostat, wire it to your system and set up the schedule that saves you the most, so your home eases back when you’re out and is comfortable the moment you’re home.",
       "durationMinutes": 90,
       "priceCents": 18900,
       "assignmentStrategy": "any_available",
@@ -230,7 +230,7 @@
     {
       "handle": "maintenance-visit",
       "name": "Seasonal maintenance visit",
-      "description": "The twice-a-year visit that keeps a system efficient and heads off breakdowns — a spring cooling check and a fall heating check, each a full tune, safety inspection and efficiency report.",
+      "description": "The twice-a-year visit that keeps a system efficient and heads off breakdowns: a spring cooling check and a fall heating check, each a full tune, safety inspection and efficiency report.",
       "durationMinutes": 120,
       "priceCents": 16900,
       "assignmentStrategy": "any_available",

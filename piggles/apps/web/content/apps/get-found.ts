@@ -18,7 +18,7 @@ export const GET_FOUND: AppMarketing = {
   does: [
     {
       title: 'Plain-English checks',
-      body: 'What is missing, why it matters and what to type instead — not a score out of a hundred and a list of acronyms.',
+      body: 'What is missing, why it matters and what to type instead, not a score out of a hundred and a list of acronyms.',
     },
     {
       title: 'Control how you look when shared',
@@ -34,7 +34,7 @@ export const GET_FOUND: AppMarketing = {
     },
     {
       title: 'See what a post actually did',
-      body: 'Reach, engagement and clicks for every post you sent — because "did that work" is the only reason to have posted it.',
+      body: 'Reach, engagement and clicks for every post you sent, because "did that work" is the only reason to have posted it.',
     },
     {
       title: 'Answer in one place',
@@ -44,7 +44,7 @@ export const GET_FOUND: AppMarketing = {
   chapters: [
     {
       heading: 'Being found by somebody who does not know your name yet.',
-      body: 'Anyone who already knows your business can find it. The traffic worth having is the person who searched for what you do and had never heard of you — and whether they see you comes down to a few dozen small, dull, easily-wrong details on every page. Get Found checks them, says what is wrong in words rather than jargon, and fixes most of it without asking.',
+      body: 'Anyone who already knows your business can find it. The traffic worth having is the person who searched for what you do and had never heard of you, and whether they see you comes down to a few dozen small, dull, easily-wrong details on every page. Get Found checks them, says what is wrong in words rather than jargon, and fixes most of it without asking.',
       does: [
         {
           title: 'Told what to fix, not scored',
@@ -52,7 +52,7 @@ export const GET_FOUND: AppMarketing = {
         },
         {
           title: 'The picture people see before the page',
-          body: 'When your link is pasted into a message, a post or a group chat, something is shown. Set what that is — per page — instead of letting each network guess from whatever was nearest the top.',
+          body: 'When your link is pasted into a message, a post or a group chat, something is shown. Set what that is (per page) instead of letting each network guess from whatever was nearest the top.',
         },
         {
           title: 'The plumbing, kept right on its own',
@@ -72,7 +72,7 @@ export const GET_FOUND: AppMarketing = {
     {
       // The chapter this whole file was restructured for.
       heading: 'Write it once. It goes everywhere you are.',
-      body: 'Posting the same thing to eight places by hand is the job everybody quietly stops doing after about three weeks. You write one post here, pick where it goes, and Piggles reshapes it for each one — the caption trimmed to that network’s limit, the image cropped to the shape it wants, the whole thing checked before it goes rather than failing quietly at two in the morning. Then it tells you what each post actually did, and brings the replies back.',
+      body: 'Posting the same thing to eight places by hand is the job everybody quietly stops doing after about three weeks. You write one post here, pick where it goes, and Piggles reshapes it for each one: the caption trimmed to that network’s limit, the image cropped to the shape it wants, the whole thing checked before it goes rather than failing quietly at two in the morning. Then it tells you what each post actually did, and brings the replies back.',
       does: [
         {
           title: 'One box, every network you are on',
@@ -80,7 +80,7 @@ export const GET_FOUND: AppMarketing = {
         },
         {
           title: 'It will not let you post something that gets rejected',
-          body: 'Each network’s real limits — caption length, how many images, what kind of video — are checked as you type and again before it publishes. "24 characters over" while you can still fix it, not a failure notice afterwards.',
+          body: 'Each network’s real limits (caption length, how many images, what kind of video) are checked as you type and again before it publishes. "24 characters over" while you can still fix it, not a failure notice afterwards.',
         },
         {
           title: 'The picture, in the right shape',
@@ -88,7 +88,7 @@ export const GET_FOUND: AppMarketing = {
         },
         {
           title: 'Standing times, not a reminder to yourself',
-          body: 'Set the slots you want to post in — Tuesdays at nine, Fridays at four — and fill them ahead. They stay at nine when the clocks change, because your customers’ morning did not move.',
+          body: 'Set the slots you want to post in (Tuesdays at nine, Fridays at four) and fill them ahead. They stay at nine when the clocks change, because your customers’ morning did not move.',
         },
         {
           title: 'When to post, from your own numbers',
@@ -104,7 +104,7 @@ export const GET_FOUND: AppMarketing = {
         },
         {
           title: 'A month planned in a spreadsheet',
-          body: 'Import the whole plan at once. Every problem is reported per row — line 14, and what is wrong with it — before a single post is created.',
+          body: 'Import the whole plan at once. Every problem is reported per row (line 14, and what is wrong with it) before a single post is created.',
         },
         {
           title: 'Nothing goes out unchecked, if you want it that way',

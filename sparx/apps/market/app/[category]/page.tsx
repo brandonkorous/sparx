@@ -83,7 +83,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           perPage={PLP_PER_PAGE}
           lockCategory
           emptyTitle={`No ${category.name} products yet`}
-          emptyHint="Check back soon — sellers are listing in this category all the time."
+          emptyHint="Check back soon: sellers are listing in this category all the time."
         />
       </div>
     </Container>

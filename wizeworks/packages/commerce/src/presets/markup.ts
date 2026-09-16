@@ -65,7 +65,7 @@ export const markupPresets = [
     slug: 'markup-standard-40',
     name: 'Standard 40% markup',
     description:
-      'Add 40% to cost across the catalog — a conservative, broadly-applicable markup that leaves room for discounts.',
+      'Add 40% to cost across the catalog: a conservative, broadly-applicable markup that leaves room for discounts.',
     iconKey: 'percent',
     tags: ['percentage', 'standard'],
     chip: '+40%',
@@ -86,7 +86,7 @@ export const markupPresets = [
     slug: 'markup-margin-50-charm',
     name: '50% margin with .99 pricing',
     description:
-      'Target a 50% margin on every product and round prices up to a charming “.99” ending — a retail-psychology favourite.',
+      'Target a 50% margin on every product and round prices up to a charming “.99” ending: a retail-psychology favorite.',
     iconKey: 'trending-up',
     tags: ['margin', 'charm-pricing'],
     chip: '50% margin · .99',

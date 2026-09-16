@@ -142,7 +142,7 @@ export function checkoutState(step: CheckoutStep): { label: string; tone: Tone; 
       return {
         label: 'Finished',
         tone: 'success',
-        detail: 'This shopper paid — the sale went through and became an order.',
+        detail: 'This shopper paid: the sale went through and became an order.',
       };
     case 'expired':
       return {

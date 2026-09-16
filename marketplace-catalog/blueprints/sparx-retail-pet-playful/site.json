@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Fetch Club — bright, bouncy pet gear dogs go wild for",
-      "seoDescription": "Fetch Club makes the fun stuff — pop-color collars, squeaky toys, honest treats and comfy beds — dog-tested, tail-approved and built to survive the zoomies.",
+      "seoTitle": "Fetch Club: bright, bouncy pet gear dogs go wild for",
+      "seoDescription": "Fetch Club makes the fun stuff (pop-color collars, squeaky toys, honest treats and comfy beds) dog-tested, tail-approved and built to survive the zoomies.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Fetch Club makes the fun stuff — pop-color collars, squeaky toys they’ll actually love, treats worth sitting for, and beds made for the world’s best nap. Bright, bouncy, built to survive the zoomies. Because a good dog deserves a good time."
+                          "Fetch Club makes the fun stuff: pop-color collars, squeaky toys they’ll actually love, treats worth sitting for, and beds made for the world’s best nap. Bright, bouncy, built to survive the zoomies. Because a good dog deserves a good time."
                         ],
                         "id": "ed76e9ea-54a5-4ee2-b88a-b1eb68f4ab76",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We test every toy against the world’s toughest reviewers — actual dogs, going full send. If it can’t survive a proper game of tug, a park sprint and a hopeful attempt at eating it, it doesn’t make the shelf. Color that pops, stitching that holds, squeaks that keep on squeaking."
+                          "We test every toy against the world’s toughest reviewers: actual dogs, going full send. If it can’t survive a proper game of tug, a park sprint and a hopeful attempt at eating it, it doesn’t make the shelf. Color that pops, stitching that holds, squeaks that keep on squeaking."
                         ],
                         "id": "566e9795-9349-4f4f-8497-9f97fe71c27e",
                         "ord": "a1"
@@ -1539,7 +1539,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Join Fetch Club and a box of fresh toys, treats and everyday goodies turns up on your schedule — matched to your dog and packed to be torn into. Skip, swap or cancel any time, no lock-in, and every box works out cheaper than buying it all one at a time."
+                          "Join Fetch Club and a box of fresh toys, treats and everyday goodies turns up on your schedule: matched to your dog and packed to be torn into. Skip, swap or cancel any time, no lock-in, and every box works out cheaper than buying it all one at a time."
                         ],
                         "id": "ccc54e8e-8879-4713-8ec3-56df3f9445c0",
                         "ord": "a1"
@@ -1574,7 +1574,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Fetch Club",
+      "seoTitle": "Shop: Fetch Club",
       "seoDescription": "Browse everything Fetch Club makes, with prices and options at a glance. Pet supplies & accessories.",
       "root": {
         "kind": "element",
@@ -1606,7 +1606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The whole happy range in one place — pop-color collars and leads, bandanas, squeaky toys, comfy beds, travel gear and treats worth sitting for. Filter by what your dog’s into or sort however you like; everything here is dog-tested, tail-approved and ready to party."
+                      "The whole happy range in one place: pop-color collars and leads, bandanas, squeaky toys, comfy beds, travel gear and treats worth sitting for. Filter by what your dog’s into or sort however you like; everything here is dog-tested, tail-approved and ready to party."
                     ],
                     "id": "b08b8f30-3d67-45ad-9d2c-141c99750e24",
                     "ord": "a1"
@@ -1634,7 +1634,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Fetch Club",
+      "seoTitle": "Collections: Fetch Club",
       "seoDescription": "Explore the collections at Fetch Club, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1666,7 +1666,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The good stuff, grouped the fun way — what just dropped, the crowd pleasers every dog goes wild for, the full walkies kit, playtime picks, and boxes that make an easy gift."
+                      "The good stuff, grouped the fun way: what just dropped, the crowd pleasers every dog goes wild for, the full walkies kit, playtime picks, and boxes that make an easy gift."
                     ],
                     "id": "c77cc0ff-8338-49a3-99f4-3e835b95bc18",
                     "ord": "a1"
@@ -1694,7 +1694,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Fetch Club",
+      "seoTitle": "Your cart: Fetch Club",
       "seoDescription": "Review what is in your cart and check out securely at Fetch Club.",
       "root": {
         "kind": "element",
@@ -1726,7 +1726,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping over $39, packed with a treat on top and sent within a day. Not quite a hit with your pup? Send it back within 30 days for a full refund — our happy-dog guarantee puts the risk on us, not you."
+                      "Free shipping over $39, packed with a treat on top and sent within a day. Not quite a hit with your pup? Send it back within 30 days for a full refund. Our happy-dog guarantee puts the risk on us, not you."
                     ],
                     "id": "27107018-19d2-4229-95bc-6ab159757701",
                     "ord": "a1"
@@ -1754,7 +1754,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Fetch Club",
+      "seoTitle": "Search: Fetch Club",
       "seoDescription": "Search Fetch Club for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Fetch Club",
+      "seoTitle": "Journal: Fetch Club",
       "seoDescription": "Stories, guides and notes from Fetch Club.",
       "root": {
         "kind": "element",
@@ -1846,7 +1846,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Fun, useful bits from people who are, frankly, a bit obsessed with dogs — toys that actually last, treats you can feel good about, and helping a new pup feel at home. No jargon, no snobbery, just good dog stuff."
+                      "Fun, useful bits from people who are, frankly, a bit obsessed with dogs: toys that actually last, treats you can feel good about, and helping a new pup feel at home. No jargon, no snobbery, just good dog stuff."
                     ],
                     "id": "314ade9e-9c50-4bb2-aba0-a473aa9bda49",
                     "ord": "a1"
@@ -1980,7 +1980,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Fetch Club",
-      "seoDescription": "Why Fetch Club makes pet gear the fun way — bright colors, tough builds, honest treats, tested by real dogs, with a share of every order going to shelters.",
+      "seoDescription": "Why Fetch Club makes pet gear the fun way: bright colors, tough builds, honest treats, tested by real dogs, with a share of every order going to shelters.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2011,7 +2011,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Fetch Club started at a muddy dog park with a chewed-up ball and a simple thought: why is so much dog stuff so boring? Beige beds, grey collars, toys that gave up after one good tug. Our dogs have more personality than that — and we figured their gear should too."
+                      "Fetch Club started at a muddy dog park with a chewed-up ball and a simple thought: why is so much dog stuff so boring? Beige beds, grey collars, toys that gave up after one good tug. Our dogs have more personality than that, and we figured their gear should too."
                     ],
                     "id": "61ca5410-2197-4c6f-9bac-929ec2112264",
                     "ord": "a1"
@@ -2021,7 +2021,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "So we make the fun stuff, properly. Pop colors that are easy to spot across a field, stitching and hardware that survive a serious game of tug, squeaks engineered to keep on squeaking, and treats with a label you can actually pronounce. Every single thing is tested by real dogs going full send — and only makes the shelf if they’re obsessed."
+                      "So we make the fun stuff, properly. Pop colors that are easy to spot across a field, stitching and hardware that survive a serious game of tug, squeaks engineered to keep on squeaking, and treats with a label you can actually pronounce. Every single thing is tested by real dogs going full send, and only makes the shelf if they’re obsessed."
                     ],
                     "id": "5d50e646-08ef-4c12-8ba9-083c7e1d3ce2",
                     "ord": "a2"
@@ -2031,7 +2031,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No boring beige, no throwaway junk, no marketing dressed up as care. Just bright, bouncy, well-made things for the goofball who’s thrilled to see you every single day — and a share of every order goes to the shelters helping more dogs find their people."
+                      "No boring beige, no throwaway junk, no marketing dressed up as care. Just bright, bouncy, well-made things for the goofball who’s thrilled to see you every single day, and a share of every order goes to the shelters helping more dogs find their people."
                     ],
                     "id": "f31ae79b-9cb2-4146-808a-1d9cda8403f8",
                     "ord": "a3"
@@ -2051,8 +2051,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Fetch Club",
-      "seoDescription": "Get in touch with Fetch Club — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Fetch Club",
+      "seoDescription": "Get in touch with Fetch Club: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2088,7 +2088,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Not sure which collar size fits, need help picking a toy your chewer can’t destroy, or want to stock Fetch Club in your shop? Tell us about your dog and a real human here — usually with a dog on their lap — will get back to you within a day."
+                          "Not sure which collar size fits, need help picking a toy your chewer can’t destroy, or want to stock Fetch Club in your shop? Tell us about your dog and a real human here (usually with a dog on their lap) will get back to you within a day."
                         ],
                         "id": "30e7bd64-5495-4c3b-8b14-b507b96a1b6f",
                         "ord": "a1"
@@ -2359,8 +2359,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Fetch Club",
-      "seoDescription": "Product details at Fetch Club — pet supplies & accessories, with options and pricing.",
+      "seoTitle": "Product: Fetch Club",
+      "seoDescription": "Product details at Fetch Club: pet supplies & accessories, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2723,7 +2723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Dog-tested, tail-approved. Free shipping over $39, and a happy-dog guarantee — if your pup isn’t obsessed, send it back within 30 days for a full refund. No fuss, no sad faces."
+                              "Dog-tested, tail-approved. Free shipping over $39, and a happy-dog guarantee: if your pup isn’t obsessed, send it back within 30 days for a full refund. No fuss, no sad faces."
                             ],
                             "id": "e623920d-6855-4ebe-ba1e-3e0009d41962",
                             "ord": "a1"

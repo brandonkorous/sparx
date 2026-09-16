@@ -160,7 +160,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('invoicing.workflow.edit', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New workflow — hold Shift to open alongside, Alt for a new window',
+          title: 'New workflow: hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
           {
@@ -233,7 +233,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               needle || state !== 'active'
                 ? 'Try a different word, or switch back to Active.'
-                : 'A workflow is the path a document takes — quote, then invoice, then paid — and what your customer sees at each step. Every business gets a couple to start with, so this being empty is unusual.'
+                : 'A workflow is the path a document takes (quote, then invoice, then paid) and what your customer sees at each step. Every business gets a couple to start with, so this being empty is unusual.'
             }
           />
         ) : (
@@ -288,7 +288,7 @@ export function WorkflowsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     {workflow.stages.length === 0 ? (
                       // Reachable: stages are deletable, and a workflow with
                       // none cannot carry a document at all.
-                      <span className="text-sm">No stages — nothing can be created on it</span>
+                      <span className="text-sm">No stages. Nothing can be created on it</span>
                     ) : (
                       // Wraps rather than clipping. The rows already stand two
                       // lines tall, so a long chain costs nothing to show in

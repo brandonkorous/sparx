@@ -81,7 +81,7 @@ export async function publishAuthEmail(input: PublishAuthEmailInput): Promise<vo
     throw new Error(
       `Cannot send the ${input.template} email: EVENT_BROKER is unset, so events are discarded ` +
         'rather than delivered. Set EVENT_BROKER=nats (with EVENT_BROKER_URL) for local ' +
-        'development — see .env.example.'
+        'development: see .env.example.'
     );
   }
 

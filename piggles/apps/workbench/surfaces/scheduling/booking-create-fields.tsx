@@ -99,8 +99,8 @@ export function BookingCreateFields({
           <AlertContent>
             <AlertTitle>Set up something to book first</AlertTitle>
             <AlertDescription>
-              A booking is a time against one of your services. Add a service — what people can book
-              you for, and how long it takes — and it will appear here to choose.
+              A booking is a time against one of your services. Add a service (what people can book
+              you for, and how long it takes) and it will appear here to choose.
             </AlertDescription>
           </AlertContent>
           <Button
@@ -190,7 +190,7 @@ export function BookingCreateFields({
 
       <FormSection
         title="A note (optional)"
-        description="Anything the customer should see about this booking — where to park, what to bring."
+        description="Anything the customer should see about this booking: where to park, what to bring."
       >
         <Textarea
           color="module"

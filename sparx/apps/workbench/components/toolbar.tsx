@@ -220,10 +220,10 @@ function StarButton({ surfaceKey, hasParams }: { surfaceKey: string | null; hasP
   const tooltip = !surfaceKey
     ? 'Focus a pane to star it'
     : hasParams
-      ? 'Individual records can’t be starred — star their screen instead'
+      ? 'Individual records can’t be starred: star their screen instead'
       : favorited
         ? 'Remove from favorites'
-        : 'Add to favorites — shows at the top of search';
+        : 'Add to favorites: shows at the top of search';
 
   return (
     <Tooltip content={tooltip}>

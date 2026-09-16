@@ -162,7 +162,7 @@ function hero(): Node {
                                     text: 'Made by hand, one at a time.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Kiln & Clay is a small pottery studio. We throw every piece on the wheel, glaze it by hand and fire it in our own kiln — so what lands on your table was shaped by someone, not stamped out by a machine.',
+                                    text: 'Kiln & Clay is a small pottery studio. We throw every piece on the wheel, glaze it by hand and fire it in our own kiln, so what lands on your table was shaped by someone, not stamped out by a machine.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -255,7 +255,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New from the studio' }),
     editorialBand({
         heading: 'Thrown, trimmed, glazed, fired',
-        lead: 'Every piece passes through a lot of hands — and every pair of them is ours. We centre the clay on the wheel, trim the foot when it’s leather-hard, glaze it by hand and fire it twice. Days of work go into a mug you’ll reach for every morning.',
+        lead: 'Every piece passes through a lot of hands, and every pair of them is ours. We centre the clay on the wheel, trim the foot when it’s leather-hard, glaze it by hand and fire it twice. Days of work go into a mug you’ll reach for every morning.',
         assetId: 'kiln-band-studio',
         cta: 'How a piece is made',
         href: '/blog/how-a-piece-is-made',
@@ -264,7 +264,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.dine', layout: 'carousel', heading: 'For the everyday table' }),
     editorialBand({
         heading: 'No two are exactly alike',
-        lead: 'Because a person made it, a person shows in it — a glaze that pools a little deeper on one side, a rim that carries the maker’s mark. We don’t hide that. It’s the difference between something you own and something you love.',
+        lead: 'Because a person made it, a person shows in it: a glaze that pools a little deeper on one side, a rim that carries the maker’s mark. We don’t hide that. It’s the difference between something you own and something you love.',
         assetId: 'kiln-band-glaze',
         cta: 'A word on our glazes',
         href: '/blog/a-word-on-glazes',
@@ -309,7 +309,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Made to order in the studio' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Each piece is thrown and glazed to order, so allow two to three weeks before it ships. Small variations in glaze, tone and size are the mark of a handmade object — yours will be a little different from the photo, and entirely its own.',
+                                        text: 'Each piece is thrown and glazed to order, so allow two to three weeks before it ships. Small variations in glaze, tone and size are the mark of a handmade object: yours will be a little different from the photo, and entirely its own.',
                                     }),
                                 ],
                             }),
@@ -348,11 +348,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The studio shop',
-        'Everything we’re making right now — mugs and tumblers to drink from, plates and bowls to eat off, vases and planters for the rest of the house. Filter by room or glaze; each piece is thrown, glazed and fired by hand, and made to order.'
+        'Everything we’re making right now: mugs and tumblers to drink from, plates and bowls to eat off, vases and planters for the rest of the house. Filter by room or glaze; each piece is thrown, glazed and fired by hand, and made to order.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The work grouped the way people actually shop — the newest pieces off the wheel, a set that dresses the everyday table, the drinkware, and gift-ready pairs and sets.'),
+    pageMasthead('Collections', 'The work grouped the way people actually shop: the newest pieces off the wheel, a set that dresses the everyday table, the drinkware, and gift-ready pairs and sets.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Kiln & Clay', 'Looking for a particular piece, a glaze, or a note from the studio? Search the whole shop and the journal below.'),
@@ -378,7 +378,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-semibold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'From the studio' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the wheel — how a piece is made, what the glazes are and why they vary, and how to look after handmade ceramics so they last for years. Plain and useful, no pottery mystique.',
+                        text: 'Notes from the wheel: how a piece is made, what the glazes are and why they vary, and how to look after handmade ceramics so they last for years. Plain and useful, no pottery mystique.',
                     }),
                 ],
             }),
@@ -395,10 +395,10 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-semibold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Kiln & Clay' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Kiln & Clay began with one secondhand wheel in a spare room and a stubborn idea: that the things you use every day should be worth using. We started making mugs for friends, then for a local café, and it grew the slow way — one firing at a time.',
+                        text: 'Kiln & Clay began with one secondhand wheel in a spare room and a stubborn idea: that the things you use every day should be worth using. We started making mugs for friends, then for a local café, and it grew the slow way. One firing at a time.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Everything is still made in-house, by us. We throw on the wheel, trim by hand, mix our own glazes from raw materials, and fire twice in a kiln we load ourselves. Nothing is outsourced and nothing is mass-produced — the studio can only make so much, and that’s the point.',
+                        text: 'Everything is still made in-house, by us. We throw on the wheel, trim by hand, mix our own glazes from raw materials, and fire twice in a kiln we load ourselves. Nothing is outsourced and nothing is mass-produced: the studio can only make so much, and that’s the point.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We like clay that looks like clay: honest forms, quiet glazes, a bare foot you can feel the grit of. A piece from here should feel good in the hand, live in the dishwasher, and get better the more you use it.',
@@ -416,7 +416,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'A question about a piece, a custom commission, or a wholesale enquiry for your shop or café? Tell us what you have in mind and one of us — the people who actually make the work — will write back.',
+        intro: 'A question about a piece, a custom commission, or a wholesale enquiry for your shop or café? Tell us what you have in mind and one of us (the people who actually make the work) will write back.',
         submitLabel: 'Email the studio',
     }),
 ];
@@ -503,7 +503,7 @@ const PRODUCTS: Product[] = [
         handle: 'everyday-mug',
         title: 'Everyday Mug',
         description:
-            'The one you’ll reach for every morning — a generous 12oz mug with a full, pulled handle that fits three fingers and a foot bare enough to feel the clay. Thrown a little heavy on purpose, so it holds the heat and sits solid on the table.',
+            'The one you’ll reach for every morning: a generous 12oz mug with a full, pulled handle that fits three fingers and a foot bare enough to feel the clay. Thrown a little heavy on purpose, so it holds the heat and sits solid on the table.',
         price: 38,
         sku: 'KILN-MUG',
         productType: 'Drinkware',
@@ -512,14 +512,14 @@ const PRODUCTS: Product[] = [
         tags: ['mug', 'drinkware', 'stoneware', 'handmade'],
         asset: 'kiln-prod-mug',
         alt: 'A hand-thrown stoneware mug with a pulled handle',
-        seoTitle: 'Everyday Mug — hand-thrown stoneware | Kiln & Clay',
+        seoTitle: 'Everyday Mug: hand-thrown stoneware | Kiln & Clay',
         seoDescription: 'A generous 12oz hand-thrown mug with a full pulled handle and a bare clay foot. Made to order in three glazes.',
     }),
     piece({
         handle: 'breakfast-bowl',
         title: 'Breakfast Bowl',
         description:
-            'A wide, low bowl that’s right for almost everything — cereal and porridge, a bowl of soup, roasted vegetables, or ice cream after. Deep enough to hold a proper serving, shallow enough to eat from comfortably, with a soft speckled glaze pooling in the well.',
+            'A wide, low bowl that’s right for almost everything: cereal and porridge, a bowl of soup, roasted vegetables, or ice cream after. Deep enough to hold a proper serving, shallow enough to eat from comfortably, with a soft speckled glaze pooling in the well.',
         price: 42,
         sku: 'KILN-BOWL',
         productType: 'Tableware',
@@ -528,14 +528,14 @@ const PRODUCTS: Product[] = [
         tags: ['bowl', 'tableware', 'stoneware', 'handmade'],
         asset: 'kiln-prod-bowl',
         alt: 'A wide breakfast bowl with a speckled glaze',
-        seoTitle: 'Breakfast Bowl — handmade stoneware | Kiln & Clay',
+        seoTitle: 'Breakfast Bowl: handmade stoneware | Kiln & Clay',
         seoDescription: 'A wide, low everyday bowl for cereal, soup or supper, with a soft speckled glaze. Made to order in three glazes.',
     }),
     piece({
         handle: 'dinner-plate',
         title: 'Dinner Plate',
         description:
-            'A proper dinner plate with a broad rim and a glazed well — the kind that makes an ordinary meal look considered. We leave the rim bare and lightly sanded so it stacks quietly and shows the clay it’s made from. Ten and a half inches; dishwasher-safe.',
+            'A proper dinner plate with a broad rim and a glazed well: the kind that makes an ordinary meal look considered. We leave the rim bare and lightly sanded so it stacks quietly and shows the clay it’s made from. Ten and a half inches; dishwasher-safe.',
         price: 46,
         sku: 'KILN-PLATE',
         productType: 'Tableware',
@@ -544,14 +544,14 @@ const PRODUCTS: Product[] = [
         tags: ['plate', 'tableware', 'stoneware', 'handmade'],
         asset: 'kiln-prod-plate',
         alt: 'A dinner plate with a bare clay rim',
-        seoTitle: 'Dinner Plate — handmade stoneware | Kiln & Clay',
+        seoTitle: 'Dinner Plate: handmade stoneware | Kiln & Clay',
         seoDescription: 'A 10.5" dinner plate with a broad bare-clay rim and glazed well. Made to order in three studio glazes.',
     }),
     piece({
         handle: 'serving-platter',
         title: 'Serving Platter',
         description:
-            'A long oval platter built for the middle of the table — a whole roast chicken, a spread of flatbreads, a pile of summer tomatoes. Thrown wide and low with a subtle lip to keep everything on board, in a matte glaze that hides the everyday marks of real use.',
+            'A long oval platter built for the middle of the table: a whole roast chicken, a spread of flatbreads, a pile of summer tomatoes. Thrown wide and low with a subtle lip to keep everything on board, in a matte glaze that hides the everyday marks of real use.',
         price: 88,
         sku: 'KILN-PLATTER',
         productType: 'Tableware',
@@ -560,14 +560,14 @@ const PRODUCTS: Product[] = [
         tags: ['platter', 'serving', 'tableware', 'handmade'],
         asset: 'kiln-prod-platter',
         alt: 'A long oval serving platter in a matte glaze',
-        seoTitle: 'Serving Platter — handmade stoneware | Kiln & Clay',
+        seoTitle: 'Serving Platter: handmade stoneware | Kiln & Clay',
         seoDescription: 'A long oval serving platter with a subtle lip and matte glaze, for the middle of the table. Made to order.',
     }),
     piece({
         handle: 'stem-vase',
         title: 'Stem Vase',
         description:
-            'A tall, narrow-necked vase for a single stem or a small gathered bunch — the kind of quiet object that earns its place on a shelf even when it’s empty. Weighted in the base so a top-heavy branch won’t tip it, with a stone-grey glaze that lets the flowers do the talking.',
+            'A tall, narrow-necked vase for a single stem or a small gathered bunch: the kind of quiet object that earns its place on a shelf even when it’s empty. Weighted in the base so a top-heavy branch won’t tip it, with a stone-grey glaze that lets the flowers do the talking.',
         price: 64,
         sku: 'KILN-VASE',
         productType: 'Vessel',
@@ -576,14 +576,14 @@ const PRODUCTS: Product[] = [
         tags: ['vase', 'vessel', 'decor', 'handmade'],
         asset: 'kiln-prod-vase',
         alt: 'A tall bud vase with a narrow neck',
-        seoTitle: 'Stem Vase — handmade stoneware | Kiln & Clay',
+        seoTitle: 'Stem Vase: handmade stoneware | Kiln & Clay',
         seoDescription: 'A tall, narrow-necked vase for a single stem, weighted in the base. Made to order in three studio glazes.',
     }),
     piece({
         handle: 'footed-planter',
         title: 'Footed Planter',
         description:
-            'A footed planter with a matching saucer, sized for a plant you actually care about — a fern, a trailing pothos, a herb on the kitchen sill. Raised on a small foot so air moves underneath, with a drainage hole and a saucer to catch the overflow. Six-inch inner pot.',
+            'A footed planter with a matching saucer, sized for a plant you actually care about: a fern, a trailing pothos, a herb on the kitchen sill. Raised on a small foot so air moves underneath, with a drainage hole and a saucer to catch the overflow. Six-inch inner pot.',
         price: 58,
         sku: 'KILN-PLANTER',
         productType: 'Vessel',
@@ -592,14 +592,14 @@ const PRODUCTS: Product[] = [
         tags: ['planter', 'home', 'plants', 'handmade'],
         asset: 'kiln-prod-planter',
         alt: 'A footed planter with a matching saucer',
-        seoTitle: 'Footed Planter — handmade stoneware | Kiln & Clay',
+        seoTitle: 'Footed Planter: handmade stoneware | Kiln & Clay',
         seoDescription: 'A 6" footed planter with drainage hole and matching saucer. Made to order in three studio glazes.',
     }),
     piece({
         handle: 'tumbler-pair',
         title: 'Tumbler Pair',
         description:
-            'A pair of faceted tumblers, cut by hand while the clay is soft so the sides catch the light differently as you turn them. Right for water, wine, whisky or a morning juice, and sized to sit under a coffee machine. Sold as two — because a good glass is better shared.',
+            'A pair of faceted tumblers, cut by hand while the clay is soft so the sides catch the light differently as you turn them. Right for water, wine, whisky or a morning juice, and sized to sit under a coffee machine. Sold as two, because a good glass is better shared.',
         price: 72,
         sku: 'KILN-TUMBLERS',
         productType: 'Drinkware',
@@ -608,14 +608,14 @@ const PRODUCTS: Product[] = [
         tags: ['tumblers', 'drinkware', 'set', 'handmade'],
         asset: 'kiln-prod-tumblers',
         alt: 'A pair of stoneware tumblers with faceted sides',
-        seoTitle: 'Tumbler Pair — hand-faceted stoneware | Kiln & Clay',
+        seoTitle: 'Tumbler Pair: hand-faceted stoneware | Kiln & Clay',
         seoDescription: 'Two hand-faceted stoneware tumblers for water, wine or whisky. Made to order in three studio glazes.',
     }),
     piece({
         handle: 'pouring-jug',
         title: 'Pouring Jug',
         description:
-            'A small pinched-spout jug that does more than you’d think — milk for the table, dressing for a salad, a few stems of something from the garden. Thrown with a rounded belly and a handle sized for one finger, it pours clean and drips less than a jug has any right to.',
+            'A small pinched-spout jug that does more than you’d think: milk for the table, dressing for a salad, a few stems of something from the garden. Thrown with a rounded belly and a handle sized for one finger, it pours clean and drips less than a jug has any right to.',
         price: 48,
         sku: 'KILN-JUG',
         productType: 'Tableware',
@@ -624,14 +624,14 @@ const PRODUCTS: Product[] = [
         tags: ['jug', 'pourer', 'tableware', 'handmade'],
         asset: 'kiln-prod-jug',
         alt: 'A small pouring jug with a pinched spout',
-        seoTitle: 'Pouring Jug — handmade stoneware | Kiln & Clay',
+        seoTitle: 'Pouring Jug: handmade stoneware | Kiln & Clay',
         seoDescription: 'A small pinched-spout jug for milk, dressing or a few stems. Pours clean. Made to order in three glazes.',
     }),
     piece({
         handle: 'dinner-set',
         title: 'Small-Batch Dinner Set',
         description:
-            'A four-piece set for two — two dinner plates and two bowls, thrown in the same batch so their tones and weights actually match, which pieces bought one at a time never quite do. The starting point for a handmade table, and the easiest way to give one as a gift.',
+            'A four-piece set for two: two dinner plates and two bowls, thrown in the same batch so their tones and weights actually match, which pieces bought one at a time never quite do. The starting point for a handmade table, and the easiest way to give one as a gift.',
         price: 210,
         sku: 'KILN-SET',
         productType: 'Tableware',
@@ -640,8 +640,8 @@ const PRODUCTS: Product[] = [
         tags: ['set', 'tableware', 'gift', 'handmade'],
         asset: 'kiln-prod-dinner-set',
         alt: 'A four-piece dinner set of plates and bowls',
-        seoTitle: 'Small-Batch Dinner Set — handmade stoneware | Kiln & Clay',
-        seoDescription: 'A four-piece dinner set for two — two plates, two bowls thrown in one batch to match. Made to order.',
+        seoTitle: 'Small-Batch Dinner Set: handmade stoneware | Kiln & Clay',
+        seoDescription: 'A four-piece dinner set for two: two plates, two bowls thrown in one batch to match. Made to order.',
     }),
 ];
 
@@ -730,13 +730,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('People are often surprised how long a single mug takes. Not the throwing — that’s a few minutes on the wheel — but everything around it. A piece passes through the studio over the better part of two weeks, and most of that time it’s just sitting, drying at the right speed so it doesn’t crack. Here’s the whole journey.'),
+                    para('People are often surprised how long a single mug takes. Not the throwing (that’s a few minutes on the wheel) but everything around it. A piece passes through the studio over the better part of two weeks, and most of that time it’s just sitting, drying at the right speed so it doesn’t crack. Here’s the whole journey.'),
                     h2('Throwing and trimming'),
-                    para('It starts as a ball of wedged clay, centred on the wheel and opened into a wall with wet hands. Once it’s thrown, it rests overnight until it’s leather-hard — firm but still damp — and goes back on the wheel upside down to have its foot trimmed. That’s where the weight and balance are decided: too heavy and it’s a brick, too light and it tips.'),
+                    para('It starts as a ball of wedged clay, centred on the wheel and opened into a wall with wet hands. Once it’s thrown, it rests overnight until it’s leather-hard (firm but still damp), and goes back on the wheel upside down to have its foot trimmed. That’s where the weight and balance are decided: too heavy and it’s a brick, too light and it tips.'),
                     h2('The first firing'),
-                    para('When it’s bone dry, it’s loaded into the kiln for a bisque firing — a slow climb to around 1000°C that turns fragile clay into hard, porous ceramic that can be handled and glazed. Everything is stacked carefully; a kiln is expensive to run, so we fire it full.'),
+                    para('When it’s bone dry, it’s loaded into the kiln for a bisque firing: a slow climb to around 1000°C that turns fragile clay into hard, porous ceramic that can be handled and glazed. Everything is stacked carefully; a kiln is expensive to run, so we fire it full.'),
                     h2('Glaze and the second firing'),
-                    para('Bisque ware is dipped or poured with glaze — a liquid coat of minerals that will melt into glass in the heat. Then it’s fired again, hotter, to around 1250°C. That final firing is the one you can’t take back: the glaze runs and pools, the clay vitrifies and becomes waterproof, and the piece comes out of the kiln as the thing you’ll actually use. Only then do we know if it worked.'),
+                    para('Bisque ware is dipped or poured with glaze: a liquid coat of minerals that will melt into glass in the heat. Then it’s fired again, hotter, to around 1250°C. That final firing is the one you can’t take back: the glaze runs and pools, the clay vitrifies and becomes waterproof, and the piece comes out of the kiln as the thing you’ll actually use. Only then do we know if it worked.'),
                 ],
             },
         },
@@ -747,16 +747,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'A word on our glazes, and why they vary',
-            excerpt: 'Oatmeal, Ash and Slate aren’t paint colors — they’re chemistry that meets fire. Here’s what to expect.',
+            excerpt: 'Oatmeal, Ash and Slate aren’t paint colors: they’re chemistry that meets fire. Here’s what to expect.',
             featuredImage: { $asset: 'kiln-post-glazes' },
             body: {
                 type: 'doc',
                 content: [
-                    para('We mix our three glazes from raw materials in the studio, by weight, from recipes we’ve tested over dozens of firings. But a glaze isn’t a paint you pick from a swatch — it’s a coat of minerals that only becomes its final color in the heat of the kiln, and small things change how it lands.'),
+                    para('We mix our three glazes from raw materials in the studio, by weight, from recipes we’ve tested over dozens of firings. But a glaze isn’t a paint you pick from a swatch: it’s a coat of minerals that only becomes its final color in the heat of the kiln, and small things change how it lands.'),
                     h2('The three glazes'),
-                    para('Oatmeal is our warm, creamy neutral — the studio default, and the most forgiving on the table. Ash is a soft matte grey-green that breaks lighter over edges and rims, where the coat is thinner. Slate is the deepest of the three, a stony blue-grey that pools dark in the wells of bowls and plates. All three are food-safe and dishwasher-safe.'),
+                    para('Oatmeal is our warm, creamy neutral: the studio default, and the most forgiving on the table. Ash is a soft matte grey-green that breaks lighter over edges and rims, where the coat is thinner. Slate is the deepest of the three, a stony blue-grey that pools dark in the wells of bowls and plates. All three are food-safe and dishwasher-safe.'),
                     h2('Why yours won’t match the photo exactly'),
-                    para('Where a glaze pools thicker it fires darker; where it thins over a rim it breaks toward the clay beneath. Its exact tone shifts with the thickness of the coat, the spot it sat in the kiln, and the weather the day it was mixed. We photograph a representative piece, but yours will be its own — a little lighter here, a little deeper there. That variation isn’t a fault to apologise for; it’s the whole reason to buy something made by a person.'),
+                    para('Where a glaze pools thicker it fires darker; where it thins over a rim it breaks toward the clay beneath. Its exact tone shifts with the thickness of the coat, the spot it sat in the kiln, and the weather the day it was mixed. We photograph a representative piece, but yours will be its own: a little lighter here, a little deeper there. That variation isn’t a fault to apologise for; it’s the whole reason to buy something made by a person.'),
                 ],
             },
         },
@@ -772,13 +772,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The best thing you can do with a handmade piece is use it. Our stoneware is fired hot and fully vitrified, which makes it tough and genuinely everyday — not a shelf ornament you’re afraid to touch. A few small habits keep it looking its best for years.'),
+                    para('The best thing you can do with a handmade piece is use it. Our stoneware is fired hot and fully vitrified, which makes it tough and genuinely everyday, not a shelf ornament you’re afraid to touch. A few small habits keep it looking its best for years.'),
                     h2('Everyday use'),
-                    para('All of our glazed ware is dishwasher-safe and microwave-safe. If you hand-wash, a soft sponge is plenty — skip the scouring pad, which can dull a glaze over time. The one thing to watch is thermal shock: don’t take a piece straight from the freezer to a hot oven, and let a cold mug warm a moment before you fill it with boiling water.'),
+                    para('All of our glazed ware is dishwasher-safe and microwave-safe. If you hand-wash, a soft sponge is plenty: skip the scouring pad, which can dull a glaze over time. The one thing to watch is thermal shock: don’t take a piece straight from the freezer to a hot oven, and let a cold mug warm a moment before you fill it with boiling water.'),
                     h2('The bare foot'),
-                    para('We leave the foot of each piece unglazed, so you can see and feel the clay. On very rare occasions a bare foot can leave a faint grey mark on a soft surface — a quick pass with fine sandpaper smooths it, and we do this before anything ships. If yours ever needs it, a light sand and it’s done.'),
+                    para('We leave the foot of each piece unglazed, so you can see and feel the clay. On very rare occasions a bare foot can leave a faint grey mark on a soft surface: a quick pass with fine sandpaper smooths it, and we do this before anything ships. If yours ever needs it, a light sand and it’s done.'),
                     h2('If something chips'),
-                    para('Even tough ceramics can chip if they’re knocked hard against a tap or a stone counter. A small chip on a rim is usually still safe and sound to use, and many people grow fond of the mark. If a piece ever fails in a way that isn’t fair wear, tell us — we stand behind what leaves the studio.'),
+                    para('Even tough ceramics can chip if they’re knocked hard against a tap or a stone counter. A small chip on a rim is usually still safe and sound to use, and many people grow fond of the mark. If a piece ever fails in a way that isn’t fair wear, tell us. We stand behind what leaves the studio.'),
                 ],
             },
         },
@@ -793,7 +793,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Ceramics Studio (Handmade)',
     theme: THEME,
     summary:
-        'A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware — mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes — with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.',
+        'A complete, working shop for a handmade pottery studio: a real catalogue of thrown-and-glazed stoneware, mugs, bowls, plates, a serving platter, a vase, a planter, tumblers and a dinner set, each in three studio glazes, with categories, collections, a gallery-calm PDP and a fully merchandised home page. Warm clay-and-stone theme with a muted sage-glaze accent. Shipped as Kiln & Clay.',
     tagline: 'A quiet, tactile storefront for a handmade ceramics studio.',
     vertical: 'retail',
     industry: 'Ceramics studio',
@@ -806,14 +806,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Kiln & Clay — handmade stoneware, thrown to order',
+            title: 'Kiln & Clay: handmade stoneware, thrown to order',
             description:
-                'Kiln & Clay is a small pottery studio making thrown-and-glazed stoneware for the table and the home — mugs, bowls, plates, vases and planters, each made to order in three studio glazes.',
+                'Kiln & Clay is a small pottery studio making thrown-and-glazed stoneware for the table and the home: mugs, bowls, plates, vases and planters, each made to order in three studio glazes.',
         },
         about: {
             title: 'About Kiln & Clay',
             description:
-                'A one-studio pottery: how Kiln & Clay throws, trims, glazes and fires every piece by hand — honest forms, quiet glazes, made to be used every day.',
+                'A one-studio pottery: how Kiln & Clay throws, trims, glazes and fires every piece by hand, honest forms, quiet glazes, made to be used every day.',
         },
     },
     home: HOME,

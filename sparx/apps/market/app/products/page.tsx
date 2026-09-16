@@ -26,7 +26,7 @@ export async function generateMetadata({
   return {
     title: 'Shop all products',
     description:
-      'Browse the full sparx.market catalog — thousands of products from independent sellers, faceted by category, price, and availability.',
+      'Browse the full sparx.market catalog: thousands of products from independent sellers, faceted by category, price, and availability.',
   };
 }
 

@@ -1368,7 +1368,7 @@ function syncTx(
         const names = stale.map((p) => p.name).join(', ');
         throw new BuilderConflictError(
           `Someone else saved changes to ${stale.length === 1 ? 'this page' : 'these pages'} ` +
-            `while you were editing: ${names}. Reload the editor to pick up their version — ` +
+            `while you were editing: ${names}. Reload the editor to pick up their version: ` +
             `saving now would overwrite it.`,
           'pages'
         );
@@ -1850,7 +1850,7 @@ export async function publishFrame(
     const layout = await activeLayoutTx(tx, ctx);
     if (layout.silicaDraftTree == null) {
       throw new BuilderValidationError(
-        'There is no header or footer saved yet — save your layout before publishing it.'
+        'There is no header or footer saved yet. Save your layout before publishing it.'
       );
     }
     await tx.builderLayout.update({
@@ -2164,7 +2164,7 @@ export async function publishPage(
     if (!row) throw new BuilderNotFoundError('BuilderPage', id);
     if (row.silicaDraftTree == null) {
       throw new BuilderValidationError(
-        'There is nothing saved on this page yet — save it before publishing it.'
+        'There is nothing saved on this page yet. Save it before publishing it.'
       );
     }
     await tx.builderPage.update({
@@ -2519,7 +2519,7 @@ async function syncScripted(
 function requireAtLeastOnePage(current: StoredSilicaSite): void {
   if (current.pages.length === 0) {
     throw new BuilderValidationError(
-      'This site has no pages yet — call upsert_silica_page to create one (e.g. the home page) before setting the frame or theme.'
+      'This site has no pages yet. Call upsert_silica_page to create one (e.g. the home page) before setting the frame or theme.'
     );
   }
 }
@@ -2643,7 +2643,7 @@ export async function removePage(
   if (pages.length === current.pages.length) return null;
   if (pages.length === 0) {
     throw new BuilderValidationError(
-      `Cannot remove page ${pageId} — it is the site's only page. A site needs at least one page; replace its content with upsert_silica_page instead of deleting it.`
+      `Cannot remove page ${pageId}: it is the site's only page. A site needs at least one page; replace its content with upsert_silica_page instead of deleting it.`
     );
   }
   // State the deletion EXPLICITLY: `sync` no longer removes a page just because it is

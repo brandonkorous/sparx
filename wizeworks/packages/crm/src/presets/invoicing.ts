@@ -304,7 +304,7 @@ const retailLineTypesPreset: ModulePreset = definePreset({
   kind: 'invoicing',
   name: 'Retail & services line types',
   description:
-    'Four general-purpose line types — Discount, Installation, Travel, and Deposit credit — for retail and service invoices that aren’t covered by the parts-and-labor defaults.',
+    'Four general-purpose line types (Discount, Installation, Travel, and Deposit credit) for retail and service invoices that aren’t covered by the parts-and-labor defaults.',
   iconKey: 'list-plus',
   tags: ['invoicing', 'line-types', 'retail', 'services'],
   summary: [

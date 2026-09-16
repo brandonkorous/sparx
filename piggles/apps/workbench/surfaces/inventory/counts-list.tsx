@@ -97,7 +97,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faClipboardList} className="size-6" aria-hidden />}
           title="Could not load your counts"
-          description="This is a problem reaching the server. Your counts are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your counts are unaffected: the list just could not be read just now."
         />
       );
     }

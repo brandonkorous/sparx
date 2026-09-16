@@ -97,7 +97,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title={`Add a ${label.toLowerCase()} — hold Shift to open alongside, Alt for a new window`}
+            title={`Add a ${label.toLowerCase()}: hold Shift to open alongside, Alt for a new window`}
             onClick={(event) => {
               ctx.open('crm.record.detail', { id: 'new', objectKey }, { target: targetFor(event) });
             }}
@@ -151,7 +151,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
             title={`Could not load these ${labelPlural.toLowerCase()}`}
             description={recordErrorMessage(
               records.error,
-              'Something went wrong reaching the server. It may be a temporary problem — try again in a moment.'
+              'Something went wrong reaching the server. It may be a temporary problem. Try again in a moment.'
             )}
             actions={
               <Button
@@ -192,7 +192,7 @@ export function RecordsListSurface({ ctx }: { ctx: SurfaceContext }) {
               // The tenant invented this type, so the welcome is about the thing
               // they invented — in their word for it, not "records".
               title: `No ${labelPlural.toLowerCase()} yet`,
-              description: `You made this record type up, which means nobody else's software has it. Add the first ${label.toLowerCase()} and it will show here — with its own search, its own saved views, and a page of its own.`,
+              description: `You made this record type up, which means nobody else's software has it. Add the first ${label.toLowerCase()} and it will show here, with its own search, its own saved views, and a page of its own.`,
               actions: (
                 <Button
                   size="sm"

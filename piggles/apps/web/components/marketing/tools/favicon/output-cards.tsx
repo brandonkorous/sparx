@@ -84,7 +84,7 @@ export function WhatYouGet() {
       <CardBody>
         <h3 className="text-lg font-bold">What you will get</h3>
         <p className="mt-2 text-base">
-          Six files and a manifest — the browser tab icon, the one iPhones put on a home screen, the
+          Six files and a manifest: the browser tab icon, the one iPhones put on a home screen, the
           two Android reads, a version with room around it for launchers that crop to a circle, and
           the multi-size <span className="font-mono">.ico</span> browsers ask for whether you link
           to it or not.

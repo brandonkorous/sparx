@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Aésthète — an editorial med spa",
+      "seoTitle": "Aésthète: an editorial med spa",
       "seoDescription": "Aésthète is a calm two-room aesthetics studio for facials, peels, microneedling, IV therapy and laser. Start with a free consultation and book your provider online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A calm, boutique studio for considered aesthetics — facials, peels, microneedling and more, planned with you and never rushed."
+                      "A calm, boutique studio for considered aesthetics: facials, peels, microneedling and more, planned with you and never rushed."
                     ],
                     "id": "a5b5afd5-7d0c-4100-b8c9-71d48e932cf3",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every plan starts with a free, unhurried consultation — no pressure and no upselling, just an honest path to the results you want."
+                              "Every plan starts with a free, unhurried consultation: no pressure and no upselling, just an honest path to the results you want."
                             ],
                             "id": "2f32a17c-75de-4381-8bc4-fe1ae114b9fb",
                             "ord": "a1"
@@ -1147,7 +1147,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "That’s the whole idea: fewer people, more attention, and results that come from a plan you understand — not a menu you were talked into."
+                          "That’s the whole idea: fewer people, more attention, and results that come from a plan you understand, not a menu you were talked into."
                         ],
                         "id": "b8c54ae3-b7d7-4dc5-9435-f788417ab419",
                         "ord": "a2"
@@ -1212,7 +1212,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — your provider stays with you from the first consultation through your results."
+                          "Book by name. Your provider stays with you from the first consultation through your results."
                         ],
                         "id": "f24bc263-6cbf-4ab6-867a-70f36bea4e6e",
                         "ord": "a1"
@@ -1492,7 +1492,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I came in nervous and left calmer than I’ve felt in months — and my skin has never looked better. It feels like being cared for, not sold to.”"
+                      "“I came in nervous and left calmer than I’ve felt in months, and my skin has never looked better. It feels like being cared for, not sold to.”"
                     ],
                     "id": "fbb71625-29fe-4f03-b1e2-c61f0f357bf4",
                     "ord": "a0"
@@ -1567,7 +1567,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Aésthète",
+      "seoTitle": "Book: Aésthète",
       "seoDescription": "See what Aésthète offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1691,7 +1691,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "46fb522f-e61c-4fcd-8768-f5237f3686c0",
                         "ord": "a1"
@@ -1798,7 +1798,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Aésthète",
+      "seoTitle": "About: Aésthète",
       "seoDescription": "Who Aésthète is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1847,7 +1847,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Aésthète to do aesthetics the way we always wished it were done — calmly, honestly, and around a plan you actually understand."
+                          "We opened Aésthète to do aesthetics the way we always wished it were done: calmly, honestly, and around a plan you actually understand."
                         ],
                         "id": "3eb219bf-ab9d-4414-9ee0-378c30c9b1bc",
                         "ord": "a1"
@@ -1962,7 +1962,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Clinical-grade products and proven protocols — and honest advice on the short list of treatments worth your time and money."
+                              "Clinical-grade products and proven protocols, and honest advice on the short list of treatments worth your time and money."
                             ],
                             "id": "29ef5973-1390-4b95-ac23-0aa947a4a7fe",
                             "ord": "a1"
@@ -2017,7 +2017,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Aésthète",
+      "seoTitle": "Visit: Aésthète",
       "seoDescription": "Where to find Aésthète, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2054,7 +2054,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Aésthète will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Aésthète will get back to you, usually the same day."
                         ],
                         "id": "cd0c61ea-9ba0-4e3a-b898-9214681a1fdc",
                         "ord": "a1"
@@ -2504,7 +2504,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your consultation or treatment online — no phone tag."
+                      "See live availability and reserve your consultation or treatment online: no phone tag."
                     ],
                     "id": "1db3b128-31c3-4b7b-8b08-ae94257cda1f",
                     "ord": "a1"

@@ -41,7 +41,7 @@ export const shippingPresets = [
   commercePreset({
     slug: 'shipping-us-tiered',
     kind: 'shipping',
-    name: 'US domestic — Economy / Standard / Express',
+    name: 'US domestic: Economy / Standard / Express',
     description:
       'A US-only shipping zone with three flat-rate speeds: Economy (≈9 days), Standard (≈4 days), and Express (next day). Edit the prices to match your carrier.',
     iconKey: 'truck',
@@ -63,7 +63,7 @@ export const shippingPresets = [
           priority: 10,
         },
         {
-          name: 'US domestic — standard goods',
+          name: 'US domestic: standard goods',
           allowedCarrierServices: [],
           hazmatClassesAllowed: ['none'],
           requiresSignature: false,
@@ -109,10 +109,17 @@ export const shippingPresets = [
       { label: 'Worldwide', tone: 'neutral' },
       { label: 'Free over $75', tone: 'module' },
     ],
+    // The zone NAME is the marker, so rewording it makes an installed preset
+    // read as not installed: the console offers it again, and applying it lays a
+    // second worldwide zone over the first with its own priority and rates. The
+    // name this zone used to ship under is therefore kept here for good.
     marker: (tx, tenantId) =>
       tx.shippingZone
         .findFirst({
-          where: { tenantId, name: 'Worldwide — free over $75' },
+          where: {
+            tenantId,
+            name: { in: ['Worldwide: free over $75', 'Worldwide — free over $75'] },
+          },
           select: { id: true },
         })
         .then(Boolean),
@@ -120,12 +127,12 @@ export const shippingPresets = [
       installZoneProfileRates(
         sx,
         {
-          name: 'Worldwide — free over $75',
+          name: 'Worldwide: free over $75',
           targeting: { countries: [], regions: [], postalCodeRanges: [] },
           priority: 5,
         },
         {
-          name: 'Worldwide — standard goods',
+          name: 'Worldwide: standard goods',
           allowedCarrierServices: [],
           hazmatClassesAllowed: ['none'],
           requiresSignature: false,

@@ -119,8 +119,8 @@ function CostPanel({ locationId }: { locationId: string }) {
                 : `${data.itemsWithoutCost} items have no cost price`}
             </AlertTitle>
             <AlertDescription>
-              They are left out of everything on this screen, so what your stock is really worth —
-              and what it really costs to keep — is higher than these figures say.
+              They are left out of everything on this screen, so what your stock is really worth
+              (and what it really costs to keep) is higher than these figures say.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -172,7 +172,7 @@ function CostPanel({ locationId }: { locationId: string }) {
           The most expensive things to keep
         </Heading>
         <Text className="text-sm">
-          Not the same list as the most valuable things to own — a slow item ties its money up for
+          Not the same list as the most valuable things to own: a slow item ties its money up for
           far longer.
         </Text>
         <div className="overflow-x-auto">

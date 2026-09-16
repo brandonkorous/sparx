@@ -123,7 +123,7 @@ const socialMetaCallbackRoutes: FastifyPluginAsync = (app) => {
     const removed = await revokeMetaConnections(userId, platforms);
     request.log.info(
       { platforms, removed },
-      'Meta deauthorize callback — removed social connections'
+      'Meta deauthorize callback: removed social connections'
     );
 
     // Meta ignores the body; 200 is the whole contract.
@@ -141,7 +141,7 @@ const socialMetaCallbackRoutes: FastifyPluginAsync = (app) => {
     const removed = await revokeMetaConnections(userId, platforms);
     request.log.info(
       { platforms, removed },
-      'Meta data-deletion callback — removed social connections'
+      'Meta data-deletion callback: removed social connections'
     );
 
     // Meta requires this exact shape: a status URL the person can open, and a

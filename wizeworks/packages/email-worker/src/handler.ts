@@ -94,7 +94,7 @@ async function platformIdentity(tenantId: string, logger: Logger) {
     });
     return platformBrandIdentity(row?.platformBrand);
   } catch (err) {
-    logger.warn({ err }, 'platform brand lookup failed — speaking as the default brand');
+    logger.warn({ err }, 'platform brand lookup failed: speaking as the default brand');
     return platformBrandIdentity(null);
   }
 }
@@ -130,7 +130,7 @@ function platformPalette(identity: PlatformBrandIdentity, logger: Logger): Email
   if (resolved.source === 'plain') {
     logger.warn(
       { brand: identity.key, reason: resolved.reason },
-      'no email palette for this brand — sending in the plain fallback chrome'
+      'no email palette for this brand: sending in the plain fallback chrome'
     );
   }
   return resolved.palette;
@@ -233,7 +233,7 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
           data.propertyId ?? null
         );
       } catch (brandErr) {
-        childLog.warn({ err: brandErr }, 'brand resolution failed — rendering with defaults');
+        childLog.warn({ err: brandErr }, 'brand resolution failed: rendering with defaults');
       }
       rendered = await renderTemplate(data, {
         // The tenant's brand when they have one, but the PLATFORM overlay either
@@ -261,7 +261,7 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
         senderDomainOf(rendered.from)
       );
     } catch (domainErr) {
-      childLog.warn({ err: domainErr }, 'sending-domain lookup failed — relaying via the default');
+      childLog.warn({ err: domainErr }, 'sending-domain lookup failed: relaying via the default');
     }
     const result = await getEmailProvider().send({
       ...rendered,
@@ -289,7 +289,7 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
         automationKey: vars.automation_key ?? null,
         customerId: vars.customer_id ?? null,
       })
-      .catch((err: unknown) => childLog.warn({ err }, 'recordAccepted failed — stat row skipped'));
+      .catch((err: unknown) => childLog.warn({ err }, 'recordAccepted failed: stat row skipped'));
 
     return {
       status: 'sent',
@@ -298,7 +298,7 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
     };
   } catch (err) {
     if (isPermanent(err)) {
-      childLog.warn({ err }, 'email rejected (permanent) — acking');
+      childLog.warn({ err }, 'email rejected (permanent): acking');
       return {
         status: 'rejected',
         messageId: '',

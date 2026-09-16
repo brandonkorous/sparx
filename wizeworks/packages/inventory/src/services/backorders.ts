@@ -728,7 +728,7 @@ export async function updateBackorder(
     if (!existing) throw new InventoryNotFoundError('Backorder', id);
     if (existing.status === 'cancelled' || existing.status === 'fulfilled') {
       throw new InventoryValidationError(
-        `This commitment is already ${existing.status} — there is nothing left to promise.`
+        `This commitment is already ${existing.status}: there is nothing left to promise.`
       );
     }
 

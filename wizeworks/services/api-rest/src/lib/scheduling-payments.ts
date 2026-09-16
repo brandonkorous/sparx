@@ -173,7 +173,7 @@ export async function createBookingDeposit(
     if (err instanceof PaymentConfigError || err instanceof GatewayNotFoundError) {
       logger.warn(
         { tenantId, bookingId },
-        'scheduling-payments: deposit policy set but this business takes no online payments — skipping deposit'
+        'scheduling-payments: deposit policy set but this business takes no online payments, skipping deposit'
       );
       return { required: false };
     }
@@ -250,7 +250,7 @@ export async function settleBookingPayment(
   } catch (err) {
     logger.error(
       { err, tenantId, bookingId, action },
-      'scheduling-payments: settlement failed — depositStatus left for manual handling'
+      'scheduling-payments: settlement failed, depositStatus left for manual handling'
     );
   }
 }

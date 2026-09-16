@@ -82,7 +82,7 @@ export function SwatchActions({
     <div className="flex flex-wrap items-center gap-2">
       <Control
         icon={locked ? faLock : faLockOpen}
-        label={locked ? 'Kept — shuffling leaves this one alone' : 'Keep this one when shuffling'}
+        label={locked ? 'Kept: shuffling leaves this one alone' : 'Keep this one when shuffling'}
         pressed={locked}
         onClick={onLock}
       />

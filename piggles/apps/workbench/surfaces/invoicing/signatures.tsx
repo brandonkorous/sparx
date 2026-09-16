@@ -113,7 +113,7 @@ export function SignaturesSection({
             title: result.emailed ? `Sent to ${signerEmail.trim()}` : 'Signing link ready',
             description: result.emailed
               ? undefined
-              : 'Copy it below — it is shown once and cannot be looked up again.',
+              : 'Copy it below. It is shown once and cannot be looked up again.',
             type: 'success',
           });
         },
@@ -182,7 +182,7 @@ export function SignaturesSection({
       {issuedUrl !== null ? (
         <Alert color="info">
           <AlertContent>
-            <AlertTitle>Here is the link — this is the only time it is shown</AlertTitle>
+            <AlertTitle>Here is the link. This is the only time it is shown</AlertTitle>
             <AlertDescription>
               <span className="block font-mono text-sm break-all">{issuedUrl}</span>
             </AlertDescription>
@@ -219,8 +219,8 @@ export function SignaturesSection({
         </Text>
       ) : rows.length === 0 ? (
         <Text className="text-sm">
-          Nobody has been asked to sign this yet. They get a link of their own — no account, no
-          password — and signing it moves this document forward.
+          Nobody has been asked to sign this yet. They get a link of their own (no account, no
+          password) and signing it moves this document forward.
         </Text>
       ) : (
         // A STACKED LIST, not a table. This section lives in the document's
@@ -297,7 +297,7 @@ export function SignaturesSection({
                     <AlertTitle>This is still a draft</AlertTitle>
                     <AlertDescription>
                       You can send it, but a draft is the stage that means you have not finished
-                      writing it — and anything they sign is frozen exactly as it is now. Move it on
+                      writing it, and anything they sign is frozen exactly as it is now. Move it on
                       first if you were still working on it.
                     </AlertDescription>
                   </AlertContent>
@@ -327,7 +327,7 @@ export function SignaturesSection({
                   }}
                 />
                 <FieldDescription>
-                  Filled in for them on the signing page, and editable there — people sign for each
+                  Filled in for them on the signing page, and editable there: people sign for each
                   other.
                 </FieldDescription>
               </Field>
@@ -359,7 +359,7 @@ export function SignaturesSection({
                   <div className="flex flex-col gap-1">
                     <FieldLabel>Email them the link</FieldLabel>
                     <FieldDescription>
-                      Leave this off to send it yourself — you get the link to copy either way, and
+                      Leave this off to send it yourself. You get the link to copy either way, and
                       only this once.
                     </FieldDescription>
                   </div>

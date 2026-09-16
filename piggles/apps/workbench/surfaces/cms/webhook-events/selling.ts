@@ -21,14 +21,14 @@ export const SELLING_EVENTS: readonly WebhookEventDef[] = [
     key: 'payment.failed',
     label: 'Payment failed',
     description:
-      'A card payment was declined or could not be taken. Worth watching — a run of these is money you are not getting.',
+      'A card payment was declined or could not be taken. Worth watching: a run of these is money you are not getting.',
     group: 'Selling',
   },
   {
     key: 'form.submitted',
     label: 'Form filled in',
     description:
-      'Somebody fills in a form on your site — a contact page, an enquiry, a trade application.',
+      'Somebody fills in a form on your site: a contact page, an enquiry, a trade application.',
     group: 'Selling',
   },
 ];

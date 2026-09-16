@@ -146,14 +146,14 @@ function SecretReveal({ ctx, created }: { ctx: SurfaceContext; created: Created 
               ctx.open('cms.webhooks.detail', { id: created.id }, { target: 'replace' });
             }}
           >
-            Done — manage this
+            Done: manage this
           </Button>
         }
       />
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          <Text>Copy its signing secret now — this is the only time we can show it to you.</Text>
+          <Text>Copy its signing secret now. This is the only time we can show it to you.</Text>
 
           <Alert color="success" variant="soft">
             <AlertContent>

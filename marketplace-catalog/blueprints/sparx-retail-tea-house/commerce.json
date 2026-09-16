@@ -109,15 +109,15 @@
     {
       "handle": "jade-cloud-green",
       "title": "Jade Cloud Green",
-      "description": "A high-mountain green from Guizhou, pan-fired and gently curled — soft and sweet, with notes of steamed greens, chestnut and a clean melon finish. No bitterness, no grassiness; the green tea for people who thought they didn’t like green tea.",
+      "description": "A high-mountain green from Guizhou, pan-fired and gently curled: soft and sweet, with notes of steamed greens, chestnut and a clean melon finish. No bitterness, no grassiness; the green tea for people who thought they didn’t like green tea.",
       "status": "active",
       "productType": "Tea",
       "vendor": "Steepwell Tea House",
       "tags": ["green", "single-origin", "caffeinated"],
       "categoryHandles": ["green-white"],
       "collectionHandles": ["new-season", "best-sellers", "green-white-set"],
-      "seoTitle": "Jade Cloud Green — high-mountain green tea | Steepwell",
-      "seoDescription": "A soft, sweet pan-fired green from Guizhou — chestnut and melon, no bitterness. Whole leaf.",
+      "seoTitle": "Jade Cloud Green: high-mountain green tea | Steepwell",
+      "seoDescription": "A soft, sweet pan-fired green from Guizhou: chestnut and melon, no bitterness. Whole leaf.",
       "options": [
         {
           "name": "Format",
@@ -162,15 +162,15 @@
     {
       "handle": "silver-needle-white",
       "title": "Silver Needle White",
-      "description": "The gentlest tea we carry — unopened buds picked in early spring and only withered and dried, nothing more. Delicate and honeyed, with cucumber and a faint florality. Steep it long and low; it rewards patience and forgives almost nothing else.",
+      "description": "The gentlest tea we carry: unopened buds picked in early spring and only withered and dried, nothing more. Delicate and honeyed, with cucumber and a faint florality. Steep it long and low; it rewards patience and forgives almost nothing else.",
       "status": "active",
       "productType": "Tea",
       "vendor": "Steepwell Tea House",
       "tags": ["white", "single-origin", "caffeinated", "delicate"],
       "categoryHandles": ["green-white"],
       "collectionHandles": ["new-season", "green-white-set"],
-      "seoTitle": "Silver Needle White — spring-picked white tea | Steepwell",
-      "seoDescription": "Early-spring buds, withered and dried — honeyed, delicate, faintly floral. Whole leaf.",
+      "seoTitle": "Silver Needle White: spring-picked white tea | Steepwell",
+      "seoDescription": "Early-spring buds, withered and dried: honeyed, delicate, faintly floral. Whole leaf.",
       "options": [
         {
           "name": "Format",
@@ -215,15 +215,15 @@
     {
       "handle": "ceremonial-matcha",
       "title": "Ceremonial Matcha",
-      "description": "Stone-ground shade-grown matcha from Uji, whisked to a bright jade froth — vegetal and umami-rich with a sweet, lingering finish and none of the chalky bitterness of culinary grade. Whisk it with water for the traditional bowl, or into warm milk for a latte.",
+      "description": "Stone-ground shade-grown matcha from Uji, whisked to a bright jade froth: vegetal and umami-rich with a sweet, lingering finish and none of the chalky bitterness of culinary grade. Whisk it with water for the traditional bowl, or into warm milk for a latte.",
       "status": "active",
       "productType": "Tea",
       "vendor": "Steepwell Tea House",
       "tags": ["matcha", "green", "single-origin", "caffeinated"],
       "categoryHandles": ["green-white"],
       "collectionHandles": ["best-sellers", "starter-ritual"],
-      "seoTitle": "Ceremonial Matcha — stone-ground Uji matcha | Steepwell",
-      "seoDescription": "Shade-grown ceremonial matcha from Uji — bright, umami-rich, sweet-finishing. Whisk and pour.",
+      "seoTitle": "Ceremonial Matcha: stone-ground Uji matcha | Steepwell",
+      "seoDescription": "Shade-grown ceremonial matcha from Uji: bright, umami-rich, sweet-finishing. Whisk and pour.",
       "options": [
         {
           "name": "Size",
@@ -268,15 +268,15 @@
     {
       "handle": "golden-assam-black",
       "title": "Golden Assam Black",
-      "description": "A second-flush Assam thick with golden tips — the classic breakfast cup, malty and full-bodied with a honeyed edge and enough backbone to take milk without disappearing. The one you reach for before you’re quite awake.",
+      "description": "A second-flush Assam thick with golden tips: the classic breakfast cup, malty and full-bodied with a honeyed edge and enough backbone to take milk without disappearing. The one you reach for before you’re quite awake.",
       "status": "active",
       "productType": "Tea",
       "vendor": "Steepwell Tea House",
       "tags": ["black", "single-origin", "caffeinated", "breakfast"],
       "categoryHandles": ["black-oolong"],
       "collectionHandles": ["new-season", "best-sellers"],
-      "seoTitle": "Golden Assam Black — malty breakfast tea | Steepwell",
-      "seoDescription": "A tippy second-flush Assam — malty, full-bodied, honeyed, and happy with milk. Whole leaf.",
+      "seoTitle": "Golden Assam Black: malty breakfast tea | Steepwell",
+      "seoDescription": "A tippy second-flush Assam: malty, full-bodied, honeyed, and happy with milk. Whole leaf.",
       "options": [
         {
           "name": "Format",
@@ -321,15 +321,15 @@
     {
       "handle": "iron-goddess-oolong",
       "title": "Iron Goddess Oolong",
-      "description": "A rolled Tie Guan Yin oolong, lightly oxidised and roasted — orchid on the nose, buttery and lingering in the cup, and endlessly re-steepable. Open the same leaves three or four times and each pour tells you something new.",
+      "description": "A rolled Tie Guan Yin oolong, lightly oxidised and roasted: orchid on the nose, buttery and lingering in the cup, and endlessly re-steepable. Open the same leaves three or four times and each pour tells you something new.",
       "status": "active",
       "productType": "Tea",
       "vendor": "Steepwell Tea House",
       "tags": ["oolong", "single-origin", "caffeinated"],
       "categoryHandles": ["black-oolong"],
       "collectionHandles": ["new-season", "green-white-set"],
-      "seoTitle": "Iron Goddess Oolong — Tie Guan Yin oolong | Steepwell",
-      "seoDescription": "A rolled, lightly roasted Tie Guan Yin — orchid, butter, and many honest re-steeps. Whole leaf.",
+      "seoTitle": "Iron Goddess Oolong: Tie Guan Yin oolong | Steepwell",
+      "seoDescription": "A rolled, lightly roasted Tie Guan Yin: orchid, butter, and many honest re-steeps. Whole leaf.",
       "options": [
         {
           "name": "Format",
@@ -374,15 +374,15 @@
     {
       "handle": "house-masala-chai",
       "title": "House Masala Chai",
-      "description": "Our own blend of bold Assam with hand-cracked cardamom, cinnamon, ginger, clove and black pepper — warming and properly spiced, not sweet. Simmer it in milk and water for the real thing, or steep it straight for a lighter spiced cup.",
+      "description": "Our own blend of bold Assam with hand-cracked cardamom, cinnamon, ginger, clove and black pepper: warming and properly spiced, not sweet. Simmer it in milk and water for the real thing, or steep it straight for a lighter spiced cup.",
       "status": "active",
       "productType": "Tea",
       "vendor": "Steepwell Tea House",
       "tags": ["chai", "black", "blend", "spiced", "caffeinated"],
       "categoryHandles": ["black-oolong"],
       "collectionHandles": ["best-sellers"],
-      "seoTitle": "House Masala Chai — spiced black tea blend | Steepwell",
-      "seoDescription": "Bold Assam with cardamom, cinnamon, ginger, clove and pepper — warming, not sweet. Whole leaf.",
+      "seoTitle": "House Masala Chai: spiced black tea blend | Steepwell",
+      "seoDescription": "Bold Assam with cardamom, cinnamon, ginger, clove and pepper: warming, not sweet. Whole leaf.",
       "options": [
         {
           "name": "Format",
@@ -427,15 +427,15 @@
     {
       "handle": "chamomile-meadow",
       "title": "Chamomile Meadow",
-      "description": "Whole Egyptian chamomile flowers, not the dust that hides in most tea bags — softly apple-sweet, gently floral and genuinely calming. A caffeine-free cup for the end of the day, or any hour that could use slowing down.",
+      "description": "Whole Egyptian chamomile flowers, not the dust that hides in most tea bags: softly apple-sweet, gently floral and genuinely calming. A caffeine-free cup for the end of the day, or any hour that could use slowing down.",
       "status": "active",
       "productType": "Tea",
       "vendor": "Steepwell Tea House",
       "tags": ["herbal", "caffeine-free", "evening"],
       "categoryHandles": ["herbal"],
       "collectionHandles": ["caffeine-free", "starter-ritual"],
-      "seoTitle": "Chamomile Meadow — whole-flower chamomile | Steepwell",
-      "seoDescription": "Whole Egyptian chamomile flowers — apple-sweet, gently floral, caffeine-free. A calm evening cup.",
+      "seoTitle": "Chamomile Meadow: whole-flower chamomile | Steepwell",
+      "seoDescription": "Whole Egyptian chamomile flowers: apple-sweet, gently floral, caffeine-free. A calm evening cup.",
       "options": [
         {
           "name": "Format",
@@ -487,8 +487,8 @@
       "tags": ["herbal", "rooibos", "caffeine-free"],
       "categoryHandles": ["herbal"],
       "collectionHandles": ["caffeine-free"],
-      "seoTitle": "Amber Rooibos — caffeine-free red bush tea | Steepwell",
-      "seoDescription": "Naturally sweet South African rooibos — honey, vanilla and warm wood. Caffeine-free.",
+      "seoTitle": "Amber Rooibos: caffeine-free red bush tea | Steepwell",
+      "seoDescription": "Naturally sweet South African rooibos: honey, vanilla and warm wood. Caffeine-free.",
       "options": [
         {
           "name": "Format",
@@ -533,15 +533,15 @@
     {
       "handle": "tea-sampler",
       "title": "The Steepwell Sampler",
-      "description": "Five small tins to taste your way across the shelf — a green, a black, an oolong, a chai and a caffeine-free herbal, each enough for several pots. The easiest way to find your tea, and a genuinely lovely thing to give.",
+      "description": "Five small tins to taste your way across the shelf: a green, a black, an oolong, a chai and a caffeine-free herbal, each enough for several pots. The easiest way to find your tea, and a genuinely lovely thing to give.",
       "status": "active",
       "productType": "Gift",
       "vendor": "Steepwell Tea House",
       "tags": ["sampler", "gift", "variety"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts", "starter-ritual"],
-      "seoTitle": "The Steepwell Sampler — five-tea tasting set | Steepwell",
-      "seoDescription": "Five small tins — green, black, oolong, chai and a herbal — to taste across the shelf. A lovely gift.",
+      "seoTitle": "The Steepwell Sampler: five-tea tasting set | Steepwell",
+      "seoDescription": "Five small tins (green, black, oolong, chai and a herbal) to taste across the shelf. A lovely gift.",
       "variants": [
         {
           "sku": "STEEP-SAMPLER",
@@ -561,15 +561,15 @@
     {
       "handle": "cast-iron-teapot",
       "title": "Cast-Iron Teapot",
-      "description": "A matte-black tetsubin-style cast-iron pot with an enamel-lined interior and a removable stainless infuser basket — it holds heat beautifully for a long, even steep and pours clean. 0.6 litres, enough for two or three cups; a pot to keep for years.",
+      "description": "A matte-black tetsubin-style cast-iron pot with an enamel-lined interior and a removable stainless infuser basket. It holds heat beautifully for a long, even steep and pours clean. 0.6 litres, enough for two or three cups; a pot to keep for years.",
       "status": "active",
       "productType": "Teaware",
       "vendor": "Steepwell Tea House",
       "tags": ["teaware", "brewing", "teapot"],
       "categoryHandles": ["tools"],
       "collectionHandles": ["brewing-tools", "gifts"],
-      "seoTitle": "Cast-Iron Teapot — enamel-lined tetsubin | Steepwell",
-      "seoDescription": "A matte cast-iron teapot with an enamel lining and stainless infuser — holds heat, pours clean. 0.6L.",
+      "seoTitle": "Cast-Iron Teapot: enamel-lined tetsubin | Steepwell",
+      "seoDescription": "A matte cast-iron teapot with an enamel lining and stainless infuser: holds heat, pours clean. 0.6L.",
       "variants": [
         {
           "sku": "STEEP-TOOL-POT",
@@ -589,15 +589,15 @@
     {
       "handle": "glass-infuser-mug",
       "title": "Glass Infuser Mug",
-      "description": "A double-walled glass mug with a fine stainless infuser and a lid that doubles as a drip tray — watch the leaves unfurl, lift the basket when it’s ready, and drink from the same cup. The simplest way to brew loose leaf at your desk.",
+      "description": "A double-walled glass mug with a fine stainless infuser and a lid that doubles as a drip tray: watch the leaves unfurl, lift the basket when it’s ready, and drink from the same cup. The simplest way to brew loose leaf at your desk.",
       "status": "active",
       "productType": "Teaware",
       "vendor": "Steepwell Tea House",
       "tags": ["teaware", "brewing", "infuser"],
       "categoryHandles": ["tools"],
       "collectionHandles": ["brewing-tools", "starter-ritual"],
-      "seoTitle": "Glass Infuser Mug — double-walled brewing mug | Steepwell",
-      "seoDescription": "A double-walled glass mug with a fine stainless infuser and lid — brew loose leaf and drink from one cup.",
+      "seoTitle": "Glass Infuser Mug: double-walled brewing mug | Steepwell",
+      "seoDescription": "A double-walled glass mug with a fine stainless infuser and lid: brew loose leaf and drink from one cup.",
       "variants": [
         {
           "sku": "STEEP-TOOL-INF",
@@ -617,15 +617,15 @@
     {
       "handle": "subscription",
       "title": "Tea Club Subscription",
-      "description": "Fresh tea on your schedule — pick how many tins and how often, and we fill and ship them to match. Rotate through the whole shelf or stay with your favourites; skip, swap or cancel any time. The easiest way to keep good tea in the house.",
+      "description": "Fresh tea on your schedule. Pick how many tins and how often, and we fill and ship them to match. Rotate through the whole shelf or stay with your favourites; skip, swap or cancel any time. The easiest way to keep good tea in the house.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Steepwell Tea House",
       "tags": ["subscription", "gift"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["best-sellers", "gifts"],
-      "seoTitle": "Tea Club Subscription — fresh tea, on your schedule | Steepwell",
-      "seoDescription": "A flexible tea subscription — choose tins and cadence; skip, swap or cancel any time.",
+      "seoTitle": "Tea Club Subscription: fresh tea, on your schedule | Steepwell",
+      "seoDescription": "A flexible tea subscription. Choose tins and cadence; skip, swap or cancel any time.",
       "options": [
         {
           "name": "Plan",

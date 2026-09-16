@@ -305,14 +305,14 @@ function main(): void {
 
   if (findings.length === 0 && unsafeGuc.length === 0 && unreadableScans.length === 0) {
     console.log(
-      '\nOK — every tenant-scoped table has the required RLS clauses, every policy reads its\n' +
+      '\nOK: every tenant-scoped table has the required RLS clauses, every policy reads its\n' +
         'GUC via current_tenant_id(), and every cross-tenant scan can read what it scans.'
     );
     process.exit(0);
   }
 
   if (findings.length > 0) {
-    console.error(`\nFAIL — ${findings.length} table(s) missing RLS clauses:\n`);
+    console.error(`\nFAIL: ${findings.length} table(s) missing RLS clauses:\n`);
     for (const f of findings) {
       console.error(`  ${f.table}  (introduced in ${f.migration})`);
       for (const m of f.missing) console.error(`    - missing: ${m}`);
@@ -324,14 +324,14 @@ function main(): void {
 
   if (unsafeGuc.length > 0) {
     console.error(
-      `\nFAIL — ${unsafeGuc.length} table(s) whose effective policy uses a raw current_setting('app.…') GUC:\n`
+      `\nFAIL: ${unsafeGuc.length} table(s) whose effective policy uses a raw current_setting('app.…') GUC:\n`
     );
     for (const f of unsafeGuc) {
       console.error(`  ${f.table}  (last defined in ${f.migration})`);
     }
     console.error(
       '\nFix: add a later migration that DROPs + recreates each policy with the\n' +
-        'missing-safe helper — USING (tenant_id = current_tenant_id()) — which\n' +
+        'missing-safe helper, USING (tenant_id = current_tenant_id()), which\n' +
         'returns NULL on an unset GUC instead of throwing 42704 under FORCE RLS.\n' +
         '(See 20260801000000_fix_b2b_import_rls_guc for the canonical pattern.)'
     );
@@ -339,16 +339,16 @@ function main(): void {
 
   if (unreadableScans.length > 0) {
     console.error(
-      `\nFAIL — ${unreadableScans.length} cross-tenant scan(s) read a FORCE-RLS table the\n` +
-        'definer role cannot see. Each returns ZERO ROWS in prod — silently, with no\n' +
-        'error — so whatever background feature it drives never fires:\n'
+      `\nFAIL: ${unreadableScans.length} cross-tenant scan(s) read a FORCE-RLS table the\n` +
+        'definer role cannot see. Each returns ZERO ROWS in prod: silently, with no\n' +
+        'error, so whatever background feature it drives never fires:\n'
     );
     for (const s of unreadableScans) {
       console.error(`  ${s.fn}()  (defined in ${s.migration})`);
       for (const t of s.blocked) console.error(`    - no owner read on: ${t}`);
     }
     console.error(
-      '\nFix: add a migration granting the definer a read on each table listed —\n' +
+      '\nFix: add a migration granting the definer a read on each table listed:\n' +
         '  CREATE POLICY <table>_owner_read ON "<table>"\n' +
         '      AS PERMISSIVE FOR SELECT TO sparx_owner USING (true);\n' +
         'This opens nothing for sparx_app and grants no cross-tenant WRITE: the scan\n' +

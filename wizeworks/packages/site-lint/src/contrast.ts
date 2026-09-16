@@ -105,12 +105,12 @@ function checkThemePairs(
       severity,
       title: `Text on your ${pair.name} color is hard to read`,
       detail:
-        `Anything using your ${pair.name} color as a background — buttons, labels, ` +
-        `highlighted panels — puts ${hex(pair.content)} text on ${hex(pair.color)}, which is ` +
+        `Anything using your ${pair.name} color as a background: buttons, labels, ` +
+        `highlighted panels: puts ${hex(pair.content)} text on ${hex(pair.color)}, which is ` +
         `${ratio(value)}. Comfortable reading needs about ${String(AA_NORMAL)}:1. ` +
         (pair.derived
           ? 'No text color was chosen for this one, so the darkest or lightest option was ' +
-            'picked automatically and it still is not enough — the color itself is in the ' +
+            'picked automatically and it still is not enough: the color itself is in the ' +
             'middle of the range, where neither black nor white reads well. Choose a deeper ' +
             'or lighter version of it, or set its text color yourself.'
           : 'The text color set for it is too close in tone. Make one of the two much darker ' +
@@ -200,9 +200,9 @@ function checkAuthoredPairs(
         `what is behind it${inMode(palette, modes)}. ` +
         (paint.backgroundSoft
           ? 'The background here is a soft tint, which is much paler than the color it is ' +
-            'made from — text chosen for the solid color will not carry on it.'
+            'made from: text chosen for the solid color will not carry on it.'
           : ''),
-      evidence: `${ratio(value)}${words ? ` — "${words}"` : ''}${
+      evidence: `${ratio(value)}${words ? `: "${words}"` : ''}${
         modes.length > 1 ? ` (${palette.mode})` : ''
       }`,
     });

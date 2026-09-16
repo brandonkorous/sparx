@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Brightpath Life Coaching — warm, judgment-free coaching",
-      "seoDescription": "Brightpath Life Coaching helps you navigate change with warm, certified coaching — life transitions, confidence, mindset, balance and purpose. Book a free discovery call online.",
+      "seoTitle": "Brightpath Life Coaching: warm, judgment-free coaching",
+      "seoDescription": "Brightpath Life Coaching helps you navigate change with warm, certified coaching: life transitions, confidence, mindset, balance and purpose. Book a free discovery call online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Warm, judgment-free coaching for the moments that ask for change — a new season, a big decision, or simply wanting to feel more like yourself again."
+                      "Warm, judgment-free coaching for the moments that ask for change: a new season, a big decision, or simply wanting to feel more like yourself again."
                     ],
                     "id": "4a02fe0f-a2b4-43e6-acf8-78d4847d6534",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Trained, credentialed coaches who’ve guided hundreds of people through real change — not generic advice from a book."
+                              "Trained, credentialed coaches who’ve guided hundreds of people through real change, not generic advice from a book."
                             ],
                             "id": "e691677e-bd75-4c02-893a-78fb075664d1",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A safe, encouraging space to say the thing out loud. No shame, no fixing you — just steady support and honest reflection."
+                              "A safe, encouraging space to say the thing out loud. No shame, no fixing you. Just steady support and honest reflection."
                             ],
                             "id": "e8b084cf-69a8-46eb-ae26-3f82e5b9dd2a",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every session ends with something to carry into your week — a small step, a reframe, a habit that actually sticks."
+                              "Every session ends with something to carry into your week: a small step, a reframe, a habit that actually sticks."
                             ],
                             "id": "95e1f90c-d6c2-49b2-b372-8fb2d9a830dc",
                             "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It’s less about pushing harder and more about seeing clearly — noticing the mindset and habits quietly shaping your days, then choosing the small, doable changes that add up to a life that feels like yours."
+                          "It’s less about pushing harder and more about seeing clearly: noticing the mindset and habits quietly shaping your days, then choosing the small, doable changes that add up to a life that feels like yours."
                         ],
                         "id": "3d60402a-0f42-4c7a-9ede-fd8081f04ded",
                         "ord": "a2"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book with the coach whose focus fits you best — you’ll work with the same person throughout your journey."
+                          "Book with the coach whose focus fits you best: you’ll work with the same person throughout your journey."
                         ],
                         "id": "6e1b2166-47f3-4345-8656-d9512e9de9ec",
                         "ord": "a1"
@@ -1243,7 +1243,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Guides people through big life changes — careers, moves, new chapters — with warmth and a steady, mindset-first approach."
+                                  "Guides people through big life changes (careers, moves, new chapters) with warmth and a steady, mindset-first approach."
                                 ],
                                 "id": "4f691877-5d79-42c7-8f0e-c1ae335ddcde",
                                 "ord": "a2"
@@ -1439,7 +1439,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "No commitment, no pressure — just 30 minutes to talk it through and see how coaching could help. Book a time that works for you."
+                      "No commitment, no pressure. Just 30 minutes to talk it through and see how coaching could help. Book a time that works for you."
                     ],
                     "id": "77ba74ec-d149-4147-ae3e-a7873b0d443c",
                     "ord": "a1"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Brightpath Life Coaching",
+      "seoTitle": "Book: Brightpath Life Coaching",
       "seoDescription": "See what Brightpath Life Coaching offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "0962452b-a5f9-44e9-9e6a-881b659cee0f",
                         "ord": "a1"
@@ -1626,7 +1626,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Life happens — just give us at least 24 hours’ notice to reschedule and we’ll find another time that fits. We send a friendly reminder the day before and two hours ahead."
+                              "Life happens. Just give us at least 24 hours’ notice to reschedule and we’ll find another time that fits. We send a friendly reminder the day before and two hours ahead."
                             ],
                             "id": "cb87f94b-2916-43ae-81d7-cce5e864452d",
                             "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Brightpath Life Coaching",
+      "seoTitle": "About: Brightpath Life Coaching",
       "seoDescription": "Who Brightpath Life Coaching is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Brightpath began with a simple belief: everyone deserves a caring, capable person in their corner when life asks them to change. Not a lecturer, not a guru — a coach who listens, believes in you, and helps you move forward."
+                          "Brightpath began with a simple belief: everyone deserves a caring, capable person in their corner when life asks them to change. Not a lecturer, not a guru, a coach who listens, believes in you, and helps you move forward."
                         ],
                         "id": "47670138-e27c-43d5-ab9a-d82ee9f3d761",
                         "ord": "a1"
@@ -1760,7 +1760,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We work with people from every walk of life — those navigating transitions, rebuilding confidence, chasing more balance, or simply wanting to feel purposeful again. Wherever you’re starting from, you’re welcome here."
+                          "We work with people from every walk of life. Those navigating transitions, rebuilding confidence, chasing more balance, or simply wanting to feel purposeful again. Wherever you’re starting from, you’re welcome here."
                         ],
                         "id": "af6215a2-c2c1-4233-8cb2-646e37dbc1c9",
                         "ord": "a2"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Brightpath Life Coaching",
+      "seoTitle": "Visit: Brightpath Life Coaching",
       "seoDescription": "Where to find Brightpath Life Coaching, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Brightpath Life Coaching will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Brightpath Life Coaching will get back to you, usually the same day."
                         ],
                         "id": "53949b60-6017-4d9a-8b8f-8b97d7d2a7a6",
                         "ord": "a1"
@@ -2409,7 +2409,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book your free discovery call online and see live availability — no phone tag, no pressure."
+                      "Book your free discovery call online and see live availability: no phone tag, no pressure."
                     ],
                     "id": "d3b60d43-31b6-4277-b745-9507b9cb8694",
                     "ord": "a1"

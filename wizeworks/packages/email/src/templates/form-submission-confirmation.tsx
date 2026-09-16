@@ -26,7 +26,7 @@ export function FormSubmissionConfirmationEmail({
   const site = siteName ?? '';
   const body =
     message ??
-    'Thanks for getting in touch — we’ve received your message and will be in touch soon.';
+    'Thanks for getting in touch: we’ve received your message and will be in touch soon.';
   return (
     <EmailLayout
       // The visitor filled in a form on the TENANT's site.
@@ -36,7 +36,7 @@ export function FormSubmissionConfirmationEmail({
       <Section>
         <EmailHeading>Thanks{name ? `, ${name}` : ''}</EmailHeading>
         <EmailParagraph>{body}</EmailParagraph>
-        <EmailParagraph>{site ? `— The ${site} team` : '— Thanks again'}</EmailParagraph>
+        <EmailParagraph>{site ? `The ${site} team` : 'Thanks again'}</EmailParagraph>
       </Section>
     </EmailLayout>
   );

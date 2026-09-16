@@ -101,7 +101,7 @@ function validate(draft: WorkflowDraft): void {
   }
   if (draft.stages.length === 0) {
     throw new WorkflowValidationError(
-      'A workflow needs at least one stage — that is the step a document sits at.'
+      'A workflow needs at least one stage. That is the step a document sits at.'
     );
   }
   const unnamed = draft.stages.findIndex(

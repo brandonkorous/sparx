@@ -98,7 +98,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
         ? `This clears the current sample records and stamps a fresh ${data.packLabel.toLowerCase()} set across ${scope}. Every record it adds is marked as a sample, and none of your real records are touched.`
         : productCopyWith(
             'sampleData.loadConfirm',
-            `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set — products, customers, orders and more — so you can see how Piggles works with real-looking records. Everything it adds is clearly marked as a sample and can be removed in one step.`,
+            `This fills ${scope} with a full, realistic ${data.packLabel.toLowerCase()} set (products, customers, orders and more) so you can see how Piggles works with real-looking records. Everything it adds is clearly marked as a sample and can be removed in one step.`,
             { scope, pack: data.packLabel.toLowerCase() }
           ),
       confirmLabel: loaded ? 'Replace it' : 'Load sample data',
@@ -254,7 +254,7 @@ export function SampleDataSurface({ ctx }: { ctx: SurfaceContext }) {
                 ) : null
               ) : (
                 <Text className="text-sm">
-                  Nothing is loaded right now. Loading is safe to undo — one click removes every
+                  Nothing is loaded right now. Loading is safe to undo. One click removes every
                   sample record and leaves your real ones exactly as they are.
                 </Text>
               )}

@@ -18,19 +18,19 @@ export const BUILDER_STYLE_GUIDE = {
   overview:
     'Author a site page as a tree of nodes. Every node is { id?, type, name?, class?, props, binding?, children? }. ' +
     '`type` picks a component from the catalog below; `class` is a Tailwind-native string that compiles to the tenant theme; ' +
-    '`props` is component data; `binding` pulls live data; `children` nest. There is ONE styling surface — the class string. ' +
+    '`props` is component data; `binding` pulls live data; `children` nest. There is ONE styling surface: the class string. ' +
     'Containers arrange children (flex/grid); leaves render content. Pages are DRAFTs until published. ' +
-    'NON-NEGOTIABLE: every page — and especially the site-layout header & footer — MUST be responsive. Author mobile-first ' +
+    'NON-NEGOTIABLE: every page (and especially the site-layout header & footer) MUST be responsive. Author mobile-first ' +
     '(the bare utility is the phone layout) and let the layout adapt to width per `responsive` below. A site that breaks, ' +
-    'overflows, or crams on a phone is unshippable — treat it as a defect, not polish.',
+    'overflows, or crams on a phone is unshippable: treat it as a defect, not polish.',
 
   documentFormat: {
     description:
-      'Pass create_builder_page / update_builder_page a "document" — either this envelope or a bare node tree. ' +
+      'Pass create_builder_page / update_builder_page a "document". Either this envelope or a bare node tree. ' +
       'Missing node ids are auto-filled, so you only need to emit { type, class?, props?, children? }. The envelope also ' +
-      'accepts optional SEO — seoTitle, seoDescription, canonical, ogImage, noindex — which set the page metadata the ' +
+      'accepts optional SEO (seoTitle, seoDescription, canonical, ogImage, noindex) which set the page metadata the ' +
       'site renders (omit them on an update to leave existing SEO untouched). To change ONLY the SEO of an ' +
-      'existing page, use set_page_seo (pageId + the fields) — it patches the metadata without resending the tree.',
+      'existing page, use set_page_seo (pageId + the fields). It patches the metadata without resending the tree.',
     format: 'sparx.builder/v1',
     kinds: {
       singleton:
@@ -44,7 +44,7 @@ export const BUILDER_STYLE_GUIDE = {
       name: 'About',
       kind: 'singleton',
       slug: 'about',
-      seoTitle: 'About — Your Company',
+      seoTitle: 'About: Your Company',
       seoDescription: 'Who we are and what we make.',
       tree: {
         type: 'Section',
@@ -144,7 +144,7 @@ export const BUILDER_STYLE_GUIDE = {
 
   classVocabulary: {
     note:
-      'Author Tailwind utilities directly. Every color/shape/spacing token below resolves to the tenant silica theme (`--color-*`, `--radius-*`) at compile time — ' +
+      'Author Tailwind utilities directly. Every color/shape/spacing token below resolves to the tenant silica theme (`--color-*`, `--radius-*`) at compile time: ' +
       'never hardcode hex. Unknown utilities are silently dropped (no error), so typos are safe but inert.',
     color: {
       surfaces: [
@@ -208,12 +208,12 @@ export const BUILDER_STYLE_GUIDE = {
       grid: ['grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4'],
       sizing: ['w-full', 'max-w-site', 'min-h-screen', 'min-h-[50vh]', 'h-[75vh]'],
       centeredColumn:
-        'mx-auto w-full max-w-site — the centered content column inside a full-bleed (w-full) band. This pairing is the core page rhythm.',
+        'mx-auto w-full max-w-site: the centered content column inside a full-bleed (w-full) band. This pairing is the core page rhythm.',
     },
     motion: {
       note:
         'Entrance animations ship with the theme; reduced-motion is the default posture (neutralized under the OS setting, so never add a reduced-motion guard). ' +
-        'An entrance has THREE triggers — choose the class shape by WHEN it should play:',
+        'An entrance has THREE triggers. Choose the class shape by WHEN it should play:',
       triggers: {
         scroll:
           'Plays as the element scrolls into view (the alive-feeling default). Emit `bx-reveal bx-reveal--<token>` (e.g. `bx-reveal bx-reveal--fade-up`). A tiny IntersectionObserver island flips it on; nothing is hidden when JS is off or reduced motion is set.',
@@ -222,9 +222,9 @@ export const BUILDER_STYLE_GUIDE = {
       },
       tokens: ['fade-in', 'fade-up', 'fade-down', 'scale-in', 'slide-in-left', 'slide-in-right'],
       stagger:
-        'On a CONTAINER, `bx-reveal-stagger` (or `bx-reveal-stagger--bold`) fades its direct children in sequence as it scrolls into view — do NOT also put a reveal on each child.',
+        'On a CONTAINER, `bx-reveal-stagger` (or `bx-reveal-stagger--bold`) fades its direct children in sequence as it scrolls into view: do NOT also put a reveal on each child.',
       hoverEffects: {
-        note: 'A PERSISTENT hover effect (held while hovered, eases back on hover-out) — the card/tile/image idiom, distinct from the one-shot `hover:animate-<token>` entrance. Emit ONE `bx-hover--<effect>` class on the element; it is reduced-motion aware on its own (movement is gated, a shadow/brightness cue stays), so never add a guard.',
+        note: 'A PERSISTENT hover effect (held while hovered, eases back on hover-out): the card/tile/image idiom, distinct from the one-shot `hover:animate-<token>` entrance. Emit ONE `bx-hover--<effect>` class on the element; it is reduced-motion aware on its own (movement is gated, a shadow/brightness cue stays), so never add a guard.',
         effects: ['lift', 'grow', 'sink', 'glow', 'brighten', 'tilt'],
         guidance:
           '`lift` (rise + shadow) is the default for cards; `grow`/`brighten` suit images & media; `glow` (brand-tinted) suits feature cards & CTAs; `sink` suits pressable tiles; `tilt` is a playful 3D accent.',
@@ -239,7 +239,7 @@ export const BUILDER_STYLE_GUIDE = {
 
   responsive: {
     mandate:
-      'REQUIRED on every page. Responsiveness is a top-priority platform rule — a fixed desktop-only arrangement is a release ' +
+      'REQUIRED on every page. Responsiveness is a top-priority platform rule: a fixed desktop-only arrangement is a release ' +
       'blocker, not a refinement. Author the base (no-prefix) utility as the MOBILE layout, then widen with `@`-prefixed steps. ' +
       'Never assume a single width.',
     strategy:
@@ -247,12 +247,12 @@ export const BUILDER_STYLE_GUIDE = {
       'wherever it is placed. Author mobile-first (the base utility) then step up at container breakpoints.',
     breakpoints: ['@sm', '@md', '@lg', '@xl', '@2xl', '@3xl', '@4xl', '@5xl', '@6xl', '@7xl'],
     examples: [
-      'grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3  — one column on narrow, stepping up as the container widens',
-      'flex-col @3xl:flex-row  — stacked on narrow, side-by-side once wide',
-      'p-6 @3xl:p-16  — tighter padding on small containers',
+      'grid-cols-1 @2xl:grid-cols-2 @4xl:grid-cols-3. One column on narrow, stepping up as the container widens',
+      'flex-col @3xl:flex-row: stacked on narrow, side-by-side once wide',
+      'p-6 @3xl:p-16: tighter padding on small containers',
     ],
     headerFooter:
-      'Header & footer are NOT authored here — they are the silica FRAME (see `siteChrome` below). The guidance moved with ' +
+      'Header & footer are NOT authored here. They are the silica FRAME (see `siteChrome` below). The guidance moved with ' +
       'them; `describe_silica_authoring` carries the responsive rules that apply to the frame’s own vocabulary.',
   },
 
@@ -264,21 +264,21 @@ export const BUILDER_STYLE_GUIDE = {
       'There used to be a parallel "site layout" document here (list_builder_layouts, get_builder_layout, ' +
       'update_builder_layout, publish_builder_layout, set_active_layout). Those tools are REMOVED. They wrote the legacy ' +
       '`builder_layouts.draft_tree`/`.published_tree` columns, and the site’s only chrome tier reads the silica ' +
-      'frame — so a header authored that way returned `published: true` and never appeared. If you are working from an ' +
+      'frame, so a header authored that way returned `published: true` and never appeared. If you are working from an ' +
       'older transcript or doc that names them, that instruction is stale.',
     workflow:
-      'To change the header/footer: `describe_silica_authoring` (its node contract differs from this one — read it ' +
+      'To change the header/footer: `describe_silica_authoring` (its node contract differs from this one, read it ' +
       'first), then `get_silica_frame` → `set_silica_frame` → `publish_silica_site`. The frame needs at least one silica ' +
       'page to attach to, so `upsert_silica_page` the home page first if the site has none.',
     identity:
-      'Use the `siteNavbar` / `siteFooter` composites — silica’s own navbar/footer blocks pre-filled with the ' +
+      'Use the `siteNavbar` / `siteFooter` composites: silica’s own navbar/footer blocks pre-filled with the ' +
       'tenant’s live brand + legal-links host cores. The blocks’ "SilicaUI" wordmark is a slot DEFAULT, not branding.',
   },
 
   binding: {
     description:
       'A node may bind to a path in the current data scope (`binding.path`). Cardinality drives behavior: an OBJECT path sets the ' +
-      'scope for the subtree (renders once); an ARRAY path on a container ITERATES — the children render once per item, with `item.*` ' +
+      'scope for the subtree (renders once); an ARRAY path on a container ITERATES: the children render once per item, with `item.*` ' +
       'in scope. A leaf binds a single field. A node with no binding is static.',
     examples: [
       'cms.blog_post[0]  (object → latest post sets scope)',
@@ -294,10 +294,10 @@ export const BUILDER_STYLE_GUIDE = {
   allowlist: {
     note: 'The per-tenant compile drops a small denylist of weaponizable classes even though they are "just utilities". Everything else Tailwind emits is allowed.',
     blocked: [
-      'fixed — position:fixed (clickjacking overlay). Use sticky/relative + the overlay-header preset instead.',
-      'z-[…] — arbitrary z-index escalation. The z-0..z-50 scale is allowed.',
-      'content-[…] — arbitrary generated content (injection vector).',
-      'any url(…) — external load / exfiltration. Set images via props (Image src / a Section background image prop), never a bg-[url(…)] class.',
+      'fixed: position:fixed (clickjacking overlay). Use sticky/relative + the overlay-header preset instead.',
+      'z-[…]: arbitrary z-index escalation. The z-0..z-50 scale is allowed.',
+      'content-[…]: arbitrary generated content (injection vector).',
+      'any url(…): external load / exfiltration. Set images via props (Image src / a Section background image prop), never a bg-[url(…)] class.',
     ],
     images:
       'Put image URLs in props, never in a class (url() in a class is blocked). Get a URL by adding the ' +
@@ -401,9 +401,9 @@ export const BUILDER_STYLE_GUIDE = {
   workflow:
     'Typical loop: (1) describe_builder_styling once to load this guide. (2) list_builder_pages to see the catalog; ' +
     'get_builder_page to read an existing tree. (3) create_builder_page or update_builder_page with your document ' +
-    '(saves a DRAFT) — set page SEO inline via the envelope’s seoTitle/seoDescription, or set_page_seo to change just ' +
+    '(saves a DRAFT). Set page SEO inline via the envelope’s seoTitle/seoDescription, or set_page_seo to change just ' +
     'the SEO of an existing page without resending its tree. (4) publish_builder_page to take it live ' +
-    '(confirmation-gated). The site header/footer is NOT authored here — it is the silica frame; see `siteChrome`.',
+    '(confirmation-gated). The site header/footer is NOT authored here. It is the silica frame; see `siteChrome`.',
 } as const;
 
 export type BuilderStyleGuide = typeof BUILDER_STYLE_GUIDE;

@@ -152,7 +152,7 @@ const SALES_DASHBOARD: DashboardConfig = {
   module: 'commerce',
   title: 'Sales',
   description:
-    'How selling is going across your whole business — money in, orders, and what’s selling.',
+    'How selling is going across your whole business: money in, orders, and what’s selling.',
   scope: 'tenant',
   tiles: [
     {
@@ -198,7 +198,7 @@ const SALES_DASHBOARD: DashboardConfig = {
       limit: 6,
       centerLabel: 'revenue',
       emptyHint:
-        'Your sales split by what brought the buyer to your site — search, social, or a link. Sales placed before this was switched on, and any without a matching same-day visit, show as “Unattributed”.',
+        'Your sales split by what brought the buyer to your site. Search, social, or a link. Sales placed before this was switched on, and any without a matching same-day visit, show as “Unattributed”.',
     },
     {
       metric: 'commerce.products.top',

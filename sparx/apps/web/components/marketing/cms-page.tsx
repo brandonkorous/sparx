@@ -46,7 +46,7 @@ export function CmsPage() {
             <Spark color={M.color} />
           </>
         }
-        lede="Standalone use, headless access, SEO, and how it fits your stack — answered straight. Still deciding? Read the CMS docs or start the 14-day trial."
+        lede="Standalone use, headless access, SEO, and how it fits your stack: answered straight. Still deciding? Read the CMS docs or start the 14-day trial."
       />
       <CmsCta />
     </>
@@ -64,19 +64,19 @@ const CMS_FAQ: FaqItem[] = [
     id: 'cms-standalone',
     question: 'Can I use the CMS without a store?',
     answer:
-      'Yes — CMS is a standalone module. A publisher, a documentation site, a portfolio, or a content team can run entirely on sparx CMS without ever turning on Commerce. The content engine and the commerce engine are deliberately separate, so you only pay for what you use.',
+      'Yes: CMS is a standalone module. A publisher, a documentation site, a portfolio, or a content team can run entirely on sparx CMS without ever turning on Commerce. The content engine and the commerce engine are deliberately separate, so you only pay for what you use.',
   },
   {
     id: 'cms-pricing',
     question: 'How much does sparx CMS cost?',
     answer:
-      'A flat $49/mo. No tiers, no per-seat charge, and no per-record metering — your pages, posts, and media are unlimited. Add any other modules à la carte and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
+      'A flat $49/mo. No tiers, no per-seat charge, and no per-record metering. Your pages, posts, and media are unlimited. Add any other modules à la carte and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'cms-headless',
     question: 'Can I use it as a headless CMS?',
     answer:
-      'Yes. Every content type is available over REST and GraphQL, including your custom fields, authenticated with a read:content API key. The @sparx/site-sdk package ships typed helpers, so you can render content in Next.js, Astro, SvelteKit, a native app, or anything else — no Builder required.',
+      'Yes. Every content type is available over REST and GraphQL, including your custom fields, authenticated with a read:content API key. The @sparx/site-sdk package ships typed helpers, so you can render content in Next.js, Astro, SvelteKit, a native app, or anything else: no Builder required.',
   },
   {
     id: 'cms-editor',
@@ -113,11 +113,11 @@ function CmsCapabilities() {
     },
     {
       title: 'Blog & authors',
-      body: 'Multiple authors, categories and tags, featured images, excerpts, reading time, and an RSS feed — with related posts wired by tag.',
+      body: 'Multiple authors, categories and tags, featured images, excerpts, reading time, and an RSS feed, with related posts wired by tag.',
     },
     {
       title: 'Navigation menus',
-      body: 'Build header, footer, and mega menus that link to any page, post, product, collection, or external URL — no theme code required.',
+      body: 'Build header, footer, and mega menus that link to any page, post, product, collection, or external URL: no theme code required.',
     },
     {
       title: 'Redirects, handled',
@@ -129,14 +129,14 @@ function CmsCapabilities() {
     },
     {
       title: 'Pages & landing pages',
-      body: 'About, contact, policies, and campaign pages — all the static content a site needs, with the same editor and SEO tooling.',
+      body: 'About, contact, policies, and campaign pages. All the static content a site needs, with the same editor and SEO tooling.',
     },
   ];
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
         headline="Everything a publishing team needs"
-        lede="The CMS isn’t just an editor — it’s the whole content layer, with the parts most tools charge extra for already in the box."
+        lede="The CMS isn’t just an editor: it’s the whole content layer, with the parts most tools charge extra for already in the box."
       />
       <div className="mt-[52px] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {caps.map((c) => (
@@ -171,11 +171,11 @@ function CmsStandalone() {
   }[] = [
     {
       title: 'Rendered on a hosted site',
-      body: 'Pair CMS with Builder and your pages and posts render on your own domain — fast, on the CDN, with SSL handled. Selling stays optional; turn Commerce on the day you want it.',
+      body: 'Pair CMS with Builder and your pages and posts render on your own domain: fast, on the CDN, with SSL handled. Selling stays optional; turn Commerce on the day you want it.',
       points: [
         'Your theme, your domain, automatic SSL.',
         'Blog, pages, and media on one design system.',
-        'Add Commerce later — same content, no rebuild.',
+        'Add Commerce later: same content, no rebuild.',
       ],
       dot: BUILDER.color,
       runs: 'CMS + Builder',
@@ -195,8 +195,8 @@ function CmsStandalone() {
   return (
     <Section padding="lg">
       <SectionHeader
-        headline="No shop required — ever"
-        lede="CMS is its own module. A publisher, a docs site, or a content team can run entirely on sparx without a cart in sight — and pull it any way they like."
+        headline="No shop required: ever"
+        lede="CMS is its own module. A publisher, a docs site, or a content team can run entirely on sparx without a cart in sight, and pull it any way they like."
       />
       <div className="mt-[52px] grid grid-cols-1 gap-6 md:grid-cols-2">
         {ways.map((w) => (
@@ -229,11 +229,11 @@ function CmsProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
       n: <>1{<Spark color={M.color} />}</>,
-      l: 'database under content, customers, and orders — nothing to sync',
+      l: 'database under content, customers, and orders: nothing to sync',
     },
-    { n: 'REST + GraphQL', l: 'on every content type and custom field — headless from day one' },
-    { n: '10', l: 'revisions kept per page, any one restorable — autosave every 30s' },
-    { n: '$0', l: 'to export — full JSON or SQL from the dashboard, no ticket' },
+    { n: 'REST + GraphQL', l: 'on every content type and custom field: headless from day one' },
+    { n: '10', l: 'revisions kept per page, any one restorable: autosave every 30s' },
+    { n: '$0', l: 'to export: full JSON or SQL from the dashboard, no ticket' },
   ];
   return (
     <Section surface="dark" padding="lg">
@@ -243,7 +243,7 @@ function CmsProof() {
           <Spark color={M.color} />
         </Display>
         <p className="mt-[22px] max-w-[640px] text-lg">
-          Content lives in the same database as everything else on sparx — no separate CMS to sync,
+          Content lives in the same database as everything else on sparx: no separate CMS to sync,
           no plugin sprawl, no platform that holds your archive hostage. Export the whole thing
           whenever you want.
         </p>
@@ -275,7 +275,7 @@ function CmsPricing() {
             <span className="text-md">/mo</span>
           </div>
           <p className="max-w-[640px] text-sm">
-            A flat $49/mo, standalone — no Builder required, no tiers, no per-seat or per-record
+            A flat $49/mo, standalone: no Builder required, no tiers, no per-seat or per-record
             metering. Run it headless against the API, or add Builder when you want it rendered on a
             hosted sparx site. One bill with everything else; start free for 14 days, no card to
             begin.
@@ -306,7 +306,7 @@ function CmsCta() {
           <Spark color={M.color} />
         </Display>
         <p className="max-w-[640px] text-lg">
-          Open the editor, write your first post, and publish to your own domain — or pull it
+          Open the editor, write your first post, and publish to your own domain, or pull it
           straight into your own frontend over the API. No migration weekend, no contract; turn it
           off the day you stop, and your content stays yours.
         </p>

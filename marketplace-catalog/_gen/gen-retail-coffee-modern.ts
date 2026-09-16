@@ -154,7 +154,7 @@ function hero(): Node {
                 text: 'Coffee, dialed in.',
               }),
               el('p', 'max-w-md text-lg leading-relaxed text-base-content', {
-                text: 'Meridian is a modern specialty roaster. We source clean, high-grown coffees, roast them to order in small batches, and ship within days — so every cup lands bright, sweet and exactly as intended.',
+                text: 'Meridian is a modern specialty roaster. We source clean, high-grown coffees, roast them to order in small batches, and ship within days, so every cup lands bright, sweet and exactly as intended.',
               }),
               el('div', 'flex flex-wrap items-center gap-6', {
                 children: [
@@ -192,7 +192,7 @@ function valueRow(): Node {
         children: [
           cell('Roasted to order', 'Nothing sits in a warehouse. We roast after you order and ship inside two days.'),
           cell('Free shipping over $40', 'Flat, honest rates below that, and every bag ships whole bean or ground to your brewer.'),
-          cell('Skip or cancel anytime', 'A subscription that flexes with you — no lock-in, no minimum, no games.'),
+          cell('Skip or cancel anytime', 'A subscription that flexes with you: no lock-in, no minimum, no games.'),
         ],
       }),
     ],
@@ -251,7 +251,7 @@ function featureSplit(): Node {
                 text: 'Precision, start to finish',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Every coffee is profiled on a sample roaster, logged batch by batch, and cupped before it ships. We chase clarity — the notes on the bag are the notes in the cup, not a wish list.',
+                text: 'Every coffee is profiled on a sample roaster, logged batch by batch, and cupped before it ships. We chase clarity: the notes on the bag are the notes in the cup, not a wish list.',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
                 text: 'Green coffee is bought from importers and farms we can name, at prices that keep good coffee worth growing. Clean sourcing, careful roasting, honest labels.',
@@ -279,7 +279,7 @@ function subscriptionBand(): Node {
             text: 'Never run out',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Pick a coffee and a cadence and we roast it fresh to match your schedule. Rotate through single origins or lock in the Signal Blend — skip, swap or cancel any week from your account.',
+            text: 'Pick a coffee and a cadence and we roast it fresh to match your schedule. Rotate through single origins or lock in the Signal Blend: skip, swap or cancel any week from your account.',
           }),
           el('a', 'btn btn-primary btn-lg', { attrs: { href: '/shop/subscription' }, text: 'Start a subscription' }),
         ],
@@ -374,11 +374,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'Shop coffee',
-    'Everything we’re roasting right now — single origins, blends, a Swiss-water decaf, single-serve steep bags and the gear to brew them. Filter by roast or origin, sort however you like; all of it ships freshly roasted to order.'
+    'Everything we’re roasting right now: single origins, blends, a Swiss-water decaf, single-serve steep bags and the gear to brew them. Filter by roast or origin, sort however you like; all of it ships freshly roasted to order.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The coffees grouped the way people actually shop — fresh off the roaster, the everyday best sellers, the bright single origins, and starter kits for a new setup.'),
+  pageMasthead('Collections', 'The coffees grouped the way people actually shop: fresh off the roaster, the everyday best sellers, the bright single origins, and starter kits for a new setup.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search Meridian', 'Looking for an origin, a roast level, or a brewing guide? Search the whole shop and the journal below.'),
@@ -390,7 +390,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not what you hoped for? Tell us and we’ll make it right — good coffee should never be a gamble.',
+            text: 'Free shipping on orders over $40, and every bag is roasted to order and sent within two days. Not what you hoped for? Tell us and we’ll make it right: good coffee should never be a gamble.',
           }),
         ],
       }),
@@ -404,7 +404,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Meridian journal' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Clear, useful notes from the roastery — how to dial in a cup, why water matters more than you think, and where the coffee actually comes from. No snobbery, just what works.',
+            text: 'Clear, useful notes from the roastery: how to dial in a cup, why water matters more than you think, and where the coffee actually comes from. No snobbery, just what works.',
           }),
         ],
       }),
@@ -421,13 +421,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Meridian' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Meridian began with a sample roaster, a refractometer, and a stubborn belief that great coffee should be repeatable — not a lucky bag once in a while, but the same bright, sweet cup every single morning.',
+            text: 'Meridian began with a sample roaster, a refractometer, and a stubborn belief that great coffee should be repeatable, not a lucky bag once in a while, but the same bright, sweet cup every single morning.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We buy clean, high-grown lots from importers and farms we can name, and we pay above the commodity rate because that is what keeps good coffee worth growing. Then we roast in small batches, profile every one, and cup it before it ships.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'No mystery blends, no roast dates you can’t find, no coffee older than it should be. Just precise, modern coffee — sourced with care and roasted to order for the way you actually brew.',
+            text: 'No mystery blends, no roast dates you can’t find, no coffee older than it should be. Just precise, modern coffee: sourced with care and roasted to order for the way you actually brew.',
           }),
         ],
       }),
@@ -550,99 +550,99 @@ const PRODUCTS: Product[] = [
     handle: 'ethiopia-yirgacheffe',
     title: 'Ethiopia Yirgacheffe',
     description:
-      'A washed Yirgacheffe roasted light — the archetype of a bright, clean Ethiopia. Jasmine and bergamot on the nose, lemon-tea acidity, a delicate, sparkling finish. The pour-over that tastes like a place, not just like coffee.',
+      'A washed Yirgacheffe roasted light: the archetype of a bright, clean Ethiopia. Jasmine and bergamot on the nose, lemon-tea acidity, a delicate, sparkling finish. The pour-over that tastes like a place, not just like coffee.',
     price: 22,
     sku: 'MER-ETH-YIRG',
     categories: ['single-origin'],
     collections: ['fresh', 'single-origins'],
     tags: ['single-origin', 'ethiopia', 'washed', 'light-roast'],
     asset: 'meridian-ethiopia',
-    seoTitle: 'Ethiopia Yirgacheffe — washed single-origin coffee | Meridian',
+    seoTitle: 'Ethiopia Yirgacheffe: washed single-origin coffee | Meridian',
     seoDescription: 'A bright, floral washed Ethiopia Yirgacheffe, roasted light. Jasmine, bergamot and lemon-tea acidity.',
   }),
   bag({
     handle: 'kenya-nyeri',
     title: 'Kenya Nyeri',
     description:
-      'A washed Kenya from Nyeri County — the coffee that converts people who think they don’t like light roasts. Blackcurrant, ripe tomato and a juicy, structured acidity, with a syrupy weight that fills the cup. Loud, in the best way.',
+      'A washed Kenya from Nyeri County: the coffee that converts people who think they don’t like light roasts. Blackcurrant, ripe tomato and a juicy, structured acidity, with a syrupy weight that fills the cup. Loud, in the best way.',
     price: 24,
     sku: 'MER-KEN-NYERI',
     categories: ['single-origin'],
     collections: ['fresh', 'single-origins'],
     tags: ['single-origin', 'kenya', 'washed', 'light-roast'],
     asset: 'meridian-kenya',
-    seoTitle: 'Kenya Nyeri — washed single-origin coffee | Meridian',
-    seoDescription: 'A juicy, structured washed Kenya from Nyeri — blackcurrant, ripe tomato and syrupy body. Roasted light.',
+    seoTitle: 'Kenya Nyeri: washed single-origin coffee | Meridian',
+    seoDescription: 'A juicy, structured washed Kenya from Nyeri: blackcurrant, ripe tomato and syrupy body. Roasted light.',
   }),
   bag({
     handle: 'colombia-narino',
     title: 'Colombia Nariño',
     description:
-      'A washed Colombia from the high slopes of Nariño — the easy, everyone-likes-it single origin. Red apple, caramel and toasted almond, medium-bodied and sweet, equally good black or with milk. The reliable one.',
+      'A washed Colombia from the high slopes of Nariño: the easy, everyone-likes-it single origin. Red apple, caramel and toasted almond, medium-bodied and sweet, equally good black or with milk. The reliable one.',
     price: 20,
     sku: 'MER-COL-NARINO',
     categories: ['single-origin'],
     collections: ['single-origins', 'best-sellers'],
     tags: ['single-origin', 'colombia', 'washed', 'medium-roast'],
     asset: 'meridian-colombia',
-    seoTitle: 'Colombia Nariño — washed single-origin coffee | Meridian',
-    seoDescription: 'A sweet, balanced washed Colombia from Nariño — red apple, caramel and toasted almond. Roasted medium.',
+    seoTitle: 'Colombia Nariño: washed single-origin coffee | Meridian',
+    seoDescription: 'A sweet, balanced washed Colombia from Nariño: red apple, caramel and toasted almond. Roasted medium.',
   }),
   bag({
     handle: 'signal-blend',
     title: 'Signal Blend',
     description:
-      'Our everyday blend and the coffee we drink most — a clean Latin American base lifted by a bright East African top note. Chocolate, orange and brown sugar, medium-bodied and forgiving. Great in a filter, great in a press, great half-asleep.',
+      'Our everyday blend and the coffee we drink most: a clean Latin American base lifted by a bright East African top note. Chocolate, orange and brown sugar, medium-bodied and forgiving. Great in a filter, great in a press, great half-asleep.',
     price: 18,
     sku: 'MER-SIGNAL',
     categories: ['blends'],
     collections: ['fresh', 'blends', 'best-sellers'],
     tags: ['blend', 'everyday', 'medium-roast'],
     asset: 'meridian-signal',
-    seoTitle: 'Signal Blend — everyday coffee | Meridian',
-    seoDescription: 'A clean, sweet everyday blend — chocolate, orange and brown sugar. Works in any brewer. Roasted medium.',
+    seoTitle: 'Signal Blend: everyday coffee | Meridian',
+    seoDescription: 'A clean, sweet everyday blend: chocolate, orange and brown sugar. Works in any brewer. Roasted medium.',
   }),
   bag({
     handle: 'type-01-espresso',
     title: 'Type 01 Espresso',
     description:
-      'A modern espresso built for clarity, not char — a touch fuller than our filter roasts but still bright underneath. Pulls a syrupy, cocoa-and-red-fruit shot that holds its own in milk without turning to ash. Dialed for the home machine.',
+      'A modern espresso built for clarity, not char: a touch fuller than our filter roasts but still bright underneath. Pulls a syrupy, cocoa-and-red-fruit shot that holds its own in milk without turning to ash. Dialed for the home machine.',
     price: 19,
     sku: 'MER-ESP-01',
     categories: ['blends'],
     collections: ['blends', 'best-sellers'],
     tags: ['blend', 'espresso', 'medium-dark-roast'],
     asset: 'meridian-espresso',
-    seoTitle: 'Type 01 Espresso — modern espresso blend | Meridian',
-    seoDescription: 'A bright, syrupy modern espresso — cocoa and red fruit, holds up in milk. Roasted medium-dark.',
+    seoTitle: 'Type 01 Espresso: modern espresso blend | Meridian',
+    seoDescription: 'A bright, syrupy modern espresso: cocoa and red fruit, holds up in milk. Roasted medium-dark.',
   }),
   bag({
     handle: 'offgrid-decaf',
     title: 'Off-Grid Decaf',
     description:
-      'A Swiss-water decaf that actually tastes like coffee — Colombian beans, chemical-free process, and a roast that keeps the sweetness in. Milk chocolate, baked apple and a soft nutty finish. The evening cup that won’t keep you up.',
+      'A Swiss-water decaf that actually tastes like coffee: Colombian beans, chemical-free process, and a roast that keeps the sweetness in. Milk chocolate, baked apple and a soft nutty finish. The evening cup that won’t keep you up.',
     price: 20,
     sku: 'MER-DECAF',
     categories: ['blends'],
     collections: ['blends'],
     tags: ['decaf', 'swiss-water', 'medium-roast'],
     asset: 'meridian-decaf',
-    seoTitle: 'Off-Grid Decaf — Swiss-water decaf coffee | Meridian',
-    seoDescription: 'A genuinely good Swiss-water decaf — milk chocolate, baked apple and a nutty finish. Roasted medium.',
+    seoTitle: 'Off-Grid Decaf: Swiss-water decaf coffee | Meridian',
+    seoDescription: 'A genuinely good Swiss-water decaf: milk chocolate, baked apple and a nutty finish. Roasted medium.',
   }),
   {
     handle: 'steeped-coffee',
     title: 'Steeped Coffee (8-pack)',
     description:
-      'Single-serve steep bags — like tea, but real specialty coffee. Tear one open, drop it in a mug, pour hot water and wait five minutes for a clean, full cup. No machine, no grinder, no mess. The travel, office and camp answer, filled with the Signal Blend.',
+      'Single-serve steep bags, like tea, but real specialty coffee. Tear one open, drop it in a mug, pour hot water and wait five minutes for a clean, full cup. No machine, no grinder, no mess. The travel, office and camp answer, filled with the Signal Blend.',
     status: 'active',
     productType: 'Coffee',
     vendor: 'Meridian Coffee',
     tags: ['ready-to-brew', 'single-serve', 'travel'],
     categoryHandles: ['ready-to-brew'],
     collectionHandles: ['fresh', 'best-sellers'],
-    seoTitle: 'Steeped Coffee, 8-pack — single-serve steep bags | Meridian',
-    seoDescription: 'Single-serve coffee steep bags — real specialty coffee, no machine. Filled with the Signal Blend.',
+    seoTitle: 'Steeped Coffee, 8-pack: single-serve steep bags | Meridian',
+    seoDescription: 'Single-serve coffee steep bags: real specialty coffee, no machine. Filled with the Signal Blend.',
     variants: [{ sku: 'MER-STEEP-8', priceCents: money(16), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'meridian-steeped', isPrimary: true, alt: 'A box of single-serve coffee steep bags' }],
   },
@@ -650,14 +650,14 @@ const PRODUCTS: Product[] = [
     handle: 'precision-grinder',
     title: 'Precision Hand Grinder',
     description:
-      'A hand grinder with 38mm conical burrs and stepped adjustment — even, repeatable grounds from espresso to French press, without the noise or the price of a benchtop machine. Matte steel, glass catch, built to outlast a few coffee machines.',
+      'A hand grinder with 38mm conical burrs and stepped adjustment: even, repeatable grounds from espresso to French press, without the noise or the price of a benchtop machine. Matte steel, glass catch, built to outlast a few coffee machines.',
     status: 'active',
     productType: 'Equipment',
     vendor: 'Meridian Coffee',
     tags: ['gear', 'brewing', 'grinder'],
     categoryHandles: ['brew-gear'],
     collectionHandles: ['brew-gear', 'starter-kit'],
-    seoTitle: 'Precision Hand Grinder — 38mm conical burrs | Meridian',
+    seoTitle: 'Precision Hand Grinder: 38mm conical burrs | Meridian',
     seoDescription: 'A quiet, repeatable hand grinder with 38mm conical burrs, from espresso to French press.',
     variants: [{ sku: 'MER-GEAR-GRINDER', priceCents: money(89), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'meridian-grinder', isPrimary: true, alt: 'A precision hand grinder in matte steel' }],
@@ -666,14 +666,14 @@ const PRODUCTS: Product[] = [
     handle: 'flat-bottom-dripper',
     title: 'Flat-Bottom Dripper',
     description:
-      'A flat-bottom ceramic dripper that’s far more forgiving than a cone — the even bed pulls a balanced, repeatable cup even when your pour isn’t perfect. Holds heat, pours clean, and uses standard basket filters. The easiest way into great pour-over.',
+      'A flat-bottom ceramic dripper that’s far more forgiving than a cone: the even bed pulls a balanced, repeatable cup even when your pour isn’t perfect. Holds heat, pours clean, and uses standard basket filters. The easiest way into great pour-over.',
     status: 'active',
     productType: 'Equipment',
     vendor: 'Meridian Coffee',
     tags: ['gear', 'brewing', 'pour-over'],
     categoryHandles: ['brew-gear'],
     collectionHandles: ['brew-gear', 'starter-kit'],
-    seoTitle: 'Flat-Bottom Dripper — forgiving pour-over brewer | Meridian',
+    seoTitle: 'Flat-Bottom Dripper: forgiving pour-over brewer | Meridian',
     seoDescription: 'A flat-bottom ceramic dripper for a balanced, repeatable pour-over. Uses standard basket filters.',
     variants: [{ sku: 'MER-GEAR-DRIPPER', priceCents: money(34), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'meridian-dripper', isPrimary: true, alt: 'A flat-bottom ceramic pour-over dripper' }],
@@ -682,15 +682,15 @@ const PRODUCTS: Product[] = [
     handle: 'subscription',
     title: 'Coffee Subscription',
     description:
-      'Freshly roasted coffee on your schedule — choose one or two bags and how often, and we roast and ship to match. Rotate through the single origins or lock in the Signal Blend; skip, swap or cancel any week. The easiest way to always have great coffee on the counter.',
+      'Freshly roasted coffee on your schedule. Choose one or two bags and how often, and we roast and ship to match. Rotate through the single origins or lock in the Signal Blend; skip, swap or cancel any week. The easiest way to always have great coffee on the counter.',
     status: 'active',
     productType: 'Subscription',
     vendor: 'Meridian Coffee',
     tags: ['subscription', 'gift'],
     categoryHandles: ['subscription'],
     collectionHandles: ['fresh', 'best-sellers'],
-    seoTitle: 'Coffee Subscription — freshly roasted, on your schedule | Meridian',
-    seoDescription: 'A flexible coffee subscription — pick one or two bags and a cadence; skip, swap or cancel any week.',
+    seoTitle: 'Coffee Subscription: freshly roasted, on your schedule | Meridian',
+    seoDescription: 'A flexible coffee subscription. Pick one or two bags and a cadence; skip, swap or cancel any week.',
     options: [{ name: 'Bags', displayType: 'dropdown', values: [{ value: 'One bag' }, { value: 'Two bags' }] }],
     variants: [
       { sku: 'MER-SUB-1', priceCents: money(18), isDefault: true, inventoryPolicy: 'continue', optionValues: { Bags: 'One bag' } },
@@ -778,11 +778,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Most weak, sour or bitter coffee at home isn’t a bean problem or a gear problem — it’s a ratio problem. You’re using too little coffee for the water, or too much water for the coffee, and no amount of expensive equipment fixes that. The good news: it’s the easiest thing to correct.'),
+          para('Most weak, sour or bitter coffee at home isn’t a bean problem or a gear problem: it’s a ratio problem. You’re using too little coffee for the water, or too much water for the coffee, and no amount of expensive equipment fixes that. The good news: it’s the easiest thing to correct.'),
           h2('Start at 1-to-16'),
-          para('Weigh your coffee and your water, and aim for roughly one gram of coffee to sixteen grams of water — say 25 grams of coffee to 400 grams of water for a two-cup pour-over. That single habit, more than any gadget, is what separates a flat cup from a bright, sweet one. A cheap kitchen scale is the best twenty dollars you’ll spend on coffee.'),
+          para('Weigh your coffee and your water, and aim for roughly one gram of coffee to sixteen grams of water: say 25 grams of coffee to 400 grams of water for a two-cup pour-over. That single habit, more than any gadget, is what separates a flat cup from a bright, sweet one. A cheap kitchen scale is the best twenty dollars you’ll spend on coffee.'),
           h2('Then adjust to taste'),
-          para('Sour and thin means under-extracted — go a little finer on the grind, or a touch more coffee. Bitter and drying means over-extracted — go coarser, or pull back the coffee slightly. Change one variable at a time and taste as you go. Two or three brews in, you’ll have that coffee dialed, and it’ll taste the same every morning after.'),
+          para('Sour and thin means under-extracted: go a little finer on the grind, or a touch more coffee. Bitter and drying means over-extracted, go coarser, or pull back the coffee slightly. Change one variable at a time and taste as you go. Two or three brews in, you’ll have that coffee dialed, and it’ll taste the same every morning after.'),
         ],
       },
     },
@@ -793,16 +793,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Your coffee is 98% water',
-      excerpt: 'You dialed the grind and weighed the dose — and it still tastes flat. The culprit is almost always the water.',
+      excerpt: 'You dialed the grind and weighed the dose, and it still tastes flat. The culprit is almost always the water.',
       featuredImage: { $asset: 'meridian-post-water' },
       body: {
         type: 'doc',
         content: [
-          para('A brewed cup is about 98% water, so the water you use isn’t a background detail — it’s most of the drink. Too soft and the coffee tastes hollow and sour; too hard and it tastes chalky and dull; heavily chlorinated tap water flattens everything. If a great coffee tastes lifeless, look at what you’re brewing it with before you blame the beans.'),
+          para('A brewed cup is about 98% water, so the water you use isn’t a background detail: it’s most of the drink. Too soft and the coffee tastes hollow and sour; too hard and it tastes chalky and dull; heavily chlorinated tap water flattens everything. If a great coffee tastes lifeless, look at what you’re brewing it with before you blame the beans.'),
           h2('Aim for the middle'),
-          para('You want water with some minerality but not too much — filtered tap water is usually the sweet spot, and a simple carbon filter removes the chlorine that dulls aromatics. If your tap water is very hard or very soft, a low-mineral bottled water or a remineralizing sachet gets you closer to the balanced middle that lets a coffee show its best.'),
+          para('You want water with some minerality but not too much: filtered tap water is usually the sweet spot, and a simple carbon filter removes the chlorine that dulls aromatics. If your tap water is very hard or very soft, a low-mineral bottled water or a remineralizing sachet gets you closer to the balanced middle that lets a coffee show its best.'),
           h2('And get the temperature right'),
-          para('Brew just off the boil — around 92 to 96°C, or roughly thirty seconds after a kettle stops rolling. Too hot scorches and turns things bitter; too cool under-extracts and leaves the cup sour and weak. A gooseneck kettle helps you pour with control, but the temperature matters far more than the pretty stream.'),
+          para('Brew just off the boil: around 92 to 96°C, or roughly thirty seconds after a kettle stops rolling. Too hot scorches and turns things bitter; too cool under-extracts and leaves the cup sour and weak. A gooseneck kettle helps you pour with control, but the temperature matters far more than the pretty stream.'),
         ],
       },
     },
@@ -813,16 +813,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'What “single origin” actually means',
-      excerpt: 'It’s on every bag, including ours — here’s what it tells you, what it doesn’t, and why we still pay more for it.',
+      excerpt: 'It’s on every bag, including ours: here’s what it tells you, what it doesn’t, and why we still pay more for it.',
       featuredImage: { $asset: 'meridian-post-origin' },
       body: {
         type: 'doc',
         content: [
-          para('“Single origin” means the coffee in the bag comes from one place — a single farm, a single washing station, or a single small region — rather than being blended across countries. It isn’t a quality grade on its own, but it’s a promise of traceability: you can point at where it grew, and taste the difference a place and a process make, season after season.'),
+          para('“Single origin” means the coffee in the bag comes from one place (a single farm, a single washing station, or a single small region) rather than being blended across countries. It isn’t a quality grade on its own, but it’s a promise of traceability: you can point at where it grew, and taste the difference a place and a process make, season after season.'),
           h2('Why a place tastes like a place'),
-          para('Altitude, soil, the coffee variety, and how the cherry is processed all leave a fingerprint. A washed Ethiopia is floral and tea-like; a washed Kenya is blackcurrant and structured; a Colombian is red apple and caramel. Blend them together and those signatures average out into something rounder and more consistent — which is exactly why a good everyday blend exists too. Single origin is about clarity; a blend is about balance.'),
+          para('Altitude, soil, the coffee variety, and how the cherry is processed all leave a fingerprint. A washed Ethiopia is floral and tea-like; a washed Kenya is blackcurrant and structured; a Colombian is red apple and caramel. Blend them together and those signatures average out into something rounder and more consistent, which is exactly why a good everyday blend exists too. Single origin is about clarity; a blend is about balance.'),
           h2('Why we pay above the market'),
-          para('Traceable, high-grown, carefully processed coffee costs more to produce than the commodity price rewards. Paying above the market isn’t charity — it’s how the good lots keep getting grown, and how the same farmers come back with the same quality year on year. The name on the bag is a promise that someone was paid fairly to grow something worth roasting.'),
+          para('Traceable, high-grown, carefully processed coffee costs more to produce than the commodity price rewards. Paying above the market isn’t charity: it’s how the good lots keep getting grown, and how the same farmers come back with the same quality year on year. The name on the bag is a promise that someone was paid fairly to grow something worth roasting.'),
         ],
       },
     },
@@ -837,7 +837,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Coffee Roaster (Modern)',
   theme: THEME,
   summary:
-    'A complete, working shop for a modern specialty coffee roaster: a real catalogue of single-origin bags, blends, a Swiss-water decaf, single-serve steep bags, brew gear and a flexible subscription, with categories, collections, a bespoke PDP and a sharp, product-forward home page. Bright, minimalist theme — a crisp near-white ground, one electric-orange accent, a clean grotesk display. Shipped as Meridian Coffee.',
+    'A complete, working shop for a modern specialty coffee roaster: a real catalogue of single-origin bags, blends, a Swiss-water decaf, single-serve steep bags, brew gear and a flexible subscription, with categories, collections, a bespoke PDP and a sharp, product-forward home page. Bright, minimalist theme, a crisp near-white ground, one electric-orange accent, a clean grotesk display. Shipped as Meridian Coffee.',
   tagline: 'A crisp, modern storefront for a specialty coffee roaster.',
   vertical: 'retail',
   industry: 'Coffee roaster',
@@ -850,14 +850,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'Meridian Coffee — modern specialty coffee, roasted to order',
+      title: 'Meridian Coffee: modern specialty coffee, roasted to order',
       description:
-        'Meridian is a modern specialty roaster — clean single origins, blends, a Swiss-water decaf and a flexible subscription, roasted to order and shipped within days. Coffee, dialed in.',
+        'Meridian is a modern specialty roaster: clean single origins, blends, a Swiss-water decaf and a flexible subscription, roasted to order and shipped within days. Coffee, dialed in.',
     },
     about: {
       title: 'About Meridian Coffee',
       description:
-        'How Meridian sources, roasts and ships — clean high-grown lots, small-batch profiling, fair prices, and coffee that tastes exactly as intended, cup after cup.',
+        'How Meridian sources, roasts and ships: clean high-grown lots, small-batch profiling, fair prices, and coffee that tastes exactly as intended, cup after cup.',
     },
   },
   home: HOME,

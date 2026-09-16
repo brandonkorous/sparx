@@ -60,7 +60,7 @@ export function DiscountOfferFields({
           {nameError && touched ? (
             <FieldStatus status="error">{nameError}</FieldStatus>
           ) : (
-            <FieldDescription>For you — how you tell one discount from another.</FieldDescription>
+            <FieldDescription>For you: how you tell one discount from another.</FieldDescription>
           )}
         </Field>
 
@@ -102,7 +102,7 @@ export function DiscountOfferFields({
           <FieldDescription>
             {draft.hasCode
               ? 'Only orders that enter this code get the discount.'
-              : 'The discount applies on its own — no code needed.'}
+              : 'The discount applies on its own: no code needed.'}
           </FieldDescription>
         </Field>
 

@@ -90,7 +90,7 @@ export function billingNotice(billing: BillingPhaseView): BillingNotice | null {
       return {
         level: 'grace',
         tone: 'warning',
-        title: 'Your trial has ended — paid features are paused',
+        title: 'Your trial has ended: paid features are paused',
         body: `Your public site stays live for ${days} more ${dayWord(days)}. Add a payment method to switch everything back on.`,
         ctaLabel: 'Add payment method',
         dismissible: false,

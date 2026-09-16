@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Enterprise — sparx',
+  title: 'Enterprise: sparx',
   description:
     'Custom sites, dedicated support, security review assistance, contract terms tailored to your security and procurement requirements.',
   alternates: { canonical: '/enterprise' },

@@ -36,7 +36,7 @@ export function CartLines({ cart }: { cart: CartDetail }) {
   return (
     <FormSection title="What’s in it">
       {cart.items.length === 0 ? (
-        <Text>This cart is empty — every line was removed before they left.</Text>
+        <Text>This cart is empty: every line was removed before they left.</Text>
       ) : (
         <ul className="flex flex-col">
           {cart.items.map((item) => (

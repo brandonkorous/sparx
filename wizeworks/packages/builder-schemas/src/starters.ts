@@ -350,7 +350,7 @@ export interface StarterPage {
 /** Built ONCE at module load — the `node()` id counter runs to completion here,
  *  giving each starter tree a stable id sequence. Never mutated. */
 export const STARTER_PAGES: StarterPage[] = [
-  { key: 'home', name: 'Home — Landing', kind: 'singleton', tree: homeTree() },
+  { key: 'home', name: 'Home: Landing', kind: 'singleton', tree: homeTree() },
   {
     key: 'blog-post',
     name: 'Blog post',
@@ -403,7 +403,7 @@ function welcomeEmailTree(): BuilderNode {
       node('Text', {
         props: {
           variant: 'body',
-          text: "Thanks for joining. We're glad you're here — here's what to do next.",
+          text: "Thanks for joining. We're glad you're here: here's what to do next.",
         },
       }),
       node('Button', {
@@ -444,7 +444,7 @@ export const STARTER_EMAILS: StarterEmail[] = [
     key: 'welcome',
     name: 'Welcome',
     subject: 'Welcome to {{site.name}} 👋',
-    preheader: "You're in — here's how to get started.",
+    preheader: "You're in: here's how to get started.",
     tree: welcomeEmailTree(),
   },
 ];

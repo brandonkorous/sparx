@@ -144,7 +144,7 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
       setError(
         credentialFailure
           ? 'That email and password do not match an account.'
-          : `Sign-in is not working right now — ${res.error.message ?? 'the server refused the request'}. This is our problem, not yours.`
+          : `Sign-in is not working right now: ${res.error.message ?? 'the server refused the request'}. This is our problem, not yours.`
       );
       return;
     }
@@ -202,7 +202,7 @@ export function SignInForm({ next, google }: { next: string; google: boolean }) 
     return (
       <Alert color="success" variant="soft">
         <AlertDescription>
-          Check your email — we have sent a link that signs you straight in. It is good for the next
+          Check your email. We have sent a link that signs you straight in. It is good for the next
           few minutes.
         </AlertDescription>
       </Alert>

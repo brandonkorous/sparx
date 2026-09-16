@@ -101,11 +101,11 @@ interface Asset {
 
 const ASSETS: Asset[] = [
   { id: 'kettle-hero', url: src('kettle-hero'), alt: 'A bright, plant-filled café in morning light, tables by tall windows' },
-  { id: 'kettle-brunch', url: src('kettle-brunch'), alt: 'A brunch spread — eggs, greens and toast on a sunny table' },
+  { id: 'kettle-brunch', url: src('kettle-brunch'), alt: 'A brunch spread: eggs, greens and toast on a sunny table' },
   { id: 'kettle-coffee', url: src('kettle-coffee'), alt: 'A flat white with latte art on a warm wooden counter' },
   { id: 'kettle-toast', url: src('kettle-toast'), alt: 'A loaded toast plate topped with avocado, chilli and a soft egg' },
   { id: 'kettle-pastry', url: src('kettle-pastry'), alt: 'A tray of fresh pastries and a slice of citrus cake' },
-  { id: 'kettle-room', url: src('kettle-room'), alt: 'The café room — light wood, hanging plants, mismatched chairs' },
+  { id: 'kettle-room', url: src('kettle-room'), alt: 'The café room: light wood, hanging plants, mismatched chairs' },
   { id: 'kettle-counter', url: src('kettle-counter'), alt: 'A barista pulling a shot at the espresso counter' },
   { id: 'kettle-window', url: src('kettle-window'), alt: 'A quiet window seat with a coffee and a book in the sun' },
 ];
@@ -180,14 +180,14 @@ function morningBand(): Node {
                 text: 'All day, your way',
               }),
               el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                text: 'Roll in for a quiet coffee, settle in for a slow brunch, or grab something sweet on the way past. We serve the whole menu from open to close — no breakfast cut-off here.',
+                text: 'Roll in for a quiet coffee, settle in for a slow brunch, or grab something sweet on the way past. We serve the whole menu from open to close: no breakfast cut-off here.',
               }),
             ],
           }),
           el('div', 'grid grid-cols-1 gap-6 @3xl:grid-cols-3', {
             children: [
               card('kettle-coffee', 'Just coffee', 'Beans roasted up the road, pulled properly. Flat whites, filters, and a very good iced latte when the sun’s out.', 'A flat white with latte art'),
-              card('kettle-toast', 'Brunch, all day', 'Loaded toasts, big breakfast plates, and greens that earn their place. Long tables welcome — we’ll pull them together.', 'A loaded toast plate with a soft egg'),
+              card('kettle-toast', 'Brunch, all day', 'Loaded toasts, big breakfast plates, and greens that earn their place. Long tables welcome: we’ll pull them together.', 'A loaded toast plate with a soft egg'),
               card('kettle-pastry', 'Something sweet', 'The pastry case, the cake of the day, and a warm cinnamon bun that never lasts past noon. Ask what’s just come out.', 'A tray of fresh pastries and citrus cake'),
             ],
           }),
@@ -208,7 +208,7 @@ function reserveBand(): Node {
       el('div', 'mx-auto grid w-full max-w-5xl gap-8 @3xl:grid-cols-2 @3xl:items-center', {
         children: [
           el('img', 'aspect-video w-full rounded-box border border-base-300 object-cover', {
-            attrs: { src: assetUrl('kettle-room'), alt: 'The café room — light wood, hanging plants, mismatched chairs', loading: 'lazy' },
+            attrs: { src: assetUrl('kettle-room'), alt: 'The café room: light wood, hanging plants, mismatched chairs', loading: 'lazy' },
           }),
           el('div', 'flex flex-col gap-5', {
             children: [
@@ -216,7 +216,7 @@ function reserveBand(): Node {
                 text: 'Save your table',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Weekend brunch fills up fast, so booking ahead is the safe bet — it takes about a minute and you’ll see the real availability. Walk-ins are always welcome too; there’s usually a stool at the counter with your name on it.',
+                text: 'Weekend brunch fills up fast, so booking ahead is the safe bet. It takes about a minute and you’ll see the real availability. Walk-ins are always welcome too; there’s usually a stool at the counter with your name on it.',
               }),
               el('div', 'flex flex-wrap gap-3', {
                 children: [
@@ -320,7 +320,7 @@ const MENU: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The menu' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Everything you see is served all day — no breakfast cut-off, no rush. We bake most of it here, the eggs are free-range, and there’s always something for the little ones. Tell us about allergies and we’ll sort you out.',
+            text: 'Everything you see is served all day: no breakfast cut-off, no rush. We bake most of it here, the eggs are free-range, and there’s always something for the little ones. Tell us about allergies and we’ll sort you out.',
           }),
         ],
       }),
@@ -337,16 +337,16 @@ const MENU: Node[] = [
     { name: 'Avo, chilli & lime', desc: 'Smashed avocado, quick-pickled chilli, lime, toasted seeds and a soft-poached egg.', price: '11' },
     { name: 'Mushrooms on toast', desc: 'Garlic-buttered mushrooms, thyme, aged cheddar melted through, a crack of pepper.', price: '10' },
     { name: 'Smoked salmon', desc: 'Cream cheese, cured salmon, capers, dill and shaved red onion on rye.', price: '13' },
-    { name: 'Soup of the day', desc: 'Whatever’s good this week — ask the counter. Comes with buttered sourdough.', price: '8' },
+    { name: 'Soup of the day', desc: 'Whatever’s good this week. Ask the counter. Comes with buttered sourdough.', price: '8' },
     { name: 'Halloumi & slaw bowl', desc: 'Grilled halloumi, crunchy slaw, grains, roast squash and a lemon-tahini drizzle.', price: '12' },
   ]),
-  menuSection('Something sweet', 'From the pastry case up front — ask what came out of the oven this morning.', [
-    { name: 'Cinnamon bun', desc: 'Soft, tall and iced. Best still warm — they rarely make it past noon.', price: '5' },
+  menuSection('Something sweet', 'From the pastry case up front. Ask what came out of the oven this morning.', [
+    { name: 'Cinnamon bun', desc: 'Soft, tall and iced. Best still warm. They rarely make it past noon.', price: '5' },
     { name: 'Citrus & olive-oil cake', desc: 'A moist slice with crème fraîche and a spoon of poached rhubarb.', price: '6' },
     { name: 'Chocolate cookie', desc: 'Rye flour, sea salt, a puddle of dark chocolate. Warm on request.', price: '4' },
-    { name: 'Pastry of the day', desc: 'A croissant, a morning bun, or whatever the baker felt like — ask what’s in.', price: '4' },
+    { name: 'Pastry of the day', desc: 'A croissant, a morning bun, or whatever the baker felt like. Ask what’s in.', price: '4' },
   ]),
-  menuSection('Coffee & drinks', 'Beans roasted two streets over. Oat, soya and whole milk all on the house — no extra.', [
+  menuSection('Coffee & drinks', 'Beans roasted two streets over. Oat, soya and whole milk all on the house: no extra.', [
     { name: 'Espresso / flat white / latte', desc: 'Our house blend, pulled properly. Decaf’s just as good, honestly.', price: '4' },
     { name: 'Filter / batch brew', desc: 'A rotating single origin, brewed by the cup. Free refills before eleven.', price: '4' },
     { name: 'Iced latte / cold brew', desc: 'Slow-steeped overnight, poured long over ice. A summer regular.', price: '5' },
@@ -364,7 +364,7 @@ const BOOK_INTRO: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Book a table' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Pick your party size and a time below — you’ll see live availability across the week. No deposit, no fuss. Walk-ins are always welcome; booking just means your table’s waiting when the weekend gets busy.',
+            text: 'Pick your party size and a time below: you’ll see live availability across the week. No deposit, no fuss. Walk-ins are always welcome; booking just means your table’s waiting when the weekend gets busy.',
           }),
         ],
       }),
@@ -381,7 +381,7 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Kettle & Crumb' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Kettle & Crumb started as a tiny coffee window and grew into the corner café we always wanted on our own street — the kind you can drop into any hour of the day and feel at home in. Sunny, unhurried, and open to everyone.',
+            text: 'Kettle & Crumb started as a tiny coffee window and grew into the corner café we always wanted on our own street: the kind you can drop into any hour of the day and feel at home in. Sunny, unhurried, and open to everyone.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We bake the sourdough and the pastries in-house, pull coffee from a roaster two streets over, and cook a menu that runs all day because we never understood why brunch has to stop at eleven. Most of what’s on the plate comes from growers and makers we know by name.',
@@ -402,7 +402,7 @@ const CONTACT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'Visit Kettle & Crumb' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: '9 Marigold Street, on the sunny corner by the little park. Open every day, eight till four, kitchen running the whole time. Bikes, buggies and well-behaved dogs always welcome — the number 4 stops right outside.',
+            text: '9 Marigold Street, on the sunny corner by the little park. Open every day, eight till four, kitchen running the whole time. Bikes, buggies and well-behaved dogs always welcome: the number 4 stops right outside.',
           }),
           el('div', 'flex flex-wrap gap-3', {
             children: [
@@ -446,7 +446,7 @@ const SCHEDULING = {
       cancellationWindowHours: 2,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'No deposit, ever — just book and turn up. We hold your table for 15 minutes past your time; if your plans change, a quick heads-up by a couple of hours before frees it for someone else. Walk-ins are always welcome, so don’t worry if you didn’t book.',
+        'No deposit, ever. Just book and turn up. We hold your table for 15 minutes past your time; if your plans change, a quick heads-up by a couple of hours before frees it for someone else. Walk-ins are always welcome, so don’t worry if you didn’t book.',
     },
     {
       handle: 'group-table',
@@ -455,7 +455,7 @@ const SCHEDULING = {
       cancellationWindowHours: 12,
       reminderOffsetsMin: [1440, 180],
       policyText:
-        'Groups of five or six get the big communal table by the window — still no deposit. If you need to cancel, letting us know the evening before means we can offer it to another party. Bigger than six? Email us and we’ll happily sort it.',
+        'Groups of five or six get the big communal table by the window: still no deposit. If you need to cancel, letting us know the evening before means we can offer it to another party. Bigger than six? Email us and we’ll happily sort it.',
     },
   ],
   resources: [
@@ -471,7 +471,7 @@ const SCHEDULING = {
       handle: 'table-for-two',
       name: 'Table for two',
       description:
-        'A table for two, any time we’re open. Perfect for a slow brunch or a catch-up over coffee — an hour and a quarter is yours, and we won’t rush you off.',
+        'A table for two, any time we’re open. Perfect for a slow brunch or a catch-up over coffee: an hour and a quarter is yours, and we won’t rush you off.',
       bookingType: 'reservation',
       durationMinutes: 75,
       assignmentStrategy: 'any_available',
@@ -482,7 +482,7 @@ const SCHEDULING = {
       handle: 'table-for-four',
       name: 'Table for four',
       description:
-        'A table for three or four — bring the family, the friends, or the whole brunch crew. Ninety unhurried minutes, high chairs on request.',
+        'A table for three or four. Bring the family, the friends, or the whole brunch crew. Ninety unhurried minutes, high chairs on request.',
       bookingType: 'reservation',
       durationMinutes: 90,
       assignmentStrategy: 'any_available',
@@ -509,7 +509,7 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-cafe',
   name: 'Café',
   summary:
-    'A complete, working site for an all-day café: a real all-day brunch menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, daytime hours, a relaxed no-deposit policy — walk-ins welcome) on the /reserve page. Sunny café theme — warm cream, fresh café-green, a cheerful coral accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Kettle & Crumb.',
+    'A complete, working site for an all-day café: a real all-day brunch menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, daytime hours, a relaxed no-deposit policy, walk-ins welcome) on the /reserve page. Sunny café theme, warm cream, fresh café-green, a cheerful coral accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Kettle & Crumb.',
   tagline: 'A sunny, working template for an all-day café that takes bookings.',
   industry: 'Café & brunch',
   sortWeight: 85,
@@ -535,14 +535,14 @@ const SPEC: ServiceSiteSpec = {
   },
   seo: {
     home: {
-      title: 'Kettle & Crumb — a sunny all-day café',
+      title: 'Kettle & Crumb: a sunny all-day café',
       description:
-        'Kettle & Crumb is a bright all-day café — proper coffee, unhurried brunch served open to close, house pastries and a warm welcome. Open eight to four, every day. See the menu and book a table.',
+        'Kettle & Crumb is a bright all-day café: proper coffee, unhurried brunch served open to close, house pastries and a warm welcome. Open eight to four, every day. See the menu and book a table.',
     },
     about: {
-      title: 'About Kettle & Crumb — the café',
+      title: 'About Kettle & Crumb: the café',
       description:
-        'A sunny corner café that bakes its own sourdough and pastries, pulls coffee from a local roaster, and serves brunch all day long — everyone welcome.',
+        'A sunny corner café that bakes its own sourdough and pastries, pulls coffee from a local roaster, and serves brunch all day long. Everyone welcome.',
     },
   },
   home: HOME,

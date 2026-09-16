@@ -54,7 +54,7 @@ export const taxPresets = [
     kind: 'tax',
     name: 'US sales tax',
     description:
-      'California, Texas and New York set up with their state rates, SWITCHED OFF. Turn on the states you are actually registered in, and add your own — nothing is charged anywhere until you do.',
+      'California, Texas and New York set up with their state rates, SWITCHED OFF. Turn on the states you are actually registered in, and add your own. Nothing is charged anywhere until you do.',
     iconKey: 'receipt',
     tags: ['tax', 'us', 'sales-tax'],
     summary: [
@@ -84,9 +84,9 @@ export const taxPresets = [
   commercePreset({
     slug: 'tax-eu-vat-de',
     kind: 'tax',
-    name: 'EU VAT — Germany',
+    name: 'EU VAT: Germany',
     description:
-      'A German VAT place with the 19% standard rate on goods and shipping, SWITCHED OFF. Turn it on once you are registered for VAT in the EU — nothing is charged until you do.',
+      'A German VAT place with the 19% standard rate on goods and shipping, SWITCHED OFF. Turn it on once you are registered for VAT in the EU. Nothing is charged until you do.',
     iconKey: 'globe',
     tags: ['tax', 'eu', 'vat', 'germany'],
     summary: [
@@ -110,7 +110,7 @@ export const taxPresets = [
     kind: 'tax',
     name: 'Canada GST/HST',
     description:
-      'Ontario (13% HST) and British Columbia (5% GST) set up with their rates, SWITCHED OFF. Turn on the provinces you are registered in — nothing is charged until you do.',
+      'Ontario (13% HST) and British Columbia (5% GST) set up with their rates, SWITCHED OFF. Turn on the provinces you are registered in. Nothing is charged until you do.',
     iconKey: 'map-pin',
     tags: ['tax', 'canada', 'gst', 'hst'],
     summary: [

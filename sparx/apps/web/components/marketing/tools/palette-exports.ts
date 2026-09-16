@@ -64,14 +64,14 @@ function themeBlock(
 export function buildSilicaTheme(name: string, colors: PaletteColor[]): string {
   const extras = colors.length - SILICA_SLOTS.length;
   const header = [
-    `/* ${name} — a color theme for silicaui (silicaui.com).`,
+    `/* ${name}: a color theme for silicaui (silicaui.com).`,
     ' * Paste into your stylesheet. Each color has a matching "-content" value:',
     ' * the text color that stays readable on top of it.',
   ];
   if (extras > 0) {
     header.push(
       ` * The last ${extras === 1 ? 'color uses a name' : `${extras} colors use names`} silicaui does`,
-      " * not ship by default — add them to your silicaui plugin's `colors:` list",
+      " * not ship by default. Add them to your silicaui plugin's `colors:` list",
       ' * to use them as button, badge, and card colors. */'
     );
   } else {

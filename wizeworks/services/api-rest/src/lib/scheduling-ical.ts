@@ -190,7 +190,7 @@ export async function loadResourceFeed(
       uid: uidFor(b.id),
       start: b.startAt,
       end: b.endAt,
-      summary: guest ? `${b.service.name} — ${guest}` : b.service.name,
+      summary: guest ? `${b.service.name}: ${guest}` : b.service.name,
       location: undefined,
       status: toIcsStatus(b.status),
       organizerName: siteName || undefined,
@@ -200,7 +200,7 @@ export async function loadResourceFeed(
     };
   });
 
-  const calName = siteName ? `${resource.name} — ${siteName}` : `${resource.name} — Bookings`;
+  const calName = siteName ? `${resource.name}: ${siteName}` : `${resource.name}: Bookings`;
   return {
     filename: `${resourceId}.ics`,
     calName,

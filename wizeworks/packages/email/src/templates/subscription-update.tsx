@@ -54,7 +54,7 @@ function copyFor(p: SubscriptionUpdateEmailProps): Copy {
       return p.trialEndLabel
         ? {
             heading: 'Your trial has started',
-            lead: `You're on ${plan} — free until ${p.trialEndLabel}. Everything's unlocked; explore at your own pace.`,
+            lead: `You're on ${plan}: free until ${p.trialEndLabel}. Everything's unlocked; explore at your own pace.`,
             body: 'Add a payment method any time before your trial ends and your plan simply continues without a break.',
             cta: 'View billing',
             tone: 'info',
@@ -63,7 +63,7 @@ function copyFor(p: SubscriptionUpdateEmailProps): Copy {
           }
         : {
             heading: 'Your plan is active',
-            lead: `You're all set on ${plan}. Thanks for subscribing — everything on your plan is unlocked.`,
+            lead: `You're all set on ${plan}. Thanks for subscribing. Everything on your plan is unlocked.`,
             body: p.renewsOnLabel ? `Your plan renews on ${p.renewsOnLabel}.` : undefined,
             cta: 'View billing',
             tone: 'success',
@@ -73,7 +73,7 @@ function copyFor(p: SubscriptionUpdateEmailProps): Copy {
     case 'canceled':
       return {
         heading: 'Your subscription is canceled',
-        lead: `We've canceled ${plan}${p.effectiveLabel ? ` — it stays active until ${p.effectiveLabel}` : ''}. We're sorry to see you go.`,
+        lead: `We've canceled ${plan}${p.effectiveLabel ? `: it stays active until ${p.effectiveLabel}` : ''}. We're sorry to see you go.`,
         body: 'Nothing is deleted. Your sites, content, and data are kept safe, and you can reactivate any time to pick up right where you left off.',
         cta: 'Reactivate',
         tone: 'neutral',
@@ -93,7 +93,7 @@ function copyFor(p: SubscriptionUpdateEmailProps): Copy {
     case 'paused':
       return {
         heading: 'Your subscription is paused',
-        lead: `${plan} is paused because there's no payment method on file. Your sites and store are paused too — nothing is deleted.`,
+        lead: `${plan} is paused because there's no payment method on file. Your sites and store are paused too. Nothing is deleted.`,
         body: 'Add a payment method to switch everything back on instantly.',
         cta: 'Add a payment method',
         tone: 'warn',

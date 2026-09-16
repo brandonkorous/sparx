@@ -45,7 +45,7 @@ function startedDescription(created: CountDetail): string {
   if (created.lines.length > 0) {
     return `${plural(created.lines.length, 'item is', 'items are')} ready to count.`;
   }
-  return 'Nothing has been counted here before, so the list starts empty — scan or type a code to put the first item on it.';
+  return 'Nothing has been counted here before, so the list starts empty: scan or type a code to put the first item on it.';
 }
 
 export function StartCount({ ctx }: { ctx: SurfaceContext }) {
@@ -170,7 +170,7 @@ export function StartCount({ ctx }: { ctx: SurfaceContext }) {
                 <FieldDescription>
                   {type === 'full'
                     ? 'Anything that already has stock here is listed for you. If nothing does yet, you start empty and add items by scanning or typing a code.'
-                    : 'You start with an empty list and add the items you want to count as you go — good for a quick spot-check.'}
+                    : 'You start with an empty list and add the items you want to count as you go: good for a quick spot-check.'}
                 </FieldDescription>
               </Field>
 
@@ -204,7 +204,7 @@ function NowhereToCount({ ctx }: { ctx: SurfaceContext }) {
     <EmptyState
       icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
       title="You have nowhere to count yet"
-      description="A count is always tied to one place — a shop, a warehouse, a van. Set up at least one location and you can start counting what is on its shelves."
+      description="A count is always tied to one place: a shop, a warehouse, a van. Set up at least one location and you can start counting what is on its shelves."
       actions={
         <Button
           size="sm"

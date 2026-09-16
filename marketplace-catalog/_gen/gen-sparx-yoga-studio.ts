@@ -128,7 +128,7 @@ const SCHEDULING = {
       cancellationWindowHours: 12,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Reserve your mat ahead — classes are small and fill up. Cancel at least 12 hours before and your spot frees for the next person; we send a reminder the day before and two hours ahead.',
+        'Reserve your mat ahead: classes are small and fill up. Cancel at least 12 hours before and your spot frees for the next person; we send a reminder the day before and two hours ahead.',
     },
     {
       handle: 'drop-in',
@@ -137,7 +137,7 @@ const SCHEDULING = {
       cancellationWindowHours: 4,
       reminderOffsetsMin: [120],
       policyText:
-        'Pay as you go — book a single class with no commitment. Life happens; give us a few hours’ notice if your plans change.',
+        'Pay as you go. Book a single class with no commitment. Life happens; give us a few hours’ notice if your plans change.',
     },
   ],
   resources: [
@@ -189,7 +189,7 @@ const SCHEDULING = {
       handle: 'vinyasa-flow',
       name: 'Vinyasa flow',
       description:
-        'A breath-led flow that builds heat and moves with you — strong but never rushed. All levels; modifications offered throughout.',
+        'A breath-led flow that builds heat and moves with you: strong but never rushed. All levels; modifications offered throughout.',
       bookingType: 'class',
       durationMinutes: 60,
       priceCents: 2200,
@@ -205,7 +205,7 @@ const SCHEDULING = {
       handle: 'yin-yoga',
       name: 'Yin yoga',
       description:
-        'Long, quiet holds that open the deeper tissues and settle the nervous system. Bring nothing but yourself — props do the work.',
+        'Long, quiet holds that open the deeper tissues and settle the nervous system. Bring nothing but yourself: props do the work.',
       bookingType: 'class',
       durationMinutes: 75,
       priceCents: 2000,
@@ -221,7 +221,7 @@ const SCHEDULING = {
       handle: 'hot-yoga',
       name: 'Hot yoga',
       description:
-        'A warm-room flow in The Hearth — heat to loosen, sweat to reset. Come hydrated; leave lighter.',
+        'A warm-room flow in The Hearth: heat to loosen, sweat to reset. Come hydrated; leave lighter.',
       bookingType: 'class',
       durationMinutes: 60,
       priceCents: 2500,
@@ -237,7 +237,7 @@ const SCHEDULING = {
       handle: 'restorative',
       name: 'Restorative',
       description:
-        'Fully supported, deeply still. A slow, blanketed hour that asks nothing of you but rest — the softest landing in the week.',
+        'Fully supported, deeply still. A slow, blanketed hour that asks nothing of you but rest: the softest landing in the week.',
       bookingType: 'class',
       durationMinutes: 75,
       priceCents: 2000,
@@ -253,7 +253,7 @@ const SCHEDULING = {
       handle: 'foundations',
       name: 'Foundations',
       description:
-        'The beginners’ track — the shapes, the breath and the words, taught slowly and kindly. Brand new? Start exactly here.',
+        'The beginners’ track: the shapes, the breath and the words, taught slowly and kindly. Brand new? Start exactly here.',
       bookingType: 'class',
       durationMinutes: 60,
       priceCents: 1800,
@@ -269,7 +269,7 @@ const SCHEDULING = {
       handle: 'prenatal',
       name: 'Prenatal',
       description:
-        'A gentle, knowing practice for every trimester — strength, breath and space, with a teacher who’s been there.',
+        'A gentle, knowing practice for every trimester: strength, breath and space, with a teacher who’s been there.',
       bookingType: 'class',
       durationMinutes: 60,
       priceCents: 2000,
@@ -285,7 +285,7 @@ const SCHEDULING = {
       handle: 'community-flow',
       name: 'Community flow',
       description:
-        'Our pay-what-you-can class — an easy, all-levels gentle flow, open to everyone. Come as you are; bring a friend.',
+        'Our pay-what-you-can class: an easy, all-levels gentle flow, open to everyone. Come as you are; bring a friend.',
       bookingType: 'class',
       durationMinutes: 45,
       priceCents: 1500,
@@ -306,7 +306,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A warm, sunlit studio with mats laid out on a wood floor',
     title: 'You belong here, wherever you’re starting',
-    sub: 'A warm, unhurried studio for every body and every level — flow, yin, hot and restorative, taught by people who’ll learn your name.',
+    sub: 'A warm, unhurried studio for every body and every level: flow, yin, hot and restorative, taught by people who’ll learn your name.',
     primary: { label: 'Reserve your mat', href: '/book' },
     secondary: { label: 'See the schedule', href: '/book' },
     overlay: 'dark',
@@ -319,17 +319,17 @@ const HOME = [
       },
       {
         title: 'Small classes, real attention',
-        body: 'We cap every class so your teacher can actually see you — adjust, encourage, and keep the room feeling like a room, not a crowd.',
+        body: 'We cap every class so your teacher can actually see you: adjust, encourage, and keep the room feeling like a room, not a crowd.',
       },
       {
         title: 'Your first class is free',
-        body: 'Drop in or become a member — no contracts, no pressure. Try one on us and see how it feels to leave lighter than you came.',
+        body: 'Drop in or become a member: no contracts, no pressure. Try one on us and see how it feels to leave lighter than you came.',
       },
     ],
   }),
   serviceMenu({
     heading: 'The class schedule',
-    intro: 'A rhythm for every kind of day — pick your pace. Live times and teachers are on the booking page.',
+    intro: 'A rhythm for every kind of day. Pick your pace. Live times and teachers are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -337,7 +337,7 @@ const HOME = [
       { name: 'Yin yoga', priceCents: 2000, durationMin: 75, desc: 'Long, quiet holds; deep release.' },
       { name: 'Hot yoga', priceCents: 2500, durationMin: 60, desc: 'A warm-room flow that resets you.' },
       { name: 'Restorative', priceCents: 2000, durationMin: 75, desc: 'Fully supported, deeply still.' },
-      { name: 'Foundations', priceCents: 1800, durationMin: 60, desc: 'The beginners’ track — start here.' },
+      { name: 'Foundations', priceCents: 1800, durationMin: 60, desc: 'The beginners’ track. Start here.' },
       { name: 'Prenatal', priceCents: 2000, durationMin: 60, desc: 'A gentle practice for every trimester.' },
     ],
     cta: { label: 'See every class & book', href: '/book' },
@@ -347,17 +347,17 @@ const HOME = [
     alt: 'A calm studio corner with plants, blankets and soft morning light',
     heading: 'A slow room in a fast city',
     body: [
-      'Prana is a two-room studio built to feel like an exhale — warm wood, soft light, plants in the corners and no mirrors to perform for.',
-      'We keep the pace human. Come early, stay for tea, and let the hour be yours. There’s nothing to prove on the mat — only something to notice.',
+      'Prana is a two-room studio built to feel like an exhale: warm wood, soft light, plants in the corners and no mirrors to perform for.',
+      'We keep the pace human. Come early, stay for tea, and let the hour be yours. There’s nothing to prove on the mat. Only something to notice.',
     ],
     cta: { label: 'Reserve your mat', href: '/book' },
   }),
   teamRow({
     heading: 'Your teachers',
-    intro: 'Book by name, or let the schedule choose for you — every one of them teaches for the room, not the mirror.',
+    intro: 'Book by name, or let the schedule choose for you: every one of them teaches for the room, not the mirror.',
     members: [
       { name: 'Maya Rivers', role: 'Vinyasa & hot', image: url(IMG.maya), alt: 'Maya Rivers, vinyasa and hot-yoga teacher', bio: 'Strong, breath-led flows and a warm-room practice that leaves you clear-headed.' },
-      { name: 'Anjali Rao', role: 'Yin & restorative', image: url(IMG.anjali), alt: 'Anjali Rao, yin and restorative teacher', bio: 'Long, quiet holds and deep rest — the softest hours on the schedule.' },
+      { name: 'Anjali Rao', role: 'Yin & restorative', image: url(IMG.anjali), alt: 'Anjali Rao, yin and restorative teacher', bio: 'Long, quiet holds and deep rest: the softest hours on the schedule.' },
       { name: 'Priya Menon', role: 'Foundations & prenatal', image: url(IMG.priya), alt: 'Priya Menon, foundations and prenatal teacher', bio: 'Patient, plain-spoken teaching for brand-new students and every trimester.' },
       { name: 'Sofia Lindqvist', role: 'Vinyasa & gentle flow', image: url(IMG.sofia), alt: 'Sofia Lindqvist, vinyasa and gentle-flow teacher', bio: 'Playful, accessible flow and our pay-what-you-can community class.' },
     ],
@@ -368,7 +368,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Reserve your mat',
-    sub: 'Pick a class, choose a time, and you’re set. Your first one’s on us — see live availability in about a minute.',
+    sub: 'Pick a class, choose a time, and you’re set. Your first one’s on us: see live availability in about a minute.',
     cta: { label: 'Book a class', href: '/book' },
   }),
 ];
@@ -378,7 +378,7 @@ const BOOK_INTRO = [
     image: url(IMG.flow),
     alt: 'A small class moving through a gentle vinyasa flow',
     title: 'Book a class',
-    sub: 'Choose a class to see the drop-in price, how long it runs and live availability — then pick your teacher and time.',
+    sub: 'Choose a class to see the drop-in price, how long it runs and live availability, then pick your teacher and time.',
     primary: { label: 'See classes below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -391,7 +391,7 @@ const ABOUT = [
     alt: 'A warm, sunlit studio with mats laid out on a wood floor',
     heading: 'About Prana',
     body: [
-      'We opened Prana because so many studios felt like they were for someone else — already flexible, already calm, already sure of the words. We wanted a room for the rest of us.',
+      'We opened Prana because so many studios felt like they were for someone else: already flexible, already calm, already sure of the words. We wanted a room for the rest of us.',
       'So this is a place to start, and a place to stay. All levels in the same class, taught kindly, capped small, with teachers who learn your name and meet you exactly where you are.',
     ],
     cta: { label: 'Reserve your mat', href: '/book' },
@@ -401,7 +401,7 @@ const ABOUT = [
     heading: 'How the studio works',
     items: [
       { title: 'Come as you are', body: 'No special clothes, no experience, no flexibility required. Bare feet, an open hour, and a mat we’ll lend you if you don’t have one.' },
-      { title: 'Drop in or belong', body: 'Pay per class or become a member — whichever fits your life. Memberships are month-to-month, and your first class is always free.' },
+      { title: 'Drop in or belong', body: 'Pay per class or become a member: whichever fits your life. Memberships are month-to-month, and your first class is always free.' },
       { title: 'Rest is part of it', body: 'We build the schedule around balance: something strong, something slow, and a community flow that’s open to everyone, pay-what-you-can.' },
     ],
   }),
@@ -421,7 +421,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'New here? Start with a free class',
-    sub: 'Reserve your mat online and see live times — no phone tag, no pressure.',
+    sub: 'Reserve your mat online and see live times: no phone tag, no pressure.',
     surface: 'muted',
     cta: { label: 'Book a class', href: '/book' },
   }),
@@ -432,8 +432,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-yoga-studio',
   name: 'Yoga Studio',
   summary:
-    'A warm, grounded yoga-studio site — a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as "Prana", an all-levels studio where you belong wherever you’re starting.',
-  tagline: 'A warm, all-levels template for yoga studios — a live class schedule from day one.',
+    'A warm, grounded yoga-studio site: a terracotta-and-clay palette over a cream ground, a soft sage accent and humanist type. Installs a live class schedule with capacity: vinyasa, yin, hot, restorative, foundations and prenatal, each a bookable class with a drop-in price, plus four teachers and two studio rooms (including a hot room) as bookable resources with weekly hours. Ships as "Prana", an all-levels studio where you belong wherever you’re starting.',
+  tagline: 'A warm, all-levels template for yoga studios: a live class schedule from day one.',
   industry: 'Yoga studio',
   sortWeight: 82,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -442,9 +442,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Prana — a warm, all-levels yoga studio',
+      title: 'Prana: a warm, all-levels yoga studio',
       description:
-        'Prana is a warm, unhurried yoga studio for every body — vinyasa, yin, hot, restorative, foundations and prenatal classes, capped small. Your first class is free. Reserve your mat online.',
+        'Prana is a warm, unhurried yoga studio for every body: vinyasa, yin, hot, restorative, foundations and prenatal classes, capped small. Your first class is free. Reserve your mat online.',
     },
   },
   home: HOME,

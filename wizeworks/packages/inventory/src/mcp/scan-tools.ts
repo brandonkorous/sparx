@@ -34,7 +34,7 @@ const SCAN_KINDS = [
 const lookUpScan: McpToolDefinition = {
   name: 'resolve_scan',
   description:
-    'What a scanned or typed code IS. Tries every reading of the same physical code — a UPC-A that a scanner reported as EAN-13, a zero-suppressed UPC-E, a SKU printed as a Code 128 — and returns everything it matched: products (with how many units one scan of that code means), shelves, purchase orders, transfers, counts, lots and serial numbers. Returns several matches rather than guessing when a value is honestly ambiguous. Narrow it with `expect` when you already know what kind of thing you are looking at.',
+    'What a scanned or typed code IS. Tries every reading of the same physical code: a UPC-A that a scanner reported as EAN-13, a zero-suppressed UPC-E, a SKU printed as a Code 128, and returns everything it matched: products (with how many units one scan of that code means), shelves, purchase orders, transfers, counts, lots and serial numbers. Returns several matches rather than guessing when a value is honestly ambiguous. Narrow it with `expect` when you already know what kind of thing you are looking at.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -58,7 +58,7 @@ const lookUpScan: McpToolDefinition = {
 const listCodes: McpToolDefinition = {
   name: 'list_barcodes',
   description:
-    "Every barcode registered against an item, or a search across all of them. Each carries its format, how many units one scan represents (a case code means twelve), whether it is the item's main code, which supplier's packaging it came from, and when it was last scanned — which is what decides whether an old label can be retired.",
+    "Every barcode registered against an item, or a search across all of them. Each carries its format, how many units one scan represents (a case code means twelve), whether it is the item's main code, which supplier's packaging it came from, and when it was last scanned, which is what decides whether an old label can be retired.",
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -110,7 +110,7 @@ const scanHistory: McpToolDefinition = {
 const receivingState: McpToolDefinition = {
   name: 'get_receiving_session',
   description:
-    'How a delivery is going: for each ordered line, how many were ordered, already booked on earlier receipts, scanned so far in this session and still outstanding — plus any scans that resolved to nothing. The session lives on the server, so it is the same for everyone working the delivery.',
+    'How a delivery is going: for each ordered line, how many were ordered, already booked on earlier receipts, scanned so far in this session and still outstanding, plus any scans that resolved to nothing. The session lives on the server, so it is the same for everyone working the delivery.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({ purchaseOrderId: Uuid }),
@@ -147,7 +147,7 @@ export const scanReadTools: AnyMcpTool[] = [
 const registerCode: McpToolDefinition = {
   name: 'register_barcode',
   description:
-    'Put a barcode on an item so scanning it resolves. The format is worked out from the value, and a UPC or EAN check digit is verified before it is stored — a mis-typed code is caught here rather than on the day somebody scans a carton and the wrong item comes up. Set packSize when the code is on a case: scanning it will then add that many units, not one.',
+    'Put a barcode on an item so scanning it resolves. The format is worked out from the value, and a UPC or EAN check digit is verified before it is stored: a mis-typed code is caught here rather than on the day somebody scans a carton and the wrong item comes up. Set packSize when the code is on a case: scanning it will then add that many units, not one.',
   scope: 'write:inventory',
   confirmation: false,
   input: CreateVariantBarcodeInput,
@@ -157,7 +157,7 @@ const registerCode: McpToolDefinition = {
 const mintCodes: McpToolDefinition = {
   name: 'generate_barcodes',
   description:
-    'Mint barcodes for items that arrived without one. Each is a real UPC-A in the range reserved for in-house use, so it scans on any gun with no setup and can never collide with a manufacturer code. Items that already have a barcode are skipped unless you force it. The numbers only ever go up — a deleted code is never re-issued, because its labels may still be on a shelf.',
+    'Mint barcodes for items that arrived without one. Each is a real UPC-A in the range reserved for in-house use, so it scans on any gun with no setup and can never collide with a manufacturer code. Items that already have a barcode are skipped unless you force it. The numbers only ever go up: a deleted code is never re-issued, because its labels may still be on a shelf.',
   scope: 'write:inventory',
   confirmation: true,
   input: GenerateVariantBarcodesInput,
@@ -203,7 +203,7 @@ const receiveScan: McpToolDefinition = {
 const postReceipt: McpToolDefinition = {
   name: 'post_scanned_receipt',
   description:
-    'Turn a finished receiving session into a goods receipt — the irreversible step that adds the stock, records the cost, and advances the purchase order. Damaged units are booked as arrived-and-written-off rather than as sellable stock. Check the session first.',
+    'Turn a finished receiving session into a goods receipt: the irreversible step that adds the stock, records the cost, and advances the purchase order. Damaged units are booked as arrived-and-written-off rather than as sellable stock. Check the session first.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -218,7 +218,7 @@ const postReceipt: McpToolDefinition = {
 const countScan: McpToolDefinition = {
   name: 'scan_to_count',
   description:
-    'Count one item on an open stock count. Scanning ACCUMULATES — ten pulls on the same item is ten, which is what counting a shelf physically is. An item that is not on the count sheet is added to it rather than refused: finding stock the system does not know about is the most valuable thing a count does.',
+    'Count one item on an open stock count. Scanning ACCUMULATES: ten pulls on the same item is ten, which is what counting a shelf physically is. An item that is not on the count sheet is added to it rather than refused: finding stock the system does not know about is the most valuable thing a count does.',
   scope: 'write:inventory',
   confirmation: false,
   input: ScanEnvelope.extend({
@@ -227,7 +227,7 @@ const countScan: McpToolDefinition = {
       .boolean()
       .default(true)
       .describe(
-        'False replaces the running total instead of adding to it — a typed entry, not a scan.'
+        'False replaces the running total instead of adding to it: a typed entry, not a scan.'
       ),
   }),
   run: (ctx, input) => inventoryService.scanToCount(ctx, input as never),

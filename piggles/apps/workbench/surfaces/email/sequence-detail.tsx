@@ -608,7 +608,7 @@ function SequenceEditor({
                   />
                 }
               />
-              <FieldDescription>For you — so you can tell your sequences apart.</FieldDescription>
+              <FieldDescription>For you, so you can tell your sequences apart.</FieldDescription>
             </Field>
 
             <Field>
@@ -645,7 +645,7 @@ function SequenceEditor({
                 }}
               />
               <FieldDescription>
-                Choosing every business is wider — a sequence set to one business only ever emails
+                Choosing every business is wider: a sequence set to one business only ever emails
                 that business’s people.
               </FieldDescription>
             </Field>
@@ -742,7 +742,7 @@ function StepEditor({
         <div className="border-base-300 flex flex-col items-center gap-2 rounded-lg border border-dashed p-6 text-center">
           <Icon glyph={faEnvelope} className="size-6" aria-hidden />
           <Text className="text-sm">
-            No emails yet. Add the first one — it usually goes out the moment someone is enrolled.
+            No emails yet. Add the first one. It usually goes out the moment someone is enrolled.
           </Text>
           <Button size="sm" color="module" variant="soft" onClick={onAdd}>
             <Icon glyph={faPlus} className="size-4" aria-hidden />
@@ -949,8 +949,8 @@ function StepCard({
           aria-label="What kind of email is this"
           value={step.emailType}
           items={{
-            marketing: 'Marketing — a promotion or offer',
-            transactional: 'Transactional — about something they did (a receipt, a reminder)',
+            marketing: 'Marketing: a promotion or offer',
+            transactional: 'Transactional: about something they did (a receipt, a reminder)',
           }}
           onValueChange={(next) => {
             onChange({ ...step, emailType: next as 'marketing' | 'transactional' });

@@ -29,17 +29,17 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     points: [
       {
         title: "What's in the package",
-        body: 'From one image we render the full real-world set: a multi-resolution favicon.ico (16/32/48), standalone PNGs, an apple-touch-icon, 192 and 512 PWA icons, a maskable icon for Android, and a site.webmanifest — plus the exact markup to paste.',
+        body: 'From one image we render the full real-world set: a multi-resolution favicon.ico (16/32/48), standalone PNGs, an apple-touch-icon, 192 and 512 PWA icons, a maskable icon for Android, and a site.webmanifest: plus the exact markup to paste.',
       },
       {
         title: 'Everything stays on your device',
-        body: 'Your image is processed entirely in your browser with the Canvas API. Nothing is uploaded, so there is no queue, no watermark, and no privacy trade-off — the reason most online generators feel slow and sketchy.',
+        body: 'Your image is processed entirely in your browser with the Canvas API. Nothing is uploaded, so there is no queue, no watermark, and no privacy trade-off: the reason most online generators feel slow and sketchy.',
       },
     ],
     faq: [
       {
         q: 'What size should my source image be?',
-        a: 'A square PNG or SVG of at least 512×512 looks best — it scales down cleanly to every icon size. SVG is ideal because it is resolution-independent.',
+        a: 'A square PNG or SVG of at least 512×512 looks best. It scales down cleanly to every icon size. SVG is ideal because it is resolution-independent.',
       },
       {
         q: 'Where do I put the files?',
@@ -65,10 +65,10 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     faq: [
       {
         q: 'Do these QR codes expire?',
-        a: 'No. The code encodes your content directly — there is no redirect or tracking link in between — so it works forever and never depends on our servers.',
+        a: 'No. The code encodes your content directly (there is no redirect or tracking link in between) so it works forever and never depends on our servers.',
       },
       {
-        q: 'PNG or SVG — which should I use?',
+        q: 'PNG or SVG, which should I use?',
         a: 'Use PNG for screens and quick prints. Use SVG for anything large or professionally printed (posters, packaging, signage) because it stays sharp at any size.',
       },
       {
@@ -95,7 +95,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Should UTM values be lowercase?',
-        a: 'Yes — analytics treats Source and source as different values, which splits your reports. Keeping everything lowercase (the default here) avoids that.',
+        a: 'Yes: analytics treats Source and source as different values, which splits your reports. Keeping everything lowercase (the default here) avoids that.',
       },
       {
         q: 'Do UTMs hurt my SEO?',
@@ -111,7 +111,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         title: '1200×630, the size that works everywhere',
-        body: 'We render at 1200×630 — the ratio every major platform accepts — with an auto-fitting headline so short or long titles both look composed. Download the PNG and reference it in your og:image tag.',
+        body: 'We render at 1200×630 (the ratio every major platform accepts) with an auto-fitting headline so short or long titles both look composed. Download the PNG and reference it in your og:image tag.',
       },
     ],
     faq: [
@@ -133,11 +133,11 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     points: [
       {
         title: 'Built to survive every email client',
-        body: 'The signature is table-based HTML with fully inlined styles — the only structure Gmail, Outlook, and Apple Mail render consistently. Social links are text, not images, because most clients block remote images by default.',
+        body: 'The signature is table-based HTML with fully inlined styles: the only structure Gmail, Outlook, and Apple Mail render consistently. Social links are text, not images, because most clients block remote images by default.',
       },
       {
         title: 'Copy once, paste anywhere',
-        body: '"Copy signature" puts formatted HTML on your clipboard so you can paste it straight into your email client\'s signature settings — no HTML knowledge needed. "Copy HTML" gives you the source instead.',
+        body: '"Copy signature" puts formatted HTML on your clipboard so you can paste it straight into your email client\'s signature settings: no HTML knowledge needed. "Copy HTML" gives you the source instead.',
       },
     ],
     faq: [
@@ -163,7 +163,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         title: 'A real PDF, built in your browser',
-        body: 'The download is a genuine, print-ready PDF generated client-side — not a screenshot. Any currency is supported, and your business details are saved locally so the next invoice starts filled in.',
+        body: 'The download is a genuine, print-ready PDF generated client-side, not a screenshot. Any currency is supported, and your business details are saved locally so the next invoice starts filled in.',
       },
     ],
     faq: [
@@ -173,7 +173,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Can I use my own currency?',
-        a: 'Yes — pick from common currencies and every amount formats correctly, including the symbol and decimal rules for that currency.',
+        a: 'Yes. Pick from common currencies and every amount formats correctly, including the symbol and decimal rules for that currency.',
       },
       {
         q: 'Do you store my invoices or client data?',
@@ -188,8 +188,8 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
         body: 'SPF says which servers may send for your domain, DKIM cryptographically signs your mail, and DMARC tells receivers what to do on failure. Get all three right and your email stops landing in spam.',
       },
       {
-        title: 'Generate, then verify — live',
-        body: "Build the exact DNS records to publish, then check any domain's existing SPF, DKIM, and DMARC straight from your browser using public DNS — no account, no waiting on a tool to email you a report.",
+        title: 'Generate, then verify: live',
+        body: "Build the exact DNS records to publish, then check any domain's existing SPF, DKIM, and DMARC straight from your browser using public DNS: no account, no waiting on a tool to email you a report.",
       },
     ],
     faq: [
@@ -215,7 +215,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         title: 'Copy a complete, correct block',
-        body: 'The generated markup includes the title, meta description, canonical, and the Open Graph and Twitter tags that control how the page looks when shared — not just the two everyone remembers.',
+        body: 'The generated markup includes the title, meta description, canonical, and the Open Graph and Twitter tags that control how the page looks when shared, not just the two everyone remembers.',
       },
     ],
     faq: [
@@ -229,7 +229,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Do meta keywords matter?',
-        a: 'No — Google has ignored the meta keywords tag for years. Focus on a strong title, description, and Open Graph tags, which this tool generates.',
+        a: 'No: Google has ignored the meta keywords tag for years. Focus on a strong title, description, and Open Graph tags, which this tool generates.',
       },
     ],
   },
@@ -237,25 +237,25 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     points: [
       {
         title: 'One color, a whole scheme',
-        body: 'Pick a single brand color and get matching accents from color theory — complementary, analogous, triadic, tetradic, or monochromatic — by rotating your hue around the color wheel, or switch to a free-form Random mode when you want more variety. A slider sets how many accents you want, from one to four.',
+        body: 'Pick a single brand color and get matching accents from color theory (complementary, analogous, triadic, tetradic, or monochromatic) by rotating your hue around the color wheel, or switch to a free-form Random mode when you want more variety. A slider sets how many accents you want, from one to four.',
       },
       {
         title: 'Shuffle, then lock what you love',
-        body: 'Hit Shuffle (or tap the spacebar) to roll fresh variations within your scheme, and lock any color to keep it fixed while the rest re-roll. A live preview applies the palette to real UI — buttons, badges, charts, alerts — so you judge it in context, not as a flat strip.',
+        body: 'Hit Shuffle (or tap the spacebar) to roll fresh variations within your scheme, and lock any color to keep it fixed while the rest re-roll. A live preview applies the palette to real UI (buttons, badges, charts, alerts) so you judge it in context, not as a flat strip.',
       },
       {
         title: 'Copy it the way you build',
-        body: 'Export every color — primary and each accent — as a full 50–950 ramp of CSS custom properties or a Tailwind color config, with text-on-background pairings checked against WCAG so you know which steps are safe to put words on.',
+        body: 'Export every color (primary and each accent) as a full 50–950 ramp of CSS custom properties or a Tailwind color config, with text-on-background pairings checked against WCAG so you know which steps are safe to put words on.',
       },
     ],
     faq: [
       {
         q: 'What is a complementary color?',
-        a: "It's the color directly opposite yours on the color wheel — a 180° hue rotation. Complementary pairs have the most contrast and make accents pop. Analogous colors sit next to yours for a calmer, blended look; triadic and tetradic spread three or four colors evenly for a balanced multi-color scheme.",
+        a: "It's the color directly opposite yours on the color wheel: a 180° hue rotation. Complementary pairs have the most contrast and make accents pop. Analogous colors sit next to yours for a calmer, blended look; triadic and tetradic spread three or four colors evenly for a balanced multi-color scheme.",
       },
       {
         q: 'How do I keep one color and change the rest?',
-        a: 'Lock it. Click the lock on any color and it stays fixed while Shuffle — or the spacebar — re-rolls the others, so you can explore variations around a color you’ve already committed to. Unlock the primary too if you want to roll the entire palette from scratch.',
+        a: 'Lock it. Click the lock on any color and it stays fixed while Shuffle (or the spacebar) re-rolls the others, so you can explore variations around a color you’ve already committed to. Unlock the primary too if you want to roll the entire palette from scratch.',
       },
       {
         q: 'How many accent colors should a brand use?',
@@ -263,11 +263,11 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'What do the 50–950 numbers mean?',
-        a: "It's the convention design systems (including Tailwind) use: 50 is the lightest tint, 500 is roughly your base color, and 950 is the darkest shade — a consistent set of steps to design with. Each color in your palette gets its own ramp.",
+        a: "It's the convention design systems (including Tailwind) use: 50 is the lightest tint, 500 is roughly your base color, and 950 is the darkest shade: a consistent set of steps to design with. Each color in your palette gets its own ramp.",
       },
       {
         q: 'Can I use these colors with Tailwind?',
-        a: "Yes — copy the Tailwind config output into your theme's colors and the whole scale, plus each accent, is available as utility classes.",
+        a: "Yes. Copy the Tailwind config output into your theme's colors and the whole scale, plus each accent, is available as utility classes.",
       },
     ],
   },
@@ -279,13 +279,13 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         title: 'Know your break-even',
-        body: 'Add fixed costs and the calculator shows how many units you must sell to break even — the number that says whether a price actually works for the business, not just the spreadsheet.',
+        body: 'Add fixed costs and the calculator shows how many units you must sell to break even: the number that says whether a price actually works for the business, not just the spreadsheet.',
       },
     ],
     faq: [
       {
         q: "What's the difference between margin and markup?",
-        a: 'Markup is profit as a percentage of cost; margin is profit as a percentage of price. A 50% markup is only a 33% margin — mixing them up is a common, expensive mistake.',
+        a: 'Markup is profit as a percentage of cost; margin is profit as a percentage of price. A 50% markup is only a 33% margin: mixing them up is a common, expensive mistake.',
       },
       {
         q: 'How do I price for a target margin?',
@@ -293,7 +293,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: "What counts as 'cost'?",
-        a: 'Use your fully-loaded unit cost — materials, manufacturing, inbound shipping, and per-unit fees. The more complete the cost, the more honest the margin.',
+        a: 'Use your fully-loaded unit cost: materials, manufacturing, inbound shipping, and per-unit fees. The more complete the cost, the more honest the margin.',
       },
     ],
   },
@@ -301,7 +301,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     points: [
       {
         title: 'An estimate, not yet an invoice',
-        body: "A quote is a price you're offering, valid until a date you set. Add line items, tax, and a valid-until, and totals calculate live — then download a branded PDF to send.",
+        body: "A quote is a price you're offering, valid until a date you set. Add line items, tax, and a valid-until, and totals calculate live, then download a branded PDF to send.",
       },
       {
         title: 'Built to become an order',
@@ -311,11 +311,11 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     faq: [
       {
         q: "What's the difference between a quote and an invoice?",
-        a: 'A quote is an offer of price before the work or sale; an invoice is a request for payment after. A quote usually includes an expiry date — this tool adds one.',
+        a: 'A quote is an offer of price before the work or sale; an invoice is a request for payment after. A quote usually includes an expiry date. This tool adds one.',
       },
       {
         q: 'How long should a quote be valid?',
-        a: "It's up to you, but 14–30 days is common — long enough for the buyer to decide, short enough that your pricing and availability are still accurate.",
+        a: "It's up to you, but 14–30 days is common: long enough for the buyer to decide, short enough that your pricing and availability are still accurate.",
       },
       {
         q: 'Is it free and unwatermarked?',
@@ -327,7 +327,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     points: [
       {
         title: 'The markup behind rich results',
-        body: 'Structured data is the JSON-LD that lets Google show stars, prices, FAQs, and business details right in search. Pick a type — LocalBusiness, Product, Article, FAQ — fill the form, copy a valid script.',
+        body: 'Structured data is the JSON-LD that lets Google show stars, prices, FAQs, and business details right in search. Pick a type (LocalBusiness, Product, Article, FAQ) fill the form, copy a valid script.',
       },
       {
         title: 'Valid by construction',
@@ -337,15 +337,15 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     faq: [
       {
         q: 'What is JSON-LD?',
-        a: "It's the format Google recommends for structured data — a small script block you add to your page. It describes your content to search engines without changing how the page looks.",
+        a: "It's the format Google recommends for structured data: a small script block you add to your page. It describes your content to search engines without changing how the page looks.",
       },
       {
         q: 'Where do I put the script?',
-        a: 'Anywhere in the page HTML — the <head> or <body> both work. Paste the generated block once per page that the schema describes.',
+        a: 'Anywhere in the page HTML: the <head> or <body> both work. Paste the generated block once per page that the schema describes.',
       },
       {
         q: 'Will this guarantee rich results?',
-        a: "No tool can — Google decides when to show them. But valid, complete structured data is a requirement, and this generates exactly that. Verify with Google's Rich Results Test.",
+        a: "No tool can: Google decides when to show them. But valid, complete structured data is a requirement, and this generates exactly that. Verify with Google's Rich Results Test.",
       },
     ],
   },
@@ -357,7 +357,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         title: 'Where it actually matters',
-        body: 'Low contrast is the most common accessibility failure — and the one enterprise buyers and audits check first. This tells you instantly whether your colors are readable, before it is a problem.',
+        body: 'Low contrast is the most common accessibility failure, and the one enterprise buyers and audits check first. This tells you instantly whether your colors are readable, before it is a problem.',
       },
     ],
     faq: [
@@ -371,7 +371,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Does contrast affect conversions?',
-        a: 'Indirectly, yes — readable pages keep users engaged, and accessibility is increasingly a legal and procurement requirement. It is cheap insurance against losing users and contracts.',
+        a: 'Indirectly, yes: readable pages keep users engaged, and accessibility is increasingly a legal and procurement requirement. It is cheap insurance against losing users and contracts.',
       },
     ],
   },
@@ -383,7 +383,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         title: 'Print-ready output',
-        body: 'Download a crisp PNG for screens and labels, or an SVG that stays sharp at any size for professional printing — with an optional human-readable number beneath the bars.',
+        body: 'Download a crisp PNG for screens and labels, or an SVG that stays sharp at any size for professional printing, with an optional human-readable number beneath the bars.',
       },
     ],
     faq: [
@@ -393,11 +393,11 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Do I need to buy a UPC number?',
-        a: "To sell in major retail, yes — UPC/EAN numbers are issued by GS1. This tool encodes any valid number into a scannable barcode, but it doesn't assign you an official one.",
+        a: "To sell in major retail, yes: UPC/EAN numbers are issued by GS1. This tool encodes any valid number into a scannable barcode, but it doesn't assign you an official one.",
       },
       {
         q: 'Will these scan reliably?',
-        a: 'Yes — the encoding and check digits follow the standards. For retail, print at adequate size and keep a quiet zone (blank margin) around the bars.',
+        a: 'Yes: the encoding and check digits follow the standards. For retail, print at adequate size and keep a quiet zone (blank margin) around the bars.',
       },
     ],
   },
@@ -405,17 +405,17 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     points: [
       {
         title: 'Tap or scan, contact saved',
-        body: 'A digital business card is a vCard (.vcf) — the format every phone understands. Download the file to share by AirDrop or attachment, or let people scan the QR to drop your details into their contacts.',
+        body: 'A digital business card is a vCard (.vcf): the format every phone understands. Download the file to share by AirDrop or attachment, or let people scan the QR to drop your details into their contacts.',
       },
       {
         title: 'Always current, nothing to reprint',
-        body: 'Update your details and re-share — no reprinting a stack of cards. The QR and file carry your name, title, company, phone, email, and links.',
+        body: 'Update your details and re-share: no reprinting a stack of cards. The QR and file carry your name, title, company, phone, email, and links.',
       },
     ],
     faq: [
       {
         q: 'What is a vCard?',
-        a: 'A .vcf file — the universal contact format. When someone opens it or scans the QR, their phone offers to save your details as a new contact, complete with phone, email, and links.',
+        a: 'A .vcf file: the universal contact format. When someone opens it or scans the QR, their phone offers to save your details as a new contact, complete with phone, email, and links.',
       },
       {
         q: 'Do they need an app to scan it?',
@@ -434,7 +434,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
         body: 'Tell us your business name, your site, what data you collect, and the regions you serve, and we assemble a clear, plain-language privacy policy and terms you can copy or download.',
       },
       {
-        title: 'A solid starting point — read it',
+        title: 'A solid starting point: read it',
         body: 'The output covers the sections most sites need (data collected, cookies, third parties, your rights, contact). Adapt it to how your business actually works; it is a strong draft, not legal advice.',
       },
     ],
@@ -445,7 +445,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Does it cover GDPR and CCPA?',
-        a: 'It includes the common sections those laws expect (lawful basis, data-subject rights, contact for requests). Pick the regions you serve and the relevant language is included — then confirm it matches your real practices.',
+        a: 'It includes the common sections those laws expect (lawful basis, data-subject rights, contact for requests). Pick the regions you serve and the relevant language is included, then confirm it matches your real practices.',
       },
       {
         q: 'Where do I publish it?',
@@ -457,7 +457,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     points: [
       {
         title: 'Check the whole shortlist at once',
-        body: 'Enter a name and we check availability across .com, .co, .io, .app and more in one pass, using live registry (RDAP) data — so you find an open name before you fall for a taken one.',
+        body: 'Enter a name and we check availability across .com, .co, .io, .app and more in one pass, using live registry (RDAP) data, so you find an open name before you fall for a taken one.',
       },
       {
         title: 'Authoritative, not a guess',
@@ -471,7 +471,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
       },
       {
         q: 'Does checking a domain here register it?',
-        a: 'No — this only checks availability. To register, take the name to a domain registrar. Nothing you type is stored.',
+        a: 'No. This only checks availability. To register, take the name to a domain registrar. Nothing you type is stored.',
       },
       {
         q: 'Why are some extensions skipped?',

@@ -840,7 +840,7 @@
                         "kind": "element",
                         "class": "text-base-content",
                         "children": [
-                          "Your storefront, your journal, your bookings, and your customer list all live in one place — a change in one shows up everywhere it should. Turn on only what you need."
+                          "Your storefront, your journal, your bookings, and your customer list all live in one place: a change in one shows up everywhere it should. Turn on only what you need."
                         ]
                       },
                       {
@@ -1056,7 +1056,7 @@
                             "kind": "element",
                             "class": "text-base-content",
                             "children": [
-                              "Take appointments, classes, and consultations right on your site — with real availability, deposits, and confirmations."
+                              "Take appointments, classes, and consultations right on your site, with real availability, deposits, and confirmations."
                             ]
                           },
                           {
@@ -1094,7 +1094,7 @@
                             "kind": "element",
                             "class": "text-base-content",
                             "children": [
-                              "Give trade customers their own pricing, terms, and one-click reordering — a full B2B side to your business."
+                              "Give trade customers their own pricing, terms, and one-click reordering: a full B2B side to your business."
                             ]
                           },
                           {
@@ -1259,7 +1259,7 @@
         ]
       },
       "seoTitle": "Welcome",
-      "seoDescription": "Everything your business needs to sell and grow online — build your site, show what you offer, and reach your customers, all in one place."
+      "seoDescription": "Everything your business needs to sell and grow online. Build your site, show what you offer, and reach your customers, all in one place."
     },
     {
       "name": "Shop",
@@ -1301,7 +1301,7 @@
                     "kind": "element",
                     "class": "mt-4 max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we currently have available. Filter, sort, and search to find what you're after — swap in your own products to make this store your own."
+                      "Everything we currently have available. Filter, sort, and search to find what you're after. Swap in your own products to make this store your own."
                     ]
                   }
                 ]
@@ -1369,7 +1369,7 @@
                     "kind": "element",
                     "class": "mt-5 max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "A short story about who you are and why you do this. Replace it with your own — this is your space to make a first impression."
+                      "A short story about who you are and why you do this. Replace it with your own. This is your space to make a first impression."
                     ]
                   }
                 ]
@@ -1412,7 +1412,7 @@
                         "kind": "element",
                         "class": "text-base-content",
                         "children": [
-                          "We wanted it to be easy to start something and run it well — without juggling five different tools. So everything lives in one place: the storefront, the writing, the bookings, and the people who buy from us."
+                          "We wanted it to be easy to start something and run it well, without juggling five different tools. So everything lives in one place: the storefront, the writing, the bookings, and the people who buy from us."
                         ]
                       },
                       {
@@ -1530,7 +1530,7 @@
                             "kind": "element",
                             "class": "text-base-content",
                             "children": [
-                              "Good work, honest descriptions, and a fair price — no tricks, no fine print."
+                              "Good work, honest descriptions, and a fair price: no tricks, no fine print."
                             ]
                           }
                         ]
@@ -1618,7 +1618,7 @@
         ]
       },
       "seoTitle": "About",
-      "seoDescription": "Who we are, how we started and what we care about — the people behind the work, and why we do it this way."
+      "seoDescription": "Who we are, how we started and what we care about: the people behind the work, and why we do it this way."
     },
     {
       "name": "Journal",
@@ -1660,7 +1660,7 @@
                     "kind": "element",
                     "class": "mt-3 max-w-2xl text-lg text-base-content",
                     "children": [
-                      "Stories, updates, and ideas. Publish posts to share what's new — they'll appear here automatically."
+                      "Stories, updates, and ideas. Publish posts to share what's new: they'll appear here automatically."
                     ]
                   }
                 ]
@@ -2141,7 +2141,7 @@
                         "kind": "element",
                         "class": "text-lg text-base-content",
                         "children": [
-                          "Book a session, class, or consultation in about a minute. You'll see live availability, get an instant confirmation, and a reminder before the day — no phone tag."
+                          "Book a session, class, or consultation in about a minute. You'll see live availability, get an instant confirmation, and a reminder before the day: no phone tag."
                         ]
                       },
                       {
@@ -2275,7 +2275,7 @@
                             "kind": "element",
                             "class": "text-base-content",
                             "children": [
-                              "Pick what you need from the list above — each one shows the length and price up front."
+                              "Pick what you need from the list above. Each one shows the length and price up front."
                             ]
                           }
                         ]
@@ -2434,7 +2434,7 @@
                             "kind": "element",
                             "class": "text-base-content",
                             "children": [
-                              "Group sessions with a set number of spots — attendees book themselves in."
+                              "Group sessions with a set number of spots: attendees book themselves in."
                             ]
                           }
                         ]
@@ -2501,7 +2501,7 @@
                     "kind": "element",
                     "class": "text-lg text-neutral-content",
                     "children": [
-                      "Tell us what you're after and we'll point you to the right session — or set one up just for you."
+                      "Tell us what you're after and we'll point you to the right session, or set one up just for you."
                     ]
                   },
                   {
@@ -2522,7 +2522,7 @@
         ]
       },
       "seoTitle": "Book with us",
-      "seoDescription": "Choose what you need, pick a time that works for you, and book it in — no phone calls, no waiting for a reply."
+      "seoDescription": "Choose what you need, pick a time that works for you, and book it in: no phone calls, no waiting for a reply."
     },
     {
       "name": "Wholesale",
@@ -2683,7 +2683,7 @@
                             "kind": "element",
                             "class": "text-base-content",
                             "children": [
-                              "Account pricing and volume breaks apply automatically the moment you sign in — no quoting, no back-and-forth."
+                              "Account pricing and volume breaks apply automatically the moment you sign in: no quoting, no back-and-forth."
                             ]
                           }
                         ]
@@ -2710,7 +2710,7 @@
                             "kind": "element",
                             "class": "text-base-content",
                             "children": [
-                              "Pay how your accounting works — Net 15, 30, or 60 — and drop a PO number right at checkout."
+                              "Pay how your accounting works (Net 15, 30, or 60) and drop a PO number right at checkout."
                             ]
                           }
                         ]
@@ -2777,7 +2777,7 @@
                     "kind": "element",
                     "class": "text-lg text-neutral-content",
                     "children": [
-                      "Tell us a little about your business and we'll set you up — most accounts are approved the same day. No card required to apply."
+                      "Tell us a little about your business and we'll set you up. Most accounts are approved the same day. No card required to apply."
                     ]
                   },
                   {

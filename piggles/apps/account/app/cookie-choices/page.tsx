@@ -85,7 +85,7 @@ export default async function CookieChoicesPage({
         <p>
           It is <span className="font-bold">never</span> advertising, it is{' '}
           <span className="font-bold">never</span> sold or passed to anybody, and it{' '}
-          <span className="font-bold">never</span> reads what you have stored — not your customers,
+          <span className="font-bold">never</span> reads what you have stored, not your customers,
           your orders, your money or your files.
         </p>
       </div>

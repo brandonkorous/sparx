@@ -186,7 +186,7 @@ const SCHEDULING = {
       handle: 'free-estimate',
       name: 'Free estimate',
       description:
-        'Not sure what’s wrong? Bring it by. We’ll look it over and tell you honestly what it needs — no charge, no pressure.',
+        'Not sure what’s wrong? Bring it by. We’ll look it over and tell you honestly what it needs: no charge, no pressure.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -225,7 +225,7 @@ const SCHEDULING = {
     {
       handle: 'brake-service',
       name: 'Brake service',
-      description: 'Pads, rotors and a full brake inspection — so you stop the way you’re supposed to. Every job is warrantied.',
+      description: 'Pads, rotors and a full brake inspection, so you stop the way you’re supposed to. Every job is warrantied.',
       durationMinutes: 120,
       priceCents: 28000,
       assignmentStrategy: 'any_available',
@@ -238,7 +238,7 @@ const SCHEDULING = {
     {
       handle: 'tire-rotation',
       name: 'Tire rotation & balance',
-      description: 'Rotate, balance and set your pressures right — the cheapest way to make a set of tires last longer.',
+      description: 'Rotate, balance and set your pressures right: the cheapest way to make a set of tires last longer.',
       durationMinutes: 30,
       priceCents: 3500,
       assignmentStrategy: 'any_available',
@@ -251,7 +251,7 @@ const SCHEDULING = {
     {
       handle: 'safety-inspection',
       name: 'Safety inspection',
-      description: 'The state check, done right the first time — plus an honest heads-up on anything that’ll need attention soon.',
+      description: 'The state check, done right the first time: plus an honest heads-up on anything that’ll need attention soon.',
       durationMinutes: 45,
       priceCents: 3000,
       assignmentStrategy: 'any_available',
@@ -264,7 +264,7 @@ const SCHEDULING = {
     {
       handle: 'check-engine',
       name: 'Check-engine light',
-      description: 'That light means something — we pull the codes, explain them in plain English and only fix what’s actually broken.',
+      description: 'That light means something. We pull the codes, explain them in plain English and only fix what’s actually broken.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'any_available',
@@ -296,7 +296,7 @@ const HOME = [
       },
       {
         title: 'ASE-certified technicians',
-        body: 'The people under your hood are trained and certified — not a rotating crew of whoever’s cheapest this week.',
+        body: 'The people under your hood are trained and certified, not a rotating crew of whoever’s cheapest this week.',
       },
       {
         title: 'Warranty on every job',
@@ -310,13 +310,13 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'What we do',
-    intro: 'The everyday work that keeps a car running well. Book any of these online — live times and prices are on the booking page.',
+    intro: 'The everyday work that keeps a car running well. Book any of these online: live times and prices are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Free estimate', priceCents: 0, durationMin: 30, desc: 'We look it over and tell you what it needs — no charge.' },
+      { name: 'Free estimate', priceCents: 0, durationMin: 30, desc: 'We look it over and tell you what it needs: no charge.' },
       { name: 'Oil & filter change', priceCents: 4500, durationMin: 30, desc: 'Full-synthetic oil, new filter, quick safety once-over.' },
-      { name: 'Brake service', priceCents: 28000, durationMin: 120, desc: 'Pads, rotors and a full inspection — warrantied.' },
+      { name: 'Brake service', priceCents: 28000, durationMin: 120, desc: 'Pads, rotors and a full inspection: warrantied.' },
       { name: 'Check-engine light', priceCents: 12000, durationMin: 60, desc: 'We pull the codes and explain what they mean.' },
       { name: 'Diagnostic inspection', priceCents: 9000, durationMin: 60, desc: 'Track down the real cause before you buy parts.' },
       { name: 'Safety inspection', priceCents: 3000, durationMin: 45, desc: 'The state check, done right the first time.' },
@@ -328,14 +328,14 @@ const HOME = [
     alt: 'Open garage bay doors with the shop team working inside',
     heading: 'Thirty years on the same corner',
     body: [
-      'Ray Sparrow opened these bay doors in 1994, and his boy Danny grew up sweeping the floors before he started turning wrenches himself. Most of our customers have been coming for a decade or more — and they send their kids.',
+      'Ray Sparrow opened these bay doors in 1994, and his boy Danny grew up sweeping the floors before he started turning wrenches himself. Most of our customers have been coming for a decade or more, and they send their kids.',
       'We’re not the biggest shop in town, and we don’t try to be. We just do good work for a fair price and tell you the truth, so you never have to wonder whether you really needed it.',
     ],
     cta: { label: 'Book your visit', href: '/book' },
   }),
   teamRow({
     heading: 'The people working on your car',
-    intro: 'Real names, real faces. Book with whoever you like — they all trained in this shop.',
+    intro: 'Real names, real faces. Book with whoever you like. They all trained in this shop.',
     members: [
       {
         name: 'Ray Sparrow',
@@ -377,7 +377,7 @@ const BOOK_INTRO = [
     image: url(IMG.bay),
     alt: 'Open garage bay doors with the shop team working inside',
     title: 'Book a visit',
-    sub: 'Choose what you need — a service, a diagnostic, or a free estimate — to see live availability, then pick your time and tech.',
+    sub: 'Choose what you need (a service, a diagnostic, or a free estimate) to see live availability, then pick your time and tech.',
     primary: { label: 'See services below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -428,7 +428,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Grab a time online and we’ll have a bay ready when you pull in — no phone tag, no waiting on hold.',
+    sub: 'Grab a time online and we’ll have a bay ready when you pull in: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book a service', href: '/book' },
   }),
@@ -439,8 +439,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-auto-neighborhood',
   name: 'Auto Repair (Neighborhood)',
   summary:
-    'A warm, honest template for a family-run neighborhood auto shop — a racing-blue palette with a warm-red accent and real shop photography. Installs online booking from day one: a menu of visits (free estimate, oil, brakes, diagnostics, inspections) with three mechanics AND two service bays as bookable resources, plus a drop-off policy. Ships as "Sparrow & Sons Auto", the shop that tells you what it actually needs.',
-  tagline: 'A trusted-neighborhood template for auto shops — book a visit from day one.',
+    'A warm, honest template for a family-run neighborhood auto shop: a racing-blue palette with a warm-red accent and real shop photography. Installs online booking from day one: a menu of visits (free estimate, oil, brakes, diagnostics, inspections) with three mechanics AND two service bays as bookable resources, plus a drop-off policy. Ships as "Sparrow & Sons Auto", the shop that tells you what it actually needs.',
+  tagline: 'A trusted-neighborhood template for auto shops. Book a visit from day one.',
   industry: 'Auto repair',
   sortWeight: 72,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -449,7 +449,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Sparrow & Sons Auto — honest neighborhood car repair',
+      title: 'Sparrow & Sons Auto: honest neighborhood car repair',
       description:
         'A family-run repair shop since 1994. Honest estimates, ASE-certified techs, and a warranty on every job. Book a service or a free estimate online.',
     },

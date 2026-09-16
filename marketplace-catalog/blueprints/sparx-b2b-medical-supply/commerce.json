@@ -102,8 +102,8 @@
   "products": [
     {
       "handle": "nitrile-exam-gloves-case",
-      "title": "Nitrile Exam Gloves, 4-mil — Case of 1000",
-      "description": "Powder-free blue nitrile examination gloves, 4-mil, textured fingertips, AQL 1.5 — the everyday clinical glove for exams, treatment and handling. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size; stock the full size run so no room is caught short.",
+      "title": "Nitrile Exam Gloves, 4-mil: Case of 1000",
+      "description": "Powder-free blue nitrile examination gloves, 4-mil, textured fingertips, AQL 1.5: the everyday clinical glove for exams, treatment and handling. Case of 1000 (10 boxes of 100). MOQ 1 case. Pick your size; stock the full size run so no room is caught short.",
       "status": "active",
       "productType": "PPE",
       "vendor": "Meridian Medical Supplies",
@@ -177,8 +177,8 @@
     },
     {
       "handle": "procedure-face-masks-box",
-      "title": "Procedure Face Masks, Type IIR — Box of 50",
-      "description": "Type IIR fluid-resistant ear-loop procedure masks, 3-ply with an adjustable nose wire, EN 14683 tested. Box of 50. MOQ 10 boxes — buy the outer and keep every treatment room and reception stocked.",
+      "title": "Procedure Face Masks, Type IIR: Box of 50",
+      "description": "Type IIR fluid-resistant ear-loop procedure masks, 3-ply with an adjustable nose wire, EN 14683 tested. Box of 50. MOQ 10 boxes: buy the outer and keep every treatment room and reception stocked.",
       "status": "active",
       "productType": "PPE",
       "vendor": "Meridian Medical Supplies",
@@ -199,14 +199,14 @@
         {
           "assetId": "prod-masks",
           "isPrimary": true,
-          "alt": "Procedure Face Masks, Type IIR — Box of 50"
+          "alt": "Procedure Face Masks, Type IIR: Box of 50"
         }
       ]
     },
     {
       "handle": "disinfectant-wipes-case",
-      "title": "Surface Disinfectant Wipes — Case of 12",
-      "description": "Alcohol-free bactericidal, virucidal and fungicidal surface wipes — effective against enveloped viruses, EN 14476 compliant, for daily clinical surface and equipment cleaning. Case of 12 canisters (200 wipes each). MOQ 1 case.",
+      "title": "Surface Disinfectant Wipes: Case of 12",
+      "description": "Alcohol-free bactericidal, virucidal and fungicidal surface wipes: effective against enveloped viruses, EN 14476 compliant, for daily clinical surface and equipment cleaning. Case of 12 canisters (200 wipes each). MOQ 1 case.",
       "status": "active",
       "productType": "Infection control",
       "vendor": "Meridian Medical Supplies",
@@ -227,13 +227,13 @@
         {
           "assetId": "prod-wipes",
           "isPrimary": true,
-          "alt": "Surface Disinfectant Wipes — Case of 12"
+          "alt": "Surface Disinfectant Wipes: Case of 12"
         }
       ]
     },
     {
       "handle": "sterile-gauze-swabs-box",
-      "title": "Sterile Gauze Swabs — Box of 100",
+      "title": "Sterile Gauze Swabs: Box of 100",
       "description": "Sterile 8-ply 100% cotton gauze swabs, individually wrapped, highly absorbent and low-linting for wound cleaning, dressing and prep. Box of 100. MOQ 5 boxes. Choose the swab size your procedures call for.",
       "status": "active",
       "productType": "Wound care",
@@ -297,7 +297,7 @@
     },
     {
       "handle": "luer-lock-syringes-case",
-      "title": "Luer-Lock Syringes — Case of 800",
+      "title": "Luer-Lock Syringes: Case of 800",
       "description": "Sterile single-use luer-lock syringes with a clear barrel and bold graduations, latex-free, for accurate dosing and irrigation. Case of 800 (8 boxes of 100). MOQ 1 case. Pick the volume your clinic uses most.",
       "status": "active",
       "productType": "Consumables",
@@ -361,8 +361,8 @@
     },
     {
       "handle": "isolation-gowns-case",
-      "title": "Disposable Isolation Gowns — Case of 50",
-      "description": "Fluid-resistant AAMI Level 2 disposable isolation gowns with knit cuffs and full back coverage — single-use protection for examinations, procedures and infection-control precautions. Case of 50. MOQ 2 cases. Choose the fit.",
+      "title": "Disposable Isolation Gowns: Case of 50",
+      "description": "Fluid-resistant AAMI Level 2 disposable isolation gowns with knit cuffs and full back coverage: single-use protection for examinations, procedures and infection-control precautions. Case of 50. MOQ 2 cases. Choose the fit.",
       "status": "active",
       "productType": "PPE",
       "vendor": "Meridian Medical Supplies",
@@ -414,8 +414,8 @@
     },
     {
       "handle": "hand-sanitiser-case",
-      "title": "Alcohol Hand Sanitiser Gel, 500 mL — Case of 12",
-      "description": "70% alcohol hand sanitiser gel with added emollient to protect skin through repeated use, EN 1500 hygienic hand-rub compliant, in a 500 mL pump bottle. Case of 12. MOQ 2 cases — stock every room, station and reception desk.",
+      "title": "Alcohol Hand Sanitiser Gel, 500 mL: Case of 12",
+      "description": "70% alcohol hand sanitiser gel with added emollient to protect skin through repeated use, EN 1500 hygienic hand-rub compliant, in a 500 mL pump bottle. Case of 12. MOQ 2 cases: stock every room, station and reception desk.",
       "status": "active",
       "productType": "Infection control",
       "vendor": "Meridian Medical Supplies",
@@ -436,14 +436,14 @@
         {
           "assetId": "prod-sanitiser",
           "isPrimary": true,
-          "alt": "Alcohol Hand Sanitiser Gel, 500 mL — Case of 12"
+          "alt": "Alcohol Hand Sanitiser Gel, 500 mL: Case of 12"
         }
       ]
     },
     {
       "handle": "digital-thermometers-box",
-      "title": "Digital Clinical Thermometers — Box of 12",
-      "description": "Fast-read digital clinical thermometers with a flexible tip, fever alarm and last-reading memory, CE marked for clinical use. Box of 12 with spare batteries. MOQ 2 boxes — a reliable diagnostic every room should have to hand.",
+      "title": "Digital Clinical Thermometers: Box of 12",
+      "description": "Fast-read digital clinical thermometers with a flexible tip, fever alarm and last-reading memory, CE marked for clinical use. Box of 12 with spare batteries. MOQ 2 boxes: a reliable diagnostic every room should have to hand.",
       "status": "active",
       "productType": "Consumables",
       "vendor": "Meridian Medical Supplies",
@@ -464,14 +464,14 @@
         {
           "assetId": "prod-thermometer",
           "isPrimary": true,
-          "alt": "Digital Clinical Thermometers — Box of 12"
+          "alt": "Digital Clinical Thermometers: Box of 12"
         }
       ]
     },
     {
       "handle": "adhesive-wound-dressings-box",
-      "title": "Adhesive Wound Dressings — Box of 100",
-      "description": "Sterile individually wrapped adhesive island dressings with a low-adherent absorbent pad and a breathable, water-resistant border — for minor wounds, post-procedure cover and everyday first aid. Box of 100. MOQ 5 boxes.",
+      "title": "Adhesive Wound Dressings: Box of 100",
+      "description": "Sterile individually wrapped adhesive island dressings with a low-adherent absorbent pad and a breathable, water-resistant border, for minor wounds, post-procedure cover and everyday first aid. Box of 100. MOQ 5 boxes.",
       "status": "active",
       "productType": "Wound care",
       "vendor": "Meridian Medical Supplies",
@@ -492,14 +492,14 @@
         {
           "assetId": "prod-dressings",
           "isPrimary": true,
-          "alt": "Adhesive Wound Dressings — Box of 100"
+          "alt": "Adhesive Wound Dressings: Box of 100"
         }
       ]
     },
     {
       "handle": "clinic-starter-kit",
       "title": "Clinic Starter Kit",
-      "description": "A curated kit of the consumables a new practice or satellite clinic runs out of first — nitrile gloves, procedure masks, disinfectant wipes, hand sanitiser, sterile gauze and adhesive dressings, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a treatment room from empty.",
+      "description": "A curated kit of the consumables a new practice or satellite clinic runs out of first: nitrile gloves, procedure masks, disinfectant wipes, hand sanitiser, sterile gauze and adhesive dressings, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to stock a treatment room from empty.",
       "status": "active",
       "productType": "Consumables",
       "vendor": "Meridian Medical Supplies",
@@ -507,7 +507,7 @@
       "categoryHandles": ["consumables"],
       "collectionHandles": ["new-in", "everyday-essentials"],
       "seoTitle": "Clinic Starter Kit | Meridian Medical",
-      "seoDescription": "A curated starter kit of essential clinical consumables — gloves, masks, wipes, sanitiser, gauze and dressings, priced below the sum.",
+      "seoDescription": "A curated starter kit of essential clinical consumables: gloves, masks, wipes, sanitiser, gauze and dressings, priced below the sum.",
       "variants": [
         {
           "sku": "MMS-KIT-CLINIC-STARTER",

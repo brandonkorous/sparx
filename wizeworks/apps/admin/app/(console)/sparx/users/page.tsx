@@ -48,7 +48,7 @@ export default async function UsersPage({
     <Stack gap={6}>
       <PageHeader
         title="Users"
-        description="Every staff member across the platform — the people who sign in to a dashboard. Search by name or email; open a user to see their tenants and take action."
+        description="Every staff member across the platform: the people who sign in to a dashboard. Search by name or email; open a user to see their tenants and take action."
       />
 
       <form method="get" className="flex gap-2">

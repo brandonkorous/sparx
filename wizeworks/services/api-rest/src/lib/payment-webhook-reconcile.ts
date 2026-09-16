@@ -50,7 +50,7 @@ export async function reconcilePaymentEvent(
   if (!tenantId) {
     log.warn(
       { type: parsed.type, externalId: parsed.externalId },
-      'payment webhook: could not resolve tenant — skipping'
+      'payment webhook: could not resolve tenant, skipping'
     );
     return;
   }
@@ -68,7 +68,7 @@ export async function reconcilePaymentEvent(
   if (!novel) {
     log.debug(
       { externalId: parsed.externalId },
-      'payment webhook: duplicate delivery — reprocessing idempotently for recovery'
+      'payment webhook: duplicate delivery, reprocessing idempotently for recovery'
     );
   }
 
@@ -99,7 +99,7 @@ export async function reconcilePaymentEvent(
   if (!data) {
     log.warn(
       { type: parsed.type, externalId: parsed.externalId },
-      'payment webhook: payment event missing normalized data — skipping'
+      'payment webhook: payment event missing normalized data, skipping'
     );
     return;
   }
@@ -519,7 +519,7 @@ async function handleRefunded(
   if (!data.refundId) {
     log.warn(
       { chargeId: data.chargeId },
-      'payment webhook: refunded event has no refund id — skipping'
+      'payment webhook: refunded event has no refund id, skipping'
     );
     return;
   }

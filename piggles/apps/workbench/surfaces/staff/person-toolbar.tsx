@@ -52,7 +52,7 @@ function ClockButton({ id, running }: { id: string; running: TimeEntry | null })
               onSuccess: (entry) => {
                 afterPaneChange(() => {
                   toast.add({
-                    title: `Clocked out — ${formatMinutes(entry.minutes)}`,
+                    title: `Clocked out: ${formatMinutes(entry.minutes)}`,
                     description: 'It is waiting to be approved on the timesheet.',
                     type: 'success',
                   });

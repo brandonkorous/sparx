@@ -34,7 +34,7 @@ const respondToReview: McpToolDefinition = {
 const moderateReviews: McpToolDefinition = {
   name: 'moderate_reviews',
   description:
-    'Bulk-moderate reviews — set the same moderation status (approved / rejected / pending / flagged) on many reviews at once, with an optional note.',
+    'Bulk-moderate reviews. Set the same moderation status (approved / rejected / pending / flagged) on many reviews at once, with an optional note.',
   scope: 'write:commerce_bulk',
   confirmation: true,
   input: ModerateReviewInput.omit({ reviewId: true }).extend({

@@ -30,7 +30,7 @@ export const headHtml = (opts: FaviconOptions): string =>
  *  markup above as well produces duplicate tags. Saying which file goes where is
  *  more useful than handing over markup the framework writes itself. */
 export const nextjsNote = (opts: FaviconOptions): string =>
-  `// Next.js App Router picks these up automatically — no <link> tags needed.
+  `// Next.js App Router picks these up automatically: no <link> tags needed.
 // Put the files in your app/ directory with these names:
 //
 //   app/favicon.ico
@@ -53,7 +53,7 @@ function backdropNotes(opts: FaviconOptions): string[] {
   }
   return [
     '  The tab and Android icons are see-through behind your logo, so they sit',
-    "  on whatever color the reader's browser is using — white for some people,",
+    "  on whatever color the reader's browser is using: white for some people,",
     '  near-black for others. A dark logo is hard to see on a dark tab, and a',
     '  pale one is hard to see on a light tab; that is the reason to put a',
     '  background on a favicon at all.',
@@ -62,7 +62,7 @@ function backdropNotes(opts: FaviconOptions): string[] {
     '  see-through pixels black.',
     '',
     '  If you want that solid color on all of them, go back and change "Behind',
-    '  your logo" to a solid color. Nothing was erased from your picture — this',
+    '  your logo" to a solid color. Nothing was erased from your picture: this',
     '  tool never removes a background.',
   ];
 }
@@ -72,8 +72,8 @@ export const readmeText = (files: FaviconFile[], opts: FaviconOptions): string =
     'Your favicon set',
     '================',
     '',
-    'Put every file in this archive in the ROOT folder of your website —',
-    'the same place as your home page — and paste the contents of',
+    'Put every file in this archive in the ROOT folder of your website,',
+    'the same place as your home page, and paste the contents of',
     'paste-into-your-head.html into the <head> of every page.',
     '',
     'What each one is for:',

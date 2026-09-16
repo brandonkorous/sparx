@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "A missed lesson with no notice, or a cancellation inside 24 hours, is charged in full — the car and instructor were held for you. Life happens, so tell us as early as you can and we’ll always try to move you instead."
+      "policyText": "A missed lesson with no notice, or a cancellation inside 24 hours, is charged in full: the car and instructor were held for you. Life happens, so tell us as early as you can and we’ll always try to move you instead."
     }
   ],
   "resources": [
@@ -119,7 +119,7 @@
     },
     {
       "handle": "car-1",
-      "name": "Training car 1 — dual-control sedan",
+      "name": "Training car 1: dual-control sedan",
       "kind": "asset",
       "skillTags": ["training-car"],
       "windows": [
@@ -157,7 +157,7 @@
     },
     {
       "handle": "car-2",
-      "name": "Training car 2 — dual-control hatchback",
+      "name": "Training car 2: dual-control hatchback",
       "kind": "asset",
       "skillTags": ["training-car"],
       "windows": [
@@ -215,7 +215,7 @@
     {
       "handle": "adult-lesson",
       "name": "Adult driving lesson",
-      "description": "A focused hour behind the wheel for adult learners — building real road confidence at your pace, in a calm dual-control car.",
+      "description": "A focused hour behind the wheel for adult learners: building real road confidence at your pace, in a calm dual-control car.",
       "durationMinutes": 60,
       "priceCents": 8500,
       "assignmentStrategy": "customer_choice",
@@ -238,7 +238,7 @@
     {
       "handle": "defensive-driving-course",
       "name": "Defensive driving session",
-      "description": "Hazard awareness, space management and crash-avoidance technique — the skills that keep you safe long after the test. Great for a ticket dismissal or an insurance discount.",
+      "description": "Hazard awareness, space management and crash-avoidance technique: the skills that keep you safe long after the test. Great for a ticket dismissal or an insurance discount.",
       "durationMinutes": 90,
       "priceCents": 13500,
       "bufferAfterMin": 10,
@@ -308,7 +308,7 @@
     {
       "handle": "advanced-highway-lesson",
       "name": "Advanced & highway lesson",
-      "description": "Merging, lane discipline, high-speed judgement and complex interchanges — the confidence to take on freeways and long trips.",
+      "description": "Merging, lane discipline, high-speed judgement and complex interchanges: the confidence to take on freeways and long trips.",
       "durationMinutes": 120,
       "priceCents": 16500,
       "bufferAfterMin": 15,

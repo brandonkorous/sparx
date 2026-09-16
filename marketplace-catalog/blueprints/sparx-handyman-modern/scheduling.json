@@ -155,7 +155,7 @@
     {
       "handle": "quick-fix-hour",
       "name": "Quick-fix hour",
-      "description": "One hour, one pro, your short list of small stuff — a wobbly handle, a running toilet, a door that won’t latch.",
+      "description": "One hour, one pro, your short list of small stuff: a wobbly handle, a running toilet, a door that won’t latch.",
       "durationMinutes": 60,
       "priceCents": 9900,
       "assignmentStrategy": "any_available",
@@ -189,7 +189,7 @@
     {
       "handle": "furniture-assembly",
       "name": "Furniture assembly",
-      "description": "Flat-pack beds, shelves, desks and dressers built right the first time — packaging hauled out when we’re done.",
+      "description": "Flat-pack beds, shelves, desks and dressers built right the first time: packaging hauled out when we’re done.",
       "durationMinutes": 120,
       "priceCents": 12900,
       "assignmentStrategy": "any_available",
@@ -240,7 +240,7 @@
     {
       "handle": "half-day-project",
       "name": "Half-day project",
-      "description": "Four hours of a dedicated pro for the bigger list — a gallery wall, a closet system, a room’s worth of small repairs.",
+      "description": "Four hours of a dedicated pro for the bigger list: a gallery wall, a closet system, a room’s worth of small repairs.",
       "durationMinutes": 240,
       "priceCents": 34900,
       "assignmentStrategy": "any_available",

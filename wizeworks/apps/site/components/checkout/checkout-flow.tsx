@@ -232,7 +232,7 @@ export function CheckoutFlow({
         setChosenRate(result.rates[0] ?? null);
         if (result.rates.length === 0) {
           setError(
-            'We can’t get an order to that address. Check it over, or try another address — and do get in touch if you think it should work.'
+            'We can’t get an order to that address. Check it over, or try another address, and do get in touch if you think it should work.'
           );
         }
         return;

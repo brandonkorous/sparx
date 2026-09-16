@@ -136,7 +136,7 @@
     {
       "handle": "handyman-hour",
       "name": "Handyman hour",
-      "description": "One hour with a skilled pro for the small stuff — a wobbly rail, a sticking door, a leaky faucet, that shelf that never went up.",
+      "description": "One hour with a skilled pro for the small stuff: a wobbly rail, a sticking door, a leaky faucet, that shelf that never went up.",
       "durationMinutes": 60,
       "priceCents": 9500,
       "assignmentStrategy": "any_available",
@@ -153,7 +153,7 @@
     {
       "handle": "tv-mounting",
       "name": "TV mounting",
-      "description": "We hang the TV level and solid, hide the cables and set it where you want it — bracket and hardware included.",
+      "description": "We hang the TV level and solid, hide the cables and set it where you want it: bracket and hardware included.",
       "durationMinutes": 90,
       "priceCents": 14900,
       "assignmentStrategy": "any_available",
@@ -170,7 +170,7 @@
     {
       "handle": "furniture-assembly",
       "name": "Furniture assembly",
-      "description": "Flat-pack, crib, desk or wardrobe — assembled right, squared up and anchored to the wall if it needs it.",
+      "description": "Flat-pack, crib, desk or wardrobe: assembled right, squared up and anchored to the wall if it needs it.",
       "durationMinutes": 60,
       "priceCents": 8900,
       "assignmentStrategy": "any_available",
@@ -187,7 +187,7 @@
     {
       "handle": "drywall-repair",
       "name": "Drywall repair",
-      "description": "Holes, dents and cracks patched, sanded smooth and blended in — ready to paint, or we can paint it to match.",
+      "description": "Holes, dents and cracks patched, sanded smooth and blended in: ready to paint, or we can paint it to match.",
       "durationMinutes": 120,
       "priceCents": 19900,
       "assignmentStrategy": "any_available",
@@ -204,7 +204,7 @@
     {
       "handle": "home-repair-visit",
       "name": "Home repair visit",
-      "description": "A booked visit for a specific fix — a repair, a swap, an install. Tell us what’s wrong and we bring the right tools.",
+      "description": "A booked visit for a specific fix: a repair, a swap, an install. Tell us what’s wrong and we bring the right tools.",
       "durationMinutes": 60,
       "priceCents": 11900,
       "assignmentStrategy": "any_available",
@@ -221,7 +221,7 @@
     {
       "handle": "honey-do-half-day",
       "name": "Honey-do half day",
-      "description": "Four hours to knock out the whole list in one go — hang, patch, tighten, mount, swap. Bring the list, we bring the van.",
+      "description": "Four hours to knock out the whole list in one go: hang, patch, tighten, mount, swap. Bring the list, we bring the van.",
       "durationMinutes": 240,
       "priceCents": 34900,
       "assignmentStrategy": "any_available",

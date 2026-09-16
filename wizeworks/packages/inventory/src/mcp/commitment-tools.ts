@@ -27,7 +27,7 @@ const Uuid = z.string().uuid();
 const backorders: McpToolDefinition = {
   name: 'list_backorders',
   description:
-    'What you owe people and have not shipped: who is waiting, for what, how many, when they were promised it, and their place in the queue. `overdueOnly` is everything already past its promised date; `undatedOnly` is the worse list — commitments nobody has given a date at all, which is how a customer ends up waiting without ever being told.',
+    'What you owe people and have not shipped: who is waiting, for what, how many, when they were promised it, and their place in the queue. `overdueOnly` is everything already past its promised date; `undatedOnly` is the worse list, commitments nobody has given a date at all, which is how a customer ends up waiting without ever being told.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -59,7 +59,7 @@ const backorder: McpToolDefinition = {
 const commitments: McpToolDefinition = {
   name: 'get_variant_commitments',
   description:
-    'For one item: how many units are owed to customers across every open commitment, how many separate commitments that is, and the soonest date anybody was promised. Use this before answering "can I sell this" — free stock is not the same as unspoken-for stock, and the difference is exactly this number.',
+    'For one item: how many units are owed to customers across every open commitment, how many separate commitments that is, and the soonest date anybody was promised. Use this before answering "can I sell this", free stock is not the same as unspoken-for stock, and the difference is exactly this number.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({ variantId: Uuid }),
@@ -72,7 +72,7 @@ const commitments: McpToolDefinition = {
 const settlements: McpToolDefinition = {
   name: 'list_consignment_settlements',
   description:
-    'Consignment settlements — the periodic reckoning with whoever owns stock sitting on your shelves: what sold, what is owed, and whether it has been invoiced and paid. Reports the total outstanding across the list, which is the number that matters.',
+    'Consignment settlements: the periodic reckoning with whoever owns stock sitting on your shelves: what sold, what is owed, and whether it has been invoiced and paid. Reports the total outstanding across the list, which is the number that matters.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -101,7 +101,7 @@ const settlement: McpToolDefinition = {
 const unsettled: McpToolDefinition = {
   name: 'list_unsettled_consignment',
   description:
-    'Consignment sales that no settlement covers yet, grouped by whose stock it was. This is the gap between "we sold it" and "we have accounted to the owner for it" — the list that says a settlement is overdue.',
+    'Consignment sales that no settlement covers yet, grouped by whose stock it was. This is the gap between "we sold it" and "we have accounted to the owner for it": the list that says a settlement is overdue.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({}),
@@ -111,7 +111,7 @@ const unsettled: McpToolDefinition = {
 const nonOwned: McpToolDefinition = {
   name: 'list_non_owned_stock',
   description:
-    'Stock on your shelves that you do not own — consignment and customer-owned — with whose it is and what it is worth. It is sellable and it is countable, and it must NOT appear in what your business is worth; this is the list that proves the valuation excluded it.',
+    'Stock on your shelves that you do not own (consignment and customer-owned) with whose it is and what it is worth. It is sellable and it is countable, and it must NOT appear in what your business is worth; this is the list that proves the valuation excluded it.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -127,7 +127,7 @@ const nonOwned: McpToolDefinition = {
 const expiring: McpToolDefinition = {
   name: 'list_expiring_stock',
   description:
-    'Batches running out of time, bucketed by how long is left and priced at what they cost. Batches with NO expiry date are included by default and are a finding in themselves — a perishable line nobody dated is one nobody can manage. Use this for "what do I need to shift this month".',
+    'Batches running out of time, bucketed by how long is left and priced at what they cost. Batches with NO expiry date are included by default and are a finding in themselves: a perishable line nobody dated is one nobody can manage. Use this for "what do I need to shift this month".',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({

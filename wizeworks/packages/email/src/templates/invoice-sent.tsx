@@ -93,7 +93,7 @@ export function InvoiceSentEmail({
     // product's name reads like a billing service nobody hired, or a scam. The
     // tenant frame signs it with the business's own name instead.
     <EmailLayout
-      preview={`${label} ${documentNumber} from ${fromName} — ${formatMoney(balance, currency)}`}
+      preview={`${label} ${documentNumber} from ${fromName}: ${formatMoney(balance, currency)}`}
       footerNote={`${fromName} sent you ${label.toLowerCase()} ${documentNumber}.`}
       // No masthead, and no operator in the fine print. `EmailWordmark` paints
       // the PLATFORM's wordmark, and the person reading this bought bread from a

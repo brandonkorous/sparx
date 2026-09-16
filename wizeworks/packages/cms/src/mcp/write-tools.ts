@@ -46,7 +46,7 @@ async function emit(ctx: CmsMcpCtx, events: CmsEmittedEvent[]): Promise<void> {
 export const createContentTypeTool: McpToolDefinition = {
   name: 'create_content_type',
   description:
-    'Define a new content type: a reusable shape (its field schema) for a class of entries — e.g. a `doc` or `component` type for a documentation site. `urlPattern` makes its entries routable (each needs a slug).',
+    'Define a new content type: a reusable shape (its field schema) for a class of entries, e.g. a `doc` or `component` type for a documentation site. `urlPattern` makes its entries routable (each needs a slug).',
   scope: 'write:cms',
   confirmation: true,
   input: z.object({
@@ -95,7 +95,7 @@ export const putContentTypeSchemaTool: McpToolDefinition = {
 export const deleteContentTypeTool: McpToolDefinition = {
   name: 'delete_content_type',
   description:
-    'Delete a tenant-owned (custom or forked) content type by key. Refuses if any live entries still use it — archive or delete those entries first. Built-in platform types cannot be deleted.',
+    'Delete a tenant-owned (custom or forked) content type by key. Refuses if any live entries still use it. Archive or delete those entries first. Built-in platform types cannot be deleted.',
   scope: 'write:cms',
   confirmation: true,
   input: z.object({ key: z.string().min(1).max(63) }),
@@ -154,7 +154,7 @@ const EntryBody = z.object({
 export const createContentEntryTool: McpToolDefinition = {
   name: 'create_content_entry',
   description:
-    "Create a content entry (draft by default) for a content type. The `body` must satisfy that type's field schema — call get_content_type first. `propertyIds` scopes the entry to specific sites (omit for all sites).",
+    "Create a content entry (draft by default) for a content type. The `body` must satisfy that type's field schema. Call get_content_type first. `propertyIds` scopes the entry to specific sites (omit for all sites).",
   scope: 'write:cms',
   confirmation: true,
   input: EntryBody,
@@ -238,7 +238,7 @@ export const unpublishContentEntryTool: McpToolDefinition = {
 export const restoreContentRevisionTool: McpToolDefinition = {
   name: 'restore_content_revision',
   description:
-    "Restore a content entry's body + SEO from one of its earlier revisions (by revision number — see list via the entry's history). Re-writes the current draft/published body from that snapshot and records a NEW revision noting the restore; does not change the publish status.",
+    "Restore a content entry's body + SEO from one of its earlier revisions (by revision number: see list via the entry's history). Re-writes the current draft/published body from that snapshot and records a NEW revision noting the restore; does not change the publish status.",
   scope: 'write:cms',
   confirmation: true,
   input: z.object({ id: z.string().uuid(), revisionNumber: z.number().int().positive() }),
@@ -257,7 +257,7 @@ export const restoreContentRevisionTool: McpToolDefinition = {
 export const deleteContentEntryTool: McpToolDefinition = {
   name: 'delete_content_entry',
   description:
-    'Delete a content entry (soft-delete — it stops appearing everywhere but its history is retained). Notifies subscribers via content.entry.deleted.',
+    'Delete a content entry (soft-delete, it stops appearing everywhere but its history is retained). Notifies subscribers via content.entry.deleted.',
   scope: 'write:cms',
   confirmation: true,
   input: z.object({ id: z.string().uuid() }),

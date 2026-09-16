@@ -9,6 +9,7 @@ import { withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -67,7 +68,7 @@ export async function submitInventoryCount(
     const uncounted = lines.filter((l) => l.countedQuantity === null).length;
     if (uncounted > 0) {
       throw new InventoryValidationError(
-        `${uncounted} line${uncounted === 1 ? '' : 's'} not yet counted — enter every quantity first`
+        `${uncounted} line${uncounted === 1 ? '' : 's'} not yet counted: enter every quantity first`
       );
     }
 
@@ -89,6 +90,7 @@ export async function submitInventoryCount(
       entityId: countId,
       diff: { after: { varianceValueCents, requiresApproval } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'inventory_count', countId);
   });
   return getDetail(ctx, countId);
 }
@@ -134,7 +136,7 @@ export async function approveInventoryCount(
     }
     if (!count.requiresApproval) {
       throw new InventoryConflictError(
-        'This count is under the approval threshold — post it directly',
+        'This count is under the approval threshold: post it directly',
         'status'
       );
     }
@@ -152,6 +154,7 @@ export async function approveInventoryCount(
       entityId: countId,
       diff: { after: { approvedBy: ctx.userId ?? null } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'inventory_count', countId);
   });
   return getDetail(ctx, countId);
 }
@@ -229,6 +232,7 @@ export async function postInventoryCount(
       entityId: countId,
       diff: { after: { number: count.number, lineCount: lines.length } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'inventory_count', countId);
     return { number: count.number, events, reason };
   });
 
@@ -255,7 +259,7 @@ function assertPostable(status: string, requiresApproval: boolean): void {
   if (canPost) return;
   if (status === 'review' && requiresApproval) {
     throw new InventoryConflictError(
-      'This count exceeds the approval threshold — it must be approved before posting',
+      'This count exceeds the approval threshold. It must be approved before posting',
       'status'
     );
   }
@@ -370,6 +374,7 @@ export async function cancelInventoryCount(
       entityId: countId,
       diff: { after: { status: 'cancelled' } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'inventory_count', countId);
   });
   return getDetail(ctx, countId);
 }

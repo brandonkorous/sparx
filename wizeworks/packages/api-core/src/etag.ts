@@ -30,7 +30,7 @@ export function ifMatchSatisfied(headerValue: string | undefined, currentTag: st
 export function assertIfMatch(headerValue: string | undefined, currentTag: string): void {
   if (!ifMatchSatisfied(headerValue, currentTag)) {
     throw preconditionFailed(
-      'If-Match precondition failed — entry was modified by someone else. Reload before retrying.',
+      'If-Match precondition failed: entry was modified by someone else. Reload before retrying.',
       { currentETag: currentTag }
     );
   }

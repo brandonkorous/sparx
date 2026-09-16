@@ -78,7 +78,7 @@ function ReplyBox({
         color="module"
         rows={3}
         value={text}
-        placeholder="Reply to this review — everyone reading it on your website will see what you write."
+        placeholder="Reply to this review. Everyone reading it on your website will see what you write."
         aria-label="Reply to this review"
         onChange={(event) => {
           setText(event.target.value);
@@ -157,7 +157,7 @@ function ReviewCard({
     void (async () => {
       const ok = await confirm({
         title: `Delete ${author}'s review of ${product}?`,
-        description: `Their words, their star rating and any photos they attached are removed for good, and ${product}'s overall rating is worked out again without them. If you only want it off your website, hide it instead — hiding can be undone.`,
+        description: `Their words, their star rating and any photos they attached are removed for good, and ${product}'s overall rating is worked out again without them. If you only want it off your website, hide it instead: hiding can be undone.`,
         confirmLabel: 'Delete it',
         cancelLabel: 'Keep it',
         color: 'danger',

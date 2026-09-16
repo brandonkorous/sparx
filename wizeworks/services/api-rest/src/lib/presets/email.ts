@@ -139,7 +139,7 @@ export const emailPresets: ModulePreset[] = [
     content: {
       heading: 'What’s new this month',
       paragraphs: [
-        'Hi {{customer.firstName ?? "there"}} — here’s a quick roundup of what’s new at {{site.name}}.',
+        'Hi {{customer.firstName ?? "there"}}, here’s a quick roundup of what’s new at {{site.name}}.',
         'Swap in your own highlights, news, and links before you send. Keep it short: a headline, a few updates, and one clear call to action work best.',
       ],
       ctaLabel: 'See the latest',
@@ -161,7 +161,7 @@ export const emailPresets: ModulePreset[] = [
     content: {
       heading: 'An exclusive offer, just for you',
       paragraphs: [
-        'Hi {{customer.firstName ?? "there"}} — as a thank-you for being a customer of {{site.name}}, here’s an offer we think you’ll like.',
+        'Hi {{customer.firstName ?? "there"}}, as a thank-you for being a customer of {{site.name}}, here’s an offer we think you’ll like.',
         'Add your discount code, the offer details, and an end date before sending. A clear deadline is what turns a promo into a purchase.',
       ],
       ctaLabel: 'Shop the sale',

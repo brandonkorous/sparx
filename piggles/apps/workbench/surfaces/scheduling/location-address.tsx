@@ -130,7 +130,7 @@ export function LocationAddressSection({
   return (
     <FormSection
       title="Where it is"
-      description="Shown to customers on your booking page. Fill in as much as makes sense — a market stall and a clinic do not need the same lines."
+      description="Shown to customers on your booking page. Fill in as much as makes sense: a market stall and a clinic do not need the same lines."
     >
       <AddressLine
         label="Street"

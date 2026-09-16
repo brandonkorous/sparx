@@ -63,7 +63,7 @@ export function ActivityCard({
   return (
     <FormSection
       title="Recent account activity"
-      description="A record of the things people have done in your account, newest first. Only actions are listed here — simply looking at something is not."
+      description="A record of the things people have done in your account, newest first. Only actions are listed here: simply looking at something is not."
     >
       {isError ? (
         <Alert color="error">
@@ -118,7 +118,7 @@ export function ActivityCard({
                 <div className="flex min-w-0 flex-1 flex-col">
                   <span className="font-medium">
                     {entry.title}
-                    {entry.subject ? <span className="font-normal"> — {entry.subject}</span> : null}
+                    {entry.subject ? <span className="font-normal"> ({entry.subject})</span> : null}
                   </span>
                   <Text className="text-sm">
                     {entry.actor.name ?? productName()} ·{' '}

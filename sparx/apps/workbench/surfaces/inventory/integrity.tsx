@@ -191,7 +191,7 @@ function Verdict({
               <StatDesc>
                 {openDrifts === 0
                   ? 'Nothing outstanding'
-                  : 'Still unresolved — count these to settle them'}
+                  : 'Still unresolved: count these to settle them'}
               </StatDesc>
             </Stat>
             <Stat>
@@ -219,7 +219,7 @@ function Verdict({
             <AlertContent>
               <AlertTitle>The last check could not finish</AlertTitle>
               <AlertDescription>
-                {latest.error ?? 'No reason was recorded.'} Nothing is known to be wrong — but
+                {latest.error ?? 'No reason was recorded.'} Nothing is known to be wrong, but
                 nothing has been confirmed right either. Run it again.
               </AlertDescription>
             </AlertContent>
@@ -249,7 +249,7 @@ function DriftsCard({
         </Heading>
         <Text className="text-sm">
           For each of these, the number on the record and the number you get by adding up its
-          history disagree. Nothing has been changed — settle one by counting it, so the correction
+          history disagree. Nothing has been changed: settle one by counting it, so the correction
           is recorded as a real count rather than an overwrite.
         </Text>
       </div>
@@ -369,7 +369,7 @@ function OversellCard({
               {plural(summary.unitsShort, 'unit', 'units')} short across{' '}
               {plural(summary.variantsAffected, 'item', 'items')}.
               {summary.variantsAffected < total
-                ? ' A few items account for most of it — worth setting their reorder point higher.'
+                ? ' A few items account for most of it: worth setting their reorder point higher.'
                 : ''}
             </Text>
           ) : null}
@@ -470,7 +470,7 @@ function FreshnessCard({ sources }: { sources: SourceFreshness[] }) {
 
       {sources.length === 0 ? (
         <Text className="text-sm">
-          You are not pulling stock from anywhere else — every number here was recorded in sparx.
+          You are not pulling stock from anywhere else: every number here was recorded in sparx.
         </Text>
       ) : (
         <ul className="flex flex-col gap-3">

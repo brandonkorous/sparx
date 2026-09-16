@@ -334,7 +334,7 @@ export function enrollmentState(status: EnrollmentStatus): { tone: Tone; label: 
 export function enrollReasonText(reason: string | undefined): string {
   switch (reason) {
     case 'sequence_inactive':
-      return 'Turn the sequence on first — it only enrols people while it is on.';
+      return 'Turn the sequence on first. It only enrolls people while it is on.';
     case 'no_steps':
       return 'This sequence has no steps yet, so there is nothing to send.';
     case 'no_recipient':

@@ -51,7 +51,7 @@ const uuid = () => z.string().uuid();
 const createCategory: McpToolDefinition = {
   name: 'create_category',
   description:
-    'Create a product category — a node in the organizational tree a shopper browses (e.g. "Engine > Fuel Injection"). A product lives in one canonical category. Pass parentId to nest it; omit for a top-level category.',
+    'Create a product category: a node in the organizational tree a shopper browses (e.g. "Engine > Fuel Injection"). A product lives in one canonical category. Pass parentId to nest it; omit for a top-level category.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateCategoryInput,
@@ -61,7 +61,7 @@ const createCategory: McpToolDefinition = {
 const updateCategory: McpToolDefinition = {
   name: 'update_category',
   description:
-    'Edit a category — name, handle, description, featured flag, imagery, SEO, or its per-site visibility. Send only the fields to change; omitted fields are left untouched. To MOVE a category in the tree use reparent_category.',
+    'Edit a category. Name, handle, description, featured flag, imagery, SEO, or its per-site visibility. Send only the fields to change; omitted fields are left untouched. To MOVE a category in the tree use reparent_category.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateCategoryInput.extend({ categoryId: uuid() }),
@@ -84,7 +84,7 @@ const reparentCategory: McpToolDefinition = {
 const deleteCategory: McpToolDefinition = {
   name: 'delete_category',
   description:
-    'Soft-delete a category. Products in it are not deleted — they lose this categorization. A category with children cannot be removed until the children are moved or removed.',
+    'Soft-delete a category. Products in it are not deleted. They lose this categorization. A category with children cannot be removed until the children are moved or removed.',
   scope: 'write:commerce',
   confirmation: true,
   input: z.object({ categoryId: uuid() }),
@@ -109,7 +109,7 @@ const setProductCategories: McpToolDefinition = {
 const createCollection: McpToolDefinition = {
   name: 'create_collection',
   description:
-    'Create a collection — a merchandising surface like "Featured" or "New for Spring". type `manual` is hand-curated (set members with set_collection_products); type `rules` auto-populates from a rule set evaluated at index time.',
+    'Create a collection: a merchandising surface like "Featured" or "New for Spring". type `manual` is hand-curated (set members with set_collection_products); type `rules` auto-populates from a rule set evaluated at index time.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateCollectionInput,
@@ -119,7 +119,7 @@ const createCollection: McpToolDefinition = {
 const updateCollection: McpToolDefinition = {
   name: 'update_collection',
   description:
-    'Edit a collection — name, handle, description, type, rule set, featured flag, hero image, SEO, or per-site visibility. Send only the fields to change.',
+    'Edit a collection. Name, handle, description, type, rule set, featured flag, hero image, SEO, or per-site visibility. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateCollectionInput.extend({ collectionId: uuid() }),
@@ -188,7 +188,7 @@ const createBundle: McpToolDefinition = {
 const updateBundle: McpToolDefinition = {
   name: 'update_bundle',
   description:
-    'Edit a bundle — pricing mode, fixed price, percent off, inventory mode, or its component list. Send only the fields to change.',
+    'Edit a bundle: pricing mode, fixed price, percent off, inventory mode, or its component list. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateBundleInput.extend({ bundleId: uuid() }),
@@ -221,7 +221,7 @@ const createConfiguratorTemplate: McpToolDefinition = {
 const updateConfiguratorTemplate: McpToolDefinition = {
   name: 'update_configurator_template',
   description:
-    'Edit a configurator template — name, description, status, layout, options, rules, or add-ons. Send only the fields to change.',
+    'Edit a configurator template. Name, description, status, layout, options, rules, or add-ons. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateConfigurationTemplateInput.extend({ templateId: uuid() }),
@@ -246,7 +246,7 @@ const deleteConfiguratorTemplate: McpToolDefinition = {
 const createVariant: McpToolDefinition = {
   name: 'create_variant',
   description:
-    'Add a variant (a sellable SKU) to an existing product — its own price, SKU, and stock policy, mapped onto the product’s option lattice via optionValueIds. For a single-variant product, create_product already made the default variant; use this to add sizes/colors.',
+    'Add a variant (a sellable SKU) to an existing product. Its own price, SKU, and stock policy, mapped onto the product’s option lattice via optionValueIds. For a single-variant product, create_product already made the default variant; use this to add sizes/colors.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateVariantInput.extend({ productId: uuid() }),
@@ -272,7 +272,7 @@ const renameVariantSku: McpToolDefinition = {
 const setDefaultVariant: McpToolDefinition = {
   name: 'set_default_variant',
   description:
-    'Make a variant the product’s default — the one selected first on the product page and used for the product’s headline price.',
+    'Make a variant the product’s default: the one selected first on the product page and used for the product’s headline price.',
   scope: 'write:commerce',
   confirmation: true,
   input: z.object({ variantId: uuid() }),
@@ -301,7 +301,7 @@ const restoreVariant: McpToolDefinition = {
 const setProductOptions: McpToolDefinition = {
   name: 'set_product_options',
   description:
-    'Replace a product’s full option set (e.g. Size, Color) in one call. Existing options + values are dropped and re-created; existing variants are NOT touched — rebind them with assign_variant_option_values once the new lattice exists.',
+    'Replace a product’s full option set (e.g. Size, Color) in one call. Existing options + values are dropped and re-created; existing variants are NOT touched: rebind them with assign_variant_option_values once the new lattice exists.',
   scope: 'write:commerce',
   confirmation: true,
   input: SetProductOptionsInput.extend({ productId: uuid() }),
@@ -326,7 +326,7 @@ const assignVariantOptionValues: McpToolDefinition = {
 const createFitmentDomain: McpToolDefinition = {
   name: 'create_fitment_domain',
   description:
-    'Create a fitment domain — a compatibility taxonomy (e.g. "Vehicles" with Year/Make/Model/Engine levels) products can be matched against. Nodes (the actual values) are added with create_fitment_node.',
+    'Create a fitment domain: a compatibility taxonomy (e.g. "Vehicles" with Year/Make/Model/Engine levels) products can be matched against. Nodes (the actual values) are added with create_fitment_node.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateFitmentDomainInput,
@@ -336,7 +336,7 @@ const createFitmentDomain: McpToolDefinition = {
 const updateFitmentDomain: McpToolDefinition = {
   name: 'update_fitment_domain',
   description:
-    'Edit a fitment domain — display name, description, icon, dimensions, or position. Send only the fields to change.',
+    'Edit a fitment domain: display name, description, icon, dimensions, or position. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateFitmentDomainInput.extend({ domainId: uuid() }),
@@ -369,7 +369,7 @@ const createFitmentNode: McpToolDefinition = {
 const updateFitmentNode: McpToolDefinition = {
   name: 'update_fitment_node',
   description:
-    'Edit a fitment node — name, slug, attributes, or position. Send only the fields to change.',
+    'Edit a fitment node. Name, slug, attributes, or position. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateFitmentNodeInput.extend({ nodeId: uuid() }),
@@ -401,7 +401,7 @@ const reorderFitmentNodes: McpToolDefinition = {
 const bulkAssignFitment: McpToolDefinition = {
   name: 'bulk_assign_fitment',
   description:
-    'Assign a fitment rule (a domain node + optional numeric ranges) to many products at once — "these 40 brake pads all fit this vehicle range".',
+    'Assign a fitment rule (a domain node + optional numeric ranges) to many products at once: "these 40 brake pads all fit this vehicle range".',
   scope: 'write:commerce',
   confirmation: true,
   input: BulkAssignFitmentInput,
@@ -423,7 +423,7 @@ const deleteFitment: McpToolDefinition = {
 const upsertProductTranslation: McpToolDefinition = {
   name: 'upsert_product_translation',
   description:
-    'Create or replace one locale’s translation of a product — localized title, description, and SEO. Pass the product id and the locale’s content.',
+    'Create or replace one locale’s translation of a product: localized title, description, and SEO. Pass the product id and the locale’s content.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpsertProductTranslationInput.extend({ productId: uuid() }),

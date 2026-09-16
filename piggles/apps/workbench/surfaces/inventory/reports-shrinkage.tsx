@@ -153,7 +153,7 @@ export function ShrinkageCard({
   return (
     <ReportCard
       title="What left without being sold"
-      blurb="Losses, breakages and shortfalls found at a count — added up and priced at what they cost you."
+      blurb="Losses, breakages and shortfalls found at a count: added up and priced at what they cost you."
       aside={
         report.percentOfValuation === null ? null : (
           <Badge color={shrinkageTone(report.percentOfValuation)} variant="soft">

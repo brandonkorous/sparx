@@ -94,7 +94,7 @@ export function TwoFactorSetupForm({ email }: { email: string }) {
     setBusy(false);
     if (result.error) {
       setCode('');
-      setError('That code did not work. Codes change every 30 seconds — try the current one.');
+      setError('That code did not work. Codes change every 30 seconds. Try the current one.');
       return;
     }
     router.push('/');
@@ -170,7 +170,7 @@ export function TwoFactorSetupForm({ email }: { email: string }) {
                 ))}
               </ul>
               <Alert color="warning">
-                Save these now — each signs you in once if you lose your phone, and this is the only
+                Save these now. Each signs you in once if you lose your phone, and this is the only
                 time they are shown without your password. There is no self-serve recovery for an
                 operator account.
               </Alert>
@@ -178,7 +178,7 @@ export function TwoFactorSetupForm({ email }: { email: string }) {
           ) : null}
 
           <Button type="button" onClick={() => setStep('verify')}>
-            I have saved them — continue
+            I have saved them: continue
           </Button>
         </Stack>
       ) : null}

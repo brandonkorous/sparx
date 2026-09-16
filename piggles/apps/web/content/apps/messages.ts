@@ -7,12 +7,12 @@ import type { AppMarketing } from './types';
 
 export const MESSAGES: AppMarketing = {
   heading: 'Talk to your customers without leaving what you were doing.',
-  lede: 'Messages is email and conversation that already knows who it is talking to. Send the one-off reply, the order confirmation and the monthly note to everybody, answer the person typing on your website right now — all from the same place, with the whole history of that person beside it.',
+  lede: 'Messages is email and conversation that already knows who it is talking to. Send the one-off reply, the order confirmation and the monthly note to everybody, answer the person typing on your website right now. All from the same place, with the whole history of that person beside it.',
   alsoKnownAs: ['email marketing', 'transactional email', 'newsletter', 'live chat', 'inbox'],
   does: [
     {
       title: 'Write from your own address',
-      body: 'Verify your domain and send as you@yourbusiness — not as a platform with your name in brackets. Setup is guided and checked.',
+      body: 'Verify your domain and send as you@yourbusiness, not as a platform with your name in brackets. Setup is guided and checked.',
     },
     {
       title: 'The automatic ones, handled',
@@ -20,7 +20,7 @@ export const MESSAGES: AppMarketing = {
     },
     {
       title: 'Write to everybody, or to the right ones',
-      body: 'Send to a group that keeps itself current — recent customers, people who booked once, the wholesale list.',
+      body: 'Send to a group that keeps itself current: recent customers, people who booked once, the wholesale list.',
     },
     {
       title: 'Did it arrive, and did they read it',
@@ -38,7 +38,7 @@ export const MESSAGES: AppMarketing = {
   chapters: [
     {
       heading: 'Somebody is on your website right now with a question.',
-      body: 'Most of them will not ring, and most of them will not fill in a form. They will look for a chat bubble, not find one, and go somewhere else. Live chat puts the conversation on the site, in the same place as everything else you know about them — and when nobody is there to answer, it takes the question rather than pretending the shop is open.',
+      body: 'Most of them will not ring, and most of them will not fill in a form. They will look for a chat bubble, not find one, and go somewhere else. Live chat puts the conversation on the site, in the same place as everything else you know about them, and when nobody is there to answer, it takes the question rather than pretending the shop is open.',
       does: [
         {
           title: 'One queue, every conversation',
@@ -50,7 +50,7 @@ export const MESSAGES: AppMarketing = {
         },
         {
           title: 'The answers you give every day',
-          body: 'Quick replies for the questions that come up constantly — opening hours, delivery times, whether you do that — inserted rather than retyped.',
+          body: 'Quick replies for the questions that come up constantly (opening hours, delivery times, whether you do that) inserted rather than retyped.',
         },
         {
           title: 'Per site, not all mixed together',
@@ -62,7 +62,7 @@ export const MESSAGES: AppMarketing = {
         },
         {
           title: 'How busy it actually is',
-          body: 'Volume over time and what people are asking about — which is usually the fastest way to find the thing your website does not explain.',
+          body: 'Volume over time and what people are asking about, which is usually the fastest way to find the thing your website does not explain.',
         },
       ],
     },
@@ -84,7 +84,7 @@ export const MESSAGES: AppMarketing = {
         },
         {
           title: 'See who is in one',
-          body: 'Who is part-way through, at which step, and what they have had — so a sequence is inspectable rather than a thing running in the dark.',
+          body: 'Who is part-way through, at which step, and what they have had, so a sequence is inspectable rather than a thing running in the dark.',
         },
         {
           title: 'It arrives, because the setup was checked',

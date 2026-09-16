@@ -57,7 +57,7 @@ export function LandingProof() {
           </Heading>
           <Text variant="lead" className="mt-5 text-2xl">
             sparx puts the website, commerce, customer data, marketing and operations on one shared
-            foundation — so you pay for capability instead of integrations.
+            foundation, so you pay for capability instead of integrations.
           </Text>
         </div>
 
@@ -77,7 +77,7 @@ export function LandingProof() {
                   Stop paying for the seams.
                 </CardTitle>
                 <Text className="text-secondary-content max-w-xl text-2xl">
-                  Four subscriptions, four bills, four copies of the same customer — and you still
+                  Four subscriptions, four bills, four copies of the same customer, and you still
                   stitch them together by hand every week.
                 </Text>
               </div>

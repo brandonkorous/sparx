@@ -70,7 +70,7 @@ async function main(): Promise<void> {
 
     const how = tenant.source === 'bundled' ? `bundled via ${tenant.includedBy.join('/')}` : 'on';
     if (!apply) {
-      console.log(`WOULD SEED  ${tenant.slug} — finance ${how}, 0 categories`);
+      console.log(`WOULD SEED  ${tenant.slug}: finance ${how}, 0 categories`);
       seeded += 1;
       continue;
     }
@@ -80,7 +80,7 @@ async function main(): Promise<void> {
     const { categoriesSeeded, categoriesTotal } = await provisionFinance(tenant.id);
     console.log(
       `seeded ${String(categoriesSeeded)} of ${String(categoriesTotal)}  ` +
-        `${tenant.slug} — ${how}`
+        `${tenant.slug}: ${how}`
     );
     seeded += 1;
   }

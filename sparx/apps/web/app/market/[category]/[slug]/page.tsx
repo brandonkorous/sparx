@@ -36,10 +36,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category, slug } = await params;
   const item = await fetchListing(category, slug);
-  if (!item) return { title: 'Marketplace — sparx' };
+  if (!item) return { title: 'Marketplace: sparx' };
   const description = item.tagline ?? item.description ?? undefined;
   return {
-    title: `${item.name} — sparx Marketplace`,
+    title: `${item.name} · sparx Marketplace`,
     description,
     alternates: { canonical: `/market/${category}/${slug}` },
     // No `images` here on purpose. Setting it would override the generated card
@@ -49,7 +49,7 @@ export async function generateMetadata({
     // og:url, so inheriting the layout's site-root value collapsed every listing
     // share onto the homepage's cached preview.
     openGraph: {
-      title: `${item.name} — sparx Marketplace`,
+      title: `${item.name} · sparx Marketplace`,
       description,
       url: `https://sparx.works/market/${category}/${slug}`,
     },

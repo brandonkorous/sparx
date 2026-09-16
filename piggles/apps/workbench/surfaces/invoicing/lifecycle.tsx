@@ -105,7 +105,7 @@ export function StageControl({ doc, stages }: StageControlProps) {
     onError: () => {
       toast.add({
         title: 'Could not move the document',
-        description: 'It may have changed underneath you — it will refresh and you can retry.',
+        description: 'It may have changed underneath you. It will refresh and you can retry.',
         type: 'error',
       });
       void queryClient.invalidateQueries({ queryKey: ['invoicing'] });
@@ -137,7 +137,7 @@ export function StageControl({ doc, stages }: StageControlProps) {
 
   return (
     <DropdownMenu>
-      <Tooltip content="Where this document is in its life — open to move it">
+      <Tooltip content="Where this document is in its life: open to move it">
         <DropdownMenuTrigger>
           <Button
             color={stageTone(current.stageType)}
@@ -250,7 +250,7 @@ export function SendButton({ doc, dirty }: { doc: BillingDocument; dirty: boolea
   // Never email a version that is not the saved one — what lands in their inbox
   // has to be the document this pane can still show her afterwards.
   const blockedReason = dirty
-    ? 'Save your changes first — otherwise they would get a different invoice from the one you are looking at.'
+    ? 'Save your changes first, otherwise they would get a different invoice from the one you are looking at.'
     : null;
 
   const onSend = async () => {
@@ -334,7 +334,7 @@ export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
       await navigator.clipboard.writeText(url);
       toast.add({
         title: 'Payment link copied',
-        description: 'Paste it into an email or message — it collects the amount still owed.',
+        description: 'Paste it into an email or message. It collects the amount still owed.',
         type: 'success',
       });
     },

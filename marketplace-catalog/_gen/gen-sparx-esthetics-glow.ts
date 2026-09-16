@@ -128,7 +128,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Life happens — just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you.',
+        'Life happens. Just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you.',
     },
     {
       handle: 'glow-noshow',
@@ -137,7 +137,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service — a heads-up text keeps you in the clear.',
+        'Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service: a heads-up text keeps you in the clear.',
     },
   ],
   resources: [
@@ -181,7 +181,7 @@ const SCHEDULING = {
     {
       handle: 'express-glow-facial',
       name: 'Express glow facial',
-      description: 'Cleanse, exfoliate, mask and a dewy finish — a proper glow on your lunch break.',
+      description: 'Cleanse, exfoliate, mask and a dewy finish: a proper glow on your lunch break.',
       durationMinutes: 30,
       priceCents: 4500,
       assignmentStrategy: 'any_available',
@@ -191,7 +191,7 @@ const SCHEDULING = {
     {
       handle: 'signature-glow-facial',
       name: 'Signature glow facial',
-      description: 'The full feel-good ritual — deep cleanse, custom mask, massage and glow serum.',
+      description: 'The full feel-good ritual: deep cleanse, custom mask, massage and glow serum.',
       durationMinutes: 45,
       priceCents: 7500,
       bufferAfterMin: 10,
@@ -202,7 +202,7 @@ const SCHEDULING = {
     {
       handle: 'hydrating-facial',
       name: 'Dewy hydration facial',
-      description: 'Thirsty skin, meet its match — layers of hydration for a plump, bouncy glow.',
+      description: 'Thirsty skin, meet its match: layers of hydration for a plump, bouncy glow.',
       durationMinutes: 45,
       priceCents: 7000,
       bufferAfterMin: 10,
@@ -224,7 +224,7 @@ const SCHEDULING = {
     {
       handle: 'led-add-on',
       name: 'LED light add-on',
-      description: 'Ten minutes under the glow lights — calming, brightening, extra dewy.',
+      description: 'Ten minutes under the glow lights: calming, brightening, extra dewy.',
       durationMinutes: 15,
       priceCents: 2500,
       assignmentStrategy: 'any_available',
@@ -260,7 +260,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'Fresh, dewy, glowing skin in bright natural light',
     title: 'Glow on your lunch break',
-    sub: 'Quick, feel-good express facials at the glow bar — walk in dull, walk out dewy. No downtime, all glow.',
+    sub: 'Quick, feel-good express facials at the glow bar: walk in dull, walk out dewy. No downtime, all glow.',
     primary: { label: 'Book a glow', href: '/book' },
     secondary: { label: 'See the menu', href: '/book' },
     overlay: 'soft',
@@ -269,7 +269,7 @@ const HOME = [
     items: [
       {
         title: 'Express, walk-in-friendly facials',
-        body: 'Thirty happy minutes, in and out on your break. Book ahead or pop in — a fresh glow fits any day.',
+        body: 'Thirty happy minutes, in and out on your break. Book ahead or pop in: a fresh glow fits any day.',
       },
       {
         title: 'Glow memberships',
@@ -283,7 +283,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'The glow menu',
-    intro: 'Express facials and fun add-ons — pick your glow. Live times and full prices are on the booking page.',
+    intro: 'Express facials and fun add-ons. Pick your glow. Live times and full prices are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -300,21 +300,21 @@ const HOME = [
     heading: 'Glow on your schedule',
     body: [
       'The Dewy membership is the easy way to keep your glow going: one express or signature facial a month, member pricing on every add-on, and roll-over if life gets busy.',
-      'No lock-in, no fine print you need a magnifying glass for. Pause it, share it, or cancel any time — it’s your glow, your call.',
+      'No lock-in, no fine print you need a magnifying glass for. Pause it, share it, or cancel any time: it’s your glow, your call.',
     ],
     cta: { label: 'Chat memberships', href: '/book' },
   }),
   teamRow({
     heading: 'Your glow team',
-    intro: 'Book by name — a friendly esthetician who learns your skin and roots for your glow.',
+    intro: 'Book by name: a friendly esthetician who learns your skin and roots for your glow.',
     members: [
       { name: 'Mila Fox', role: 'Esthetician · Express & LED', image: url(IMG.mila), alt: 'Mila Fox, esthetician', bio: 'Speedy express facials and glow-light sessions. Mila runs the bar.' },
       { name: 'Priya Anand', role: 'Esthetician · Gua sha', image: url(IMG.priya), alt: 'Priya Anand, esthetician', bio: 'Sculpting gua sha and a calming, feel-good touch.' },
-      { name: 'Jade Nguyen', role: 'Esthetician · Add-ons', image: url(IMG.jade), alt: 'Jade Nguyen, esthetician', bio: 'The add-on queen — she’ll send you out extra dewy.' },
+      { name: 'Jade Nguyen', role: 'Esthetician · Add-ons', image: url(IMG.jade), alt: 'Jade Nguyen, esthetician', bio: 'The add-on queen: she’ll send you out extra dewy.' },
     ],
   }),
   testimonial({
-    quote: 'I pop in on my lunch break and leave actually glowing. It’s become my favourite little treat — fast, fun, zero fuss.',
+    quote: 'I pop in on my lunch break and leave actually glowing. It’s become my favourite little treat: fast, fun, zero fuss.',
     attribution: 'Sam, member since 2024',
     surface: 'primary',
   }),
@@ -344,7 +344,7 @@ const ABOUT = [
     heading: 'About Dewy Skin Bar',
     body: [
       'We started Dewy Skin Bar because good skin shouldn’t mean a two-hour appointment and a scary bill. Glowing skin should feel fun, quick and completely doable.',
-      'So we built a glow bar: express facials you can fit on a lunch break, playful add-ons, and memberships that keep the glow going — all in a bright, easy space where nobody makes you feel bad about your pores.',
+      'So we built a glow bar: express facials you can fit on a lunch break, playful add-ons, and memberships that keep the glow going. All in a bright, easy space where nobody makes you feel bad about your pores.',
     ],
     cta: { label: 'Book a glow', href: '/book' },
   }),
@@ -352,8 +352,8 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How the glow bar works',
     items: [
-      { title: 'Quick by design', body: 'Express facials are built for real life — 30 dewy minutes, no downtime, back to your day.' },
-      { title: 'Skin you’ll actually see', body: 'Gentle, feel-good treatments that leave you plump, bright and glowing — not red and raw.' },
+      { title: 'Quick by design', body: 'Express facials are built for real life: 30 dewy minutes, no downtime, back to your day.' },
+      { title: 'Skin you’ll actually see', body: 'Gentle, feel-good treatments that leave you plump, bright and glowing, not red and raw.' },
       { title: 'Keep it going', body: 'Memberships and add-ons make the glow a habit, at prices that don’t need a special occasion.' },
     ],
   }),
@@ -372,7 +372,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live times and grab your glow online — no phone tag, no hold music.',
+    sub: 'See live times and grab your glow online: no phone tag, no hold music.',
     surface: 'muted',
     cta: { label: 'Book a glow', href: '/book' },
   }),
@@ -383,8 +383,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-esthetics-glow',
   name: 'Esthetics (Glow Bar)',
   summary:
-    'A playful, dewy express-facial glow bar — a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as "Dewy Skin Bar", a fun, feel-good glow on your lunch break.',
-  tagline: 'A playful, dewy template for express facial bars — book a glow from day one.',
+    'A playful, dewy express-facial glow bar: a bright peach-coral palette, aqua accent and rounded, friendly type. Installs a working booking flow: express facials, hydration and brightening treatments, and fun add-ons (LED, gua sha), with three estheticians and two treatment rooms as bookable resources so every glow pairs a face and a room. Ships as "Dewy Skin Bar", a fun, feel-good glow on your lunch break.',
+  tagline: 'A playful, dewy template for express facial bars. Book a glow from day one.',
   industry: 'Esthetics',
   sortWeight: 37,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -393,7 +393,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Dewy Skin Bar — express facials & glow bar',
+      title: 'Dewy Skin Bar: express facials & glow bar',
       description:
         'Dewy Skin Bar is a fun, feel-good glow bar for quick express facials, LED and gua sha add-ons, and glow memberships. Book your glow online.',
     },

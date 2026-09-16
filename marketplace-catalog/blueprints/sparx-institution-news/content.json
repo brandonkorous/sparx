@@ -41,7 +41,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Working across eleven marshes along the state’s coast, the group drove cores two metres down and dated each layer. Below the reach of the usual sample, the sediment kept holding carbon — the slow accumulation of centuries of tidal plants, sealed away from the air by the water above it."
+                "text": "Working across eleven marshes along the state’s coast, the group drove cores two metres down and dated each layer. Below the reach of the usual sample, the sediment kept holding carbon: the slow accumulation of centuries of tidal plants, sealed away from the air by the water above it."
               }
             ]
           },
@@ -109,7 +109,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "On the last Saturday of August, eight hundred first-year students carried boxes up the steps of the new East Quad residential college — and a neighbourhood that had spent thirty years as a quiet edge of campus became, overnight, its front door."
+                "text": "On the last Saturday of August, eight hundred first-year students carried boxes up the steps of the new East Quad residential college, and a neighbourhood that had spent thirty years as a quiet edge of campus became, overnight, its front door."
               }
             ]
           },
@@ -139,7 +139,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Not everyone welcomed the change at the same pace. Residents who had grown used to the calm came to the community board with real questions about noise, rubbish and rent. The university sent people to listen, and — for once — kept sending them after the first meeting."
+                "text": "Not everyone welcomed the change at the same pace. Residents who had grown used to the calm came to the community board with real questions about noise, rubbish and rent. The university sent people to listen, and (for once) kept sending them after the first meeting."
               }
             ]
           },
@@ -198,7 +198,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Every campus clinician knows students do not sleep enough. The Northgate health service wanted to know something more useful: not the average, but the shape of it — who is losing sleep, when, and to what."
+                "text": "Every campus clinician knows students do not sleep enough. The Northgate health service wanted to know something more useful: not the average, but the shape of it, who is losing sleep, when, and to what."
               }
             ]
           },
@@ -219,7 +219,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Over a semester, six hundred volunteers wore a simple wrist tracker. The average landed where everyone expected, at a little under seven hours. But the average hid two very different populations. One group kept a steady, if short, schedule. The other swung wildly — five hours one night, ten the next — chasing a debt they never repaid."
+                "text": "Over a semester, six hundred volunteers wore a simple wrist tracker. The average landed where everyone expected, at a little under seven hours. But the average hid two very different populations. One group kept a steady, if short, schedule. The other swung wildly (five hours one night, ten the next) chasing a debt they never repaid."
               }
             ]
           },
@@ -275,7 +275,7 @@
     "tags": ["Robotics", "Computing"],
     "body": {
       "title": "Inside the lab teaching robots to read handwriting",
-      "excerpt": "A Northgate engineering group is training machines to read the one thing they have always failed at — a doctor’s scrawl, a field notebook, a century-old ledger. The trick was to stop treating it as text.",
+      "excerpt": "A Northgate engineering group is training machines to read the one thing they have always failed at: a doctor’s scrawl, a field notebook, a century-old ledger. The trick was to stop treating it as text.",
       "featuredImage": {
         "$asset": "story-robotics"
       },
@@ -287,7 +287,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Handwriting is the problem computers were supposed to have solved decades ago and never quite did. A printed page is easy; a hurried note in a margin, a field biologist’s pencil, a nineteenth-century clerk’s cursive — those still defeat the best systems on the market. A lab in the Northgate engineering school thinks it knows why."
+                "text": "Handwriting is the problem computers were supposed to have solved decades ago and never quite did. A printed page is easy; a hurried note in a margin, a field biologist’s pencil, a nineteenth-century clerk’s cursive. Those still defeat the best systems on the market. A lab in the Northgate engineering school thinks it knows why."
               }
             ]
           },
@@ -308,7 +308,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "“Everyone tries to turn the writing into letters and then read the letters,” the lab’s director explained. “We stopped doing that.” Instead, their system watches the physical motion the pen would have made — the order and direction of strokes — and learns handwriting the way a person learns to read a friend’s scrawl: by getting used to the hand, not by decoding each mark."
+                "text": "“Everyone tries to turn the writing into letters and then read the letters,” the lab’s director explained. “We stopped doing that.” Instead, their system watches the physical motion the pen would have made (the order and direction of strokes) and learns handwriting the way a person learns to read a friend’s scrawl: by getting used to the hand, not by decoding each mark."
               }
             ]
           },
@@ -317,7 +317,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "On a benchmark of archival documents that off-the-shelf tools read at barely fifty per cent accuracy, the Northgate model passed ninety. On field notebooks — smudged, abbreviated, half in Latin — it still cleared eighty."
+                "text": "On a benchmark of archival documents that off-the-shelf tools read at barely fifty per cent accuracy, the Northgate model passed ninety. On field notebooks (smudged, abbreviated, half in Latin) it still cleared eighty."
               }
             ]
           },
@@ -364,7 +364,7 @@
     "tags": ["Music", "Campus life"],
     "body": {
       "title": "The student orchestra that filled a century-old hall",
-      "excerpt": "Whitfield Hall reopened this month after a three-year restoration. The student symphony that played the first night gave it back the one thing the builders could not — a full house that knew the room.",
+      "excerpt": "Whitfield Hall reopened this month after a three-year restoration. The student symphony that played the first night gave it back the one thing the builders could not: a full house that knew the room.",
       "featuredImage": {
         "$asset": "story-orchestra"
       },
@@ -397,7 +397,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "It worked. The restoration had chased an old set of drawings and a stubborn belief that the hall’s original shape — narrower, taller, wrapped in wood — was the reason players a hundred years ago had loved it. The first chord settled the argument. The sound bloomed and held, the way the oldest recordings from the room suggested it once had."
+                "text": "It worked. The restoration had chased an old set of drawings and a stubborn belief that the hall’s original shape (narrower, taller, wrapped in wood) was the reason players a hundred years ago had loved it. The first chord settled the argument. The sound bloomed and held, the way the oldest recordings from the room suggested it once had."
               }
             ]
           },
@@ -427,7 +427,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "What the restoration could not supply, the students did: a hall full of people who cared. The programme spanned the room’s hundred years, and the audience — parents, faculty, alumni who had played the same stage decades before — treated each piece like a homecoming, because for many of them it was."
+                "text": "What the restoration could not supply, the students did: a hall full of people who cared. The programme spanned the room’s hundred years, and the audience (parents, faculty, alumni who had played the same stage decades before) treated each piece like a homecoming, because for many of them it was."
               }
             ]
           },

@@ -330,7 +330,7 @@ export async function approveOrder(
         actorType: 'staff',
         customerId: existing.customerId,
         type: 'note',
-        description: `Order #${existing.orderNumber} approved${body.reason ? ` — ${body.reason}` : ''}`,
+        description: `Order #${existing.orderNumber} approved${body.reason ? `: ${body.reason}` : ''}`,
         occurredAt: new Date(),
       },
     });
@@ -444,7 +444,7 @@ export async function rejectOrder(
         actorType: 'staff',
         customerId: existing.customerId,
         type: 'note',
-        description: `Order #${existing.orderNumber} rejected${body.reason ? ` — ${body.reason}` : ''}`,
+        description: `Order #${existing.orderNumber} rejected${body.reason ? `: ${body.reason}` : ''}`,
         occurredAt: new Date(),
       },
     });

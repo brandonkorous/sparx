@@ -136,7 +136,7 @@ const writeTools: AnyMcpTool[] = [
   {
     name: 'create_funnel',
     description:
-      'Start a new campaign. It is created as a draft with the default stage ladder for its kind, and stays a draft until it is given a goal and turned on — a campaign that measured from the moment it was created would count the author clicking around their own landing page.',
+      'Start a new campaign. It is created as a draft with the default stage ladder for its kind, and stays a draft until it is given a goal and turned on: a campaign that measured from the moment it was created would count the author clicking around their own landing page.',
     scope: 'write:funnels',
     confirmation: false,
     input: CreateFunnelInput,
@@ -159,7 +159,7 @@ const writeTools: AnyMcpTool[] = [
   {
     name: 'record_funnel_stage',
     description:
-      'Record that one person reached one stage of a campaign — for outcomes that happen away from the website, like a job booked over the phone. Name exactly one person: an existing customer, or an email address for somebody who is not a contact yet. Only the converting stage can carry a value; leave it out when nobody can say what it was worth, because an unknown value must never be recorded as nothing.',
+      'Record that one person reached one stage of a campaign, for outcomes that happen away from the website, like a job booked over the phone. Name exactly one person: an existing customer, or an email address for somebody who is not a contact yet. Only the converting stage can carry a value; leave it out when nobody can say what it was worth, because an unknown value must never be recorded as nothing.',
     scope: 'write:funnels',
     // Consequential: it writes a person into a campaign's history and can wake
     // a follow-up automation.

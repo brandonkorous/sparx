@@ -236,7 +236,7 @@ export function useVerifyTwoFactor() {
       await accountPost(
         'two-factor/verify',
         { code },
-        'That code did not work. Codes change every 30 seconds — check your app for the current one.'
+        'That code did not work. Codes change every 30 seconds. Check your app for the current one.'
       );
     },
     onSuccess: () => {

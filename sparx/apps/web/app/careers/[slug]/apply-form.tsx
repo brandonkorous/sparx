@@ -196,7 +196,7 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
       <SubmitButton pending={pending} />
 
       <p className="m-0 text-sm">
-        A real person — usually the founder — reads every application. No black hole, no bot screen.
+        A real person (usually the founder) reads every application. No black hole, no bot screen.
       </p>
     </form>
   );
@@ -248,7 +248,7 @@ function Confirmation() {
         <Spark />
       </span>
       <p className="text-md m-0 max-w-[380px]">
-        Thank you — we&rsquo;ll be in touch. A real person reads every application, so give us a
+        Thank you. We&rsquo;ll be in touch. A real person reads every application, so give us a
         little time to do it justice.
       </p>
     </div>

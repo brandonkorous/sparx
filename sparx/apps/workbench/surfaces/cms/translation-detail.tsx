@@ -421,7 +421,7 @@ function Editor({
                     label="Name"
                     source={product.title}
                     sourceEmpty="This product has no name."
-                    description="Required — a language with no name for the product cannot be saved."
+                    description="Required: a language with no name for the product cannot be saved."
                   >
                     <Input
                       color="module"
@@ -567,7 +567,7 @@ function AddLanguage({ existing, onAdd }: { existing: string[]; onAdd: (locale: 
   return (
     <FormSection
       title="Add a language"
-      description="Use the short code for the language — “es” for Spanish, “fr-CA” for Canadian French, “de” for German."
+      description="Use the short code for the language: “es” for Spanish, “fr-CA” for Canadian French, “de” for German."
     >
       <Field>
         <FieldLabel>Language code</FieldLabel>
@@ -593,7 +593,7 @@ function AddLanguage({ existing, onAdd }: { existing: string[]; onAdd: (locale: 
         />
         <FieldDescription>
           {raw.trim() === ''
-            ? 'Two letters for a language, optionally followed by a country — es, pt-BR, zh-Hans.'
+            ? 'Two letters for a language, optionally followed by a country: es, pt-BR, zh-Hans.'
             : duplicate
               ? `You already have ${localeName(canonical)} below.`
               : isValidLocale(raw)

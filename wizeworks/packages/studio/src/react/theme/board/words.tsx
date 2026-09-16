@@ -23,7 +23,7 @@ export function WordsTile() {
       </p>
 
       <p className="text-base">
-        Body copy sits at the sixteen-pixel floor — the size the rest of the world reads at — with
+        Body copy sits at the sixteen-pixel floor (the size the rest of the world reads at) with
         room between the lines. Inside it a{' '}
         <Link color="primary" href="#board-sample">
           link

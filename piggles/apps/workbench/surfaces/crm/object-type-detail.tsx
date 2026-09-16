@@ -424,7 +424,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                Filled in from the name above — change it for a word that does not simply take an
+                Filled in from the name above. Change it for a word that does not simply take an
                 &ldquo;s&rdquo;, or clear it if the word is the same either way.
               </FieldDescription>
             </Field>
@@ -546,7 +546,7 @@ export function ObjectTypeDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         setDraft((d) => ({ ...d, primaryFieldKey: e.target.value }));
                       }}
                     >
-                      <option value="">Nothing — just show when it was added</option>
+                      <option value="">Nothing, just show when it was added</option>
                       {draft.fields
                         .filter(({ field }) => field.type === 'text' || field.type === 'number')
                         .map(({ uid, field }) => (

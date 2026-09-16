@@ -178,12 +178,12 @@ export const foodPack: SampleDataPack = {
       title: 'Single-Origin Ethiopia Yirgacheffe',
       handle: 'single-origin-ethiopia-yirgacheffe',
       description:
-        '<p>A bright, washed Yirgacheffe from the Gedeo zone, roasted light to keep its signature florals intact. Expect jasmine and bergamot on the nose, a clean lemon-tea acidity, and a finish that lingers like stone fruit. This is the bag we hand someone who says they "don\'t like coffee" — because they\'ve never had it taste like this.</p><p>Roasted to order in small batches and shipped within 48 hours, so the bag in your hand is days off the roaster, not weeks. Best from days 4 through 21 after the roast date stamped on the valve seal.</p>',
+        '<p>A bright, washed Yirgacheffe from the Gedeo zone, roasted light to keep its signature florals intact. Expect jasmine and bergamot on the nose, a clean lemon-tea acidity, and a finish that lingers like stone fruit. This is the bag we hand someone who says they "don\'t like coffee", because they\'ve never had it taste like this.</p><p>Roasted to order in small batches and shipped within 48 hours, so the bag in your hand is days off the roaster, not weeks. Best from days 4 through 21 after the roast date stamped on the valve seal.</p>',
       productType: 'Coffee',
       productTypeKey: 'food_beverage',
       attributes: {
         ingredients:
-          '100% arabica coffee — single-origin washed Yirgacheffe from the Gedeo zone of Ethiopia. Nothing else added.',
+          '100% arabica coffee: single-origin washed Yirgacheffe from the Gedeo zone of Ethiopia. Nothing else added.',
         allergens: [],
         netWeight: '340 g / 12 oz',
         storage:
@@ -198,7 +198,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Ridgeline Roasters',
       tags: ['coffee', 'single-origin', 'ethiopia', 'light-roast', 'whole-bean'],
-      seoTitle: 'Ethiopia Yirgacheffe Single-Origin Coffee — Light Roast',
+      seoTitle: 'Ethiopia Yirgacheffe Single-Origin Coffee: Light Roast',
       seoDescription:
         'Floral, citrus-bright washed Yirgacheffe roasted light and shipped within 48 hours. Whole bean or ground.',
       categoryKeys: ['coffee-tea'],
@@ -214,7 +214,7 @@ export const foodPack: SampleDataPack = {
         {
           key: 'COF-ETH-WB-12',
           sku: 'COF-ETH-WB-12',
-          title: 'Whole bean — 12 oz',
+          title: 'Whole bean: 12 oz',
           priceCents: 1899,
           costCents: 820,
           optionValues: ['Whole bean'],
@@ -245,7 +245,7 @@ export const foodPack: SampleDataPack = {
         {
           key: 'COF-ETH-GR-12',
           sku: 'COF-ETH-GR-12',
-          title: 'Ground — 12 oz',
+          title: 'Ground: 12 oz',
           priceCents: 1899,
           costCents: 820,
           optionValues: ['Ground'],
@@ -270,7 +270,7 @@ export const foodPack: SampleDataPack = {
           body: 'The jasmine note is no joke. I brew it as a pour-over and it is the cleanest cup I have made at home.',
           authorPersona: 'amelia',
           response:
-            'So glad it landed, Amelia — try it a touch cooler (200°F) to push the florals even further.',
+            'So glad it landed, Amelia. Try it a touch cooler (200°F) to push the florals even further.',
           helpfulCount: 12,
           daysAgo: 16,
         },
@@ -313,12 +313,12 @@ export const foodPack: SampleDataPack = {
       title: 'Single-Origin Colombia Huila',
       handle: 'single-origin-colombia-huila',
       description:
-        '<p>A crowd-pleasing washed Colombia from smallholder farms around Pitalito, Huila, roasted medium for balance. Caramel sweetness, a round red-apple acidity, and a cocoa finish make it the everyday bag that works in any brewer — drip, French press, or espresso.</p><p>If you keep one coffee in the house, this is it. Forgiving to brew, equally good black or with a splash of milk, and roasted in small batches so every bag ships fresh.</p>',
+        '<p>A crowd-pleasing washed Colombia from smallholder farms around Pitalito, Huila, roasted medium for balance. Caramel sweetness, a round red-apple acidity, and a cocoa finish make it the everyday bag that works in any brewer: drip, French press, or espresso.</p><p>If you keep one coffee in the house, this is it. Forgiving to brew, equally good black or with a splash of milk, and roasted in small batches so every bag ships fresh.</p>',
       productType: 'Coffee',
       productTypeKey: 'food_beverage',
       attributes: {
         ingredients:
-          '100% arabica coffee — single-origin washed Colombia from smallholder farms around Pitalito, Huila. Nothing else added.',
+          '100% arabica coffee: single-origin washed Colombia from smallholder farms around Pitalito, Huila. Nothing else added.',
         allergens: [],
         netWeight: '340 g / 12 oz',
         storage:
@@ -333,7 +333,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Ridgeline Roasters',
       tags: ['coffee', 'single-origin', 'colombia', 'medium-roast', 'whole-bean'],
-      seoTitle: 'Colombia Huila Single-Origin Coffee — Medium Roast',
+      seoTitle: 'Colombia Huila Single-Origin Coffee: Medium Roast',
       seoDescription:
         'Balanced, caramel-sweet washed Colombia roasted medium for any brewer. Whole bean or ground.',
       categoryKeys: ['coffee-tea'],
@@ -349,7 +349,7 @@ export const foodPack: SampleDataPack = {
         {
           key: 'COF-COL-WB-12',
           sku: 'COF-COL-WB-12',
-          title: 'Whole bean — 12 oz',
+          title: 'Whole bean: 12 oz',
           priceCents: 1699,
           costCents: 740,
           optionValues: ['Whole bean'],
@@ -379,7 +379,7 @@ export const foodPack: SampleDataPack = {
         {
           key: 'COF-COL-GR-12',
           sku: 'COF-COL-GR-12',
-          title: 'Ground — 12 oz',
+          title: 'Ground: 12 oz',
           priceCents: 1699,
           costCents: 740,
           optionValues: ['Ground'],
@@ -412,7 +412,7 @@ export const foodPack: SampleDataPack = {
           body: 'Exactly the caramel-and-cocoa profile described. Knocked one star only because I wish it came in 2 lb.',
           authorPersona: 'walt',
           response:
-            'Good news — the 2 lb size is on the way for the espresso blend, and Colombia is next!',
+            'Good news: the 2 lb size is on the way for the espresso blend, and Colombia is next!',
           helpfulCount: 5,
           daysAgo: 8,
         },
@@ -422,14 +422,14 @@ export const foodPack: SampleDataPack = {
           body: 'Will this work for espresso or is it too light?',
           authorPersona: 'lucia',
           answer:
-            'It pulls a lovely shot — medium roast and forgiving. Dial in around an 18 g dose for a 36 g out in roughly 28 seconds and adjust to taste.',
+            'It pulls a lovely shot: medium roast and forgiving. Dial in around an 18 g dose for a 36 g out in roughly 28 seconds and adjust to taste.',
           daysAgo: 10,
         },
       ],
     },
     {
       key: 'espresso-blend',
-      title: 'House Espresso Blend — "Lamplight"',
+      title: 'House Espresso Blend: "Lamplight"',
       handle: 'house-espresso-blend-lamplight',
       description:
         '<p>Our signature espresso blend: a Brazil-and-Guatemala base for body and chocolate, lifted with a touch of washed Ethiopian for sparkle. Roasted medium-dark to pull thick, syrupy shots with notes of dark chocolate, toasted almond, and a brown-sugar sweetness that cuts beautifully through milk.</p><p>Built for the home espresso machine but every bit as good in a moka pot or press. Give it three to five days off the roast to degas before you pull your first shot.</p>',
@@ -437,7 +437,7 @@ export const foodPack: SampleDataPack = {
       productTypeKey: 'food_beverage',
       attributes: {
         ingredients:
-          '100% arabica coffee — a blend of washed Brazil and Guatemala for body and chocolate, lifted with a touch of washed Ethiopian. Roasted medium-dark.',
+          '100% arabica coffee: a blend of washed Brazil and Guatemala for body and chocolate, lifted with a touch of washed Ethiopian. Roasted medium-dark.',
         allergens: [],
         netWeight: '340 g / 12 oz · 907 g / 2 lb',
         storage:
@@ -452,7 +452,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Ridgeline Roasters',
       tags: ['coffee', 'espresso', 'blend', 'medium-dark', 'whole-bean'],
-      seoTitle: 'House Espresso Blend "Lamplight" — Medium-Dark Roast',
+      seoTitle: 'House Espresso Blend "Lamplight": Medium-Dark Roast',
       seoDescription:
         'A chocolate-forward espresso blend that shines with milk. Whole bean, 12 oz or 2 lb.',
       categoryKeys: ['coffee-tea'],
@@ -468,7 +468,7 @@ export const foodPack: SampleDataPack = {
         {
           key: 'COF-ESP-WB-12',
           sku: 'COF-ESP-WB-12',
-          title: 'Whole bean — 12 oz',
+          title: 'Whole bean: 12 oz',
           priceCents: 1799,
           costCents: 760,
           optionValues: ['12 oz'],
@@ -489,7 +489,7 @@ export const foodPack: SampleDataPack = {
         {
           key: 'COF-ESP-WB-2LB',
           sku: 'COF-ESP-WB-2LB',
-          title: 'Whole bean — 2 lb',
+          title: 'Whole bean: 2 lb',
           priceCents: 4299,
           compareAtPriceCents: 4796,
           costCents: 1980,
@@ -534,7 +534,7 @@ export const foodPack: SampleDataPack = {
           displayName: 'BaristaBeck',
           status: 'flagged',
           response:
-            "So sorry about the bag — we have shipped a replacement and re-checked that lot's sealer.",
+            "So sorry about the bag. We have shipped a replacement and re-checked that lot's sealer.",
           helpfulCount: 1,
           daysAgo: 4,
         },
@@ -544,7 +544,7 @@ export const foodPack: SampleDataPack = {
           body: 'How long should I let it rest before pulling shots?',
           authorPersona: 'lucia',
           answer:
-            'Three to five days off the roast date is the sweet spot — fresh enough for flavor, rested enough that it is not too gassy to dial in.',
+            'Three to five days off the roast date is the sweet spot: fresh enough for flavor, rested enough that it is not too gassy to dial in.',
           daysAgo: 9,
         },
       ],
@@ -554,7 +554,7 @@ export const foodPack: SampleDataPack = {
       title: 'Loose-Leaf Earl Grey Supreme',
       handle: 'loose-leaf-earl-grey-supreme',
       description:
-        '<p>A proper Earl Grey: a brisk Ceylon-and-Assam black tea base scented with natural bergamot oil and finished with a scatter of blue cornflower petals. Bold enough to take milk, fragrant enough to drink straight with a twist of lemon. No artificial flavoring — just real oil of bergamot.</p><p>Sold loose by weight in a resealable tin-tie pouch. One heaping teaspoon per cup, steeped 3 to 4 minutes in just-off-boil water.</p>',
+        '<p>A proper Earl Grey: a brisk Ceylon-and-Assam black tea base scented with natural bergamot oil and finished with a scatter of blue cornflower petals. Bold enough to take milk, fragrant enough to drink straight with a twist of lemon. No artificial flavoring. Just real oil of bergamot.</p><p>Sold loose by weight in a resealable tin-tie pouch. One heaping teaspoon per cup, steeped 3 to 4 minutes in just-off-boil water.</p>',
       productType: 'Tea',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -574,7 +574,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Harbor & Vine Tea Co.',
       tags: ['tea', 'loose-leaf', 'earl-grey', 'black-tea', 'bergamot'],
-      seoTitle: 'Loose-Leaf Earl Grey Supreme — Bergamot Black Tea',
+      seoTitle: 'Loose-Leaf Earl Grey Supreme: Bergamot Black Tea',
       seoDescription:
         'A brisk Ceylon-Assam Earl Grey scented with real bergamot oil and cornflower. Loose leaf, 4 oz.',
       categoryKeys: ['coffee-tea'],
@@ -624,7 +624,7 @@ export const foodPack: SampleDataPack = {
           body: 'Does this have caffeine?',
           displayName: 'NightOwl',
           answer:
-            'Yes — it is a black tea base, so it is fully caffeinated. For evenings, steep it a minute shorter or pick one of our herbal tisanes.',
+            'Yes. It is a black tea base, so it is fully caffeinated. For evenings, steep it a minute shorter or pick one of our herbal tisanes.',
           daysAgo: 7,
         },
       ],
@@ -634,7 +634,7 @@ export const foodPack: SampleDataPack = {
       title: 'Small-Batch Habanero-Mango Hot Sauce',
       handle: 'small-batch-habanero-mango-hot-sauce',
       description:
-        "<p>A bright, fruit-forward hot sauce that leads with ripe mango and ends with a clean habanero burn. Fermented in small batches for a week before bottling, which rounds the heat and builds a tangy depth you don't get from a quick-blend sauce. Medium-hot: enough to make you notice, never enough to ruin the dish.</p><p>Spectacular on tacos, grilled chicken, eggs, and — trust us — a wedge of sharp cheddar. Five ounces in a glass bottle with a drip-control cap.</p>",
+        "<p>A bright, fruit-forward hot sauce that leads with ripe mango and ends with a clean habanero burn. Fermented in small batches for a week before bottling, which rounds the heat and builds a tangy depth you don't get from a quick-blend sauce. Medium-hot: enough to make you notice, never enough to ruin the dish.</p><p>Spectacular on tacos, grilled chicken, eggs, and (trust us) a wedge of sharp cheddar. Five ounces in a glass bottle with a drip-control cap.</p>",
       productType: 'Condiment',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -653,7 +653,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Ember Lane Provisions',
       tags: ['hot-sauce', 'habanero', 'mango', 'fermented', 'small-batch'],
-      seoTitle: 'Habanero-Mango Hot Sauce — Small-Batch Fermented',
+      seoTitle: 'Habanero-Mango Hot Sauce: Small-Batch Fermented',
       seoDescription:
         'A fruit-forward, fermented habanero-mango hot sauce. Medium heat, bright and tangy. 5 oz.',
       categoryKeys: ['pantry'],
@@ -684,7 +684,7 @@ export const foodPack: SampleDataPack = {
         {
           rating: 5,
           title: 'On everything now',
-          body: 'The mango up front then the heat builds — perfect on fish tacos. Already on my second bottle.',
+          body: 'The mango up front then the heat builds: perfect on fish tacos. Already on my second bottle.',
           authorPersona: 'walt',
           response: 'Try it on grilled pineapple next, Walter. Game changer.',
           helpfulCount: 9,
@@ -734,7 +734,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Wildflour Kitchen',
       tags: ['granola', 'grain-free', 'maple', 'pecan', 'breakfast', 'snack'],
-      seoTitle: 'Maple-Pecan Grain-Free Granola — No Oats, No Refined Sugar',
+      seoTitle: 'Maple-Pecan Grain-Free Granola: No Oats, No Refined Sugar',
       seoDescription:
         'Clustery grain-free granola of almonds, pecans, and coconut, sweetened with real maple. 12 oz.',
       categoryKeys: ['snacks'],
@@ -781,7 +781,7 @@ export const foodPack: SampleDataPack = {
         {
           rating: 4,
           title: 'A touch sweet',
-          body: 'Excellent texture. Maple comes through strong — a hair sweet for me but great over plain yogurt.',
+          body: 'Excellent texture. Maple comes through strong: a hair sweet for me but great over plain yogurt.',
           displayName: 'MorningRunner',
           status: 'pending',
           helpfulCount: 2,
@@ -793,17 +793,17 @@ export const foodPack: SampleDataPack = {
           body: 'Is this nut-free safe? Allergy in the house.',
           displayName: 'CarefulMom',
           answer:
-            'No — this granola contains almonds and pecans and is made in a facility that handles tree nuts, so it is not suitable for nut allergies.',
+            'No. This granola contains almonds and pecans and is made in a facility that handles tree nuts, so it is not suitable for nut allergies.',
           daysAgo: 10,
         },
       ],
     },
     {
       key: 'olive-oil-evoo',
-      title: 'Extra-Virgin Olive Oil — Cold-Pressed',
+      title: 'Extra-Virgin Olive Oil: Cold-Pressed',
       handle: 'extra-virgin-olive-oil-cold-pressed',
       description:
-        '<p>A single-estate, cold-pressed extra-virgin olive oil from a family grove in Jaén, Spain, pressed within hours of harvest. Grassy and peppery with a green-almond finish and the throat-catching tickle that tells you the polyphenols are alive. Harvest date — not just a "best by" — is stamped on every tin.</p><p>500 ml in a light-blocking tin to protect it from oxidation. Finish soups, dress salads, or pour over warm bread; save the neutral oil for the frying pan.</p>',
+        '<p>A single-estate, cold-pressed extra-virgin olive oil from a family grove in Jaén, Spain, pressed within hours of harvest. Grassy and peppery with a green-almond finish and the throat-catching tickle that tells you the polyphenols are alive. Harvest date (not just a "best by") is stamped on every tin.</p><p>500 ml in a light-blocking tin to protect it from oxidation. Finish soups, dress salads, or pour over warm bread; save the neutral oil for the frying pan.</p>',
       productType: 'Oil',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -823,7 +823,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Olivar del Sol',
       tags: ['olive-oil', 'extra-virgin', 'cold-pressed', 'spain', 'pantry'],
-      seoTitle: 'Cold-Pressed Extra-Virgin Olive Oil — Single-Estate Spain',
+      seoTitle: 'Cold-Pressed Extra-Virgin Olive Oil: Single-Estate Spain',
       seoDescription:
         'Grassy, peppery single-estate EVOO from Jaén, cold-pressed and harvest-dated. 500 ml tin.',
       categoryKeys: ['oils-vinegars', 'pantry'],
@@ -857,7 +857,7 @@ export const foodPack: SampleDataPack = {
           body: 'That little throat tickle means it is the real deal. Best finishing oil I have bought in years.',
           authorPersona: 'nadia',
           response:
-            'Right on — that pungency is the polyphenols. Thanks for noticing the harvest date too!',
+            'Right on. That pungency is the polyphenols. Thanks for noticing the harvest date too!',
           helpfulCount: 8,
           daysAgo: 18,
         },
@@ -875,7 +875,7 @@ export const foodPack: SampleDataPack = {
           body: 'Can I cook with this or is it only for finishing?',
           displayName: 'HomeCook22',
           answer:
-            'You can sauté with it, but its real magic is raw — drizzled to finish — where the flavor and polyphenols survive. For high-heat frying use a neutral oil.',
+            'You can sauté with it, but its real magic is raw (drizzled to finish) where the flavor and polyphenols survive. For high-heat frying use a neutral oil.',
           daysAgo: 11,
         },
       ],
@@ -885,7 +885,7 @@ export const foodPack: SampleDataPack = {
       title: 'Raw Wildflower Honey',
       handle: 'raw-wildflower-honey',
       description:
-        "<p>Unfiltered, unpasteurized wildflower honey from hives in the Willamette Valley, bottled raw to keep its pollen, enzymes, and complex floral character intact. Amber and thick with a layered sweetness that shifts with the season's blooms — clover one batch, blackberry the next. It may crystallize over time; that is the mark of real raw honey, not a flaw.</p><p>Twelve ounces in a glass jar. Stir into tea, drizzle over the granola, or spoon onto a cheese board. Not for infants under one year.</p>",
+        "<p>Unfiltered, unpasteurized wildflower honey from hives in the Willamette Valley, bottled raw to keep its pollen, enzymes, and complex floral character intact. Amber and thick with a layered sweetness that shifts with the season's blooms: clover one batch, blackberry the next. It may crystallize over time; that is the mark of real raw honey, not a flaw.</p><p>Twelve ounces in a glass jar. Stir into tea, drizzle over the granola, or spoon onto a cheese board. Not for infants under one year.</p>",
       productType: 'Sweetener',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -894,7 +894,7 @@ export const foodPack: SampleDataPack = {
         allergens: [],
         netWeight: '340 g / 12 oz',
         storage:
-          'Store sealed at room temperature. Natural crystallization is a mark of real raw honey — set the jar in a bowl of warm (not hot) water to return it to liquid. Not for infants under one year.',
+          'Store sealed at room temperature. Natural crystallization is a mark of real raw honey. Set the jar in a bowl of warm (not hot) water to return it to liquid. Not for infants under one year.',
         nutrition: [
           { label: 'Serving size', value: '1 tbsp (21 g)' },
           { label: 'Calories', value: '60' },
@@ -905,7 +905,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Willamette Apiaries',
       tags: ['honey', 'raw', 'wildflower', 'unfiltered', 'pantry'],
-      seoTitle: 'Raw Wildflower Honey — Unfiltered & Unpasteurized',
+      seoTitle: 'Raw Wildflower Honey: Unfiltered & Unpasteurized',
       seoDescription:
         'Raw, unfiltered wildflower honey from the Willamette Valley with pollen and enzymes intact. 12 oz jar.',
       categoryKeys: ['pantry', 'sweets'],
@@ -955,17 +955,17 @@ export const foodPack: SampleDataPack = {
           body: 'Why did my jar go solid and cloudy?',
           authorPersona: 'amelia',
           answer:
-            'That is natural crystallization — a hallmark of raw, unfiltered honey. Set the jar in a bowl of warm (not hot) water and it returns to liquid without harming the enzymes.',
+            'That is natural crystallization: a hallmark of raw, unfiltered honey. Set the jar in a bowl of warm (not hot) water and it returns to liquid without harming the enzymes.',
           daysAgo: 12,
         },
       ],
     },
     {
       key: 'chocolate-dark',
-      title: 'Single-Origin Dark Chocolate Bar — 72%',
+      title: 'Single-Origin Dark Chocolate Bar: 72%',
       handle: 'single-origin-dark-chocolate-bar-72',
       description:
-        '<p>A bean-to-bar 72% dark chocolate made from single-origin Ecuadorian Nacional cacao, stone-ground and conched for three days for a silken snap and a clean finish. Tasting notes of dried cherry, toasted hazelnut, and a faint floral lift — only three ingredients: cacao, cane sugar, and cocoa butter.</p><p>A generous 2.5 oz bar, hand-wrapped. Let a square melt slowly on the tongue rather than chewing to catch the full arc of flavor.</p>',
+        '<p>A bean-to-bar 72% dark chocolate made from single-origin Ecuadorian Nacional cacao, stone-ground and conched for three days for a silken snap and a clean finish. Tasting notes of dried cherry, toasted hazelnut, and a faint floral lift. Only three ingredients: cacao, cane sugar, and cocoa butter.</p><p>A generous 2.5 oz bar, hand-wrapped. Let a square melt slowly on the tongue rather than chewing to catch the full arc of flavor.</p>',
       productType: 'Chocolate',
       productTypeKey: 'food_beverage',
       attributes: {
@@ -985,7 +985,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Cobblestone Chocolate Works',
       tags: ['chocolate', 'dark', 'single-origin', 'bean-to-bar', 'ecuador', 'sweets'],
-      seoTitle: 'Single-Origin 72% Dark Chocolate Bar — Bean-to-Bar Ecuador',
+      seoTitle: 'Single-Origin 72% Dark Chocolate Bar: Bean-to-Bar Ecuador',
       seoDescription:
         'A bean-to-bar 72% dark chocolate from Ecuadorian Nacional cacao. Three ingredients, 2.5 oz.',
       categoryKeys: ['sweets'],
@@ -1024,10 +1024,10 @@ export const foodPack: SampleDataPack = {
         {
           rating: 4,
           title: 'Excellent, melts fast',
-          body: 'Beautiful snap and flavor. Arrived a little soft in summer heat — maybe a cold pack next time.',
+          body: 'Beautiful snap and flavor. Arrived a little soft in summer heat: maybe a cold pack next time.',
           authorPersona: 'desmond',
           response:
-            'Noted — we add insulated packaging and cold packs on hot-weather routes. Sorry it caught a warm spell!',
+            'Noted. We add insulated packaging and cold packs on hot-weather routes. Sorry it caught a warm spell!',
           helpfulCount: 3,
           daysAgo: 6,
         },
@@ -1037,7 +1037,7 @@ export const foodPack: SampleDataPack = {
           body: 'Is this dairy-free?',
           authorPersona: 'lucia',
           answer:
-            'Yes — the bar is just cacao, cane sugar, and cocoa butter, so it is dairy-free. It is made in a facility that also handles tree nuts and milk, however.',
+            'Yes: the bar is just cacao, cane sugar, and cocoa butter, so it is dairy-free. It is made in a facility that also handles tree nuts and milk, however.',
           daysAgo: 8,
         },
       ],
@@ -1047,14 +1047,14 @@ export const foodPack: SampleDataPack = {
       title: 'Morning Ritual Gift Box',
       handle: 'morning-ritual-gift-box',
       description:
-        '<p>The cure for "I don\'t know what to get them." Our Morning Ritual gift box pairs a bag of fresh single-origin coffee, a pouch of clustery maple-pecan granola, and a jar of raw wildflower honey in a kraft box with a hand-tied ribbon and a card you can personalize at checkout.</p><p>It is the breakfast we\'d want delivered to our own door — and it saves versus buying the three pieces on their own. Ships in protective packaging with everything dated fresh.</p>',
+        '<p>The cure for "I don\'t know what to get them." Our Morning Ritual gift box pairs a bag of fresh single-origin coffee, a pouch of clustery maple-pecan granola, and a jar of raw wildflower honey in a kraft box with a hand-tied ribbon and a card you can personalize at checkout.</p><p>It is the breakfast we\'d want delivered to our own door, and it saves versus buying the three pieces on their own. Ships in protective packaging with everything dated fresh.</p>',
       productType: 'Gift Box',
       productTypeKey: 'food_beverage',
       attributes: {
         ingredients:
           'A curated box: a bag of single-origin whole-bean coffee (100% arabica), a pouch of grain-free maple-pecan granola (almonds, pecans, coconut, pumpkin seeds, maple syrup), and a jar of raw wildflower honey. See each item for its full ingredient statement.',
         allergens: ['tree_nuts'],
-        netWeight: '3 items — coffee, granola & honey',
+        netWeight: '3 items: coffee, granola & honey',
         storage:
           'Store each item per its own label: coffee and granola sealed at cool room temperature, honey sealed at room temperature. Everything ships dated fresh.',
         nutrition: [
@@ -1065,7 +1065,7 @@ export const foodPack: SampleDataPack = {
       },
       vendor: 'Ridgeline Roasters',
       tags: ['gift', 'gift-box', 'bundle', 'coffee', 'breakfast'],
-      seoTitle: 'Morning Ritual Gift Box — Coffee, Granola & Honey',
+      seoTitle: 'Morning Ritual Gift Box: Coffee, Granola & Honey',
       seoDescription:
         'A curated breakfast gift box: fresh single-origin coffee, maple-pecan granola, and raw wildflower honey.',
       categoryKeys: ['pantry'],
@@ -1093,7 +1093,7 @@ export const foodPack: SampleDataPack = {
           title: 'Gifted three already',
           body: 'My go-to now for new-baby and housewarming gifts. The card personalization is a nice touch.',
           authorPersona: 'amelia',
-          response: 'Thank you, Amelia — we love being your go-to gift!',
+          response: 'Thank you, Amelia. We love being your go-to gift!',
           helpfulCount: 4,
           daysAgo: 5,
         },
@@ -1103,7 +1103,7 @@ export const foodPack: SampleDataPack = {
           body: 'Can I choose which coffee goes in the box?',
           authorPersona: 'theo',
           answer:
-            'Yes — use the gift-box builder to pick your coffee, a sweet, and an extra. By default it ships with our Colombia Huila, granola, and honey.',
+            'Yes. Use the gift-box builder to pick your coffee, a sweet, and an extra. By default it ships with our Colombia Huila, granola, and honey.',
           daysAgo: 9,
         },
       ],
@@ -1168,14 +1168,14 @@ export const foodPack: SampleDataPack = {
       daysAgo: 4,
       body: doc(
         p(
-          'A pour-over is the most forgiving way to make a stunning cup of coffee at home, because it puts every variable in your hands — and once you nail the rhythm, it is the same five minutes every morning. You need a cone dripper, a paper filter, a gooseneck kettle if you have one, and a scale.'
+          'A pour-over is the most forgiving way to make a stunning cup of coffee at home, because it puts every variable in your hands, and once you nail the rhythm, it is the same five minutes every morning. You need a cone dripper, a paper filter, a gooseneck kettle if you have one, and a scale.'
         ),
         h2('The recipe'),
         p(
           'Aim for a 1-to-16 ratio of coffee to water. A great starting point is 22 grams of coffee to 350 grams of water.'
         ),
         ol(
-          'Boil your water and let it rest 30 seconds — you want about 200°F, just off the boil.',
+          'Boil your water and let it rest 30 seconds. You want about 200°F, just off the boil.',
           'Rinse the paper filter with hot water, then dump the rinse water; this kills the papery taste and warms the cup.',
           'Grind 22 g of coffee to a medium, table-salt texture and add it to the filter.',
           'Pour just enough water (about 50 g) to wet all the grounds and let it bloom for 30 to 45 seconds.',
@@ -1186,7 +1186,7 @@ export const foodPack: SampleDataPack = {
         ul(
           'Tastes sour or thin? Grind finer or pour a touch slower.',
           'Tastes bitter or harsh? Grind coarser or use slightly cooler water.',
-          'Always start from fresh, recently roasted beans — no recipe rescues stale coffee.'
+          'Always start from fresh, recently roasted beans: no recipe rescues stale coffee.'
         ),
         p(
           'Change one variable at a time and taste as you go. Within a week you will have a recipe dialed to your beans and your palate.'
@@ -1205,14 +1205,14 @@ export const foodPack: SampleDataPack = {
         ),
         h2('The everyday rules'),
         ul(
-          'Buy whole bean and grind right before brewing — ground coffee goes stale in hours, not weeks.',
+          'Buy whole bean and grind right before brewing: ground coffee goes stale in hours, not weeks.',
           'Keep beans in an airtight, opaque container at room temperature, away from the stove and the window.',
-          'Never store coffee in the fridge — it is humid and full of odors the beans will happily absorb.',
+          'Never store coffee in the fridge. It is humid and full of odors the beans will happily absorb.',
           'Buy only what you will drink in two to three weeks so you are always near the roast date.'
         ),
         h2('What about the freezer?'),
         p(
-          'For long-term storage, the freezer works — but only if you do it right. Portion beans into airtight, single-use bags, freeze them, and pull a bag out as you need it. The cardinal rule: never re-freeze. Each thaw cycle drives condensation into the beans, and moisture is the enemy. Let a frozen portion come fully to room temperature before opening the bag.'
+          'For long-term storage, the freezer works, but only if you do it right. Portion beans into airtight, single-use bags, freeze them, and pull a bag out as you need it. The cardinal rule: never re-freeze. Each thaw cycle drives condensation into the beans, and moisture is the enemy. Let a frozen portion come fully to room temperature before opening the bag.'
         ),
         p(
           'Stored well at room temperature, treat a bag as best within three to four weeks of its roast date.'
@@ -1245,7 +1245,7 @@ export const foodPack: SampleDataPack = {
           'Finish with flaky salt and a squeeze of lemon, and serve warm.'
         ),
         p(
-          'A handful of toasted pecans or a scatter of fresh thyme takes it further, but it needs nothing — the honey and the carrots do all the work.'
+          'A handful of toasted pecans or a scatter of fresh thyme takes it further, but it needs nothing: the honey and the carrots do all the work.'
         )
       ),
     },

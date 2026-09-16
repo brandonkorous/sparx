@@ -101,7 +101,7 @@ export function OAuthPopupRelay({
       <div className="card bg-base-100 flex max-w-sm flex-col items-center gap-3 p-6 text-center">
         <PigglesMascot intent={closed ? 'success' : 'loading'} size="sm" />
         <h1 className="text-lg font-semibold">
-          {closed ? 'All done — you can close this' : 'Nearly there…'}
+          {closed ? 'All done: you can close this' : 'Nearly there…'}
         </h1>
         {/* A real ink token, never faded: this is the only sentence on the screen
             and the whole point of it is to be read. */}

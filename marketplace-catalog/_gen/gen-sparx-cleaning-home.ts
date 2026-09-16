@@ -144,7 +144,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Your first clean and any recurring plan is fully flexible — change your day, skip a visit or pause any time with 24 hours’ notice. No lock-in, ever.',
+        'Your first clean and any recurring plan is fully flexible. Change your day, skip a visit or pause any time with 24 hours’ notice. No lock-in, ever.',
     },
   ],
   resources: [
@@ -182,7 +182,7 @@ const SCHEDULING = {
       handle: 'free-estimate',
       name: 'Free in-home estimate',
       description:
-        'A friendly walk-through of your home so we can quote an exact price — no obligation, no pressure.',
+        'A friendly walk-through of your home so we can quote an exact price: no obligation, no pressure.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -193,7 +193,7 @@ const SCHEDULING = {
       handle: 'standard-clean',
       name: 'Standard clean',
       description:
-        'Kitchens, bathrooms, floors and surfaces across your whole home — the everyday refresh that keeps things sparkling.',
+        'Kitchens, bathrooms, floors and surfaces across your whole home: the everyday refresh that keeps things sparkling.',
       durationMinutes: 120,
       priceCents: 12000,
       assignmentStrategy: 'any_available',
@@ -204,7 +204,7 @@ const SCHEDULING = {
       handle: 'deep-clean',
       name: 'Deep clean',
       description:
-        'Top-to-bottom detail — baseboards, inside the oven and fridge, grout, vents and the spots that get skipped.',
+        'Top-to-bottom detail: baseboards, inside the oven and fridge, grout, vents and the spots that get skipped.',
       durationMinutes: 180,
       priceCents: 22000,
       assignmentStrategy: 'any_available',
@@ -213,7 +213,7 @@ const SCHEDULING = {
     },
     {
       handle: 'recurring-setup',
-      name: 'Recurring plan — first visit',
+      name: 'Recurring plan: first visit',
       description:
         'Set up weekly, every-two-weeks or monthly cleans with the same friendly cleaner each time. Change or skip any time.',
       durationMinutes: 120,
@@ -237,7 +237,7 @@ const SCHEDULING = {
       handle: 'one-time-refresh',
       name: 'One-time refresh',
       description:
-        'A quick single visit before guests, after a party or whenever life gets busy — the essentials, done well.',
+        'A quick single visit before guests, after a party or whenever life gets busy: the essentials, done well.',
       durationMinutes: 90,
       priceCents: 9000,
       assignmentStrategy: 'any_available',
@@ -266,7 +266,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A bright, freshly cleaned living room full of morning light',
     title: 'Come home to clean',
-    sub: 'Friendly, vetted cleaners for your home — recurring cleans, deep cleans and move-outs. Book in about a minute and walk into a place that feels brand new.',
+    sub: 'Friendly, vetted cleaners for your home: recurring cleans, deep cleans and move-outs. Book in about a minute and walk into a place that feels brand new.',
     primary: { label: 'Book your first clean', href: '/book' },
     secondary: { label: 'Get a free estimate', href: '/book' },
     overlay: 'dark',
@@ -279,15 +279,15 @@ const HOME = [
       },
       {
         title: 'Satisfaction guaranteed',
-        body: 'If we miss a spot, tell us within 24 hours and we’ll come back and make it right — no arguing, no extra charge.',
+        body: 'If we miss a spot, tell us within 24 hours and we’ll come back and make it right: no arguing, no extra charge.',
       },
       {
         title: 'Flexible recurring plans',
-        body: 'Weekly, every two weeks or monthly, with the same friendly cleaner each visit. Skip, move or cancel any time — no lock-in.',
+        body: 'Weekly, every two weeks or monthly, with the same friendly cleaner each visit. Skip, move or cancel any time: no lock-in.',
       },
       {
         title: 'Eco-friendly options',
-        body: 'Just ask for our plant-based, family- and pet-safe products — a fresh, clean home without the harsh chemical smell.',
+        body: 'Just ask for our plant-based, family- and pet-safe products: a fresh, clean home without the harsh chemical smell.',
       },
     ],
   }),
@@ -301,19 +301,19 @@ const HOME = [
         name: 'Standard clean',
         priceCents: 12000,
         durationMin: 120,
-        desc: 'Kitchens, baths, floors and surfaces — your whole home refreshed.',
+        desc: 'Kitchens, baths, floors and surfaces. Your whole home refreshed.',
       },
       {
         name: 'Deep clean',
         priceCents: 22000,
         durationMin: 180,
-        desc: 'Baseboards, inside the oven and fridge, grout — the works.',
+        desc: 'Baseboards, inside the oven and fridge, grout: the works.',
       },
       {
         name: 'Recurring plan',
         priceCents: 11000,
         durationMin: 120,
-        desc: 'Set it and forget it — the same cleaner on your schedule.',
+        desc: 'Set it and forget it: the same cleaner on your schedule.',
       },
       {
         name: 'Move-in / move-out',
@@ -329,14 +329,14 @@ const HOME = [
     alt: 'A spotless kitchen with sparkling counters and tidy shelves',
     heading: 'Your same trusted cleaner, every time',
     body: [
-      'With a recurring plan you’re matched with one cleaner who gets to know your home — where things go, which products you like, the corners that always need a little extra.',
+      'With a recurring plan you’re matched with one cleaner who gets to know your home: where things go, which products you like, the corners that always need a little extra.',
       'No revolving door of strangers, no re-explaining yourself every week. Just a familiar, friendly face and a home that stays effortlessly clean.',
     ],
     cta: { label: 'Start a recurring plan', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your cleaning team',
-    intro: 'Real people, background-checked and insured — the friendly faces who’ll make your home shine.',
+    intro: 'Real people, background-checked and insured: the friendly faces who’ll make your home shine.',
     members: [
       {
         name: 'Rosa Delgado',
@@ -350,7 +350,7 @@ const HOME = [
         role: 'Cleaner',
         image: url(IMG.mateo),
         alt: 'Mateo Rivera, cleaner',
-        bio: 'The detail guy — deep cleans and move-outs where every corner has to be perfect.',
+        bio: 'The detail guy: deep cleans and move-outs where every corner has to be perfect.',
       },
       {
         name: 'Aisha Bello',
@@ -364,7 +364,7 @@ const HOME = [
         role: 'Cleaner',
         image: url(IMG.grace),
         alt: 'Grace Lin, cleaner',
-        bio: 'Handles the big jobs — post-renovation and move-out cleans, start to sparkling finish.',
+        bio: 'Handles the big jobs: post-renovation and move-out cleans, start to sparkling finish.',
       },
     ],
   }),
@@ -374,7 +374,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Ready for a cleaner home?',
-    sub: 'Pick a clean, choose a day and see live times. It takes about a minute — or book a free estimate first.',
+    sub: 'Pick a clean, choose a day and see live times. It takes about a minute, or book a free estimate first.',
     cta: { label: 'Book your first clean', href: '/book' },
   }),
 ];
@@ -397,7 +397,7 @@ const ABOUT = [
     alt: 'A bright, freshly cleaned living room full of morning light',
     heading: 'About Tidy Nest',
     body: [
-      'We started Tidy Nest for a simple reason: everyone deserves to come home to a clean house without the stress of finding — and trusting — someone to do it.',
+      'We started Tidy Nest for a simple reason: everyone deserves to come home to a clean house without the stress of finding (and trusting) someone to do it.',
       'So we built a team we’d welcome into our own homes: vetted, insured, genuinely friendly, and backed by a guarantee. You get your evenings and weekends back, and a home that always feels cared for.',
     ],
     cta: { label: 'Book a clean', href: '/book' },
@@ -408,7 +408,7 @@ const ABOUT = [
     items: [
       {
         title: 'A price you can trust',
-        body: 'A clear, upfront quote before we start — free estimates on bigger jobs. What we quote is what you pay.',
+        body: 'A clear, upfront quote before we start: free estimates on bigger jobs. What we quote is what you pay.',
       },
       {
         title: 'People you can trust',
@@ -416,7 +416,7 @@ const ABOUT = [
       },
       {
         title: 'A guarantee behind it',
-        body: 'If anything’s not right, tell us within 24 hours and we’ll come back and re-clean it — free.',
+        body: 'If anything’s not right, tell us within 24 hours and we’ll come back and re-clean it: free.',
       },
     ],
   }),
@@ -436,7 +436,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your clean online — no phone tag, no waiting on a callback.',
+    sub: 'See live availability and reserve your clean online: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -447,8 +447,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-cleaning-home',
   name: 'House Cleaning (Home)',
   summary:
-    'A bright, cheerful residential house-cleaning site — a fresh aqua palette, a sunny coral accent and a friendly rounded display, with clean, light-filled home photography. Installs a working booking flow: online booking for standard, deep, move-out and recurring cleans plus free estimates, four vetted cleaners as bookable resources with their own hours, and a satisfaction-guarantee policy. Ships as "Tidy Nest", with a recurring-plan angle — the same trusted cleaner every visit.',
-  tagline: 'A bright, friendly template for house cleaners — book cleans online from day one.',
+    'A bright, cheerful residential house-cleaning site: a fresh aqua palette, a sunny coral accent and a friendly rounded display, with clean, light-filled home photography. Installs a working booking flow: online booking for standard, deep, move-out and recurring cleans plus free estimates, four vetted cleaners as bookable resources with their own hours, and a satisfaction-guarantee policy. Ships as "Tidy Nest", with a recurring-plan angle, the same trusted cleaner every visit.',
+  tagline: 'A bright, friendly template for house cleaners. Book cleans online from day one.',
   industry: 'House cleaning',
   sortWeight: 68,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -457,9 +457,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Tidy Nest — friendly house cleaning',
+      title: 'Tidy Nest: friendly house cleaning',
       description:
-        'Tidy Nest is a friendly, insured house-cleaning service for recurring cleans, deep cleans and move-outs. Book your first clean online — or get a free estimate.',
+        'Tidy Nest is a friendly, insured house-cleaning service for recurring cleans, deep cleans and move-outs. Book your first clean online, or get a free estimate.',
     },
   },
   home: HOME,

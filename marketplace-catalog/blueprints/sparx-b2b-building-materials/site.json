@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Yardstock Trade Supplies — builders’ merchant & building materials",
-      "seoDescription": "Yardstock is a builders’ merchant — timber, sheet, plasterboard, cement, insulation, fixings, aggregates and safety sold by the pack and the pallet at trade prices, with net-30 credit, click & collect and site delivery. Open a trade account.",
+      "seoTitle": "Yardstock Trade Supplies: builders’ merchant & building materials",
+      "seoDescription": "Yardstock is a builders’ merchant: timber, sheet, plasterboard, cement, insulation, fixings, aggregates and safety sold by the pack and the pallet at trade prices, with net-30 credit, click & collect and site delivery. Open a trade account.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Yardstock is a builders’ merchant. We stock the timber, boards, cement, insulation, fixings and safety kit a site runs on — sold by the pack and the pallet, at trade prices, ready to collect from the yard or on a lorry to your job."
+                          "Yardstock is a builders’ merchant. We stock the timber, boards, cement, insulation, fixings and safety kit a site runs on: sold by the pack and the pallet, at trade prices, ready to collect from the yard or on a lorry to your job."
                         ],
                         "id": "4c9f8f5a-0be8-4e9c-afb8-3c94eb9989b9",
                         "ord": "a1"
@@ -1213,7 +1213,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Open a trade account and you buy the way a builder should — by the pack and the pallet, at yard rates, on credit. No retail markups, no queue, no runaround."
+                          "Open a trade account and you buy the way a builder should: by the pack and the pallet, at yard rates, on credit. No retail markups, no queue, no runaround."
                         ],
                         "id": "0550a57b-26d9-4a07-b539-ec9780b1a86a",
                         "ord": "a1"
@@ -1272,7 +1272,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Approved accounts run on net-30 — order what the job needs now and settle on one monthly statement, not a card swipe per run."
+                              "Approved accounts run on net-30. Order what the job needs now and settle on one monthly statement, not a card swipe per run."
                             ],
                             "id": "34d490a1-a639-4d5f-9821-7096ca6c9e48",
                             "ord": "a1"
@@ -1326,7 +1326,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A direct line to a real person who knows your jobs, your standing lines and your pricing — not a ticket queue or a call centre."
+                              "A direct line to a real person who knows your jobs, your standing lines and your pricing, not a ticket queue or a call centre."
                             ],
                             "id": "c35eaae8-eaf9-491b-ab12-af648a685986",
                             "ord": "a1"
@@ -1639,7 +1639,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Yardstock Trade Supplies",
+      "seoTitle": "Shop: Yardstock Trade Supplies",
       "seoDescription": "Browse everything Yardstock Trade Supplies makes, with prices and options at a glance. Builders’ merchant & building materials.",
       "root": {
         "kind": "element",
@@ -1671,7 +1671,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every line we hold — timber and sheet, plasterboard and cement, insulation, fixings and sealant, aggregates and safety kit, sold by the pack and the pallet. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout."
+                      "Every line we hold: timber and sheet, plasterboard and cement, insulation, fixings and sealant, aggregates and safety kit, sold by the pack and the pallet. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout."
                     ],
                     "id": "136ea473-1376-4f6c-baed-ab190551ff44",
                     "ord": "a1"
@@ -1699,7 +1699,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Yardstock Trade Supplies",
+      "seoTitle": "Collections: Yardstock Trade Supplies",
       "seoDescription": "Explore the collections at Yardstock Trade Supplies, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1731,7 +1731,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The yard grouped the way a builder actually buys — trade favourites, new lines just in, the site-run essentials, groundworks materials, first-fix, and safety & workwear."
+                      "The yard grouped the way a builder actually buys: trade favourites, new lines just in, the site-run essentials, groundworks materials, first-fix, and safety & workwear."
                     ],
                     "id": "aecc4dc7-206b-4b0d-9659-0a7f2230d6b6",
                     "ord": "a1"
@@ -1759,7 +1759,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Yardstock Trade Supplies",
+      "seoTitle": "Your cart: Yardstock Trade Supplies",
       "seoDescription": "Review what is in your cart and check out securely at Yardstock Trade Supplies.",
       "root": {
         "kind": "element",
@@ -1819,7 +1819,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Yardstock Trade Supplies",
+      "seoTitle": "Search: Yardstock Trade Supplies",
       "seoDescription": "Search Yardstock Trade Supplies for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1879,7 +1879,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Yardstock Trade Supplies",
+      "seoTitle": "Journal: Yardstock Trade Supplies",
       "seoDescription": "Stories, guides and notes from Yardstock Trade Supplies.",
       "root": {
         "kind": "element",
@@ -1911,7 +1911,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical guidance from the yard and the site — how to take off a first-fix, spec insulation to hit a U-value, and order groundworks by the bag. Written for the people doing the buying, not for a brochure."
+                      "Practical guidance from the yard and the site: how to take off a first-fix, spec insulation to hit a U-value, and order groundworks by the bag. Written for the people doing the buying, not for a brochure."
                     ],
                     "id": "6f621b5a-dc76-4f57-b326-3606df729b25",
                     "ord": "a1"
@@ -2045,7 +2045,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Yardstock Trade Supplies",
-      "seoDescription": "How Yardstock stocks, prices and delivers — one yard, one account, one delivery, wholesale by the pack and the pallet, and stock that’s actually there when you turn up for it.",
+      "seoDescription": "How Yardstock stocks, prices and delivers. One yard, one account, one delivery, wholesale by the pack and the pallet, and stock that’s actually there when you turn up for it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2076,7 +2076,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Yardstock Trade Supplies is a builders’ merchant. We hold the everyday building materials a site runs on — structural timber and sheet, plasterboard and cement, insulation, fixings, sealant, aggregates and safety kit — and we sell them to the trade by the pack and the pallet, at yard prices, on account."
+                      "Yardstock Trade Supplies is a builders’ merchant. We hold the everyday building materials a site runs on: structural timber and sheet, plasterboard and cement, insulation, fixings, sealant, aggregates and safety kit, and we sell them to the trade by the pack and the pallet, at yard prices, on account."
                     ],
                     "id": "7c0588b6-1280-41c2-94d6-46784d892345",
                     "ord": "a1"
@@ -2096,7 +2096,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the materials, priced fairly and loaded onto your van or our lorry — the boring reliability a build is made of."
+                      "No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the materials, priced fairly and loaded onto your van or our lorry: the boring reliability a build is made of."
                     ],
                     "id": "2f1ec6d7-9b2d-43d9-b511-1923d4e04b8a",
                     "ord": "a3"
@@ -2116,7 +2116,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Yardstock Trade Supplies",
+      "seoTitle": "Open a trade account: Yardstock Trade Supplies",
       "seoDescription": "Set up a trade account with Yardstock: wholesale pack and pallet pricing, volume breaks, net-30 credit, yard collection or site delivery, and a dedicated account manager. Trade enquiries and whole-job quotes start here.",
       "root": {
         "kind": "element",
@@ -2424,8 +2424,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Yardstock Trade Supplies",
-      "seoDescription": "Product details at Yardstock Trade Supplies — builders’ merchant & building materials, with options and pricing.",
+      "seoTitle": "Product: Yardstock Trade Supplies",
+      "seoDescription": "Product details at Yardstock Trade Supplies: builders’ merchant & building materials, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2788,7 +2788,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is the per-pack list rate. Trade accounts unlock volume breaks — a deeper per-unit price by the pallet, the full load, or a standing order — set for your account in your dashboard."
+                              "The price shown is the per-pack list rate. Trade accounts unlock volume breaks (a deeper per-unit price by the pallet, the full load, or a standing order) set for your account in your dashboard."
                             ],
                             "id": "31b16fba-1bcb-4b86-8eb9-5d227d8c4325",
                             "ord": "a1"
@@ -2798,7 +2798,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Collect from the yard the same day, or put it on our lorry to site with a timed drop. Approved accounts buy on net-30 — not set up yet? Open a trade account and we’ll price your regular lines and get you on terms."
+                              "Collect from the yard the same day, or put it on our lorry to site with a timed drop. Approved accounts buy on net-30, not set up yet? Open a trade account and we’ll price your regular lines and get you on terms."
                             ],
                             "id": "cc492ab3-3aa8-4c92-a28c-70ea4aa016cd",
                             "ord": "a2"

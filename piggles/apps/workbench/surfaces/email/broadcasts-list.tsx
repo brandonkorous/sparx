@@ -120,7 +120,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New broadcast — hold Shift to open alongside, Alt for a new window',
+          title: 'New broadcast: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <div className="w-40 shrink-0">
@@ -165,7 +165,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faPaperPlane} className="size-6" aria-hidden />}
             title="Could not load your broadcasts"
-            description="Something went wrong reaching the server. Anything already sent is unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Anything already sent is unaffected. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -184,7 +184,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No broadcasts yet',
               description:
-                'A broadcast is one email sent to a group of people at once — a newsletter, an offer, an announcement. Write your first to reach your audience.',
+                'A broadcast is one email sent to a group of people at once: a newsletter, an offer, an announcement. Write your first to reach your audience.',
               actions: (
                 <Button
                   size="sm"

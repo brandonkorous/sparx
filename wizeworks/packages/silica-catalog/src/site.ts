@@ -55,8 +55,8 @@ function hero(commerceEnabled: boolean): Node {
           }),
           el('p', 'text-lg text-base-content', {
             text: commerceEnabled
-              ? 'Publish your pages, tell your story, and sell when you are ready — all from one place. This is your homepage; edit every word to make it yours.'
-              : 'Publish your pages and tell your story — all from one place. This is your homepage; edit every word to make it yours.',
+              ? 'Publish your pages, tell your story, and sell when you are ready. All from one place. This is your homepage; edit every word to make it yours.'
+              : 'Publish your pages and tell your story. All from one place. This is your homepage; edit every word to make it yours.',
           }),
           el('div', 'mt-2 flex flex-wrap items-center justify-center gap-3', {
             children: [
@@ -93,7 +93,7 @@ function ctaBand(): Node {
         children: [
           el('h2', 'text-3xl font-bold text-primary-content', { text: 'Ready when you are.' }),
           el('p', 'text-lg text-primary-content/80', {
-            text: 'Add a product, publish a page, or invite your team — start with whatever comes first.',
+            text: 'Add a product, publish a page, or invite your team. Start with whatever comes first.',
           }),
           el('a', 'btn btn-lg mt-2 bg-base-100 text-base-content', {
             attrs: { href: '/contact' },
@@ -126,7 +126,7 @@ function featureTrio(): Node {
             children: [
               card(
                 'Publish',
-                'Create pages and posts that look right on every screen — no code needed.'
+                'Create pages and posts that look right on every screen: no code needed.'
               ),
               card(
                 'Sell',
@@ -155,10 +155,10 @@ function aboutContent(): Node {
             text: 'About us',
           }),
           el('p', 'text-lg text-base-content', {
-            text: 'This is your story — who you are, what you make, and why it matters. Replace this text with a few honest sentences about your work; the people who find you here want to know the human behind it.',
+            text: 'This is your story, who you are, what you make, and why it matters. Replace this text with a few honest sentences about your work; the people who find you here want to know the human behind it.',
           }),
           el('p', 'text-lg text-base-content', {
-            text: 'You can add sections, images, and links from the builder. When you are ready, connect a shop, a blog, or a contact form — this page grows with you.',
+            text: 'You can add sections, images, and links from the builder. When you are ready, connect a shop, a blog, or a contact form. This page grows with you.',
           }),
         ],
       }),
@@ -175,7 +175,7 @@ function contactContent(): Node {
         children: [
           el('h1', 'text-4xl font-bold tracking-tight text-base-content', { text: 'Get in touch' }),
           el('p', 'text-lg text-base-content', {
-            text: 'Have a question or want to work together? Tell visitors the best way to reach you — an email, a phone number, or a form you add from the builder.',
+            text: 'Have a question or want to work together? Tell visitors the best way to reach you: an email, a phone number, or a form you add from the builder.',
           }),
           // Bound, never a literal address: this button shipped pointing at
           // `mailto:hello@example.com`, on a starter page that LOOKS finished

@@ -58,7 +58,7 @@ const Hostname = z
   .min(3)
   .max(255)
   .regex(/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/, {
-    message: 'Enter a server name like imap.example.com — no https:// and no port.',
+    message: 'Enter a server name like imap.example.com: no https:// and no port.',
   });
 
 export const ConnectMailboxInput = z

@@ -220,7 +220,7 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
     res.end();
   } catch (err) {
     // Transient (DB blip, Pub/Sub down) — 500 so Pub/Sub redelivers.
-    logger.error({ err, messageId }, 'ingest failed — returning 500 for redelivery');
+    logger.error({ err, messageId }, 'ingest failed: returning 500 for redelivery');
     res.statusCode = 500;
     res.end();
   }

@@ -34,13 +34,13 @@ export function BillingTrialEndingEmail({
     >
       <EmailDisplayHeading>Your trial ends soon</EmailDisplayHeading>
       <EmailParagraph>
-        Hi {accountName ?? 'there'}, your {platform.name} free trial is almost up — add a payment
+        Hi {accountName ?? 'there'}, your {platform.name} free trial is almost up. Add a payment
         method to keep everything running without a break.
       </EmailParagraph>
       <EmailCallout tone="info">Your trial ends {trialEndLabel}.</EmailCallout>
       <EmailActionButton href={manageUrl}>Add a payment method</EmailActionButton>
       <EmailParagraph flush style={{ marginTop: 18 }}>
-        If you don&apos;t add one before then, your account simply pauses until you do — nothing is
+        If you don&apos;t add one before then, your account simply pauses until you do. Nothing is
         deleted, and you can pick up right where you left off.
       </EmailParagraph>
     </PlatformEmailLayout>

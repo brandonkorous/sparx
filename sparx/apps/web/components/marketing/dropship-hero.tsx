@@ -22,7 +22,7 @@ const M = getModuleColor('dropship');
 
 export function DropshipHero() {
   const lede =
-    'Connect a supplier, import their catalog, set a markup rule. When an order comes in, sparx routes it to the right supplier automatically, pulls back tracking, and emails the customer — all without you touching a box. Sell without holding inventory, on a real platform where suppliers, products, and orders live in one place.';
+    'Connect a supplier, import their catalog, set a markup rule. When an order comes in, sparx routes it to the right supplier automatically, pulls back tracking, and emails the customer. All without you touching a box. Sell without holding inventory, on a real platform where suppliers, products, and orders live in one place.';
   const chips = ['supplier connectors', 'auto order routing', 'margin rules', 'tracking sync'];
   return (
     <section className={`${M.bg} bg-soft px-page pt-20 pb-28`}>

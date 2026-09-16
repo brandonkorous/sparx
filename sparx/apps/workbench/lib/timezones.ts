@@ -53,7 +53,7 @@ function describe(zone: string, at: Date): TimezoneOption | null {
   // `name` is the seasonal name ("Mountain Daylight Time") — genuinely the most
   // recognisable part. When the runtime has none it falls back to the offset
   // alone rather than printing an empty gap.
-  const label = name && name !== city ? `${city} — ${name} (${offset})` : `${city} (${offset})`;
+  const label = name && name !== city ? `${city}, ${name} (${offset})` : `${city} (${offset})`;
   return { value: zone, label, offsetMinutes: offsetToMinutes(offset) };
 }
 

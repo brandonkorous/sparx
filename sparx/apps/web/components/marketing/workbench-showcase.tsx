@@ -106,11 +106,11 @@ const CHAT: ChatMsg[] = [
   { from: 'in', body: 'Hi! Is the Summit Hoodie coming back in large?', time: '10:24' },
   {
     from: 'out',
-    body: 'Just restocked it this morning — I’ll set one aside for you.',
+    body: 'Just restocked it this morning: I’ll set one aside for you.',
     time: '10:26',
   },
   { from: 'in', body: 'Perfect, thank you! Same card as order #1043?', time: '10:27' },
-  { from: 'out', body: 'Yes — sending a checkout link now.', time: '10:27' },
+  { from: 'out', body: 'Yes: sending a checkout link now.', time: '10:27' },
 ];
 
 // Status text → the platform's real statusTone vocabulary → silica badgeClasses,
@@ -313,7 +313,7 @@ function Dock() {
 
       {/* Email (sky) — a live customer conversation. */}
       <Group module="email" grow="flex-[1.25]">
-        <TabStrip tabs={[{ icon: MessageCircle, label: 'Inbox — Dana W.', active: true }]} />
+        <TabStrip tabs={[{ icon: MessageCircle, label: 'Inbox: Dana W.', active: true }]} />
         <ChatPane />
       </Group>
     </div>
@@ -580,7 +580,7 @@ function StatusBar() {
       <span className="flex-1" />
       <span className="inline-flex items-center gap-1.5 text-sm whitespace-nowrap">
         <ShoppingBag size={13} strokeWidth={1.8} className="text-success" />
-        New order — #1043 · 2m ago
+        New order: #1043 · 2m ago
       </span>
       <span className="inline-flex items-center gap-1.5 text-sm whitespace-nowrap">
         <AppWindow size={13} strokeWidth={1.8} />1 window

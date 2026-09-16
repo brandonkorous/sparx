@@ -124,7 +124,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Take a booking — hold Shift to open alongside, Alt for a new window"
+            title="Take a booking: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('scheduling.bookings.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -195,7 +195,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<CalendarClock className="size-6" aria-hidden />}
             title="Could not load your bookings"
-            description="Something went wrong reaching the server. It may be a temporary problem — try refreshing in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try refreshing in a moment."
           />
         ) : isLoading ? (
           <p className="p-4 text-base" role="status">
@@ -213,7 +213,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No bookings yet',
               description:
-                'When someone books a time with you — online or taken here by hand — it appears in this list. Take your first one to see how it looks.',
+                'When someone books a time with you (online or taken here by hand), it appears in this list. Take your first one to see how it looks.',
               actions: (
                 <Button
                   color="module"

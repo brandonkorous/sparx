@@ -101,7 +101,7 @@ export function checkSeo(pages: readonly LintablePage[]): RawFinding[] {
         detail:
           'It is set so that Google and other search engines will not list it, and it will not ' +
           'appear in your sitemap. That is the right setting for a thank-you page or a private ' +
-          'landing page — but if you want people to be able to find this page by searching, turn ' +
+          'landing page, but if you want people to be able to find this page by searching, turn ' +
           'it off in the page settings.',
       });
       continue;
@@ -118,8 +118,8 @@ export function checkSeo(pages: readonly LintablePage[]): RawFinding[] {
         title: 'This page has no search title',
         detail:
           'Search results and browser tabs will fall back to the page name and your site name. ' +
-          'That works, but a title written for the result — what someone would be searching for ' +
-          'when they should land here — is the single biggest thing you can change about how ' +
+          'That works, but a title written for the result: what someone would be searching for ' +
+          'when they should land here: is the single biggest thing you can change about how ' +
           'often this page gets clicked.',
       });
     } else if ((titles.get(title.toLowerCase().replace(/\s+/g, ' ')) ?? 0) > 1) {
@@ -130,7 +130,7 @@ export function checkSeo(pages: readonly LintablePage[]): RawFinding[] {
         title: 'Another page uses this exact search title',
         detail:
           'When several pages share a title, search engines usually pick one and leave the rest ' +
-          'out of results altogether — so the pages compete with each other instead of adding up. ' +
+          'out of results altogether, so the pages compete with each other instead of adding up. ' +
           'Give each page a title that describes only that page.',
         evidence: title,
       });
@@ -146,7 +146,7 @@ export function checkSeo(pages: readonly LintablePage[]): RawFinding[] {
           'The description is the sentence or two shown under the title in search results, and it ' +
           'is what appears when someone shares the page in a message or on social media. With ' +
           'none set, that space is filled with whatever text happens to be near the top of the ' +
-          'page — often a menu.',
+          'page, often a menu.',
       });
     } else if ((descriptions.get(description.toLowerCase().replace(/\s+/g, ' ')) ?? 0) > 1) {
       findings.push({

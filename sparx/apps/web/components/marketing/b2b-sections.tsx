@@ -24,7 +24,7 @@ export function B2bPriceList() {
       <SectionHeader
         accent={M.color}
         headline="Login decides the price"
-        lede="Build pricing tiers — a percentage off list, a fixed price, or a per-product price list — and assign them to accounts. When a buyer signs in, the catalog and checkout already show their negotiated price. No manual quoting for everyday orders."
+        lede="Build pricing tiers (a percentage off list, a fixed price, or a per-product price list) and assign them to accounts. When a buyer signs in, the catalog and checkout already show their negotiated price. No manual quoting for everyday orders."
       />
       <div className="mkt-b2b-split mt-12">
         <Cycle
@@ -138,7 +138,7 @@ export function B2bRfq() {
   const stages = [
     {
       title: 'Buyer submits an RFQ',
-      body: 'From the catalog, the buyer builds a request — quantities, delivery needs, notes — and submits it. It lands in your dashboard, separate from the cart.',
+      body: 'From the catalog, the buyer builds a request (quantities, delivery needs, notes) and submits it. It lands in your dashboard, separate from the cart.',
     },
     {
       title: 'You price it',
@@ -146,19 +146,19 @@ export function B2bRfq() {
     },
     {
       title: 'Sent back',
-      body: 'The buyer gets a branded quote PDF, valid until the expiry. The lifecycle is tracked: submitted, under review, quoted — nothing lost in email.',
+      body: 'The buyer gets a branded quote PDF, valid until the expiry. The lifecycle is tracked: submitted, under review, quoted. Nothing lost in email.',
     },
     {
       title: 'Accepted → converted',
-      body: 'On accept, the quote converts straight to an order at the quoted prices — through the same checkout, inventory, and fulfillment as every other order.',
+      body: 'On accept, the quote converts straight to an order at the quoted prices: through the same checkout, inventory, and fulfillment as every other order.',
     },
   ];
   return (
     <Section padding="lg">
       <SectionHeader
         accent={M.color}
-        headline="Request, quote, order — one flow"
-        lede="Not every wholesale order is a fixed-price reorder. When a buyer needs a custom quote, the RFQ runs end to end inside sparx — request to priced quote to a real order — with the lifecycle tracked the whole way."
+        headline="Request, quote, order: one flow"
+        lede="Not every wholesale order is a fixed-price reorder. When a buyer needs a custom quote, the RFQ runs end to end inside sparx (request to priced quote to a real order), with the lifecycle tracked the whole way."
       />
       <div className="mkt-pipeline bg-base-100 mt-12">
         {stages.map((s, i) => (

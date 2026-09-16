@@ -540,8 +540,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Pilar Ortega — illustrator",
-      "seoDescription": "Pilar Ortega is an illustrator working across editorial, character design and motion — loud, saturated pictures. Selected work, commissions, and how to start one.",
+      "seoTitle": "Pilar Ortega: illustrator",
+      "seoDescription": "Pilar Ortega is an illustrator working across editorial, character design and motion: loud, saturated pictures. Selected work, commissions, and how to start one.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -594,7 +594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
                         "children": [
-                          "I’m Pilar Ortega — an illustrator drawing editorial covers with a pulse, characters you’d recognise on the street, and pictures that move. Big color, big feeling, no beige."
+                          "I’m Pilar Ortega: an illustrator drawing editorial covers with a pulse, characters you’d recognise on the street, and pictures that move. Big color, big feeling, no beige."
                         ],
                         "id": "46b89523-8356-4463-8194-3fcf940eb859",
                         "ord": "a1"
@@ -680,7 +680,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Recent commissions and personal pieces. Give one a poke — they open to the whole story."
+                          "Recent commissions and personal pieces. Give one a poke. They open to the whole story."
                         ],
                         "id": "776d1a08-b8aa-447a-aa6d-337ae7d8e8c4",
                         "ord": "a1"
@@ -1095,7 +1095,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-primary-content",
                     "children": [
-                      "I take on a handful of commissions a season — editorial, covers, characters, packaging, motion. Tell me what you’re making and roughly when, and I’ll tell you how I’d draw it."
+                      "I take on a handful of commissions a season: editorial, covers, characters, packaging, motion. Tell me what you’re making and roughly when, and I’ll tell you how I’d draw it."
                     ],
                     "id": "eb8e8db0-5ca4-479e-9d4f-0eff3636772c",
                     "ord": "a1"
@@ -1126,8 +1126,8 @@
       "name": "Work",
       "kind": "singleton",
       "slug": "work",
-      "seoTitle": "Work — Pilar Ortega",
-      "seoDescription": "Selected projects and case studies by Pilar Ortega — the work, the thinking, and the outcome.",
+      "seoTitle": "Work: Pilar Ortega",
+      "seoDescription": "Selected projects and case studies by Pilar Ortega: the work, the thinking, and the outcome.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1158,7 +1158,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every commission and personal piece, loudest first. Each one opens to the whole story — the brief, the making, and where it ran."
+                      "Every commission and personal piece, loudest first. Each one opens to the whole story: the brief, the making, and where it ran."
                     ],
                     "id": "5c0bf0b3-3dab-4a05-bc00-5c485af3ca6e",
                     "ord": "a1"
@@ -1291,8 +1291,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Pilar Ortega — illustrator",
-      "seoDescription": "Ten years of loud, saturated illustration across editorial, character design, motion and murals — for magazines, labels and brands who’d rather look like themselves.",
+      "seoTitle": "About Pilar Ortega: illustrator",
+      "seoDescription": "Ten years of loud, saturated illustration across editorial, character design, motion and murals, for magazines, labels and brands who’d rather look like themselves.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1338,7 +1338,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "My work is loud on purpose — saturated color, heavy line, real feeling. I’d rather a picture take a swing and miss than sit there being tasteful. Most jobs start as a scribble and a stubborn idea, and I love the part where a client’s vague brief turns into a face nobody expected."
+                          "My work is loud on purpose: saturated color, heavy line, real feeling. I’d rather a picture take a swing and miss than sit there being tasteful. Most jobs start as a scribble and a stubborn idea, and I love the part where a client’s vague brief turns into a face nobody expected."
                         ],
                         "id": "0bd95f3e-fa7e-4b6d-9352-1f95d38d6b96",
                         "ord": "a2"
@@ -1459,8 +1459,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Pilar Ortega",
-      "seoDescription": "Start a project with Pilar Ortega — availability, what a good brief looks like, and where to reach them.",
+      "seoTitle": "Contact: Pilar Ortega",
+      "seoDescription": "Start a project with Pilar Ortega: availability, what a good brief looks like, and where to reach them.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1496,7 +1496,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I take on editorial, covers, character design, packaging and short motion — commissions and the occasional wall. Tell me what you’re making, who it’s for, and roughly when you need it. A rough idea and a deadline is a perfect place to start; I’ll come back with how I’d draw it and what it costs."
+                          "I take on editorial, covers, character design, packaging and short motion: commissions and the occasional wall. Tell me what you’re making, who it’s for, and roughly when you need it. A rough idea and a deadline is a perfect place to start; I’ll come back with how I’d draw it and what it costs."
                         ],
                         "id": "42be0104-7c02-43ad-a11a-a9816a04701f",
                         "ord": "a1"
@@ -1778,8 +1778,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Project — Pilar Ortega",
-      "seoDescription": "A project by Pilar Ortega — the brief, the process, and the result, in one case study.",
+      "seoTitle": "Project: Pilar Ortega",
+      "seoDescription": "A project by Pilar Ortega: the brief, the process, and the result, in one case study.",
       "root": {
         "kind": "element",
         "tag": "div",

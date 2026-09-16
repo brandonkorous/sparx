@@ -32,7 +32,7 @@ import type { McpToolDefinition } from './registry';
 export const createAutomationTool: McpToolDefinition = {
   name: 'create_automation',
   description:
-    'Author a new automation. Always created as a user-origin DRAFT — activate it separately with set_automation_status once the trigger/conditions/actions look right. Provide a trigger (event or schedule), an optional condition group, and one or more typed actions.',
+    'Author a new automation. Always created as a user-origin DRAFT: activate it separately with set_automation_status once the trigger/conditions/actions look right. Provide a trigger (event or schedule), an optional condition group, and one or more typed actions.',
   scope: 'write:automations',
   confirmation: true,
   input: CreateAutomationInput,
@@ -42,7 +42,7 @@ export const createAutomationTool: McpToolDefinition = {
 export const updateAutomationTool: McpToolDefinition = {
   name: 'update_automation',
   description:
-    'Update an existing automation (name / description / trigger / conditions / actions / status) and publish the change live. Document edits are staged as a draft and immediately published as the next version (the dashboard offers an explicit draft → publish step; over MCP the edit goes live). Only user-origin rules are editable — a platform-managed LOCKED rule rejects this (AUTOMATION_LOCKED); clone_automation it first, then edit the copy.',
+    'Update an existing automation (name / description / trigger / conditions / actions / status) and publish the change live. Document edits are staged as a draft and immediately published as the next version (the dashboard offers an explicit draft → publish step; over MCP the edit goes live). Only user-origin rules are editable: a platform-managed LOCKED rule rejects this (AUTOMATION_LOCKED); clone_automation it first, then edit the copy.',
   scope: 'write:automations',
   confirmation: true,
   input: UpdateAutomationInput.extend({ automationId: z.string().uuid() }),
@@ -88,7 +88,7 @@ export const setAutomationStatusTool: McpToolDefinition = {
 export const cloneAutomationTool: McpToolDefinition = {
   name: 'clone_automation',
   description:
-    '"Duplicate to edit" — fork any automation (including a platform-managed/Locked one) into a new user-origin, editable DRAFT copy that records its lineage (clonedFrom). This is how a tenant adapts a system rule without touching the original.',
+    '"Duplicate to edit": fork any automation (including a platform-managed/Locked one) into a new user-origin, editable DRAFT copy that records its lineage (clonedFrom). This is how a tenant adapts a system rule without touching the original.',
   scope: 'write:automations',
   confirmation: true,
   input: z.object({
@@ -104,7 +104,7 @@ export const cloneAutomationTool: McpToolDefinition = {
 export const deleteAutomationTool: McpToolDefinition = {
   name: 'delete_automation',
   description:
-    'Delete a user-origin automation permanently. A platform-managed LOCKED rule cannot be deleted (AUTOMATION_LOCKED) — pause it instead, or clone-and-adapt.',
+    'Delete a user-origin automation permanently. A platform-managed LOCKED rule cannot be deleted (AUTOMATION_LOCKED): pause it instead, or clone-and-adapt.',
   scope: 'write:automations',
   confirmation: true,
   input: z.object({ automationId: z.string().uuid() }),

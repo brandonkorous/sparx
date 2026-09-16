@@ -22,7 +22,7 @@ const propertyIdArg = z
   .optional()
   .describe(
     'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
-      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'MULTIPLE sites. Call list_sites first to get each site’s id, then pass it here to target ' +
       'that specific site.'
   );
 
@@ -43,7 +43,7 @@ export const listSilicaBlocks: McpToolDefinition = {
   name: 'list_silica_blocks',
   description:
     'List available silica blocks (native marketing/content patterns) and domain composites (commerce/content ' +
-    'patterns), the MCP equivalent of the Insert palette. Trees are omitted for compactness — call get_silica_block ' +
+    'patterns), the MCP equivalent of the Insert palette. Trees are omitted for compactness. Call get_silica_block ' +
     'for one entry’s full tree. Optionally filter by `category`.',
   scope: 'read:builder',
   confirmation: false,
@@ -56,7 +56,7 @@ export const getSilicaBlock: McpToolDefinition = {
   name: 'get_silica_block',
   description:
     'Fetch one block/composite’s full, id-free Node tree by its key (from list_silica_blocks). Edit its text/props/' +
-    'hrefs in place, then pass it (or its children, for a container block) into upsert_silica_page’s `sections` — ' +
+    'hrefs in place, then pass it (or its children, for a container block) into upsert_silica_page’s `sections`: ' +
     'this is the reliable way to compose a page instead of inventing markup from scratch.',
   scope: 'read:builder',
   confirmation: false,
@@ -72,7 +72,7 @@ export const getSilicaBlock: McpToolDefinition = {
 export const getSilicaSite: McpToolDefinition = {
   name: 'get_silica_site',
   description:
-    'Fetch the whole DRAFT silica site — pages (id/name/slug/root) + frame + theme + symbols. An empty `pages` array ' +
+    'Fetch the whole DRAFT silica site: pages (id/name/slug/root) + frame + theme + symbols. An empty `pages` array ' +
     'means nothing has been authored yet (start with upsert_silica_page for the home page).',
   scope: 'read:builder',
   confirmation: false,
@@ -88,7 +88,7 @@ export const listSilicaPages: McpToolDefinition = {
   description:
     'List the site’s silica-authored pages: id, name, slug, plus the SEO/recordType/isDefault/published metadata ' +
     'that lives on the page’s row side-channel (see describe_silica_authoring’s `metadata` section). Trees are ' +
-    'omitted — call get_silica_page for one.',
+    'omitted. Call get_silica_page for one.',
   scope: 'read:builder',
   confirmation: false,
   input: z.object({ propertyId: propertyIdArg }),
@@ -144,7 +144,7 @@ export const getSilicaPage: McpToolDefinition = {
 
 export const getSilicaFrame: McpToolDefinition = {
   name: 'get_silica_frame',
-  description: 'Fetch the site’s DRAFT frame (chrome) tree — null when none has been authored yet.',
+  description: 'Fetch the site’s DRAFT frame (chrome) tree: null when none has been authored yet.',
   scope: 'read:builder',
   confirmation: false,
   input: z.object({ propertyId: propertyIdArg }),
@@ -159,7 +159,7 @@ export const getSilicaTheme: McpToolDefinition = {
   name: 'get_silica_theme',
   description:
     'Fetch the site’s DRAFT theme + saved-theme library. A null theme means the tenant’s brand-derived default is ' +
-    'what the editor currently previews — that is expected, not a gap, until an author explicitly saves one.',
+    'what the editor currently previews. That is expected, not a gap, until an author explicitly saves one.',
   scope: 'read:builder',
   confirmation: false,
   input: z.object({ propertyId: propertyIdArg }),

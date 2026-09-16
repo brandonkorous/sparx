@@ -32,7 +32,7 @@ export function buildNotice(count: CountDetail): CountNotice | null {
     case 'approved':
       return {
         tone: 'info',
-        title: 'Approved — ready to apply',
+        title: 'Approved: ready to apply',
         body: 'A manager has signed this off. Apply it to correct your stock numbers to match what was counted.',
       };
     case 'posted':

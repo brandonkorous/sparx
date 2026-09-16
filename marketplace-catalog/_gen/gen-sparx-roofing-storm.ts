@@ -157,7 +157,7 @@ const SCHEDULING = {
       cancellationWindowHours: 4,
       reminderOffsetsMin: [240, 60],
       policyText:
-        'Active leak or storm damage? Emergency visits go to the next available crew — we text a tight window and call before we roll to tarp and protect. Please give us 4 hours’ notice to release the slot.',
+        'Active leak or storm damage? Emergency visits go to the next available crew. We text a tight window and call before we roll to tarp and protect. Please give us 4 hours’ notice to release the slot.',
     },
   ],
   resources: [
@@ -188,7 +188,7 @@ const SCHEDULING = {
       handle: 'free-storm-inspection',
       name: 'Free storm inspection',
       description:
-        'We climb up, document every hit — hail, wind, lifted shingles — and tell you straight whether you have a claim. No charge, no pressure.',
+        'We climb up, document every hit (hail, wind, lifted shingles) and tell you straight whether you have a claim. No charge, no pressure.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -210,7 +210,7 @@ const SCHEDULING = {
       handle: 'roof-replacement-estimate',
       name: 'Roof replacement estimate',
       description:
-        'A full measure-up and a written scope for a new roof — materials, timeline and the number your insurer sees, all in one visit.',
+        'A full measure-up and a written scope for a new roof: materials, timeline and the number your insurer sees, all in one visit.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -233,7 +233,7 @@ const SCHEDULING = {
       handle: 'siding-estimate',
       name: 'Siding estimate',
       description:
-        'Storm-dented, cracked or faded siding, measured and priced — matched to your home and your claim if there is one.',
+        'Storm-dented, cracked or faded siding, measured and priced: matched to your home and your claim if there is one.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -244,7 +244,7 @@ const SCHEDULING = {
       handle: 'window-estimate',
       name: 'Window estimate',
       description:
-        'Broken seals, cracked panes or wind-damaged frames — we assess and quote replacement windows that hold up next time.',
+        'Broken seals, cracked panes or wind-damaged frames. We assess and quote replacement windows that hold up next time.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -255,7 +255,7 @@ const SCHEDULING = {
       handle: 'full-exterior-consult',
       name: 'Full exterior consult',
       description:
-        'Roof, siding, gutters and windows walked as one — a single plan when the whole exterior took a beating and you want it handled together.',
+        'Roof, siding, gutters and windows walked as one: a single plan when the whole exterior took a beating and you want it handled together.',
       durationMinutes: 90,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -268,8 +268,8 @@ const SCHEDULING = {
 // ── Home ───────────────────────────────────────────────────────────────────────
 const HOME = [
   typeHero({
-    title: 'Storm hit your roof? We handle the damage — and the claim.',
-    sub: 'Ironclad is the storm-damage specialist that documents the hit, works directly with your insurance, and gets you a new roof — while you get on with your life. Start with a free inspection.',
+    title: 'Storm hit your roof? We handle the damage, and the claim.',
+    sub: 'Ironclad is the storm-damage specialist that documents the hit, works directly with your insurance, and gets you a new roof, while you get on with your life. Start with a free inspection.',
     primary: { label: 'Book a free storm inspection', href: '/book' },
     secondary: { label: 'See what we cover', href: '/book' },
     surface: 'primary',
@@ -279,7 +279,7 @@ const HOME = [
     items: [
       {
         title: 'Free storm inspections',
-        body: 'We climb up, document every hit, and tell you straight whether you have a claim — no charge and no pressure to sign anything.',
+        body: 'We climb up, document every hit, and tell you straight whether you have a claim: no charge and no pressure to sign anything.',
       },
       {
         title: 'We work with your insurance',
@@ -297,7 +297,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Inspections, estimates & visits',
-    intro: 'Inspections and estimates are always free. Book any of these online and see live availability — emergencies go to the next available crew.',
+    intro: 'Inspections and estimates are always free. Book any of these online and see live availability: emergencies go to the next available crew.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -345,8 +345,8 @@ const HOME = [
     alt: 'A roofer on a ladder photographing hail damage on a shingle roof for an insurance claim',
     heading: 'We handle the claim. You get a new roof.',
     body: [
-      'Filing a storm claim on your own is a part-time job — photos, measurements, the right language, and an adjuster who moves on their own schedule. We do all of it. We document the damage, submit the evidence, and meet the adjuster on your roof so nothing gets missed or lowballed.',
-      'You stay in the loop and in control; we carry the weight. When it’s approved, our crews do the work — roof, siding or the whole exterior — and you pay your deductible, not a surprise.',
+      'Filing a storm claim on your own is a part-time job: photos, measurements, the right language, and an adjuster who moves on their own schedule. We do all of it. We document the damage, submit the evidence, and meet the adjuster on your roof so nothing gets missed or lowballed.',
+      'You stay in the loop and in control; we carry the weight. When it’s approved, our crews do the work (roof, siding or the whole exterior), and you pay your deductible, not a surprise.',
     ],
     cta: { label: 'Start your free inspection', href: '/book' },
   }),
@@ -391,7 +391,7 @@ const HOME = [
 const BOOK_INTRO = [
   typeHero({
     title: 'Book your inspection',
-    sub: 'Pick what you need — a free storm inspection, an estimate, or an emergency tarp — to see live availability and a two-hour arrival window. We’ll confirm your crew and text you before we roll.',
+    sub: 'Pick what you need (a free storm inspection, an estimate, or an emergency tarp) to see live availability and a two-hour arrival window. We’ll confirm your crew and text you before we roll.',
     primary: { label: 'Choose a service below', href: '/book' },
     surface: 'base',
   }),
@@ -403,7 +403,7 @@ const ABOUT = [
     alt: 'An Ironclad crew and branded truck at a storm-damaged house, ready to tarp and inspect',
     heading: 'Built for the day after the storm',
     body: [
-      'Ironclad Roofing & Exteriors started after one too many neighbors got steamrolled by their own insurance company — underpaid, under-documented, and left with a patch job instead of the roof they were owed. We decided to be the contractor that stands on the homeowner’s side of the table.',
+      'Ironclad Roofing & Exteriors started after one too many neighbors got steamrolled by their own insurance company: underpaid, under-documented, and left with a patch job instead of the roof they were owed. We decided to be the contractor that stands on the homeowner’s side of the table.',
       'We’re a storm-damage and exteriors specialist: roofing, siding, windows and full exteriors, backed by people who know how claims actually work. We document it right, fight for the full scope, and do the work like it’s our own house.',
     ],
     cta: { label: 'Book a free inspection', href: '/book' },
@@ -418,7 +418,7 @@ const ABOUT = [
       },
       {
         title: 'One crew, whole exterior',
-        body: 'Roof, siding, gutters and windows handled together — no juggling three contractors after one storm.',
+        body: 'Roof, siding, gutters and windows handled together: no juggling three contractors after one storm.',
       },
       {
         title: 'Licensed, insured, guaranteed',
@@ -442,7 +442,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Skip the phone tag',
-    sub: 'Booking online is faster than calling — see live times and lock in your free inspection in about a minute.',
+    sub: 'Booking online is faster than calling: see live times and lock in your free inspection in about a minute.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -453,8 +453,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-roofing-storm',
   name: 'Roofing (Storm)',
   summary:
-    'A bold storm-damage and exteriors template — a deep-graphite palette with a sharp signal-red accent and condensed type. Installs a working booking spine for storm inspections and insurance claims: free inspections, claim consults, roof/siding/window estimates and an emergency tarp visit, with three roofers dispatched by skill on their own weekly hours and a priority policy. Ships as "Ironclad Roofing & Exteriors".',
-  tagline: 'A bold, storm-ready template for roofers — book inspections online from day one.',
+    'A bold storm-damage and exteriors template: a deep-graphite palette with a sharp signal-red accent and condensed type. Installs a working booking spine for storm inspections and insurance claims: free inspections, claim consults, roof/siding/window estimates and an emergency tarp visit, with three roofers dispatched by skill on their own weekly hours and a priority policy. Ships as "Ironclad Roofing & Exteriors".',
+  tagline: 'A bold, storm-ready template for roofers. Book inspections online from day one.',
   industry: 'Roofing',
   sortWeight: 29,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -466,7 +466,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Ironclad Roofing & Exteriors — storm damage & insurance claims',
+      title: 'Ironclad Roofing & Exteriors: storm damage & insurance claims',
       description:
         'Storm-damage roofing specialists. Book a free inspection online, we work directly with your insurance, and handle roofing, siding, windows and emergency tarping.',
     },

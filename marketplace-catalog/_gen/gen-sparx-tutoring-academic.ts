@@ -185,7 +185,7 @@ const SCHEDULING = {
       handle: 'free-assessment',
       name: 'Free assessment',
       description:
-        'A relaxed, no-pressure first visit — we get to know your child, find where they are and where they’re headed, and build a plan together. No cost, no commitment.',
+        'A relaxed, no-pressure first visit. We get to know your child, find where they are and where they’re headed, and build a plan together. No cost, no commitment.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -199,7 +199,7 @@ const SCHEDULING = {
       handle: 'math-tutoring',
       name: 'Math tutoring',
       description:
-        'One-to-one math for any grade — from times tables and fractions to algebra and geometry, at a pace that builds real understanding, not just right answers.',
+        'One-to-one math for any grade: from times tables and fractions to algebra and geometry, at a pace that builds real understanding, not just right answers.',
       durationMinutes: 60,
       priceCents: 6500,
       assignmentStrategy: 'customer_choice',
@@ -213,7 +213,7 @@ const SCHEDULING = {
       handle: 'reading-tutoring',
       name: 'Reading tutoring',
       description:
-        'Warm, patient reading support — phonics and fluency for younger readers, comprehension and confidence for older ones. We meet every reader where they are.',
+        'Warm, patient reading support: phonics and fluency for younger readers, comprehension and confidence for older ones. We meet every reader where they are.',
       durationMinutes: 45,
       priceCents: 6000,
       assignmentStrategy: 'customer_choice',
@@ -227,7 +227,7 @@ const SCHEDULING = {
       handle: 'writing-tutoring',
       name: 'Writing tutoring',
       description:
-        'From first sentences to essays and reports — structure, grammar and finding a voice, with kind feedback that makes writing feel a whole lot less scary.',
+        'From first sentences to essays and reports: structure, grammar and finding a voice, with kind feedback that makes writing feel a whole lot less scary.',
       durationMinutes: 45,
       priceCents: 6000,
       assignmentStrategy: 'customer_choice',
@@ -241,7 +241,7 @@ const SCHEDULING = {
       handle: 'science-tutoring',
       name: 'Science tutoring',
       description:
-        'Biology, chemistry, physics and everything in between — we make the tricky parts click with clear explanations and plenty of encouragement along the way.',
+        'Biology, chemistry, physics and everything in between. We make the tricky parts click with clear explanations and plenty of encouragement along the way.',
       durationMinutes: 60,
       priceCents: 6500,
       assignmentStrategy: 'customer_choice',
@@ -255,7 +255,7 @@ const SCHEDULING = {
       handle: 'homework-help',
       name: 'Homework help',
       description:
-        'A focused hour to get today’s homework done and understood. Great for busy weeks — your child leaves with the work finished and the concept actually learned.',
+        'A focused hour to get today’s homework done and understood. Great for busy weeks. Your child leaves with the work finished and the concept actually learned.',
       durationMinutes: 30,
       priceCents: 4500,
       assignmentStrategy: 'any_available',
@@ -269,7 +269,7 @@ const SCHEDULING = {
       handle: 'small-group-session',
       name: 'Small-group session',
       description:
-        'A friendly group of no more than four, working on the same subject. The social, motivating side of learning — and a gentler price than one-to-one.',
+        'A friendly group of no more than four, working on the same subject. The social, motivating side of learning, and a gentler price than one-to-one.',
       durationMinutes: 60,
       priceCents: 4000,
       assignmentStrategy: 'any_available',
@@ -288,7 +288,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A tutor sitting beside a smiling student, working through a problem together',
     title: 'Where kids find their confidence',
-    sub: 'Caring, one-to-one tutoring for grades K–12 — math, reading, writing, science and homework help, from tutors who make learning feel good again.',
+    sub: 'Caring, one-to-one tutoring for grades K–12: math, reading, writing, science and homework help, from tutors who make learning feel good again.',
     primary: { label: 'Book a free assessment', href: '/book' },
     secondary: { label: 'See our subjects', href: '/book' },
     overlay: 'dark',
@@ -297,7 +297,7 @@ const HOME = [
     items: [
       {
         title: 'Certified, caring tutors',
-        body: 'Every tutor is qualified, background-checked and — just as important — genuinely kind. Your child looks forward to coming back.',
+        body: 'Every tutor is qualified, background-checked and (just as important) genuinely kind. Your child looks forward to coming back.',
       },
       {
         title: 'A plan made for your child',
@@ -309,7 +309,7 @@ const HOME = [
       },
       {
         title: 'Progress you can see',
-        body: 'You’ll always know how it’s going — the wins, the next steps, and the growing confidence that shows up in schoolwork and at home.',
+        body: 'You’ll always know how it’s going: the wins, the next steps, and the growing confidence that shows up in schoolwork and at home.',
       },
     ],
   }),
@@ -341,7 +341,7 @@ const HOME = [
         name: 'Homework help',
         priceCents: 4500,
         durationMin: 30,
-        desc: 'Get today’s homework done — and actually understood.',
+        desc: 'Get today’s homework done, and actually understood.',
       },
     ],
     cta: { label: 'See everything & book', href: '/book' },
@@ -351,21 +351,21 @@ const HOME = [
     alt: 'A young student raising a hand with a confident grin',
     heading: 'Confidence first, grades follow',
     body: [
-      'A child who believes they can do it is a child who will. So before we drill a single problem, we build the belief — celebrating small wins, taking the fear out of mistakes, and showing your child that hard things get easier.',
-      'The grades come, because the confidence comes first. Parents tell us the biggest change isn’t a report card — it’s a kid who now says “I’ve got this” at the kitchen table.',
+      'A child who believes they can do it is a child who will. So before we drill a single problem, we build the belief: celebrating small wins, taking the fear out of mistakes, and showing your child that hard things get easier.',
+      'The grades come, because the confidence comes first. Parents tell us the biggest change isn’t a report card: it’s a kid who now says “I’ve got this” at the kitchen table.',
     ],
     cta: { label: 'Book a free assessment', href: '/book' },
   }),
   teamRow({
     heading: 'Meet the tutors',
-    intro: 'Book by name — your child sees the same friendly face each visit.',
+    intro: 'Book by name. Your child sees the same friendly face each visit.',
     members: [
       {
         name: 'Elena Marsh',
         role: 'Math & science tutor',
         image: url(IMG.elena),
         alt: 'Elena Marsh, math and science tutor',
-        bio: 'Makes the tricky stuff click — algebra, geometry and science, with endless patience.',
+        bio: 'Makes the tricky stuff click: algebra, geometry and science, with endless patience.',
       },
       {
         name: 'Marcus Bell',
@@ -379,7 +379,7 @@ const HOME = [
         role: 'Math & homework coach',
         image: url(IMG.priya),
         alt: 'Priya Nair, math and homework coach',
-        bio: 'The calm in a busy week — keeps homework on track and confidence growing.',
+        bio: 'The calm in a busy week: keeps homework on track and confidence growing.',
       },
     ],
   }),
@@ -413,7 +413,7 @@ const ABOUT = [
     alt: 'A bright, welcoming learning room with a shared table and books',
     heading: 'About Summit Learning',
     body: [
-      'We started Summit Learning because we believe every child can learn — they just need the right person beside them, a little patience, and a place that feels safe to try, get it wrong, and try again.',
+      'We started Summit Learning because we believe every child can learn. They just need the right person beside them, a little patience, and a place that feels safe to try, get it wrong, and try again.',
       'That’s what we built: a warm learning center, not a test factory. Real tutors who care, plans made for one child at a time, and a room where a kid can go from “I can’t” to “watch me.”',
     ],
     cta: { label: 'Book a free assessment', href: '/book' },
@@ -424,7 +424,7 @@ const ABOUT = [
     items: [
       {
         title: 'A free assessment first',
-        body: 'Every child starts with a relaxed assessment so we understand their strengths, their gaps and how they learn best — before a single session is booked.',
+        body: 'Every child starts with a relaxed assessment so we understand their strengths, their gaps and how they learn best: before a single session is booked.',
       },
       {
         title: 'Patience over pressure',
@@ -432,7 +432,7 @@ const ABOUT = [
       },
       {
         title: 'Parents in the loop',
-        body: 'You’ll hear how each session went and what’s next. We’re a team — you, your child, and a tutor who’s genuinely in your corner.',
+        body: 'You’ll hear how each session went and what’s next. We’re a team. You, your child, and a tutor who’s genuinely in your corner.',
       },
     ],
   }),
@@ -452,7 +452,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Questions before you book?',
-    sub: 'Reach out any time — or skip the phone tag and reserve a free assessment online.',
+    sub: 'Reach out any time, or skip the phone tag and reserve a free assessment online.',
     surface: 'muted',
     cta: { label: 'Book a free assessment', href: '/book' },
   }),
@@ -463,8 +463,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-tutoring-academic',
   name: 'Tutoring (Academic)',
   summary:
-    'A warm, encouraging K–12 tutoring center — math, reading, writing, science and homework help for kids and teens. A friendly warm-blue palette with a sunny accent and online booking from day one: a free assessment plus subject and small-group sessions, three caring tutors and two learning rooms provisioned as bookable resources, and a 24-hour reschedule policy. Ships as "Summit Learning", built to book.',
-  tagline: 'A warm, confidence-building template for academic tutoring — book online from day one.',
+    'A warm, encouraging K–12 tutoring center: math, reading, writing, science and homework help for kids and teens. A friendly warm-blue palette with a sunny accent and online booking from day one: a free assessment plus subject and small-group sessions, three caring tutors and two learning rooms provisioned as bookable resources, and a 24-hour reschedule policy. Ships as "Summit Learning", built to book.',
+  tagline: 'A warm, confidence-building template for academic tutoring. Book online from day one.',
   industry: 'Tutoring',
   sortWeight: 32,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -473,9 +473,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Summit Learning — K–12 tutoring center',
+      title: 'Summit Learning: K–12 tutoring center',
       description:
-        'Summit Learning is a warm, caring tutoring center for grades K–12 — math, reading, writing, science and homework help. Book a free assessment online.',
+        'Summit Learning is a warm, caring tutoring center for grades K–12: math, reading, writing, science and homework help. Book a free assessment online.',
     },
   },
   home: HOME,

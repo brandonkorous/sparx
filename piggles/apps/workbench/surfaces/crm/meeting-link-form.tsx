@@ -131,8 +131,8 @@ export function MeetingLinkForm({
                 <AlertContent>
                   <AlertTitle>The old address stops working</AlertTitle>
                   <AlertDescription>
-                    Anyone holding <Text as="span">/meet/{editing.slug}</Text> — in an email you
-                    have already sent, in a signature, on a quote — will find it no longer resolves.
+                    Anyone holding <Text as="span">/meet/{editing.slug}</Text> (in an email you have
+                    already sent, in a signature, on a quote) will find it no longer resolves.
                     Change the address only if nobody has it yet.
                   </AlertDescription>
                 </AlertContent>
@@ -157,7 +157,7 @@ export function MeetingLinkForm({
               />
               <FieldDescription>
                 The length, your free times, how much notice you need and your cancellation terms
-                all come from this — change them there and every link follows.
+                all come from this. Change them there and every link follows.
               </FieldDescription>
             </Field>
 
@@ -169,7 +169,7 @@ export function MeetingLinkForm({
                 color="module"
                 rows={2}
                 value={description}
-                placeholder="Twenty minutes to talk through what you need — no charge."
+                placeholder="Twenty minutes to talk through what you need: no charge."
                 onChange={(event) => {
                   setDraft({ description: event.target.value });
                 }}

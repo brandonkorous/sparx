@@ -103,7 +103,7 @@ export default function RequestsPage() {
       setSubject('');
       setMessage('');
       setComposing(false);
-      setNotice(`Request #${String(created.number)} is in — we'll be in touch.`);
+      setNotice(`Request #${String(created.number)} is in: we'll be in touch.`);
       // Land them where the new request actually is, so it is not "sent" and
       // then invisible.
       if (scope !== 'open') switchScope('open');

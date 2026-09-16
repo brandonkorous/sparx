@@ -23,7 +23,7 @@ const LAUNCH = 'launch-2026-06';
 export const LAUNCH_LINKS: readonly LinkDef[] = [
   // ── Spike events ────────────────────────────────────────────────────────
   {
-    label: 'Product Hunt — listing link',
+    label: 'Product Hunt: listing link',
     destination: `${SITE}/`,
     source: 'product-hunt',
     medium: 'referral',
@@ -31,7 +31,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'ph-listing',
   },
   {
-    label: 'Product Hunt — first comment (promo)',
+    label: 'Product Hunt: first comment (promo)',
     destination: `${SITE}/pricing`,
     source: 'product-hunt',
     medium: 'referral',
@@ -39,7 +39,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'ph-comment',
   },
   {
-    label: 'Hacker News — Show HN',
+    label: 'Hacker News: Show HN',
     destination: `${SITE}/`,
     source: 'hacker-news',
     medium: 'community',
@@ -47,7 +47,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'show-hn',
   },
   {
-    label: 'MCP registry — server listing',
+    label: 'MCP registry: server listing',
     destination: `${SITE}/ai`,
     source: 'mcp-registry',
     medium: 'mcp',
@@ -57,7 +57,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
 
   // ── Communities ─────────────────────────────────────────────────────────
   {
-    label: 'Reddit — r/selfhosted',
+    label: 'Reddit: r/selfhosted',
     destination: `${SITE}/`,
     source: 'reddit',
     medium: 'community',
@@ -65,7 +65,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'r-selfhosted',
   },
   {
-    label: 'Reddit — r/ecommerce',
+    label: 'Reddit: r/ecommerce',
     destination: `${SITE}/`,
     source: 'reddit',
     medium: 'community',
@@ -73,7 +73,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'r-ecommerce',
   },
   {
-    label: 'Reddit — r/ClaudeAI',
+    label: 'Reddit: r/ClaudeAI',
     destination: `${SITE}/ai`,
     source: 'reddit',
     medium: 'community',
@@ -81,7 +81,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'r-claudeai',
   },
   {
-    label: 'Indie Hackers — post',
+    label: 'Indie Hackers: post',
     destination: `${SITE}/`,
     source: 'indie-hackers',
     medium: 'community',
@@ -91,7 +91,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
 
   // ── Owned social ────────────────────────────────────────────────────────
   {
-    label: 'X — launch thread',
+    label: 'X: launch thread',
     destination: `${SITE}/`,
     source: 'x',
     medium: 'organic-social',
@@ -99,7 +99,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'launch-thread',
   },
   {
-    label: 'LinkedIn — launch post',
+    label: 'LinkedIn: launch post',
     destination: `${SITE}/`,
     source: 'linkedin',
     medium: 'organic-social',
@@ -107,7 +107,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'launch-post',
   },
   {
-    label: 'YouTube — MCP demo',
+    label: 'YouTube: MCP demo',
     destination: `${SITE}/ai`,
     source: 'youtube',
     medium: 'organic-social',
@@ -115,7 +115,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'demo-mcp',
   },
   {
-    label: 'Newsletter — announcement',
+    label: 'Newsletter: announcement',
     destination: `${SITE}/`,
     source: 'newsletter',
     medium: 'email',
@@ -125,7 +125,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
 
   // ── Launch directories (partner-{name}) ─────────────────────────────────
   {
-    label: 'Peerlist — launchpad',
+    label: 'Peerlist: launchpad',
     destination: `${SITE}/`,
     source: 'partner-peerlist',
     medium: 'referral',
@@ -133,7 +133,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'listing',
   },
   {
-    label: 'Uneed — launchpad',
+    label: 'Uneed: launchpad',
     destination: `${SITE}/`,
     source: 'partner-uneed',
     medium: 'referral',
@@ -141,7 +141,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'listing',
   },
   {
-    label: 'Fazier — launchpad',
+    label: 'Fazier: launchpad',
     destination: `${SITE}/`,
     source: 'partner-fazier',
     medium: 'referral',
@@ -149,7 +149,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'listing',
   },
   {
-    label: 'Tiny Launch — launchpad',
+    label: 'Tiny Launch: launchpad',
     destination: `${SITE}/`,
     source: 'partner-tinylaunch',
     medium: 'referral',
@@ -157,7 +157,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'listing',
   },
   {
-    label: 'Microlaunch — launchpad',
+    label: 'Microlaunch: launchpad',
     destination: `${SITE}/`,
     source: 'partner-microlaunch',
     medium: 'referral',
@@ -165,7 +165,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     content: 'listing',
   },
   {
-    label: 'BetaList — listing',
+    label: 'BetaList: listing',
     destination: `${SITE}/`,
     source: 'partner-betalist',
     medium: 'referral',
@@ -175,7 +175,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
 
   // ── Paid (when you scale spend) ─────────────────────────────────────────
   {
-    label: 'Google Ads — Shopify alternative',
+    label: 'Google Ads: Shopify alternative',
     destination: `${SITE}/migrate`,
     source: 'google',
     medium: 'paid-search',
@@ -184,7 +184,7 @@ export const LAUNCH_LINKS: readonly LinkDef[] = [
     term: 'shopify-alternative',
   },
   {
-    label: 'Meta Ads — Founding 100',
+    label: 'Meta Ads: Founding 100',
     destination: `${SITE}/pricing`,
     source: 'meta',
     medium: 'paid-social',

@@ -51,7 +51,7 @@ async function resolveShippingBundle(
     installation = await resolveActiveConfig(ctx, 'shipping');
   } catch {
     throw new CommerceValidationError(
-      'No ShippingProvider is installed yet — connect a carrier from Commerce → Providers.'
+      'No ShippingProvider is installed yet. Connect a carrier from Commerce → Providers.'
     );
   }
   const bundle = getProvider(installation.providerSlug);

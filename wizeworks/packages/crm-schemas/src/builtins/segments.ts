@@ -53,7 +53,7 @@ const AT_RISK: SegmentTemplate = {
 const B2B_FLEET: SegmentTemplate = {
   name: 'B2B Fleet',
   slug: 'b2b-fleet',
-  description: 'B2B accounts with a fleet — primary target for parts cross-sell.',
+  description: 'B2B accounts with a fleet: primary target for parts cross-sell.',
   color: '#0EA5E9',
   rules: {
     kind: 'and',

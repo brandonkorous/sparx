@@ -346,7 +346,7 @@ export function invoiceStyles(brand: BillingRenderBrand): string {
   .doc-head { text-align: right; }
   /* Two brand colors, two jobs. The document title is the tenant's IDENTITY, so
      it takes the brand PRIMARY. The balance row keeps the ACCENT, because the
-     amount still owed is the one number the reader must not miss — which is what
+     amount still owed is the one number the reader must not miss, which is what
      an accent is for.
      Previously BOTH were on the accent, which left primary resolved from the
      tenant, threaded through the entire render, and then used nowhere at all: a

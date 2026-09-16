@@ -215,7 +215,7 @@ export async function remove(ctx: ServiceContext, id: string): Promise<void> {
     // default is blocked; promote another template first.
     if (existing.isDefault) {
       throw new CrmValidationError(
-        'Cannot delete the default template — set another template as default first.'
+        'Cannot delete the default template. Set another template as default first.'
       );
     }
     await tx.billingDocumentTemplate.delete({ where: { id } });

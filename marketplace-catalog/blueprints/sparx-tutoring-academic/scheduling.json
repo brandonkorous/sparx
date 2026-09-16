@@ -195,7 +195,7 @@
     {
       "handle": "free-assessment",
       "name": "Free assessment",
-      "description": "A relaxed, no-pressure first visit — we get to know your child, find where they are and where they’re headed, and build a plan together. No cost, no commitment.",
+      "description": "A relaxed, no-pressure first visit. We get to know your child, find where they are and where they’re headed, and build a plan together. No cost, no commitment.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -218,7 +218,7 @@
     {
       "handle": "math-tutoring",
       "name": "Math tutoring",
-      "description": "One-to-one math for any grade — from times tables and fractions to algebra and geometry, at a pace that builds real understanding, not just right answers.",
+      "description": "One-to-one math for any grade: from times tables and fractions to algebra and geometry, at a pace that builds real understanding, not just right answers.",
       "durationMinutes": 60,
       "priceCents": 6500,
       "assignmentStrategy": "customer_choice",
@@ -241,7 +241,7 @@
     {
       "handle": "reading-tutoring",
       "name": "Reading tutoring",
-      "description": "Warm, patient reading support — phonics and fluency for younger readers, comprehension and confidence for older ones. We meet every reader where they are.",
+      "description": "Warm, patient reading support: phonics and fluency for younger readers, comprehension and confidence for older ones. We meet every reader where they are.",
       "durationMinutes": 45,
       "priceCents": 6000,
       "assignmentStrategy": "customer_choice",
@@ -264,7 +264,7 @@
     {
       "handle": "writing-tutoring",
       "name": "Writing tutoring",
-      "description": "From first sentences to essays and reports — structure, grammar and finding a voice, with kind feedback that makes writing feel a whole lot less scary.",
+      "description": "From first sentences to essays and reports: structure, grammar and finding a voice, with kind feedback that makes writing feel a whole lot less scary.",
       "durationMinutes": 45,
       "priceCents": 6000,
       "assignmentStrategy": "customer_choice",
@@ -287,7 +287,7 @@
     {
       "handle": "science-tutoring",
       "name": "Science tutoring",
-      "description": "Biology, chemistry, physics and everything in between — we make the tricky parts click with clear explanations and plenty of encouragement along the way.",
+      "description": "Biology, chemistry, physics and everything in between. We make the tricky parts click with clear explanations and plenty of encouragement along the way.",
       "durationMinutes": 60,
       "priceCents": 6500,
       "assignmentStrategy": "customer_choice",
@@ -310,7 +310,7 @@
     {
       "handle": "homework-help",
       "name": "Homework help",
-      "description": "A focused hour to get today’s homework done and understood. Great for busy weeks — your child leaves with the work finished and the concept actually learned.",
+      "description": "A focused hour to get today’s homework done and understood. Great for busy weeks. Your child leaves with the work finished and the concept actually learned.",
       "durationMinutes": 30,
       "priceCents": 4500,
       "assignmentStrategy": "any_available",
@@ -333,7 +333,7 @@
     {
       "handle": "small-group-session",
       "name": "Small-group session",
-      "description": "A friendly group of no more than four, working on the same subject. The social, motivating side of learning — and a gentler price than one-to-one.",
+      "description": "A friendly group of no more than four, working on the same subject. The social, motivating side of learning, and a gentler price than one-to-one.",
       "durationMinutes": 60,
       "priceCents": 4000,
       "assignmentStrategy": "any_available",

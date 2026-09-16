@@ -115,7 +115,7 @@ function HideFromSearch({
       <FieldLabel>Keep this page out of search</FieldLabel>
       <Switch checked={hidden} onCheckedChange={onChange} />
       <FieldDescription>
-        Anyone with the link can still open it — it just won’t come up in Google.
+        Anyone with the link can still open it. It just won’t come up in Google.
       </FieldDescription>
     </Field>
   );
@@ -142,10 +142,10 @@ function PageAddress({ doc }: { doc: PageDoc }) {
       />
       <FieldDescription>
         {doc.slug
-          ? 'What comes after your web address — “/about” shows at yoursite.com/about.'
+          ? 'What comes after your web address: “/about” shows at yoursite.com/about.'
           : // Empty means HOME, and saying so is what stops three pages quietly
             // claiming the same address with only one of them reachable.
-            'Empty means this is your home page — the first thing people see. Give it an address like “/about” if it is not.'}
+            'Empty means this is your home page: the first thing people see. Give it an address like “/about” if it is not.'}
       </FieldDescription>
     </Field>
   );
@@ -181,7 +181,7 @@ function ChromeChoice({ doc }: { doc: PageDoc }) {
         {current === 'other' ? <option value="other">A different header and footer</option> : null}
       </NativeSelect>
       <FieldDescription>
-        “No header or footer” gives you a bare page — useful for a campaign or a thank-you page.
+        “No header or footer” gives you a bare page: useful for a campaign or a thank-you page.
       </FieldDescription>
     </Field>
   );

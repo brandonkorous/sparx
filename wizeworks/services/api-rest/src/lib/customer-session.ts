@@ -124,7 +124,7 @@ export async function requireCustomer(
       throw forbidden('This action is not available to a connected assistant.');
     }
     if (!resolved.scopes.has(requiredScope)) {
-      throw forbidden(`Insufficient scope — this action requires "${requiredScope}".`);
+      throw forbidden(`Insufficient scope: this action requires "${requiredScope}".`);
     }
   }
   return resolved;

@@ -148,7 +148,7 @@ export async function createUnitOfMeasure(
     const clash = await tx.unitOfMeasure.findFirst({ where: { code: input.code } });
     if (clash) {
       throw new InventoryConflictError(
-        `You already have a unit called ${input.code} — ${clash.name}. Edit that one rather than adding a second.`,
+        `You already have a unit called ${input.code}: ${clash.name}. Edit that one rather than adding a second.`,
         'code'
       );
     }

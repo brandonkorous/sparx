@@ -39,7 +39,7 @@ function moduleSections(): string {
       .join('\n');
     const price = `${m.pricing.modifier === '+' ? '+' : ''}${m.pricing.price}${m.pricing.period}`;
 
-    return `### sparx ${m.label} — ${price}
+    return `### sparx ${m.label}: ${price}
 
 ${m.lede}
 
@@ -75,7 +75,7 @@ ${byStatus}`;
 function toolSections(): string {
   return TOOLS.map(
     (t) =>
-      `- [${t.name}](${BASE}/tools/${t.slug}) — ${t.description} Common searches: ${t.keywords.join(', ')}.`
+      `- [${t.name}](${BASE}/tools/${t.slug}): ${t.description} Common searches: ${t.keywords.join(', ')}.`
   ).join('\n');
 }
 
@@ -83,7 +83,7 @@ function docSections(): string {
   return DOC_NAV.map((group) => {
     const links = group.links
       .map((l) =>
-        l.soon ? `- ${l.title} (planned — no page yet)` : `- [${l.title}](${BASE}${l.href})`
+        l.soon ? `- ${l.title} (planned: no page yet)` : `- [${l.title}](${BASE}${l.href})`
       )
       .join('\n');
     return `**${group.title}**\n\n${links}`;
@@ -93,17 +93,17 @@ function docSections(): string {
 export function GET(): Response {
   const counts = capabilityCounts();
 
-  const body = `# sparx — full platform reference
+  const body = `# sparx: full platform reference
 
-> sparx (by WizeWorks) is a modular content and commerce operating system: site building, commerce, CRM, CMS, email, B2B/wholesale, dropship, scheduling, and a first-class AI/MCP integration in one platform. Businesses activate only the modules they need and are billed per module — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
+> sparx (by WizeWorks) is a modular content and commerce operating system: site building, commerce, CRM, CMS, email, B2B/wholesale, dropship, scheduling, and a first-class AI/MCP integration in one platform. Businesses activate only the modules they need and are billed per module: a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
 
-This is the expanded-content companion to ${BASE}/llms.txt. It contains the full module descriptions, the complete capability catalog with build status, the free-tool index, and the documentation map — enough to answer most questions about sparx without fetching another page.
+This is the expanded-content companion to ${BASE}/llms.txt. It contains the full module descriptions, the complete capability catalog with build status, the free-tool index, and the documentation map: enough to answer most questions about sparx without fetching another page.
 
 ## What sparx is
 
-sparx is content AND/OR commerce. Selling is one capability, never the assumption: a business can run a content site with no store, a store with no content, or both. Modules are independently activatable and independently billed, with no tiers and no required base plan — you are never charged for a module you have not switched on.
+sparx is content AND/OR commerce. Selling is one capability, never the assumption: a business can run a content site with no store, a store with no content, or both. Modules are independently activatable and independently billed, with no tiers and no required base plan: you are never charged for a module you have not switched on.
 
-The platform is API-first: every feature exists as an API endpoint, and the dashboard is one consumer among many. A native Model Context Protocol (MCP) server lets AI agents read and write live business data directly — no exports, no CSVs, no scraping. Businesses can also run entirely headless, using the API and MCP without the hosted site module at all.
+The platform is API-first: every feature exists as an API endpoint, and the dashboard is one consumer among many. A native Model Context Protocol (MCP) server lets AI agents read and write live business data directly: no exports, no CSVs, no scraping. Businesses can also run entirely headless, using the API and MCP without the hosted site module at all.
 
 sparx runs on Google Kubernetes Engine with PostgreSQL row-level security enforcing tenant isolation at the database tier, not just in application code.
 
@@ -117,13 +117,13 @@ ${moduleSections()}
 
 ## Complete capability catalog
 
-The marketing site headlines the modules above; the platform ships ${counts.live} capabilities live today, with ${counts.building} in build and ${counts.planned} on the roadmap. Status is stated per capability below — "live" means shipped and usable now, "in build" means actively being built, "on the roadmap" means committed but not started. Full page: ${BASE}/features
+The marketing site headlines the modules above; the platform ships ${counts.live} capabilities live today, with ${counts.building} in build and ${counts.planned} on the roadmap. Status is stated per capability below: "live" means shipped and usable now, "in build" means actively being built, "on the roadmap" means committed but not started. Full page: ${BASE}/features
 
 ${capabilitySections()}
 
 ## Extension catalog
 
-Businesses extend their own site from the catalog at ${BASE}/market — installable blueprints, themes, integrations, and components. (This is distinct from sparx.market, a separate site where shoppers buy products FROM businesses running on sparx.)
+Businesses extend their own site from the catalog at ${BASE}/market: installable blueprints, themes, integrations, and components. (This is distinct from sparx.market, a separate site where shoppers buy products FROM businesses running on sparx.)
 
 ${LIVE_CATEGORIES.map((c) => `- [${c.label}](${BASE}/market/${c.id}): ${c.tagline}`).join('\n')}
 
@@ -135,7 +135,7 @@ ${toolSections()}
 
 ## Documentation
 
-Developer documentation — guides, REST & GraphQL API reference, SDKs, and the MCP server. Canonical home: ${BASE}/docs
+Developer documentation: guides, REST & GraphQL API reference, SDKs, and the MCP server. Canonical home: ${BASE}/docs
 
 ${docSections()}
 

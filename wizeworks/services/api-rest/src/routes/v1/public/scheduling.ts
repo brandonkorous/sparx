@@ -308,7 +308,7 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     if (body.resourceId) {
       const eligible = await listBookableResourcesForService(tenantId, body.serviceId);
       if (!eligible.some((r) => r.id === body.resourceId)) {
-        throw badRequest('That option is no longer available — please pick another.');
+        throw badRequest('That option is no longer available: please pick another.');
       }
       resourceIds = [body.resourceId];
     }
@@ -373,7 +373,7 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       (err: unknown) => {
         request.log.error(
           { err, tenantId, bookingId: created.booking.id },
-          'scheduling: deposit failed after the booking was created — confirming the booking without one'
+          'scheduling: deposit failed after the booking was created, confirming the booking without one'
         );
         return { required: false } as const;
       }

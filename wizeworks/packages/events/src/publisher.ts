@@ -129,7 +129,7 @@ class LocalDispatchPublisher implements Publisher {
     if (targets.length === 0) {
       // No local worker registered for this type — most events are consumed
       // in-process; only the standalone workers need forwarding.
-      this.logger.info({ type: event.type }, '[pubsub:dev-dispatch] no local worker — skipping');
+      this.logger.info({ type: event.type }, '[pubsub:dev-dispatch] no local worker: skipping');
       return Promise.resolve();
     }
 
@@ -184,13 +184,13 @@ export function localDispatchFromEnv(logger: PublisherLogger): Publisher | null 
     if (!Array.isArray(routes) || routes.length === 0) return null;
     logger.info(
       { routes: routes.length },
-      'pubsub: dev local-dispatch — forwarding to local workers'
+      'pubsub: dev local-dispatch, forwarding to local workers'
     );
     return new LocalDispatchPublisher(routes, logger);
   } catch (err) {
     logger.error(
       { err: err instanceof Error ? err.message : String(err) },
-      'pubsub: SPARX_DEV_WORKER_ROUTES is not valid JSON — ignoring'
+      'pubsub: SPARX_DEV_WORKER_ROUTES is not valid JSON, ignoring'
     );
     return null;
   }
@@ -245,13 +245,13 @@ export function createPublisher({ projectId, logger }: CreatePublisherOptions): 
       cached = new LocalDispatchPublisher(transport.routes, logger);
       logger.warn(
         { routes: transport.routes.length },
-        'events: HTTP dev dispatch — NO queue, retry or dead-letter. Events published while a worker is down are lost.'
+        'events: HTTP dev dispatch, NO queue, retry or dead-letter. Events published while a worker is down are lost.'
       );
       break;
 
     case 'log':
       cached = new LoggingPublisher(logger);
-      logger.info({}, 'events: logging stub — events are DISCARDED');
+      logger.info({}, 'events: logging stub, events are DISCARDED');
       break;
   }
 

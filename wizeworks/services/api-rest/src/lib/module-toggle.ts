@@ -259,7 +259,7 @@ export async function toggleTenantModule(opts: {
 
 /** Format the "turn off X first" conflict message shared by both toggle surfaces. */
 export function moduleBlockedMessage(blockers: ModuleSlug[], target: ModuleSlug): string {
-  return `Turn off ${blockers.join(' and ')} first — ${
+  return `Turn off ${blockers.join(' and ')} first: ${
     blockers.length > 1 ? 'they require' : 'it requires'
   } ${target}.`;
 }

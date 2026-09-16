@@ -119,7 +119,7 @@ function fallbackSubjects(pack: SampleDataPack): { subject: string; detail: stri
       detail: 'The total is higher than the quote I was given. Could someone take a look?',
     },
     {
-      subject: 'Thanks — sorted now',
+      subject: 'Thanks: sorted now',
       detail: 'The replacement arrived this morning and it is exactly right. Appreciated.',
     },
   ];

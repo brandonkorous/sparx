@@ -60,7 +60,7 @@ export function Signup({
       {description ? <p className="leading-relaxed">{description}</p> : null}
       {done ? (
         <p className="text-success" role="status">
-          {message ?? 'Thanks — you’re subscribed.'}
+          {message ?? 'Thanks: you’re subscribed.'}
         </p>
       ) : (
         <>

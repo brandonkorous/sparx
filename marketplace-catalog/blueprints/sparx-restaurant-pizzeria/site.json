@@ -587,8 +587,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Forno — a wood-fired pizzeria & trattoria",
-      "seoDescription": "Forno is a wood-fired pizzeria and trattoria — Naples-style pizza, hand-rolled pasta, open Tue–Sun for lunch and dinner. See the menu and book a table.",
+      "seoTitle": "Forno: a wood-fired pizzeria & trattoria",
+      "seoDescription": "Forno is a wood-fired pizzeria and trattoria: Naples-style pizza, hand-rolled pasta, open Tue–Sun for lunch and dinner. See the menu and book a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -712,7 +712,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The oven runs at five hundred degrees and never really cools down. Three of the things we’re pulling out of it this week — the rest is on the menu."
+                          "The oven runs at five hundred degrees and never really cools down. Three of the things we’re pulling out of it this week: the rest is on the menu."
                         ],
                         "id": "459a7077-b06e-4f3c-9dbd-6fcc5b2282fd",
                         "ord": "a1"
@@ -759,7 +759,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Boards for the middle of the table — burrata, cured meats, marinated olives and a pile of warm focaccia."
+                              "Boards for the middle of the table: burrata, cured meats, marinated olives and a pile of warm focaccia."
                             ],
                             "id": "2700e7bc-096e-49a7-b361-030d4b26e18e",
                             "ord": "a2"
@@ -906,7 +906,7 @@
                     "class": "aspect-video w-full rounded-box border border-base-300 object-cover",
                     "attrs": {
                       "src": "https://images.unsplash.com/photo-1611596188718-840151555242?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8dHJhdHRvcmlhJTIwZGluaW5nJTIwcm9vbXxlbnwwfDB8fHwxNzg2NDE1NTA5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                      "alt": "The trattoria dining room — long communal tables, warm light",
+                      "alt": "The trattoria dining room: long communal tables, warm light",
                       "loading": "lazy"
                     },
                     "id": "33d8f163-8dce-4c41-a3b6-26e72334e160",
@@ -930,7 +930,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book online in under a minute — you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome; we keep the front counter and a few tables back for people who just wander in hungry."
+                          "Book online in under a minute: you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome; we keep the front counter and a few tables back for people who just wander in hungry."
                         ],
                         "id": "d9592cfc-2963-42ae-bbf4-0a5e21532105",
                         "ord": "a1"
@@ -1171,8 +1171,8 @@
       "name": "Menu",
       "kind": "singleton",
       "slug": "menu",
-      "seoTitle": "Menu — Forno",
-      "seoDescription": "See the full menu at Forno — dishes, drinks and prices — then reserve a table.",
+      "seoTitle": "Menu: Forno",
+      "seoDescription": "See the full menu at Forno (dishes, drinks and prices) then reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1203,7 +1203,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Flour, fire, and not much fuss. Dough proved for two days, sauce from San Marzano tomatoes, mozzarella pulled the same morning. The specials board fills in the rest — tell us about allergies and we’ll steer you right."
+                      "Flour, fire, and not much fuss. Dough proved for two days, sauce from San Marzano tomatoes, mozzarella pulled the same morning. The specials board fills in the rest. Tell us about allergies and we’ll steer you right."
                     ],
                     "id": "a3754050-48fe-4aa2-a4d4-4955e9a972f7",
                     "ord": "a1"
@@ -1458,7 +1458,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Panzanella — ripe tomatoes, torn focaccia, red onion, oregano."
+                              "Panzanella: ripe tomatoes, torn focaccia, red onion, oregano."
                             ],
                             "id": "fbb80491-ed65-4819-851a-81cb586ed17e",
                             "ord": "a1"
@@ -1502,7 +1502,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "Naples-style — a 48-hour dough, thirty seconds in a 500° oven, blistered and floppy. Gluten-free bases on request."
+                      "Naples-style: a 48-hour dough, thirty seconds in a 500° oven, blistered and floppy. Gluten-free bases on request."
                     ],
                     "id": "8e7c0194-81d8-46d6-a68e-94097086061d",
                     "ord": "a1"
@@ -1635,7 +1635,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Fennel sausage, mozzarella, roasted onion, wild fennel — no tomato."
+                              "Fennel sausage, mozzarella, roasted onion, wild fennel: no tomato."
                             ],
                             "id": "db184749-6cf7-470c-b985-42777c067089",
                             "ord": "a1"
@@ -1723,7 +1723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Tomato, garlic, oregano, olive oil — no cheese, all the way old-school."
+                              "Tomato, garlic, oregano, olive oil: no cheese, all the way old-school."
                             ],
                             "id": "194061a9-cc22-4139-a681-73d91cc2d98c",
                             "ord": "a1"
@@ -1898,7 +1898,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Tonnarelli, pecorino romano, cracked pepper — three things, done right."
+                              "Tonnarelli, pecorino romano, cracked pepper: three things, done right."
                             ],
                             "id": "dffe1270-809e-4f82-b0b9-fbe24b0481b4",
                             "ord": "a1"
@@ -2029,7 +2029,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
-                    "children": ["A short list — plus whatever the kitchen felt like making."],
+                    "children": ["A short list: plus whatever the kitchen felt like making."],
                     "id": "970698ed-0eb6-41b2-9ec1-43ed5408450b",
                     "ord": "a1"
                   },
@@ -2073,7 +2073,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Made in trays out back — espresso, mascarpone, a heavy dust of cocoa."
+                              "Made in trays out back: espresso, mascarpone, a heavy dust of cocoa."
                             ],
                             "id": "37203d61-5a3c-4c54-b66f-29730db3cbd8",
                             "ord": "a1"
@@ -2160,7 +2160,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Sharp, bright, and cold — the way to end a big meal."],
+                            "children": ["Sharp, bright, and cold: the way to end a big meal."],
                             "id": "f2035489-b12a-4ce7-8d5b-0ec5357afc9d",
                             "ord": "a1"
                           }
@@ -2247,7 +2247,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "A short Italian list — Negronis, a handful of growers’ wines, and beer from the brewery two streets over."
+                      "A short Italian list: Negronis, a handful of growers’ wines, and beer from the brewery two streets over."
                     ],
                     "id": "c8b84425-2b8d-4d86-8308-6aeb712d8531",
                     "ord": "a1"
@@ -2377,7 +2377,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["On tap — one classic, one from two streets over."],
+                            "children": ["On tap. One classic, one from two streets over."],
                             "id": "a35b7ec0-89c1-4501-80d3-adb0f531ec69",
                             "ord": "a1"
                           }
@@ -2446,7 +2446,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Forno",
+      "seoTitle": "Book: Forno",
       "seoDescription": "See what Forno offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -2478,7 +2478,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Pick your party size and a time below — you’ll see live availability for the next few weeks. For parties of seven or more, or to take over the long table for a birthday, drop us a line and we’ll sort it."
+                      "Pick your party size and a time below: you’ll see live availability for the next few weeks. For parties of seven or more, or to take over the long table for a birthday, drop us a line and we’ll sort it."
                     ],
                     "id": "686ad621-af4a-48fe-b992-b350f1b019be",
                     "ord": "a1"
@@ -2531,7 +2531,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "b2ba62bb-2943-48b2-87b5-79225030293b",
                         "ord": "a1"
@@ -2563,7 +2563,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead."
+                              "Tables are held for 15 minutes past your time. Plans change. Just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead."
                             ],
                             "id": "fe365717-ba02-4fe4-b8fd-8cbffc1e22d6",
                             "ord": "a1"
@@ -2600,7 +2600,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Parties of six place a card hold to secure the table — nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone."
+                              "Parties of six place a card hold to secure the table. Nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone."
                             ],
                             "id": "9f48d246-5c54-482b-a19a-2826c73dd953",
                             "ord": "a1"
@@ -2636,8 +2636,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Forno — the pizzeria",
-      "seoDescription": "A wood-fired pizzeria & trattoria built around a brick oven — two-day dough, San Marzano sauce, pasta rolled by hand each morning, long communal tables.",
+      "seoTitle": "About Forno: the pizzeria",
+      "seoDescription": "A wood-fired pizzeria & trattoria built around a brick oven: two-day dough, San Marzano sauce, pasta rolled by hand each morning, long communal tables.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2668,7 +2668,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Forno started with an oven and a stubborn idea: that a pizzeria should feel like someone’s kitchen, not a chain. We built the oven ourselves, brick by brick, on the corner where the old bakery used to be — so the room still smells of flour and fire the way it always did."
+                      "Forno started with an oven and a stubborn idea: that a pizzeria should feel like someone’s kitchen, not a chain. We built the oven ourselves, brick by brick, on the corner where the old bakery used to be, so the room still smells of flour and fire the way it always did."
                     ],
                     "id": "10e67dfb-5a4b-4469-8d81-0c33bbcda26d",
                     "ord": "a1"
@@ -2678,7 +2678,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The dough proves for two days. The sauce is San Marzano tomatoes and not much else. The pasta gets rolled and cut by hand every morning, and half the menu changes with whatever the market had that week. We keep it simple on purpose — good flour, real fire, and time."
+                      "The dough proves for two days. The sauce is San Marzano tomatoes and not much else. The pasta gets rolled and cut by hand every morning, and half the menu changes with whatever the market had that week. We keep it simple on purpose: good flour, real fire, and time."
                     ],
                     "id": "617f3623-8f65-4b2d-9bf6-2d0146b0eddf",
                     "ord": "a2"
@@ -2688,7 +2688,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The long communal tables are there so strangers end up passing the chilli oil. Book ahead for the weekend, but there’s always a stool at the counter for a walk-in — a pizza, a glass of something red, and a seat by the flames."
+                      "The long communal tables are there so strangers end up passing the chilli oil. Book ahead for the weekend, but there’s always a stool at the counter for a walk-in: a pizza, a glass of something red, and a seat by the flames."
                     ],
                     "id": "1cd1a977-148e-4562-8072-c25c2e791515",
                     "ord": "a3"
@@ -2708,7 +2708,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Forno",
+      "seoTitle": "Visit: Forno",
       "seoDescription": "Where to find Forno, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2745,7 +2745,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Forno will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Forno will get back to you, usually the same day."
                         ],
                         "id": "cdb5e322-be5a-4aad-b758-6bd67a9dfce4",
                         "ord": "a1"

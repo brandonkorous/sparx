@@ -29,8 +29,8 @@ export const embedFields: SectionField[] = [
     placeholder: 'https://www.google.com/maps/embed?pb=…',
     help: 'Paste a Google Maps “Embed a map” link, a YouTube or Vimeo video URL, or any embeddable URL.',
   },
-  { key: 'heading', label: 'Heading', type: 'text', help: 'Optional — shown above the embed.' },
-  { key: 'caption', label: 'Caption', type: 'text', help: 'Optional — shown below the embed.' },
+  { key: 'heading', label: 'Heading', type: 'text', help: 'Optional: shown above the embed.' },
+  { key: 'caption', label: 'Caption', type: 'text', help: 'Optional: shown below the embed.' },
   {
     key: 'aspect',
     label: 'Aspect ratio',

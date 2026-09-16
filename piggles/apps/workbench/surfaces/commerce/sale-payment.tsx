@@ -46,7 +46,7 @@ export function SalePayment({
   return (
     <FormSection
       title="What they paid"
-      description="How much you were handed, and how. Clear it if they have not paid yet — the sale is still written down, and it shows up under what you are owed."
+      description="How much you were handed, and how. Clear it if they have not paid yet: the sale is still written down, and it shows up under what you are owed."
     >
       <div className="flex flex-wrap items-start gap-3">
         <label className="w-32">
@@ -112,7 +112,7 @@ export function SalePayment({
             ? `${formatMoney(owing, currency)} of ${formatMoney(total, currency)} will still be owed.`
             : owing < -0.004
               ? `That is ${formatMoney(-owing, currency)} more than the sale comes to.`
-              : `Paid in full — ${formatMoney(total, currency)}.`}
+              : `Paid in full: ${formatMoney(total, currency)}.`}
         </Text>
       ) : null}
     </FormSection>

@@ -56,7 +56,7 @@ export function RoutingCard({ domain }: { domain: OperatorDomainDetail }) {
             }
           />
           <Fact label="Site" value={propertyLabel} />
-          <Fact label="Canonical" value={domain.isCanonical ? 'Yes — primary domain' : 'No'} />
+          <Fact label="Canonical" value={domain.isCanonical ? 'Yes: primary domain' : 'No'} />
           <Fact
             label="Ownership proof"
             value={verificationMethodLabel(domain.verificationMethod)}
@@ -81,10 +81,10 @@ export function SslCard({ domain }: { domain: OperatorDomainDetail }) {
         </Stack>
         <Text size="sm" variant="muted">
           {domain.sslStatus === 'secured'
-            ? 'This host is authorized for HTTPS — its certificate is issued (and auto-renewed) on demand the first time it’s reached over TLS.'
+            ? 'This host is authorized for HTTPS. Its certificate is issued (and auto-renewed) on demand the first time it’s reached over TLS.'
             : domain.sslStatus === 'provisioning'
               ? 'DNS is still propagating. Once the domain resolves, it becomes authorized and its certificate issues automatically on the first HTTPS request.'
-              : 'Not yet secured — the domain must finish verification before a certificate can be issued. Certificates are on-demand, so there is nothing to install manually.'}
+              : 'Not yet secured: the domain must finish verification before a certificate can be issued. Certificates are on-demand, so there is nothing to install manually.'}
         </Text>
       </Stack>
     </Card>
@@ -145,7 +145,7 @@ export function DnsProbeCard({ probe }: { probe: OperatorDomainDnsProbe | null }
         </Stack>
         {!probe ? (
           <Text size="sm" variant="muted">
-            This is an automatic sparx.zone address — its DNS is managed for the tenant, so there’s
+            This is an automatic sparx.zone address. Its DNS is managed for the tenant, so there’s
             nothing to verify here.
           </Text>
         ) : (

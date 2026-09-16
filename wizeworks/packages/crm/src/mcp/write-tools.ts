@@ -84,7 +84,7 @@ const CustomerPatchInput = UpdateCustomerInput.pick({
 export const createCustomer: McpToolDefinition = {
   name: 'create_customer',
   description:
-    'Add a customer / contact. Classification is three independent axes (docs/137): `type` is the RELATIONSHIP — retail | b2b | partner | vendor (default retail; only b2b applies trade pricing); `lifecycleStage` is where they are in the journey — subscriber | lead | marketing_qualified_lead | sales_qualified_lead | opportunity | customer | evangelist | other (default lead); `leadStatus` is the optional work-state on a lead. A first completed order later promotes them to the `customer` stage automatically.',
+    'Add a customer / contact. Classification is three independent axes (docs/137): `type` is the RELATIONSHIP: retail | b2b | partner | vendor (default retail; only b2b applies trade pricing); `lifecycleStage` is where they are in the journey: subscriber | lead | marketing_qualified_lead | sales_qualified_lead | opportunity | customer | evangelist | other (default lead); `leadStatus` is the optional work-state on a lead. A first completed order later promotes them to the `customer` stage automatically.',
   scope: 'write:crm',
   confirmation: true,
   input: CustomerWriteInput,
@@ -94,7 +94,7 @@ export const createCustomer: McpToolDefinition = {
 export const updateCustomer: McpToolDefinition = {
   name: 'update_customer',
   description:
-    'Update a customer / contact — any subset of fields, including the three classification axes (relationship `type`, `lifecycleStage`, `leadStatus`). Omitted fields are left unchanged; pass null to clear a nullable field.',
+    'Update a customer / contact: any subset of fields, including the three classification axes (relationship `type`, `lifecycleStage`, `leadStatus`). Omitted fields are left unchanged; pass null to clear a nullable field.',
   scope: 'write:crm',
   confirmation: true,
   input: CustomerPatchInput.extend({ customerId: z.string().uuid() }),
@@ -107,7 +107,7 @@ export const updateCustomer: McpToolDefinition = {
 export const deleteCustomer: McpToolDefinition = {
   name: 'delete_customer',
   description:
-    'Soft-delete a customer / contact: the record is hidden from lists and search but not erased — their orders, deals and history are preserved and it can be restored.',
+    'Soft-delete a customer / contact: the record is hidden from lists and search but not erased. Their orders, deals and history are preserved and it can be restored.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ customerId: z.string().uuid() }),
@@ -118,7 +118,7 @@ export const deleteCustomer: McpToolDefinition = {
 export const addActivity: McpToolDefinition = {
   name: 'add_crm_activity',
   description:
-    'Record a CRM activity (note / call / meeting) on a customer or deal. Activities are append-only — corrections insert a new row pointing at the original.',
+    'Record a CRM activity (note / call / meeting) on a customer or deal. Activities are append-only: corrections insert a new row pointing at the original.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({
@@ -159,7 +159,7 @@ export const completeTask: McpToolDefinition = {
 export const bulkAssignCustomers: McpToolDefinition = {
   name: 'bulk_assign_customers',
   description:
-    'Bulk-assign a rep to a list of customers. Bulk write — the MCP server confirms with the user first.',
+    'Bulk-assign a rep to a list of customers. Bulk write: the MCP server confirms with the user first.',
   scope: 'write:crm_bulk',
   confirmation: true,
   input: z.object({
@@ -265,7 +265,7 @@ export const convertQuote: McpToolDefinition = {
 export const mergeCustomers: McpToolDefinition = {
   name: 'merge_customers',
   description:
-    'Merge one or more duplicate customers into a primary. All activities, deals, tasks and addresses move to the primary; commerce stats (spend, order count, first/last order) roll up; tags union; the primary fills any missing name/email/phone from the freshest duplicate. Duplicates are soft-deleted with a merge pointer preserved — the history survives. Destructive and hard to undo; the server confirms first.',
+    'Merge one or more duplicate customers into a primary. All activities, deals, tasks and addresses move to the primary; commerce stats (spend, order count, first/last order) roll up; tags union; the primary fills any missing name/email/phone from the freshest duplicate. Duplicates are soft-deleted with a merge pointer preserved: the history survives. Destructive and hard to undo; the server confirms first.',
   scope: 'write:crm',
   confirmation: true,
   input: MergeCustomersInput,
@@ -280,7 +280,7 @@ export const mergeCustomers: McpToolDefinition = {
 export const updateDeal: McpToolDefinition = {
   name: 'update_deal',
   description:
-    'Update a deal — title, value, currency, probability, expected close date, customer/account link, assigned rep, source, tags. Omitted fields are unchanged. To move a deal to a different stage use move_deal_stage instead (it fires the stage-change automations).',
+    'Update a deal: title, value, currency, probability, expected close date, customer/account link, assigned rep, source, tags. Omitted fields are unchanged. To move a deal to a different stage use move_deal_stage instead (it fires the stage-change automations).',
   scope: 'write:crm',
   confirmation: true,
   input: UpdateDealInput.omit({ pipelineId: true, stageId: true }).extend({
@@ -295,7 +295,7 @@ export const updateDeal: McpToolDefinition = {
 export const deleteDeal: McpToolDefinition = {
   name: 'delete_deal',
   description:
-    'Soft-delete a deal that should never have existed — it drops out of every list while the row and its activity trail survive. The normal way a deal leaves the board is move_deal_stage to a Won/Lost stage, which keeps it in pipeline history; use that for a real close, this only for a mistake.',
+    'Soft-delete a deal that should never have existed. It drops out of every list while the row and its activity trail survive. The normal way a deal leaves the board is move_deal_stage to a Won/Lost stage, which keeps it in pipeline history; use that for a real close, this only for a mistake.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ dealId: z.string().uuid() }),
@@ -307,7 +307,7 @@ export const deleteDeal: McpToolDefinition = {
 export const updateTask: McpToolDefinition = {
   name: 'update_task',
   description:
-    'Update a follow-up task — title, description, due date, priority, assignee, linked customer/deal, or status. Omitted fields are unchanged. To mark a task done prefer complete_task (it stamps who/when and drops a timeline entry).',
+    'Update a follow-up task: title, description, due date, priority, assignee, linked customer/deal, or status. Omitted fields are unchanged. To mark a task done prefer complete_task (it stamps who/when and drops a timeline entry).',
   scope: 'write:crm',
   confirmation: true,
   input: UpdateTaskInput.extend({ taskId: z.string().uuid() }),
@@ -322,7 +322,7 @@ export const updateTask: McpToolDefinition = {
 export const createCompany: McpToolDefinition = {
   name: 'create_company',
   description:
-    'Add a company — the organisation a contact works for. Name is the only thing required; tax id, website and email domains are optional. The trade fields (credit limit, payment terms, discount, pricing tier) only mean anything to a business selling on account: set them and customers become authorised buyers on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
+    'Add a company: the organisation a contact works for. Name is the only thing required; tax id, website and email domains are optional. The trade fields (credit limit, payment terms, discount, pricing tier) only mean anything to a business selling on account: set them and customers become authorised buyers on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
   scope: 'write:crm',
   confirmation: true,
   input: CreateCompanyInput,
@@ -332,7 +332,7 @@ export const createCompany: McpToolDefinition = {
 export const updateCompany: McpToolDefinition = {
   name: 'update_company',
   description:
-    'Update a company — any subset of name, tax id, website, email domains, pricing tier, credit limit, payment terms, discount, status, assigned rep, fleet size, notes, tags. Omitted fields are left exactly as they are.',
+    'Update a company: any subset of name, tax id, website, email domains, pricing tier, credit limit, payment terms, discount, status, assigned rep, fleet size, notes, tags. Omitted fields are left exactly as they are.',
   scope: 'write:crm',
   confirmation: true,
   input: UpdateCompanyInput.extend({ companyId: z.string().uuid() }),
@@ -345,7 +345,7 @@ export const updateCompany: McpToolDefinition = {
 export const deleteCompany: McpToolDefinition = {
   name: 'delete_company',
   description:
-    'Remove a company from the lists. Nothing is erased — its orders, invoices and history stay, and the contacts who worked there keep theirs.',
+    'Remove a company from the lists. Nothing is erased. Its orders, invoices and history stay, and the contacts who worked there keep theirs.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ companyId: z.string().uuid() }),
@@ -380,7 +380,7 @@ export const createPipeline: McpToolDefinition = {
 export const updatePipeline: McpToolDefinition = {
   name: 'update_pipeline',
   description:
-    'Update a pipeline — name, slug, default flag, or sort order. Omitted fields are unchanged.',
+    'Update a pipeline. Name, slug, default flag, or sort order. Omitted fields are unchanged.',
   scope: 'write:crm',
   confirmation: true,
   input: UpdatePipelineInput.extend({ pipelineId: z.string().uuid() }),
@@ -416,7 +416,7 @@ export const addPipelineStage: McpToolDefinition = {
 export const updatePipelineStage: McpToolDefinition = {
   name: 'update_pipeline_stage',
   description:
-    'Update a pipeline stage — name, sort order, probability, stage type, or color. Omitted fields are unchanged.',
+    'Update a pipeline stage. Name, sort order, probability, stage type, or color. Omitted fields are unchanged.',
   scope: 'write:crm',
   confirmation: true,
   input: UpdatePipelineStageInput.extend({ stageId: z.string().uuid() }),
@@ -429,7 +429,7 @@ export const updatePipelineStage: McpToolDefinition = {
 export const deletePipelineStage: McpToolDefinition = {
   name: 'delete_pipeline_stage',
   description:
-    'Remove a stage from a pipeline. A pipeline must keep at least one stage. If the stage still has open deals you MUST pass reassignToStageId (a different stage on the same pipeline) to move them to — the move and delete run atomically.',
+    'Remove a stage from a pipeline. A pipeline must keep at least one stage. If the stage still has open deals you MUST pass reassignToStageId (a different stage on the same pipeline) to move them to: the move and delete run atomically.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({
@@ -472,7 +472,7 @@ export const createSegment: McpToolDefinition = {
 export const updateSegment: McpToolDefinition = {
   name: 'update_segment',
   description:
-    'Update a segment — name, slug, description, color, or its rule tree. Omitted fields are unchanged; changing the rules triggers a membership recompute downstream.',
+    'Update a segment. Name, slug, description, color, or its rule tree. Omitted fields are unchanged; changing the rules triggers a membership recompute downstream.',
   scope: 'write:crm',
   confirmation: true,
   input: UpdateSegmentInput.extend({ segmentId: z.string().uuid() }),
@@ -495,7 +495,7 @@ export const archiveSegment: McpToolDefinition = {
 export const recomputeSegment: McpToolDefinition = {
   name: 'recompute_segment',
   description:
-    'Force a full re-evaluation of a segment against every customer, reconciling its membership. Expensive — use when membership looks stale, not routinely (membership normally updates incrementally from events).',
+    'Force a full re-evaluation of a segment against every customer, reconciling its membership. Expensive. Use when membership looks stale, not routinely (membership normally updates incrementally from events).',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ segmentId: z.string().uuid() }),

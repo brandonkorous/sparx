@@ -81,7 +81,7 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
           title="Nothing is overdue"
           description={
             undated > 0
-              ? 'Every order with a date on it is either here on time or already in. The orders with no date at all are counted above — those cannot be late, which is not the same as being on time.'
+              ? 'Every order with a date on it is either here on time or already in. The orders with no date at all are counted above. Those cannot be late, which is not the same as being on time.'
               : 'Every order you have placed is either still inside its promised date or already received.'
           }
         />
@@ -181,7 +181,7 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
               {plural(undated, 'open order has', 'open orders have')} no expected date
             </AlertTitle>
             <AlertDescription>
-              They cannot appear here, because nothing says when they should have arrived — and that
+              They cannot appear here, because nothing says when they should have arrived, and that
               is not the same as being on time. Put a date on the order, or record a delivery time
               against the supplier, and they start being checked.
             </AlertDescription>

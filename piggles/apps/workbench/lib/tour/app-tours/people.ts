@@ -11,7 +11,7 @@ export const CUSTOMERS_GUIDE: Guide = {
       app: 'customers',
       anchor: 'nav-crm.customers.list',
       title: 'Everyone you deal with',
-      body: 'One page per person or company, with everything that has ever happened between you on it — orders, invoices, bookings, emails, notes. Nobody has to remember what was agreed.',
+      body: 'One page per person or company, with everything that has ever happened between you on it: orders, invoices, bookings, emails, notes. Nobody has to remember what was agreed.',
     },
     {
       id: 'customers.deals',
@@ -32,7 +32,7 @@ export const CUSTOMERS_GUIDE: Guide = {
       app: 'customers',
       anchor: 'nav-crm.segments.list',
       title: 'Groups that keep themselves up to date',
-      body: '"Bought in the last ninety days", "never ordered", "spent over £500". Describe the group once and people join and leave it on their own — which is what makes a mailout worth sending.',
+      body: '"Bought in the last ninety days", "never ordered", "spent over $500". Describe the group once and people join and leave it on their own, which is what makes a mailout worth sending.',
     },
   ],
 };
@@ -60,7 +60,7 @@ export const MESSAGES_GUIDE: Guide = {
       app: 'messages',
       anchor: 'nav-email.domains.list',
       title: 'Send from your own address',
-      body: 'Until you set this up, mail goes out from a Piggles address. Connecting yours takes a few minutes and means it arrives looking like it came from you — which is most of whether it arrives at all.',
+      body: 'Until you set this up, mail goes out from a Piggles address. Connecting yours takes a few minutes and means it arrives looking like it came from you, which is most of whether it arrives at all.',
     },
   ],
 };
@@ -74,7 +74,7 @@ export const BOOKINGS_GUIDE: Guide = {
       app: 'bookings',
       anchor: 'nav-scheduling.calendar',
       title: 'Your diary',
-      body: 'Everything booked, by day or by week. Drag one to move it and the customer gets told — you never have to send that message yourself.',
+      body: 'Everything booked, by day or by week. Drag one to move it and the customer gets told. You never have to send that message yourself.',
     },
     {
       id: 'bookings.services',

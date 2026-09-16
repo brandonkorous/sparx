@@ -14,7 +14,7 @@ import { ListEmptyState } from '../../components/list-empty-state';
  *  to switch on a toggle that is already on sends somebody hunting. */
 function firstRunDescription(includeClosed: boolean): string {
   const base =
-    'A location is any place you keep stock — a warehouse, a shop, a garage, a van. Set up your first and you can start counting what is in it.';
+    'A location is any place you keep stock: a warehouse, a shop, a garage, a van. Set up your first and you can start counting what is in it.';
   return includeClosed
     ? base
     : `${base} If you have closed a location before, switch on “Show closed” to see it.`;
@@ -46,7 +46,7 @@ export function LocationsListEmpty({
       <EmptyState
         icon={<Icon glyph={faWarehouse} className="size-6" aria-hidden />}
         title="Could not load your locations"
-        description="This is a problem reaching the server. Your locations are unaffected — the list just could not be read just now."
+        description="This is a problem reaching the server. Your locations are unaffected: the list just could not be read just now."
         actions={
           <Button
             size="sm"

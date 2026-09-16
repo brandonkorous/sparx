@@ -180,7 +180,7 @@ const SCHEDULING = {
     {
       handle: 'skin-consultation',
       name: 'Skin consultation',
-      description: 'A no-pressure sit-down to read your skin and map a plan — free, and yours to keep.',
+      description: 'A no-pressure sit-down to read your skin and map a plan: free, and yours to keep.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -280,7 +280,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'Clear, luminous skin in soft studio light',
     title: 'Real results, glowing skin',
-    sub: 'A results-driven skincare studio — advanced facials, peels and treatments planned around your skin, not a one-size menu.',
+    sub: 'A results-driven skincare studio: advanced facials, peels and treatments planned around your skin, not a one-size menu.',
     primary: { label: 'Book a facial', href: '/book' },
     secondary: { label: 'See treatments', href: '/book' },
     overlay: 'dark',
@@ -289,11 +289,11 @@ const HOME = [
     items: [
       {
         title: 'Licensed, expert estheticians',
-        body: 'Every treatment is done by a licensed esthetician who reads your skin first — advanced training, not a quick add-on.',
+        body: 'Every treatment is done by a licensed esthetician who reads your skin first: advanced training, not a quick add-on.',
       },
       {
         title: 'Medical-grade, results-first',
-        body: 'We use professional, medical-grade products and treatments chosen to actually change your skin — not just feel nice for an hour.',
+        body: 'We use professional, medical-grade products and treatments chosen to actually change your skin, not just feel nice for an hour.',
       },
       {
         title: 'A custom plan, real progress',
@@ -319,14 +319,14 @@ const HOME = [
     alt: 'An esthetician reviewing a custom skin plan with a client',
     heading: 'A plan built for your skin',
     body: [
-      'No two faces are the same, so we never treat them that way. Every visit starts by reading your skin — its history, your routine and what you actually want to change.',
+      'No two faces are the same, so we never treat them that way. Every visit starts by reading your skin. Its history, your routine and what you actually want to change.',
       'From there we build a plan: the right treatments, in the right order, at the right pace. It’s the difference between a nice hour and skin that genuinely gets better.',
     ],
     cta: { label: 'Start with a consult', href: '/book' },
   }),
   teamRow({
     heading: 'Your estheticians',
-    intro: 'Book by name — you’ll see the same expert who knows your skin and your plan.',
+    intro: 'Book by name: you’ll see the same expert who knows your skin and your plan.',
     members: [
       { name: 'Camille Fontaine', role: 'Lead esthetician', image: url(IMG.camille), alt: 'Camille Fontaine, lead esthetician', bio: 'Acne programs and corrective peels. Camille leads the studio.' },
       { name: 'Rosa Vance', role: 'Esthetician', image: url(IMG.rosa), alt: 'Rosa Vance, esthetician', bio: 'Dermaplaning, glow facials and anti-aging treatments.' },
@@ -362,8 +362,8 @@ const ABOUT = [
     alt: 'Clear, luminous skin in soft studio light',
     heading: 'About Lumière Skin Studio',
     body: [
-      'Lumière is a results-driven skincare studio for people who want their skin to actually change — clearer, brighter, firmer — not just a pampering hour.',
-      'We’re licensed estheticians who believe great skin comes from a plan, honest advice and consistency. No upselling, no gimmicks — just expert treatments and real progress you can see.',
+      'Lumière is a results-driven skincare studio for people who want their skin to actually change (clearer, brighter, firmer) not just a pampering hour.',
+      'We’re licensed estheticians who believe great skin comes from a plan, honest advice and consistency. No upselling, no gimmicks. Just expert treatments and real progress you can see.',
     ],
     cta: { label: 'Book a facial', href: '/book' },
   }),
@@ -371,7 +371,7 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'Consultation first', body: 'Every plan begins with reading your skin — its history, your routine and the results you’re after.' },
+      { title: 'Consultation first', body: 'Every plan begins with reading your skin. Its history, your routine and the results you’re after.' },
       { title: 'Medical-grade products', body: 'Professional, results-first products and treatments, plus honest advice on the short list worth taking home.' },
       { title: 'Progress you can see', body: 'We track your skin visit to visit and adjust the plan, so each treatment builds toward a lasting result.' },
     ],
@@ -392,7 +392,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your treatment online — no phone tag.',
+    sub: 'See live availability and reserve your treatment online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a facial', href: '/book' },
   }),
@@ -403,8 +403,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-esthetics-results',
   name: 'Esthetics (Results)',
   summary:
-    'A luminous, results-driven esthetics studio site — a soft-plum palette, a warm-peach accent and a clean near-white ground, with glowing-skin photography. Installs a working booking flow: a real treatment menu (signature facials, chemical peels, dermaplaning, microneedling), licensed estheticians you book by name, two treatment rooms as bookable resources, and a deposit policy. Ships as "Lumière Skin Studio", a clean, expert skincare studio.',
-  tagline: 'A clean, expert template for skincare studios — book facials online from day one.',
+    'A luminous, results-driven esthetics studio site: a soft-plum palette, a warm-peach accent and a clean near-white ground, with glowing-skin photography. Installs a working booking flow: a real treatment menu (signature facials, chemical peels, dermaplaning, microneedling), licensed estheticians you book by name, two treatment rooms as bookable resources, and a deposit policy. Ships as "Lumière Skin Studio", a clean, expert skincare studio.',
+  tagline: 'A clean, expert template for skincare studios. Book facials online from day one.',
   industry: 'Esthetics',
   sortWeight: 38,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -413,7 +413,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Lumière Skin Studio — results-driven skincare',
+      title: 'Lumière Skin Studio: results-driven skincare',
       description:
         'Lumière Skin Studio is a results-driven esthetics studio for advanced facials, chemical peels, dermaplaning and microneedling. Book your esthetician online.',
     },

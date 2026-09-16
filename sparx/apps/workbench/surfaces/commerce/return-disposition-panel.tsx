@@ -84,7 +84,7 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
               description:
                 result.unitsRestocked > 0
                   ? `${result.unitsRestocked} back into stock${disposition === 'restock' ? ' and on sale' : ', on a shelf nothing sells from'}.`
-                  : 'Recorded. Nothing went back into stock — the cost stays where it was relieved when the item sold.',
+                  : 'Recorded. Nothing went back into stock: the cost stays where it was relieved when the item sold.',
               type: 'success',
             });
           });
@@ -205,7 +205,7 @@ export function ReturnDispositionPanel({ returnId }: { returnId: string }) {
         <div className="pt-0">
           <Text className="text-sm">
             Quarantined and awaiting-repair goods stay counted as stock you hold and stop being
-            sellable — they come off what a customer can buy the moment they land. Scrapped goods
+            sellable. They come off what a customer can buy the moment they land. Scrapped goods
             never re-enter stock at all: their cost was already accounted for when the item sold, so
             adding them back only to write them off would file a customer return under shrinkage.
           </Text>

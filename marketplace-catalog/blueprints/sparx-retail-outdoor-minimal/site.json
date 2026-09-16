@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Tarn — considered technical essentials for city and trail",
-      "seoDescription": "Tarn makes a small, design-led line of technical essentials — a packable shell, merino layers, clean bags and everyday-carry hardware — built to move between the commute and the trail. Fewer, better things.",
+      "seoTitle": "Tarn: considered technical essentials for city and trail",
+      "seoDescription": "Tarn makes a small, design-led line of technical essentials (a packable shell, merino layers, clean bags and everyday-carry hardware) built to move between the commute and the trail. Fewer, better things.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tarn makes a small line of technical essentials that work as well on the 7am commute as on a Sunday ridgeline. Considered materials, quiet design, nothing you have to explain — pieces you reach for every day and keep for years."
+                          "Tarn makes a small line of technical essentials that work as well on the 7am commute as on a Sunday ridgeline. Considered materials, quiet design, nothing you have to explain: pieces you reach for every day and keep for years."
                         ],
                         "id": "26384fc3-96ff-413c-bcd7-965a140ffccb",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We keep the range deliberately short. Each piece earns its place — the right fabric, the details that matter and none that don’t — so a Tarn shell or tee is one you buy once and wear for years. Fewer, better things, made to be lived in."
+                          "We keep the range deliberately short. Each piece earns its place (the right fabric, the details that matter and none that don’t) so a Tarn shell or tee is one you buy once and wear for years. Fewer, better things, made to be lived in."
                         ],
                         "id": "f70f88bc-acfd-4836-a779-50ac6b762218",
                         "ord": "a1"
@@ -1539,7 +1539,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A day that starts on a train and ends on a ridge shouldn’t need two wardrobes. Everything Tarn makes is built to move between them — technical enough for the weather, quiet enough for the office — so you pack lighter and think about it less."
+                          "A day that starts on a train and ends on a ridge shouldn’t need two wardrobes. Everything Tarn makes is built to move between them (technical enough for the weather, quiet enough for the office) so you pack lighter and think about it less."
                         ],
                         "id": "f8b7150a-3574-402a-b36e-785c44fb8563",
                         "ord": "a1"
@@ -1574,7 +1574,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Tarn",
+      "seoTitle": "Shop: Tarn",
       "seoDescription": "Browse everything Tarn makes, with prices and options at a glance. Outdoor & technical essentials.",
       "root": {
         "kind": "element",
@@ -1606,7 +1606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The whole Tarn range in one place — apparel, bags, accessories and the everyday essentials that go everywhere. Filter by category or sort however you like; each piece is considered, versatile and built to be kept."
+                      "The whole Tarn range in one place: apparel, bags, accessories and the everyday essentials that go everywhere. Filter by category or sort however you like; each piece is considered, versatile and built to be kept."
                     ],
                     "id": "31d36e8b-b907-4d37-a942-b8787e78af0d",
                     "ord": "a1"
@@ -1634,7 +1634,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Tarn",
+      "seoTitle": "Collections: Tarn",
       "seoDescription": "Explore the collections at Tarn, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1666,7 +1666,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The range grouped the way you actually shop it — what just landed, the pieces people reach for daily, a full city-to-trail kit, and the merino edit we’re quietly known for."
+                      "The range grouped the way you actually shop it: what just landed, the pieces people reach for daily, a full city-to-trail kit, and the merino edit we’re quietly known for."
                     ],
                     "id": "ccca64dd-a2f2-475b-8f8b-3e22275f235f",
                     "ord": "a1"
@@ -1694,7 +1694,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Tarn",
+      "seoTitle": "Your cart: Tarn",
       "seoDescription": "Review what is in your cart and check out securely at Tarn.",
       "root": {
         "kind": "element",
@@ -1754,7 +1754,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Tarn",
+      "seoTitle": "Search: Tarn",
       "seoDescription": "Search Tarn for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Tarn",
+      "seoTitle": "Journal: Tarn",
       "seoDescription": "Stories, guides and notes from Tarn.",
       "root": {
         "kind": "element",
@@ -1846,7 +1846,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes on design and everyday carry — why we make fewer things, how to build one kit for the city and the trail, and what actually makes a fabric worth keeping. Plain and useful, no hype."
+                      "Notes on design and everyday carry: why we make fewer things, how to build one kit for the city and the trail, and what actually makes a fabric worth keeping. Plain and useful, no hype."
                     ],
                     "id": "28f29484-e914-4fca-abc0-c14a3c075eca",
                     "ord": "a1"
@@ -1980,7 +1980,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Tarn",
-      "seoDescription": "Why Tarn keeps the range short — pieces designed around the fabric, stripped of what they don’t need, and built to be kept rather than replaced.",
+      "seoDescription": "Why Tarn keeps the range short: pieces designed around the fabric, stripped of what they don’t need, and built to be kept rather than replaced.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2011,7 +2011,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Tarn started with a simple frustration: a wardrobe split between technical gear that looked out of place in the city and city clothes that fell apart on the trail. So we set out to make one small line that quietly does both — considered, versatile pieces you can wear on a Monday commute and a Saturday summit without a second thought."
+                      "Tarn started with a simple frustration: a wardrobe split between technical gear that looked out of place in the city and city clothes that fell apart on the trail. So we set out to make one small line that quietly does both, considered, versatile pieces you can wear on a Monday commute and a Saturday summit without a second thought."
                     ],
                     "id": "82884e4a-107d-47f4-862b-f3638233a8e6",
                     "ord": "a1"
@@ -2051,8 +2051,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Tarn",
-      "seoDescription": "Get in touch with Tarn — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Tarn",
+      "seoDescription": "Get in touch with Tarn: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2088,7 +2088,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions about fit, a color, a repair or an order? Tell us what you’re after and a real person who wears the pieces will get back to you — usually within a day."
+                          "Questions about fit, a color, a repair or an order? Tell us what you’re after and a real person who wears the pieces will get back to you, usually within a day."
                         ],
                         "id": "dba853b7-53f9-4ef7-a560-0ae42b1e118c",
                         "ord": "a1"
@@ -2359,8 +2359,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Tarn",
-      "seoDescription": "Product details at Tarn — outdoor & technical essentials, with options and pricing.",
+      "seoTitle": "Product: Tarn",
+      "seoDescription": "Product details at Tarn: outdoor & technical essentials, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

@@ -81,7 +81,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     surfaces: ['page', 'site'],
     tags: ['input', 'email', 'field', 'form'],
     tree: field('Email address', input('email', 'email', 'you@example.com'), {
-      hint: "We'll only use this to reply — never shared.",
+      hint: "We'll only use this to reply, never shared.",
     }),
   }),
 
@@ -284,7 +284,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'send',
     description:
-      'A working form — collects whatever fields you put in it, emails you, and can add the person to your CRM. Add, remove, or restyle fields like any other blocks.',
+      'A working form: collects whatever fields you put in it, emails you, and can add the person to your CRM. Add, remove, or restyle fields like any other blocks.',
     surfaces: ['page', 'site'],
     tags: ['form', 'contact', 'email', 'message', 'lead', 'inquiry'],
     tree: atom(
@@ -363,7 +363,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
 
         part(
           el('div', 'flex flex-col gap-4', {
-            name: 'Step 1 — who they are',
+            name: 'Step 1, who they are',
             children: [
               field('Name', input('text', 'name', 'Jordan Avery'), { cls: 'w-full' }),
               field('Email', input('email', 'email', 'you@example.com'), { cls: 'w-full' }),
@@ -374,7 +374,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
 
         part(
           el('div', 'flex flex-col gap-4', {
-            name: 'Step 2 — what they want',
+            name: 'Step 2: what they want',
             children: [
               field(
                 'What can we help with?',
@@ -392,7 +392,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
 
         part(
           el('div', 'flex flex-col gap-4', {
-            name: 'Step 3 — the detail',
+            name: 'Step 3: the detail',
             children: [
               field(
                 'Anything else we should know?',
@@ -447,7 +447,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
             {
               minScore: 0,
               headline: 'Start with the basics',
-              body: 'Have a look around at your own pace — everything here works on the free plan.',
+              body: 'Have a look around at your own pace. Everything here works on the free plan.',
             },
             {
               minScore: 30,
@@ -538,7 +538,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'calculator',
     description:
-      'Asks a couple of questions and shows the visitor a number — what they could save, earn, or get back. Captures their email along the way.',
+      'Asks a couple of questions and shows the visitor a number: what they could save, earn, or get back. Captures their email along the way.',
     surfaces: ['page', 'site'],
     tags: ['calculator', 'estimate', 'savings', 'roi', 'quote', 'lead', 'form'],
     tree: atom(
@@ -637,7 +637,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
         ...DEFAULT_CONTACT_FORM_PROPS,
         submitLabel: 'Send it to me',
         addToCrm: true,
-        successMessage: 'On its way — check your inbox in a minute or two.',
+        successMessage: 'On its way. Check your inbox in a minute or two.',
       },
       [
         el('div', 'flex flex-col gap-1', {
@@ -676,7 +676,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'file-text',
     description:
-      'A quote-request form — collects the details you need, adds the person to your CRM, and opens a deal in your sales pipeline so nothing slips. Edit or restyle any field.',
+      'A quote-request form: collects the details you need, adds the person to your CRM, and opens a deal in your sales pipeline so nothing slips. Edit or restyle any field.',
     surfaces: ['page', 'site'],
     tags: ['form', 'quote', 'lead', 'sales', 'deal', 'estimate', 'inquiry', 'crm'],
     tree: atom(
@@ -686,13 +686,13 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
         ...DEFAULT_CONTACT_FORM_PROPS,
         submitLabel: 'Request a quote',
         successMessage:
-          "Thanks — your request is in. We'll put together a quote and get back to you shortly.",
+          "Thanks. Your request is in. We'll put together a quote and get back to you shortly.",
         addToCrm: true,
         openDeal: true,
         autoresponder: true,
         autoresponderSubject: 'We received your quote request',
         autoresponderMessage:
-          "Thanks for your interest — we've received your request and our team is putting together a quote. We'll be in touch soon.",
+          "Thanks for your interest: we've received your request and our team is putting together a quote. We'll be in touch soon.",
       },
       [
         el('div', 'flex flex-col gap-1', {
@@ -718,7 +718,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           'What do you need a quote for?',
           atom('Textarea', 'input-primary', {
             name: 'message',
-            placeholder: 'Describe the project, quantities, timing — whatever helps us scope it.',
+            placeholder: 'Describe the project, quantities, timing: whatever helps us scope it.',
             rows: '4',
           }),
           { cls: 'w-full' }
@@ -770,7 +770,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'life-buoy',
     description:
-      'A help form — collects what went wrong, adds the person to your CRM, and opens a support request with a reply deadline so nothing waits longer than you promised. Edit or restyle any field.',
+      'A help form: collects what went wrong, adds the person to your CRM, and opens a support request with a reply deadline so nothing waits longer than you promised. Edit or restyle any field.',
     surfaces: ['page', 'site'],
     tags: ['form', 'support', 'help', 'service', 'request', 'ticket', 'contact', 'crm'],
     tree: atom(
@@ -780,13 +780,13 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
         ...DEFAULT_CONTACT_FORM_PROPS,
         submitLabel: 'Send request',
         successMessage:
-          "Thanks — we've got your request and someone will get back to you. Check your email for a copy.",
+          "Thanks: we've got your request and someone will get back to you. Check your email for a copy.",
         addToCrm: true,
         openRequest: true,
         autoresponder: true,
         autoresponderSubject: 'We got your request',
         autoresponderMessage:
-          "Thanks for getting in touch — we've received your request and someone will get back to you shortly. There is nothing else you need to do.",
+          "Thanks for getting in touch: we've received your request and someone will get back to you shortly. There is nothing else you need to do.",
       },
       [
         el('div', 'flex flex-col gap-1', {

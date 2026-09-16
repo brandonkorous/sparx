@@ -13,7 +13,7 @@ export const GROUP_COPY: Record<PigglesGroup, { title: string; blurb: string; lo
   home: {
     title: 'Your day',
     blurb: 'What needs you, first thing.',
-    long: 'One screen that tells you what happened overnight and what is waiting — instead of five tabs you check in a fixed order because you once forgot one.',
+    long: 'One screen that tells you what happened overnight and what is waiting: instead of five tabs you check in a fixed order because you once forgot one.',
   },
   web: {
     title: 'Your website',
@@ -23,12 +23,12 @@ export const GROUP_COPY: Record<PigglesGroup, { title: string; blurb: string; lo
   sell: {
     title: 'Selling',
     blurb: 'What you sell and what you have left.',
-    long: 'Products or services, online or across the counter, one at a time or by the pallet — and always an honest answer to how many are left.',
+    long: 'Products or services, online or across the counter, one at a time or by the pallet, and always an honest answer to how many are left.',
   },
   people: {
     title: 'People',
     blurb: 'Customers, conversations, appointments.',
-    long: 'Everyone you deal with, everything you have ever said to them, and every time they are booked in — in one history rather than three systems and a notebook.',
+    long: 'Everyone you deal with, everything you have ever said to them, and every time they are booked in: in one history rather than three systems and a notebook.',
   },
   money: {
     title: 'Money',

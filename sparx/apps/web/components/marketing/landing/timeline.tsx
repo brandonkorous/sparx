@@ -17,7 +17,7 @@ const MOMENTS = [
   {
     time: '7:12 AM',
     title: 'An order lands before you open.',
-    body: 'Inventory updates, payment clears, the customer record updates, and a pickup message is scheduled — automatically, with no integration to configure.',
+    body: 'Inventory updates, payment clears, the customer record updates, and a pickup message is scheduled: automatically, with no integration to configure.',
     result: 'Order handled',
     module: 'commerce',
   },
@@ -38,7 +38,7 @@ const MOMENTS = [
   {
     time: '4:50 PM',
     title: 'You ask your AI what changed today.',
-    body: 'Because sparx exposes live business data through MCP, your assistant answers with real orders, customers and inventory — not a stale export.',
+    body: 'Because sparx exposes live business data through MCP, your assistant answers with real orders, customers and inventory, not a stale export.',
     result: 'Answer grounded',
     module: 'ai',
   },

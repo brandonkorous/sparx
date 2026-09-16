@@ -41,7 +41,7 @@ export function MeetingPanel({
           We could not find that booking link
         </h1>
         <p className="text-base-content">
-          Check the address in the email you were sent — links are sometimes cut short on their way
+          Check the address in the email you were sent: links are sometimes cut short on their way
           through a message. If it keeps happening, reply and ask for a fresh one.
         </p>
       </div>
@@ -58,8 +58,8 @@ export function MeetingPanel({
         </h1>
         <p className="text-base-content">
           {link.hostName === ''
-            ? 'Reply to the email you received and ask for a current one — whoever sent it can still book you in.'
-            : `Reply to the email ${link.hostName} sent you and ask for a current one — they can still book you in.`}
+            ? 'Reply to the email you received and ask for a current one: whoever sent it can still book you in.'
+            : `Reply to the email ${link.hostName} sent you and ask for a current one. They can still book you in.`}
         </p>
       </div>
     );

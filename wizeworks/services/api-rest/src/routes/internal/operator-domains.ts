@@ -436,7 +436,7 @@ const operatorDomainsRoutes: FastifyPluginAsync = async (app) => {
         mode: 'synchronous',
         passed,
         message: passed
-          ? 'Domain verified — it is now live and secures on the next request.'
+          ? 'Domain verified. It is now live and secures on the next request.'
           : apex
             ? `The TXT control-proof at ${TXT_PREFIX}${row.host} is not resolving yet. DNS can take a few minutes to propagate.`
             : `No CNAME for ${row.host} pointing to ${CNAME_TARGET} yet. DNS can take a few minutes to propagate.`,

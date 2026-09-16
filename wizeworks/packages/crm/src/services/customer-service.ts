@@ -1050,7 +1050,7 @@ async function asDuplicateEmail(
   const who = name === '' ? 'A contact' : name;
   return new CrmConflictError(
     existing.deletedAt === null
-      ? `${who} already uses ${email}. Open that contact and add what is new there — a second record splits one person's history in half.`
+      ? `${who} already uses ${email}. Open that contact and add what is new there: a second record splits one person's history in half.`
       : `${who} used ${email} and was deleted. Restore that contact rather than adding a second one; their orders and conversations are still attached to it.`,
     'email'
   );

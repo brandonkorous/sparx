@@ -299,7 +299,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -727,8 +727,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Vérane — fine jewellery & fragrance",
-      "seoDescription": "Vérane is a fine jewellery and fragrance maison — pieces cut and composed in small numbers, made to be worn every day and kept for a lifetime.",
+      "seoTitle": "Vérane: fine jewellery & fragrance",
+      "seoDescription": "Vérane is a fine jewellery and fragrance maison: pieces cut and composed in small numbers, made to be worn every day and kept for a lifetime.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -781,7 +781,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Fine jewellery and fragrance from the Vérane atelier — made a few pieces at a time, to be kept for a lifetime."
+                          "Fine jewellery and fragrance from the Vérane atelier: made a few pieces at a time, to be kept for a lifetime."
                         ],
                         "id": "070092fe-c60a-4598-ac2a-7b21b81ff63c",
                         "ord": "a1"
@@ -1264,7 +1264,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every Vérane piece is cut, set and finished by hand in numbered runs. Small numbers are not a scarcity trick — they are what it takes to answer for every stone, every setting and every drop of scent that leaves the atelier."
+                          "Every Vérane piece is cut, set and finished by hand in numbered runs. Small numbers are not a scarcity trick. They are what it takes to answer for every stone, every setting and every drop of scent that leaves the atelier."
                         ],
                         "id": "7f04befb-acbe-4be3-b3bc-60864740ff7f",
                         "ord": "a1"
@@ -1707,7 +1707,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Vérane",
+      "seoTitle": "Shop: Vérane",
       "seoDescription": "Browse everything Vérane makes, with prices and options at a glance. Fine jewellery & fragrance.",
       "root": {
         "kind": "element",
@@ -1739,7 +1739,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything Vérane currently makes — fine jewellery in gold, platinum and hand-selected stones, and the four house eaux de parfum. Cut and composed in small numbers, and made to be kept."
+                      "Everything Vérane currently makes: fine jewellery in gold, platinum and hand-selected stones, and the four house eaux de parfum. Cut and composed in small numbers, and made to be kept."
                     ],
                     "id": "69542bf4-2b16-4731-8168-06714e4cbcc9",
                     "ord": "a1"
@@ -1767,7 +1767,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Vérane",
+      "seoTitle": "Collections: Vérane",
       "seoDescription": "Explore the collections at Vérane, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1799,7 +1799,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The house in three registers — the numbered high jewellery we make a few of a year, the fine gold and silver made for every day, and the four house eaux de parfum. Begin wherever you are dressing."
+                      "The house in three registers: the numbered high jewellery we make a few of a year, the fine gold and silver made for every day, and the four house eaux de parfum. Begin wherever you are dressing."
                     ],
                     "id": "96a6e623-3f6e-40ab-a5bf-6f73437547f1",
                     "ord": "a1"
@@ -1827,7 +1827,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Vérane",
+      "seoTitle": "Your cart: Vérane",
       "seoDescription": "Review what is in your cart and check out securely at Vérane.",
       "root": {
         "kind": "element",
@@ -1887,7 +1887,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Vérane",
+      "seoTitle": "Search: Vérane",
       "seoDescription": "Search Vérane for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1919,7 +1919,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Looking for a particular piece — a stone, a metal, a scent you were once given? Search the whole collection and the Journal below."
+                      "Looking for a particular piece: a stone, a metal, a scent you were once given? Search the whole collection and the Journal below."
                     ],
                     "id": "22bf6cb3-4810-4c22-ac13-320aee314137",
                     "ord": "a1"
@@ -1947,7 +1947,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Vérane",
+      "seoTitle": "Journal: Vérane",
       "seoDescription": "Stories, guides and notes from Vérane.",
       "root": {
         "kind": "element",
@@ -1979,7 +1979,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the atelier — where the stones are cut, how a fragrance is composed, and the plain idea behind the whole house: buy less, choose better, keep it for a lifetime."
+                      "Notes from the atelier: where the stones are cut, how a fragrance is composed, and the plain idea behind the whole house: buy less, choose better, keep it for a lifetime."
                     ],
                     "id": "0095122e-e1a8-43af-9f79-bdea92e33938",
                     "ord": "a1"
@@ -2112,8 +2112,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Vérane — the maison",
-      "seoDescription": "The maison behind Vérane — how each piece of jewellery and every fragrance is made in small numbers, by the hands that designed it.",
+      "seoTitle": "About Vérane: the maison",
+      "seoDescription": "The maison behind Vérane: how each piece of jewellery and every fragrance is made in small numbers, by the hands that designed it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2144,7 +2144,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Vérane is a small maison of fine jewellery and fragrance. We work in gold, platinum and hand-selected stones, and in scent composed a few litres at a time — and we make in numbered runs, in our own atelier, by the people whose hands are on the work."
+                      "Vérane is a small maison of fine jewellery and fragrance. We work in gold, platinum and hand-selected stones, and in scent composed a few litres at a time, and we make in numbered runs, in our own atelier, by the people whose hands are on the work."
                     ],
                     "id": "4a30de8f-ed4c-44b4-91d5-625cfd122652",
                     "ord": "a1"
@@ -2174,8 +2174,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Vérane",
-      "seoDescription": "Get in touch with Vérane — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Vérane",
+      "seoDescription": "Get in touch with Vérane: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2211,7 +2211,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Our atelier and salon are open by appointment. Tell us what you are looking for — a single piece, a bespoke commission, or a fragrance to be layered to your own — and we will find a time."
+                          "Our atelier and salon are open by appointment. Tell us what you are looking for (a single piece, a bespoke commission, or a fragrance to be layered to your own) and we will find a time."
                         ],
                         "id": "a9f38c3a-5d74-4457-9e78-b86a4730b4f3",
                         "ord": "a1"
@@ -2482,8 +2482,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Vérane",
-      "seoDescription": "Product details at Vérane — fine jewellery & fragrance, with options and pricing.",
+      "seoTitle": "Product: Vérane",
+      "seoDescription": "Product details at Vérane: fine jewellery & fragrance, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2528,7 +2528,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-xs font-medium uppercase tracking-widest text-base-content",
-                            "children": ["Vérane — the maison"],
+                            "children": ["Vérane: the maison"],
                             "id": "c52f91b0-a733-4fa8-b44b-1a6884ffea7c",
                             "ord": "a0"
                           },

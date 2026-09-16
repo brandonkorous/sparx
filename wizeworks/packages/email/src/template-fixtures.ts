@@ -139,7 +139,7 @@ export const TEMPLATE_PROPS: { [K in TemplateId]: PropsFor<K> } = {
     siteName: 'Rosa Flowers',
     name: 'Dev Patel',
     subject: 'Here is your download',
-    message: 'Thanks for asking — here is the wedding flower planner.',
+    message: 'Thanks for asking. Here is the wedding flower planner.',
     filename: 'Wedding Flower Planner.pdf',
     // A neutral host on purpose: the real one is per-deployment
     // (`MEDIA_PUBLIC_URL`), and a brand's domain in a fixture is a thing someone

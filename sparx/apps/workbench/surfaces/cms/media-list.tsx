@@ -94,9 +94,9 @@ function kindIcon(kind: MediaKind, className: string) {
 function emptyAdvice(search: string, kindLabel: string | null, statusLabel: string | null): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of the filename, or the alt text you gave it.');
-  if (kindLabel) parts.push(`You are only seeing ${kindLabel} — switch to All to widen it.`);
+  if (kindLabel) parts.push(`You are only seeing ${kindLabel}. Switch to All to widen it.`);
   if (statusLabel)
-    parts.push(`Only “${statusLabel}” is showing — choose Any state to see the rest.`);
+    parts.push(`Only “${statusLabel}” is showing. Choose Any state to see the rest.`);
   return parts.join(' ');
 }
 
@@ -301,7 +301,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<ImageIcon className="size-6" aria-hidden />}
             title="Could not load your library"
-            description="This is a problem reaching the server. Nothing you have uploaded is affected — none of it has been lost."
+            description="This is a problem reaching the server. Nothing you have uploaded is affected: none of it has been lost."
             actions={
               <Button
                 size="sm"
@@ -360,7 +360,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
                   <button
                     type="button"
                     aria-label={`Open ${asset.filename}`}
-                    title="Open — hold Shift to open alongside, Alt for a new window"
+                    title="Open: hold Shift to open alongside, Alt for a new window"
                     className="group border-base-300 bg-base-100 rounded-box flex w-full flex-col overflow-hidden border text-left hover:[border-color:var(--color-module)]"
                     onClick={(event) => {
                       open(asset, event);

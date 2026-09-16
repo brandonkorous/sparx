@@ -12,7 +12,7 @@ const cartToken = z.string().min(1).describe('The cart token returned by create_
 const createCart: SiteTool = {
   name: 'create_cart',
   description:
-    'Create a new guest cart. Returns the cart plus a `token` — keep the cartId AND token and pass them to every later cart/checkout tool.',
+    'Create a new guest cart. Returns the cart plus a `token`: keep the cartId AND token and pass them to every later cart/checkout tool.',
   kind: 'guest_write',
   module: 'commerce',
   input: z.object({}),

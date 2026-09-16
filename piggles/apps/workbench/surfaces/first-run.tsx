@@ -54,7 +54,7 @@ const STEPS: Step[] = [
     key: 'product',
     module: 'commerce',
     label: 'Add the first thing you sell',
-    detail: 'A product, a service, a session — whatever people pay you for.',
+    detail: 'A product, a service, a session: whatever people pay you for.',
     surface: 'commerce.product.detail',
     params: { id: 'new' },
     doneLabel: 'You have something to sell',
@@ -100,7 +100,7 @@ export function FirstRunPanel({ ctx }: { ctx: SurfaceContext }) {
             </Heading>
             <Text className="text-base text-pretty">
               Three things and your business is running here. Nothing else is waiting on them, so do
-              them in any order — or none.
+              them in any order, or none.
             </Text>
           </div>
           {/* Small, and only on a pane with room: this is a nudge, not an event. */}

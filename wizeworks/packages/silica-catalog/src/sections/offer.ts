@@ -206,7 +206,7 @@ export function costExamples(): Node {
   return section([
     sectionHead(
       'What people usually spend',
-      'Three real jobs from this year, with what they actually cost. Yours will differ — these are for calibration, not a quote.'
+      'Three real jobs from this year, with what they actually cost. Yours will differ. These are for calibration, not a quote.'
     ),
     gridThree([
       example('A small kitchen', 'Eight units, oak worktop, three weeks on site.', 'about $9,400'),

@@ -166,7 +166,7 @@ function hero(): Node {
                                     text: 'Ships today, priced by the pallet.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses. Boxes, mailers, tape, fill and labels by the case — real trade pricing, deep stock, and next-day dispatch on everything you see.',
+                                    text: 'Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses. Boxes, mailers, tape, fill and labels by the case: real trade pricing, deep stock, and next-day dispatch on everything you see.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -253,7 +253,7 @@ function tradeBand(): Node {
                         children: [
                             tradeCard({
                                 heading: 'Bulk pricing tiers',
-                                body: 'Every line drops in price as the quantity climbs — case, half-pallet, pallet. The break shows on the product page, so you always know the next threshold worth hitting.',
+                                body: 'Every line drops in price as the quantity climbs: case, half-pallet, pallet. The break shows on the product page, so you always know the next threshold worth hitting.',
                             }),
                             tradeCard({
                                 heading: 'Next-day dispatch',
@@ -261,7 +261,7 @@ function tradeBand(): Node {
                             }),
                             tradeCard({
                                 heading: 'Net-30 terms',
-                                body: 'Approved accounts order on net-30 and settle monthly against a single statement — no card at the checkout, no reconciling a dozen small receipts.',
+                                body: 'Approved accounts order on net-30 and settle monthly against a single statement: no card at the checkout, no reconciling a dozen small receipts.',
                             }),
                             tradeCard({
                                 heading: 'Custom-printed options',
@@ -269,7 +269,7 @@ function tradeBand(): Node {
                             }),
                             tradeCard({
                                 heading: 'A named account manager',
-                                body: 'One person who knows your SKUs, your sizes and your peak season — reachable by direct line, not a ticket queue. They flag a better-fitting box before you reorder the wrong one.',
+                                body: 'One person who knows your SKUs, your sizes and your peak season: reachable by direct line, not a ticket queue. They flag a better-fitting box before you reorder the wrong one.',
                             }),
                             tradeCard({
                                 heading: 'Standing orders',
@@ -324,7 +324,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.boxes', layout: 'carousel', heading: 'Shipping boxes' }),
     editorialBand({
         heading: 'One warehouse, next-day out',
-        lead: 'We hold deep stock of every line so an order is picked, banded and on a next-day pallet the same afternoon — not back-ordered from a supplier three steps away. The catalogue is what is actually on the shelf.',
+        lead: 'We hold deep stock of every line so an order is picked, banded and on a next-day pallet the same afternoon, not back-ordered from a supplier three steps away. The catalogue is what is actually on the shelf.',
         assetId: 'pkg-band-dispatch',
         cta: 'How dispatch works',
         href: '/blog/cut-your-shipping-costs',
@@ -369,7 +369,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & bulk breaks' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'The price shown is per case at the standard trade rate. It steps down again at half-pallet and pallet quantities — open a trade account to see your tier and net-30 terms. Order by 3pm and it ships from stock the same day.',
+                                        text: 'The price shown is per case at the standard trade rate. It steps down again at half-pallet and pallet quantities. Open a trade account to see your tier and net-30 terms. Order by 3pm and it ships from stock the same day.',
                                     }),
                                 ],
                             }),
@@ -408,11 +408,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The catalogue',
-        'Everything we stock, priced by the case with pack quantities and minimum orders on every line. Filter by aisle or sort however you like — all of it ships next-day from one warehouse, and every price drops again on a trade account.'
+        'Everything we stock, priced by the case with pack quantities and minimum orders on every line. Filter by aisle or sort however you like. All of it ships next-day from one warehouse, and every price drops again on a trade account.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The catalogue grouped the way a packing bench actually orders — the fast movers, what is new this quarter, the box range, protective fill, the mailer range, and a starter kit for a new operation.'),
+    pageMasthead('Collections', 'The catalogue grouped the way a packing bench actually orders: the fast movers, what is new this quarter, the box range, protective fill, the mailer range, and a starter kit for a new operation.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Boxwell', 'Looking for a box size, a mailer, a tape grade or a spec? Search the whole catalogue and the trade notes below.'),
@@ -424,7 +424,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your order' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Order by 3pm for same-day dispatch, next-day across the mainland. Approved trade accounts check out on net-30 against a single monthly statement — no card, no per-order receipts to reconcile.',
+                        text: 'Order by 3pm for same-day dispatch, next-day across the mainland. Approved trade accounts check out on net-30 against a single monthly statement: no card, no per-order receipts to reconcile.',
                     }),
                 ],
             }),
@@ -438,7 +438,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The loading dock' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Plain, useful notes from the warehouse — right-sizing your cartons, the greener materials worth switching to, and the shipping-cost levers that actually move the invoice.',
+                        text: 'Plain, useful notes from the warehouse: right-sizing your cartons, the greener materials worth switching to, and the shipping-cost levers that actually move the invoice.',
                     }),
                 ],
             }),
@@ -455,10 +455,10 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Boxwell Supply' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Boxwell started on one loading dock, supplying packaging to the growing e-commerce sellers next door who were tired of paying retail prices for the boxes they shipped in every day. We grew the plain way — deeper stock, better trade pricing, faster dispatch — and it still runs on the same idea: hold the material, price it fairly, and get it out the door today.',
+                        text: 'Boxwell started on one loading dock, supplying packaging to the growing e-commerce sellers next door who were tired of paying retail prices for the boxes they shipped in every day. We grew the plain way (deeper stock, better trade pricing, faster dispatch) and it still runs on the same idea: hold the material, price it fairly, and get it out the door today.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We buy direct from the mills and converters, in pallet volumes, and pass the volume through to accounts of every size — a two-person studio and a national 3PL buy the same line at a price that reflects what they take. No opaque list price, no chasing a rep for a quote on a stock box.',
+                        text: 'We buy direct from the mills and converters, in pallet volumes, and pass the volume through to accounts of every size: a two-person studio and a national 3PL buy the same line at a price that reflects what they take. No opaque list price, no chasing a rep for a quote on a stock box.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'What we sell is dependability: the case you reordered is the case that arrives, at the price you were quoted, on the day you needed it. Packaging is the last thing that should be a surprise.',
@@ -476,7 +476,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Open a trade account',
-        intro: 'Tell us what you ship and roughly how much, and we will set up an account with your trade pricing, net-30 terms and a named account manager — usually within a day. Existing customers, reach your manager on the direct line on your statement.',
+        intro: 'Tell us what you ship and roughly how much, and we will set up an account with your trade pricing, net-30 terms and a named account manager, usually within a day. Existing customers, reach your manager on the direct line on your statement.',
         submitLabel: 'Email the trade desk',
     }),
 ];
@@ -551,14 +551,14 @@ const PRODUCTS: Product[] = [
         handle: 'shipping-boxes',
         title: 'Corrugated Shipping Boxes',
         description:
-            'Single-wall 32 ECT kraft cartons, sold in bundles of 25, flat-packed. MOQ 4 bundles (100 boxes); price shown is per bundle and steps down by the pallet. Clean die-cut creases fold square by hand — no tape gun fight, no bulging seams. Pick the size to your product and stop paying to ship air.',
+            'Single-wall 32 ECT kraft cartons, sold in bundles of 25, flat-packed. MOQ 4 bundles (100 boxes); price shown is per bundle and steps down by the pallet. Clean die-cut creases fold square by hand: no tape gun fight, no bulging seams. Pick the size to your product and stop paying to ship air.',
         status: 'active',
         productType: 'Shipping box',
         vendor: 'Boxwell Supply',
         tags: ['boxes', 'corrugated', 'bulk', 'best-seller'],
         categoryHandles: ['boxes'],
         collectionHandles: ['best-sellers', 'ship-boxes'],
-        seoTitle: 'Corrugated Shipping Boxes — bundles of 25 | Boxwell Supply',
+        seoTitle: 'Corrugated Shipping Boxes: bundles of 25 | Boxwell Supply',
         seoDescription: 'Single-wall 32 ECT kraft shipping boxes in bundles of 25, three sizes. Trade-priced by the pallet, next-day dispatch.',
         options: [
             {
@@ -586,7 +586,7 @@ const PRODUCTS: Product[] = [
         tags: ['mailers', 'poly', 'bulk', 'best-seller'],
         categoryHandles: ['mailers'],
         collectionHandles: ['best-sellers', 'mailer-range'],
-        seoTitle: 'Poly Mailers — case of 500 | Boxwell Supply',
+        seoTitle: 'Poly Mailers: case of 500 | Boxwell Supply',
         seoDescription: 'Waterproof self-seal poly mailers in a case of 500, three sizes. Trade-priced, next-day dispatch from stock.',
         options: [
             {
@@ -606,7 +606,7 @@ const PRODUCTS: Product[] = [
         handle: 'packing-tape',
         title: 'Packing Tape',
         description:
-            'Heavy-grade acrylic carton-sealing tape, 48mm x 100m, sold by the case of 36 rolls. MOQ 1 case; price shown is per case. Quiet off the roll, sticks first pass to kraft, and holds through a cold van — the tape you stop thinking about. Fits every standard 2-inch dispenser.',
+            'Heavy-grade acrylic carton-sealing tape, 48mm x 100m, sold by the case of 36 rolls. MOQ 1 case; price shown is per case. Quiet off the roll, sticks first pass to kraft, and holds through a cold van: the tape you stop thinking about. Fits every standard 2-inch dispenser.',
         price: 44,
         sku: 'TAPE-ACR-36',
         productType: 'Tape',
@@ -615,14 +615,14 @@ const PRODUCTS: Product[] = [
         tags: ['tape', 'sealing', 'bulk'],
         asset: 'pkg-prod-tape',
         alt: 'A case of clear packing-tape rolls',
-        seoTitle: 'Packing Tape — case of 36 rolls | Boxwell Supply',
+        seoTitle: 'Packing Tape: case of 36 rolls | Boxwell Supply',
         seoDescription: 'Heavy-grade 48mm acrylic carton-sealing tape, 36 rolls to the case. First-pass adhesion on kraft, trade-priced.',
     }),
     caseItem({
         handle: 'bubble-wrap',
         title: 'Bubble Cushioning Roll',
         description:
-            'Small-bubble cushioning film, 500mm x 100m on the roll, perforated every 300mm so it tears clean at the bench. MOQ 4 rolls; price shown is per roll. Nesting bubbles keep their air under stacking — the everyday wrap for anything with an edge or a screen.',
+            'Small-bubble cushioning film, 500mm x 100m on the roll, perforated every 300mm so it tears clean at the bench. MOQ 4 rolls; price shown is per roll. Nesting bubbles keep their air under stacking: the everyday wrap for anything with an edge or a screen.',
         price: 34,
         sku: 'FILL-BUB-500',
         productType: 'Protective packaging',
@@ -631,14 +631,14 @@ const PRODUCTS: Product[] = [
         tags: ['fill', 'protective', 'bubble', 'roll'],
         asset: 'pkg-prod-bubble',
         alt: 'A large roll of small-bubble cushioning wrap',
-        seoTitle: 'Bubble Cushioning Roll — 500mm x 100m | Boxwell Supply',
+        seoTitle: 'Bubble Cushioning Roll: 500mm x 100m | Boxwell Supply',
         seoDescription: 'Perforated small-bubble cushioning film, 500mm x 100m. Tears clean at the bench, trade-priced by the roll.',
     }),
     caseItem({
         handle: 'void-fill-paper',
         title: 'Kraft Void-Fill Paper',
         description:
-            'Recycled 70gsm kraft void-fill on a 400m fan-folded stack that feeds straight into a dispenser — no jams, no tangles. MOQ 2 stacks; price shown is per stack. Scrunches to fill a carton fast and drops in the household recycling, so it is the greener swap for loose-fill and air pillows.',
+            'Recycled 70gsm kraft void-fill on a 400m fan-folded stack that feeds straight into a dispenser: no jams, no tangles. MOQ 2 stacks; price shown is per stack. Scrunches to fill a carton fast and drops in the household recycling, so it is the greener swap for loose-fill and air pillows.',
         price: 39,
         sku: 'FILL-KRAFT-400',
         productType: 'Protective packaging',
@@ -647,14 +647,14 @@ const PRODUCTS: Product[] = [
         tags: ['fill', 'void-fill', 'kraft', 'recyclable'],
         asset: 'pkg-prod-voidfill',
         alt: 'A fan-folded stack of kraft void-fill paper',
-        seoTitle: 'Kraft Void-Fill Paper — 400m fan-fold | Boxwell Supply',
+        seoTitle: 'Kraft Void-Fill Paper: 400m fan-fold | Boxwell Supply',
         seoDescription: 'Recycled 70gsm kraft void-fill, 400m fan-folded for jam-free dispensing. Kerbside-recyclable, trade-priced.',
     }),
     caseItem({
         handle: 'kraft-mailers',
         title: 'Padded Kraft Mailers',
         description:
-            'Paper-padded kraft bubble mailers with a self-seal strip, sold by the case of 100. MOQ 2 cases; price shown is per case. A recyclable protective mailer for small fragile items — books, cosmetics, electronics accessories — that skips the plastic bubble lining entirely.',
+            'Paper-padded kraft bubble mailers with a self-seal strip, sold by the case of 100. MOQ 2 cases; price shown is per case. A recyclable protective mailer for small fragile items (books, cosmetics, electronics accessories) that skips the plastic bubble lining entirely.',
         price: 52,
         sku: 'MLR-KRAFT-100',
         productType: 'Mailer',
@@ -663,14 +663,14 @@ const PRODUCTS: Product[] = [
         tags: ['mailers', 'kraft', 'padded', 'recyclable'],
         asset: 'pkg-prod-kraft',
         alt: 'A stack of padded kraft bubble mailers',
-        seoTitle: 'Padded Kraft Mailers — case of 100 | Boxwell Supply',
+        seoTitle: 'Padded Kraft Mailers: case of 100 | Boxwell Supply',
         seoDescription: 'Recyclable paper-padded kraft mailers, self-seal, case of 100. Protective without the plastic, trade-priced.',
     }),
     caseItem({
         handle: 'thermal-labels',
         title: 'Thermal Shipping Labels',
         description:
-            '4x6 direct-thermal shipping labels on a 250-count roll, sold in a pack of 12 rolls (3,000 labels). MOQ 1 pack; price shown is per pack. Smudge-proof, no ink or ribbon, and sized for every major carrier — feeds any standard 4-inch desktop or industrial label printer.',
+            '4x6 direct-thermal shipping labels on a 250-count roll, sold in a pack of 12 rolls (3,000 labels). MOQ 1 pack; price shown is per pack. Smudge-proof, no ink or ribbon, and sized for every major carrier: feeds any standard 4-inch desktop or industrial label printer.',
         price: 46,
         sku: 'LBL-4X6-12',
         productType: 'Label',
@@ -679,7 +679,7 @@ const PRODUCTS: Product[] = [
         tags: ['labels', 'thermal', 'shipping', 'bulk'],
         asset: 'pkg-prod-labels',
         alt: 'A pack of thermal shipping-label rolls',
-        seoTitle: 'Thermal Shipping Labels — 4x6, 12-roll pack | Boxwell Supply',
+        seoTitle: 'Thermal Shipping Labels: 4x6, 12-roll pack | Boxwell Supply',
         seoDescription: '4x6 direct-thermal shipping labels, 250 to the roll, 12-roll pack. Ribbon-free, carrier-sized, trade-priced.',
     }),
     caseItem({
@@ -695,7 +695,7 @@ const PRODUCTS: Product[] = [
         tags: ['stretch-wrap', 'pallet', 'film', 'bulk'],
         asset: 'pkg-prod-stretch',
         alt: 'A roll of clear pallet stretch wrap',
-        seoTitle: 'Pallet Stretch Wrap — 500mm, case of 6 rolls | Boxwell Supply',
+        seoTitle: 'Pallet Stretch Wrap: 500mm, case of 6 rolls | Boxwell Supply',
         seoDescription: 'Blown cast stretch film, 500mm x 300m, 20 micron, 6 rolls to the case. High cling, trade-priced by the case.',
     }),
     caseItem({
@@ -711,8 +711,8 @@ const PRODUCTS: Product[] = [
         tags: ['kit', 'starter', 'bundle', 'best-seller'],
         asset: 'pkg-prod-kit',
         alt: 'A warehouse packing starter kit of boxes, tape and fill',
-        seoTitle: 'Warehouse Starter Kit — boxes, tape, fill & labels | Boxwell Supply',
-        seoDescription: 'A bundled packing starter kit — assorted boxes, tape, bubble, void-fill and labels — at a trade price below the parts.',
+        seoTitle: 'Warehouse Starter Kit: boxes, tape, fill & labels | Boxwell Supply',
+        seoDescription: 'A bundled packing starter kit (assorted boxes, tape, bubble, void-fill and labels) at a trade price below the parts.',
     }),
 ];
 
@@ -793,12 +793,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('An oversized box costs you three times over: you pay for the extra board, you pay for the void-fill to stop the product rattling around inside it, and — the big one — you pay the carrier for the air, because parcels are priced on dimensional weight as often as actual weight. A product that could ship in a 12x9x6 going out in an 18x14x10 can quietly double the shipping line on every order.'),
+                    para('An oversized box costs you three times over: you pay for the extra board, you pay for the void-fill to stop the product rattling around inside it, and (the big one) you pay the carrier for the air, because parcels are priced on dimensional weight as often as actual weight. A product that could ship in a 12x9x6 going out in an 18x14x10 can quietly double the shipping line on every order.'),
                     h2('Measure the product, then add a little'),
-                    para('Take the real dimensions of the packed product — including any bubble or sleeve — and add roughly 2cm on each axis for the cushioning and an easy hand-pack. That target size is the box you want a bundle of. Most operations ship 80% of their volume in three or four sizes; find yours by looking at what you actually send, not the full range you could stock.'),
+                    para('Take the real dimensions of the packed product (including any bubble or sleeve) and add roughly 2cm on each axis for the cushioning and an easy hand-pack. That target size is the box you want a bundle of. Most operations ship 80% of their volume in three or four sizes; find yours by looking at what you actually send, not the full range you could stock.'),
                     h2('Fewer sizes, bought deeper'),
                     para('It is tempting to stock a size for every product. In practice, a tight range of three to five sizes bought in pallet volume beats a wide range bought in bundles: you hit the better price break, you hold less slow-moving stock, and the bench packs faster because there is less deciding. Round products up to the nearest stocked size rather than adding another SKU for the sake of a centimetre.'),
-                    para('If you are not sure where your range should land, send us a month of your order dimensions and your account manager will map it to the fewest sizes that cover it — usually saving more on carrier cost than on the boxes themselves.'),
+                    para('If you are not sure where your range should land, send us a month of your order dimensions and your account manager will map it to the fewest sizes that cover it, usually saving more on carrier cost than on the boxes themselves.'),
                 ],
             },
         },
@@ -814,11 +814,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Customers notice packaging, and increasingly they notice plastic. The good news is that the paper-based alternatives have caught up on protection — the question is no longer whether they work, but which switches are worth making first for your product mix.'),
+                    para('Customers notice packaging, and increasingly they notice plastic. The good news is that the paper-based alternatives have caught up on protection: the question is no longer whether they work, but which switches are worth making first for your product mix.'),
                     h2('The easy swaps'),
-                    para('Two changes cover most operations. Kraft void-fill paper replaces loose-fill and air pillows one-for-one at the bench, scrunches to fill any carton, and drops in the household recycling — no separate stream, no “check locally” asterisk. Padded kraft mailers replace plastic bubble mailers for small fragile items and carry the same self-seal convenience. Both are stocked lines here, in trade volume.'),
+                    para('Two changes cover most operations. Kraft void-fill paper replaces loose-fill and air pillows one-for-one at the bench, scrunches to fill any carton, and drops in the household recycling: no separate stream, no “check locally” asterisk. Padded kraft mailers replace plastic bubble mailers for small fragile items and carry the same self-seal convenience. Both are stocked lines here, in trade volume.'),
                     h2('Where plastic still earns its place'),
-                    para('Be honest about the exceptions. Poly mailers are waterproof and lighter than any paper equivalent, which for some products means a lower carrier weight band and genuinely less material by mass. Where you keep a plastic line, look for a recyclable-stream grade and say so on the parcel, so the customer knows what to do with it. Greener is a direction, not a purity test — the switch that lowers your damage rate and your footprint at once is the one to make.'),
+                    para('Be honest about the exceptions. Poly mailers are waterproof and lighter than any paper equivalent, which for some products means a lower carrier weight band and genuinely less material by mass. Where you keep a plastic line, look for a recyclable-stream grade and say so on the parcel, so the customer knows what to do with it. Greener is a direction, not a purity test: the switch that lowers your damage rate and your footprint at once is the one to make.'),
                     para('Ask your account manager for the recyclable equivalent of anything on your current order; where we stock one, we’ll price it alongside so you can compare cost per parcel, not just cost per case.'),
                 ],
             },
@@ -835,15 +835,15 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Most sellers try to cut shipping by negotiating the carrier rate, then stop. The rate matters, but the parcel itself is often the bigger lever — because it is one you control completely, and it compounds across every order you ship. Here are the four that move the number most, roughly in order.'),
+                    para('Most sellers try to cut shipping by negotiating the carrier rate, then stop. The rate matters, but the parcel itself is often the bigger lever, because it is one you control completely, and it compounds across every order you ship. Here are the four that move the number most, roughly in order.'),
                     h2('1. Dimensional weight'),
-                    para('Carriers bill on whichever is greater: the actual weight or the volumetric weight (length × width × height ÷ a divisor). For anything light and bulky, the box size sets the price, full stop. Right-sizing your cartons — see the right-sizing note — is almost always the single biggest saving available, and it costs nothing but a tighter box range.'),
+                    para('Carriers bill on whichever is greater: the actual weight or the volumetric weight (length × width × height ÷ a divisor). For anything light and bulky, the box size sets the price, full stop. Right-sizing your cartons (see the right-sizing note) is almost always the single biggest saving available, and it costs nothing but a tighter box range.'),
                     h2('2. Weight bands and material mass'),
-                    para('The difference between the top of one weight band and the bottom of the next can be a few grams of packaging. Lighter mailers, thinner-but-adequate board, and paper fill instead of heavy alternatives can keep a parcel in the cheaper band. Weigh a typical packed order and see how close you are to a threshold — sometimes a lighter tape or mailer pays for itself immediately.'),
+                    para('The difference between the top of one weight band and the bottom of the next can be a few grams of packaging. Lighter mailers, thinner-but-adequate board, and paper fill instead of heavy alternatives can keep a parcel in the cheaper band. Weigh a typical packed order and see how close you are to a threshold: sometimes a lighter tape or mailer pays for itself immediately.'),
                     h2('3. Consolidation and format'),
                     para('Two items going to one address should leave in one parcel; a mailer beats a box for anything that does not need the rigidity, both on dimensional weight and on material cost. Set the bench up so the smaller format is the default and the box is the exception, not the reverse.'),
                     h2('4. Buying volume'),
-                    para('None of the above helps if the packaging itself is bought at retail. Trade pricing by the pallet, on the tight range you actually use, is what makes the per-parcel maths work — and it is exactly what a trade account here is for. Send us your volumes and we’ll show the landed cost per parcel, not just the case price.'),
+                    para('None of the above helps if the packaging itself is bought at retail. Trade pricing by the pallet, on the tight range you actually use, is what makes the per-parcel maths work, and it is exactly what a trade account here is for. Send us your volumes and we’ll show the landed cost per parcel, not just the case price.'),
                 ],
             },
         },
@@ -858,7 +858,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Packaging Supplies (Wholesale)',
     theme: THEME,
     summary:
-        'A complete, working wholesale shop for a packaging & shipping-supplies distributor: a real trade catalogue priced by the case, bundle and roll — boxes, mailers, tape, cushioning, void-fill, stretch wrap, labels and a starter kit — with pack quantities and MOQs, a bespoke trade PDP with bulk breaks, and a home page that sells the account (bulk tiers, next-day dispatch, net-30). Kraft-industrial theme — corrugated tan, deep warehouse blue, safety-orange accent. Shipped as Boxwell Supply.',
+        'A complete, working wholesale shop for a packaging & shipping-supplies distributor: a real trade catalogue priced by the case, bundle and roll, boxes, mailers, tape, cushioning, void-fill, stretch wrap, labels and a starter kit, with pack quantities and MOQs, a bespoke trade PDP with bulk breaks, and a home page that sells the account (bulk tiers, next-day dispatch, net-30). Kraft-industrial theme, corrugated tan, deep warehouse blue, safety-orange accent. Shipped as Boxwell Supply.',
     tagline: 'A dependable trade storefront for a packaging distributor.',
     vertical: 'b2b',
     industry: 'Packaging & shipping supplies',
@@ -871,14 +871,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Boxwell Supply — wholesale packaging & shipping supplies',
+            title: 'Boxwell Supply: wholesale packaging & shipping supplies',
             description:
-                'Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses — boxes, mailers, tape, fill and labels by the case, at real trade pricing with next-day dispatch and net-30 terms.',
+                'Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses: boxes, mailers, tape, fill and labels by the case, at real trade pricing with next-day dispatch and net-30 terms.',
         },
         about: {
             title: 'About Boxwell Supply',
             description:
-                'How Boxwell buys, stocks and ships — direct from the mills, deep stock, honest trade pricing, and packaging that arrives the day you need it.',
+                'How Boxwell buys, stocks and ships: direct from the mills, deep stock, honest trade pricing, and packaging that arrives the day you need it.',
         },
     },
     home: HOME,

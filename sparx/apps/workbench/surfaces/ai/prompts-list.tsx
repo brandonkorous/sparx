@@ -209,7 +209,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 color="module"
                 size="sm"
                 className="ml-auto shrink-0"
-                title="Write a new instruction — hold Shift to open alongside, Alt for a new window"
+                title="Write a new instruction. Hold Shift to open alongside, Alt for a new window"
                 onClick={openNew}
               >
                 <Plus className="size-4" aria-hidden />
@@ -238,7 +238,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 Instructions
               </Heading>
               <Text>
-                The voice and rules sparx follows when it writes for you using your own AI account —
+                The voice and rules sparx follows when it writes for you using your own AI account:
                 how to sound, what to say, and what to never say, right down to your site’s chat
                 personality. The ones you turn on are the ones it follows.
               </Text>
@@ -246,7 +246,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <div className="border-base-300 flex flex-wrap items-center gap-x-1.5 gap-y-1 rounded-lg border px-3 py-2">
               <Text as="span" className="text-sm">
                 This is not about letting an outside AI app into your business to look things up or
-                make changes — that’s in
+                make changes: that’s in
               </Text>
               <Button
                 variant="link"
@@ -270,7 +270,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
               <EmptyState
                 icon={<Bot className="size-6" aria-hidden />}
                 title="Could not load your instructions"
-                description="This is a problem reaching the server. Your instructions are unaffected — nothing has been lost."
+                description="This is a problem reaching the server. Your instructions are unaffected. Nothing has been lost."
                 actions={
                   <Button
                     size="sm"
@@ -296,7 +296,7 @@ export function AiPromptsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 title="No instructions yet"
                 description={
                   canInstall
-                    ? 'Start with a ready-made set covering a support personality, product descriptions, email and more — then edit any of them. Or write your own from scratch.'
+                    ? 'Start with a ready-made set covering a support personality, product descriptions, email and more, then edit any of them. Or write your own from scratch.'
                     : canEdit
                       ? 'Write your first instruction to tell your own AI account how to sound and what to say when sparx writes for you.'
                       : 'Nobody has written any instructions yet for how sparx should write using your AI account. Ask an account admin to add some.'

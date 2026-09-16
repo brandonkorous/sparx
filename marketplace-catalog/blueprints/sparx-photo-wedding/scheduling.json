@@ -135,7 +135,7 @@
     {
       "handle": "engagement-session",
       "name": "Engagement session",
-      "description": "A golden-hour hour-and-a-half together — a warm-up in front of the camera and photographs you’ll actually use.",
+      "description": "A golden-hour hour-and-a-half together: a warm-up in front of the camera and photographs you’ll actually use.",
       "durationMinutes": 90,
       "priceCents": 45000,
       "assignmentStrategy": "customer_choice",
@@ -186,7 +186,7 @@
     {
       "handle": "bridal-session",
       "name": "Bridal session",
-      "description": "A slow, portrait-led morning in your gown — a trial run and a set of timeless images before the day itself.",
+      "description": "A slow, portrait-led morning in your gown: a trial run and a set of timeless images before the day itself.",
       "durationMinutes": 90,
       "priceCents": 55000,
       "assignmentStrategy": "customer_choice",
@@ -203,7 +203,7 @@
     {
       "handle": "full-day-wedding-consult",
       "name": "Full-day wedding consult",
-      "description": "A planning session for the whole wedding day — timeline, light and coverage, so nothing is left to chance.",
+      "description": "A planning session for the whole wedding day: timeline, light and coverage, so nothing is left to chance.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

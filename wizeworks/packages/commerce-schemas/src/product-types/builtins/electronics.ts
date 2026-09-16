@@ -5,7 +5,7 @@ export const electronicsType: ProductTypeDefinition = {
   key: 'electronics',
   name: 'Electronics',
   pluralName: 'Electronics',
-  description: 'Devices and gear — specifications, connectivity, box contents, and warranty.',
+  description: 'Devices and gear: specifications, connectivity, box contents, and warranty.',
   icon: '💻',
   attributeSchema: {
     fields: [

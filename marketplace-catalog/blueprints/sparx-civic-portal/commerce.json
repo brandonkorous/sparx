@@ -34,7 +34,7 @@
       "tags": ["publication", "guide"],
       "categoryHandles": ["publications"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Rivermark Resident Guide 2026 — City of Rivermark",
+      "seoTitle": "Rivermark Resident Guide 2026: City of Rivermark",
       "seoDescription": "The printed guide to city services, the waste calendar, and facility hours, mailed to your door.",
       "variants": [
         {
@@ -55,14 +55,14 @@
     {
       "handle": "monthly-transit-pass",
       "title": "Monthly Transit Pass",
-      "description": "Unlimited rides on every Rivermark Transit bus route for one calendar month. Tap to board — no exact change needed. Reduced-fare pricing is available for seniors and students at any transit center.",
+      "description": "Unlimited rides on every Rivermark Transit bus route for one calendar month. Tap to board: no exact change needed. Reduced-fare pricing is available for seniors and students at any transit center.",
       "status": "active",
       "productType": "Pass",
       "vendor": "City of Rivermark",
       "tags": ["pass", "transit"],
       "categoryHandles": ["passes"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Monthly Transit Pass — Rivermark Transit",
+      "seoTitle": "Monthly Transit Pass: Rivermark Transit",
       "seoDescription": "Unlimited rides on every Rivermark Transit bus route for one calendar month.",
       "variants": [
         {
@@ -90,7 +90,7 @@
       "tags": ["pass", "parks"],
       "categoryHandles": ["passes"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Annual Parks Pass — City of Rivermark",
+      "seoTitle": "Annual Parks Pass: City of Rivermark",
       "seoDescription": "A year of parking and entry at every Rivermark park, trailhead, and boat launch for a household.",
       "variants": [
         {

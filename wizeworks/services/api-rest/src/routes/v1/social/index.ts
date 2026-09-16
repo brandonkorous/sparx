@@ -183,7 +183,7 @@ const socialRoutes: FastifyPluginAsync = async (app) => {
     const adapter = getSocialAdapter(platform);
     if (!adapter) {
       throw conflict(
-        `${descriptor.name} is not available to connect yet — it ships in ${descriptor.phase}.`,
+        `${descriptor.name} is not available to connect yet: it ships in ${descriptor.phase}.`,
         { platform, phase: descriptor.phase }
       );
     }

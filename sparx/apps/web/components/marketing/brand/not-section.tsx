@@ -17,7 +17,7 @@ export function NotSection() {
         <SectionHeader
           accent="var(--color-module-ai)"
           headline="What sparx is not"
-          lede="The brand is defined as much by what it refuses. sparx is the tool a senior developer wishes existed — technical enough to be trusted, simple enough for anyone to use."
+          lede="The brand is defined as much by what it refuses. sparx is the tool a senior developer wishes existed: technical enough to be trusted, simple enough for anyone to use."
         />
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

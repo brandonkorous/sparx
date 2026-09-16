@@ -256,7 +256,7 @@ function mostRead(): Node {
 
 const HOME: Node[] = [
     featureBand(),
-    headingBand('The latest', 'New music writing, screen takes and culture from the Static desk — loud, on purpose.'),
+    headingBand('The latest', 'New music writing, screen takes and culture from the Static desk: loud, on purpose.'),
     blogPostGrid(),
     mostRead(),
     // The content→commerce bridge: the magazine's own store, as a live carousel.
@@ -354,7 +354,7 @@ const JOURNAL: Node[] = [
                         text: 'Static',
                     }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Music, screen and culture — reported loud, updated all day. Everything the desk is playing, watching and arguing about, newest first.',
+                        text: 'Music, screen and culture: reported loud, updated all day. Everything the desk is playing, watching and arguing about, newest first.',
                     }),
                 ],
             }),
@@ -373,7 +373,7 @@ const ABOUT: Node[] = [
                         text: 'About Static',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Static is a music and pop-culture magazine for people who still turn it up. We cover the records, the shows, the films and the arguments that actually move the needle — not the ones a press release told us to care about.',
+                        text: 'Static is a music and pop-culture magazine for people who still turn it up. We cover the records, the shows, the films and the arguments that actually move the needle, not the ones a press release told us to care about.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We started in a basement venue with a laptop and a merch table, and we have kept the same rule ever since: go to the room, talk to the people making the thing, and write it down while it is still loud. We are opinionated on purpose. If everyone already agrees, it is not a story.',
@@ -425,7 +425,7 @@ interface Product {
 const PRODUCTS: Product[] = [
     {
         handle: 'static-vol-1-vinyl',
-        title: 'Static Vol. 1 — Vinyl LP',
+        title: 'Static Vol. 1: Vinyl LP',
         description:
             'Our first compilation, pressed on 180-gram black vinyl: twelve tracks from the bands the desk spent the year chasing across basement rooms and festival tents. Gatefold sleeve, liner notes, and a download code inside.',
         status: 'active',
@@ -434,7 +434,7 @@ const PRODUCTS: Product[] = [
         tags: ['vinyl', 'lp', 'compilation'],
         categoryHandles: ['vinyl'],
         collectionHandles: ['featured'],
-        seoTitle: 'Static Vol. 1 — Vinyl LP',
+        seoTitle: 'Static Vol. 1: Vinyl LP',
         seoDescription: 'The Static Vol. 1 compilation on 180-gram vinyl, twelve tracks with liner notes.',
         variants: [{ sku: 'STC-VNL-VOL1', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'vinyl-lp', isPrimary: true, alt: 'Static Vol. 1 vinyl LP half out of its sleeve' }],
@@ -450,7 +450,7 @@ const PRODUCTS: Product[] = [
         tags: ['merch', 'tee', 'apparel'],
         categoryHandles: ['merch'],
         collectionHandles: ['featured'],
-        seoTitle: 'Static Logo Tee — heavyweight black t-shirt',
+        seoTitle: 'Static Logo Tee: heavyweight black t-shirt',
         seoDescription: 'A heavyweight black tee with the Static masthead screen-printed on the back.',
         variants: [{ sku: 'STC-TEE-LOGO', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'tee', isPrimary: true, alt: 'The Static logo tee, folded' }],
@@ -459,14 +459,14 @@ const PRODUCTS: Product[] = [
         handle: 'static-tour-poster',
         title: 'Static Tour Poster',
         description:
-            'An 18×24 screen print in hot crimson on uncoated black stock — the poster from our Vol. 1 launch run. Numbered edition, shipped flat in a rigid tube.',
+            'An 18×24 screen print in hot crimson on uncoated black stock: the poster from our Vol. 1 launch run. Numbered edition, shipped flat in a rigid tube.',
         status: 'active',
         productType: 'Print',
         vendor: 'Static',
         tags: ['merch', 'poster', 'print'],
         categoryHandles: ['merch'],
         collectionHandles: ['featured'],
-        seoTitle: 'Static Tour Poster — 18×24 screen print',
+        seoTitle: 'Static Tour Poster: 18×24 screen print',
         seoDescription: 'A numbered 18×24 screen-printed Static tour poster on black stock.',
         variants: [{ sku: 'STC-PST-TOUR', priceCents: money(22), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'poster', isPrimary: true, alt: 'The Static tour poster on a wall' }],
@@ -482,7 +482,7 @@ const PRODUCTS: Product[] = [
         tags: ['merch', 'tote'],
         categoryHandles: ['merch'],
         collectionHandles: [],
-        seoTitle: 'Static Tote — heavyweight canvas tote',
+        seoTitle: 'Static Tote: heavyweight canvas tote',
         seoDescription: 'A heavyweight canvas tote with the Static masthead, sized for a stack of records.',
         variants: [{ sku: 'STC-TOTE', priceCents: money(24), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'tote', isPrimary: true, alt: 'The Static canvas tote' }],
@@ -516,19 +516,19 @@ const AUTHORS = [
     {
         slug: 'jules-vega',
         displayName: 'Jules Vega',
-        bio: 'Jules Vega covers music for Static — the bands, the rooms and the scenes, mostly from the floor. Fifteen years of gig tickets and a permanent ring in one ear to show for it.',
+        bio: 'Jules Vega covers music for Static: the bands, the rooms and the scenes, mostly from the floor. Fifteen years of gig tickets and a permanent ring in one ear to show for it.',
         avatarAssetId: 'author-vega',
     },
     {
         slug: 'theo-marsh',
         displayName: 'Theo Marsh',
-        bio: 'Theo Marsh writes about screen and sound for Static — how films and TV use music, and how music becomes a picture. Formerly a film programmer, still a soundtrack obsessive.',
+        bio: 'Theo Marsh writes about screen and sound for Static: how films and TV use music, and how music becomes a picture. Formerly a film programmer, still a soundtrack obsessive.',
         avatarAssetId: 'author-marsh',
     },
     {
         slug: 'nia-okonkwo',
         displayName: 'Nia Okonkwo',
-        bio: 'Nia Okonkwo reports on culture for Static — the internet, the discourse and the way a song becomes a moment. She has a low tolerance for manufactured virality and a high one for a good argument.',
+        bio: 'Nia Okonkwo reports on culture for Static: the internet, the discourse and the way a song becomes a moment. She has a low tolerance for manufactured virality and a high one for a good argument.',
         avatarAssetId: 'author-okonkwo',
     },
 ];
@@ -554,11 +554,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('For the better part of a decade the story about guitar music was that it was over — displaced, streamed into irrelevance, a heritage act at best. Then, quietly and then all at once, the small rooms started selling out again. Not stadiums. The 200-cap basements, the back rooms of pubs, the all-ages spaces that keep dying and keep coming back.'),
+                    para('For the better part of a decade the story about guitar music was that it was over: displaced, streamed into irrelevance, a heritage act at best. Then, quietly and then all at once, the small rooms started selling out again. Not stadiums. The 200-cap basements, the back rooms of pubs, the all-ages spaces that keep dying and keep coming back.'),
                     h2('The room is the format'),
                     para('What these bands worked out is that the show is the product, and the recording is the flyer for it. You cannot stream the feeling of a floor going up at once, so they built everything around the thing that only happens in the room. The songs are shorter, louder and made to be shouted back. The merch table is the label. The whole economy runs on a night you had to be there for.'),
                     h2('Loud is a decision'),
-                    para('None of this is nostalgia, whatever the takes say. The bands filling these rooms grew up online and use every tool the internet gives them — they just point all of it at getting bodies into a space. The volume is the point. In a culture optimised to be consumed quietly, on a screen, at half speed, a band that insists you show up and get loud is making an argument, not just a noise.'),
+                    para('None of this is nostalgia, whatever the takes say. The bands filling these rooms grew up online and use every tool the internet gives them. They just point all of it at getting bodies into a space. The volume is the point. In a culture optimised to be consumed quietly, on a screen, at half speed, a band that insists you show up and get loud is making an argument, not just a noise.'),
                     para('We went to eleven of these shows across the summer. Every one of them sold out. Every one of them ended with a merch queue longer than the bar. Something is happening down there, and the industry is, as usual, the last to hear it.'),
                 ],
             },
@@ -581,9 +581,9 @@ const CONTENT = [
                 content: [
                     para('The knock on the modern movie musical was always the cutting. A number would start, the energy would build, and then the edit would chop it into a hundred tiny pieces, terrified of holding a shot long enough to let a body actually move. You could feel the fear of boredom in every cut, and it drained the one thing a musical has that nothing else does.'),
                     h2('Let the take breathe'),
-                    para('The films getting it right now share a single instinct: hold the shot. Give the performer the whole phrase. Let the camera move with the music instead of cutting against it. It sounds obvious, and it is the hardest thing to sell to a nervous studio, because it means committing to a take that either works or very visibly does not. When it works, the screen does something a stage never can — it puts you inside the number.'),
+                    para('The films getting it right now share a single instinct: hold the shot. Give the performer the whole phrase. Let the camera move with the music instead of cutting against it. It sounds obvious, and it is the hardest thing to sell to a nervous studio, because it means committing to a take that either works or very visibly does not. When it works, the screen does something a stage never can. It puts you inside the number.'),
                     h2('The song is the story'),
-                    para('The better new directors treat a song as plot, not pause. The number is where the character decides something, and the staging carries that decision — a slow push in as the resolve lands, a wide shot the moment they commit. The music stops being a break from the story and becomes the most efficient way to tell it.'),
+                    para('The better new directors treat a song as plot, not pause. The number is where the character decides something, and the staging carries that decision: a slow push in as the resolve lands, a wide shot the moment they commit. The music stops being a break from the story and becomes the most efficient way to tell it.'),
                     para('It is a small craft revolution and an expensive one, and it is producing the first musicals in years that people leave humming instead of politely applauding. Turns out the format was never tired. It was just being shot by people who were scared of it.'),
                 ],
             },
@@ -606,9 +606,9 @@ const CONTENT = [
                 content: [
                     para('The track that defined this summer does not exist, technically. There is no single, no streaming link that stays up for more than a day, no video. There is a two-minute phone recording of a rough mix that got out of a session, and there is what the internet did with it, which was everything.'),
                     h2('The song stops belonging to you'),
-                    para('The old anxiety about a leak was money — a lost release, a blown rollout. The new anxiety is authorship. The moment the demo got out, thousands of people finished it: sped it up, slowed it down, put it under clips, wrote verses for it, decided what it was about. By the time the artist could respond, the song was no longer theirs to define. It had become a shared object, and the original was just one version among tens of thousands.'),
+                    para('The old anxiety about a leak was money: a lost release, a blown rollout. The new anxiety is authorship. The moment the demo got out, thousands of people finished it: sped it up, slowed it down, put it under clips, wrote verses for it, decided what it was about. By the time the artist could respond, the song was no longer theirs to define. It had become a shared object, and the original was just one version among tens of thousands.'),
                     h2('Virality is not the same as a hit'),
-                    para('It is tempting to call this a triumph of the algorithm, but that gets it backwards. The platforms did not choose this song; they noticed people had already chosen it, and turned up the tap. The distinction matters. A manufactured trend feels like being sold something. This felt like a rumour spreading — messy, participatory, impossible to buy. That is exactly why it worked, and exactly why it cannot be repeated on demand.'),
+                    para('It is tempting to call this a triumph of the algorithm, but that gets it backwards. The platforms did not choose this song; they noticed people had already chosen it, and turned up the tap. The distinction matters. A manufactured trend feels like being sold something. This felt like a rumour spreading: messy, participatory, impossible to buy. That is exactly why it worked, and exactly why it cannot be repeated on demand.'),
                     para('The artist has said almost nothing, which is probably the only sane move. Some songs you release. This one released itself, and the best you can do is get out of its way.'),
                 ],
             },
@@ -629,11 +629,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('A song recorded before most of its current audience was born spent this year at the top of the charts. It is not the first, and it will not be the last. The catalogue — the deep, dusty back half of recorded music — has become the most reliable growth market in the business, and there is now a whole trade dedicated to mining it.'),
+                    para('A song recorded before most of its current audience was born spent this year at the top of the charts. It is not the first, and it will not be the last. The catalogue (the deep, dusty back half of recorded music) has become the most reliable growth market in the business, and there is now a whole trade dedicated to mining it.'),
                     h2('The archive is a warehouse'),
                     para('Reissue labels operate like archaeologists with lawyers. They track down the masters, clear the rights, restore the tape, and time the release for the moment a placement or a clip sends a forgotten track back into the conversation. When it works, a record that earned nothing for thirty years becomes a catalogue asset worth pursuing all over again.'),
                     h2('New ears, no context'),
-                    para('What makes this era different is that the listeners do not experience these songs as old. Stripped of the context that once dated them, a track from decades ago arrives with no baggage — just the sound. Younger audiences are not being nostalgic; they genuinely encountered it for the first time last week, next to a song released last week, and judged them on the same terms.'),
+                    para('What makes this era different is that the listeners do not experience these songs as old. Stripped of the context that once dated them, a track from decades ago arrives with no baggage. Just the sound. Younger audiences are not being nostalgic; they genuinely encountered it for the first time last week, next to a song released last week, and judged them on the same terms.'),
                     para('There is something bracing in that. The canon is not a museum the young are being marched through. It is a pile of records they are digging through themselves, and keeping whatever still hits. The tape does not care how old it is. Neither, it turns out, do they.'),
                 ],
             },
@@ -654,12 +654,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('A debut album is a strange, singular thing: the only record an artist ever makes with no expectations, no audience, and nothing to lose. Everything after it is a response to being heard. The first one is made in private, and that shows — in the nerve, the mess, and the occasional flash of a fully-formed voice arriving from nowhere.'),
+                    para('A debut album is a strange, singular thing: the only record an artist ever makes with no expectations, no audience, and nothing to lose. Everything after it is a response to being heard. The first one is made in private, and that shows, in the nerve, the mess, and the occasional flash of a fully-formed voice arriving from nowhere.'),
                     h2('How we ranked them'),
-                    para('We were not looking for the most influential records or the best careers. We were looking for the best first statements — albums that walked in the door already knowing exactly who they were, or albums so alive with the sound of a band figuring it out in real time that the uncertainty became the point. Longevity counted. So did nerve. A safe, competent debut lost every argument in the room to a flawed, fearless one.'),
+                    para('We were not looking for the most influential records or the best careers. We were looking for the best first statements: albums that walked in the door already knowing exactly who they were, or albums so alive with the sound of a band figuring it out in real time that the uncertainty became the point. Longevity counted. So did nerve. A safe, competent debut lost every argument in the room to a flawed, fearless one.'),
                     h2('What the great ones share'),
-                    para('The debuts near the top of this list have almost nothing in common on the surface — different decades, genres, budgets, ambitions. What they share is a refusal to hedge. None of them sound like an audition for a bigger record later. Each one sounds like the whole point, made by people who did not yet know they were allowed to hold anything back. That is the quality no second album can fake, and it is why the first one so often stays the best.'),
-                    para('The full ranking runs below, counted down from fifty. We expect you to disagree with roughly half of it. That is the job — a list is not a verdict, it is the start of the argument. Tell us what we got wrong.'),
+                    para('The debuts near the top of this list have almost nothing in common on the surface: different decades, genres, budgets, ambitions. What they share is a refusal to hedge. None of them sound like an audition for a bigger record later. Each one sounds like the whole point, made by people who did not yet know they were allowed to hold anything back. That is the quality no second album can fake, and it is why the first one so often stays the best.'),
+                    para('The full ranking runs below, counted down from fifty. We expect you to disagree with roughly half of it. That is the job: a list is not a verdict, it is the start of the argument. Tell us what we got wrong.'),
                 ],
             },
         },
@@ -673,7 +673,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-culture-bold',
     name: 'Culture Bold',
     summary:
-        'A loud music & pop-culture magazine — a full-bleed feature lead over a dense feed, a signature ranked “most read” countdown, and a bespoke bylined article page, on a near-black ground with one hot crimson-magenta accent and heavy condensed display type. Modelled on the bold-culture-magazine archetype; shipped as Static. Ships a light store (vinyl + merch) to demonstrate content + commerce together.',
+        'A loud music & pop-culture magazine: a full-bleed feature lead over a dense feed, a signature ranked “most read” countdown, and a bespoke bylined article page, on a near-black ground with one hot crimson-magenta accent and heavy condensed display type. Modelled on the bold-culture-magazine archetype; shipped as Static. Ships a light store (vinyl + merch) to demonstrate content + commerce together.',
     tagline: 'A loud dark-mode magazine template for a publication that reports and sells.',
     vertical: 'content',
     industry: 'Music & pop culture',
@@ -688,14 +688,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Static — music & pop culture, loud on purpose',
+            title: 'Static: music & pop culture, loud on purpose',
             description:
-                'Static is a music and pop-culture magazine covering the records, shows, films and arguments that actually move — reported loud, from the floor.',
+                'Static is a music and pop-culture magazine covering the records, shows, films and arguments that actually move: reported loud, from the floor.',
         },
         about: {
-            title: 'About Static — a music & pop-culture magazine',
+            title: 'About Static: a music & pop-culture magazine',
             description:
-                'Who Static is and how it works — an opinionated music and culture magazine that goes to the room, talks to the makers, and writes it down while it is still loud.',
+                'Who Static is and how it works: an opinionated music and culture magazine that goes to the room, talks to the makers, and writes it down while it is still loud.',
         },
     },
     home: HOME,

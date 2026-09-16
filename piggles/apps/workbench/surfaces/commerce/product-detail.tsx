@@ -75,7 +75,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             error={error}
             noun="product"
             title="Could not load this product"
-            description="This is a problem reaching the server. The product itself is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. The product itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void refetch();
             }}
@@ -159,7 +159,7 @@ function ProductTabs({
     } catch (error) {
       toast.add({
         title: 'Could not save',
-        description: productErrorMessage(error, 'Your changes are still here — nothing was lost.'),
+        description: productErrorMessage(error, 'Your changes are still here. Nothing was lost.'),
         type: 'error',
       });
     }

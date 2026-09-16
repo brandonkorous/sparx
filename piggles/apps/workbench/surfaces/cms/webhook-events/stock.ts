@@ -9,7 +9,7 @@ export const STOCK_EVENTS: readonly WebhookEventDef[] = [
     key: 'inventory.adjusted',
     label: 'Stock changed',
     description:
-      'Any quantity moves, for any reason — a sale, a delivery, a count, a correction. The busiest of these by a wide margin; take it when another system needs to mirror your numbers, not when a person needs telling.',
+      'Any quantity moves, for any reason: a sale, a delivery, a count, a correction. The busiest of these by a wide margin; take it when another system needs to mirror your numbers, not when a person needs telling.',
     group: 'Stock',
   },
   {
@@ -42,7 +42,7 @@ export const STOCK_EVENTS: readonly WebhookEventDef[] = [
     key: 'inventory.oversell.blocked',
     label: 'Oversell prevented',
     description:
-      'Someone tried to buy more than you actually had and was stopped. Worth watching — a run of these is demand you are turning away.',
+      'Someone tried to buy more than you actually had and was stopped. Worth watching: a run of these is demand you are turning away.',
     group: 'Stock',
   },
   {
@@ -65,7 +65,7 @@ export const STOCK_EVENTS: readonly WebhookEventDef[] = [
     key: 'inventory.bin.moved',
     label: 'Stock moved shelf',
     description:
-      'Stock is put away or moved between shelves inside one location. The location total does not change — nothing entered or left the building.',
+      'Stock is put away or moved between shelves inside one location. The location total does not change. Nothing entered or left the building.',
     group: 'Warehouse',
   },
   {

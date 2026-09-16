@@ -177,7 +177,7 @@ export function ColumnMapper({ headers, raw, onChange }: ColumnMapperProps) {
           <AlertTitle>Tell us what this file is</AlertTitle>
           <AlertDescription>
             We had a go at matching {guessedCount} of {headers.length} columns. Change anything we
-            got wrong — the count at the bottom updates as you go.
+            got wrong: the count at the bottom updates as you go.
           </AlertDescription>
         </AlertContent>
       </Alert>

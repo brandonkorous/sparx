@@ -76,7 +76,7 @@ export const paymentPresets: ModulePreset[] = [
     gatewayId: 'manual',
     name: 'Manual / offline payments',
     description:
-      'Take payment by cash, check, wire, or bank transfer and mark orders paid by hand. No online card processing and no processing fee — the fastest way to start selling while you set up a gateway.',
+      'Take payment by cash, check, wire, or bank transfer and mark orders paid by hand. No online card processing and no processing fee: the fastest way to start selling while you set up a gateway.',
     iconKey: 'banknote',
     tags: ['manual', 'offline', 'cash', 'check', 'ach', 'invoice'],
     summary: [
@@ -90,7 +90,7 @@ export const paymentPresets: ModulePreset[] = [
     gatewayId: 'stripe_direct',
     name: 'Bring your own Stripe',
     description:
-      'Route checkout through your own Stripe account — you keep the full Stripe relationship, payouts, and disputes, with no platform markup. Installs the gateway; add your API keys in Finance → Payments to go live.',
+      'Route checkout through your own Stripe account. You keep the full Stripe relationship, payouts, and disputes, with no platform markup. Installs the gateway; add your API keys in Finance → Payments to go live.',
     iconKey: 'credit-card',
     tags: ['stripe', 'bring-your-own', 'cards'],
     summary: [

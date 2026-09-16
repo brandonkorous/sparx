@@ -87,7 +87,7 @@ export function SignatureTool() {
             ...(codeFits ? [{ label: 'The code', value: html }] : []),
           ],
           note: codeFits
-            ? 'Most email apps have a box that takes code — paste it there. If yours only has a plain box and you end up looking at the code instead of the signature, open the tool again and use the copy button, which pastes it already formatted.'
+            ? 'Most email apps have a box that takes code. Paste it there. If yours only has a plain box and you end up looking at the code instead of the signature, open the tool again and use the copy button, which pastes it already formatted.'
             : 'Your signature is too long to send in one piece by email. Open the tool again and use the copy button, then paste it into your email settings.',
         }
       : null
@@ -135,7 +135,7 @@ export function SignatureTool() {
             />
             <TextField
               label="One closing line (optional)"
-              hint="Something useful rather than a slogan — “Open Tuesday to Saturday”, “Booking for March now”."
+              hint="Something useful rather than a slogan: “Open Tuesday to Saturday”, “Booking for March now”."
               value={input.tagline}
               onChange={(v) => set('tagline', v)}
             />
@@ -156,7 +156,7 @@ export function SignatureTool() {
             />
             <TextField
               label="Photo or logo (a web address)"
-              hint="It has to live on the internet. A file on your computer disappears the moment the email leaves it — upload it to your site first and use the address it gets."
+              hint="It has to live on the internet. A file on your computer disappears the moment the email leaves it. Upload it to your site first and use the address it gets."
               value={input.imageUrl}
               onChange={(v) => set('imageUrl', v)}
               inputMode="url"
@@ -198,7 +198,7 @@ export function SignatureTool() {
                       }
                     }}
                   >
-                    {copied ? 'Copied — now paste it into your mail app' : 'Copy the signature'}
+                    {copied ? 'Copied: now paste it into your mail app' : 'Copy the signature'}
                   </Button>
 
                   <p className="mt-3 text-base">
@@ -236,7 +236,7 @@ export function SignatureTool() {
                 </div>
                 <Aside>
                   Built with tables and styling written on every element, which looks thoroughly
-                  old-fashioned and is the only thing that survives Outlook — it renders email using
+                  old-fashioned and is the only thing that survives Outlook. It renders email using
                   Microsoft Word&rsquo;s engine, which ignores most modern layout.
                 </Aside>
               </CardBody>

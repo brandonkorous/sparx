@@ -52,7 +52,7 @@ export function DropshipPage() {
             <Spark color={M.color} />
           </>
         }
-        lede="Suppliers, routing, margins, and how it fits Commerce — answered straight. Still deciding? Read the dropship docs or start the 14-day trial."
+        lede="Suppliers, routing, margins, and how it fits Commerce: answered straight. Still deciding? Read the dropship docs or start the 14-day trial."
       />
       <DropshipCta />
     </>
@@ -71,19 +71,19 @@ const DROPSHIP_FAQ: FaqItem[] = [
     id: 'dropship-pricing',
     question: 'How much does sparx Dropship cost?',
     answer:
-      'A flat $29/mo. No tiers, no per-order dropship fee, and no reseller markup between you and your supplier — you connect to your own supplier accounts directly. Add it alongside whatever else you run; it lands on one bill. Start on a 14-day free trial; no card required to begin.',
+      'A flat $29/mo. No tiers, no per-order dropship fee, and no reseller markup between you and your supplier. You connect to your own supplier accounts directly. Add it alongside whatever else you run; it lands on one bill. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'dropship-suppliers',
     question: 'Which suppliers can I connect?',
     answer:
-      'Printify and Printful for print-on-demand, DSers for AliExpress-sourced products, and Spocket for US/EU suppliers — each connects by API with a token you paste in. For any supplier without a usable API, a CSV feed imports the catalog and you fulfill those orders manually. We only list suppliers with a real, self-serve integration, so there are no dead Connect buttons.',
+      'Printify and Printful for print-on-demand, DSers for AliExpress-sourced products, and Spocket for US/EU suppliers. Each connects by API with a token you paste in. For any supplier without a usable API, a CSV feed imports the catalog and you fulfill those orders manually. We only list suppliers with a real, self-serve integration, so there are no dead Connect buttons.',
   },
   {
     id: 'dropship-needs-commerce',
     question: 'Do I need Commerce to use Dropship?',
     answer:
-      'In practice, yes — Dropship is a commerce capability. Imported products become products in your Commerce catalog, and the orders that route to suppliers are the orders your store takes. Run Commerce for the catalog, checkout, and orders; add Dropship to connect suppliers, price by markup, and route fulfillment automatically. The two work as one flow on one bill.',
+      'In practice, yes: Dropship is a commerce capability. Imported products become products in your Commerce catalog, and the orders that route to suppliers are the orders your store takes. Run Commerce for the catalog, checkout, and orders; add Dropship to connect suppliers, price by markup, and route fulfillment automatically. The two work as one flow on one bill.',
   },
   {
     id: 'dropship-routing',
@@ -95,19 +95,19 @@ const DROPSHIP_FAQ: FaqItem[] = [
     id: 'dropship-margins',
     question: 'How is my price and margin set?',
     answer:
-      'You set a pricing rule per supplier — a percentage markup, a multiplier, a flat markup, or a target margin — with rounding and an optional cap at the supplier MSRP. Every imported product prices itself off the supplier cost, and when a cost changes on the next sync, your sell price recomputes. The dashboard reports profit and margin per product, per supplier, and per order, so you always see what each sale actually made.',
+      'You set a pricing rule per supplier (a percentage markup, a multiplier, a flat markup, or a target margin) with rounding and an optional cap at the supplier MSRP. Every imported product prices itself off the supplier cost, and when a cost changes on the next sync, your sell price recomputes. The dashboard reports profit and margin per product, per supplier, and per order, so you always see what each sale actually made.',
   },
   {
     id: 'dropship-inventory-tracking',
     question: 'What about inventory and tracking?',
     answer:
-      'API suppliers sync live stock on a schedule: a sold-out product is flagged unavailable and you’re notified, while an individual out-of-stock color or size greys out on the product page rather than hiding the whole product. Print-on-demand suppliers are made-to-order, so their stock is unlimited. When a supplier ships, sparx forwards the tracking to your customer in a branded email from your own domain and logs the shipment on the customer record — the supplier is never named to the buyer.',
+      'API suppliers sync live stock on a schedule: a sold-out product is flagged unavailable and you’re notified, while an individual out-of-stock color or size greys out on the product page rather than hiding the whole product. Print-on-demand suppliers are made-to-order, so their stock is unlimited. When a supplier ships, sparx forwards the tracking to your customer in a branded email from your own domain and logs the shipment on the customer record: the supplier is never named to the buyer.',
   },
   {
     id: 'dropship-pod',
     question: 'Can I sell print-on-demand products?',
     answer:
-      'Yes. Connect Printify or Printful, import the products you’ve already designed in their tools, and route orders to them by SKU — sparx handles the catalog, pricing, order routing, and tracking. Designing artwork inside sparx and publishing it to the supplier is on the roadmap; today the flow imports finished products and routes orders, with no artwork moving through sparx.',
+      'Yes. Connect Printify or Printful, import the products you’ve already designed in their tools, and route orders to them by SKU: sparx handles the catalog, pricing, order routing, and tracking. Designing artwork inside sparx and publishing it to the supplier is on the roadmap; today the flow imports finished products and routes orders, with no artwork moving through sparx.',
   },
 ];
 
@@ -133,11 +133,11 @@ function DropshipWithCommerce() {
     },
     {
       title: 'Dropship runs the supply',
-      body: 'Connect suppliers, import and price their catalogs, and hand off fulfillment. Dropship adds the supply side to Commerce — it doesn’t replace the store, it feeds it.',
+      body: 'Connect suppliers, import and price their catalogs, and hand off fulfillment. Dropship adds the supply side to Commerce. It doesn’t replace the store, it feeds it.',
       points: [
         'Supplier connectors, catalog + inventory sync, margin rules.',
         'Automatic order routing, split by supplier, with tracking back.',
-        'Per-supplier profitability — cost, revenue, profit, margin.',
+        'Per-supplier profitability: cost, revenue, profit, margin.',
       ],
       dot: M.color,
       bg: M.bg,
@@ -147,7 +147,7 @@ function DropshipWithCommerce() {
     <Section padding="lg">
       <SectionHeader
         headline="Hands-off fulfillment, on the same store"
-        lede="Dropship is the supply side of Commerce, not a separate system. Commerce takes the order; Dropship sources and ships it. Same catalog, same checkout, same customer record — you just stop holding the inventory and packing the boxes."
+        lede="Dropship is the supply side of Commerce, not a separate system. Commerce takes the order; Dropship sources and ships it. Same catalog, same checkout, same customer record. You just stop holding the inventory and packing the boxes."
       />
       <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
         {panels.map((p) => (
@@ -179,13 +179,13 @@ function DropshipWithCommerce() {
 // ── DARK PROOF ──────────────────────────────────────────────────────────────
 function DropshipProof() {
   const stats: { n: ReactNode; l: string }[] = [
-    { n: '$0', l: 'inventory held — you never buy stock before a customer does' },
+    { n: '$0', l: 'inventory held: you never buy stock before a customer does' },
     {
       n: <>1{<Spark color={M.color} />}</>,
-      l: 'order object — dropship and stock-held lines fulfill on the same record',
+      l: 'order object: dropship and stock-held lines fulfill on the same record',
     },
-    { n: 'auto', l: 'routing, splitting, and tracking — submitted the moment an order lands' },
-    { n: 'per-order', l: 'profit and margin — cost vs revenue, by product and supplier' },
+    { n: 'auto', l: 'routing, splitting, and tracking: submitted the moment an order lands' },
+    { n: 'per-order', l: 'profit and margin: cost vs revenue, by product and supplier' },
   ];
   return (
     <Section surface="dark" padding="lg">
@@ -196,7 +196,7 @@ function DropshipProof() {
         </Display>
         <Text variant="lead" className="mt-6 max-w-[640px]">
           No warehouse, no packing, no buying stock on a bet. Connect the suppliers, set your
-          margins, and let orders route themselves — while the platform keeps the catalog, the
+          margins, and let orders route themselves, while the platform keeps the catalog, the
           customer, and the profit math all in one place.
         </Text>
       </div>
@@ -229,7 +229,7 @@ function DropshipPricing() {
             </Text>
           </div>
           <Text className="m-0 max-w-[660px] text-sm">
-            A flat $29/mo — supplier connectors, catalog and inventory sync, markup rules, automated
+            A flat $29/mo: supplier connectors, catalog and inventory sync, markup rules, automated
             order routing, and tracking sync. No per-order dropship fee and no reseller cut; you
             connect to your own supplier accounts directly. Works alongside Commerce, which runs
             your catalog and checkout. Start free for 14 days; no card to begin.
@@ -260,7 +260,7 @@ function DropshipCta() {
           <Spark color={M.color} />
         </Display>
         <Text variant="lead" className="m-0 max-w-[640px]">
-          Connect a supplier, import a few products, set a markup rule, and take your first order —
+          Connect a supplier, import a few products, set a markup rule, and take your first order:
           routed and tracked for you. No stock to buy, no boxes to pack, no migration weekend. Turn
           Dropship off the day you stop, and your products and orders stay yours.
         </Text>

@@ -240,7 +240,7 @@ export function PostPreview({
         {cut ? (
           <Text className="text-error text-sm font-medium">
             {cut.length.toLocaleString()} {cut.length === 1 ? 'character' : 'characters'} past the
-            limit here — the struck-through words will not be posted.
+            limit here: the struck-through words will not be posted.
           </Text>
         ) : null}
 
@@ -271,7 +271,7 @@ export function PostPreview({
 
         {dropped > 0 ? (
           <Text className="text-warning text-sm">
-            Takes {maxMedia} {maxMedia === 1 ? 'item' : 'items'} — the other{' '}
+            Takes {maxMedia} {maxMedia === 1 ? 'item' : 'items'}. The other{' '}
             {dropped === 1 ? 'one will' : `${dropped} will`} not be included here.
           </Text>
         ) : null}

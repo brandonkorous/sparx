@@ -170,7 +170,7 @@ function lengthHint(value: string, ideal: number): { text: string; over: boolean
   const n = value.trim().length;
   if (n === 0) return null;
   if (n > ideal) {
-    return { text: `${n} characters — the end may be cut off in search results`, over: true };
+    return { text: `${n} characters: the end may be cut off in search results`, over: true };
   }
   return { text: `${n} characters`, over: false };
 }
@@ -285,7 +285,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
     <div className="flex flex-col gap-4">
       {!saved ? (
         <p className="text-sm leading-snug">
-          This page is new. Fill these in now — they save along with the page itself.
+          This page is new. Fill these in now. They save along with the page itself.
         </p>
       ) : null}
 
@@ -296,7 +296,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
       {isProductPage ? (
         <PanelField
           label="This page designs"
-          help="Choose a kind of product to design a page just for it — the rest keep using your default product page."
+          help="Choose a kind of product to design a page just for it: the rest keep using your default product page."
         >
           <NativeSelect
             size="sm"
@@ -336,7 +336,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
             <AlertTitle>Each {record.each} writes its own</AlertTitle>
             <AlertDescription>
               This one page designs every {record.each} you have, so it cannot carry the words a
-              search result shows — those come from {record.where}, which is where you set them.
+              search result shows. Those come from {record.where}, which is where you set them.
               Anything you typed here would be the same on all of them, and search engines treat a
               thousand pages sharing one description as a thousand copies of nothing. Leave a{' '}
               {record.each}’s own fields empty and its name and description are used.
@@ -378,7 +378,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
 
           <PanelField
             label="Description"
-            help="The couple of lines under the title. This is your pitch — it is often what decides whether someone clicks."
+            help="The couple of lines under the title. This is your pitch. It is often what decides whether someone clicks."
           >
             <Textarea
               size="sm"
@@ -445,7 +445,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
 
           <PanelField
             label="Show this page in search engines"
-            help="Turn this off for a page you only want people to reach by link — a thank-you page, or something not ready yet."
+            help="Turn this off for a page you only want people to reach by link: a thank-you page, or something not ready yet."
           >
             <div className="flex items-center gap-2">
               <Switch
@@ -478,7 +478,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
           decoding what is on disk, not a choice worth showing anyone. */}
       <PanelField
         label="Show your header and footer on this page"
-        help="Turn this off for a landing page — an advert or a campaign — where the menu would only give people a way to click away from it."
+        help="Turn this off for a landing page (an advert or a campaign) where the menu would only give people a way to click away from it."
       >
         <div className="flex items-center gap-2">
           <Switch

@@ -44,13 +44,13 @@ const ROLE_DESCRIPTIONS: Record<OrgRole, string> = {
   admin:
     'Can do everything day to day, including inviting people and deciding what each of them can reach. Cannot touch billing or close the account.',
   editor:
-    'Does the everyday work — products, content, orders and customers. Cannot invite people or change what anyone is allowed to see.',
+    'Does the everyday work: products, content, orders and customers. Cannot invite people or change what anyone is allowed to see.',
   builder:
     'Works on your website: pages, layout and how it all looks. Cannot see orders, customers or anything to do with money.',
   marketing:
     'Writes content, sends email and sees how it performed. Cannot open orders or see customer contact details.',
   support:
-    'Looks after customers — finds their orders, answers their questions and makes small fixes. Cannot change your products or your prices.',
+    'Looks after customers: finds their orders, answers their questions and makes small fixes. Cannot change your products or your prices.',
   partner:
     'Runs your partner and referral program: who sends you business and what they are owed. Can only look, not change, everywhere else.',
   scanner:
@@ -68,7 +68,7 @@ export function roleDescription(role: string): string {
     (ROLE_DESCRIPTIONS as Record<string, string>)[role] ??
     productCopy(
       'team.roles.unknown',
-      'A role this version of Piggles does not recognize. It still works — ask us what it covers.'
+      'A role this version of Piggles does not recognize. It still works. Ask us what it covers.'
     )
   );
 }

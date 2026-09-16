@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Contact — sparx',
+  title: 'Contact: sparx',
   description:
     'Sales, support, partnerships, press. Pick the right address or just write hello@sparx.works.',
   alternates: { canonical: '/contact' },

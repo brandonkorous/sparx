@@ -146,7 +146,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'A short, free consultation — no deposit. Give us a day’s notice if you need to move it, and we’ll find another time.',
+        'A short, free consultation: no deposit. Give us a day’s notice if you need to move it, and we’ll find another time.',
     },
     {
       handle: 'session-deposit',
@@ -197,8 +197,8 @@ const SCHEDULING = {
     },
     {
       handle: 'fineline-small',
-      name: 'Fine-line — small',
-      description: 'A small single-needle piece — a stem, a symbol, a few words. About an hour in the chair.',
+      name: 'Fine-line: small',
+      description: 'A small single-needle piece: a stem, a symbol, a few words. About an hour in the chair.',
       durationMinutes: 60,
       priceCents: 12000,
       bufferAfterMin: 15,
@@ -208,8 +208,8 @@ const SCHEDULING = {
     },
     {
       handle: 'fineline-medium',
-      name: 'Fine-line — medium',
-      description: 'A more detailed line piece — a small composition or a set of elements. Around two hours.',
+      name: 'Fine-line: medium',
+      description: 'A more detailed line piece: a small composition or a set of elements. Around two hours.',
       durationMinutes: 120,
       priceCents: 24000,
       bufferAfterMin: 15,
@@ -219,7 +219,7 @@ const SCHEDULING = {
     },
     {
       handle: 'fineline-large',
-      name: 'Fine-line — large',
+      name: 'Fine-line: large',
       description: 'A larger, layered line piece across a full placement. A considered three-hour session.',
       durationMinutes: 180,
       priceCents: 36000,
@@ -231,7 +231,7 @@ const SCHEDULING = {
     {
       handle: 'lettering-script',
       name: 'Lettering & script',
-      description: 'Fine cursive or hand-drawn script — a name, a date, a line worth keeping. Set with your artist.',
+      description: 'Fine cursive or hand-drawn script: a name, a date, a line worth keeping. Set with your artist.',
       durationMinutes: 90,
       priceCents: 18000,
       bufferAfterMin: 15,
@@ -242,7 +242,7 @@ const SCHEDULING = {
     {
       handle: 'delicate-floral',
       name: 'Delicate floral',
-      description: 'Botanical fine-line work — single stems, wildflowers, small clusters — drawn light and precise.',
+      description: 'Botanical fine-line work (single stems, wildflowers, small clusters) drawn light and precise.',
       durationMinutes: 120,
       priceCents: 22000,
       bufferAfterMin: 15,
@@ -257,7 +257,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Fine lines, meant to last.',
-    sub: 'A bright, quiet studio for delicate fine-line tattoos — considered work, unhurried sessions, and a plan you leave with before any needle touches skin.',
+    sub: 'A bright, quiet studio for delicate fine-line tattoos: considered work, unhurried sessions, and a plan you leave with before any needle touches skin.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See the work', href: '/book' },
     surface: 'base',
@@ -283,11 +283,11 @@ const HOME = [
     surface: 'muted',
     columns: 3,
     items: [
-      { name: 'Fine-line — small', priceCents: 12000, durationMin: 60, desc: 'A single-needle piece — a stem, a symbol, a few words.' },
-      { name: 'Fine-line — medium', priceCents: 24000, durationMin: 120, desc: 'A more detailed line piece or a small composition.' },
-      { name: 'Fine-line — large', priceCents: 36000, durationMin: 180, desc: 'A larger, layered piece across a full placement.' },
+      { name: 'Fine-line: small', priceCents: 12000, durationMin: 60, desc: 'A single-needle piece: a stem, a symbol, a few words.' },
+      { name: 'Fine-line: medium', priceCents: 24000, durationMin: 120, desc: 'A more detailed line piece or a small composition.' },
+      { name: 'Fine-line: large', priceCents: 36000, durationMin: 180, desc: 'A larger, layered piece across a full placement.' },
       { name: 'Lettering & script', priceCents: 18000, durationMin: 90, desc: 'Fine cursive or hand-drawn script, set with your artist.' },
-      { name: 'Delicate floral', priceCents: 22000, durationMin: 120, desc: 'Botanical fine-line — single stems and small clusters.' },
+      { name: 'Delicate floral', priceCents: 22000, durationMin: 120, desc: 'Botanical fine-line: single stems and small clusters.' },
     ],
     cta: { label: 'See everything & book', href: '/book' },
   }),
@@ -296,7 +296,7 @@ const HOME = [
     alt: 'A single fine needle tracing a delicate line on skin',
     heading: 'How a session works',
     body: [
-      'It starts with a short, free consultation — we talk through the idea, the placement and the size, and agree on a design before we book anything.',
+      'It starts with a short, free consultation. We talk through the idea, the placement and the size, and agree on a design before we book anything.',
       'On the day, we take our time: a fresh stencil, a single needle, and a slow, precise hand. Fine-line work rewards patience, so we never rush the chair.',
       'You leave with clear aftercare and a piece drawn to settle softly and hold its line for years, not months.',
     ],
@@ -304,7 +304,7 @@ const HOME = [
   }),
   teamRow({
     heading: 'Artists',
-    intro: 'Book by name — you’ll work with the same artist from the first line to the last.',
+    intro: 'Book by name: you’ll work with the same artist from the first line to the last.',
     surface: 'muted',
     members: [
       { name: 'Iris Devlin', role: 'Studio lead · fine line', image: url(IMG.iris), alt: 'Iris Devlin, fine-line artist and studio lead', bio: 'Minimal line work and quiet compositions. Iris runs the studio.' },
@@ -313,7 +313,7 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'They talked me out of making it bigger, then drew exactly what I’d pictured. A year on the line is still crisp — and the room felt like a gallery, not a garage.',
+    quote: 'They talked me out of making it bigger, then drew exactly what I’d pictured. A year on the line is still crisp, and the room felt like a gallery, not a garage.',
     attribution: 'Devi, client since 2024',
   }),
   bookingCta({
@@ -338,8 +338,8 @@ const ABOUT = [
     alt: 'A bright, minimal tattoo studio with white walls and natural light',
     heading: 'About Faint',
     body: [
-      'Faint is a small, bright fine-line studio — white walls, good light, and work that hangs like a gallery. We opened it to prove a tattoo shop doesn’t have to be dark to be serious.',
-      'We do one thing carefully: delicate line work. No walk-in flash wall, no rushing, no talking you into more than you came for — just a considered piece, drawn light and made to last.',
+      'Faint is a small, bright fine-line studio: white walls, good light, and work that hangs like a gallery. We opened it to prove a tattoo shop doesn’t have to be dark to be serious.',
+      'We do one thing carefully: delicate line work. No walk-in flash wall, no rushing, no talking you into more than you came for. Just a considered piece, drawn light and made to last.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -348,7 +348,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'A plan before a needle', body: 'Every piece begins with a free consultation. We agree the design, size and placement before anything is booked.' },
-      { title: 'One artist, start to finish', body: 'You book by name and stay with the same hand — someone who knows the line they’re drawing and why.' },
+      { title: 'One artist, start to finish', body: 'You book by name and stay with the same hand. Someone who knows the line they’re drawing and why.' },
       { title: 'Clean, calm, unhurried', body: 'A single-use, single-needle setup in a quiet room. We take the time fine-line work actually needs.' },
     ],
   }),
@@ -367,7 +367,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your consultation online — no phone tag.',
+    sub: 'See live availability and reserve your consultation online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -378,8 +378,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-tattoo-fineline',
   name: 'Tattoo (Fine Line)',
   summary:
-    'A bright, minimal fine-line tattoo-studio site — a bone off-white palette, a warm near-black ink and one quiet soft-gold accent, with a clean grotesque and gallery-style work carrying the page. Installs a working booking flow: a free consultation, fine-line pieces priced by size, plus lettering and delicate floral; three artists you book by name with their own hours; and a session-deposit policy. Ships as "Faint", a light, considered studio — the calm opposite of the dark tattoo shop.',
-  tagline: 'A bright, editorial template for fine-line tattoo studios — book online from day one.',
+    'A bright, minimal fine-line tattoo-studio site: a bone off-white palette, a warm near-black ink and one quiet soft-gold accent, with a clean grotesque and gallery-style work carrying the page. Installs a working booking flow: a free consultation, fine-line pieces priced by size, plus lettering and delicate floral; three artists you book by name with their own hours; and a session-deposit policy. Ships as "Faint", a light, considered studio, the calm opposite of the dark tattoo shop.',
+  tagline: 'A bright, editorial template for fine-line tattoo studios. Book online from day one.',
   industry: 'Tattoo studio',
   sortWeight: 85,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -388,7 +388,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Faint — a fine-line tattoo studio',
+      title: 'Faint: a fine-line tattoo studio',
       description:
         'Faint is a bright, minimal fine-line tattoo studio for delicate line work, lettering and botanical pieces. Book your artist online, starting with a free consultation.',
     },

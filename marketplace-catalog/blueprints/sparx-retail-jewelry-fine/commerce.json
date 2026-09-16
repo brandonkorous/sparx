@@ -58,7 +58,7 @@
     {
       "handle": "the-signature-edit",
       "name": "The signature edit",
-      "description": "The statement pieces — a little more of everything.",
+      "description": "The statement pieces: a little more of everything.",
       "type": "manual",
       "featured": false,
       "productHandles": ["classic-tennis-bracelet", "smooth-cuff-bracelet", "solitaire-ring"]
@@ -88,14 +88,14 @@
     {
       "handle": "oval-signet-ring",
       "title": "Oval Signet Ring",
-      "description": "A classic oval-face signet with a softly domed top, polished to a mirror or brushed matte on request — the ring you engrave with an initial, a date, or nothing at all. Substantial without being heavy, and just as good stacked as worn alone.",
+      "description": "A classic oval-face signet with a softly domed top, polished to a mirror or brushed matte on request: the ring you engrave with an initial, a date, or nothing at all. Substantial without being heavy, and just as good stacked as worn alone.",
       "status": "active",
       "productType": "Ring",
       "vendor": "Aurelia",
       "tags": ["ring", "signet", "engravable"],
       "categoryHandles": ["rings"],
       "collectionHandles": ["new-arrivals", "best-sellers", "everyday-gold"],
-      "seoTitle": "Oval Signet Ring — solid 14k gold or silver | Aurelia",
+      "seoTitle": "Oval Signet Ring: solid 14k gold or silver | Aurelia",
       "seoDescription": "A classic engravable oval signet ring in solid 14k gold or sterling silver. Polished or brushed.",
       "options": [
         {
@@ -236,15 +236,15 @@
     {
       "handle": "stacking-ring-trio",
       "title": "Stacking Ring Trio",
-      "description": "Three fine bands — a plain round, a hammered facet and a tiny bezel-set stone — designed to be worn together or split across fingers. Buy the set to start a stack, then keep adding; they’re made to sit flush against each other without catching.",
+      "description": "Three fine bands (a plain round, a hammered facet and a tiny bezel-set stone) designed to be worn together or split across fingers. Buy the set to start a stack, then keep adding; they’re made to sit flush against each other without catching.",
       "status": "active",
       "productType": "Ring",
       "vendor": "Aurelia",
       "tags": ["ring", "stacking", "set"],
       "categoryHandles": ["rings"],
       "collectionHandles": ["everyday-gold", "best-sellers"],
-      "seoTitle": "Stacking Ring Trio — set of three fine bands | Aurelia",
-      "seoDescription": "A set of three fine stacking rings in solid 14k gold or sterling silver — plain, hammered and bezel-set.",
+      "seoTitle": "Stacking Ring Trio. Set of three fine bands | Aurelia",
+      "seoDescription": "A set of three fine stacking rings in solid 14k gold or sterling silver: plain, hammered and bezel-set.",
       "options": [
         {
           "name": "Metal",
@@ -384,14 +384,14 @@
     {
       "handle": "petite-pendant-necklace",
       "title": "Petite Pendant Necklace",
-      "description": "A small solid pendant on a delicate 16–18\" adjustable chain — the everyday necklace that layers with anything and never needs taking off. Wear it alone for a clean line, or as the shortest layer under longer chains.",
+      "description": "A small solid pendant on a delicate 16–18\" adjustable chain: the everyday necklace that layers with anything and never needs taking off. Wear it alone for a clean line, or as the shortest layer under longer chains.",
       "status": "active",
       "productType": "Necklace",
       "vendor": "Aurelia",
       "tags": ["necklace", "pendant", "layering"],
       "categoryHandles": ["necklaces"],
       "collectionHandles": ["new-arrivals", "everyday-gold", "gifts"],
-      "seoTitle": "Petite Pendant Necklace — solid gold or silver | Aurelia",
+      "seoTitle": "Petite Pendant Necklace: solid gold or silver | Aurelia",
       "seoDescription": "A small solid pendant on a fine adjustable chain, in 14k gold or sterling silver. Made to layer.",
       "options": [
         {
@@ -437,14 +437,14 @@
     {
       "handle": "everyday-hoop-earrings",
       "title": "Everyday Hoop Earrings",
-      "description": "The hoop you put in and forget about — a lightweight 15mm solid hoop with a secure hinged closure, smooth enough to sleep in and small enough for the office. The pair most people never take out once they own them.",
+      "description": "The hoop you put in and forget about: a lightweight 15mm solid hoop with a secure hinged closure, smooth enough to sleep in and small enough for the office. The pair most people never take out once they own them.",
       "status": "active",
       "productType": "Earrings",
       "vendor": "Aurelia",
       "tags": ["earrings", "hoops", "everyday"],
       "categoryHandles": ["earrings"],
       "collectionHandles": ["everyday-gold", "best-sellers"],
-      "seoTitle": "Everyday Hoop Earrings — solid 14k gold or silver | Aurelia",
+      "seoTitle": "Everyday Hoop Earrings: solid 14k gold or silver | Aurelia",
       "seoDescription": "Lightweight 15mm solid hoop earrings with a secure hinged closure, in 14k gold or sterling silver.",
       "options": [
         {
@@ -497,7 +497,7 @@
       "tags": ["bracelet", "tennis", "sapphire"],
       "categoryHandles": ["bracelets"],
       "collectionHandles": ["the-signature-edit", "gifts"],
-      "seoTitle": "Classic Tennis Bracelet — white sapphire line | Aurelia",
+      "seoTitle": "Classic Tennis Bracelet: white sapphire line | Aurelia",
       "seoDescription": "A hand-set line of round white sapphires with a double-locking clasp, in solid 14k gold or sterling silver.",
       "options": [
         {
@@ -543,14 +543,14 @@
     {
       "handle": "birthstone-necklace",
       "title": "Birthstone Necklace",
-      "description": "A single bezel-set birthstone on a fine chain — pick the month that means something and we set the stone to match. The gift that lands every time: personal without being fussy, and worn far past the birthday it marks.",
+      "description": "A single bezel-set birthstone on a fine chain. Pick the month that means something and we set the stone to match. The gift that lands every time: personal without being fussy, and worn far past the birthday it marks.",
       "status": "active",
       "productType": "Necklace",
       "vendor": "Aurelia",
       "tags": ["necklace", "birthstone", "personalized", "gift"],
       "categoryHandles": ["necklaces"],
       "collectionHandles": ["gifts", "new-arrivals"],
-      "seoTitle": "Birthstone Necklace — bezel-set, solid gold or silver | Aurelia",
+      "seoTitle": "Birthstone Necklace: bezel-set, solid gold or silver | Aurelia",
       "seoDescription": "A single bezel-set birthstone on a fine chain, set to your month, in solid 14k gold or sterling silver.",
       "options": [
         {
@@ -570,19 +570,19 @@
           "displayType": "dropdown",
           "values": [
             {
-              "value": "January — Garnet"
+              "value": "January: Garnet"
             },
             {
-              "value": "April — White Topaz"
+              "value": "April: White Topaz"
             },
             {
-              "value": "July — Ruby"
+              "value": "July: Ruby"
             },
             {
-              "value": "October — Opal"
+              "value": "October: Opal"
             },
             {
-              "value": "December — Blue Topaz"
+              "value": "December: Blue Topaz"
             }
           ]
         }
@@ -595,7 +595,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "14k Gold",
-            "Birthstone": "January — Garnet"
+            "Birthstone": "January: Garnet"
           }
         },
         {
@@ -604,7 +604,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "Sterling Silver",
-            "Birthstone": "January — Garnet"
+            "Birthstone": "January: Garnet"
           }
         },
         {
@@ -613,7 +613,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "14k Gold",
-            "Birthstone": "April — White Topaz"
+            "Birthstone": "April: White Topaz"
           }
         },
         {
@@ -622,7 +622,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "Sterling Silver",
-            "Birthstone": "April — White Topaz"
+            "Birthstone": "April: White Topaz"
           }
         },
         {
@@ -631,7 +631,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "14k Gold",
-            "Birthstone": "July — Ruby"
+            "Birthstone": "July: Ruby"
           }
         },
         {
@@ -640,7 +640,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "Sterling Silver",
-            "Birthstone": "July — Ruby"
+            "Birthstone": "July: Ruby"
           }
         },
         {
@@ -649,7 +649,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "14k Gold",
-            "Birthstone": "October — Opal"
+            "Birthstone": "October: Opal"
           }
         },
         {
@@ -658,7 +658,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "Sterling Silver",
-            "Birthstone": "October — Opal"
+            "Birthstone": "October: Opal"
           }
         },
         {
@@ -667,7 +667,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "14k Gold",
-            "Birthstone": "December — Blue Topaz"
+            "Birthstone": "December: Blue Topaz"
           }
         },
         {
@@ -676,7 +676,7 @@
           "inventoryPolicy": "continue",
           "optionValues": {
             "Metal": "Sterling Silver",
-            "Birthstone": "December — Blue Topaz"
+            "Birthstone": "December: Blue Topaz"
           }
         }
       ],
@@ -691,14 +691,14 @@
     {
       "handle": "smooth-cuff-bracelet",
       "title": "Smooth Cuff Bracelet",
-      "description": "A solid open cuff with a clean, unadorned curve — the piece that reads as expensive precisely because there’s nothing on it. Gently springs to slip on over the wrist and holds its shape for years; polished bright or brushed soft.",
+      "description": "A solid open cuff with a clean, unadorned curve: the piece that reads as expensive precisely because there’s nothing on it. Gently springs to slip on over the wrist and holds its shape for years; polished bright or brushed soft.",
       "status": "active",
       "productType": "Bracelet",
       "vendor": "Aurelia",
       "tags": ["bracelet", "cuff", "minimal"],
       "categoryHandles": ["bracelets"],
       "collectionHandles": ["everyday-gold", "the-signature-edit"],
-      "seoTitle": "Smooth Cuff Bracelet — solid 14k gold or silver | Aurelia",
+      "seoTitle": "Smooth Cuff Bracelet: solid 14k gold or silver | Aurelia",
       "seoDescription": "A solid open cuff with a clean unadorned curve, in 14k gold or sterling silver. Polished or brushed.",
       "options": [
         {
@@ -744,14 +744,14 @@
     {
       "handle": "solitaire-ring",
       "title": "The Solitaire",
-      "description": "A single brilliant-cut lab-grown white sapphire raised in a slim six-prong setting, on a fine tapered band that lets the stone stand alone. The engagement-style ring for people who want the look, the sparkle and the meaning — without the small mortgage.",
+      "description": "A single brilliant-cut lab-grown white sapphire raised in a slim six-prong setting, on a fine tapered band that lets the stone stand alone. The engagement-style ring for people who want the look, the sparkle and the meaning, without the small mortgage.",
       "status": "active",
       "productType": "Ring",
       "vendor": "Aurelia",
       "tags": ["ring", "solitaire", "engagement", "sapphire"],
       "categoryHandles": ["rings"],
       "collectionHandles": ["engagement", "the-signature-edit"],
-      "seoTitle": "The Solitaire — engagement-style ring | Aurelia",
+      "seoTitle": "The Solitaire: engagement-style ring | Aurelia",
       "seoDescription": "A brilliant-cut white sapphire in a six-prong solitaire setting on a fine tapered band, in solid gold or silver.",
       "options": [
         {

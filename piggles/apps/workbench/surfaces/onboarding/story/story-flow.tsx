@@ -38,7 +38,7 @@ export function StoryFlow({
           We couldn’t load your setup
         </Heading>
         <Text className="max-w-md text-center">
-          Something went wrong reaching your account. Check your connection and try again — nothing
+          Something went wrong reaching your account. Check your connection and try again. Nothing
           you’ve entered is lost.
         </Text>
         <Button

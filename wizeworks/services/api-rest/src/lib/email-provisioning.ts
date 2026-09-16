@@ -120,7 +120,7 @@ export function startEmailProvisioningReconcileLoop(
     try {
       await reconcileEmailProvisioning(logger);
     } catch (err) {
-      logger.error({ err }, 'email-provisioning-reconcile: tick threw — will retry next interval');
+      logger.error({ err }, 'email-provisioning-reconcile: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

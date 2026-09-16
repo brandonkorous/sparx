@@ -68,7 +68,7 @@ export function usePersonWrites({
       const ok = await confirm({
         title: `Mark ${person.name} as having left?`,
         description:
-          'They come off the roster and out of the schedule. Every hour they have worked stays exactly where it is — last year’s profit figure still adds up, and you can bring them back at any time.',
+          'They come off the roster and out of the schedule. Every hour they have worked stays exactly where it is: last year’s profit figure still adds up, and you can bring them back at any time.',
         confirmLabel: 'They have left',
         cancelLabel: 'Cancel',
         color: 'warning',
@@ -94,7 +94,7 @@ export function usePersonWrites({
     const ok = await confirm({
       title: `Delete ${person.name} completely?`,
       description:
-        'This is for a record created by mistake. It removes their timesheet, shifts, qualifications and paperwork. Wage costs already filed against your spending are NOT removed — deleting spend is a decision you make on the spending screen. This cannot be undone.',
+        'This is for a record created by mistake. It removes their timesheet, shifts, qualifications and paperwork. Wage costs already filed against your spending are NOT removed: deleting spend is a decision you make on the spending screen. This cannot be undone.',
       confirmLabel: 'Delete the record',
       cancelLabel: 'Keep it',
       color: 'danger',

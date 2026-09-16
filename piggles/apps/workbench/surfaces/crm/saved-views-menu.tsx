@@ -269,8 +269,8 @@ export function SavedViewsMenu({
     const ok = await confirm({
       title: `Delete “${view.name}”?`,
       description: view.isShared
-        ? 'It disappears for everyone on your team. The records in it are untouched — this only removes the saved set of filters.'
-        : 'The records in it are untouched — this only removes the saved set of filters.',
+        ? 'It disappears for everyone on your team. The records in it are untouched. This only removes the saved set of filters.'
+        : 'The records in it are untouched. This only removes the saved set of filters.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -287,7 +287,7 @@ export function SavedViewsMenu({
   return (
     <>
       <DropdownMenu>
-        <Tooltip content="Saved views — the list the way you always want it">
+        <Tooltip content="Saved views: the list the way you always want it">
           <DropdownMenuTrigger>
             {/* Soft-filled while a view is on, so the toolbar shows at a glance
                 that the rows below are a subset. Neutral ghost on the whole
@@ -347,7 +347,7 @@ export function SavedViewsMenu({
 
             {views.length === 0 ? (
               <DropdownMenuItem disabled>
-                <span className="text-sm">No saved views yet — narrow the list, then save it.</span>
+                <span className="text-sm">No saved views yet: narrow the list, then save it.</span>
               </DropdownMenuItem>
             ) : null}
           </DropdownMenuGroup>
@@ -415,7 +415,7 @@ export function SavedViewsMenu({
                   }}
                 />
                 <FieldDescription>
-                  Name it after what you use it for, not what it filters on — that is what you will
+                  Name it after what you use it for, not what it filters on. That is what you will
                   be scanning for next week.
                 </FieldDescription>
               </Field>

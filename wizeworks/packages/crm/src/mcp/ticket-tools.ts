@@ -30,7 +30,7 @@ import type { McpToolDefinition } from './registry';
 export const listTickets: McpToolDefinition = {
   name: 'list_crm_tickets',
   description:
-    'Read the support queue — who asked for what, how urgent it is, who has it, and how much time is left on the response the business promised. Defaults to requests still open and to the ones running out of time first, which is the order somebody working the queue actually wants. Use `breached: true` for what has already been missed, or `dueWithinMinutes` for what is about to be.',
+    'Read the support queue, who asked for what, how urgent it is, who has it, and how much time is left on the response the business promised. Defaults to requests still open and to the ones running out of time first, which is the order somebody working the queue actually wants. Use `breached: true` for what has already been missed, or `dueWithinMinutes` for what is about to be.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -51,7 +51,7 @@ export const listTickets: McpToolDefinition = {
 export const getTicket: McpToolDefinition = {
   name: 'get_crm_ticket',
   description:
-    'Read one support request in full: what was asked, which stage it is on, who owns it, and both clocks — whether anybody has replied yet, and whether it is on track to be resolved in time.',
+    'Read one support request in full: what was asked, which stage it is on, who owns it, and both clocks, whether anybody has replied yet, and whether it is on track to be resolved in time.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({ ticketId: z.string().uuid() }),
@@ -61,7 +61,7 @@ export const getTicket: McpToolDefinition = {
 export const listSlaPolicies: McpToolDefinition = {
   name: 'list_crm_sla_policies',
   description:
-    'Read what this business has promised about response times: the hours it is open, the days it is shut, and the reply and resolution targets for each level of urgency. Read this before telling anyone whether a request is late — "four hours" means four WORKING hours here, so a request that arrived at five in the afternoon is not overdue the next morning.',
+    'Read what this business has promised about response times: the hours it is open, the days it is shut, and the reply and resolution targets for each level of urgency. Read this before telling anyone whether a request is late, "four hours" means four WORKING hours here, so a request that arrived at five in the afternoon is not overdue the next morning.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({}),
@@ -73,7 +73,7 @@ export const listSlaPolicies: McpToolDefinition = {
 export const createTicket: McpToolDefinition = {
   name: 'create_crm_ticket',
   description:
-    "Open a support request. Use it when somebody has asked for something that needs following up and is not already in the queue — check with list_crm_tickets first, because a duplicate request splits one conversation across two records and each one then looks half-answered. Lands on the business's support queue with a response time attached automatically.",
+    "Open a support request. Use it when somebody has asked for something that needs following up and is not already in the queue. Check with list_crm_tickets first, because a duplicate request splits one conversation across two records and each one then looks half-answered. Lands on the business's support queue with a response time attached automatically.",
   scope: 'write:crm',
   confirmation: false,
   input: CreateTicketInput,
@@ -83,7 +83,7 @@ export const createTicket: McpToolDefinition = {
 export const updateTicket: McpToolDefinition = {
   name: 'update_crm_ticket',
   description:
-    'Change a request: its subject, the detail, who it is for, or how urgent it is. CHANGING THE URGENCY CHANGES THE DEADLINE — the response time is re-worked from the promise attached to the new level, measured from when the request first arrived. To move it along its stages, use move_crm_ticket_stage instead.',
+    'Change a request: its subject, the detail, who it is for, or how urgent it is. CHANGING THE URGENCY CHANGES THE DEADLINE, the response time is re-worked from the promise attached to the new level, measured from when the request first arrived. To move it along its stages, use move_crm_ticket_stage instead.',
   scope: 'write:crm',
   confirmation: false,
   input: z.object({ ticketId: z.string().uuid() }).and(UpdateTicketInput),
@@ -96,7 +96,7 @@ export const updateTicket: McpToolDefinition = {
 export const assignTicket: McpToolDefinition = {
   name: 'assign_crm_ticket',
   description:
-    'Hand a request to somebody on the team, or pass `null` to put it back in the unassigned queue for whoever picks it up first. Reversible and internal — nothing is sent to the customer.',
+    'Hand a request to somebody on the team, or pass `null` to put it back in the unassigned queue for whoever picks it up first. Reversible and internal. Nothing is sent to the customer.',
   scope: 'write:crm',
   confirmation: false,
   input: z.object({ ticketId: z.string().uuid() }).and(AssignTicketInput),
@@ -109,7 +109,7 @@ export const assignTicket: McpToolDefinition = {
 export const moveTicketStage: McpToolDefinition = {
   name: 'move_crm_ticket_stage',
   description:
-    'Move a request to another stage of the support process. CONFIRM BEFORE MARKING ANYTHING RESOLVED OR CLOSED: that is the business telling this customer their problem is dealt with, and any rule they have set up — a survey, a closing email — fires on it. Only somebody who has read the conversation can say whether it really is resolved.',
+    'Move a request to another stage of the support process. CONFIRM BEFORE MARKING ANYTHING RESOLVED OR CLOSED: that is the business telling this customer their problem is dealt with, and any rule they have set up (a survey, a closing email) fires on it. Only somebody who has read the conversation can say whether it really is resolved.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ ticketId: z.string().uuid() }).and(MoveTicketStageInput),
@@ -122,7 +122,7 @@ export const moveTicketStage: McpToolDefinition = {
 export const deleteTicket: McpToolDefinition = {
   name: 'delete_crm_ticket',
   description:
-    "Remove a request that should never have existed — spam, or a duplicate of one already in the queue. NOT how a request finishes: one that has been dealt with is moved to Resolved so it stays in the business's history and its response time still counts. Deleting is for mistakes only.",
+    "Remove a request that should never have existed: spam, or a duplicate of one already in the queue. NOT how a request finishes: one that has been dealt with is moved to Resolved so it stays in the business's history and its response time still counts. Deleting is for mistakes only.",
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ ticketId: z.string().uuid() }),

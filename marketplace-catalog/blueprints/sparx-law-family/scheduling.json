@@ -113,7 +113,7 @@
     {
       "handle": "free-consultation",
       "name": "Free consultation",
-      "description": "A relaxed, no-pressure first conversation. Tell us what’s on your mind and we’ll explain your options in plain English — no bill, no commitment.",
+      "description": "A relaxed, no-pressure first conversation. Tell us what’s on your mind and we’ll explain your options in plain English: no bill, no commitment.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -130,7 +130,7 @@
     {
       "handle": "estate-planning-consult",
       "name": "Estate planning consultation",
-      "description": "Sit down with us about wills, trusts and a plan for the people you love. We’ll walk you through what you actually need — and what you don’t.",
+      "description": "Sit down with us about wills, trusts and a plan for the people you love. We’ll walk you through what you actually need, and what you don’t.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -147,7 +147,7 @@
     {
       "handle": "will-trust-review",
       "name": "Will & trust review",
-      "description": "Already have documents? We’ll read them closely and tell you honestly whether they still do what you want — a flat fee, no surprises.",
+      "description": "Already have documents? We’ll read them closely and tell you honestly whether they still do what you want: a flat fee, no surprises.",
       "durationMinutes": 45,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -198,7 +198,7 @@
     {
       "handle": "business-formation-consult",
       "name": "Business formation session",
-      "description": "Starting or restructuring a family business? A working session to set it up right — the entity, the paperwork and how it fits your estate plan.",
+      "description": "Starting or restructuring a family business? A working session to set it up right: the entity, the paperwork and how it fits your estate plan.",
       "durationMinutes": 60,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -215,7 +215,7 @@
     {
       "handle": "guardianship-consult",
       "name": "Guardianship consultation",
-      "description": "When someone you love needs protecting — a child or an aging parent — we’ll explain guardianship and conservatorship in words that make sense.",
+      "description": "When someone you love needs protecting (a child or an aging parent), we’ll explain guardianship and conservatorship in words that make sense.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

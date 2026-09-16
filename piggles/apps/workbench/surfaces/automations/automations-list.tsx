@@ -160,7 +160,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('automations.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New automation — hold Shift to open alongside, Alt for a new window',
+          title: 'New automation: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <>
@@ -227,7 +227,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faDiagramProject} className="size-6" aria-hidden />}
             title="Could not load your automations"
-            description="Something went wrong reaching the server. Your rules are unaffected and still running — try again in a moment."
+            description="Something went wrong reaching the server. Your rules are unaffected and still running. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -246,7 +246,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No automations yet',
               description:
-                'Automations run jobs for you — email a customer when they order, chase an overdue invoice, tag a big spender. Create your first to get started.',
+                'Automations run jobs for you: email a customer when they order, chase an overdue invoice, tag a big spender. Create your first to get started.',
               actions: (
                 <Button
                   size="sm"

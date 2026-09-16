@@ -69,7 +69,7 @@ function sweep(theme: Theme): SiteLintReport {
 function of(report: SiteLintReport, severity: 'error' | 'warning'): string[] {
   return report.findings
     .filter((f) => f.severity === severity)
-    .map((f) => `${f.location.ownerName}: ${f.rule} — ${f.evidence ?? f.title}`);
+    .map((f) => `${f.location.ownerName}: ${f.rule}: ${f.evidence ?? f.title}`);
 }
 
 describe('the platform section library, against every real theme', () => {

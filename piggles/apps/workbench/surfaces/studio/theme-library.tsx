@@ -150,7 +150,7 @@ function ReadyMade({
     <section className="mt-6">
       <h3 className="text-base-content text-sm font-medium">Ready-made</h3>
       <p className="text-base-content mb-2 text-sm">
-        Pick one and it becomes yours — a copy you can change however you like.
+        Pick one and it becomes yours: a copy you can change however you like.
       </p>
       {/* One real stylesheet for the whole shelf, scoped per look. That is what lets
           each swatch wear `bg-primary` and mean THAT look's primary — no inline

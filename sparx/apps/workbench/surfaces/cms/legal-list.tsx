@@ -98,7 +98,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Add your ${item.title.toLowerCase()}?`,
       description:
-        'This creates a private draft from a sparx starter template, so you have something to work from rather than a blank page. The starter wording is a starting point, not legal advice — read it through and make it fit your business before you publish. It will also be linked in your site footer.',
+        'This creates a private draft from a sparx starter template, so you have something to work from rather than a blank page. The starter wording is a starting point, not legal advice. Read it through and make it fit your business before you publish. It will also be linked in your site footer.',
       confirmLabel: 'Add it',
       cancelLabel: 'Cancel',
       color: 'module',
@@ -167,7 +167,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Mark your ${item.title.toLowerCase()} as reviewed?`,
       description:
-        'Confirm you have read the starter wording and made it fit your business. This is not legal advice — if you are unsure, check it with your own advisor. This only clears the “needs review” note; it does not publish the page.',
+        'Confirm you have read the starter wording and made it fit your business. This is not legal advice: if you are unsure, check it with your own advisor. This only clears the “needs review” note; it does not publish the page.',
       confirmLabel: 'I have reviewed it',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -224,7 +224,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Scale className="size-6" aria-hidden />}
             title="Could not load your legal pages"
-            description="This is a problem reaching the server. None of your pages are affected — nothing has been lost."
+            description="This is a problem reaching the server. None of your pages are affected. Nothing has been lost."
             actions={
               <Button
                 size="sm"
@@ -426,7 +426,7 @@ function ChecklistRows({
                     size="sm"
                     variant="outline"
                     color="neutral"
-                    title="Open the editor — hold Shift to open alongside, Alt for a new window"
+                    title="Open the editor: hold Shift to open alongside, Alt for a new window"
                     onClick={(event) => {
                       onEdit(item, event);
                     }}
@@ -528,7 +528,7 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
     const ok = await confirm({
       title: `Remove “${name}” from your footer?`,
       description:
-        'This only takes the link out of your footer — the page itself, and everything on it, stays exactly as it is. You can link it again whenever you like.',
+        'This only takes the link out of your footer: the page itself, and everything on it, stays exactly as it is. You can link it again whenever you like.',
       confirmLabel: 'Remove the link',
       cancelLabel: 'Keep it',
       color: 'danger',

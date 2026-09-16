@@ -296,7 +296,7 @@ async function createSourceLinkOnTx(
   });
   if (claimedElsewhere) {
     throw new InventoryConflictError(
-      'This item is already linked to another inventory source — one source per item.'
+      'This item is already linked to another inventory source. One source per item.'
     );
   }
 

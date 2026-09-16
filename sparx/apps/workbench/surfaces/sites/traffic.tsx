@@ -232,7 +232,7 @@ export function SiteTraffic({ propertyId }: { propertyId: string }) {
       ) : (
         <Text className="text-sm">
           No visits recorded in the last {TRAFFIC_WINDOW_DAYS} days. Figures start appearing as soon
-          as people begin arriving — there is nothing to switch on.
+          as people begin arriving. There is nothing to switch on.
         </Text>
       )}
     </div>

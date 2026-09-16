@@ -587,8 +587,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Vesper — a tasting-menu restaurant",
-      "seoDescription": "Vesper is a tasting-menu restaurant — one nightly menu built around the day’s market, a deep cellar, and a chef’s counter. Open Tue–Sat for dinner. See the menu and reserve a table.",
+      "seoTitle": "Vesper: a tasting-menu restaurant",
+      "seoDescription": "Vesper is a tasting-menu restaurant. One nightly menu built around the day’s market, a deep cellar, and a chef’s counter. Open Tue–Sat for dinner. See the menu and reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -636,7 +636,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A tasting-menu restaurant. One nightly menu that changes with the day, a wine list read like a story, and a room kept low and quiet. Dinner, Tuesday through Saturday — as an occasion, not an errand."
+                          "A tasting-menu restaurant. One nightly menu that changes with the day, a wine list read like a story, and a room kept low and quiet. Dinner, Tuesday through Saturday: as an occasion, not an errand."
                         ],
                         "id": "09d5e7f2-ff84-4799-993a-19e4ad86a2be",
                         "ord": "a1"
@@ -724,7 +724,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Dinner at Vesper is a single tasting menu of seven courses, built around what the boats and the growers sent that day. There is no à la carte on the busiest nights — you sit, and we cook for you."
+                          "Dinner at Vesper is a single tasting menu of seven courses, built around what the boats and the growers sent that day. There is no à la carte on the busiest nights. You sit, and we cook for you."
                         ],
                         "id": "5ab5d6c6-d6bf-46b9-bd6c-0ed2acee0d19",
                         "ord": "a1"
@@ -892,7 +892,7 @@
                             "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover transition group-hover:opacity-90",
                             "attrs": {
                               "src": "https://images.unsplash.com/photo-1654772704042-0d536b77548b?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZmlzaCUyMGNvdXJzZSUyMGZpbGxldCUyMHR1cmJvdCUyMHBhbGUlMjBiZXVycmUlMjBibGFuY3xlbnwwfDB8fHwxNzg2NDE1Mjc5fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                              "alt": "A fish course — turbot in a pale butter sauce",
+                              "alt": "A fish course: turbot in a pale butter sauce",
                               "loading": "lazy"
                             },
                             "id": "360e5441-8e00-4d89-a1b3-0ebdbd0feab5",
@@ -934,7 +934,7 @@
                             "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover transition group-hover:opacity-90",
                             "attrs": {
                               "src": "https://images.unsplash.com/photo-1547050605-2f268cd5daf0?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWVhdCUyMGNvdXJzZSUyMGRyeS1hZ2VkJTIwYmVlZiUyMGJvbmUlMjBtYXJyb3clMjBnaXJvbGxlc3xlbnwwfDB8fHwxNzg2NDE1MjgyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                              "alt": "A meat course — dry-aged beef with bone marrow",
+                              "alt": "A meat course: dry-aged beef with bone marrow",
                               "loading": "lazy"
                             },
                             "id": "639e0721-e8f0-4fa4-9714-6b85cfe05888",
@@ -1058,7 +1058,7 @@
                     "class": "aspect-video w-full rounded-box border border-base-300 object-cover",
                     "attrs": {
                       "src": "https://images.unsplash.com/photo-1723744910051-da35a92321af?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8Y2hlZiUyMHMlMjBjb3VudGVyJTIwZGluZXJzJTIwc2VhdGVkJTIwcGFzcyUyMHdhdGNoaW5nfGVufDB8MHx8fDE3ODY0MTUyODl8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                      "alt": "The chef’s counter — diners seated at the pass",
+                      "alt": "The chef’s counter: diners seated at the pass",
                       "loading": "lazy"
                     },
                     "id": "72318999-6001-4cff-a703-2d6ffad31268",
@@ -1082,7 +1082,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Six stools sit at the chef’s counter, looking straight into the kitchen — the courses come from the hands that made them, with the story of each one told across the pass. Book a table in the room, or take a seat at the counter."
+                          "Six stools sit at the chef’s counter, looking straight into the kitchen: the courses come from the hands that made them, with the story of each one told across the pass. Book a table in the room, or take a seat at the counter."
                         ],
                         "id": "92588303-a7d0-4221-bd99-168be0111c3b",
                         "ord": "a1"
@@ -1241,7 +1241,7 @@
                         "tag": "p",
                         "class": "text-base leading-relaxed text-secondary",
                         "children": [
-                          "One seating a night. The kitchen sends the last course close to eleven — stay for a final glass."
+                          "One seating a night. The kitchen sends the last course close to eleven: stay for a final glass."
                         ],
                         "id": "3d284e1b-a715-4a9b-884c-cd0f7c0151f8",
                         "ord": "a2"
@@ -1268,7 +1268,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "No. 9 Vesper Court, behind the old exchange on the harbour side. There is no sign on the door — look for the single lit lamp. Valet from six; the last train leaves at midnight."
+                          "No. 9 Vesper Court, behind the old exchange on the harbour side. There is no sign on the door: look for the single lit lamp. Valet from six; the last train leaves at midnight."
                         ],
                         "id": "dc67edf4-6360-4917-b1fc-b382adfff463",
                         "ord": "a1"
@@ -1318,8 +1318,8 @@
       "name": "Menu",
       "kind": "singleton",
       "slug": "menu",
-      "seoTitle": "Menu — Vesper",
-      "seoDescription": "See the full menu at Vesper — dishes, drinks and prices — then reserve a table.",
+      "seoTitle": "Menu: Vesper",
+      "seoDescription": "See the full menu at Vesper (dishes, drinks and prices) then reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1391,7 +1391,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Seven courses, one seating, written the morning of your visit. This is the shape of a night with us — the detail changes with the market. $145 per guest; wine pairing $95."
+                          "Seven courses, one seating, written the morning of your visit. This is the shape of a night with us: the detail changes with the market. $145 per guest; wine pairing $95."
                         ],
                         "id": "12150b74-c3a0-4185-8797-1ceda479d6af",
                         "ord": "a1"
@@ -1423,7 +1423,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A handful of one-bite things to open — cured, fried, and cold from the pass, with a glass of something sparkling."
+                              "A handful of one-bite things to open: cured, fried, and cold from the pass, with a glass of something sparkling."
                             ],
                             "id": "1b67928b-c7d1-48bf-8091-d32b18463597",
                             "ord": "a1"
@@ -1558,7 +1558,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A short board of British farmhouse cheeses, quince, walnut and warm oatcakes — as much or as little as you like."
+                              "A short board of British farmhouse cheeses, quince, walnut and warm oatcakes: as much or as little as you like."
                             ],
                             "id": "e541eb93-0e4b-4801-a4b5-2d9ea8af2c77",
                             "ord": "a1"
@@ -1585,7 +1585,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Valrhona chocolate, hazelnut praline, sea salt and a quenelle churned to order — coffee and petits fours to follow."
+                              "Valrhona chocolate, hazelnut praline, sea salt and a quenelle churned to order: coffee and petits fours to follow."
                             ],
                             "id": "08010d77-6e17-4b2b-ac6a-a0e20f97226d",
                             "ord": "a1"
@@ -1620,7 +1620,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @2xl:text-4xl",
-                    "children": ["À la carte — to begin"],
+                    "children": ["À la carte: to begin"],
                     "id": "bb8832f6-ff46-47a9-8102-f6ba2a0bfc72",
                     "ord": "a0"
                   },
@@ -2494,7 +2494,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A long list, low-intervention and classic alike — ask the sommelier."
+                              "A long list, low-intervention and classic alike. Ask the sommelier."
                             ],
                             "id": "7c11f0b7-a09d-4639-91cc-061a2ea31c6f",
                             "ord": "a1"
@@ -2522,7 +2522,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Vesper",
+      "seoTitle": "Book: Vesper",
       "seoDescription": "See what Vesper offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -2554,7 +2554,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Choose your party size and a night below — you’ll see live availability for the weeks ahead. A small per-guest deposit holds the table and comes off your bill on the night."
+                      "Choose your party size and a night below: you’ll see live availability for the weeks ahead. A small per-guest deposit holds the table and comes off your bill on the night."
                     ],
                     "id": "429cf233-8e32-45da-ac23-726e32a60494",
                     "ord": "a1"
@@ -2617,7 +2617,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "dd2ef6ee-cfe0-45aa-ba05-8c5d80273ac0",
                         "ord": "a1"
@@ -2649,7 +2649,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A $25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day."
+                              "A $25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change. Cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day."
                             ],
                             "id": "2dbf0fcd-abaa-46fd-92f6-4ec78c32114e",
                             "ord": "a1"
@@ -2724,8 +2724,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Vesper — the tasting-menu restaurant",
-      "seoDescription": "A small, chef-led tasting-menu restaurant on the harbour side — one menu a night, written each morning, cooked over embers, with a cellar built over years.",
+      "seoTitle": "About Vesper: the tasting-menu restaurant",
+      "seoDescription": "A small, chef-led tasting-menu restaurant on the harbour side. One menu a night, written each morning, cooked over embers, with a cellar built over years.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2766,7 +2766,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "There is no fixed carte. The chef writes the menu each morning after the boats land and the growers call, so the courses turn with the tide and the season and are never quite the same twice. Nearly everything is made in-house — the bread, the butter, the pastry, the petits fours that close the night."
+                      "There is no fixed carte. The chef writes the menu each morning after the boats land and the growers call, so the courses turn with the tide and the season and are never quite the same twice. Nearly everything is made in-house: the bread, the butter, the pastry, the petits fours that close the night."
                     ],
                     "id": "a16c62a4-b832-4156-9883-9d4506bac091",
                     "ord": "a2"
@@ -2776,7 +2776,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The room seats a few more than thirty, with six stools at the chef’s counter for those who want to watch it happen. One seating a night means the evening is yours — book ahead, especially at the weekend, and come as you are for the long, unhurried kind of dinner an occasion deserves."
+                      "The room seats a few more than thirty, with six stools at the chef’s counter for those who want to watch it happen. One seating a night means the evening is yours. Book ahead, especially at the weekend, and come as you are for the long, unhurried kind of dinner an occasion deserves."
                     ],
                     "id": "058ff5f9-f714-4d4f-bec8-eb0ee89c15c2",
                     "ord": "a3"
@@ -2829,7 +2829,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Under the dining room is a cellar built over years — classic estates beside low-intervention growers, a deep bench of older vintages, and a sommelier who would rather talk you into something surprising than something safe."
+                          "Under the dining room is a cellar built over years: classic estates beside low-intervention growers, a deep bench of older vintages, and a sommelier who would rather talk you into something surprising than something safe."
                         ],
                         "id": "0e868d98-000e-4129-8112-296ab87659f7",
                         "ord": "a1"
@@ -2863,7 +2863,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Vesper",
+      "seoTitle": "Visit: Vesper",
       "seoDescription": "Where to find Vesper, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2900,7 +2900,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Vesper will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Vesper will get back to you, usually the same day."
                         ],
                         "id": "507b08a1-f2b1-41ea-b368-063fe6ce0586",
                         "ord": "a1"
@@ -3181,7 +3181,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No. 9 Vesper Court, behind the old exchange on the harbour side. Dinner Tuesday to Saturday, one seating a night; closed Sunday and Monday. There is no sign on the door — look for the single lit lamp."
+                      "No. 9 Vesper Court, behind the old exchange on the harbour side. Dinner Tuesday to Saturday, one seating a night; closed Sunday and Monday. There is no sign on the door: look for the single lit lamp."
                     ],
                     "id": "4ff9195a-6f70-4640-8ec7-07738b42d467",
                     "ord": "a1"

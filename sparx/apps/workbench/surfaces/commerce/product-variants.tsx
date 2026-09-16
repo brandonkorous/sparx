@@ -177,7 +177,7 @@ function dimensionProblem(draft: VariantDraft): string | null {
 function draftProblem(draft: VariantDraft): string | null {
   if (draft.sku.trim() === '') return 'Give this version a code.';
   if (!/^[A-Za-z0-9._\-/]+$/.test(draft.sku.trim())) {
-    return 'A code can use letters, digits, dots, dashes, underscores and slashes — no spaces.';
+    return 'A code can use letters, digits, dots, dashes, underscores and slashes: no spaces.';
   }
   if (draft.barcode.trim() !== '' && !/^[0-9]{8,14}$/.test(draft.barcode.trim())) {
     return 'A barcode is 8 to 14 digits, with nothing else in it.';
@@ -388,7 +388,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s prices</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing about the product has changed — its
+            This is a problem reaching the server. Nothing about the product has changed. Its
             versions just could not be read just now.
           </AlertDescription>
         </AlertContent>
@@ -481,7 +481,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
         live.length === 0 ? null : (
           <FormSection
             title="How this product is sold"
-            description="There is one version of this product. Shoppers do not choose anything — they just buy it."
+            description="There is one version of this product. Shoppers do not choose anything. They just buy it."
           >
             {live.map((variant) => (
               <VariantRow key={variant.id} variant={variant} label={variant.sku} {...rowProps} />
@@ -628,7 +628,7 @@ function NoPriceYet({
           <FieldStatus status="error">{problem}</FieldStatus>
         ) : (
           <FieldDescription>
-            Your own reference for this version — on labels, on invoices, in your records.
+            Your own reference for this version: on labels, on invoices, in your records.
           </FieldDescription>
         )}
       </Field>
@@ -946,7 +946,7 @@ function VariantRow({
                 <AlertTitle>This price is worked out for you</AlertTitle>
                 <AlertDescription>
                   It comes from a pricing rule based on what this costs you. Typing a price here
-                  changes it now, but the rule will set it again next time your cost moves — change
+                  changes it now, but the rule will set it again next time your cost moves. Change
                   the rule on the Pricing tab to make it stick.
                 </AlertDescription>
               </AlertContent>
@@ -1074,7 +1074,7 @@ function VariantRow({
               }}
             />
             <FieldDescription>
-              Leave this alone unless this one version differs — a downloadable size of an otherwise
+              Leave this alone unless this one version differs: a downloadable size of an otherwise
               posted product, say.
             </FieldDescription>
           </Field>

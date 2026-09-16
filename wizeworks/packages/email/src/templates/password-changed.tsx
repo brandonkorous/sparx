@@ -35,7 +35,7 @@ export function PasswordChangedEmail({
       <EmailParagraph>
         {name ? `Hi ${name}, ` : ''}this is a confirmation that the password for your {platform}{' '}
         account was just changed{changedAtLabel ? ` on ${changedAtLabel}` : ''}. If this was you,
-        you&apos;re all set — no further action needed.
+        you&apos;re all set: no further action needed.
       </EmailParagraph>
 
       <EmailAlert tone="warn" title="Didn't change your password?">

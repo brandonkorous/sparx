@@ -57,7 +57,7 @@ export function WhatYouPay() {
           What are you paying for all this now?
         </h2>
         <p className="mt-6 text-lg">
-          Not what we think you spend — what you actually do. Tick what you pay for, add the amounts
+          Not what we think you spend: what you actually do. Tick what you pay for, add the amounts
           if you know them, and put your own hours in if you want the rest of it. Every number below
           is one you typed, except ours.
         </p>

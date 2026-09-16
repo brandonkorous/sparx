@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Autobahn Werks — European import specialists",
-      "seoDescription": "Autobahn Werks is a factory-trained BMW, Mercedes, Audi, Porsche and VW specialist — dealer-level diagnostics without the dealer markup. Book your service online.",
+      "seoTitle": "Autobahn Werks: European import specialists",
+      "seoDescription": "Autobahn Werks is a factory-trained BMW, Mercedes, Audi, Porsche and VW specialist: dealer-level diagnostics without the dealer markup. Book your service online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "BMW, Mercedes, Audi, Porsche and VW — diagnosed, serviced and dialed in by factory-trained technicians, without the dealer markup."
+                      "BMW, Mercedes, Audi, Porsche and VW: diagnosed, serviced and dialed in by factory-trained technicians, without the dealer markup."
                     ],
                     "id": "d671f693-8ba5-4b2d-ac7e-508dd7341609",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Marque-certified master techs who work on your make every day — not a generalist meeting it for the first time."
+                              "Marque-certified master techs who work on your make every day, not a generalist meeting it for the first time."
                             ],
                             "id": "4e174d2f-0d70-4dbf-a2a5-10950af7abbd",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The same factory interfaces the dealer uses, reading live data and coding to spec — so the fix is the real fix."
+                              "The same factory interfaces the dealer uses, reading live data and coding to spec, so the fix is the real fix."
                             ],
                             "id": "c73a6bc6-2070-41ae-a6bc-e29ca52b6154",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Dealership expertise and equipment at an independent’s rate — with a straight answer on what actually needs doing."
+                              "Dealership expertise and equipment at an independent’s rate, with a straight answer on what actually needs doing."
                             ],
                             "id": "257a53e5-7b30-4f05-b9ea-270ffa03009a",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The services we book most. Full pricing and live availability are on the booking page — pick a technician and a bay opens up."
+                          "The services we book most. Full pricing and live availability are on the booking page. Pick a technician and a bay opens up."
                         ],
                         "id": "0b0483ea-3bc3-49ef-89aa-287e8dc5ac62",
                         "ord": "a1"
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "European cars are engineered tightly, and they’re unforgiving of guesswork. Autobahn Werks exists to work on them the way the factory intended — with the right tools, the right procedures and technicians who know the platform cold."
+                          "European cars are engineered tightly, and they’re unforgiving of guesswork. Autobahn Werks exists to work on them the way the factory intended, with the right tools, the right procedures and technicians who know the platform cold."
                         ],
                         "id": "9de1140e-ae94-488d-abaa-07b768667d2e",
                         "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "That means we find the actual fault instead of throwing parts at a symptom, we torque and code to spec, and we tell you what can wait and what can’t. Precision is the point — and it’s what keeps a well-built machine feeling built."
+                          "That means we find the actual fault instead of throwing parts at a symptom, we torque and code to spec, and we tell you what can wait and what can’t. Precision is the point, and it’s what keeps a well-built machine feeling built."
                         ],
                         "id": "77ae268b-1b41-4f28-98e9-5a348cdc117b",
                         "ord": "a2"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — the specialist who knows your marque and your history."
+                          "Book by name: the specialist who knows your marque and your history."
                         ],
                         "id": "2a2b4c80-b503-492d-97fb-8b90f9f5b846",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Scheduled maintenance, brakes and electrical — meticulous, to the book."
+                                  "Scheduled maintenance, brakes and electrical: meticulous, to the book."
                                 ],
                                 "id": "dc4421f5-9b3c-4382-8198-acdcad465058",
                                 "ord": "a2"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Autobahn Werks",
+      "seoTitle": "Book: Autobahn Werks",
       "seoDescription": "See what Autobahn Werks offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1521,7 +1521,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose a service to see pricing and live availability, then pick your technician — a bay is reserved with you automatically."
+                      "Choose a service to see pricing and live availability, then pick your technician: a bay is reserved with you automatically."
                     ],
                     "id": "61e6a0c1-0468-40b2-8249-bdc976c601db",
                     "ord": "a1"
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "c34621ea-9bc4-48a9-a746-57bdf3ca17ff",
                         "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Autobahn Werks",
+      "seoTitle": "About: Autobahn Werks",
       "seoDescription": "Who Autobahn Werks is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Autobahn Werks because European drivers deserved a shop that treats their cars as seriously as the engineers who built them — dealer-level capability, without the dealer runaround."
+                          "We opened Autobahn Werks because European drivers deserved a shop that treats their cars as seriously as the engineers who built them: dealer-level capability, without the dealer runaround."
                         ],
                         "id": "643dda15-dc2b-47ac-8b1d-d9e30c9b4ef3",
                         "ord": "a1"
@@ -1838,7 +1838,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We confirm the real cause on the factory interface before recommending a repair — no parts-cannon, no guesswork."
+                              "We confirm the real cause on the factory interface before recommending a repair: no parts-cannon, no guesswork."
                             ],
                             "id": "b3f216cd-7119-4d3e-b15a-517ba70b527b",
                             "ord": "a1"
@@ -1865,7 +1865,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Torque values, fluids, coding and procedures follow the manufacturer — the way precision engineering expects to be handled."
+                              "Torque values, fluids, coding and procedures follow the manufacturer: the way precision engineering expects to be handled."
                             ],
                             "id": "b1b02633-755c-4ee4-a36c-328e90de7839",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Autobahn Werks",
+      "seoTitle": "Visit: Autobahn Werks",
       "seoDescription": "Where to find Autobahn Werks, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Autobahn Werks will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Autobahn Werks will get back to you, usually the same day."
                         ],
                         "id": "193ec4c6-05f0-46e4-b7a6-f4720b13e307",
                         "ord": "a1"
@@ -2384,7 +2384,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your technician and bay online — no phone tag."
+                      "See live availability and reserve your technician and bay online: no phone tag."
                     ],
                     "id": "3394410a-0f65-4af7-80a5-7565f92f6e94",
                     "ord": "a1"

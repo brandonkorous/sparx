@@ -176,7 +176,7 @@ const purchaseDomainTool = {
     'Register a new domain through the platform’s GoDaddy reseller account and connect it to this tenant. ' +
     'Configures DNS automatically (CNAME, SPF, DKIM, DMARC). ' +
     'Requires the registrant contact information for ICANN compliance. ' +
-    'Payment is billed to the tenant account (Stripe charge stubbed during beta — no charge now). ' +
+    'Payment is billed to the tenant account (Stripe charge stubbed during beta: no charge now). ' +
     'IMPORTANT: This action registers a real domain and cannot be undone. Always confirm the domain name and registration period with the user before proceeding.',
   scope: 'write:domains' as const,
   input: PurchaseInput,

@@ -84,7 +84,7 @@ export default async function MetricsPage({
     <Stack gap={6}>
       <PageHeader
         title="Platform metrics"
-        description="Cross-tenant platform health — lifecycle, revenue, module adoption, signups, and churn across every account."
+        description="Cross-tenant platform health: lifecycle, revenue, module adoption, signups, and churn across every account."
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -133,7 +133,7 @@ export default async function MetricsPage({
           <Heading level={2}>Acquisition</Heading>
           <Text size="sm">
             Where the accounts created in the last {windowDays} days came from. These count signups,
-            not visits — somebody who read the site and left is in none of these numbers.
+            not visits: somebody who read the site and left is in none of these numbers.
           </Text>
         </Stack>
         {acquisition ? (

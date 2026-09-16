@@ -111,7 +111,7 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
             >
               {SIZES.map((s) => (
                 <option key={s.value} value={s.value}>
-                  {s.label} — {s.hint}
+                  {s.label}: {s.hint}
                 </option>
               ))}
             </NativeSelect>
@@ -173,7 +173,7 @@ export function DocumentLabelSurface({ ctx }: { ctx: SurfaceContext }) {
             </PrintSheet>
 
             <Text className="text-sm print:hidden">
-              Print at actual size — scaling narrows the bars, which is the commonest reason a
+              Print at actual size: scaling narrows the bars, which is the commonest reason a
               printed label will not scan.
             </Text>
           </div>

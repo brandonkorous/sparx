@@ -34,9 +34,9 @@ const FLOW_CLASS = 'flex flex-col gap-12 py-10 md:gap-16 md:py-14';
 // layout's `%s · sparx.market` template — the homepage title already names the
 // site, so the template would render it twice.
 export const metadata: Metadata = {
-  title: { absolute: 'sparx.market — Shop thousands of independent sellers' },
+  title: { absolute: 'sparx.market: Shop thousands of independent sellers' },
   description:
-    'Browse and buy from thousands of independent shops in one place. Real makers, shipped direct — discover products you won’t find on the big marketplaces.',
+    'Browse and buy from thousands of independent shops in one place. Real makers, shipped direct: discover products you won’t find on the big marketplaces.',
   alternates: { canonical: '/' },
 };
 

@@ -77,7 +77,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'megaphone',
     description:
-      'A full-width accent band with a headline, a supporting line, and a primary + secondary action — centered.',
+      'A full-width accent band with a headline, a supporting line, and a primary + secondary action: centered.',
     surfaces: ['page', 'site'],
     tags: ['cta', 'call to action', 'band', 'banner', 'convert', 'marketing'],
     tree: el(
@@ -92,7 +92,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 text: 'Ready to launch your storefront?',
               }),
               el('p', 'text-lg text-primary-content/80', {
-                text: 'Go from idea to a live, branded site in minutes — no code, no contracts, cancel anytime.',
+                text: 'Go from idea to a live, branded site in minutes: no code, no contracts, cancel anytime.',
               }),
               el('div', 'flex flex-col gap-3 @sm:flex-row', {
                 children: [
@@ -114,12 +114,12 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
   // ── Pricing — three tiers, highlighted middle plan ────────────────────────────
   entry({
     key: 'pricing_three_tier',
-    name: 'Pricing — three tiers',
+    name: 'Pricing: three tiers',
     category: 'marketing',
     kind: 'comprehensive',
     icon: 'badge-dollar-sign',
     description:
-      'Three pricing cards — Starter, Pro, Enterprise — with the middle plan highlighted, each listing features and a call to action.',
+      'Three pricing cards (Starter, Pro, Enterprise) with the middle plan highlighted, each listing features and a call to action.',
     surfaces: ['page', 'site'],
     tags: ['pricing', 'plans', 'tiers', 'subscription', 'compare', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -258,12 +258,12 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
   // ── Testimonial (single) — one large, centered pull quote ─────────────────────
   entry({
     key: 'testimonial_single',
-    name: 'Testimonial — single',
+    name: 'Testimonial: single',
     category: 'marketing',
     kind: 'common',
     icon: 'quote',
     description:
-      'A single large centered quote with an avatar, name, and role — social proof at the top of a page.',
+      'A single large centered quote with an avatar, name, and role: social proof at the top of a page.',
     surfaces: ['page', 'site'],
     tags: ['testimonial', 'quote', 'review', 'social proof', 'marketing'],
     tree: el('section', 'w-full px-6 py-16', {
@@ -306,7 +306,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'messages-square',
     description:
-      'A responsive grid of three testimonial cards — each a quote with the person who said it. Collapses to one column.',
+      'A responsive grid of three testimonial cards. Each a quote with the person who said it. Collapses to one column.',
     surfaces: ['page', 'site'],
     tags: ['testimonials', 'reviews', 'quotes', 'social proof', 'grid', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -428,7 +428,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'layout-grid',
     description:
-      'A responsive three-up grid of features — each an icon tile, a heading, and a line of supporting copy.',
+      'A responsive three-up grid of features. Each an icon tile, a heading, and a line of supporting copy.',
     surfaces: ['page', 'site'],
     tags: ['features', 'benefits', 'icons', 'grid', 'value props', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -440,7 +440,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               text: 'Everything you need to sell',
             }),
             el('p', 'text-lg text-base-content', {
-              text: 'One platform for your storefront, payments, customers, and marketing — no plugins to wrangle.',
+              text: 'One platform for your storefront, payments, customers, and marketing: no plugins to wrangle.',
             }),
           ],
         }),
@@ -507,7 +507,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'gallery-horizontal-end',
     description:
-      'A centered caption above a responsive row of muted placeholder logos — drop in real customer marks later.',
+      'A centered caption above a responsive row of muted placeholder logos: drop in real customer marks later.',
     surfaces: ['page', 'site'],
     tags: ['logos', 'logo cloud', 'customers', 'trusted by', 'social proof', 'marketing'],
     tree: el('section', 'w-full px-4 py-12', {
@@ -540,7 +540,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'mail',
     description:
-      'A heading and blurb above an inline email field joined to a subscribe button — stacks on a narrow container.',
+      'A heading and blurb above an inline email field joined to a subscribe button: stacks on a narrow container.',
     surfaces: ['page', 'site'],
     tags: ['newsletter', 'signup', 'subscribe', 'email', 'capture', 'marketing'],
     tree: el('section', 'w-full rounded-box bg-base-200 px-6 py-12 @3xl:px-12', {
@@ -552,7 +552,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               text: 'Get the weekly drop',
             }),
             el('p', 'text-base text-base-content', {
-              text: 'New arrivals, restocks, and subscriber-only offers — straight to your inbox. No spam, unsubscribe anytime.',
+              text: 'New arrivals, restocks, and subscriber-only offers: straight to your inbox. No spam, unsubscribe anytime.',
             }),
             el('form', 'flex w-full flex-col gap-3 @sm:flex-row', {
               children: [
@@ -582,7 +582,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'circle-help',
     description:
-      'A stack of question / answer disclosures built on native <details> — markers hidden, the chevron rotates on open. No script.',
+      'A stack of question / answer disclosures built on native <details>: markers hidden, the chevron rotates on open. No script.',
     surfaces: ['page', 'site'],
     tags: ['faq', 'accordion', 'questions', 'disclosure', 'help', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -642,7 +642,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       }
                     ),
                     el('p', 'mt-3 text-sm leading-relaxed text-base-content', {
-                      text: 'Yes. Connect a domain you already own or register a new one in a few clicks — SSL is provisioned automatically.',
+                      text: 'Yes. Connect a domain you already own or register a new one in a few clicks: SSL is provisioned automatically.',
                     }),
                   ],
                 }),
@@ -688,7 +688,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       }
                     ),
                     el('p', 'mt-3 text-sm leading-relaxed text-base-content', {
-                      text: 'Absolutely. There are no contracts or lock-in — cancel in one click and keep access through the end of the period.',
+                      text: 'Absolutely. There are no contracts or lock-in. Cancel in one click and keep access through the end of the period.',
                     }),
                   ],
                 }),
@@ -708,7 +708,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'bar-chart-3',
     description:
-      'A band of four headline metrics with labels on a contrasting neutral surface — responsive, two-up then four-up.',
+      'A band of four headline metrics with labels on a contrasting neutral surface: responsive, two-up then four-up.',
     surfaces: ['page', 'site'],
     tags: ['stats', 'metrics', 'numbers', 'kpi', 'band', 'marketing'],
     tree: el(
@@ -737,7 +737,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'users-round',
     description:
-      'A responsive grid of four team cards — photo, name, role, and a small social row. Collapses to one column.',
+      'A responsive grid of four team cards: photo, name, role, and a small social row. Collapses to one column.',
     surfaces: ['page', 'site'],
     tags: ['team', 'people', 'about', 'staff', 'members', 'grid', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -849,7 +849,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'table-2',
     description:
-      'A feature comparison table — rows of capabilities across plan columns, each cell a check or a dash. Scrolls on narrow containers.',
+      'A feature comparison table: rows of capabilities across plan columns, each cell a check or a dash. Scrolls on narrow containers.',
     surfaces: ['page', 'site'],
     tags: ['comparison', 'table', 'plans', 'features', 'pricing', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -952,7 +952,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'bell-ring',
     description:
-      'A slim full-width highlight strip with a short message and an inline link — for a sale, launch, or notice.',
+      'A slim full-width highlight strip with a short message and an inline link, for a sale, launch, or notice.',
     surfaces: ['page', 'site'],
     tags: ['announcement', 'banner', 'notice', 'promo', 'bar', 'marketing'],
     tree: el('div', 'w-full bg-highlight px-4 py-2.5 text-highlight-content', {
@@ -965,7 +965,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
             children: [
               atom('Icon', 'h-4 w-4 shrink-0', { name: 'sparkles' }),
               el('span', 'font-medium', {
-                text: 'Spring sale is live — 20% off every plan through Sunday.',
+                text: 'Spring sale is live: 20% off every plan through Sunday.',
               }),
               el(
                 'a',
@@ -990,7 +990,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'columns-2',
     description:
-      'A two-column feature block — supporting media beside a heading, body, checklist, and call to action. Stacks on a narrow container.',
+      'A two-column feature block: supporting media beside a heading, body, checklist, and call to action. Stacks on a narrow container.',
     surfaces: ['page', 'site'],
     tags: ['feature', 'split', 'media', 'showcase', 'two column', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -1041,7 +1041,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'layout-dashboard',
     description:
-      'An asymmetric mosaic of feature tiles — wide and standard cells in a balanced grid that collapses to one column on a narrow container.',
+      'An asymmetric mosaic of feature tiles: wide and standard cells in a balanced grid that collapses to one column on a narrow container.',
     surfaces: ['page', 'site'],
     tags: ['bento', 'mosaic', 'features', 'grid', 'highlights', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -1060,7 +1060,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   '@xl:col-span-2',
                   'bg-primary text-primary-content',
                   'Build once, publish everywhere',
-                  'Pages, posts, and products share one canvas — design a section and reuse it across every site you run.'
+                  'Pages, posts, and products share one canvas: design a section and reuse it across every site you run.'
                 ),
                 bentoCell(
                   '',
@@ -1072,13 +1072,13 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                   '',
                   'bg-base-200 text-base-content',
                   'Yours to own',
-                  'Export your work anytime — no lock-in, no surprises.'
+                  'Export your work anytime: no lock-in, no surprises.'
                 ),
                 bentoCell(
                   '@xl:col-span-2',
                   'bg-neutral text-neutral-content',
                   'Grows with you',
-                  'Turn on commerce, email, or a CRM the day you need it — the rest stays out of your way.'
+                  'Turn on commerce, email, or a CRM the day you need it: the rest stays out of your way.'
                 ),
               ],
             }),
@@ -1096,7 +1096,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'circle-play',
     description:
-      'A centered headline and call-to-action above a framed video embed — paste a video URL into the frame to bring it to life.',
+      'A centered headline and call-to-action above a framed video embed. Paste a video URL into the frame to bring it to life.',
     surfaces: ['page', 'site'],
     tags: ['video', 'hero', 'embed', 'demo', 'media', 'marketing'],
     tree: el('section', 'w-full px-4 py-20', {
@@ -1110,7 +1110,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
             }),
             atom('Text', 'text-lg text-base-content', {
               variant: 'body',
-              text: 'A two-minute look at how it all fits together — from a blank canvas to a published, polished site.',
+              text: 'A two-minute look at how it all fits together: from a blank canvas to a published, polished site.',
             }),
             atom('Button', 'btn btn-primary btn-lg', { label: 'Start free' }),
           ],
@@ -1131,7 +1131,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'list-ordered',
     description:
-      'A three-step “how it works” row — a numbered badge, heading, and a line of copy each, side by side and stacking on narrow containers.',
+      'A three-step “how it works” row: a numbered badge, heading, and a line of copy each, side by side and stacking on narrow containers.',
     surfaces: ['page', 'site'],
     tags: ['steps', 'process', 'how it works', 'onboarding', 'guide', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -1150,7 +1150,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 stepItem(
                   '1',
                   'Create your space',
-                  'Sign up and name your site — you are in the editor in under a minute.'
+                  'Sign up and name your site. You are in the editor in under a minute.'
                 ),
                 stepItem(
                   '2',
@@ -1178,7 +1178,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'images',
     description:
-      'A multi-column image wall where photos keep their natural proportions — a portfolio or lookbook that reflows from one to three columns.',
+      'A multi-column image wall where photos keep their natural proportions: a portfolio or lookbook that reflows from one to three columns.',
     surfaces: ['page', 'site'],
     tags: ['gallery', 'masonry', 'portfolio', 'photos', 'lookbook', 'grid', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -1215,7 +1215,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'mail',
     description:
-      'A two-column contact section — your details and a map beside a contact form with name, email, and message fields.',
+      'A two-column contact section. Your details and a map beside a contact form with name, email, and message fields.',
     surfaces: ['page', 'site'],
     tags: ['contact', 'form', 'map', 'get in touch', 'support', 'marketing'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -1232,19 +1232,19 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 }),
                 atom('Text', 'text-base text-base-content', {
                   variant: 'body',
-                  text: 'Questions, partnerships, or press — send a note and we will get back to you within a day.',
+                  text: 'Questions, partnerships, or press. Send a note and we will get back to you within a day.',
                 }),
                 el('div', 'mt-1 flex flex-col gap-1 text-sm text-base-content', {
                   children: [
                     el('p', '', {
                       children: [
-                        el('span', 'font-medium text-base-content', { text: 'Email — ' }),
+                        el('span', 'font-medium text-base-content', { text: 'Email: ' }),
                         el('span', '', { text: 'hello@example.com' }),
                       ],
                     }),
                     el('p', '', {
                       children: [
-                        el('span', 'font-medium text-base-content', { text: 'Phone — ' }),
+                        el('span', 'font-medium text-base-content', { text: 'Phone: ' }),
                         el('span', '', { text: '(555) 010-0142' }),
                       ],
                     }),
@@ -1310,7 +1310,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
           {
             children: [
               el('span', 'text-sm font-semibold', {
-                text: 'Summer sale — up to 40% off everything',
+                text: 'Summer sale: up to 40% off everything',
               }),
               el('div', 'flex items-center gap-4', {
                 children: [
@@ -1511,7 +1511,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'btn btn-primary',
               {
                 triggerLabel: 'See the offer',
-                title: 'Before you go — take 10% off',
+                title: 'Before you go: take 10% off',
                 description: 'Leave your email and we will send a code you can use today.',
                 closeLabel: 'No thanks',
                 placement: 'center',

@@ -79,8 +79,8 @@ export function SocialPostFailedEmail({
 
       <EmailParagraph>
         {partial
-          ? 'Nothing has been posted twice — you can send it to just the accounts that missed out.'
-          : 'Your post is safe and unchanged — fix what went wrong and send it again.'}
+          ? 'Nothing has been posted twice. You can send it to just the accounts that missed out.'
+          : 'Your post is safe and unchanged: fix what went wrong and send it again.'}
       </EmailParagraph>
 
       <EmailStatusList rows={rows} />

@@ -73,7 +73,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
   {
     slug: 'printify',
     label: 'Printify',
-    tagline: 'Print-on-demand — broadest catalog, 90+ print providers',
+    tagline: 'Print-on-demand: broadest catalog, 90+ print providers',
     description:
       'Connect your Printify shop to import its products, route orders to Printify for fulfillment, and sync tracking. Best for a wide range of products (apparel, drinkware, accessories, home goods).',
     connectionMethod: 'api',
@@ -93,7 +93,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
         key: 'shopId',
         label: 'Shop ID',
         type: 'text',
-        placeholder: 'Optional — leave blank to use your first shop',
+        placeholder: 'Optional: leave blank to use your first shop',
         help: 'Only needed if your account has multiple Printify shops.',
         required: false,
       },
@@ -102,7 +102,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
   {
     slug: 'printful',
     label: 'Printful',
-    tagline: 'Print-on-demand — premium quality, global fulfillment',
+    tagline: 'Print-on-demand: premium quality, global fulfillment',
     description:
       'Connect your Printful store to import its sync products, submit orders for fulfillment, and sync shipment tracking. Apparel-led with strong print quality.',
     connectionMethod: 'api',
@@ -122,7 +122,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
         key: 'storeId',
         label: 'Store ID',
         type: 'text',
-        placeholder: 'Optional — only for account-level tokens',
+        placeholder: 'Optional: only for account-level tokens',
         help: 'Required only when your token is account-scoped rather than store-scoped.',
         required: false,
       },
@@ -184,7 +184,7 @@ export const VENDOR_CATALOG: DropshipVendor[] = [
   {
     slug: 'csv',
     label: 'CSV feed',
-    tagline: 'Any supplier — import a product feed, fulfill orders manually',
+    tagline: 'Any supplier: import a product feed, fulfill orders manually',
     description:
       'For suppliers without an API: point us at a CSV product feed to import the catalog. Orders are fulfilled manually with your supplier (no automated submission or tracking).',
     connectionMethod: 'manual',

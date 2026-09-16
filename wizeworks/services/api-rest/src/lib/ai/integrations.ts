@@ -37,7 +37,7 @@ const COPY: Record<AiProvider, AiVendorCopy> = {
     name: 'Anthropic',
     vendor: 'Anthropic',
     blurb:
-      'Use your own Anthropic account to power the AI features in {platform} — writing product descriptions, drafting emails, answering questions about your business.',
+      'Use your own Anthropic account to power the AI features in {platform}: writing product descriptions, drafting emails, answering questions about your business.',
     keyHelp: 'Anthropic Console → Settings → API keys.',
     placeholder: 'sk-ant-…',
     docsUrl: 'https://console.anthropic.com/settings/keys',
@@ -46,7 +46,7 @@ const COPY: Record<AiProvider, AiVendorCopy> = {
     name: 'OpenAI',
     vendor: 'OpenAI',
     blurb:
-      'Use your own OpenAI account to power the AI features in {platform} — writing product descriptions, drafting emails, answering questions about your business.',
+      'Use your own OpenAI account to power the AI features in {platform}: writing product descriptions, drafting emails, answering questions about your business.',
     keyHelp: 'OpenAI dashboard → API keys.',
     placeholder: 'sk-…',
     docsUrl: 'https://platform.openai.com/api-keys',

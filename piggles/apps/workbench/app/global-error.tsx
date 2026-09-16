@@ -77,7 +77,7 @@ export default function GlobalError({
           <p style={{ fontSize: '16px', lineHeight: 1.6, color: INK_SOFT, margin: '0 0 24px' }}>
             {stale
               ? 'This tab was open while we shipped an update. Reloading to pick it up.'
-              : 'Something went wrong before your business finished loading. Try again in a moment — nothing you have saved is affected.'}
+              : 'Something went wrong before your business finished loading. Try again in a moment. Nothing you have saved is affected.'}
           </p>
           <button
             type="button"

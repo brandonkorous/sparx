@@ -59,7 +59,7 @@ export function BarcodeTool() {
             { label: 'Bar width', value: `${Math.max(1, Number(moduleWidth) || 2)}` },
             { label: 'Number printed underneath', value: showText ? 'Yes' : 'No' },
           ],
-          note: 'Open the tool again with these and download it. Print one and scan it before you print a whole sheet — a barcode that is slightly too small looks perfectly fine and will not read.',
+          note: 'Open the tool again with these and download it. Print one and scan it before you print a whole sheet: a barcode that is slightly too small looks perfectly fine and will not read.',
         }
       : null
   );
@@ -91,7 +91,7 @@ export function BarcodeTool() {
             {isRetail ? (
               <Aside>
                 <strong>Selling through shops or a marketplace?</strong> These numbers have to be
-                bought from GS1 — the whole system depends on no two products anywhere sharing a
+                bought from GS1: the whole system depends on no two products anywhere sharing a
                 code. For your own shelves, bins and stock counts, Code 128 needs no registration
                 and holds more.
               </Aside>
@@ -115,7 +115,7 @@ export function BarcodeTool() {
             />
             <CheckField
               label="Print the number underneath"
-              hint="Leave this on. When a scanner fails, somebody types it in — and if it is not printed, they cannot."
+              hint="Leave this on. When a scanner fails, somebody types it in, and if it is not printed, they cannot."
               checked={showText}
               onChange={setShowText}
             />
@@ -140,7 +140,7 @@ export function BarcodeTool() {
                   <p className="mt-4 text-base">
                     {isRetail ? (
                       <>
-                        Check digit worked out and added — the full number is{' '}
+                        Check digit worked out and added: the full number is{' '}
                         <span className="font-mono font-bold">{result.text}</span>.
                       </>
                     ) : (
@@ -163,7 +163,7 @@ export function BarcodeTool() {
                         )
                       }
                     >
-                      Download SVG — use this for printing
+                      Download SVG. Use this for printing
                     </Button>
                     <Button
                       variant="outline"

@@ -15,7 +15,7 @@
       "depositAmountCents": 3500,
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show — otherwise the hold is released after your visit."
+      "policyText": "Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show, otherwise the hold is released after your visit."
     }
   ],
   "resources": [
@@ -232,7 +232,7 @@
     {
       "handle": "wellness-exam",
       "name": "Wellness exam",
-      "description": "A head-to-tail check-up for a healthy dog or cat — weight, heart, teeth, coat and a plan to keep them feeling their best.",
+      "description": "A head-to-tail check-up for a healthy dog or cat: weight, heart, teeth, coat and a plan to keep them feeling their best.",
       "durationMinutes": 30,
       "priceCents": 6500,
       "assignmentStrategy": "customer_choice",
@@ -325,7 +325,7 @@
     {
       "handle": "senior-wellness",
       "name": "Senior wellness",
-      "description": "A gentle, thorough check-in for older pets — mobility, weight, bloodwork and comfort, so their golden years stay easy.",
+      "description": "A gentle, thorough check-in for older pets: mobility, weight, bloodwork and comfort, so their golden years stay easy.",
       "durationMinutes": 45,
       "priceCents": 12000,
       "bufferAfterMin": 10,
@@ -349,7 +349,7 @@
     {
       "handle": "dental-cleaning",
       "name": "Dental cleaning",
-      "description": "A full dental under anesthesia with pre-op bloodwork — scaling, polishing and a look under the gumline for a fresher, healthier mouth.",
+      "description": "A full dental under anesthesia with pre-op bloodwork: scaling, polishing and a look under the gumline for a fresher, healthier mouth.",
       "durationMinutes": 90,
       "priceCents": 34000,
       "bufferAfterMin": 15,
@@ -373,7 +373,7 @@
     {
       "handle": "nail-trim",
       "name": "Nail trim",
-      "description": "A quick, low-stress nail trim with our tech — in and out, no exam needed. Walk-ins welcome when we can fit you in.",
+      "description": "A quick, low-stress nail trim with our tech: in and out, no exam needed. Walk-ins welcome when we can fit you in.",
       "durationMinutes": 20,
       "priceCents": 2500,
       "assignmentStrategy": "any_available",

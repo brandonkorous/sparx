@@ -70,7 +70,7 @@ export function TextPanel({ node }: { node: TextNode }) {
           value={node.lineHeight}
           min={10}
           max={120}
-          hint="In pixels — around 1.5× the size reads comfortably."
+          hint="In pixels: around 1.5× the size reads comfortably."
           onCommit={(lineHeight) => patch('Change line spacing', { lineHeight })}
         />
         <SelectRow

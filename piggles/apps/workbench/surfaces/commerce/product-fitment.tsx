@@ -145,7 +145,7 @@ function rangeLabel(range: ProductFitmentRange, dimension: FitmentDimension | un
   }
   if (range.min !== null) return `${label} ${String(range.min)}${unit} and up`;
   if (range.max !== null) return `${label} up to ${String(range.max)}${unit}`;
-  return `${label} — any`;
+  return `${label}: any`;
 }
 
 function ruleTitle(rule: { nodePath: string[] }, domain: FitmentDomain | undefined): string {
@@ -456,7 +456,7 @@ function FitmentPicker({
                 }
               />
               <FieldDescription>
-                A caveat worth remembering. Kept with the rule, for you — not shown to shoppers.
+                A caveat worth remembering. Kept with the rule, for you, not shown to shoppers.
               </FieldDescription>
             </Field>
           </div>
@@ -571,7 +571,7 @@ function FitmentBody({
     const title = ruleTitle(rule, domain);
     const ok = await confirm({
       title: `Stop saying this fits ${title}?`,
-      description: `Anyone filtering your website by what they own will no longer be shown ${scope.product.title} for ${title}, from the moment you confirm. Nothing else about the product changes, and you can add it again — but nothing here remembers the note or the years you had set on it.`,
+      description: `Anyone filtering your website by what they own will no longer be shown ${scope.product.title} for ${title}, from the moment you confirm. Nothing else about the product changes, and you can add it again, but nothing here remembers the note or the years you had set on it.`,
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -606,7 +606,7 @@ function FitmentBody({
             module={MODULE}
             icon={<Icon glyph={faPuzzlePiece} className="size-6" aria-hidden />}
             title="Could not load what this product fits"
-            description="This is a problem reaching the server. Nothing about the product has changed — it just could not be read just now."
+            description="This is a problem reaching the server. Nothing about the product has changed. It just could not be read just now."
             onRetry={() => {
               void fitment.refetch();
               void domainsQuery.refetch();
@@ -634,7 +634,7 @@ function FitmentBody({
             module={MODULE}
             icon={<Icon glyph={faLayerGroup} className="size-6" aria-hidden />}
             title="There is nothing to match against yet"
-            description="Before a product can be marked as fitting something, your catalog needs a list of what those things ARE — a list of vehicles, of machine models, of printers. Add one and every product can then be matched against it."
+            description="Before a product can be marked as fitting something, your catalog needs a list of what those things ARE: a list of vehicles, of machine models, of printers. Add one and every product can then be matched against it."
             actions={
               <Button
                 size="sm"

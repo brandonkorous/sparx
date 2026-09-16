@@ -85,7 +85,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Users className="size-6" aria-hidden />}
           title="Could not load your people & equipment"
-          description="This is a problem reaching the server. Nothing is affected — the list just could not be read just now."
+          description="This is a problem reaching the server. Nothing is affected: the list just could not be read just now."
           actions={
             <Button
               size="sm"
@@ -116,12 +116,12 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
           noResults={{
             icon: <Users className="size-6" aria-hidden />,
             title: 'Nothing matches that',
-            description: `You are only seeing “${kindLabel ?? ''}” — switch to every kind to see the rest.`,
+            description: `You are only seeing “${kindLabel ?? ''}”. Switch to every kind to see the rest.`,
           }}
           firstRun={{
             title: 'Nothing set up yet',
             description:
-              'Add the people and things a booking uses up — your staff, your rooms, your equipment. Once they exist, you can set the hours each one is free.',
+              'Add the people and things a booking uses up. Your staff, your rooms, your equipment. Once they exist, you can set the hours each one is free.',
             actions: (
               <Button
                 size="sm"
@@ -203,7 +203,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add one — hold Shift to open alongside, Alt for a new window"
+            title="Add one: hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
             <Plus className="size-4" aria-hidden />

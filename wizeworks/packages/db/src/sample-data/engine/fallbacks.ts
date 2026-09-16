@@ -75,7 +75,7 @@ const SCHEDULING_FLAVORS: Record<string, SchedulingFlavor> = {
       {
         name: 'Tasting & menu consultation',
         description:
-          'Sit down with the kitchen to taste seasonal dishes and shape a menu for your event — dietary needs, pairings, and portion planning included.',
+          'Sit down with the kitchen to taste seasonal dishes and shape a menu for your event: dietary needs, pairings, and portion planning included.',
         durationMinutes: 60,
         priceCents: 7500,
       },
@@ -219,7 +219,7 @@ export function defaultRecordTypes(): SampleRecordType[] {
           key: 'howTheyFoundUs',
           label: 'How they found us',
           type: 'enum',
-          helpText: 'Worth asking once — it is the only way to know what is working.',
+          helpText: 'Worth asking once. It is the only way to know what is working.',
           options: [
             { value: 'word_of_mouth', label: 'Someone told them' },
             { value: 'search', label: 'Found us searching' },

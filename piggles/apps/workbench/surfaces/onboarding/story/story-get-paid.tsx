@@ -41,8 +41,8 @@ export function StoryGetPaid({
         </Heading>
         <Text className="max-w-[58ch] text-base">
           {subject(story)} is set up and ready to sell. The last line of your story is getting the
-          money into your hands — connect your bank through Stripe and you can take payments the
-          moment you go live. Not today? Go live now and add it whenever you’re ready — checkout
+          money into your hands: connect your bank through Stripe and you can take payments the
+          moment you go live. Not today? Go live now and add it whenever you’re ready. Checkout
           simply waits until you do.
         </Text>
       </div>
@@ -51,7 +51,7 @@ export function StoryGetPaid({
         <div className="border-success flex items-start gap-3 rounded-xl border px-5 py-4">
           <Icon glyph={faCheckCircle} className="text-success mt-0.5 size-5 shrink-0" aria-hidden />
           <Text className="max-w-[58ch] text-base">
-            You’re set to get paid — Stripe is connected and checkout is ready. Money from your
+            You’re set to get paid: Stripe is connected and checkout is ready. Money from your
             customers lands straight in your bank account.
           </Text>
         </div>
@@ -61,7 +61,7 @@ export function StoryGetPaid({
             Connect Stripe
           </Button>
           <Text className="max-w-[58ch] text-sm">
-            Stripe is how the money reaches you — cards, wallets, and bank debits, paid straight to
+            Stripe is how the money reaches you: cards, wallets, and bank debits, paid straight to
             your bank. It’s the account that <span className="font-medium">receives</span> customer
             payments, separate from what you pay us each month.
           </Text>

@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Maple Grove Dental — a friendly family dentist",
-      "seoDescription": "Maple Grove Dental is a warm, gentle family practice for checkups, cleanings, kids’ dentistry, whitening, fillings and same-day emergencies. New patients welcome — book online.",
+      "seoTitle": "Maple Grove Dental: a friendly family dentist",
+      "seoDescription": "Maple Grove Dental is a warm, gentle family practice for checkups, cleanings, kids’ dentistry, whitening, fillings and same-day emergencies. New patients welcome. Book online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Gentle, unhurried care for every age — checkups, cleanings, kids’ dentistry and same-day help when it hurts. New patients always welcome."
+                      "Gentle, unhurried care for every age: checkups, cleanings, kids’ dentistry and same-day help when it hurts. New patients always welcome."
                     ],
                     "id": "5a407a78-a8db-459e-b0e4-a1a8f19bd5ec",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Nervous about the dentist? So were half of our patients once. We go slowly, explain everything, and never rush — a lot of people tell us they’ve stopped dreading it."
+                              "Nervous about the dentist? So were half of our patients once. We go slowly, explain everything, and never rush: a lot of people tell us they’ve stopped dreading it."
                             ],
                             "id": "25c51c32-fd8b-4ec9-8276-41c05daabdb4",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "From first tooth to teenager, we make visits fun and easy — gentle hygienists, no scary words, and plenty of high-fives on the way out."
+                              "From first tooth to teenager, we make visits fun and easy: gentle hygienists, no scary words, and plenty of high-fives on the way out."
                             ],
                             "id": "24e0c9e7-9550-4c5f-b8ee-9509e1714c67",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A few of the visits we see most. Full prices and live availability are on the booking page — and consults are always free."
+                          "A few of the visits we see most. Full prices and live availability are on the booking page, and consults are always free."
                         ],
                         "id": "665e353c-a542-4ada-882f-343613ae9c70",
                         "ord": "a1"
@@ -1219,7 +1219,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Maple Grove is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one visit, where the hygienist remembers your kids’ names, and where nobody is ever made to feel rushed or judged."
+                          "Maple Grove is a neighbourhood practice built for real families: the kind of place where the whole household can be seen in one visit, where the hygienist remembers your kids’ names, and where nobody is ever made to feel rushed or judged."
                         ],
                         "id": "4ae05600-c940-4f98-aafd-77117d07cf54",
                         "ord": "a1"
@@ -1229,7 +1229,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We keep things simple and honest: clear prices, gentle hands, and only the treatment you actually need. Come as you are — anxious, overdue, or just here for a clean — and leave feeling looked after."
+                          "We keep things simple and honest: clear prices, gentle hands, and only the treatment you actually need. Come as you are (anxious, overdue, or just here for a clean) and leave feeling looked after."
                         ],
                         "id": "bd20f431-a6d1-4f0a-82a2-f093f004d78a",
                         "ord": "a2"
@@ -1294,7 +1294,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see friendly, familiar faces every visit."
+                          "Book by name: you’ll see friendly, familiar faces every visit."
                         ],
                         "id": "6d66a722-5e0d-498d-8d22-ac52800724c6",
                         "ord": "a1"
@@ -1407,7 +1407,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Thorough, easy-going cleanings and checkups — and the calmest hands in the building."
+                                  "Thorough, easy-going cleanings and checkups, and the calmest hands in the building."
                                 ],
                                 "id": "b83e3c7a-abc6-4342-9568-ae80d05064d9",
                                 "ord": "a2"
@@ -1463,7 +1463,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "A favourite with the little ones — Priya makes first visits fun and fear-free."
+                                  "A favourite with the little ones: Priya makes first visits fun and fear-free."
                                 ],
                                 "id": "ae737ba5-3ccf-4f60-b92a-e0c3efa9ba27",
                                 "ord": "a2"
@@ -1503,7 +1503,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“My kids actually ask when their next dentist visit is — I never thought I’d say that. The whole team is so gentle and kind, and I finally stopped dreading my own checkups too.”"
+                      "“My kids actually ask when their next dentist visit is: I never thought I’d say that. The whole team is so gentle and kind, and I finally stopped dreading my own checkups too.”"
                     ],
                     "id": "30bb68aa-f5f0-480d-b261-fe9d1d4a3fcb",
                     "ord": "a0"
@@ -1547,7 +1547,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Pick a visit, choose your provider and see live times. It takes about a minute — and we’ll take it from there."
+                      "Pick a visit, choose your provider and see live times. It takes about a minute, and we’ll take it from there."
                     ],
                     "id": "ca293b8b-f439-4ebd-a338-d8e1afb69514",
                     "ord": "a1"
@@ -1578,7 +1578,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Maple Grove Dental",
+      "seoTitle": "Book: Maple Grove Dental",
       "seoDescription": "See what Maple Grove Dental offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1702,7 +1702,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "e29bb99b-825d-4919-91e9-f8c637fd87dc",
                         "ord": "a1"
@@ -1734,7 +1734,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
+                              "Please give us at least 24 hours’ notice if you need to change or cancel. It lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
                             ],
                             "id": "178186f7-b805-42c9-b755-7700cbf20535",
                             "ord": "a1"
@@ -1771,7 +1771,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Longer visits reserve a chair and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
+                              "Longer visits reserve a chair and a provider just for you, so we hold a card on file. Nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
                             ],
                             "id": "9f91efdf-5cc1-4056-878e-fc25e0c2a99c",
                             "ord": "a1"
@@ -1807,7 +1807,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Maple Grove Dental",
+      "seoTitle": "About: Maple Grove Dental",
       "seoDescription": "Who Maple Grove Dental is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1856,7 +1856,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Maple Grove to be the kind of dentist we’d want for our own families — warm, honest and genuinely gentle. Somewhere every age feels welcome, from a toddler’s first visit to a grandparent’s regular checkup."
+                          "We opened Maple Grove to be the kind of dentist we’d want for our own families: warm, honest and genuinely gentle. Somewhere every age feels welcome, from a toddler’s first visit to a grandparent’s regular checkup."
                         ],
                         "id": "6a11b308-8f5d-4681-835e-8017fb9da3a9",
                         "ord": "a1"
@@ -1944,7 +1944,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every visit starts with a real conversation about your teeth, your worries and your budget — so the plan fits your life, not a sales target."
+                              "Every visit starts with a real conversation about your teeth, your worries and your budget, so the plan fits your life, not a sales target."
                             ],
                             "id": "bbc85498-88b1-453f-8650-a5a4b0bc3653",
                             "ord": "a1"
@@ -1998,7 +1998,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Nervous adults, wriggly toddlers, busy teens — we know how to make each one comfortable, calm and glad they came."
+                              "Nervous adults, wriggly toddlers, busy teens. We know how to make each one comfortable, calm and glad they came."
                             ],
                             "id": "f32ed017-b02c-4d78-a8b4-3f9bf1b8d8fc",
                             "ord": "a1"
@@ -2026,7 +2026,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Maple Grove Dental",
+      "seoTitle": "Visit: Maple Grove Dental",
       "seoDescription": "Where to find Maple Grove Dental, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2063,7 +2063,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Maple Grove Dental will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Maple Grove Dental will get back to you, usually the same day."
                         ],
                         "id": "d0d323ca-1a2f-4be7-88cb-2f33373a520a",
                         "ord": "a1"
@@ -2515,7 +2515,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your family’s appointments online — no phone tag, no hold music."
+                      "See live availability and reserve your family’s appointments online: no phone tag, no hold music."
                     ],
                     "id": "a4c261bf-6253-40ef-b6e2-17afc38c33dc",
                     "ord": "a1"

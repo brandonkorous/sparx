@@ -168,7 +168,7 @@ export function sectionHeightField(): SectionField {
     key: 'sectionHeight',
     label: 'Section height',
     type: 'buttongroup',
-    help: 'How tall this section is — a fraction of the screen, or Auto to fit its content.',
+    help: 'How tall this section is: a fraction of the screen, or Auto to fit its content.',
     options: [
       { label: 'Auto', value: 'auto' },
       { label: '¼', value: 'sm' },

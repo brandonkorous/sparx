@@ -113,7 +113,7 @@ export function ChecklistRows({
                     size="sm"
                     variant="outline"
                     color="neutral"
-                    title="Open the editor — hold Shift to open alongside, Alt for a new window"
+                    title="Open the editor: hold Shift to open alongside, Alt for a new window"
                     onClick={(event) => {
                       onEdit(item, event);
                     }}

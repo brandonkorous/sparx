@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ironclad Roofing & Exteriors — storm damage & insurance claims",
+      "seoTitle": "Ironclad Roofing & Exteriors: storm damage & insurance claims",
       "seoDescription": "Storm-damage roofing specialists. Book a free inspection online, we work directly with your insurance, and handle roofing, siding, windows and emergency tarping.",
       "root": {
         "kind": "element",
@@ -578,7 +578,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "text-5xl font-bold leading-none tracking-tight @2xl:text-6xl @3xl:text-7xl",
-                    "children": ["Storm hit your roof? We handle the damage — and the claim."],
+                    "children": ["Storm hit your roof? We handle the damage, and the claim."],
                     "id": "55adc04c-2a57-44a3-b7e2-38cfbb223cc8",
                     "ord": "a0"
                   },
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Ironclad is the storm-damage specialist that documents the hit, works directly with your insurance, and gets you a new roof — while you get on with your life. Start with a free inspection."
+                      "Ironclad is the storm-damage specialist that documents the hit, works directly with your insurance, and gets you a new roof, while you get on with your life. Start with a free inspection."
                     ],
                     "id": "7f9499b0-6833-4f94-99ef-a02231ab6966",
                     "ord": "a1"
@@ -672,7 +672,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We climb up, document every hit, and tell you straight whether you have a claim — no charge and no pressure to sign anything."
+                              "We climb up, document every hit, and tell you straight whether you have a claim: no charge and no pressure to sign anything."
                             ],
                             "id": "495d1272-d450-4583-a8e7-57893abc7060",
                             "ord": "a1"
@@ -802,7 +802,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Inspections and estimates are always free. Book any of these online and see live availability — emergencies go to the next available crew."
+                          "Inspections and estimates are always free. Book any of these online and see live availability: emergencies go to the next available crew."
                         ],
                         "id": "c1788fa1-5050-4b84-a615-aa18344f88a5",
                         "ord": "a1"
@@ -1210,7 +1210,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Filing a storm claim on your own is a part-time job — photos, measurements, the right language, and an adjuster who moves on their own schedule. We do all of it. We document the damage, submit the evidence, and meet the adjuster on your roof so nothing gets missed or lowballed."
+                          "Filing a storm claim on your own is a part-time job: photos, measurements, the right language, and an adjuster who moves on their own schedule. We do all of it. We document the damage, submit the evidence, and meet the adjuster on your roof so nothing gets missed or lowballed."
                         ],
                         "id": "2e6bb77f-3af4-433f-bd13-2bd5241fb244",
                         "ord": "a1"
@@ -1220,7 +1220,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "You stay in the loop and in control; we carry the weight. When it’s approved, our crews do the work — roof, siding or the whole exterior — and you pay your deductible, not a surprise."
+                          "You stay in the loop and in control; we carry the weight. When it’s approved, our crews do the work (roof, siding or the whole exterior), and you pay your deductible, not a surprise."
                         ],
                         "id": "ad2e9611-6a34-467c-b5e4-a1efbd022878",
                         "ord": "a2"
@@ -1569,7 +1569,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Ironclad Roofing & Exteriors",
+      "seoTitle": "Book: Ironclad Roofing & Exteriors",
       "seoDescription": "See what Ironclad Roofing & Exteriors offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1601,7 +1601,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Pick what you need — a free storm inspection, an estimate, or an emergency tarp — to see live availability and a two-hour arrival window. We’ll confirm your crew and text you before we roll."
+                      "Pick what you need (a free storm inspection, an estimate, or an emergency tarp) to see live availability and a two-hour arrival window. We’ll confirm your crew and text you before we roll."
                     ],
                     "id": "cd585a2e-3cdc-4565-8468-72b425cea241",
                     "ord": "a1"
@@ -1674,7 +1674,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "d4e39f36-e0da-4d10-89d0-b87b6e8c11ab",
                         "ord": "a1"
@@ -1743,7 +1743,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Active leak or storm damage? Emergency visits go to the next available crew — we text a tight window and call before we roll to tarp and protect. Please give us 4 hours’ notice to release the slot."
+                              "Active leak or storm damage? Emergency visits go to the next available crew. We text a tight window and call before we roll to tarp and protect. Please give us 4 hours’ notice to release the slot."
                             ],
                             "id": "c384e835-b76f-4a32-a7ed-47b1383ded05",
                             "ord": "a1"
@@ -1781,7 +1781,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Ironclad Roofing & Exteriors",
+      "seoTitle": "About: Ironclad Roofing & Exteriors",
       "seoDescription": "Who Ironclad Roofing & Exteriors is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1830,7 +1830,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Ironclad Roofing & Exteriors started after one too many neighbors got steamrolled by their own insurance company — underpaid, under-documented, and left with a patch job instead of the roof they were owed. We decided to be the contractor that stands on the homeowner’s side of the table."
+                          "Ironclad Roofing & Exteriors started after one too many neighbors got steamrolled by their own insurance company: underpaid, under-documented, and left with a patch job instead of the roof they were owed. We decided to be the contractor that stands on the homeowner’s side of the table."
                         ],
                         "id": "dd69519d-4311-4c23-8b05-03fdd9f136c8",
                         "ord": "a1"
@@ -1945,7 +1945,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Roof, siding, gutters and windows handled together — no juggling three contractors after one storm."
+                              "Roof, siding, gutters and windows handled together: no juggling three contractors after one storm."
                             ],
                             "id": "1d13a9f6-5dd6-4d54-aaab-e146f9f0f66e",
                             "ord": "a1"
@@ -2000,7 +2000,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Ironclad Roofing & Exteriors",
+      "seoTitle": "Visit: Ironclad Roofing & Exteriors",
       "seoDescription": "Where to find Ironclad Roofing & Exteriors, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2037,7 +2037,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Ironclad Roofing & Exteriors will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Ironclad Roofing & Exteriors will get back to you, usually the same day."
                         ],
                         "id": "b7fa6313-edac-4bdc-9077-81e8f2c04ff3",
                         "ord": "a1"
@@ -2489,7 +2489,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Booking online is faster than calling — see live times and lock in your free inspection in about a minute."
+                      "Booking online is faster than calling: see live times and lock in your free inspection in about a minute."
                     ],
                     "id": "c2653e5f-d5c5-49d1-88f5-3442f9f6e7c2",
                     "ord": "a1"

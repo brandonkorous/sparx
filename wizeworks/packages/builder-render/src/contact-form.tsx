@@ -53,7 +53,7 @@ function validateFiles(files: File[]): string | null {
   const maxMb = Math.round(MAX_FORM_ATTACHMENT_BYTES / (1024 * 1024));
   for (const file of files) {
     if (file.size > MAX_FORM_ATTACHMENT_BYTES) {
-      return `"${file.name}" is too large — files must be under ${maxMb} MB.`;
+      return `"${file.name}" is too large: files must be under ${maxMb} MB.`;
     }
     if (!isAllowedAttachmentMime(file.type)) {
       return `"${file.name}" isn't an accepted file type. Accepted: ${ACCEPTED_TYPES}.`;

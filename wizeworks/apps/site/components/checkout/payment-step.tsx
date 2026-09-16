@@ -204,7 +204,7 @@ function InPersonPaymentStep({
         <Button type="submit" color="primary" size="lg" className="flex-1" disabled={busy}>
           {busy
             ? 'Placing order…'
-            : `Place order — ${formatMoney(session.totals.totalCents, session.currency)} to pay`}
+            : `Place order: ${formatMoney(session.totals.totalCents, session.currency)} to pay`}
         </Button>
       </div>
     </form>
@@ -264,7 +264,7 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
         <Button type="submit" color="primary" size="lg" className="flex-1" disabled={busy}>
           {busy
             ? 'Placing order…'
-            : `Place order — ${formatMoney(session.totals.totalCents, session.currency)}`}
+            : `Place order: ${formatMoney(session.totals.totalCents, session.currency)}`}
         </Button>
       </div>
     </form>

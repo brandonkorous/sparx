@@ -19,7 +19,7 @@ export const TEAM: AppMarketing = {
     },
     {
       title: 'A record of who did what',
-      body: 'Significant changes are logged with a name and a time — not to catch anybody out, but so a mystery has an answer.',
+      body: 'Significant changes are logged with a name and a time, not to catch anybody out, but so a mystery has an answer.',
     },
     {
       title: 'Per-location, where it matters',
@@ -36,7 +36,7 @@ export const TEAM: AppMarketing = {
       // long, which left the largest cost in most service businesses looking
       // like something Piggles does not track.
       heading: 'The hours behind the biggest number you pay out.',
-      body: 'For most businesses that employ anybody, wages are the largest single cost — and in most software they are a figure somebody types in at the end of the month. My Team keeps what people actually worked, so the cost of a job is arithmetic rather than a guess. It is not payroll and will not become it: Piggles records the hours and the rates and hands them to whoever runs yours.',
+      body: 'For most businesses that employ anybody, wages are the largest single cost, and in most software they are a figure somebody types in at the end of the month. My Team keeps what people actually worked, so the cost of a job is arithmetic rather than a guess. It is not payroll and will not become it: Piggles records the hours and the rates and hands them to whoever runs yours.',
       does: [
         {
           title: 'Hours attached to something',
@@ -48,11 +48,11 @@ export const TEAM: AppMarketing = {
         },
         {
           title: 'Time off that actually blocks the diary',
-          body: 'Requested, approved, and written straight through to availability — so once it is agreed, nobody can be booked in with a person who is away.',
+          body: 'Requested, approved, and written straight through to availability, so once it is agreed, nobody can be booked in with a person who is away.',
         },
         {
           title: 'Tickets and licences before they lapse',
-          body: 'A forklift ticket, a food-hygiene certificate, a trade licence — kept with its expiry date and raised while there is still time to renew it.',
+          body: 'A forklift ticket, a food-hygiene certificate, a trade license: kept with its expiry date and raised while there is still time to renew it.',
         },
         {
           title: 'It is what makes profit-by-job real',

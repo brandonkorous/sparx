@@ -358,7 +358,7 @@ function AddStageRow({ onClick, hasStages }: { onClick: () => void; hasStages: b
           <span className="flex flex-col gap-0.5">
             <span className="text-sm font-medium">Add the first stage</span>
             <span className="text-sm">
-              A step a document sits at — a draft, a sent invoice, a paid receipt.
+              A step a document sits at: a draft, a sent invoice, a paid receipt.
             </span>
           </span>
         )}

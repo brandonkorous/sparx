@@ -139,7 +139,7 @@ export const FIELD_TYPE_LABELS: Record<PropertyFieldType, string> = {
 };
 
 export const FIELD_TYPE_HINTS: Record<PropertyFieldType, string> = {
-  text: 'A single line — a reference number, a nickname.',
+  text: 'A single line: a reference number, a nickname.',
   long_text: 'A paragraph or two of plain notes.',
   rich_text: 'Notes with bold, links and lists.',
   slug: 'Lowercase, dashes instead of spaces.',
@@ -154,7 +154,7 @@ export const FIELD_TYPE_HINTS: Record<PropertyFieldType, string> = {
   asset: 'An uploaded file or picture.',
   currency: 'An amount, with its currency.',
   user: 'One of the people on your team.',
-  calculated: 'A number worked out from the other details — you never type it.',
+  calculated: 'A number worked out from the other details. You never type it.',
   object: 'Several related details kept together.',
   repeater: 'The same set of details, as many times as needed.',
 };

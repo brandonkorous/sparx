@@ -118,7 +118,7 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
     res.statusCode = 204;
     res.end();
   } catch (err) {
-    logger.error({ err, messageId }, 'transient failure — returning 500 for redelivery');
+    logger.error({ err, messageId }, 'transient failure: returning 500 for redelivery');
     res.statusCode = 500;
     res.end();
   }

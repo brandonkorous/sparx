@@ -197,7 +197,7 @@ const SCHEDULING = {
             handle: 'meet-consult',
             name: 'Meet & greet consultation',
             description:
-                'A calm first visit — we meet your pet, talk through coat, temperament and the look you love, and plan the perfect groom. Booked before your first signature visit.',
+                'A calm first visit. We meet your pet, talk through coat, temperament and the look you love, and plan the perfect groom. Booked before your first signature visit.',
             durationMinutes: 30,
             priceCents: 0,
             requiresApproval: true,
@@ -212,7 +212,7 @@ const SCHEDULING = {
             handle: 'signature-spa-groom',
             name: 'Signature spa groom',
             description:
-                'Our full experience: a gentle warm bath, hand-fluff dry, breed-appropriate finish, nails, ears and a spritz of light cologne — never crated, never rushed.',
+                'Our full experience: a gentle warm bath, hand-fluff dry, breed-appropriate finish, nails, ears and a spritz of light cologne, never crated, never rushed.',
             durationMinutes: 120,
             priceCents: 11500,
             bufferAfterMin: 15,
@@ -227,7 +227,7 @@ const SCHEDULING = {
             handle: 'breed-hand-style',
             name: 'Breed-specific hand styling',
             description:
-                'Scissored and hand-finished to your breed’s standard — poodle, doodle, terrier, spaniel and more. A master groomer shapes every line by hand.',
+                'Scissored and hand-finished to your breed’s standard: poodle, doodle, terrier, spaniel and more. A master groomer shapes every line by hand.',
             durationMinutes: 150,
             priceCents: 15500,
             bufferAfterMin: 15,
@@ -242,7 +242,7 @@ const SCHEDULING = {
             handle: 'hand-strip',
             name: 'Hand-stripping (wire coats)',
             description:
-                'Traditional hand-stripping for wire-coated breeds — pulling, not clipping, to keep color and texture true. Patient, careful, and kind to the coat.',
+                'Traditional hand-stripping for wire-coated breeds: pulling, not clipping, to keep color and texture true. Patient, careful, and kind to the coat.',
             durationMinutes: 150,
             priceCents: 16500,
             bufferAfterMin: 15,
@@ -257,7 +257,7 @@ const SCHEDULING = {
             handle: 'spa-refresh',
             name: 'Spa refresh & tidy',
             description:
-                'A between-grooms freshen-up — bath, blow-out, sanitary trim, paws and a face tidy. In and out feeling soft and clean.',
+                'A between-grooms freshen-up: bath, blow-out, sanitary trim, paws and a face tidy. In and out feeling soft and clean.',
             durationMinutes: 75,
             priceCents: 7500,
             assignmentStrategy: 'any_available',
@@ -285,7 +285,7 @@ const SCHEDULING = {
             handle: 'cat-spa-groom',
             name: 'Cat spa groom',
             description:
-                'A gentle, unhurried groom for cats in our quiet room away from the dogs — bath, de-shed or lion trim, nails and ears, handled with a soft touch.',
+                'A gentle, unhurried groom for cats in our quiet room away from the dogs: bath, de-shed or lion trim, nails and ears, handled with a soft touch.',
             durationMinutes: 90,
             priceCents: 9500,
             bufferAfterMin: 15,
@@ -305,7 +305,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A small dog resting calmly on a soft towel in a quiet, sunlit grooming suite',
         title: 'A quiet, gentle spa day for your best friend',
-        sub: 'A boutique grooming salon where your pet is the only one in the room — hand-styled by master groomers, never crated, never hurried.',
+        sub: 'A boutique grooming salon where your pet is the only one in the room: hand-styled by master groomers, never crated, never hurried.',
         primary: { label: 'Book online', href: '/book' },
         secondary: { label: 'See the spa menu', href: '/book' },
         overlay: 'soft',
@@ -315,8 +315,8 @@ const HOME = [
         alt: 'A serene private grooming suite with a single table and soft daylight',
         heading: 'One pet at a time, start to finish',
         body: [
-            'The Groom Room isn’t a busy shop with a wall of cages. Each pet has a private suite and a single master groomer for the whole visit — bath, style and finish, all by the same gentle pair of hands.',
-            'No kennels between steps, no waiting in a crate to dry. Just a calm, unhurried hour that most pets — and their people — genuinely look forward to.',
+            'The Groom Room isn’t a busy shop with a wall of cages. Each pet has a private suite and a single master groomer for the whole visit: bath, style and finish, all by the same gentle pair of hands.',
+            'No kennels between steps, no waiting in a crate to dry. Just a calm, unhurried hour that most pets (and their people) genuinely look forward to.',
         ],
         cta: { label: 'Book a suite', href: '/book' },
     }),
@@ -358,7 +358,7 @@ const HOME = [
         items: [
             {
                 title: 'One pet at a time',
-                body: 'Your pet is the only one being groomed in their suite — no chaos, no barking crowd, no crate between the bath and the blow-dry.',
+                body: 'Your pet is the only one being groomed in their suite: no chaos, no barking crowd, no crate between the bath and the blow-dry.',
             },
             {
                 title: 'Master groomers only',
@@ -366,7 +366,7 @@ const HOME = [
             },
             {
                 title: 'Premium, gentle products',
-                body: 'Sulphate-free, skin-kind shampoos and conditioners chosen for sensitive coats — nothing harsh, nothing rushed.',
+                body: 'Sulphate-free, skin-kind shampoos and conditioners chosen for sensitive coats. Nothing harsh, nothing rushed.',
             },
             {
                 title: 'A calm, private suite',
@@ -376,7 +376,7 @@ const HOME = [
     }),
     teamRow({
         heading: 'Meet your master groomers',
-        intro: 'Book by name — you’ll see the same trusted groomer each visit.',
+        intro: 'Book by name: you’ll see the same trusted groomer each visit.',
         members: [
             {
                 name: 'Eloise Fairbanks',
@@ -390,7 +390,7 @@ const HOME = [
                 role: 'Master groomer · Cat specialist',
                 image: url(IMG.marcus),
                 alt: 'Marcus Devlin, master groomer and cat specialist',
-                bio: 'Our quiet-room cat expert and de-shed specialist — endlessly patient with the nervous ones.',
+                bio: 'Our quiet-room cat expert and de-shed specialist: endlessly patient with the nervous ones.',
             },
             {
                 name: 'Priya Anand',
@@ -403,7 +403,7 @@ const HOME = [
     }),
     testimonial({
         quote:
-            'My anxious rescue used to shake at the groomer. Here he naps on the table. Same person every time, one dog in the room — it changed everything for him.',
+            'My anxious rescue used to shake at the groomer. Here he naps on the table. Same person every time, one dog in the room. It changed everything for him.',
         attribution: 'Hannah & Biscuit, clients since 2024',
         surface: 'muted',
     }),
@@ -432,8 +432,8 @@ const ABOUT = [
         alt: 'A small dog resting calmly on a soft towel in a quiet, sunlit grooming suite',
         heading: 'About The Groom Room',
         body: [
-            'We opened The Groom Room because grooming had become a production line — cages, clippers and a queue. We wanted the opposite: a calm, private, one-pet-at-a-time salon where a groom feels like a spa day, not an ordeal.',
-            'Every visit is handled start to finish by one master groomer in a private suite, with gentle products and all the time your pet needs. No crates, no rush, no stress — just a beautiful, comfortable groom.',
+            'We opened The Groom Room because grooming had become a production line: cages, clippers and a queue. We wanted the opposite: a calm, private, one-pet-at-a-time salon where a groom feels like a spa day, not an ordeal.',
+            'Every visit is handled start to finish by one master groomer in a private suite, with gentle products and all the time your pet needs. No crates, no rush, no stress. Just a beautiful, comfortable groom.',
         ],
         cta: { label: 'Book a visit', href: '/book' },
     }),
@@ -443,7 +443,7 @@ const ABOUT = [
         items: [
             {
                 title: 'A consultation first',
-                body: 'Before any signature groom we meet your pet, learn their coat and temperament, and agree the look together — no surprises.',
+                body: 'Before any signature groom we meet your pet, learn their coat and temperament, and agree the look together: no surprises.',
             },
             {
                 title: 'Low-stress handling',
@@ -470,7 +470,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and reserve your pet’s suite online — no phone tag.',
+        sub: 'See live availability and reserve your pet’s suite online: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -481,8 +481,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-petgroom-boutique',
     name: 'Pet Grooming (Boutique)',
     summary:
-        'An upscale, boutique pet-spa site — a warm ivory ground, a deep-plum primary and a blush accent, with an elegant serif display and calm photography. Installs a working booking flow: a real spa menu (signature groom, breed hand styling, spa add-ons, cat grooming), three master groomers you book by name, two private suites as bookable rooms, and a deposit policy. Ships as "The Groom Room".',
-    tagline: 'A refined, boutique template for pet groomers — book online from day one.',
+        'An upscale, boutique pet-spa site: a warm ivory ground, a deep-plum primary and a blush accent, with an elegant serif display and calm photography. Installs a working booking flow: a real spa menu (signature groom, breed hand styling, spa add-ons, cat grooming), three master groomers you book by name, two private suites as bookable rooms, and a deposit policy. Ships as "The Groom Room".',
+    tagline: 'A refined, boutique template for pet groomers. Book online from day one.',
     industry: 'Pet grooming',
     sortWeight: 79,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -491,7 +491,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'The Groom Room — a boutique pet spa & grooming salon',
+            title: 'The Groom Room: a boutique pet spa & grooming salon',
             description:
                 'The Groom Room is a calm, one-pet-at-a-time grooming salon: signature spa grooms, breed hand styling, spa add-ons and gentle cat grooming by master groomers. Book online.',
         },

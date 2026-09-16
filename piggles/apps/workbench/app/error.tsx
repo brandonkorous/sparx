@@ -75,8 +75,8 @@ export default function ConsoleError({
               afterwards is how people stop trusting the app. */}
           <p className="mt-2 text-base">
             {stale
-              ? 'This tab was open while we shipped an update. Reload to pick it up — your panels come back exactly as you left them.'
-              : 'Try again first. If it keeps happening, reloading will clear it — your panels come back, though anything typed and not saved will not.'}
+              ? 'This tab was open while we shipped an update. Reload to pick it up. Your panels come back exactly as you left them.'
+              : 'Try again first. If it keeps happening, reloading will clear it. Your panels come back, though anything typed and not saved will not.'}
           </p>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3">

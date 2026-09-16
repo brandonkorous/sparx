@@ -102,8 +102,8 @@ const ASSETS: Asset[] = [
     { id: 'sprout-hero', url: src('sprout-hero'), alt: 'A bright plant-filled dining room, sun through big windows over pale wood tables' },
     { id: 'sprout-dish-1', url: src('sprout-dish-1'), alt: 'A colorful roasted-vegetable bowl with grains, herbs and a bright green dressing' },
     { id: 'sprout-dish-2', url: src('sprout-dish-2'), alt: 'A small sharing plate of charred greens and whipped beans, styled simply' },
-    { id: 'sprout-dish-3', url: src('sprout-dish-3'), alt: 'A plant-based dessert — a slice of tart with poached fruit and a scoop of sorbet' },
-    { id: 'sprout-room', url: src('sprout-room'), alt: 'The dining room interior — hanging plants, terracotta pots, warm daylight' },
+    { id: 'sprout-dish-3', url: src('sprout-dish-3'), alt: 'A plant-based dessert: a slice of tart with poached fruit and a scoop of sorbet' },
+    { id: 'sprout-room', url: src('sprout-room'), alt: 'The dining room interior: hanging plants, terracotta pots, warm daylight' },
     { id: 'sprout-produce', url: src('sprout-produce'), alt: 'A market crate of freshly picked seasonal vegetables and leafy herbs' },
     { id: 'sprout-drinks', url: src('sprout-drinks'), alt: 'Cold-pressed juices and glasses of natural orange wine on a counter' },
 ];
@@ -135,7 +135,7 @@ function heroBand(): Node {
                                     text: 'Sprout & Vine',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'A plant kitchen that puts vegetables first. Seasonal, colorful, and genuinely delicious — not worthy. Open for lunch and dinner, Tuesday through Sunday.',
+                                    text: 'A plant kitchen that puts vegetables first. Seasonal, colorful, and genuinely delicious, not worthy. Open for lunch and dinner, Tuesday through Sunday.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -184,9 +184,9 @@ function tonightBand(): Node {
                     }),
                     el('div', 'grid grid-cols-1 gap-6 @3xl:grid-cols-3', {
                         children: [
-                            card('sprout-dish-2', 'Small plates', 'Made for the middle of the table — charred hispi cabbage, whipped butter beans, warm flatbread and dips.', 'A small sharing plate of charred greens'),
-                            card('sprout-dish-1', 'Bowls & mains', 'Big, generous bowls off the grill and the fire — smoky aubergine, heritage grains, bright herb dressings.', 'A colorful roasted-vegetable bowl'),
-                            card('sprout-dish-3', 'Something sweet', 'A short pudding list that happens to be plant-based — nobody misses the dairy. Plus house-churned sorbets.', 'A plant-based dessert with poached fruit'),
+                            card('sprout-dish-2', 'Small plates', 'Made for the middle of the table: charred hispi cabbage, whipped butter beans, warm flatbread and dips.', 'A small sharing plate of charred greens'),
+                            card('sprout-dish-1', 'Bowls & mains', 'Big, generous bowls off the grill and the fire: smoky aubergine, heritage grains, bright herb dressings.', 'A colorful roasted-vegetable bowl'),
+                            card('sprout-dish-3', 'Something sweet', 'A short pudding list that happens to be plant-based. Nobody misses the dairy. Plus house-churned sorbets.', 'A plant-based dessert with poached fruit'),
                         ],
                     }),
                     el('a', 'inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4', {
@@ -214,7 +214,7 @@ function philosophyBand(): Node {
                                 text: 'Vegetables, front and centre',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'We cook plants because they’re exciting, not because we’re making a point. Everything comes from growers we know — picked days, sometimes hours, before it hits your plate — and we cook most of it over fire.',
+                                text: 'We cook plants because they’re exciting, not because we’re making a point. Everything comes from growers we know (picked days, sometimes hours, before it hits your plate) and we cook most of it over fire.',
                             }),
                             el('p', 'text-lg leading-relaxed text-secondary', {
                                 text: 'Fully plant-based, kind to just about every diet, and never dull. Tell us about allergies and we’ll happily steer you.',
@@ -234,7 +234,7 @@ function reserveBand(): Node {
             el('div', 'mx-auto grid w-full max-w-5xl gap-8 @3xl:grid-cols-2 @3xl:items-center', {
                 children: [
                     el('img', 'aspect-video w-full rounded-box border border-base-300 object-cover @3xl:order-2', {
-                        attrs: { src: assetUrl('sprout-room'), alt: 'The dining room interior — hanging plants, terracotta pots', loading: 'lazy' },
+                        attrs: { src: assetUrl('sprout-room'), alt: 'The dining room interior: hanging plants, terracotta pots', loading: 'lazy' },
                     }),
                     el('div', 'flex flex-col gap-5', {
                         children: [
@@ -242,7 +242,7 @@ function reserveBand(): Node {
                                 text: 'Pull up a chair',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Book online in under a minute — you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome, and we keep a run of counter seats back for them every service.',
+                                text: 'Book online in under a minute: you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome, and we keep a run of counter seats back for them every service.',
                             }),
                             el('div', 'flex flex-wrap gap-3', {
                                 children: [
@@ -346,20 +346,20 @@ const MENU: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The menu' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Entirely plant-based, changing with the season, and cooked with fire and care. This is roughly what’s on this week — the specials board fills in the rest. Tell us about allergies and we’ll steer you right.',
+                        text: 'Entirely plant-based, changing with the season, and cooked with fire and care. This is roughly what’s on this week: the specials board fills in the rest. Tell us about allergies and we’ll steer you right.',
                     }),
                 ],
             }),
         ],
     }),
-    menuSection('Small plates', 'Made for the middle of the table — order a few and share.', [
+    menuSection('Small plates', 'Made for the middle of the table. Order a few and share.', [
         { name: 'Warm flatbread, smoked butter bean', desc: 'Blistered flatbread torn to order, whipped smoked butter beans, chilli oil.', price: '7' },
         { name: 'Charred hispi cabbage, hazelnut', desc: 'Grilled sweetheart cabbage, brown-butter hazelnuts, capers, lemon.', price: '9' },
         { name: 'Heritage tomatoes, basil, sourdough crumb', desc: 'Peak-season tomatoes, torn basil, toasted sourdough, aged balsamic.', price: '10' },
         { name: 'Crispy oyster mushrooms, aioli', desc: 'Buttermilk-style battered oyster mushrooms, smoked garlic aioli.', price: '9' },
         { name: 'Beetroot tartare, rye toast', desc: 'Roasted beets chopped fine, capers, mustard, dill, crisp rye.', price: '9' },
     ]),
-    menuSection('Bowls & mains', 'Cooked over fire. Big and generous — sides are separate.', [
+    menuSection('Bowls & mains', 'Cooked over fire. Big and generous: sides are separate.', [
         { name: 'Smoky aubergine, freekeh, herb oil', desc: 'Whole aubergine cooked in the embers, smoked freekeh, green herb oil, pomegranate.', price: '16' },
         { name: 'Roast squash & sage dumplings', desc: 'Handmade dumplings, roasted squash, crispy sage, toasted pumpkin seeds.', price: '17' },
         { name: 'Fire-grilled cauliflower steak', desc: 'A thick cut cauliflower, charred over wood, romesco, salsa verde, almonds.', price: '18' },
@@ -372,14 +372,14 @@ const MENU: Node[] = [
         { name: 'House slaw, toasted seeds', desc: '', price: '5' },
         { name: 'Warm grains & herbs', desc: '', price: '5' },
     ]),
-    menuSection('Sweet', 'A short list that happens to be plant-based — nobody misses the dairy.', [
+    menuSection('Sweet', 'A short list that happens to be plant-based. Nobody misses the dairy.', [
         { name: 'Dark chocolate & olive oil tart', desc: 'Bitter chocolate, flaky pastry, sea salt, a spoon of coconut cream.', price: '8' },
         { name: 'Poached pear, oat crumble', desc: 'Spiced poached pear, toasted oat crumble, warm custard.', price: '7' },
-        { name: 'House sorbets', desc: 'Three scoops, churned in-house — ask what’s spinning today.', price: '6' },
+        { name: 'House sorbets', desc: 'Three scoops, churned in-house. Ask what’s spinning today.', price: '6' },
     ]),
     menuSection('Drinks', 'Cold-pressed juices, a low-intervention wine list, and beer from two streets over.', [
-        { name: 'Cold-pressed juice of the day', desc: 'Pressed that morning — green, golden, or ruby. Ask what’s on.', price: '5' },
-        { name: 'Natural wine, by the glass', desc: 'Skin-contact orange, a bright red, a crisp white — all low-intervention.', price: '8' },
+        { name: 'Cold-pressed juice of the day', desc: 'Pressed that morning: green, golden, or ruby. Ask what’s on.', price: '5' },
+        { name: 'Natural wine, by the glass', desc: 'Skin-contact orange, a bright red, a crisp white. All low-intervention.', price: '8' },
         { name: 'Local pale ale', desc: 'On tap, from the brewery two streets over.', price: '6' },
         { name: 'House kombucha & sodas', desc: 'House-fermented kombucha and seasonal fruit sodas.', price: '5' },
     ]),
@@ -394,7 +394,7 @@ const BOOK_INTRO: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Book a table' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Pick your party size and a time below — you’ll see live availability for the next few weeks. No deposit, no fuss. For parties of seven or more, or a whole-room enquiry, drop us a line and we’ll look after it.',
+                        text: 'Pick your party size and a time below: you’ll see live availability for the next few weeks. No deposit, no fuss. For parties of seven or more, or a whole-room enquiry, drop us a line and we’ll look after it.',
                     }),
                 ],
             }),
@@ -411,13 +411,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Sprout & Vine' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Sprout & Vine is a plant kitchen behind the old flower market. We opened with one idea: cook vegetables so well that nobody asks where the meat is. Not a health-food café, not a lecture — just really good food that happens to be entirely plant-based.',
+                        text: 'Sprout & Vine is a plant kitchen behind the old flower market. We opened with one idea: cook vegetables so well that nobody asks where the meat is. Not a health-food café, not a lecture. Just really good food that happens to be entirely plant-based.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'The menu turns with the season and with what our growers pull from the ground that morning, so it’s never quite the same twice. We buy from farms we know by name, cook most of it over fire, and make the bread, the dumplings and the sorbets in-house.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'The room is bright, full of plants, and easy to be in. Book ahead for dinner, especially at the weekend — but there’s always a counter seat for a walk-in, a glass of something natural and a plate to share.',
+                        text: 'The room is bright, full of plants, and easy to be in. Book ahead for dinner, especially at the weekend, but there’s always a counter seat for a walk-in, a glass of something natural and a plate to share.',
                     }),
                 ],
             }),
@@ -479,7 +479,7 @@ const SCHEDULING = {
             cancellationWindowHours: 12,
             reminderOffsetsMin: [1440, 180],
             policyText:
-                'No deposit, ever — we hold your table for 15 minutes past your time. Plans change; just let us know by the morning of and we’ll pass the table on. We’ll send a friendly reminder the day before and a few hours ahead. Walk-ins are always welcome at the counter.',
+                'No deposit, ever. We hold your table for 15 minutes past your time. Plans change; just let us know by the morning of and we’ll pass the table on. We’ll send a friendly reminder the day before and a few hours ahead. Walk-ins are always welcome at the counter.',
         },
         {
             handle: 'large-table',
@@ -488,7 +488,7 @@ const SCHEDULING = {
             cancellationWindowHours: 24,
             reminderOffsetsMin: [2880, 1440, 180],
             policyText:
-                'The big table is free to book — no deposit. Because it seats so many, we ask that you let us know a day ahead if plans change, so someone else can enjoy it. For seven or more, drop us a line and we’ll sort it.',
+                'The big table is free to book: no deposit. Because it seats so many, we ask that you let us know a day ahead if plans change, so someone else can enjoy it. For seven or more, drop us a line and we’ll sort it.',
         },
     ],
     resources: [
@@ -504,7 +504,7 @@ const SCHEDULING = {
             handle: 'table-for-two',
             name: 'Table for two',
             description:
-                'A table for two, for lunch, dinner or Sunday brunch. Ninety minutes at the weekend, longer midweek — we won’t rush you.',
+                'A table for two, for lunch, dinner or Sunday brunch. Ninety minutes at the weekend, longer midweek. We won’t rush you.',
             bookingType: 'reservation',
             durationMinutes: 90,
             assignmentStrategy: 'any_available',
@@ -525,7 +525,7 @@ const SCHEDULING = {
             handle: 'table-for-six',
             name: 'Table for six',
             description:
-                'The long table, for five or six. No deposit — just give us a day’s notice if plans change. For seven or more, email us and we’ll sort it.',
+                'The long table, for five or six. No deposit. Just give us a day’s notice if plans change. For seven or more, email us and we’ll sort it.',
             bookingType: 'reservation',
             durationMinutes: 120,
             assignmentStrategy: 'any_available',
@@ -541,7 +541,7 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-restaurant-vegan',
     name: 'Plant Kitchen',
     summary:
-        'A complete, working site for a modern plant-based restaurant: a real vegetable-forward menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a relaxed no-deposit policy, walk-ins welcome) on the Reserve page. Bright plant-kitchen theme — green-tinted cream, vibrant leaf-green, a warm terracotta accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Sprout & Vine.',
+        'A complete, working site for a modern plant-based restaurant: a real vegetable-forward menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a relaxed no-deposit policy, walk-ins welcome) on the Reserve page. Bright plant-kitchen theme, green-tinted cream, vibrant leaf-green, a warm terracotta accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Sprout & Vine.',
     tagline: 'A fresh, working template for a plant-based restaurant that takes reservations.',
     industry: 'Restaurant & plant kitchen',
     sortWeight: 84,
@@ -567,14 +567,14 @@ const SPEC: ServiceSiteSpec = {
     },
     seo: {
         home: {
-            title: 'Sprout & Vine — a modern plant kitchen',
+            title: 'Sprout & Vine: a modern plant kitchen',
             description:
-                'Sprout & Vine is a plant-based restaurant — seasonal vegetables cooked over fire, cold-pressed juice and natural wine, open Tue–Sun for lunch and dinner. See the menu and book a table.',
+                'Sprout & Vine is a plant-based restaurant: seasonal vegetables cooked over fire, cold-pressed juice and natural wine, open Tue–Sun for lunch and dinner. See the menu and book a table.',
         },
         about: {
-            title: 'About Sprout & Vine — the plant kitchen',
+            title: 'About Sprout & Vine: the plant kitchen',
             description:
-                'A bright, seasonal plant-based restaurant behind the old flower market — vegetables cooked over fire, bread and sorbets made in-house, natural wine poured honestly.',
+                'A bright, seasonal plant-based restaurant behind the old flower market: vegetables cooked over fire, bread and sorbets made in-house, natural wine poured honestly.',
         },
     },
     home: HOME,

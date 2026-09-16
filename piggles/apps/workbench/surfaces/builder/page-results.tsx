@@ -71,8 +71,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 function subtitleOf(row: PageResultRow): string {
   if (row.pathPrefix) {
     return row.pathsCovered === 0
-      ? `Every page under ${row.pathPrefix} — none of them visited yet`
-      : `Every page under ${row.pathPrefix} — ${formatCount(row.pathsCovered)} of them visited`;
+      ? `Every page under ${row.pathPrefix}: none of them visited yet`
+      : `Every page under ${row.pathPrefix} (${formatCount(row.pathsCovered)} of them visited)`;
   }
   return row.path;
 }
@@ -159,7 +159,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faChartColumn} className="size-6" aria-hidden />}
             title="No pages yet"
-            description="Once you have built a page and someone has visited it, this is where you find out how it did — how many people saw it, how many of them bought something, and how quickly it appeared for them."
+            description="Once you have built a page and someone has visited it, this is where you find out how it did: how many people saw it, how many of them bought something, and how quickly it appeared for them."
           />
         ) : (
           <>

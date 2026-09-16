@@ -132,7 +132,7 @@ const SCHEDULING = {
             cancellationWindowHours: 24,
             reminderOffsetsMin: [1440, 120],
             policyText:
-                'Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead.',
+                'Please give us at least 24 hours’ notice if you need to change or cancel. It lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead.',
         },
         {
             handle: 'dental-no-show',
@@ -141,7 +141,7 @@ const SCHEDULING = {
             cancellationWindowHours: 48,
             reminderOffsetsMin: [2880, 1440, 120],
             policyText:
-                'Longer visits reserve a chair and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases.',
+                'Longer visits reserve a chair and a provider just for you, so we hold a card on file. Nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases.',
         },
     ],
     resources: [
@@ -193,7 +193,7 @@ const SCHEDULING = {
             handle: 'new-patient-exam',
             name: 'New patient exam',
             description:
-                'A warm welcome, a full check of your teeth and gums, gentle X-rays and a plan built around you. The best first step for anyone new to the practice — every age welcome.',
+                'A warm welcome, a full check of your teeth and gums, gentle X-rays and a plan built around you. The best first step for anyone new to the practice: every age welcome.',
             durationMinutes: 60,
             priceCents: 8900,
             bufferAfterMin: 10,
@@ -208,7 +208,7 @@ const SCHEDULING = {
             handle: 'cleaning-checkup',
             name: 'Cleaning & checkup',
             description:
-                'Your regular six-month visit — a thorough, gentle clean and polish with one of our hygienists, plus a quick check to keep everything on track.',
+                'Your regular six-month visit: a thorough, gentle clean and polish with one of our hygienists, plus a quick check to keep everything on track.',
             durationMinutes: 60,
             priceCents: 11900,
             bufferAfterMin: 10,
@@ -223,7 +223,7 @@ const SCHEDULING = {
             handle: 'kids-checkup',
             name: 'Kids’ checkup',
             description:
-                'A friendly, unhurried visit made just for little ones — a gentle clean, a count of the teeth and lots of encouragement, so kids leave smiling and keen to come back.',
+                'A friendly, unhurried visit made just for little ones: a gentle clean, a count of the teeth and lots of encouragement, so kids leave smiling and keen to come back.',
             durationMinutes: 45,
             priceCents: 7900,
             bufferAfterMin: 10,
@@ -238,7 +238,7 @@ const SCHEDULING = {
             handle: 'whitening-consult',
             name: 'Teeth-whitening consult',
             description:
-                'A relaxed, no-pressure chat about brightening your smile — we’ll look at your teeth, talk through the options and what to expect, and answer every question. The consult is free.',
+                'A relaxed, no-pressure chat about brightening your smile: we’ll look at your teeth, talk through the options and what to expect, and answer every question. The consult is free.',
             durationMinutes: 30,
             priceCents: 0,
             assignmentStrategy: 'customer_choice',
@@ -252,7 +252,7 @@ const SCHEDULING = {
             handle: 'filling',
             name: 'Filling',
             description:
-                'A tooth-colored filling to fix a small cavity — quick, comfortable and gentle, with numbing whenever you need it and no rushing. We’ll confirm the exact cost before we begin.',
+                'A tooth-colored filling to fix a small cavity: quick, comfortable and gentle, with numbing whenever you need it and no rushing. We’ll confirm the exact cost before we begin.',
             durationMinutes: 60,
             priceCents: 18500,
             bufferAfterMin: 10,
@@ -302,7 +302,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A bright, friendly dental office with big windows and warm daylight',
         title: 'A dentist the whole family looks forward to',
-        sub: 'Gentle, unhurried care for every age — checkups, cleanings, kids’ dentistry and same-day help when it hurts. New patients always welcome.',
+        sub: 'Gentle, unhurried care for every age: checkups, cleanings, kids’ dentistry and same-day help when it hurts. New patients always welcome.',
         primary: { label: 'Book a checkup', href: '/book' },
         secondary: { label: 'See appointments', href: '/book' },
         overlay: 'soft',
@@ -311,7 +311,7 @@ const HOME = [
         items: [
             {
                 title: 'Gentle & anxiety-friendly',
-                body: 'Nervous about the dentist? So were half of our patients once. We go slowly, explain everything, and never rush — a lot of people tell us they’ve stopped dreading it.',
+                body: 'Nervous about the dentist? So were half of our patients once. We go slowly, explain everything, and never rush: a lot of people tell us they’ve stopped dreading it.',
             },
             {
                 title: 'Most insurance accepted',
@@ -323,13 +323,13 @@ const HOME = [
             },
             {
                 title: 'Kids genuinely welcome',
-                body: 'From first tooth to teenager, we make visits fun and easy — gentle hygienists, no scary words, and plenty of high-fives on the way out.',
+                body: 'From first tooth to teenager, we make visits fun and easy: gentle hygienists, no scary words, and plenty of high-fives on the way out.',
             },
         ],
     }),
     serviceMenu({
         heading: 'Appointments',
-        intro: 'A few of the visits we see most. Full prices and live availability are on the booking page — and consults are always free.',
+        intro: 'A few of the visits we see most. Full prices and live availability are on the booking page, and consults are always free.',
         surface: 'muted',
         columns: 2,
         items: [
@@ -347,27 +347,27 @@ const HOME = [
         alt: 'A calm, welcoming reception area with soft seating and plants',
         heading: 'Family dentistry, the warm way',
         body: [
-            'Maple Grove is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one visit, where the hygienist remembers your kids’ names, and where nobody is ever made to feel rushed or judged.',
-            'We keep things simple and honest: clear prices, gentle hands, and only the treatment you actually need. Come as you are — anxious, overdue, or just here for a clean — and leave feeling looked after.',
+            'Maple Grove is a neighbourhood practice built for real families: the kind of place where the whole household can be seen in one visit, where the hygienist remembers your kids’ names, and where nobody is ever made to feel rushed or judged.',
+            'We keep things simple and honest: clear prices, gentle hands, and only the treatment you actually need. Come as you are (anxious, overdue, or just here for a clean) and leave feeling looked after.',
         ],
         cta: { label: 'Book your visit', href: '/book' },
     }),
     teamRow({
         heading: 'Meet the team',
-        intro: 'Book by name — you’ll see friendly, familiar faces every visit.',
+        intro: 'Book by name: you’ll see friendly, familiar faces every visit.',
         members: [
             { name: 'Dr. Amara Osei', role: 'Family dentist', image: url(IMG.amara), alt: 'Dr. Amara Osei, family dentist, smiling', bio: 'Gentle, all-ages dentistry with a soft spot for nervous patients. Amara founded the practice.' },
-            { name: 'Nora Bishop', role: 'Dental hygienist', image: url(IMG.nora), alt: 'Nora Bishop, dental hygienist', bio: 'Thorough, easy-going cleanings and checkups — and the calmest hands in the building.' },
-            { name: 'Priya Anand', role: 'Hygienist · kids’ specialist', image: url(IMG.priya), alt: 'Priya Anand, dental hygienist', bio: 'A favourite with the little ones — Priya makes first visits fun and fear-free.' },
+            { name: 'Nora Bishop', role: 'Dental hygienist', image: url(IMG.nora), alt: 'Nora Bishop, dental hygienist', bio: 'Thorough, easy-going cleanings and checkups, and the calmest hands in the building.' },
+            { name: 'Priya Anand', role: 'Hygienist · kids’ specialist', image: url(IMG.priya), alt: 'Priya Anand, dental hygienist', bio: 'A favourite with the little ones: Priya makes first visits fun and fear-free.' },
         ],
     }),
     testimonial({
-        quote: 'My kids actually ask when their next dentist visit is — I never thought I’d say that. The whole team is so gentle and kind, and I finally stopped dreading my own checkups too.',
+        quote: 'My kids actually ask when their next dentist visit is: I never thought I’d say that. The whole team is so gentle and kind, and I finally stopped dreading my own checkups too.',
         attribution: 'Bianca, mum of two & patient since 2022',
     }),
     bookingCta({
         title: 'New patients always welcome',
-        sub: 'Pick a visit, choose your provider and see live times. It takes about a minute — and we’ll take it from there.',
+        sub: 'Pick a visit, choose your provider and see live times. It takes about a minute, and we’ll take it from there.',
         cta: { label: 'Book a checkup', href: '/book' },
     }),
 ];
@@ -390,7 +390,7 @@ const ABOUT = [
         alt: 'A bright, friendly dental office with big windows and warm daylight',
         heading: 'About Maple Grove Dental',
         body: [
-            'We opened Maple Grove to be the kind of dentist we’d want for our own families — warm, honest and genuinely gentle. Somewhere every age feels welcome, from a toddler’s first visit to a grandparent’s regular checkup.',
+            'We opened Maple Grove to be the kind of dentist we’d want for our own families: warm, honest and genuinely gentle. Somewhere every age feels welcome, from a toddler’s first visit to a grandparent’s regular checkup.',
             'No upselling, no lectures, no scary surprises. Just clear explanations, gentle care and a friendly team that treats you like a neighbour, because you probably are one.',
         ],
         cta: { label: 'Book a visit', href: '/book' },
@@ -399,9 +399,9 @@ const ABOUT = [
         surface: 'muted',
         heading: 'How we care for you',
         items: [
-            { title: 'We listen first', body: 'Every visit starts with a real conversation about your teeth, your worries and your budget — so the plan fits your life, not a sales target.' },
+            { title: 'We listen first', body: 'Every visit starts with a real conversation about your teeth, your worries and your budget, so the plan fits your life, not a sales target.' },
             { title: 'Honest, clear pricing', body: 'We’ll always tell you the cost before we start, file your insurance for you, and never push treatment you don’t need.' },
-            { title: 'Gentle for every age', body: 'Nervous adults, wriggly toddlers, busy teens — we know how to make each one comfortable, calm and glad they came.' },
+            { title: 'Gentle for every age', body: 'Nervous adults, wriggly toddlers, busy teens. We know how to make each one comfortable, calm and glad they came.' },
         ],
     }),
 ];
@@ -420,7 +420,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and reserve your family’s appointments online — no phone tag, no hold music.',
+        sub: 'See live availability and reserve your family’s appointments online: no phone tag, no hold music.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -431,8 +431,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-dental-family',
     name: 'Dental (Family)',
     summary:
-        'A warm, family-friendly dental site — a soft teal-blue palette, a coral accent and rounded type, with gentle, low-anxiety copy for every age. Installs a working booking flow: real appointment types (new-patient exams, cleanings, kids’ checkups, whitening, fillings and same-day emergencies), a dentist and two hygienists booked by name with their own hours, operatories as rooms, and a reserved-chair hold policy. Ships as "Maple Grove Dental", a family dentist.',
-    tagline: 'A warm, family template for dental practices — book online from day one.',
+        'A warm, family-friendly dental site: a soft teal-blue palette, a coral accent and rounded type, with gentle, low-anxiety copy for every age. Installs a working booking flow: real appointment types (new-patient exams, cleanings, kids’ checkups, whitening, fillings and same-day emergencies), a dentist and two hygienists booked by name with their own hours, operatories as rooms, and a reserved-chair hold policy. Ships as "Maple Grove Dental", a family dentist.',
+    tagline: 'A warm, family template for dental practices. Book online from day one.',
     industry: 'Dental',
     sortWeight: 70,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -441,9 +441,9 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Maple Grove Dental — a friendly family dentist',
+            title: 'Maple Grove Dental: a friendly family dentist',
             description:
-                'Maple Grove Dental is a warm, gentle family practice for checkups, cleanings, kids’ dentistry, whitening, fillings and same-day emergencies. New patients welcome — book online.',
+                'Maple Grove Dental is a warm, gentle family practice for checkups, cleanings, kids’ dentistry, whitening, fillings and same-day emergencies. New patients welcome. Book online.',
         },
     },
     home: HOME,

@@ -86,7 +86,7 @@ const noShowBookingTool: McpToolDefinition = {
 const updateBookingTool: McpToolDefinition = {
   name: 'update_booking',
   description:
-    'Edit a booking’s notes / staff notes / asset reference (not its time — use reschedule_booking).',
+    'Edit a booking’s notes / staff notes / asset reference (not its time, use reschedule_booking).',
   scope: 'write:scheduling',
   confirmation: true,
   input: UpdateBookingInput,
@@ -107,7 +107,7 @@ const addSessionAttendeeTool: McpToolDefinition = {
 
 const updateAttendeeTool: McpToolDefinition = {
   name: 'update_attendee',
-  description: 'Update a class attendee — their status or party size.',
+  description: 'Update a class attendee. Their status or party size.',
   scope: 'write:scheduling',
   confirmation: true,
   input: UpdateAttendeeInput,
@@ -183,7 +183,7 @@ const leaveWaitlistTool: McpToolDefinition = {
 const createBookingPolicyTool: McpToolDefinition = {
   name: 'create_booking_policy',
   description:
-    'Create a booking policy — lead time, cancellation window, deposit / no-show fee rules — that services reference.',
+    'Create a booking policy (lead time, cancellation window, deposit / no-show fee rules) that services reference.',
   scope: 'write:scheduling',
   confirmation: true,
   input: CreateBookingPolicyInput,
@@ -213,7 +213,7 @@ const deleteBookingPolicyTool: McpToolDefinition = {
 const createAvailabilityExceptionTool: McpToolDefinition = {
   name: 'create_availability_exception',
   description:
-    'Create a one-off availability exception — a closure (holiday) or extra open window that overrides the recurring hours on a date.',
+    'Create a one-off availability exception: a closure (holiday) or extra open window that overrides the recurring hours on a date.',
   scope: 'write:scheduling',
   confirmation: true,
   input: AvailabilityExceptionInput,

@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Foundry Coffee Trade — wholesale coffee for cafés, offices and restaurants",
-      "seoDescription": "Foundry Coffee Trade is a wholesale roaster supplying cafés, offices and restaurants — beans, filter and capsule programs, syrups, cups and equipment, on trade pricing with standing orders and net-30.",
+      "seoTitle": "Foundry Coffee Trade: wholesale coffee for cafés, offices and restaurants",
+      "seoDescription": "Foundry Coffee Trade is a wholesale roaster supplying cafés, offices and restaurants: beans, filter and capsule programs, syrups, cups and equipment, on trade pricing with standing orders and net-30.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Foundry Coffee Trade supplies cafés, offices and restaurants with coffee roasted to order — beans by the trade bag, filter and capsule programs, syrups, cups and the machines to run them. Trade pricing, weekly standing orders and a real account manager who knows your bar."
+                          "Foundry Coffee Trade supplies cafés, offices and restaurants with coffee roasted to order: beans by the trade bag, filter and capsule programs, syrups, cups and the machines to run them. Trade pricing, weekly standing orders and a real account manager who knows your bar."
                         ],
                         "id": "b53b0fda-2d73-4cd3-80d5-d41453b36d5a",
                         "ord": "a1"
@@ -1225,7 +1225,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We roast on a production drum and cup every batch before it ships, so a café ordering fifty kilos gets the same coffee we tasted on the sample table. Consistent week to week is the whole job — a house espresso that drifts is a bar full of remakes."
+                          "We roast on a production drum and cup every batch before it ships, so a café ordering fifty kilos gets the same coffee we tasted on the sample table. Consistent week to week is the whole job: a house espresso that drifts is a bar full of remakes."
                         ],
                         "id": "5ff595f0-844e-4880-a067-43dc022de572",
                         "ord": "a1"
@@ -1487,7 +1487,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Opening an account takes a short call and a first order. From there you get trade pricing that improves with volume, a standing order that keeps your bar stocked, and a named account manager who picks up the phone — not a ticket queue."
+                          "Opening an account takes a short call and a first order. From there you get trade pricing that improves with volume, a standing order that keeps your bar stocked, and a named account manager who picks up the phone, not a ticket queue."
                         ],
                         "id": "4c044eae-0ba6-4edb-9468-315f553c658d",
                         "ord": "a1"
@@ -1519,7 +1519,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Wholesale rates from your first case, with per-kilo breaks as your order grows. See your account price at checkout — no haggling, no hidden list."
+                              "Wholesale rates from your first case, with per-kilo breaks as your order grows. See your account price at checkout: no haggling, no hidden list."
                             ],
                             "id": "739dfb50-d531-45b8-b930-ef22730b5a1f",
                             "ord": "a1"
@@ -1573,7 +1573,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We dial in your espresso on your machine and train your team to hold it through the rush — on install, and any time you take on new staff."
+                              "We dial in your espresso on your machine and train your team to hold it through the rush: on install, and any time you take on new staff."
                             ],
                             "id": "591c53c2-8ea7-412c-8c69-4c42c1d13d50",
                             "ord": "a1"
@@ -1713,7 +1713,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Foundry Coffee Trade",
+      "seoTitle": "Shop: Foundry Coffee Trade",
       "seoDescription": "Browse everything Foundry Coffee Trade makes, with prices and options at a glance. Wholesale coffee roaster.",
       "root": {
         "kind": "element",
@@ -1745,7 +1745,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we supply to the trade — beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables and equipment. Prices shown are trade rates; sign in to see your account pricing and put any line on a standing order."
+                      "Everything we supply to the trade: beans by the 1kg and 5kg bag, filter and capsule programs, syrups, disposables and equipment. Prices shown are trade rates; sign in to see your account pricing and put any line on a standing order."
                     ],
                     "id": "b48cef47-97e8-4c3e-9874-30807871ffba",
                     "ord": "a1"
@@ -1773,7 +1773,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Foundry Coffee Trade",
+      "seoTitle": "Collections: Foundry Coffee Trade",
       "seoDescription": "Explore the collections at Foundry Coffee Trade, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1805,7 +1805,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalogue grouped the way a bar actually orders it — new-crop coffees, the café essentials starter, the office program, and everything to open a new site."
+                      "The catalogue grouped the way a bar actually orders it: new-crop coffees, the café essentials starter, the office program, and everything to open a new site."
                     ],
                     "id": "a81194b9-c516-4060-a6e6-8ae179206797",
                     "ord": "a1"
@@ -1833,7 +1833,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Foundry Coffee Trade",
+      "seoTitle": "Your cart: Foundry Coffee Trade",
       "seoDescription": "Review what is in your cart and check out securely at Foundry Coffee Trade.",
       "root": {
         "kind": "element",
@@ -1893,7 +1893,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Foundry Coffee Trade",
+      "seoTitle": "Search: Foundry Coffee Trade",
       "seoDescription": "Search Foundry Coffee Trade for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1953,7 +1953,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Foundry Coffee Trade",
+      "seoTitle": "Journal: Foundry Coffee Trade",
       "seoDescription": "Stories, guides and notes from Foundry Coffee Trade.",
       "root": {
         "kind": "element",
@@ -1985,7 +1985,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the roastery for the people running the bar — dialling in a house espresso, getting the most out of a standing order, and keeping your equipment honest. Practical, made for a working café."
+                      "Notes from the roastery for the people running the bar: dialling in a house espresso, getting the most out of a standing order, and keeping your equipment honest. Practical, made for a working café."
                     ],
                     "id": "9fadd69c-f20b-47d9-be8e-cf3e1362618e",
                     "ord": "a1"
@@ -2119,7 +2119,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Foundry Coffee Trade",
-      "seoDescription": "How Foundry roasts and supplies the trade — roasted to order, named farms, trade pricing, standing orders, barista training, equipment servicing and net-30 terms.",
+      "seoDescription": "How Foundry roasts and supplies the trade: roasted to order, named farms, trade pricing, standing orders, barista training, equipment servicing and net-30 terms.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2150,7 +2150,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Foundry started as a wholesale roaster with one delivery van and a handful of cafés who wanted coffee they could stand behind. It grew the way trade relationships do — one bar, one standing order, one dialled-in espresso at a time — and it still runs on the same promise: roast well, supply reliably, and answer the phone."
+                      "Foundry started as a wholesale roaster with one delivery van and a handful of cafés who wanted coffee they could stand behind. It grew the way trade relationships do (one bar, one standing order, one dialled-in espresso at a time) and it still runs on the same promise: roast well, supply reliably, and answer the phone."
                     ],
                     "id": "9e2230da-dbd5-48d0-992b-7c5e20d8a809",
                     "ord": "a1"
@@ -2190,8 +2190,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Foundry Coffee Trade",
-      "seoDescription": "Get in touch with Foundry Coffee Trade — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Foundry Coffee Trade",
+      "seoDescription": "Get in touch with Foundry Coffee Trade: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2227,7 +2227,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tell us about your café, office or restaurant — how much coffee you go through, what you pour now, and when you would want a first delivery. A real person on the trade team will come back with account pricing, samples and a plan to get you dialled in."
+                          "Tell us about your café, office or restaurant: how much coffee you go through, what you pour now, and when you would want a first delivery. A real person on the trade team will come back with account pricing, samples and a plan to get you dialled in."
                         ],
                         "id": "52f44ad6-c8da-4e2b-8cfa-25d72bfe916d",
                         "ord": "a1"
@@ -2498,8 +2498,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Foundry Coffee Trade",
-      "seoDescription": "Product details at Foundry Coffee Trade — wholesale coffee roaster, with options and pricing.",
+      "seoTitle": "Product: Foundry Coffee Trade",
+      "seoDescription": "Product details at Foundry Coffee Trade: wholesale coffee roaster, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2862,7 +2862,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Wholesale accounts see per-case trade pricing with per-kilo breaks as volume grows, and can put any line on a weekly or fortnightly standing order — adjust, skip or pause it any time. Approved accounts invoice net-30. Everything is roasted to order and freight-packed fresh, and your account manager is a phone call away if you need to change a delivery."
+                              "Wholesale accounts see per-case trade pricing with per-kilo breaks as volume grows, and can put any line on a weekly or fortnightly standing order: adjust, skip or pause it any time. Approved accounts invoice net-30. Everything is roasted to order and freight-packed fresh, and your account manager is a phone call away if you need to change a delivery."
                             ],
                             "id": "f84d4252-6c00-49d1-9a0a-9279ba690aa7",
                             "ord": "a1"

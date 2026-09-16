@@ -11,7 +11,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 export const B2B_OVERDUE_ESCALATION: SystemAutomationSpec = {
   name: 'B2B overdue escalation',
   description:
-    'Daily dunning ladder: marks past-due invoices overdue, places an account on credit hold once an invoice is 14 days overdue, and suspends it at 30 days. Locked — the platform owns this credit invariant.',
+    'Daily dunning ladder: marks past-due invoices overdue, places an account on credit hold once an invoice is 14 days overdue, and suspends it at 30 days. Locked, the platform owns this credit invariant.',
   trigger: {
     kind: 'schedule',
     // Daily, just after 00:00 UTC. The tick is idempotent within the day
@@ -46,7 +46,7 @@ export const B2B_NEW_ACCOUNT_TASK: SystemAutomationSpec = {
     {
       type: 'crm.create_task',
       config: {
-        title: 'Onboard new B2B account — {{b2bAccount.companyName}}',
+        title: 'Onboard new B2B account: {{b2bAccount.companyName}}',
         assigneeField: 'b2bAccount.assignedRepId',
         dueInDays: 1,
       },
@@ -181,7 +181,8 @@ export const B2B_QUOTE_EXPIRING: SystemAutomationSpec = {
  *  approver at their organization (docs/impl transactional-email §4 P3). The event
  *  carries the order, so it resolves through the order source. Transactional. */
 export const B2B_ORDER_APPROVED_EMAIL: SystemAutomationSpec = {
-  name: 'B2B order approved — email',
+  name: 'B2B order approved: email',
+  previousNames: ['B2B order approved — email'],
   description: 'Emails the buyer when their pending order is approved.',
   trigger: { kind: 'event', eventType: 'b2b.order.approved' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
@@ -198,7 +199,8 @@ export const B2B_ORDER_APPROVED_EMAIL: SystemAutomationSpec = {
 /** Tell the buyer when their pending-approval order is rejected (→ cancelled).
  *  Transactional. */
 export const B2B_ORDER_REJECTED_EMAIL: SystemAutomationSpec = {
-  name: 'B2B order rejected — email',
+  name: 'B2B order rejected: email',
+  previousNames: ['B2B order rejected — email'],
   description: 'Emails the buyer when their pending order is not approved.',
   trigger: { kind: 'event', eventType: 'b2b.order.rejected' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },

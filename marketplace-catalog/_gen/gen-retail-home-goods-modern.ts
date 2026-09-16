@@ -123,7 +123,7 @@ const ASSETS: Asset[] = [
     { id: 'home-tile-table', url: src('home-tile-table'), alt: 'A clean modern table set with a glass carafe and tumblers' },
     { id: 'home-tile-decor', url: src('home-tile-decor'), alt: 'A monolithic ceramic vase and a wall clock on a concrete shelf' },
     { id: 'home-band-design', url: src('home-band-design'), alt: 'A designer sketching an object at a bright studio bench' },
-    { id: 'home-band-materials', url: src('home-band-materials'), alt: 'Raw materials laid out — powder-coated steel, oak and wool felt' },
+    { id: 'home-band-materials', url: src('home-band-materials'), alt: 'Raw materials laid out: powder-coated steel, oak and wool felt' },
     { id: 'prod-floor-lamp', url: src('prod-floor-lamp'), alt: 'A slim arc floor lamp with a spun-metal shade' },
     { id: 'prod-vase', url: src('prod-vase'), alt: 'A tall monolithic matte ceramic vase' },
     { id: 'prod-rug', url: src('prod-rug'), alt: 'A flat-woven wool-blend rug with a graphic block pattern' },
@@ -159,7 +159,7 @@ function hero(): Node {
                                 text: 'Objects with a point of view.',
                             }),
                             el('p', 'max-w-md text-lg leading-relaxed text-base-content', {
-                                text: 'Form & Field makes design-led objects for a considered home — lighting, textiles and tableware drawn with intent and built to be looked at as much as used. Clean lines, honest materials, one confident color at a time.',
+                                text: 'Form & Field makes design-led objects for a considered home: lighting, textiles and tableware drawn with intent and built to be looked at as much as used. Clean lines, honest materials, one confident color at a time.',
                             }),
                             el('div', 'flex flex-wrap items-center gap-5', {
                                 children: [
@@ -263,7 +263,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New this season' }),
     splitBand({
         heading: 'Designed, not decorated',
-        lead: 'Every piece starts as a drawing and a problem to solve — how a lamp throws light, how a shelf carries weight, how a rug anchors a room. We work with independent designers and small manufacturers, and we only make the object once it earns its place.',
+        lead: 'Every piece starts as a drawing and a problem to solve: how a lamp throws light, how a shelf carries weight, how a rug anchors a room. We work with independent designers and small manufacturers, and we only make the object once it earns its place.',
         assetId: 'home-band-design',
         cta: 'Our approach',
         href: '/blog/how-we-design',
@@ -272,11 +272,11 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.lighting', layout: 'carousel', heading: 'The lighting edit' }),
     splitBand({
         heading: 'One bold thing per room',
-        lead: 'A restrained space needs a single confident move — an ochre lamp, a graphic rug, a monolithic vase — to keep it from going flat. Build the room in greys and oak, then let one object carry the color. That is the whole method.',
+        lead: 'A restrained space needs a single confident move (an ochre lamp, a graphic rug, a monolithic vase) to keep it from going flat. Build the room in greys and oak, then let one object carry the color. That is the whole method.',
         assetId: 'home-band-materials',
         cta: 'Shop living',
         href: '/shop',
-        alt: 'Raw materials — powder-coated steel, oak and wool felt',
+        alt: 'Raw materials: powder-coated steel, oak and wool felt',
         imageRight: true,
     }),
 ];
@@ -318,7 +318,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Designed to be lived with' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Made in small runs by independent workshops from honest materials — powder-coated steel, solid oak, real wool and glass. Every piece is drawn with intent and built to earn its place. Free returns within 30 days if it isn’t right for your space.',
+                                        text: 'Made in small runs by independent workshops from honest materials: powder-coated steel, solid oak, real wool and glass. Every piece is drawn with intent and built to earn its place. Free returns within 30 days if it isn’t right for your space.',
                                     }),
                                 ],
                             }),
@@ -357,13 +357,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop everything',
-        'The whole catalogue in one place — lighting, textiles, tableware, storage and decor. Filter by category or sort however you like; every piece is designed with intent, made in small runs, and built to be lived with.'
+        'The whole catalogue in one place: lighting, textiles, tableware, storage and decor. Filter by category or sort however you like; every piece is designed with intent, made in small runs, and built to be lived with.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'The catalogue grouped the way people actually shop — what’s new this season, the pieces people keep coming back for, the lighting edit, and edits for the table and the living room.'
+        'The catalogue grouped the way people actually shop: what’s new this season, the pieces people keep coming back for, the lighting edit, and edits for the table and the living room.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -376,7 +376,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping on orders over $120, carefully packed to arrive in one piece. Not quite right for your space? Send it back within 30 days — we want the object to earn its place, not just fill it.',
+                        text: 'Free shipping on orders over $120, carefully packed to arrive in one piece. Not quite right for your space? Send it back within 30 days. We want the object to earn its place, not just fill it.',
                     }),
                 ],
             }),
@@ -390,7 +390,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Form & Field journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the studio — how a piece gets designed, how to build a room around one bold object, and where our materials come from. Considered, useful, no jargon.',
+                        text: 'Notes from the studio: how a piece gets designed, how to build a room around one bold object, and where our materials come from. Considered, useful, no jargon.',
                     }),
                 ],
             }),
@@ -407,13 +407,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Form & Field' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Form & Field began with a conviction: a home doesn’t need more things, it needs better ones. Too much homeware is decoration — shaped to fill a shelf and forgotten by next season. We wanted to make the opposite: a small, sharp catalogue of objects that are drawn with intent and hold up to being looked at every day.',
+                        text: 'Form & Field began with a conviction: a home doesn’t need more things, it needs better ones. Too much homeware is decoration, shaped to fill a shelf and forgotten by next season. We wanted to make the opposite: a small, sharp catalogue of objects that are drawn with intent and hold up to being looked at every day.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'So we work with independent designers and small manufacturers, and we design each piece around a real problem — how a lamp throws light, how a shelf carries weight, how a rug anchors a room. Honest materials, clean lines, and one confident color where it counts. If an object doesn’t earn its place, we don’t make it.',
+                        text: 'So we work with independent designers and small manufacturers, and we design each piece around a real problem: how a lamp throws light, how a shelf carries weight, how a rug anchors a room. Honest materials, clean lines, and one confident color where it counts. If an object doesn’t earn its place, we don’t make it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No trend-chasing, no wall of nearly-the-same, no pieces designed to be replaced. Just design-led objects for a considered home — the kind of things you build a room around and keep for years.',
+                        text: 'No trend-chasing, no wall of nearly-the-same, no pieces designed to be replaced. Just design-led objects for a considered home: the kind of things you build a room around and keep for years.',
                     }),
                 ],
             }),
@@ -428,7 +428,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'Questions about a piece, help planning a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you — usually within a day.',
+        intro: 'Questions about a piece, help planning a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you, usually within a day.',
         submitLabel: 'Email us',
     }),
 ];
@@ -546,14 +546,14 @@ const PRODUCTS: Product[] = [
         colors: ['Graphite', 'Ochre', 'Chalk'],
         optionName: 'Finish',
         asset: 'prod-floor-lamp',
-        seoTitle: 'Aurora Arc Floor Lamp — spun-metal reading light | Form & Field',
+        seoTitle: 'Aurora Arc Floor Lamp: spun-metal reading light | Form & Field',
         seoDescription: 'A slim steel arc floor lamp with a counter-weighted base and in-line dimmer. One confident line across a room.',
     }),
     colored({
         handle: 'monolith-ceramic-vase',
         title: 'Monolith Ceramic Vase',
         description:
-            'A tall, deliberately heavy vase in matte-glazed stoneware — a single sculptural column that holds a spray of branches or stands entirely on its own. Thrown and finished by hand, so the surface catches light like poured concrete. The one bold object a bare shelf has been waiting for.',
+            'A tall, deliberately heavy vase in matte-glazed stoneware: a single sculptural column that holds a spray of branches or stands entirely on its own. Thrown and finished by hand, so the surface catches light like poured concrete. The one bold object a bare shelf has been waiting for.',
         price: 96,
         sku: 'FF-DEC-MONOLITH',
         productType: 'Decor',
@@ -563,8 +563,8 @@ const PRODUCTS: Product[] = [
         colors: ['Slate', 'Bone', 'Ochre'],
         optionName: 'Glaze',
         asset: 'prod-vase',
-        seoTitle: 'Monolith Ceramic Vase — matte sculptural stoneware | Form & Field',
-        seoDescription: 'A tall, heavy matte-glazed stoneware vase — a single sculptural column for branches or on its own.',
+        seoTitle: 'Monolith Ceramic Vase: matte sculptural stoneware | Form & Field',
+        seoDescription: 'A tall, heavy matte-glazed stoneware vase: a single sculptural column for branches or on its own.',
     }),
     colored({
         handle: 'field-wool-blend-rug',
@@ -580,7 +580,7 @@ const PRODUCTS: Product[] = [
         colors: ['Slate & Sand', 'Ochre & Bone', 'Ink & Grey'],
         optionName: 'Colorway',
         asset: 'prod-rug',
-        seoTitle: 'Field Wool-Blend Rug — flat-woven graphic rug | Form & Field',
+        seoTitle: 'Field Wool-Blend Rug: flat-woven graphic rug | Form & Field',
         seoDescription: 'A flat-woven, reversible wool-blend rug with a bold block pattern. Hard-wearing and graphic underfoot.',
     }),
     colored({
@@ -597,14 +597,14 @@ const PRODUCTS: Product[] = [
         colors: ['Ink', 'Ochre', 'Oxblood'],
         optionName: 'Lacquer',
         asset: 'prod-tray',
-        seoTitle: 'Plane Lacquer Tray — hand-lacquered serving tray | Form & Field',
+        seoTitle: 'Plane Lacquer Tray: hand-lacquered serving tray | Form & Field',
         seoDescription: 'A hand-lacquered rectangular serving tray with a low lip and a smooth single-plane finish. Wipe-clean.',
     }),
     colored({
         handle: 'grid-modular-shelf',
         title: 'Grid Modular Shelf',
         description:
-            'A powder-coated steel frame and solid oak shelves that bolt together into exactly the storage a wall needs — stack it tall, run it long, or keep it low under a window. Ships flat, assembles with the one included key, and reconfigures every time you move. Honest structure, on show.',
+            'A powder-coated steel frame and solid oak shelves that bolt together into exactly the storage a wall needs: stack it tall, run it long, or keep it low under a window. Ships flat, assembles with the one included key, and reconfigures every time you move. Honest structure, on show.',
         price: 420,
         sku: 'FF-LIV-GRID',
         productType: 'Storage',
@@ -614,14 +614,14 @@ const PRODUCTS: Product[] = [
         colors: ['Graphite', 'Chalk', 'Ochre'],
         optionName: 'Frame',
         asset: 'prod-shelf',
-        seoTitle: 'Grid Modular Shelf — steel and oak shelving | Form & Field',
+        seoTitle: 'Grid Modular Shelf: steel and oak shelving | Form & Field',
         seoDescription: 'A powder-coated steel and solid oak modular shelf that bolts together to fit any wall. Ships flat, reconfigures.',
     }),
     colored({
         handle: 'facet-cushion-pair',
         title: 'Facet Cushion Pair',
         description:
-            'A pair of color-blocked cushions with a clean geometric seam and a plump feather-blend fill — the quick, graphic way to bring one bold color to a neutral sofa. Generous 18-inch squares with a hidden zip and a woven cotton face that holds its shape. Add one for a note, a pair for a statement.',
+            'A pair of color-blocked cushions with a clean geometric seam and a plump feather-blend fill: the quick, graphic way to bring one bold color to a neutral sofa. Generous 18-inch squares with a hidden zip and a woven cotton face that holds its shape. Add one for a note, a pair for a statement.',
         price: 68,
         sku: 'FF-LIV-FACET',
         productType: 'Textiles',
@@ -631,14 +631,14 @@ const PRODUCTS: Product[] = [
         colors: ['Ochre & Grey', 'Slate & Bone', 'Ink & Rust'],
         optionName: 'Colorway',
         asset: 'prod-cushions',
-        seoTitle: 'Facet Cushion Pair — geometric color-blocked cushions | Form & Field',
+        seoTitle: 'Facet Cushion Pair: geometric color-blocked cushions | Form & Field',
         seoDescription: 'A pair of 18-inch color-blocked cushions with a clean geometric seam and a feather-blend fill.',
     }),
     colored({
         handle: 'decant-carafe-set',
         title: 'Decant Carafe Set',
         description:
-            'A hand-blown glass carafe and two matching tumblers that read as one clean silhouette on the nightstand or the table. Thin-walled and perfectly weighted, with a stopper that doubles as a cup — water by the bed, wine at dinner, or a considered gift that always lands. Dishwasher-safe glass.',
+            'A hand-blown glass carafe and two matching tumblers that read as one clean silhouette on the nightstand or the table. Thin-walled and perfectly weighted, with a stopper that doubles as a cup: water by the bed, wine at dinner, or a considered gift that always lands. Dishwasher-safe glass.',
         price: 58,
         sku: 'FF-TAB-DECANT',
         productType: 'Tableware',
@@ -648,14 +648,14 @@ const PRODUCTS: Product[] = [
         colors: ['Clear', 'Smoke', 'Amber'],
         optionName: 'Glass',
         asset: 'prod-carafe',
-        seoTitle: 'Decant Carafe Set — hand-blown glass carafe and tumblers | Form & Field',
+        seoTitle: 'Decant Carafe Set: hand-blown glass carafe and tumblers | Form & Field',
         seoDescription: 'A hand-blown glass carafe with two matching tumblers and a cup-stopper. One clean silhouette, dishwasher-safe.',
     }),
     colored({
         handle: 'arc-wall-clock',
         title: 'Arc Wall Clock',
         description:
-            'A minimalist wall clock stripped to essentials — a bare spun-metal face, two crisp hands and a silent sweep movement, so a quiet room stays quiet. Reads clearly across a kitchen or a studio, and hangs as a graphic full-stop on an empty wall. The rare clock you actually want to look at.',
+            'A minimalist wall clock stripped to essentials: a bare spun-metal face, two crisp hands and a silent sweep movement, so a quiet room stays quiet. Reads clearly across a kitchen or a studio, and hangs as a graphic full-stop on an empty wall. The rare clock you actually want to look at.',
         price: 82,
         sku: 'FF-DEC-ARCCLOCK',
         productType: 'Decor',
@@ -665,7 +665,7 @@ const PRODUCTS: Product[] = [
         colors: ['Brass', 'Graphite', 'Chalk'],
         optionName: 'Face',
         asset: 'prod-clock',
-        seoTitle: 'Arc Wall Clock — minimalist silent wall clock | Form & Field',
+        seoTitle: 'Arc Wall Clock: minimalist silent wall clock | Form & Field',
         seoDescription: 'A minimalist wall clock with a bare spun-metal face and a silent sweep movement. A graphic full-stop on a wall.',
     }),
 ];
@@ -742,16 +742,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How we design an object',
-            excerpt: 'Every piece we make starts as a drawing and a problem to solve — never a shape looking for a use. Here’s how an object gets from a sketch to your shelf.',
+            excerpt: 'Every piece we make starts as a drawing and a problem to solve, never a shape looking for a use. Here’s how an object gets from a sketch to your shelf.',
             featuredImage: { $asset: 'post-materials' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Most homeware is designed backwards: a shape is chosen because it looks good in a photograph, and a purpose is invented for it afterwards. We work the other way around. Before anything is drawn, we write down the problem — a corner that needs a reading light, a wall that needs storage without bulk, a table that needs one confident object — and the object is the answer to that sentence.'),
+                    para('Most homeware is designed backwards: a shape is chosen because it looks good in a photograph, and a purpose is invented for it afterwards. We work the other way around. Before anything is drawn, we write down the problem, a corner that needs a reading light, a wall that needs storage without bulk, a table that needs one confident object, and the object is the answer to that sentence.'),
                     h2('The problem comes first'),
-                    para('That discipline is what keeps the catalogue small and sharp. A lamp has to throw usable light and hold its balance; a shelf has to carry real weight and still ship flat; a rug has to survive a hallway and stay graphic after a hundred washes. If a design can’t answer its problem better than what already exists, we don’t make it — no matter how good it looks on the bench.'),
+                    para('That discipline is what keeps the catalogue small and sharp. A lamp has to throw usable light and hold its balance; a shelf has to carry real weight and still ship flat; a rug has to survive a hallway and stay graphic after a hundred washes. If a design can’t answer its problem better than what already exists, we don’t make it: no matter how good it looks on the bench.'),
                     h2('Honest materials, on show'),
-                    para('We choose materials for how they behave, not just how they look, and then we leave them visible. Powder-coated steel keeps its edge, solid oak takes years of use, wool felt softens sound, hand-blown glass reads as a single clean line. Nothing is clad in a veneer pretending to be something else. When the structure is honest, the object needs no decoration — the way it’s made is the way it looks.'),
+                    para('We choose materials for how they behave, not just how they look, and then we leave them visible. Powder-coated steel keeps its edge, solid oak takes years of use, wool felt softens sound, hand-blown glass reads as a single clean line. Nothing is clad in a veneer pretending to be something else. When the structure is honest, the object needs no decoration: the way it’s made is the way it looks.'),
                 ],
             },
         },
@@ -762,16 +762,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Building a room around one object',
-            excerpt: 'A restrained room can read as flat — unless one confident object carries the color. Here’s how to choose it, and how to let everything else recede.',
+            excerpt: 'A restrained room can read as flat, unless one confident object carries the color. Here’s how to choose it, and how to let everything else recede.',
             featuredImage: { $asset: 'post-palette' },
             body: {
                 type: 'doc',
                 content: [
-                    para('There’s a version of minimalism that goes cold — all grey, all oak, all restraint, and nothing to rest your eye on. The fix isn’t more objects; it’s one better one. A single piece carrying a bold color or a strong silhouette gives a quiet room a centre of gravity, and lets everything around it stay calm on purpose rather than by accident.'),
+                    para('There’s a version of minimalism that goes cold. All grey, all oak, all restraint, and nothing to rest your eye on. The fix isn’t more objects; it’s one better one. A single piece carrying a bold color or a strong silhouette gives a quiet room a centre of gravity, and lets everything around it stay calm on purpose rather than by accident.'),
                     h2('Pick the hero, then hold the line'),
-                    para('Start by choosing the one object that gets to be loud — an ochre floor lamp, a graphic rug, a monolithic vase — and place it where the eye lands first. Then hold the line everywhere else: keep the walls and the big soft furniture in neutrals, keep the materials to two or three, and resist the urge to answer your bold piece with a second one. One hero per room; the rest is chorus.'),
+                    para('Start by choosing the one object that gets to be loud (an ochre floor lamp, a graphic rug, a monolithic vase) and place it where the eye lands first. Then hold the line everywhere else: keep the walls and the big soft furniture in neutrals, keep the materials to two or three, and resist the urge to answer your bold piece with a second one. One hero per room; the rest is chorus.'),
                     h2('Let the negative space work'),
-                    para('The empty parts of a room are doing as much work as the full ones. A bare stretch of wall, a clear shelf, an uncluttered floor — that space is what lets a single object read as deliberate instead of lost. Buy less, leave room around what you keep, and the pieces you chose with intent finally get to be seen. That’s the whole method, and it costs nothing to apply.'),
+                    para('The empty parts of a room are doing as much work as the full ones. A bare stretch of wall, a clear shelf, an uncluttered floor. That space is what lets a single object read as deliberate instead of lost. Buy less, leave room around what you keep, and the pieces you chose with intent finally get to be seen. That’s the whole method, and it costs nothing to apply.'),
                 ],
             },
         },
@@ -782,16 +782,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Layering light in a modern room',
-            excerpt: 'One bright ceiling light flattens everything under it. Good rooms are lit in layers — here’s the simple three-part rule we design our lighting around.',
+            excerpt: 'One bright ceiling light flattens everything under it. Good rooms are lit in layers: here’s the simple three-part rule we design our lighting around.',
             featuredImage: { $asset: 'post-lighting' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The fastest way to make a considered room feel like an office is to light it from a single bright fixture in the middle of the ceiling. Flat, overhead, shadowless light erases the texture and depth you spent so long getting right. The rooms that feel good after dark are lit the way a stage is — in layers, from several heights, each doing a different job.'),
+                    para('The fastest way to make a considered room feel like an office is to light it from a single bright fixture in the middle of the ceiling. Flat, overhead, shadowless light erases the texture and depth you spent so long getting right. The rooms that feel good after dark are lit the way a stage is: in layers, from several heights, each doing a different job.'),
                     h2('Ambient, task, accent'),
-                    para('Think in three layers. Ambient is the soft, general fill that keeps the room from going black — often bounced off a wall or a ceiling rather than pointed down. Task is the focused, adjustable light you actually read and cook and work by, like an arc lamp reaching over a chair. Accent is the low, warm pool that adds mood and picks out an object — a lamp on a shelf, a glow in a corner. Get one of each and you can light the room for anything.'),
+                    para('Think in three layers. Ambient is the soft, general fill that keeps the room from going black, often bounced off a wall or a ceiling rather than pointed down. Task is the focused, adjustable light you actually read and cook and work by, like an arc lamp reaching over a chair. Accent is the low, warm pool that adds mood and picks out an object: a lamp on a shelf, a glow in a corner. Get one of each and you can light the room for anything.'),
                     h2('Warm, low, and on a dimmer'),
-                    para('Two more rules and you’re done. Keep the color temperature warm — the light should feel like late afternoon, not a hospital — and keep as much of it as possible low, at or below eye level, where it flatters a room instead of interrogating it. And put everything you can on a dimmer, so a single room can be bright for a dinner and soft for a Sunday. Lighting isn’t one decision; it’s a set of them you get to make again every evening.'),
+                    para('Two more rules and you’re done. Keep the color temperature warm (the light should feel like late afternoon, not a hospital) and keep as much of it as possible low, at or below eye level, where it flatters a room instead of interrogating it. And put everything you can on a dimmer, so a single room can be bright for a dinner and soft for a Sunday. Lighting isn’t one decision; it’s a set of them you get to make again every evening.'),
                 ],
             },
         },
@@ -806,7 +806,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Home Goods (Modern Design)',
     theme: THEME,
     summary:
-        'A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme — a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.',
+        'A complete, working shop for a design-led homeware brand: a real catalogue of a modern arc floor lamp, a sculptural vase, a graphic wool-blend rug, a lacquer tray, a modular steel-and-oak shelf, geometric cushions, a glass carafe set and a minimalist wall clock, with categories, collections, a bespoke PDP and a full merchandised home page. Crisp, architectural theme, a cool near-white ground, a near-black primary and an ochre accent. Shipped as Form & Field.',
     tagline: 'A crisp, modern storefront for a design-led homeware brand.',
     vertical: 'retail',
     industry: 'Home goods & homeware',
@@ -819,14 +819,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Form & Field — design-led objects for a considered home',
+            title: 'Form & Field: design-led objects for a considered home',
             description:
-                'Form & Field makes design-led homeware — lighting, textiles and tableware drawn with intent and built to last. Clean lines, honest materials, one bold color at a time.',
+                'Form & Field makes design-led homeware: lighting, textiles and tableware drawn with intent and built to last. Clean lines, honest materials, one bold color at a time.',
         },
         about: {
             title: 'About Form & Field',
             description:
-                'Why Form & Field makes a small, sharp catalogue of design-led objects — problem-first design, honest materials on show, and one confident color where it counts.',
+                'Why Form & Field makes a small, sharp catalogue of design-led objects: problem-first design, honest materials on show, and one confident color where it counts.',
         },
     },
     home: HOME,

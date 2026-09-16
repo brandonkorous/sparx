@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Life happens — just give us 24 hours if you need to move or cancel. We’ll text you a reminder the day before and again two hours ahead."
+      "policyText": "Life happens. Just give us 24 hours if you need to move or cancel. We’ll text you a reminder the day before and again two hours ahead."
     },
     {
       "handle": "color-deposit",
@@ -135,7 +135,7 @@
     {
       "handle": "curly-cut",
       "name": "Curly & textured cut",
-      "description": "A dry, curl-by-curl cut for coils, curls and waves — shaped to your pattern, styled to last.",
+      "description": "A dry, curl-by-curl cut for coils, curls and waves: shaped to your pattern, styled to last.",
       "durationMinutes": 75,
       "priceCents": 8500,
       "bufferAfterMin": 10,
@@ -171,7 +171,7 @@
     {
       "handle": "balayage",
       "name": "Balayage & highlights",
-      "description": "Hand-painted, sun-kissed lightness with a soft grow-out — the low-maintenance kind.",
+      "description": "Hand-painted, sun-kissed lightness with a soft grow-out: the low-maintenance kind.",
       "durationMinutes": 180,
       "priceCents": 21000,
       "bufferAfterMin": 15,
@@ -224,7 +224,7 @@
     {
       "handle": "kids-cut",
       "name": "Kids’ cut",
-      "description": "An easy, patient cut for little ones (12 and under) — no rush, no fuss.",
+      "description": "An easy, patient cut for little ones (12 and under): no rush, no fuss.",
       "durationMinutes": 30,
       "priceCents": 3500,
       "assignmentStrategy": "any_available",

@@ -26,6 +26,12 @@ import { PaneModuleProvider } from './module-beta-notice';
 import { ModuleScope } from './module-scope';
 import { PaneWaiting } from './pane-waiting';
 import { getSurface } from '../lib/surfaces/registry';
+import {
+  surfaceIsVisible,
+  useKnownModules,
+  useReachableModules,
+} from '../lib/surfaces/use-visible-nav';
+import { SurfaceModuleOff } from './surface-module-off';
 import { useSurfaceContext, useWorkbench } from '../lib/workbench/context';
 import { DirtyScope } from '../lib/workbench/dirty';
 import { PaneIdentityProvider } from '../lib/workbench/pane-identity';
@@ -72,7 +78,7 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
           </p>
           <p className="mt-1 text-sm">
             {stale
-              ? 'This tab was left open across an update. Reload to load the latest version — your panel arrangement comes back.'
+              ? 'This tab was left open across an update. Reload to load the latest version. Your panel arrangement comes back.'
               : 'Nothing else in your workspace was affected. Try loading it again.'}
           </p>
         </div>
@@ -104,7 +110,7 @@ export function MissingSurface({ surface }: { surface: string }) {
       <p className="font-medium">This panel is no longer available</p>
       <p className="max-w-sm text-sm">
         It was saved in your workspace but the feature it showed has since moved. You can close this
-        panel — the rest of your layout is unaffected.
+        panel: the rest of your layout is unaffected.
       </p>
       <code className="mt-1 font-mono text-sm">{surface}</code>
     </div>
@@ -143,10 +149,28 @@ export function SurfaceBody({ paneId }: { paneId: string }) {
   const { controller } = useWorkbench();
   const descriptor = controller.getDescriptor(paneId);
   const ctx = useSurfaceContext(descriptor ?? { id: paneId, surface: 'unknown' });
+  // Above the early returns, because hooks are. Both are cached shell reads, so
+  // this costs a mounted pane nothing.
+  const reachable = useReachableModules();
+  const known = useKnownModules();
 
   if (!descriptor) return <MissingSurface surface={paneId} />;
   const definition = getSurface(descriptor.surface);
   if (!definition) return <MissingSurface surface={descriptor.surface} />;
+
+  // The module gate, asked ONCE for all 215 surfaces rather than in each of
+  // them. The rail hides a switched-off module, so nobody arrives here by
+  // clicking — they arrive from a saved layout, a bookmark or a shared link,
+  // and every one of those is somebody who had this open when it worked.
+  //
+  // Without this the pane simply ran, api-rest answered its module gate with a
+  // 404, and the surface reported "something went wrong reaching the server"
+  // over a Try again that could never work. `surfaceIsVisible` returns true
+  // while the module list is still loading, so a slow shell shows the surface
+  // rather than accusing somebody of having switched it off.
+  if (!surfaceIsVisible(definition, reachable, known)) {
+    return <SurfaceModuleOff definition={definition} />;
+  }
 
   const Surface = definition.component;
   return <Surface ctx={ctx} />;

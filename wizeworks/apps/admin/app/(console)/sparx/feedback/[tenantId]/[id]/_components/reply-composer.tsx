@@ -60,7 +60,7 @@ export function ReplyComposer({
       </Field>
       {!hasEmail ? (
         <Text size="xs" variant="muted">
-          This submitter has no email on file — the reply is recorded in the thread but not emailed.
+          This submitter has no email on file: the reply is recorded in the thread but not emailed.
         </Text>
       ) : null}
       <Stack direction="row" align="end" justify="between" className="flex-wrap gap-3">

@@ -16,7 +16,7 @@ describe('two pages that answer to one address', () => {
     // development site that reported "Nothing to fix. It reads well."
     const findings = checkAddresses([
       page({ id: 'a', name: 'Home' }),
-      page({ id: 'b', name: 'Home — Landing' }),
+      page({ id: 'b', name: 'Home: Landing' }),
       page({ id: 'c', name: 'About', slug: 'about' }),
       page({ id: 'd', name: 'Welcome' }),
     ]);

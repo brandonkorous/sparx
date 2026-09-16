@@ -198,7 +198,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
       <div className="flex flex-col gap-4">
         <FormSection
           title="What kind of product is this?"
-          description="Choosing a kind adds the extra details products of that kind carry — like fabric and care for clothing, or ingredients for food."
+          description="Choosing a kind adds the extra details products of that kind carry, like fabric and care for clothing, or ingredients for food."
         >
           {isError ? (
             <div className="flex flex-col items-start gap-2">
@@ -229,7 +229,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
                   onSelectType(v);
                 }}
               >
-                <option value="">No kind — just the basics</option>
+                <option value="">No kind, just the basics</option>
                 {typeMissing ? (
                   <option value="__missing__">Its kind is no longer defined</option>
                 ) : null}
@@ -263,7 +263,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
               <AlertContent>
                 <AlertTitle>No product kinds yet</AlertTitle>
                 <AlertDescription>
-                  Define a kind of product — with the details it should carry — and it will show up
+                  Define a kind of product (with the details it should carry) and it will show up
                   here to choose from.
                 </AlertDescription>
               </AlertContent>
@@ -292,7 +292,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
         {(profiles?.items ?? []).length > 1 ? (
           <FormSection
             title="How this one is delivered"
-            description="Most products go the standard way. Put this one in a group only if it ships differently — a bigger box, freight, or something that needs a signature — and it will be priced by that group's delivery options."
+            description="Most products go the standard way. Put this one in a group only if it ships differently (a bigger box, freight, or something that needs a signature) and it will be priced by that group's delivery options."
           >
             <Field className="max-w-sm">
               <FieldLabel>Delivery group</FieldLabel>
@@ -326,7 +326,7 @@ export function ProductAttributesTab({ ctx, product }: { ctx: SurfaceContext; pr
             <Icon glyph={faShapes} className="size-6" aria-hidden />
             <Text className="text-sm">
               Pick a kind of product above to describe it in more detail. Without one, this product
-              is sold on its name, price and photos alone — which is perfectly fine.
+              is sold on its name, price and photos alone, which is perfectly fine.
             </Text>
           </div>
         ) : null}

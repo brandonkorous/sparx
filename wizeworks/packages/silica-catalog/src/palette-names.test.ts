@@ -48,7 +48,7 @@ describe('Add palette names', () => {
     const catalogLabels = new Map(catalogItems.map((i) => [i.label, i.where]));
     const collisions = hostItems
       .filter((h) => catalogLabels.has(h.label))
-      .map((h) => `"${h.label}" — ${h.where} vs ${catalogLabels.get(h.label)}`);
+      .map((h) => `"${h.label}": ${h.where} vs ${catalogLabels.get(h.label)}`);
     expect(collisions).toEqual([]);
   });
 
@@ -57,7 +57,7 @@ describe('Add palette names', () => {
     const dupes: string[] = [];
     for (const { label, where } of [...catalogItems, ...hostItems]) {
       const prior = seen.get(label);
-      if (prior) dupes.push(`"${label}" — ${where} vs ${prior}`);
+      if (prior) dupes.push(`"${label}": ${where} vs ${prior}`);
       else seen.set(label, where);
     }
     expect(dupes).toEqual([]);

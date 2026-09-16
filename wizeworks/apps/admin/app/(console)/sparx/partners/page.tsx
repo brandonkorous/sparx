@@ -75,7 +75,7 @@ export default async function PartnersPage({
     <Stack gap={6}>
       <PageHeader
         title="Partners"
-        description="The Partner Program — review applications, manage the partner roster and tiers, and run commission payouts. Freelancers, agencies, and educators who refer business and build on the platform."
+        description="The Partner Program. Review applications, manage the partner roster and tiers, and run commission payouts. Freelancers, agencies, and educators who refer business and build on the platform."
       />
 
       {error ? (
@@ -142,7 +142,7 @@ export default async function PartnersPage({
               <Stack gap={1}>
                 <Heading level={3}>Active partners</Heading>
                 <Text size="sm" variant="muted">
-                  Suspended partners leave this list — reinstate one from its detail page.
+                  Suspended partners leave this list: reinstate one from its detail page.
                 </Text>
               </Stack>
               {roster.length === 0 ? (

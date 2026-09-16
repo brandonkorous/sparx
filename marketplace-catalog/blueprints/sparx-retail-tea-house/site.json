@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Steepwell Tea House — loose-leaf tea, sourced and kept fresh",
-      "seoDescription": "Steepwell is a small loose-leaf tea house — single-origin greens, blacks, oolong, chai and caffeine-free herbals, a matcha, teaware and a flexible tea club. Source well, keep it fresh, never rush the cup.",
+      "seoTitle": "Steepwell Tea House: loose-leaf tea, sourced and kept fresh",
+      "seoDescription": "Steepwell is a small loose-leaf tea house: single-origin greens, blacks, oolong, chai and caffeine-free herbals, a matcha, teaware and a flexible tea club. Source well, keep it fresh, never rush the cup.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Steepwell is a small loose-leaf tea house. We source whole-leaf tea from gardens we can name, keep it in small batches so it stays fragrant, and send it fresh — so the cup in your hands tastes like the hillside it came from."
+                          "Steepwell is a small loose-leaf tea house. We source whole-leaf tea from gardens we can name, keep it in small batches so it stays fragrant, and send it fresh, so the cup in your hands tastes like the hillside it came from."
                         ],
                         "id": "5e8150c0-d56d-4b9e-b79f-c0d79ce2474c",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We buy whole-leaf tea, not the broken dust that fills most bags, and we keep it in small sealed batches so it stays fragrant instead of fading on a warehouse shelf. Every tea is tasted before it’s tinned — if the cup isn’t right, it doesn’t go out."
+                          "We buy whole-leaf tea, not the broken dust that fills most bags, and we keep it in small sealed batches so it stays fragrant instead of fading on a warehouse shelf. Every tea is tasted before it’s tinned: if the cup isn’t right, it doesn’t go out."
                         ],
                         "id": "92dd6317-368c-4e49-ba48-f65e51d79149",
                         "ord": "a1"
@@ -1539,7 +1539,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The tea club is the easy way to keep the shelf stocked: choose your tins, choose how often, and they arrive fresh on your schedule. Rotate through the whole shelf or stay with your favourite — skip, swap or cancel any time, no lock-in."
+                          "The tea club is the easy way to keep the shelf stocked: choose your tins, choose how often, and they arrive fresh on your schedule. Rotate through the whole shelf or stay with your favourite, skip, swap or cancel any time, no lock-in."
                         ],
                         "id": "2d7bc167-80e3-4e59-9c5b-01c3bebebb5a",
                         "ord": "a1"
@@ -1574,7 +1574,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Steepwell Tea House",
+      "seoTitle": "Shop: Steepwell Tea House",
       "seoDescription": "Browse everything Steepwell Tea House makes, with prices and options at a glance. Tea house.",
       "root": {
         "kind": "element",
@@ -1606,7 +1606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every tea on the shelf right now — green and white, black and oolong, spiced chai and caffeine-free herbals, plus the pots and infusers to brew them. Filter by type or caffeine, or sort however you like; all of it ships fresh from small batches."
+                      "Every tea on the shelf right now: green and white, black and oolong, spiced chai and caffeine-free herbals, plus the pots and infusers to brew them. Filter by type or caffeine, or sort however you like; all of it ships fresh from small batches."
                     ],
                     "id": "993ed8ed-a04a-4a7a-a611-f7dc29deccfe",
                     "ord": "a1"
@@ -1634,7 +1634,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Steepwell Tea House",
+      "seoTitle": "Collections: Steepwell Tea House",
       "seoDescription": "Explore the collections at Steepwell Tea House, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1666,7 +1666,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The teas grouped the way people actually drink them — this season’s harvest, the everyday favourites, the caffeine-free evening cups, and starter kits for a new brewing ritual."
+                      "The teas grouped the way people actually drink them. This season’s harvest, the everyday favourites, the caffeine-free evening cups, and starter kits for a new brewing ritual."
                     ],
                     "id": "247c7f0b-33ff-4bd5-9ebe-136fa9dc482d",
                     "ord": "a1"
@@ -1694,7 +1694,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Steepwell Tea House",
+      "seoTitle": "Your cart: Steepwell Tea House",
       "seoDescription": "Review what is in your cart and check out securely at Steepwell Tea House.",
       "root": {
         "kind": "element",
@@ -1726,7 +1726,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a tea is for you? Tell us and we’ll make it right — a good cup should be a small pleasure, never a gamble."
+                      "Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a tea is for you? Tell us and we’ll make it right: a good cup should be a small pleasure, never a gamble."
                     ],
                     "id": "da9dcc8c-09be-489b-998d-9f7bc389a608",
                     "ord": "a1"
@@ -1754,7 +1754,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Steepwell Tea House",
+      "seoTitle": "Search: Steepwell Tea House",
       "seoDescription": "Search Steepwell Tea House for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Steepwell Tea House",
+      "seoTitle": "Journal: Steepwell Tea House",
       "seoDescription": "Stories, guides and notes from Steepwell Tea House.",
       "root": {
         "kind": "element",
@@ -1846,7 +1846,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the tea room — how to steep a better cup, where the leaves actually come from, and how to make an unhurried few minutes of it. Plain, useful, no tea snobbery."
+                      "Notes from the tea room: how to steep a better cup, where the leaves actually come from, and how to make an unhurried few minutes of it. Plain, useful, no tea snobbery."
                     ],
                     "id": "06c83ac2-67ed-4fff-b274-556c882b9fda",
                     "ord": "a1"
@@ -1980,7 +1980,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Steepwell Tea House",
-      "seoDescription": "How Steepwell sources, keeps and ships tea — whole leaf, named gardens, fair prices, and cups that taste the way the hillside meant them to.",
+      "seoDescription": "How Steepwell sources, keeps and ships tea: whole leaf, named gardens, fair prices, and cups that taste the way the hillside meant them to.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2011,7 +2011,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Steepwell began with a shelf of tins, a small kettle, and the plain frustration of never being able to buy a green tea that still tasted alive. It grew the slow way — one garden, one regular, one shared pot at a time — and it still runs on the same idea: source well, keep it fresh, and never rush the cup."
+                      "Steepwell began with a shelf of tins, a small kettle, and the plain frustration of never being able to buy a green tea that still tasted alive. It grew the slow way (one garden, one regular, one shared pot at a time) and it still runs on the same idea: source well, keep it fresh, and never rush the cup."
                     ],
                     "id": "e5b50430-5b10-4cbc-8284-636cc6b7771c",
                     "ord": "a1"
@@ -2031,7 +2031,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No mystery blends, no tea gone dusty and grey, nothing older than it should be. Just good leaf, handled with care from the hillside to your kitchen — and a quiet few minutes to enjoy it."
+                      "No mystery blends, no tea gone dusty and grey, nothing older than it should be. Just good leaf, handled with care from the hillside to your kitchen, and a quiet few minutes to enjoy it."
                     ],
                     "id": "2691b6eb-d6ba-4a53-b5c4-7cbf763c8b6d",
                     "ord": "a3"
@@ -2051,8 +2051,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Steepwell Tea House",
-      "seoDescription": "Get in touch with Steepwell Tea House — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Steepwell Tea House",
+      "seoDescription": "Get in touch with Steepwell Tea House: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2359,8 +2359,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Steepwell Tea House",
-      "seoDescription": "Product details at Steepwell Tea House — tea house, with options and pricing.",
+      "seoTitle": "Product: Steepwell Tea House",
+      "seoDescription": "Product details at Steepwell Tea House: tea house, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2723,7 +2723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One teaspoon per cup, water just off the boil for black and herbal or a touch cooler for green and white, and a two-to-four-minute steep. Every tin carries its own time and temperature — good tea forgives a little, so taste as you go and steep it the way you like it."
+                              "One teaspoon per cup, water just off the boil for black and herbal or a touch cooler for green and white, and a two-to-four-minute steep. Every tin carries its own time and temperature: good tea forgives a little, so taste as you go and steep it the way you like it."
                             ],
                             "id": "01f8adb2-5e95-4b81-9f26-16acfde620f0",
                             "ord": "a1"

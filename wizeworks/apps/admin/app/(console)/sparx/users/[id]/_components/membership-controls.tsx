@@ -68,7 +68,7 @@ export function MembershipControls({
     startTransition(async () => {
       const ok = await confirm({
         title: `Remove ${userLabel} from ${tenantLabel}?`,
-        description: `Ends this membership entirely — ${userLabel} loses all access to ${tenantLabel}. Their account and any other memberships stay. This can’t be undone from here (they’d need a fresh invite).`,
+        description: `Ends this membership entirely: ${userLabel} loses all access to ${tenantLabel}. Their account and any other memberships stay. This can’t be undone from here (they’d need a fresh invite).`,
         confirmLabel: 'Remove membership',
         color: 'danger',
       });

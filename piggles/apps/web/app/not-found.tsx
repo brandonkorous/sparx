@@ -34,7 +34,7 @@ export default function NotFound() {
           apps in the fold would be answering the sentence before it finishes. */}
       <PageHero
         heading="That page isn’t here any more."
-        lede="Either the link was old or something moved. Nothing is broken on your side — here is everything Piggles does, in case one of them is what you were after."
+        lede="Either the link was old or something moved. Nothing is broken on your side. Here is everything Piggles does, in case one of them is what you were after."
       >
         <Link className={buttonClasses({ color: 'primary', size: 'lg' })} href="/">
           Back to the start

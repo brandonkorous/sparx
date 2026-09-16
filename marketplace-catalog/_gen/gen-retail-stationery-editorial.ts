@@ -164,7 +164,7 @@ function hero(): Node {
                                     text: 'Made for people who still write things down.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Margin & Co. is a small paper shop for the analog habit — notebooks that lie flat, pens worth refilling, planners you actually keep. Nothing precious, everything usable, made to be written in until it falls apart.',
+                                    text: 'Margin & Co. is a small paper shop for the analog habit: notebooks that lie flat, pens worth refilling, planners you actually keep. Nothing precious, everything usable, made to be written in until it falls apart.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -266,7 +266,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.notebooks', layout: 'carousel', heading: 'Notebooks' }),
     editorialBand({
         heading: 'The analog habit',
-        lead: 'Writing by hand is slower on purpose — it’s how a thought gets caught before it slips. A notebook doesn’t buzz, doesn’t update, and never asks you to log in. Keep one on the desk and one in the bag, and see what you stop forgetting.',
+        lead: 'Writing by hand is slower on purpose: it’s how a thought gets caught before it slips. A notebook doesn’t buzz, doesn’t update, and never asks you to log in. Keep one on the desk and one in the bag, and see what you stop forgetting.',
         assetId: 'paper-band-write',
         cta: 'Why we still write things down',
         href: '/blog/why-we-still-write-things-down',
@@ -350,13 +350,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The whole desk',
-        'Everything we carry — notebooks and pocket books, pens and ink, planners and desk pads, cards, tape and gift sets. Filter by category or sort however you like; every order is wrapped by hand and posted within two days.'
+        'Everything we carry: notebooks and pocket books, pens and ink, planners and desk pads, cards, tape and gift sets. Filter by category or sort however you like; every order is wrapped by hand and posted within two days.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'The shop grouped the way people actually buy — the new season’s arrivals, the everyday-carry kit, the planner desk, the writing set, and gifts for the person who loves their stationery.'
+        'The shop grouped the way people actually buy: the new season’s arrivals, the everyday-carry kit, the planner desk, the writing set, and gifts for the person who loves their stationery.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -369,7 +369,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free UK shipping over $40, gift wrap on request, and a note tucked in if you ask. Not quite right when it lands? Send it back within 30 days — unused paper should find the right desk.',
+                        text: 'Free UK shipping over $40, gift wrap on request, and a note tucked in if you ask. Not quite right when it lands? Send it back within 30 days: unused paper should find the right desk.',
                     }),
                 ],
             }),
@@ -383,7 +383,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Margin' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the shop — how to choose paper, how to keep a habit going, and what to give the person who already has a nice pen. Practical, opinionated, no stationery snobbery.',
+                        text: 'Notes from the shop: how to choose paper, how to keep a habit going, and what to give the person who already has a nice pen. Practical, opinionated, no stationery snobbery.',
                     }),
                 ],
             }),
@@ -400,10 +400,10 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Margin & Co.' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Margin & Co. started at a market stall with a box of notebooks and a strong opinion about paper. It grew the slow way — one favourite pen, one repeat customer, one “what would you actually use?” at a time — and it still runs on the same test: if we wouldn’t keep it on our own desk, we don’t sell it.',
+                        text: 'Margin & Co. started at a market stall with a box of notebooks and a strong opinion about paper. It grew the slow way. One favourite pen, one repeat customer, one “what would you actually use?” at a time, and it still runs on the same test: if we wouldn’t keep it on our own desk, we don’t sell it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We carry small makers and a few classics, and we choose everything by writing in it, not by reading the spec sheet. Fountain-pen-friendly stock, bindings that lie flat, refills you can find again in a year. Nothing here is precious — it’s meant to be used up and replaced.',
+                        text: 'We carry small makers and a few classics, and we choose everything by writing in it, not by reading the spec sheet. Fountain-pen-friendly stock, bindings that lie flat, refills you can find again in a year. Nothing here is precious: it’s meant to be used up and replaced.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'No mystery “luxury” markups, no throwaway gimmicks, no notebook so nice you’re afraid to open it. Just good paper goods, packed with care and posted quickly, for people who still write things down.',
@@ -421,7 +421,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'A question about a nib, a wholesale enquiry, or a custom gift order for the office? Tell us what you’re after and a real person at the shop will write back — usually the same day.',
+        intro: 'A question about a nib, a wholesale enquiry, or a custom gift order for the office? Tell us what you’re after and a real person at the shop will write back, usually the same day.',
         submitLabel: 'Email the shop',
     }),
 ];
@@ -504,42 +504,42 @@ const PRODUCTS: Product[] = [
         handle: 'margin-notebook',
         title: 'The Margin Notebook',
         description:
-            'Our flagship hardcover — a cloth-bound A5 with 192 pages of 120gsm ivory stock that takes a wet nib without a whisper of bleed. Lies dead flat on a stitched binding, keeps its shape in a bag, and has a proper ribbon and an elastic that actually holds. The one to write the year in.',
+            'Our flagship hardcover: a cloth-bound A5 with 192 pages of 120gsm ivory stock that takes a wet nib without a whisper of bleed. Lies dead flat on a stitched binding, keeps its shape in a bag, and has a proper ribbon and an elastic that actually holds. The one to write the year in.',
         price: 24,
         sku: 'MARGIN-NB-A5',
         collections: ['new-arrivals', 'best-sellers', 'writing-kit'],
         tags: ['notebook', 'hardcover', 'a5', 'fountain-pen-friendly'],
         asset: 'prod-margin-notebook',
         alt: 'A cloth-bound hardcover notebook open to a dot-grid page',
-        seoTitle: 'The Margin Notebook — cloth-bound A5 hardcover | Margin & Co.',
+        seoTitle: 'The Margin Notebook: cloth-bound A5 hardcover | Margin & Co.',
         seoDescription: 'A flat-lying cloth-bound A5 hardcover with 192 pages of fountain-pen-friendly 120gsm ivory paper. Dotted, lined or blank.',
     }),
     notebook({
         handle: 'pocket-notebook',
         title: 'Pocket Notebook, Set of Three',
         description:
-            'A three-pack of slim staple-bound pocket books that live in a jacket or a back pocket — the place a passing thought actually gets caught. Sixty-four pages each of the same smooth 90gsm stock as the big notebook, in a stitched kraft cover that ages nicely and never looks precious.',
+            'A three-pack of slim staple-bound pocket books that live in a jacket or a back pocket: the place a passing thought actually gets caught. Sixty-four pages each of the same smooth 90gsm stock as the big notebook, in a stitched kraft cover that ages nicely and never looks precious.',
         price: 16,
         sku: 'MARGIN-NB-PKT',
         collections: ['everyday-carry', 'best-sellers'],
         tags: ['notebook', 'pocket', 'set', 'everyday-carry'],
         asset: 'prod-pocket-notebook',
         alt: 'A three-pack of slim pocket notebooks fanned out',
-        seoTitle: 'Pocket Notebook, Set of Three — pocket-size notebooks | Margin & Co.',
+        seoTitle: 'Pocket Notebook, Set of Three: pocket-size notebooks | Margin & Co.',
         seoDescription: 'A set of three staple-bound pocket notebooks in kraft covers, 64 pages each. Dotted, lined or blank.',
     }),
     {
         handle: 'fountain-pen',
         title: 'The Fieldnote Fountain Pen',
         description:
-            'A pen built to be a daily writer, not a display piece — a balanced resin body, a smooth steel medium nib, and a standard converter so you can fill it from a bottle or drop in a cartridge. It starts on the first stroke after a week in a drawer, which is the only test a pen has to pass.',
+            'A pen built to be a daily writer, not a display piece: a balanced resin body, a smooth steel medium nib, and a standard converter so you can fill it from a bottle or drop in a cartridge. It starts on the first stroke after a week in a drawer, which is the only test a pen has to pass.',
         status: 'active',
         productType: 'Pen',
         vendor: 'Margin & Co.',
         tags: ['pen', 'fountain-pen', 'writing'],
         categoryHandles: ['pens'],
         collectionHandles: ['new-arrivals', 'everyday-carry', 'writing-kit'],
-        seoTitle: 'The Fieldnote Fountain Pen — everyday fountain pen | Margin & Co.',
+        seoTitle: 'The Fieldnote Fountain Pen: everyday fountain pen | Margin & Co.',
         seoDescription: 'A balanced everyday fountain pen with a smooth steel medium nib and a standard converter. Fills from a bottle or a cartridge.',
         options: [
             { name: 'Color', displayType: 'swatch', values: [{ value: 'Ink Black' }, { value: 'Slate Blue' }, { value: 'Oxblood' }] },
@@ -555,14 +555,14 @@ const PRODUCTS: Product[] = [
         handle: 'writers-ink',
         title: 'Writer’s Ink, 30ml',
         description:
-            'A bottle of properly saturated fountain-pen ink that flows wet and dries fast, in colors worth reaching for. Non-permanent and pen-safe, it rinses clean between fills — so keep one of each on the desk and switch by mood, not by machine.',
+            'A bottle of properly saturated fountain-pen ink that flows wet and dries fast, in colors worth reaching for. Non-permanent and pen-safe, it rinses clean between fills, so keep one of each on the desk and switch by mood, not by machine.',
         status: 'active',
         productType: 'Ink',
         vendor: 'Margin & Co.',
         tags: ['ink', 'fountain-pen', 'writing'],
         categoryHandles: ['pens'],
         collectionHandles: ['everyday-carry', 'writing-kit'],
-        seoTitle: 'Writer’s Ink, 30ml — bottled fountain-pen ink | Margin & Co.',
+        seoTitle: 'Writer’s Ink, 30ml: bottled fountain-pen ink | Margin & Co.',
         seoDescription: 'A 30ml bottle of saturated, pen-safe fountain-pen ink that flows wet and dries fast. Midnight, Sepia or Teal.',
         options: [
             { name: 'Color', displayType: 'swatch', values: [{ value: 'Midnight' }, { value: 'Sepia' }, { value: 'Teal' }] },
@@ -578,14 +578,14 @@ const PRODUCTS: Product[] = [
         handle: 'weekly-planner',
         title: 'Undated Weekly Planner',
         description:
-            'A week-to-a-spread planner with no printed dates — so you start it in January or in July, and a skipped week costs you nothing. A full column for each day, a notes margin down the side, and a lay-flat binding that stays open while you actually plan. Fifty-two weeks of room to think.',
+            'A week-to-a-spread planner with no printed dates, so you start it in January or in July, and a skipped week costs you nothing. A full column for each day, a notes margin down the side, and a lay-flat binding that stays open while you actually plan. Fifty-two weeks of room to think.',
         status: 'active',
         productType: 'Planner',
         vendor: 'Margin & Co.',
         tags: ['planner', 'undated', 'weekly'],
         categoryHandles: ['planners'],
         collectionHandles: ['new-arrivals', 'planner-desk', 'best-sellers'],
-        seoTitle: 'Undated Weekly Planner — week-to-a-spread planner | Margin & Co.',
+        seoTitle: 'Undated Weekly Planner: week-to-a-spread planner | Margin & Co.',
         seoDescription: 'An undated week-to-a-spread planner with a notes margin and a lay-flat binding. Start any week, skip none.',
         variants: [{ sku: 'MARGIN-PLN-WKLY', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-weekly-planner', isPrimary: true, alt: 'An undated weekly planner opened flat' }],
@@ -594,14 +594,14 @@ const PRODUCTS: Product[] = [
         handle: 'desk-pad',
         title: 'Monthly Desk Pad',
         description:
-            'A big tear-off desk pad that turns the month into something you can see at a glance — generous day boxes, a to-do rail down the side, and a heavy chipboard back so it sits flat under a keyboard or on the wall. Fifty sheets: a full year and change of clean starts.',
+            'A big tear-off desk pad that turns the month into something you can see at a glance: generous day boxes, a to-do rail down the side, and a heavy chipboard back so it sits flat under a keyboard or on the wall. Fifty sheets: a full year and change of clean starts.',
         status: 'active',
         productType: 'Planner',
         vendor: 'Margin & Co.',
         tags: ['planner', 'desk-pad', 'monthly'],
         categoryHandles: ['planners'],
         collectionHandles: ['planner-desk'],
-        seoTitle: 'Monthly Desk Pad — tear-off monthly planner pad | Margin & Co.',
+        seoTitle: 'Monthly Desk Pad: tear-off monthly planner pad | Margin & Co.',
         seoDescription: 'A 50-sheet tear-off monthly desk pad with roomy day boxes, a to-do rail and a heavy chipboard back.',
         variants: [{ sku: 'MARGIN-PLN-DESK', priceCents: money(19), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-desk-pad', isPrimary: true, alt: 'A tear-off monthly desk pad on a desk' }],
@@ -610,14 +610,14 @@ const PRODUCTS: Product[] = [
         handle: 'card-set',
         title: 'Everyday Card Set, Box of Eight',
         description:
-            'Eight letterpress cards for the occasions that don’t come with a printed line — a thank-you, a thinking-of-you, a well-done. Blank inside so the words are yours, on cotton stock with a deep impression you can feel, and eight kraft envelopes to match. The box to keep in a drawer for when you need one.',
+            'Eight letterpress cards for the occasions that don’t come with a printed line: a thank-you, a thinking-of-you, a well-done. Blank inside so the words are yours, on cotton stock with a deep impression you can feel, and eight kraft envelopes to match. The box to keep in a drawer for when you need one.',
         status: 'active',
         productType: 'Cards',
         vendor: 'Margin & Co.',
         tags: ['cards', 'letterpress', 'gift', 'set'],
         categoryHandles: ['cards-gifts'],
         collectionHandles: ['gifts', 'new-arrivals'],
-        seoTitle: 'Everyday Card Set, Box of Eight — blank letterpress cards | Margin & Co.',
+        seoTitle: 'Everyday Card Set, Box of Eight: blank letterpress cards | Margin & Co.',
         seoDescription: 'A boxed set of eight blank letterpress cards on cotton stock with kraft envelopes. For the everyday occasions.',
         variants: [{ sku: 'MARGIN-CARD-SET8', priceCents: money(22), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-card-set', isPrimary: true, alt: 'A boxed set of letterpress greeting cards' }],
@@ -626,14 +626,14 @@ const PRODUCTS: Product[] = [
         handle: 'washi-tape',
         title: 'Washi Tape Trio',
         description:
-            'Three rolls of low-tack Japanese paper tape for the small joys of a page — flagging a spread, taping in a ticket, or just breaking up a wall of ink. Writes over cleanly, tears by hand, and peels off without a fight. Sold as a set that actually goes together.',
+            'Three rolls of low-tack Japanese paper tape for the small joys of a page: flagging a spread, taping in a ticket, or just breaking up a wall of ink. Writes over cleanly, tears by hand, and peels off without a fight. Sold as a set that actually goes together.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Margin & Co.',
         tags: ['washi', 'tape', 'accessory', 'set'],
         categoryHandles: ['cards-gifts'],
         collectionHandles: ['gifts'],
-        seoTitle: 'Washi Tape Trio — Japanese paper tape set | Margin & Co.',
+        seoTitle: 'Washi Tape Trio: Japanese paper tape set | Margin & Co.',
         seoDescription: 'A set of three low-tack washi paper tapes that write over cleanly, tear by hand and peel off without a fight.',
         options: [
             { name: 'Color', displayType: 'swatch', values: [{ value: 'Warm' }, { value: 'Cool' }, { value: 'Mono' }] },
@@ -649,14 +649,14 @@ const PRODUCTS: Product[] = [
         handle: 'desk-kit',
         title: 'The Desk Kit',
         description:
-            'The whole starting point in one box — the Margin Notebook, the Fieldnote fountain pen, and a bottle of Writer’s Ink, wrapped and ready to give. It’s what we hand anyone who says they “should write more”: everything they need and nothing to figure out. Add a note at checkout and we’ll write it in.',
+            'The whole starting point in one box: the Margin Notebook, the Fieldnote fountain pen, and a bottle of Writer’s Ink, wrapped and ready to give. It’s what we hand anyone who says they “should write more”: everything they need and nothing to figure out. Add a note at checkout and we’ll write it in.',
         status: 'active',
         productType: 'Gift set',
         vendor: 'Margin & Co.',
         tags: ['gift', 'bundle', 'set', 'writing-kit'],
         categoryHandles: ['cards-gifts'],
         collectionHandles: ['gifts', 'writing-kit', 'best-sellers'],
-        seoTitle: 'The Desk Kit — notebook, pen & ink gift set | Margin & Co.',
+        seoTitle: 'The Desk Kit: notebook, pen & ink gift set | Margin & Co.',
         seoDescription: 'A boxed gift set: the Margin Notebook, the Fieldnote fountain pen and a bottle of Writer’s Ink, wrapped and ready to give.',
         variants: [{ sku: 'MARGIN-GIFT-DESK', priceCents: money(92), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-desk-kit', isPrimary: true, alt: 'A gift box holding a notebook, a pen and ink' }],
@@ -735,14 +735,14 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Why we still write things down',
-            excerpt: 'A notebook doesn’t buzz, doesn’t update, and never asks you to log in. Here’s the case for keeping one within reach — and what happens when you do.',
+            excerpt: 'A notebook doesn’t buzz, doesn’t update, and never asks you to log in. Here’s the case for keeping one within reach, and what happens when you do.',
             featuredImage: { $asset: 'post-handwriting' },
             body: {
                 type: 'doc',
                 content: [
                     para('Every note you’ve ever lost was lost in an app. It got typed into a box, autocorrected into nonsense, and buried under a hundred others you also can’t find. Paper doesn’t do that. A notebook holds exactly what you put in it, in the order you put it, and it’s still there next year without a password.'),
                     h2('Slower on purpose'),
-                    para('Writing by hand is slower than typing, and that’s the point — the lag is where a thought gets caught before it slips. You can’t transcribe a meeting word for word by hand, so you listen for what matters and write that instead. The friction does the filtering for you, and what’s left on the page is the part worth keeping.'),
+                    para('Writing by hand is slower than typing, and that’s the point: the lag is where a thought gets caught before it slips. You can’t transcribe a meeting word for word by hand, so you listen for what matters and write that instead. The friction does the filtering for you, and what’s left on the page is the part worth keeping.'),
                     h2('One on the desk, one in the bag'),
                     para('The habit sticks when the notebook is closer than the phone. Keep a hardcover open on the desk for the day’s thinking and a pocket book in the bag for everything else, and you stop trusting your memory to hold what a pen could. Start small: one page a day, no rules about neatness. The blank page is patient, and it never runs out of battery.'),
                 ],
@@ -755,16 +755,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to choose a notebook (that you’ll actually use)',
-            excerpt: 'Ruling, paper weight, binding, size. Four decisions stand between you and a notebook you’ll finish — here’s how we’d make each one.',
+            excerpt: 'Ruling, paper weight, binding, size. Four decisions stand between you and a notebook you’ll finish: here’s how we’d make each one.',
             featuredImage: { $asset: 'post-choosing-paper' },
             body: {
                 type: 'doc',
                 content: [
                     para('A notebook you don’t finish is the wrong notebook, and it’s usually wrong for a reason you can name. Get four things right and the rest is taste.'),
                     h2('Ruling and paper'),
-                    para('Dotted is the quiet all-rounder — structure when you want it, invisible when you don’t. Lined suits long prose; blank suits sketches and mind-maps. More important than the lines is the stock: reach for 90gsm and up if you write with anything wet, or the ink will ghost through and you’ll only ever use one side of the page. Thick, smooth paper is the single upgrade you’ll feel every day.'),
+                    para('Dotted is the quiet all-rounder: structure when you want it, invisible when you don’t. Lined suits long prose; blank suits sketches and mind-maps. More important than the lines is the stock: reach for 90gsm and up if you write with anything wet, or the ink will ghost through and you’ll only ever use one side of the page. Thick, smooth paper is the single upgrade you’ll feel every day.'),
                     h2('Binding and size'),
-                    para('A stitched or lay-flat binding is worth holding out for — a notebook that won’t stay open is a notebook you fight. For size, match it to where it lives: A5 is the desk workhorse, a pocket book rides in a jacket, and an A4 is for the person who really spreads out. Buy the one that fits the habit you already have, not the one you wish you had, and you’ll fill it.'),
+                    para('A stitched or lay-flat binding is worth holding out for: a notebook that won’t stay open is a notebook you fight. For size, match it to where it lives: A5 is the desk workhorse, a pocket book rides in a jacket, and an A4 is for the person who really spreads out. Buy the one that fits the habit you already have, not the one you wish you had, and you’ll fill it.'),
                 ],
             },
         },
@@ -775,16 +775,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'A gift guide for the person who loves their desk',
-            excerpt: 'They already have a nice pen — so what do you get them? A short, tested list for the stationery lover who’s hard to shop for.',
+            excerpt: 'They already have a nice pen, so what do you get them? A short, tested list for the stationery lover who’s hard to shop for.',
             featuredImage: { $asset: 'post-gift-guide' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The stationery lover is the easiest person to buy for and the easiest to get wrong — they have opinions, and a bad notebook is worse than no notebook. The trick is to give them something better than what they’d begrudgingly buy themselves, or something they’d never think to.'),
+                    para('The stationery lover is the easiest person to buy for and the easiest to get wrong. They have opinions, and a bad notebook is worse than no notebook. The trick is to give them something better than what they’d begrudgingly buy themselves, or something they’d never think to.'),
                     h2('If they’re just starting'),
-                    para('Give the whole beginning in one box. A good hardcover, a pen that starts on the first stroke, and a bottle of ink to make it theirs — that’s a habit handed over, not just an object. It’s the gift for the friend who keeps saying they “should write more,” with nothing left for them to figure out.'),
+                    para('Give the whole beginning in one box. A good hardcover, a pen that starts on the first stroke, and a bottle of ink to make it theirs: that’s a habit handed over, not just an object. It’s the gift for the friend who keeps saying they “should write more,” with nothing left for them to figure out.'),
                     h2('If they already have everything'),
-                    para('Go consumable and go colorful. A trio of washi tape, a fresh ink in a color they’d never pick, a box of blank letterpress cards for the notes they mean to send — small, used-up things that don’t compete with the nice pen they already love. And leave the price off: we’ll wrap it, write your note, and post it straight to them.'),
+                    para('Go consumable and go colorful. A trio of washi tape, a fresh ink in a color they’d never pick, a box of blank letterpress cards for the notes they mean to send: small, used-up things that don’t compete with the nice pen they already love. And leave the price off: we’ll wrap it, write your note, and post it straight to them.'),
                 ],
             },
         },
@@ -799,7 +799,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Stationery & Paper Goods (Editorial)',
     theme: THEME,
     summary:
-        'A complete, working shop for a stationery & paper-goods store: a real catalogue of hardcover and pocket notebooks, a fountain pen, bottled inks, a weekly planner and desk pad, card sets, washi tape and a gift bundle, with categories, collections, a bespoke PDP and a full merchandised home page. Editorial paper theme — warm cream ground, a confident ink-blue, a warm-red accent, a characterful Fraunces display. Shipped as Margin & Co.',
+        'A complete, working shop for a stationery & paper-goods store: a real catalogue of hardcover and pocket notebooks, a fountain pen, bottled inks, a weekly planner and desk pad, card sets, washi tape and a gift bundle, with categories, collections, a bespoke PDP and a full merchandised home page. Editorial paper theme, warm cream ground, a confident ink-blue, a warm-red accent, a characterful Fraunces display. Shipped as Margin & Co.',
     tagline: 'A warm, working storefront for a modern paper shop.',
     vertical: 'retail',
     industry: 'Stationery & paper goods',
@@ -812,14 +812,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLinks', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Margin & Co. — notebooks, pens and paper goods for people who write',
+            title: 'Margin & Co. notebooks, pens and paper goods for people who write',
             description:
-                'Margin & Co. is a small paper shop for the analog habit — fountain-pen-friendly notebooks, pens worth refilling, planners you keep, and gifts for the desk. Chosen by writing in it, wrapped by hand, posted fast.',
+                'Margin & Co. is a small paper shop for the analog habit: fountain-pen-friendly notebooks, pens worth refilling, planners you keep, and gifts for the desk. Chosen by writing in it, wrapped by hand, posted fast.',
         },
         about: {
             title: 'About Margin & Co.',
             description:
-                'How Margin & Co. chooses its paper goods — by writing in everything, favouring small makers and refillable classics, and only stocking what we’d keep on our own desk.',
+                'How Margin & Co. chooses its paper goods: by writing in everything, favouring small makers and refillable classics, and only stocking what we’d keep on our own desk.',
         },
     },
     home: HOME,

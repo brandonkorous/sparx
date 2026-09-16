@@ -147,7 +147,7 @@ function hero(): Node {
                                     { text: 'A home made from honest things' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Everyday housewares in cotton, linen, wood and glass — the useful, unfussy things a kitchen and a home actually run on, made from what the earth gives back and built to be kept.',
+                                    text: 'Everyday housewares in cotton, linen, wood and glass: the useful, unfussy things a kitchen and a home actually run on, made from what the earth gives back and built to be kept.',
                                 }),
                                 actions([
                                     primaryAction('Shop everything', '/shop'),
@@ -243,13 +243,13 @@ function valueProps(): Node {
             card(CARD, [
                 cardTitle('From the earth'),
                 body(
-                    'Cotton, linen, wood, glass, beeswax and stone — grown or dug, not drilled. Every material a thing is made from is on the label.'
+                    'Cotton, linen, wood, glass, beeswax and stone: grown or dug, not drilled. Every material a thing is made from is on the label.'
                 ),
             ]),
             card(CARD, [
                 cardTitle('Made to last'),
                 body(
-                    'These are things you buy once. Keep them well and most will outlive the shelf you bought them for — which is the cheapest, greenest thing they can do.'
+                    'These are things you buy once. Keep them well and most will outlive the shelf you bought them for, which is the cheapest, greenest thing they can do.'
                 ),
             ]),
             card(CARD, [
@@ -279,7 +279,7 @@ function journalStrip(): Node {
     return section([
         sectionHead(
             'From the journal',
-            'What we make things from, how to keep them, and how we are doing on the planet — written plainly.'
+            'What we make things from, how to keep them, and how we are doing on the planet: written plainly.'
         ),
         gridThree([
             postCard('how-we-choose-materials', 'How we choose our materials', 'post-materials', 'A close-up of natural linen weave'),
@@ -295,7 +295,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'What people buy again' }),
     materialBand({
         heading: 'Made from what grows back',
-        lead: 'Nothing here starts life in an oil well. Organic cotton, fast-growing bamboo, beeswax, seagrass and sand-into-glass — materials a field or a forest makes more of every year, chosen because they do the job and leave less behind.',
+        lead: 'Nothing here starts life in an oil well. Organic cotton, fast-growing bamboo, beeswax, seagrass and sand-into-glass: materials a field or a forest makes more of every year, chosen because they do the job and leave less behind.',
         assetId: 'band-materials',
         alt: 'A close-up of woven natural fibre',
         cta: 'How we choose materials',
@@ -304,7 +304,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.kitchen', layout: 'carousel', heading: 'For the kitchen' }),
     materialBand({
         heading: 'Made to be kept, not replaced',
-        lead: 'A dish towel that lasts ten years is cheaper and greener than ten that last one. We build for a long life and tell you plainly how to keep each thing going — wash it, oil it, refill it, and pass it on.',
+        lead: 'A dish towel that lasts ten years is cheaper and greener than ten that last one. We build for a long life and tell you plainly how to keep each thing going: wash it, oil it, refill it, and pass it on.',
         assetId: 'band-care',
         alt: 'Neatly folded natural textiles',
         cta: 'Caring for your things',
@@ -314,7 +314,7 @@ const HOME: Node[] = [
     valueProps(),
     materialBand({
         heading: 'A gentler way to make things',
-        lead: 'We measure what we make — the water, the carbon, the waste — and publish it, warts and all. A small shop, honest numbers, and a plan to do a little better every year.',
+        lead: 'We measure what we make (the water, the carbon, the waste) and publish it, warts and all. A small shop, honest numbers, and a plan to do a little better every year.',
         assetId: 'band-mission',
         alt: 'Fresh green leaves against soft light',
         cta: 'Read our first report',
@@ -337,10 +337,10 @@ const ABOUT: Node[] = [
                         text: 'About Fernwood Goods',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Fernwood Goods is a small shop of everyday housewares — the towels, jars, brushes, baskets and bowls a home runs on — made from materials the earth makes more of. We started it because the ordinary things in most kitchens are quietly made of plastic and built to be thrown away, and we thought the useful stuff could be honest stuff instead.',
+                        text: 'Fernwood Goods is a small shop of everyday housewares (the towels, jars, brushes, baskets and bowls a home runs on) made from materials the earth makes more of. We started it because the ordinary things in most kitchens are quietly made of plastic and built to be thrown away, and we thought the useful stuff could be honest stuff instead.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'So every item here earns its place twice: it has to work as well as the thing it replaces, and it has to be made from something you can name — cotton, linen, wood, glass, beeswax, stone. We tell you what each thing is made of, where it came from, and how to keep it going for years. That is the whole idea: everyday things, honestly made.',
+                        text: 'So every item here earns its place twice: it has to work as well as the thing it replaces, and it has to be made from something you can name, cotton, linen, wood, glass, beeswax, stone. We tell you what each thing is made of, where it came from, and how to keep it going for years. That is the whole idea: everyday things, honestly made.',
                     }),
                 ],
             }),
@@ -355,7 +355,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'A real person reads every message and replies, usually the same day. Ask us what something is made of, how to care for it, or what to buy for a home that is trying to use less plastic — we are happy to help.',
+        intro: 'A real person reads every message and replies, usually the same day. Ask us what something is made of, how to care for it, or what to buy for a home that is trying to use less plastic. We are happy to help.',
         submitLabel: 'Email the shop',
     }),
 ];
@@ -415,13 +415,13 @@ const PRODUCTS: Product[] = [
         tags: ['organic cotton', 'kitchen', 'dish towels', 'plastic-free'],
         categoryHandles: ['kitchen'],
         collectionHandles: ['best-sellers', 'kitchen'],
-        seoTitle: 'Organic Cotton Dish Towels — set of three waffle-weave towels',
+        seoTitle: 'Organic Cotton Dish Towels. Set of three waffle-weave towels',
         seoDescription: 'A set of three GOTS-certified organic cotton waffle-weave dish towels that soften with every wash.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'Woven from GOTS-certified organic cotton in a waffle structure that traps water and actually dries a plate instead of pushing it around. Generously sized, hemmed flat, and finished with a sewn-in hanging loop.',
-            fit: 'A set of three, sized for real drying — big enough for a stack of plates, not a token square. They soften and grow more absorbent with every wash.',
+            fit: 'A set of three, sized for real drying: big enough for a stack of plates, not a token square. They soften and grow more absorbent with every wash.',
             care: 'Machine wash warm with like colors and tumble or line dry; skip fabric softener, which coats the cotton and stops it absorbing. Bleach-free, and compostable in shreds once a decade of use finishes them.',
             materials: [{ name: 'Organic cotton', percent: '100%' }],
             origin: 'Made in Portugal',
@@ -446,14 +446,14 @@ const PRODUCTS: Product[] = [
         tags: ['beeswax', 'kitchen', 'plastic-free', 'reusable'],
         categoryHandles: ['kitchen'],
         collectionHandles: ['best-sellers', 'kitchen'],
-        seoTitle: 'Beeswax Food Wraps — reusable plastic-free food wraps',
+        seoTitle: 'Beeswax Food Wraps: reusable plastic-free food wraps',
         seoDescription: 'Organic cotton beeswax wraps that mould to a bowl with the warmth of your hands and compost at the end.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'Organic cotton dipped in a blend of beeswax, tree resin and jojoba oil, so the warmth of your hands moulds it around a bowl, a lemon half or a loaf. The wax makes it cling; the cotton makes it last.',
-            fit: 'A mixed set of small, medium and large squares — enough to cover most bowls and to fold around a sandwich or a block of cheese. Re-waxable, so a tired wrap comes back rather than going in the bin.',
-            care: 'Wash in cool water with a little mild soap and air-dry flat — no heat, no dishwasher, and not around raw meat. Re-wax with a grated block in a warm oven when the cling fades; compost it at the very end.',
+            fit: 'A mixed set of small, medium and large squares: enough to cover most bowls and to fold around a sandwich or a block of cheese. Re-waxable, so a tired wrap comes back rather than going in the bin.',
+            care: 'Wash in cool water with a little mild soap and air-dry flat: no heat, no dishwasher, and not around raw meat. Re-wax with a grated block in a warm oven when the cling fades; compost it at the very end.',
             materials: [
                 { name: 'Organic cotton', percent: '62%' },
                 { name: 'Beeswax', percent: '28%' },
@@ -474,21 +474,21 @@ const PRODUCTS: Product[] = [
         handle: 'bamboo-utensil-set',
         title: 'Bamboo Utensil Set',
         description:
-            'Five kitchen tools — spoon, slotted spoon, spatula, turner and salad fork — carved from a single stand of fast-growing bamboo, which grows back faster than any hardwood we could have used. Kind to a non-stick pan, warm in the hand, and finished with a food-safe oil you can refresh in a minute.',
+            'Five kitchen tools (spoon, slotted spoon, spatula, turner and salad fork) carved from a single stand of fast-growing bamboo, which grows back faster than any hardwood we could have used. Kind to a non-stick pan, warm in the hand, and finished with a food-safe oil you can refresh in a minute.',
         status: 'active',
         productType: 'Kitchen',
         vendor: 'Fernwood Goods',
         tags: ['bamboo', 'kitchen', 'utensils', 'renewable'],
         categoryHandles: ['kitchen'],
         collectionHandles: ['new-arrivals', 'kitchen'],
-        seoTitle: 'Bamboo Utensil Set — five-piece fast-growing bamboo kitchen tools',
+        seoTitle: 'Bamboo Utensil Set: five-piece fast-growing bamboo kitchen tools',
         seoDescription: 'A five-piece bamboo utensil set, kind to non-stick pans and finished in food-safe oil.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Carved from a single stand of fast-growing bamboo — which regrows quicker than any hardwood — and finished with a food-safe oil. Five tools: a spoon, a slotted spoon, a spatula, a turner and a salad fork.',
-            fit: 'A five-piece set sized for everyday cooking — warm and light in the hand, kind to a non-stick pan, and long enough to keep knuckles off a hot pan edge.',
-            care: 'Hand-wash in warm soapy water and dry upright — never the dishwasher, which splits wood over time. Refresh the finish in a minute with a food-safe oil when the grain starts to look dry.',
+                'Carved from a single stand of fast-growing bamboo (which regrows quicker than any hardwood) and finished with a food-safe oil. Five tools: a spoon, a slotted spoon, a spatula, a turner and a salad fork.',
+            fit: 'A five-piece set sized for everyday cooking: warm and light in the hand, kind to a non-stick pan, and long enough to keep knuckles off a hot pan edge.',
+            care: 'Hand-wash in warm soapy water and dry upright, never the dishwasher, which splits wood over time. Refresh the finish in a minute with a food-safe oil when the grain starts to look dry.',
             materials: [{ name: 'Bamboo', percent: '100%' }],
             origin: 'Made in Vietnam',
         },
@@ -499,19 +499,19 @@ const PRODUCTS: Product[] = [
         handle: 'linen-tea-towels',
         title: 'Linen Tea Towels',
         description:
-            'A pair of tea towels woven from European flax linen — the fibre that needs almost no water or spray to grow, and gets softer and more absorbent the more you use it. Lint-free for a polished glass, quick to dry so they never turn musty, and finished with a hanging loop and a plainly stitched edge.',
+            'A pair of tea towels woven from European flax linen: the fibre that needs almost no water or spray to grow, and gets softer and more absorbent the more you use it. Lint-free for a polished glass, quick to dry so they never turn musty, and finished with a hanging loop and a plainly stitched edge.',
         status: 'active',
         productType: 'Kitchen textiles',
         vendor: 'Fernwood Goods',
         tags: ['linen', 'kitchen', 'tea towels', 'flax'],
         categoryHandles: ['kitchen'],
         collectionHandles: ['new-arrivals', 'kitchen'],
-        seoTitle: 'Linen Tea Towels — pair of European flax linen towels',
+        seoTitle: 'Linen Tea Towels: pair of European flax linen towels',
         seoDescription: 'A pair of lint-free European flax linen tea towels that soften and absorb more with use.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Woven from European flax linen — the fibre that grows on rain alone and gets softer and more absorbent the more you use it. Lint-free for a polished glass, with a plainly stitched edge and a hanging loop.',
+                'Woven from European flax linen: the fibre that grows on rain alone and gets softer and more absorbent the more you use it. Lint-free for a polished glass, with a plainly stitched edge and a hanging loop.',
             fit: 'A pair, cut long for a proper grip on a hot pan and quick to dry so they never turn musty between washes. They break in over the first few washes and only improve from there.',
             care: 'Machine wash warm and line or tumble dry; linen actually likes being used and washed. A press with a warm iron while slightly damp keeps them crisp, though creased is honest too.',
             materials: [{ name: 'European flax linen', percent: '100%' }],
@@ -530,21 +530,21 @@ const PRODUCTS: Product[] = [
         handle: 'castile-soap-bars',
         title: 'Castile Soap Bars',
         description:
-            'A trio of hard-milled castile soap bars made from olive and coconut oil and nothing you cannot pronounce — no palm oil, no synthetic fragrance, no plastic. One bar does the sink, the shower and the hands, lasts for weeks, and arrives wrapped in paper you can plant or compost.',
+            'A trio of hard-milled castile soap bars made from olive and coconut oil and nothing you cannot pronounce: no palm oil, no synthetic fragrance, no plastic. One bar does the sink, the shower and the hands, lasts for weeks, and arrives wrapped in paper you can plant or compost.',
         status: 'active',
         productType: 'Cleaning',
         vendor: 'Fernwood Goods',
         tags: ['castile soap', 'cleaning', 'palm-oil-free', 'plastic-free'],
         categoryHandles: ['cleaning'],
         collectionHandles: ['best-sellers', 'cleaning'],
-        seoTitle: 'Castile Soap Bars — set of three olive-oil soap bars',
+        seoTitle: 'Castile Soap Bars. Set of three olive-oil soap bars',
         seoDescription: 'A trio of hard-milled olive and coconut castile soap bars, palm-oil-free and plastic-free.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Hard-milled from olive and coconut oil and nothing you cannot pronounce — no palm oil, no synthetic fragrance, no plastic. A trio of long-lasting bars wrapped in paper you can compost or plant.',
+                'Hard-milled from olive and coconut oil and nothing you cannot pronounce: no palm oil, no synthetic fragrance, no plastic. A trio of long-lasting bars wrapped in paper you can compost or plant.',
             fit: 'Three full-size bars; one does the sink, the shower and the hands and lasts for weeks. Sized to sit in a dish without going to mush between uses.',
-            care: 'Keep the bar on a draining dish so it dries between uses — a soaking bar is a bar you waste. Cool water or warm, it lathers either way, and the paper wrap composts.',
+            care: 'Keep the bar on a draining dish so it dries between uses: a soaking bar is a bar you waste. Cool water or warm, it lathers either way, and the paper wrap composts.',
             materials: [
                 { name: 'Saponified olive oil', percent: '70%' },
                 { name: 'Saponified coconut oil', percent: '28%' },
@@ -572,14 +572,14 @@ const PRODUCTS: Product[] = [
         tags: ['wool', 'laundry', 'cleaning', 'reusable'],
         categoryHandles: ['cleaning'],
         collectionHandles: ['cleaning'],
-        seoTitle: 'Wool Dryer Balls — set of six New Zealand wool dryer balls',
+        seoTitle: 'Wool Dryer Balls. Set of six New Zealand wool dryer balls',
         seoDescription: 'Six New Zealand wool dryer balls that cut drying time and replace single-use dryer sheets.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'Six balls of dense, felted New Zealand wool and nothing else. They bounce between damp clothes in the dryer to lift and separate them, cutting drying time and softening without any coating or scent.',
-            fit: 'A set of six — the number it takes to make a real difference to a full load; add a few drops of essential oil if you like a scent. They last for a thousand loads and then compost.',
-            care: 'Just use them — they need no washing. If they pill, a quick run in a hot dryer re-felts the surface. Store them dry between loads so the wool never sits damp.',
+            fit: 'A set of six: the number it takes to make a real difference to a full load; add a few drops of essential oil if you like a scent. They last for a thousand loads and then compost.',
+            care: 'Just use them. They need no washing. If they pill, a quick run in a hot dryer re-felts the surface. Store them dry between loads so the wool never sits damp.',
             materials: [{ name: 'New Zealand wool', percent: '100%' }],
             origin: 'Made in Nepal',
         },
@@ -590,20 +590,20 @@ const PRODUCTS: Product[] = [
         handle: 'coconut-scrub-brushes',
         title: 'Coconut Scrub Brushes',
         description:
-            'A pair of dish brushes with beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. When the head finally wears down you unclip it for the compost and click a fresh one onto the same handle — a brush you refill instead of replace.',
+            'A pair of dish brushes with beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. When the head finally wears down you unclip it for the compost and click a fresh one onto the same handle: a brush you refill instead of replace.',
         status: 'active',
         productType: 'Cleaning',
         vendor: 'Fernwood Goods',
         tags: ['coconut coir', 'cleaning', 'plastic-free', 'refillable'],
         categoryHandles: ['cleaning'],
         collectionHandles: ['cleaning'],
-        seoTitle: 'Coconut Scrub Brushes — pair of refillable dish brushes',
+        seoTitle: 'Coconut Scrub Brushes: pair of refillable dish brushes',
         seoDescription: 'A pair of beechwood dish brushes with compostable coconut-coir heads you refill, not replace.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'Beechwood handles and stiff coconut-coir bristles that scour a burnt pan without a scrap of plastic. The head clips off for the compost when it wears down; a fresh one clicks onto the same handle.',
-            fit: 'A pair, so there is a dry one while the other drains — sized to fit the hand and reach the bottom of a pan. A refillable design: you replace the head, not the whole brush.',
+            fit: 'A pair, so there is a dry one while the other drains: sized to fit the hand and reach the bottom of a pan. A refillable design: you replace the head, not the whole brush.',
             care: 'Rinse and stand it bristle-up to dry so the wood never sits in water. When the coir softens, unclip the head for the compost and click on a replacement.',
             materials: [
                 { name: 'Beechwood', percent: '60%' },
@@ -619,21 +619,21 @@ const PRODUCTS: Product[] = [
         handle: 'seagrass-storage-baskets',
         title: 'Seagrass Storage Baskets',
         description:
-            'A hand-woven basket of seagrass — a plant that regrows in the shallows and needs no farming at all — with sturdy handles and a soft, structured shape that holds its form under a load of blankets, toys or firewood. Every one is woven by hand, so no two are exactly alike, and it lasts for years of daily lifting.',
+            'A hand-woven basket of seagrass (a plant that regrows in the shallows and needs no farming at all) with sturdy handles and a soft, structured shape that holds its form under a load of blankets, toys or firewood. Every one is woven by hand, so no two are exactly alike, and it lasts for years of daily lifting.',
         status: 'active',
         productType: 'Storage',
         vendor: 'Fernwood Goods',
         tags: ['seagrass', 'storage', 'basket', 'handwoven'],
         categoryHandles: ['storage'],
         collectionHandles: ['best-sellers', 'storage'],
-        seoTitle: 'Seagrass Storage Baskets — hand-woven seagrass baskets',
+        seoTitle: 'Seagrass Storage Baskets: hand-woven seagrass baskets',
         seoDescription: 'A hand-woven seagrass storage basket with sturdy handles that holds its shape under a load.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Hand-woven from seagrass — a plant that regrows in the shallows and needs no farming — over a sturdy frame, with woven handles and a soft, structured shape that holds its form under a load.',
+                'Hand-woven from seagrass (a plant that regrows in the shallows and needs no farming) over a sturdy frame, with woven handles and a soft, structured shape that holds its form under a load.',
             fit: 'Offered in two sizes for blankets, toys or firewood; every basket is woven by hand, so no two are exactly alike. Sized to sit on a shelf or on the floor beside a sofa.',
-            care: 'Dust it out or wipe with a barely-damp cloth; keep it out of standing water, as any natural fibre dislikes staying wet. Reshape it by hand if it takes a knock — seagrass is forgiving.',
+            care: 'Dust it out or wipe with a barely-damp cloth; keep it out of standing water, as any natural fibre dislikes staying wet. Reshape it by hand if it takes a knock: seagrass is forgiving.',
             materials: [
                 { name: 'Seagrass', percent: '94%' },
                 { name: 'Steel frame', percent: '6%' },
@@ -660,7 +660,7 @@ const PRODUCTS: Product[] = [
         tags: ['recycled glass', 'storage', 'jars', 'pantry'],
         categoryHandles: ['storage'],
         collectionHandles: ['new-arrivals', 'storage'],
-        seoTitle: 'Glass Storage Jars — recycled-glass pantry jars with bamboo lids',
+        seoTitle: 'Glass Storage Jars: recycled-glass pantry jars with bamboo lids',
         seoDescription: 'A set of airtight recycled-glass storage jars with bamboo lids and silicone seals for the pantry.',
         productTypeKey: 'apparel',
         attributes: {
@@ -695,7 +695,7 @@ const PRODUCTS: Product[] = [
         tags: ['stoneware', 'tableware', 'mugs', 'handmade'],
         categoryHandles: ['tableware'],
         collectionHandles: ['best-sellers'],
-        seoTitle: 'Stoneware Mug Set — set of four hand-glazed stoneware mugs',
+        seoTitle: 'Stoneware Mug Set. Set of four hand-glazed stoneware mugs',
         seoDescription: 'A set of four stoneware mugs in a soft matte glaze that breaks to bare clay at the rim.',
         productTypeKey: 'apparel',
         attributes: {
@@ -722,14 +722,14 @@ const PRODUCTS: Product[] = [
         handle: 'stoneware-serving-bowl',
         title: 'Stoneware Serving Bowl',
         description:
-            'A wide, low serving bowl thrown by hand from stoneware clay — big enough for a salad for the table or a bowl of fruit on the counter, and handsome enough to leave out. The speckled oatmeal glaze suits whatever you put in it, and stoneware simply outlasts the plastic and melamine it replaces.',
+            'A wide, low serving bowl thrown by hand from stoneware clay: big enough for a salad for the table or a bowl of fruit on the counter, and handsome enough to leave out. The speckled oatmeal glaze suits whatever you put in it, and stoneware simply outlasts the plastic and melamine it replaces.',
         status: 'active',
         productType: 'Tableware',
         vendor: 'Fernwood Goods',
         tags: ['stoneware', 'tableware', 'serving bowl', 'handmade'],
         categoryHandles: ['tableware'],
         collectionHandles: ['new-arrivals'],
-        seoTitle: 'Stoneware Serving Bowl — wide hand-thrown serving bowl',
+        seoTitle: 'Stoneware Serving Bowl: wide hand-thrown serving bowl',
         seoDescription: 'A wide, low hand-thrown stoneware serving bowl in a speckled oatmeal glaze.',
         productTypeKey: 'apparel',
         attributes: {
@@ -757,7 +757,7 @@ const PRODUCTS: Product[] = [
         tags: ['organic cotton', 'bath', 'towels', 'textiles'],
         categoryHandles: ['textiles'],
         collectionHandles: ['new-arrivals'],
-        seoTitle: 'Organic Cotton Bath Towels — pair of long-staple cotton towels',
+        seoTitle: 'Organic Cotton Bath Towels: pair of long-staple cotton towels',
         seoDescription: 'A pair of long-staple organic cotton bath towels, thirsty from the first wash and free of softening coatings.',
         productTypeKey: 'apparel',
         attributes: {
@@ -844,16 +844,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How we choose our materials',
-            excerpt: 'The one question every product has to answer before it earns a place in the shop — and why "what is it made of?" is harder than it sounds.',
+            excerpt: 'The one question every product has to answer before it earns a place in the shop, and why "what is it made of?" is harder than it sounds.',
             featuredImage: { $asset: 'post-materials' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Most housewares are quietly made of plastic. A dish brush, a food wrap, a laundry sheet, a storage tub — reach into an ordinary cupboard and almost everything in it started as oil and will end as landfill. We started Fernwood to see whether the useful, boring things could be made of something else without asking anyone to try harder or spend a fortune.'),
+                    para('Most housewares are quietly made of plastic. A dish brush, a food wrap, a laundry sheet, a storage tub: reach into an ordinary cupboard and almost everything in it started as oil and will end as landfill. We started Fernwood to see whether the useful, boring things could be made of something else without asking anyone to try harder or spend a fortune.'),
                     h2('Grown or dug, not drilled'),
                     para('The first test is simple: can we name what a thing is made of, and does the earth make more of it? Organic cotton and flax linen grow in a field. Bamboo and seagrass grow back faster than we can cut them. Glass is sand, and it recycles forever. Beeswax comes from bees, clay comes from the ground. If the honest answer to "what is it made of?" is a chemical nobody can pronounce, it does not go in the shop.'),
                     h2('It still has to work'),
-                    para('The second test is the one that fails most "eco" products: it has to work at least as well as the plastic thing it replaces. A compostable brush that will not scrub a pan is not a win — it is a thing you use once and give up on. So every item earns its place twice, on the material and on the job, and plenty of samples never make it past the sink.'),
+                    para('The second test is the one that fails most "eco" products: it has to work at least as well as the plastic thing it replaces. A compostable brush that will not scrub a pan is not a win. It is a thing you use once and give up on. So every item earns its place twice, on the material and on the job, and plenty of samples never make it past the sink.'),
                     para('None of this is complicated. It is just slower, and it means saying no to a lot of things that would sell. That is the trade we made, and it is the whole reason the shop exists.'),
                 ],
             },
@@ -874,7 +874,7 @@ const CONTENT = [
                     h2('Cool water, no heat'),
                     para('Wash it in cool water with a little mild soap and let it air-dry. Heat is the enemy: no dishwasher, no hot tap, and never around raw meat, because you cannot scrub it the way you would a plastic board. Treated gently, one wrap will see you through a year or more of lunches and leftovers.'),
                     h2('When it stops sticking'),
-                    para('Eventually the wax wears thin and the cling goes. That is not the end — you can re-wax a tired wrap with a grated block and a warm oven, and it comes back to life. We sell the refresh blocks for exactly this reason: a wrap you top up is a wrap you never throw away.'),
+                    para('Eventually the wax wears thin and the cling goes. That is not the end. You can re-wax a tired wrap with a grated block and a warm oven, and it comes back to life. We sell the refresh blocks for exactly this reason: a wrap you top up is a wrap you never throw away.'),
                     para('And when it is truly finished, it composts. Or, our favourite trick: wrap it around a bit of kindling and use it to light the fire. A food wrap that ends as a firelighter is about as good as the end of a thing gets.'),
                 ],
             },
@@ -886,16 +886,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Our first carbon report',
-            excerpt: 'We measured a year of making and shipping everything in the shop, added it up, and are publishing the number — including the parts we are not proud of.',
+            excerpt: 'We measured a year of making and shipping everything in the shop, added it up, and are publishing the number, including the parts we are not proud of.',
             featuredImage: { $asset: 'post-carbon' },
             body: {
                 type: 'doc',
                 content: [
-                    para('This is the first year we have measured our whole footprint — the materials, the making, the packaging and the miles — and written it down. We are a small shop and the report is not perfect, but we would rather publish an honest, rough number than a polished, quiet nothing.'),
+                    para('This is the first year we have measured our whole footprint (the materials, the making, the packaging and the miles) and written it down. We are a small shop and the report is not perfect, but we would rather publish an honest, rough number than a polished, quiet nothing.'),
                     h2('Where it comes from'),
                     para('The biggest share, by a distance, is shipping. Sending a basket across the country costs more carbon than growing the seagrass it is woven from. The next chunk is the raw materials, and the smallest is our own workshop and warehouse. Knowing the order matters, because it tells us where an hour of effort actually moves the number.'),
                     h2('What we are changing'),
-                    para('So this year we are consolidating shipments, moving to plastic-free packaging across the whole range, and switching our workshop to a renewable tariff. We are not buying offsets to call ourselves neutral — we would rather cut the real number than pay to look like we have.'),
+                    para('So this year we are consolidating shipments, moving to plastic-free packaging across the whole range, and switching our workshop to a renewable tariff. We are not buying offsets to call ourselves neutral. We would rather cut the real number than pay to look like we have.'),
                     para('We will publish this every year, and we will show the parts that go the wrong way as well as the parts that improve. A report you only publish when it flatters you is marketing, not measurement.'),
                 ],
             },
@@ -1031,7 +1031,7 @@ const SHOP: Node[] = [
                                     { text: 'The whole shop' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Every everyday thing Fernwood Goods makes — for the kitchen, the clean-up, the cupboard and the bath — filtered and sorted however you like. Honest materials, made to be kept.',
+                                    text: 'Every everyday thing Fernwood Goods makes (for the kitchen, the clean-up, the cupboard and the bath) filtered and sorted however you like. Honest materials, made to be kept.',
                                 }),
                             ],
                         }),
@@ -1070,14 +1070,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'The collections',
-        'Small groups of everyday things gathered the way a home actually uses them — the kitchen, the clean-up, the cupboard, the table and the bath. Start where you are replacing plastic, and work outward from there.'
+        'Small groups of everyday things gathered the way a home actually uses them: the kitchen, the clean-up, the cupboard, the table and the bath. Start where you are replacing plastic, and work outward from there.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Search the shop',
-        'Looking for something in particular — a material, a room, or a plastic thing you want to swap out? Search the whole shop and the journal below by name, by material or by what it is for.'
+        'Looking for something in particular: a material, a room, or a plastic thing you want to swap out? Search the whole shop and the journal below by name, by material or by what it is for.'
     ),
 ];
 
@@ -1092,7 +1092,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Fernwood journal' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the shop, written plainly — what we make things from, how to keep them going for years, and how we are doing on the planet, warts and all.',
+                        text: 'Notes from the shop, written plainly: what we make things from, how to keep them going for years, and how we are doing on the planet, warts and all.',
                     }),
                 ],
             }),
@@ -1115,7 +1115,7 @@ const CART: Node[] = [
                         { text: 'Your cart' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Everything ships in plastic-free packaging on carbon-neutral delivery, and you have thirty days to return anything unused for a full refund. Take your time deciding — these are things to keep.',
+                        text: 'Everything ships in plastic-free packaging on carbon-neutral delivery, and you have thirty days to return anything unused for a full refund. Take your time deciding. These are things to keep.',
                     }),
                 ],
             }),
@@ -1130,7 +1130,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-natural-clean',
     name: 'Natural Clean',
     summary:
-        'A calm, oat-tinted storefront for a natural or sustainable brand — a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.',
+        'A calm, oat-tinted storefront for a natural or sustainable brand: a full-bleed hero over color-blocked category tiles and a repeating shoppable-carousel and material-story rhythm that closes on a quiet mission moment, in a warm paper-ground theme. Modelled on the natural/sustainable-clean archetype; shipped as Fernwood Goods.',
     tagline: 'A warm, honest template for eco housewares and any planet-minded brand.',
     vertical: 'retail',
     industry: 'Eco everyday housewares',
@@ -1147,14 +1147,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Fernwood Goods — everyday housewares, honestly made',
+            title: 'Fernwood Goods: everyday housewares, honestly made',
             description:
-                'Fernwood Goods makes everyday housewares in cotton, linen, wood and glass — useful, unfussy things made from what the earth gives back and built to be kept.',
+                'Fernwood Goods makes everyday housewares in cotton, linen, wood and glass: useful, unfussy things made from what the earth gives back and built to be kept.',
         },
         about: {
             title: 'About Fernwood Goods',
             description:
-                'The materials, makers and thinking behind Fernwood Goods — a simpler, better-made everyday, built to last and gentle at the end.',
+                'The materials, makers and thinking behind Fernwood Goods: a simpler, better-made everyday, built to last and gentle at the end.',
         },
     },
     home: HOME,

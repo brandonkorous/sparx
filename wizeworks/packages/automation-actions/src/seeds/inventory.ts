@@ -14,7 +14,7 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 export const INVENTORY_AUTO_REORDER: SystemAutomationSpec = {
   name: 'Auto-reorder low stock',
   description:
-    'Drafts a purchase order to the preferred supplier when a product variant drops to its reorder point. Review and submit the draft from Purchase orders. Off by default — turn it on to automate replenishment.',
+    'Drafts a purchase order to the preferred supplier when a product variant drops to its reorder point. Review and submit the draft from Purchase orders. Off by default. Turn it on to automate replenishment.',
   trigger: { kind: 'event', eventType: 'inventory.low' },
   conditions: { logic: 'AND', conditions: [] },
   actions: [{ type: 'inventory.draft_reorder_po', config: {} }],

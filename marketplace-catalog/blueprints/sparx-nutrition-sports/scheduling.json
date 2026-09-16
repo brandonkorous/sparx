@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Reschedule or cancel with at least 24 hours’ notice — plans move, and we get it. We send a reminder the day before and two hours ahead so nothing slips."
+      "policyText": "Reschedule or cancel with at least 24 hours’ notice: plans move, and we get it. We send a reminder the day before and two hours ahead so nothing slips."
     },
     {
       "handle": "no-show",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Your dietitian blocks the full session for you. Cancel inside 24 hours or miss it without notice and a no-show fee applies — one heads-up, then it’s the policy for everyone’s time."
+      "policyText": "Your dietitian blocks the full session for you. Cancel inside 24 hours or miss it without notice and a no-show fee applies. One heads-up, then it’s the policy for everyone’s time."
     }
   ],
   "resources": [
@@ -117,7 +117,7 @@
     {
       "handle": "free-strategy-call",
       "name": "Free strategy call",
-      "description": "A no-cost 20-minute call to talk goals, your sport and where fueling is holding you back — and to map the right first step. Zero pressure, all direction.",
+      "description": "A no-cost 20-minute call to talk goals, your sport and where fueling is holding you back, and to map the right first step. Zero pressure, all direction.",
       "durationMinutes": 20,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -134,7 +134,7 @@
     {
       "handle": "initial-assessment",
       "name": "Initial performance assessment",
-      "description": "The deep first session — training load, current intake, bloodwork if you have it, and your competitive calendar — built into a baseline and a clear plan of attack.",
+      "description": "The deep first session: training load, current intake, bloodwork if you have it, and your competitive calendar, built into a baseline and a clear plan of attack.",
       "durationMinutes": 60,
       "priceCents": 16500,
       "assignmentStrategy": "customer_choice",
@@ -151,7 +151,7 @@
     {
       "handle": "fueling-plan-consult",
       "name": "Fueling plan consult",
-      "description": "Build the day-to-day plan: what to eat around training, carbs by session type, hydration and race-day timing — the numbers dialed to your schedule, not a generic template.",
+      "description": "Build the day-to-day plan: what to eat around training, carbs by session type, hydration and race-day timing, the numbers dialed to your schedule, not a generic template.",
       "durationMinutes": 45,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -168,7 +168,7 @@
     {
       "handle": "body-composition-consult",
       "name": "Body-composition consult",
-      "description": "Track lean mass and composition with real measurement, then set a fuelling target that changes the number on the scale for the right reasons — performance, not punishment.",
+      "description": "Track lean mass and composition with real measurement, then set a fuelling target that changes the number on the scale for the right reasons: performance, not punishment.",
       "durationMinutes": 45,
       "priceCents": 12500,
       "assignmentStrategy": "customer_choice",
@@ -219,7 +219,7 @@
     {
       "handle": "follow-up-session",
       "name": "Follow-up & check-in",
-      "description": "A 30-minute check-in to read the data, adjust the plan and keep momentum — the accountability that turns a good plan into a better season.",
+      "description": "A 30-minute check-in to read the data, adjust the plan and keep momentum: the accountability that turns a good plan into a better season.",
       "durationMinutes": 30,
       "priceCents": 7500,
       "assignmentStrategy": "customer_choice",

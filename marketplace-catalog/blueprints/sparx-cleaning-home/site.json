@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Tidy Nest — friendly house cleaning",
-      "seoDescription": "Tidy Nest is a friendly, insured house-cleaning service for recurring cleans, deep cleans and move-outs. Book your first clean online — or get a free estimate.",
+      "seoTitle": "Tidy Nest: friendly house cleaning",
+      "seoDescription": "Tidy Nest is a friendly, insured house-cleaning service for recurring cleans, deep cleans and move-outs. Book your first clean online, or get a free estimate.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Friendly, vetted cleaners for your home — recurring cleans, deep cleans and move-outs. Book in about a minute and walk into a place that feels brand new."
+                      "Friendly, vetted cleaners for your home: recurring cleans, deep cleans and move-outs. Book in about a minute and walk into a place that feels brand new."
                     ],
                     "id": "86a6e6fe-a1a3-4690-ac84-540b3b9c2e5c",
                     "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "If we miss a spot, tell us within 24 hours and we’ll come back and make it right — no arguing, no extra charge."
+                              "If we miss a spot, tell us within 24 hours and we’ll come back and make it right: no arguing, no extra charge."
                             ],
                             "id": "aa0fee15-d3c9-4250-a5ba-dd4f3c4c3532",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Weekly, every two weeks or monthly, with the same friendly cleaner each visit. Skip, move or cancel any time — no lock-in."
+                              "Weekly, every two weeks or monthly, with the same friendly cleaner each visit. Skip, move or cancel any time: no lock-in."
                             ],
                             "id": "00a289b7-8875-4f97-a9fc-b696374ae374",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Just ask for our plant-based, family- and pet-safe products — a fresh, clean home without the harsh chemical smell."
+                              "Just ask for our plant-based, family- and pet-safe products: a fresh, clean home without the harsh chemical smell."
                             ],
                             "id": "09151d1b-0665-4ce3-b130-d410fc91afb1",
                             "ord": "a1"
@@ -873,7 +873,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Kitchens, baths, floors and surfaces — your whole home refreshed."
+                              "Kitchens, baths, floors and surfaces. Your whole home refreshed."
                             ],
                             "id": "54464dd8-4932-461c-a119-996c86e0cf01",
                             "ord": "a2"
@@ -928,7 +928,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Baseboards, inside the oven and fridge, grout — the works."
+                              "Baseboards, inside the oven and fridge, grout: the works."
                             ],
                             "id": "0156688c-10e6-4285-8872-9c2f0d21bddd",
                             "ord": "a2"
@@ -983,7 +983,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Set it and forget it — the same cleaner on your schedule."
+                              "Set it and forget it: the same cleaner on your schedule."
                             ],
                             "id": "07bcabda-9a71-4964-8b2c-d109382a5ef8",
                             "ord": "a2"
@@ -1117,7 +1117,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "With a recurring plan you’re matched with one cleaner who gets to know your home — where things go, which products you like, the corners that always need a little extra."
+                          "With a recurring plan you’re matched with one cleaner who gets to know your home: where things go, which products you like, the corners that always need a little extra."
                         ],
                         "id": "98728c91-02ae-4b51-832d-919a482040c5",
                         "ord": "a1"
@@ -1192,7 +1192,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Real people, background-checked and insured — the friendly faces who’ll make your home shine."
+                          "Real people, background-checked and insured: the friendly faces who’ll make your home shine."
                         ],
                         "id": "7b0fc36e-4cbc-42e9-a2be-a88ca61ffe8e",
                         "ord": "a1"
@@ -1305,7 +1305,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "The detail guy — deep cleans and move-outs where every corner has to be perfect."
+                                  "The detail guy: deep cleans and move-outs where every corner has to be perfect."
                                 ],
                                 "id": "1e04b5ef-d609-4819-abe4-f7f7ed7ec46d",
                                 "ord": "a2"
@@ -1417,7 +1417,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Handles the big jobs — post-renovation and move-out cleans, start to sparkling finish."
+                                  "Handles the big jobs: post-renovation and move-out cleans, start to sparkling finish."
                                 ],
                                 "id": "cd987c00-a0f1-47c1-b2f1-a5b8b60c8a6d",
                                 "ord": "a2"
@@ -1501,7 +1501,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Pick a clean, choose a day and see live times. It takes about a minute — or book a free estimate first."
+                      "Pick a clean, choose a day and see live times. It takes about a minute, or book a free estimate first."
                     ],
                     "id": "111531c2-81ea-46aa-a708-1f7c4ca60efd",
                     "ord": "a1"
@@ -1532,7 +1532,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Tidy Nest",
+      "seoTitle": "Book: Tidy Nest",
       "seoDescription": "See what Tidy Nest offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1656,7 +1656,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "a3feee83-24b7-4d24-a08e-c35f0df17fa7",
                         "ord": "a1"
@@ -1725,7 +1725,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Your first clean and any recurring plan is fully flexible — change your day, skip a visit or pause any time with 24 hours’ notice. No lock-in, ever."
+                              "Your first clean and any recurring plan is fully flexible. Change your day, skip a visit or pause any time with 24 hours’ notice. No lock-in, ever."
                             ],
                             "id": "9365e44e-b029-4bc7-84a7-c9098b74b32d",
                             "ord": "a1"
@@ -1763,7 +1763,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Tidy Nest",
+      "seoTitle": "About: Tidy Nest",
       "seoDescription": "Who Tidy Nest is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1812,7 +1812,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Tidy Nest for a simple reason: everyone deserves to come home to a clean house without the stress of finding — and trusting — someone to do it."
+                          "We started Tidy Nest for a simple reason: everyone deserves to come home to a clean house without the stress of finding (and trusting) someone to do it."
                         ],
                         "id": "10891bf9-e00b-41f4-bc93-5bdb28e91530",
                         "ord": "a1"
@@ -1900,7 +1900,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A clear, upfront quote before we start — free estimates on bigger jobs. What we quote is what you pay."
+                              "A clear, upfront quote before we start: free estimates on bigger jobs. What we quote is what you pay."
                             ],
                             "id": "3e4ef286-bd8a-46dc-a66f-2b926343666b",
                             "ord": "a1"
@@ -1954,7 +1954,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "If anything’s not right, tell us within 24 hours and we’ll come back and re-clean it — free."
+                              "If anything’s not right, tell us within 24 hours and we’ll come back and re-clean it: free."
                             ],
                             "id": "624352ae-6977-491a-8b06-3a340273993e",
                             "ord": "a1"
@@ -1982,7 +1982,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Tidy Nest",
+      "seoTitle": "Visit: Tidy Nest",
       "seoDescription": "Where to find Tidy Nest, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2019,7 +2019,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Tidy Nest will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Tidy Nest will get back to you, usually the same day."
                         ],
                         "id": "7703536a-6b2f-4af5-b4f0-6169c8e07fc1",
                         "ord": "a1"
@@ -2469,7 +2469,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your clean online — no phone tag, no waiting on a callback."
+                      "See live availability and reserve your clean online: no phone tag, no waiting on a callback."
                     ],
                     "id": "6633117e-370f-44ae-b4fd-c8e92390a920",
                     "ord": "a1"

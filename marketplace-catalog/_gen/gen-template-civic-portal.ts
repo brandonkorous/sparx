@@ -124,7 +124,7 @@ function heroBand(): Node {
                 { text: 'Welcome to the City of Rivermark' },
               ),
               el('p', 'max-w-xl text-lg leading-relaxed text-base-content @2xl:text-xl', {
-                text: 'Your city, online. Pay a bill, apply for a permit, find a meeting, or report a problem — the things residents do most, all in one clear place.',
+                text: 'Your city, online. Pay a bill, apply for a permit, find a meeting, or report a problem: the things residents do most, all in one clear place.',
               }),
               el('div', 'flex flex-col gap-4 @2xl:flex-row', {
                 children: [
@@ -283,7 +283,7 @@ function noticesBand(): Node {
                 text: 'Public notices',
               }),
               el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                text: 'Hearings, agendas, and bid postings, published as the public record — newest first.',
+                text: 'Hearings, agendas, and bid postings, published as the public record: newest first.',
               }),
               el('ul', 'flex flex-col', {
                 children: [
@@ -304,7 +304,7 @@ function noticesBand(): Node {
                   ),
                   noticeRow(
                     'Agenda',
-                    'City Council regular meeting agenda — 12 August, 6:00pm',
+                    'City Council regular meeting agenda: 12 August, 6:00pm',
                     'Posted 1 August',
                   ),
                 ],
@@ -460,7 +460,7 @@ const ABOUT: Node[] = [
             text: 'Rivermark is a mid-size city of roughly 118,000 residents on the west bank of the Clearwater River. This site is the front door to city government: the services residents use, the meetings that decide how the city is run, and the notices we are required to publish.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'We built this portal around one idea — that finding a city service should not require knowing which department owns it. Everything here is written in plain language, tested against accessibility standards, and organized around the tasks residents actually come to do.',
+            text: 'We built this portal around one idea. That finding a city service should not require knowing which department owns it. Everything here is written in plain language, tested against accessibility standards, and organized around the tasks residents actually come to do.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'City Hall is at 200 Riverside Plaza and is open Monday through Friday, 8:00am to 5:00pm. Council meetings are open to the public and streamed live; agendas are posted at least 72 hours in advance under Public notices.',
@@ -478,7 +478,7 @@ const CONTACT: Node[] = [
   // `mailto:` to a placeholder domain, which was the only way to reach the business.
   contactSection({
     heading: 'Contact the city',
-    intro: 'Reach City Hall at 200 Riverside Plaza, Monday through Friday, 8:00am to 5:00pm. For a non-emergency issue — a pothole, a streetlight, a missed pickup — the fastest route is the online service request, staffed during business hours. In an emergency, always call 911.',
+    intro: 'Reach City Hall at 200 Riverside Plaza, Monday through Friday, 8:00am to 5:00pm. For a non-emergency issue (a pothole, a streetlight, a missed pickup) the fastest route is the online service request, staffed during business hours. In an emergency, always call 911.',
     submitLabel: 'Email the city help desk',
   }),
 ];
@@ -521,7 +521,7 @@ const PRODUCTS: Product[] = [
     tags: ['publication', 'guide'],
     categoryHandles: ['publications'],
     collectionHandles: ['featured'],
-    seoTitle: 'Rivermark Resident Guide 2026 — City of Rivermark',
+    seoTitle: 'Rivermark Resident Guide 2026: City of Rivermark',
     seoDescription:
       'The printed guide to city services, the waste calendar, and facility hours, mailed to your door.',
     variants: [
@@ -533,14 +533,14 @@ const PRODUCTS: Product[] = [
     handle: 'monthly-transit-pass',
     title: 'Monthly Transit Pass',
     description:
-      'Unlimited rides on every Rivermark Transit bus route for one calendar month. Tap to board — no exact change needed. Reduced-fare pricing is available for seniors and students at any transit center.',
+      'Unlimited rides on every Rivermark Transit bus route for one calendar month. Tap to board: no exact change needed. Reduced-fare pricing is available for seniors and students at any transit center.',
     status: 'active',
     productType: 'Pass',
     vendor: 'City of Rivermark',
     tags: ['pass', 'transit'],
     categoryHandles: ['passes'],
     collectionHandles: ['featured'],
-    seoTitle: 'Monthly Transit Pass — Rivermark Transit',
+    seoTitle: 'Monthly Transit Pass: Rivermark Transit',
     seoDescription: 'Unlimited rides on every Rivermark Transit bus route for one calendar month.',
     variants: [
       { sku: 'RVM-PASS-TRANSIT', priceCents: money(45), isDefault: true, inventoryPolicy: 'continue' },
@@ -558,7 +558,7 @@ const PRODUCTS: Product[] = [
     tags: ['pass', 'parks'],
     categoryHandles: ['passes'],
     collectionHandles: ['featured'],
-    seoTitle: 'Annual Parks Pass — City of Rivermark',
+    seoTitle: 'Annual Parks Pass: City of Rivermark',
     seoDescription:
       'A year of parking and entry at every Rivermark park, trailhead, and boat launch for a household.',
     variants: [
@@ -686,7 +686,7 @@ const CONTENT = [
           ),
           h2('How it was decided'),
           para(
-            'The budget followed three public hearings and an online comment period that drew more than 400 responses. Residents asked, above all, for the roads to be fixed and for transit to keep its weekend hours — both of which the adopted budget funds.',
+            'The budget followed three public hearings and an online comment period that drew more than 400 responses. Residents asked, above all, for the roads to be fixed and for transit to keep its weekend hours. Both of which the adopted budget funds.',
           ),
           para(
             'The full adopted budget, including every department’s detail, is posted under Public notices for anyone who wants to read it line by line.',
@@ -715,7 +715,7 @@ const CONTENT = [
           ),
           h2('What happened'),
           para(
-            'A water main break near Highland Avenue dropped pressure in the local system, which can let contaminants in. Whenever that happens, the city issues a boil-water advisory as a precaution while crews repair the line and testing confirms the water is safe — which it now has.',
+            'A water main break near Highland Avenue dropped pressure in the local system, which can let contaminants in. Whenever that happens, the city issues a boil-water advisory as a precaution while crews repair the line and testing confirms the water is safe, which it now has.',
           ),
           h2('What to do now'),
           para(
@@ -777,7 +777,7 @@ const CONTENT = [
         type: 'doc',
         content: [
           para(
-            'All three branches of the Rivermark Public Library are expanding their weekend hours this month. Saturday hours now run until 6:00pm, and every branch adds a Sunday afternoon session from 1:00 to 5:00 — the first regular Sunday hours the system has offered in over a decade.',
+            'All three branches of the Rivermark Public Library are expanding their weekend hours this month. Saturday hours now run until 6:00pm, and every branch adds a Sunday afternoon session from 1:00 to 5:00: the first regular Sunday hours the system has offered in over a decade.',
           ),
           h2('What the extra hours cover'),
           para(
@@ -801,7 +801,7 @@ const SPEC: TemplateSiteSpec = {
   key: 'sparx-civic-portal',
   name: 'Civic Portal',
   summary:
-    'An accessibility-first portal for a city or public agency — a clear welcome band, a task-first services directory, a state-aware public-notices and alerts channel, a live news feed, and a light civic shop, in a white-ground deep-federal-blue theme tuned for AAA contrast. Modelled on the government/public-service archetype; shipped as the City of Rivermark. Ships a light shop (a city publication, two passes) to demonstrate content + commerce together.',
+    'An accessibility-first portal for a city or public agency: a clear welcome band, a task-first services directory, a state-aware public-notices and alerts channel, a live news feed, and a light civic shop, in a white-ground deep-federal-blue theme tuned for AAA contrast. Modelled on the government/public-service archetype; shipped as the City of Rivermark. Ships a light shop (a city publication, two passes) to demonstrate content + commerce together.',
   tagline: 'An accessibility-first template for a city, agency, or public institution.',
   vertical: 'content',
   industry: 'City & public services',
@@ -816,14 +816,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: false },
   seo: {
     home: {
-      title: 'City of Rivermark — services, news, and notices',
+      title: 'City of Rivermark: services, news, and notices',
       description:
-        'The official portal for the City of Rivermark: pay a bill, apply for a permit, find a meeting, report an issue, and read city news and public notices — all in one place.',
+        'The official portal for the City of Rivermark: pay a bill, apply for a permit, find a meeting, report an issue, and read city news and public notices. All in one place.',
     },
     about: {
       title: 'About the City of Rivermark',
       description:
-        'Who the City of Rivermark serves and how this portal is organized — plain-language, accessibility-first city government built around the tasks residents actually do.',
+        'Who the City of Rivermark serves and how this portal is organized: plain-language, accessibility-first city government built around the tasks residents actually do.',
     },
   },
   home: HOME,

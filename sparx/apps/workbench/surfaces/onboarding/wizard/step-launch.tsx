@@ -109,13 +109,13 @@ export function StepLaunch({
                 ) : (
                   'Your site is installed as a private draft. '
                 )}
-                Publishing makes it live at <span className="font-medium">{host}</span> — nothing
+                Publishing makes it live at <span className="font-medium">{host}</span>. Nothing
                 locks, so keep editing in the Builder anytime.
               </>
             ) : builderEnabled ? (
               <>
                 You are starting from a blank canvas. Finish setup to open the Builder and design
-                your site — publish whenever you are ready.
+                your site. Publish whenever you are ready.
               </>
             ) : (
               <>Everything is set up and ready to use. Finish setup to head into your workspace.</>
@@ -163,7 +163,7 @@ export function StepLaunch({
             </p>
           </div>
           <p className="mt-2 text-sm">
-            We register it and point it at your site automatically — no DNS to set up. Not ready? Go
+            We register it and point it at your site automatically: no DNS to set up. Not ready? Go
             back a step and switch to your free address; you will not be charged.
           </p>
         </div>
@@ -181,7 +181,7 @@ export function StepLaunch({
           <Text className="mx-auto mt-2 max-w-prose text-sm">
             That is <span className="font-medium">${usd(annualSavings)}</span> a year. {moduleCount}{' '}
             best-in-class {moduleCount === 1 ? 'tool' : 'tools'} on one platform, one login, one
-            invoice — for ${usd(monthlyTotal)}/mo after your free trial.
+            invoice, for ${usd(monthlyTotal)}/mo after your free trial.
           </Text>
         </div>
       ) : null}
@@ -190,23 +190,23 @@ export function StepLaunch({
         <ValuePoint
           icon={<Boxes className="text-module size-4" aria-hidden />}
           title="One platform, not a patched-together stack"
-          body="Your site, content, customers, and email run on one database — nothing to integrate, sync, or keep in step."
+          body="Your site, content, customers, and email run on one database. Nothing to integrate, sync, or keep in step."
         />
         <ValuePoint
           icon={<Receipt className="text-module size-4" aria-hidden />}
           title="One login, one invoice"
-          body="Flat per-module pricing — no per-seat fees, no cut of every order, no surprise overages. Turn modules on and off anytime."
+          body="Flat per-module pricing: no per-seat fees, no cut of every order, no surprise overages. Turn modules on and off anytime."
         />
         <ValuePoint
           icon={<TrendingUp className="text-module size-4" aria-hidden />}
           title="Built to grow with you"
-          body="From your first sale to enterprise volume on the same platform — and an AI-native API so it can all be run in plain English."
+          body="From your first sale to enterprise volume on the same platform, and an AI-native API so it can all be run in plain English."
         />
       </div>
 
       {facts.length > 0 ? (
         <Text className="text-center text-sm">
-          {facts.join(' · ')} — installed and ready to edit.
+          {facts.join(' · ')}, installed and ready to edit.
         </Text>
       ) : null}
     </div>
@@ -236,7 +236,7 @@ function LaunchSuccess({ slug, host }: { slug: string; host: string }) {
       <h2 className="text-2xl font-semibold tracking-tight">You are live</h2>
       <Text className="max-w-prose">
         Your site is published and ready for the world. It is live at{' '}
-        <span className="font-medium">{host}</span> — opening your workspace now.
+        <span className="font-medium">{host}</span>, opening your workspace now.
       </Text>
       <Button
         color="module"

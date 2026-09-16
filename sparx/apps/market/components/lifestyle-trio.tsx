@@ -49,7 +49,7 @@ export function LifestyleTrio() {
       <Container className="py-14 md:py-20">
         <SectionHeading
           title="Find your corner of the marketplace"
-          sub="Ways in for however you like to shop — from the workshop to the pantry."
+          sub="Ways in for however you like to shop: from the workshop to the pantry."
         />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {LIFESTYLE_EDITS.map((edit, i) => (

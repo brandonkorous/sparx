@@ -73,11 +73,11 @@ function sampleListItem(i: number): PublicProductListItem {
 
 export const SAMPLE_PRODUCT: PublicProduct = {
   id: 'sample-product',
-  title: 'Sample Product — Stoneware Pour-Over Dripper',
+  title: 'Sample Product: Stoneware Pour-Over Dripper',
   handle: 'sample-product',
   description:
-    'This is sample product copy. Use it to design your product page layout — the sections, ' +
-    'their order, and how everything looks — before you have real products. Every published ' +
+    'This is sample product copy. Use it to design your product page layout: the sections, ' +
+    'their order, and how everything looks: before you have real products. Every published ' +
     'product renders through this same layout.',
   vendor: 'sparx Sample Co.',
   productType: 'Coffee & Tea',
@@ -172,7 +172,7 @@ export const SAMPLE_PRODUCT: PublicProduct = {
   attributes: {
     materials:
       'High-fired stoneware with a food-safe reactive glaze; a cork base ring so it sits quiet on the counter.',
-    dimensions: 'Ø 12 cm × H 9.5 cm — brews one to four cups.',
+    dimensions: 'Ø 12 cm × H 9.5 cm: brews one to four cups.',
     care: 'Dishwasher-safe; hand-wash to keep the glaze bright. Let it come to room temperature before brewing to avoid thermal shock.',
     origin: 'Portugal',
   },
@@ -189,7 +189,7 @@ export const SAMPLE_PRODUCT: PublicProduct = {
       key: 'dimensions',
       label: 'Dimensions',
       kind: 'text',
-      value: 'Ø 12 cm × H 9.5 cm — brews one to four cups.',
+      value: 'Ø 12 cm × H 9.5 cm: brews one to four cups.',
       items: [],
     },
     {
@@ -232,7 +232,7 @@ export const SAMPLE_PRODUCT_EXTRAS: {
         author: 'Alex P.',
         verifiedPurchase: true,
         helpfulCount: 4,
-        response: 'Thanks Alex — glad it worked out! Let us know if you need anything else.',
+        response: 'Thanks Alex: glad it worked out! Let us know if you need anything else.',
         respondedAt: SAMPLE_AT,
         createdAt: SAMPLE_AT,
       },
@@ -260,7 +260,7 @@ export const SAMPLE_PRODUCT_EXTRAS: {
       answers: [
         {
           id: 'sample-a-1',
-          body: 'Yes — it fits the Everyday two-cup and four-cup sizes. The Matte White finish is our most popular.',
+          body: 'Yes. It fits the Everyday two-cup and four-cup sizes. The Matte White finish is our most popular.',
           isOfficial: true,
           createdAt: SAMPLE_AT,
         },
@@ -292,8 +292,8 @@ export const SAMPLE_COLLECTION: PublicCollection = {
   name: 'Sample Collection',
   handle: 'sample-collection',
   description:
-    'A sample collection so you can design your collection page layout — the header and the ' +
-    'product grid — before you have real collections.',
+    'A sample collection so you can design your collection page layout: the header and the ' +
+    'product grid: before you have real collections.',
   heroMediaId: null,
   featured: true,
   seoTitle: null,

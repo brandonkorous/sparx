@@ -225,7 +225,7 @@ const SCHEDULING = {
       handle: 'swedish-90',
       name: 'Swedish relaxation · 90 min',
       description:
-        'The full unhurried hour and a half — nowhere to be, nothing to do, every knot given the time it needs to let go.',
+        'The full unhurried hour and a half. Nowhere to be, nothing to do, every knot given the time it needs to let go.',
       durationMinutes: 90,
       priceCents: 15500,
       bufferAfterMin: 10,
@@ -255,7 +255,7 @@ const SCHEDULING = {
       handle: 'aromatherapy',
       name: 'Aromatherapy massage · 75 min',
       description:
-        'You choose the blend — calm, restore or breathe — and we work it in with slow, grounding pressure. You’ll carry the quiet home with you.',
+        'You choose the blend (calm, restore or breathe) and we work it in with slow, grounding pressure. You’ll carry the quiet home with you.',
       durationMinutes: 75,
       priceCents: 14000,
       bufferAfterMin: 10,
@@ -299,7 +299,7 @@ const SCHEDULING = {
       handle: 'couples-retreat',
       name: 'Couples massage · 90 min',
       description:
-        'Two therapists, one candlelit suite, side by side. Arrive together, breathe out together — the most-gifted hour on the menu.',
+        'Two therapists, one candlelit suite, side by side. Arrive together, breathe out together: the most-gifted hour on the menu.',
       durationMinutes: 90,
       priceCents: 32000,
       bufferAfterMin: 20,
@@ -319,7 +319,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A dim, candlelit treatment room with warm towels and soft light',
     title: 'An hour that dissolves',
-    sub: 'Stillwater is a quiet massage retreat built for one thing — letting you put everything down. Warm light, soft hands, and nowhere else to be.',
+    sub: 'Stillwater is a quiet massage retreat built for one thing: letting you put everything down. Warm light, soft hands, and nowhere else to be.',
     primary: { label: 'Book your escape', href: '/book' },
     secondary: { label: 'See the menu', href: '/book' },
     overlay: 'soft',
@@ -336,7 +336,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'The menu',
-    intro: 'A short, considered list — nothing rushed, nothing clinical. Live availability and full prices are on the booking page.',
+    intro: 'A short, considered list. Nothing rushed, nothing clinical. Live availability and full prices are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -352,7 +352,7 @@ const HOME = [
     items: [
       {
         title: 'Quiet, low-lit rooms',
-        body: 'Sound-softened, candle-warm and yours alone. The phone stays in the locker — the hour belongs to you.',
+        body: 'Sound-softened, candle-warm and yours alone. The phone stays in the locker: the hour belongs to you.',
       },
       {
         title: 'Warm towels, warm oil',
@@ -380,7 +380,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Give yourself the hour',
-    sub: 'Choose a treatment, pick your therapist and room, and see live times. It takes about a minute — the rest is rest.',
+    sub: 'Choose a treatment, pick your therapist and room, and see live times. It takes about a minute: the rest is rest.',
     cta: { label: 'Book online', href: '/book' },
   }),
 ];
@@ -403,7 +403,7 @@ const ABOUT = [
     alt: 'A quiet lounge with low light, plants and a pot of tea',
     heading: 'About Stillwater',
     body: [
-      'We opened Stillwater because rest had started to feel like something you had to earn. We wanted a room where you didn’t — where the light was already low, the towels already warm, and no one was watching the clock but us.',
+      'We opened Stillwater because rest had started to feel like something you had to earn. We wanted a room where you didn’t: where the light was already low, the towels already warm, and no one was watching the clock but us.',
       'It’s a small retreat on purpose. A handful of rooms, a few therapists who’ve worked together for years, and a pace that never speeds up. Come as you are, tired as you are. That’s exactly who this is for.',
     ],
     cta: { label: 'Book a room', href: '/book' },
@@ -413,8 +413,8 @@ const ABOUT = [
     heading: 'How we hold the space',
     items: [
       { title: 'One guest at a time', body: 'Your room, your hour, your quiet. We never double-book a therapist or hurry the changeover between guests.' },
-      { title: 'Gentle, plant-based care', body: 'Warm oils and essential blends we’d use ourselves — nothing harsh, nothing you’ll smell all day unless you want to.' },
-      { title: 'You set the pressure', body: 'Deep or feather-light, chatty or silent — you tell us at the start, and we follow it the whole way through.' },
+      { title: 'Gentle, plant-based care', body: 'Warm oils and essential blends we’d use ourselves. Nothing harsh, nothing you’ll smell all day unless you want to.' },
+      { title: 'You set the pressure', body: 'Deep or feather-light, chatty or silent. You tell us at the start, and we follow it the whole way through.' },
     ],
   }),
 ];
@@ -432,7 +432,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your room online — no phone tag, no waiting on hold.',
+    sub: 'See live availability and reserve your room online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -443,8 +443,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-massage-sanctuary',
   name: 'Massage (Sanctuary)',
   summary:
-    'A serene relaxation-massage retreat site — warm sand and oat grounds, a soft sage-green primary, a clay accent and a serif display, with dim, candlelit photography carrying the page. Installs a working booking flow: a calm treatment menu (Swedish, warm stone, aromatherapy, the signature Stillwater ritual, couples), three therapists and three rooms (incl. a couples suite) you book by name, and a deposit policy on longer rituals. Ships as "Stillwater".',
-  tagline: 'A warm, serene template for massage & wellness — book online from day one.',
+    'A serene relaxation-massage retreat site: warm sand and oat grounds, a soft sage-green primary, a clay accent and a serif display, with dim, candlelit photography carrying the page. Installs a working booking flow: a calm treatment menu (Swedish, warm stone, aromatherapy, the signature Stillwater ritual, couples), three therapists and three rooms (incl. a couples suite) you book by name, and a deposit policy on longer rituals. Ships as "Stillwater".',
+  tagline: 'A warm, serene template for massage & wellness. Book online from day one.',
   industry: 'Massage therapy',
   sortWeight: 83,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -453,7 +453,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Stillwater — a serene massage retreat',
+      title: 'Stillwater: a serene massage retreat',
       description:
         'Stillwater is a quiet massage retreat for Swedish, warm stone and aromatherapy massage, a signature two-hour ritual and couples rooms. Book your therapist online.',
     },

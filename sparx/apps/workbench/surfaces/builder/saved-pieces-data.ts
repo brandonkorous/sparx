@@ -196,7 +196,7 @@ export function usageState(total: number): { label: string; tone: Tone; detail: 
       label: 'Not used yet',
       tone: 'neutral',
       detail:
-        'This piece is saved but not on any page yet. Open it in the editor and drop it onto a page — then it appears wherever you place it, and any change you make here reaches all of them.',
+        'This piece is saved but not on any page yet. Open it in the editor and drop it onto a page. Then it appears wherever you place it, and any change you make here reaches all of them.',
     };
   }
   return {
@@ -204,8 +204,8 @@ export function usageState(total: number): { label: string; tone: Tone; detail: 
     tone: 'info',
     detail:
       total === 1
-        ? 'This piece appears in 1 place. Anything you change here — its name, or its design in the editor — updates that place too.'
-        : `This piece appears in ${String(total)} places. Anything you change here — its name, or its design in the editor — updates every one of them at once.`,
+        ? 'This piece appears in 1 place. Anything you change here (its name, or its design in the editor) updates that place too.'
+        : `This piece appears in ${String(total)} places. Anything you change here (its name, or its design in the editor) updates every one of them at once.`,
   };
 }
 
@@ -223,7 +223,7 @@ export function groupMeta(group: PieceGroup): GroupMeta {
     case 'layout':
       return {
         label: 'Layout & structure',
-        description: 'Pieces that arrange a page — banners, section blocks, headers and footers.',
+        description: 'Pieces that arrange a page: banners, section blocks, headers and footers.',
       };
     case 'data':
       return {

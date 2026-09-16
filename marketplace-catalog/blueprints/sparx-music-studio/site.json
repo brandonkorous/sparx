@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Amp Room — contemporary music lessons",
-      "seoDescription": "Amp Room is a modern music-lessons studio for guitar, vocals, bass, production and songwriting — teens and adults, beginners to gigging players. Book a free trial lesson online.",
+      "seoTitle": "Amp Room: contemporary music lessons",
+      "seoDescription": "Amp Room is a modern music-lessons studio for guitar, vocals, bass, production and songwriting: teens and adults, beginners to gigging players. Book a free trial lesson online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A modern lessons studio for guitar, vocals, bass, production and songwriting — for teens and adults who want to actually make music, not just practise scales. Start with a trial."
+                      "A modern lessons studio for guitar, vocals, bass, production and songwriting, for teens and adults who want to actually make music, not just practise scales. Start with a trial."
                     ],
                     "id": "51c4ec9a-9c77-45f9-a52b-4dc43d4a08be",
                     "ord": "a1"
@@ -664,7 +664,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You learn from people who gig, record and release — not from a textbook. Real players who’ve done the thing you’re trying to do."
+                              "You learn from people who gig, record and release, not from a textbook. Real players who’ve done the thing you’re trying to do."
                             ],
                             "id": "b99edac9-2c8c-437f-a2ba-26636cd1b5b9",
                             "ord": "a1"
@@ -745,7 +745,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Book the room or link up from home — same instructor, same plan. Lessons flex around school, work and everything else."
+                              "Book the room or link up from home: same instructor, same plan. Lessons flex around school, work and everything else."
                             ],
                             "id": "2bc3b960-c08a-4d14-9fa2-0d03fd60c289",
                             "ord": "a1"
@@ -853,7 +853,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Any instrument — meet a teacher and play. Free."],
+                            "children": ["Any instrument: meet a teacher and play. Free."],
                             "id": "928377e6-ab17-473f-84dc-ea69c8e01429",
                             "ord": "a2"
                           }
@@ -1198,7 +1198,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Amp Room is a proper space — a live room stacked with amps for playing loud, and a full production suite with a mixing desk, studio monitors and a vocal booth for making records."
+                          "Amp Room is a proper space: a live room stacked with amps for playing loud, and a full production suite with a mixing desk, studio monitors and a vocal booth for making records."
                         ],
                         "id": "cdd77ce7-433b-4c16-a22d-db48b5c7a013",
                         "ord": "a1"
@@ -1273,7 +1273,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — the same person every week, someone who plays the music you want to make."
+                          "Book by name: the same person every week, someone who plays the music you want to make."
                         ],
                         "id": "4d8ba16c-4576-4831-aafc-b84ec46e4b27",
                         "ord": "a1"
@@ -1526,7 +1526,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Pick an instrument, choose a time, meet your instructor. The trial’s on us — see where it goes."
+                      "Pick an instrument, choose a time, meet your instructor. The trial’s on us: see where it goes."
                     ],
                     "id": "51636555-2feb-4b2c-ba6c-afc28c370321",
                     "ord": "a1"
@@ -1557,7 +1557,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Amp Room",
+      "seoTitle": "Book: Amp Room",
       "seoDescription": "See what Amp Room offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1681,7 +1681,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "80d85b92-147b-49ef-b611-ca64d61bb893",
                         "ord": "a1"
@@ -1713,7 +1713,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Life happens — just give us 24 hours to reschedule and we’ll move your slot, no charge. We send a reminder the day before and two hours ahead so it never sneaks up on you."
+                              "Life happens. Just give us 24 hours to reschedule and we’ll move your slot, no charge. We send a reminder the day before and two hours ahead so it never sneaks up on you."
                             ],
                             "id": "c727ffe0-1970-4eae-9ee3-93bc33493db5",
                             "ord": "a1"
@@ -1750,7 +1750,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Production and hour-long sessions hold both an instructor and a room, so we ask for 24 hours’ notice to move them. No deposit — but two no-shows and we’ll ask you to call to rebook so the room stays open for everyone."
+                              "Production and hour-long sessions hold both an instructor and a room, so we ask for 24 hours’ notice to move them. No deposit, but two no-shows and we’ll ask you to call to rebook so the room stays open for everyone."
                             ],
                             "id": "1ab90abd-346b-44c1-991d-09ca9dee2611",
                             "ord": "a1"
@@ -1788,7 +1788,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Amp Room",
+      "seoTitle": "About: Amp Room",
       "seoDescription": "Who Amp Room is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1837,7 +1837,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Amp Room because the way most people are taught music is backwards — years of scales before you’re allowed to play anything you like. So we flipped it: you play real songs from lesson one, and the technique comes with them."
+                          "We started Amp Room because the way most people are taught music is backwards: years of scales before you’re allowed to play anything you like. So we flipped it: you play real songs from lesson one, and the technique comes with them."
                         ],
                         "id": "ca5addbb-213f-428f-a3c5-b7734bde1b96",
                         "ord": "a1"
@@ -1847,7 +1847,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It’s a contemporary studio for guitar, vocals, bass, production and songwriting — teens and adults, total beginners and returning players. Real gear, working-musician teachers, and a room that makes you want to keep showing up."
+                          "It’s a contemporary studio for guitar, vocals, bass, production and songwriting: teens and adults, total beginners and returning players. Real gear, working-musician teachers, and a room that makes you want to keep showing up."
                         ],
                         "id": "525e4377-476d-4597-85e4-f579a8f2009a",
                         "ord": "a2"
@@ -2007,7 +2007,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Amp Room",
+      "seoTitle": "Visit: Amp Room",
       "seoDescription": "Where to find Amp Room, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2044,7 +2044,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Amp Room will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Amp Room will get back to you, usually the same day."
                         ],
                         "id": "b0774d8c-10c3-49d7-a90b-a002c60fdaa5",
                         "ord": "a1"
@@ -2494,7 +2494,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book your free trial online and see live times — pick an instrument, pick a slot, we’ll take it from there."
+                      "Book your free trial online and see live times. Pick an instrument, pick a slot, we’ll take it from there."
                     ],
                     "id": "1bd8dbe4-3fea-4bb8-a6e8-42215dc72d34",
                     "ord": "a1"

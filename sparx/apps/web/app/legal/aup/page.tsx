@@ -3,7 +3,7 @@ import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
 import { LegalDoc, LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Acceptable use policy — sparx',
+  title: 'Acceptable use policy: sparx',
   description: 'The conduct and content rules that apply to everyone who uses sparx.',
   alternates: { canonical: '/legal/aup' },
 };
@@ -84,11 +84,11 @@ export default function AupPage() {
         </LegalP>
         <LegalList
           items={[
-            'Text only people who gave you express consent to be texted, at the number they gave you, for the kind of message you are sending. Consent to marketing texts must be its own, separate opt-in — never bundled into another agreement or a condition of purchase.',
+            'Text only people who gave you express consent to be texted, at the number they gave you, for the kind of message you are sending. Consent to marketing texts must be its own, separate opt-in, never bundled into another agreement or a condition of purchase.',
             'Keep proof of that consent. If a complaint arrives, the burden of showing consent is yours, not ours.',
             'Honor STOP, UNSUBSCRIBE, and every ordinary way a person says stop, immediately and permanently.',
             'Identify your business in the message, and respect quiet hours and the other timing rules that apply where the recipient is.',
-            'Do not send marketing texts to a number solely because it appeared on an order or a booking. A transactional relationship is a basis for transactional messages — a confirmation, a reminder — not for promotions.',
+            'Do not send marketing texts to a number solely because it appeared on an order or a booking. A transactional relationship is a basis for transactional messages (a confirmation, a reminder) not for promotions.',
           ]}
         />
       </LegalSection>
@@ -105,7 +105,7 @@ export default function AupPage() {
             'Connect only accounts you own or are authorized to manage, and comply with each platform’s terms and community standards for everything you publish through sparx.',
             'No artificial engagement, follower or like buying, mass unsolicited messaging, or automated behavior a platform prohibits.',
             'Do not misrepresent who is posting, and disclose paid or sponsored content where the platform or the law requires it.',
-            'Comments, reviews, and messages that arrive in your inbox are other people’s personal data. Use them to run your business — reply, resolve, moderate — not to build a marketing list, and delete them on request or when a platform requires it.',
+            'Comments, reviews, and messages that arrive in your inbox are other people’s personal data. Use them to run your business (reply, resolve, moderate) not to build a marketing list, and delete them on request or when a platform requires it.',
           ]}
         />
         <LegalP>
@@ -127,7 +127,7 @@ export default function AupPage() {
       <LegalSection heading="8. Enforcement">
         <LegalP>
           We may investigate suspected violations and may remove content, throttle or suspend
-          functionality, or terminate accounts that violate this policy — with notice where
+          functionality, or terminate accounts that violate this policy, with notice where
           practical, and immediately where there is risk of harm, legal exposure, or abuse. We
           cooperate with lawful requests from authorities.
         </LegalP>

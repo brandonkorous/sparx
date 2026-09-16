@@ -32,7 +32,7 @@ export const listServicesTool: McpToolDefinition = {
 export const getAvailabilityTool: McpToolDefinition = {
   name: 'get_scheduling_availability',
   description:
-    'Open booking slots for a service over a date range (ISO-8601 instants). Returns concrete start/end times the no-overlap engine will accept — only offer the customer times this returns.',
+    'Open booking slots for a service over a date range (ISO-8601 instants). Returns concrete start/end times the no-overlap engine will accept. Only offer the customer times this returns.',
   scope: 'read:scheduling',
   confirmation: false,
   input: z.object({
@@ -68,7 +68,7 @@ export const listBookingsTool: McpToolDefinition = {
 export const getBookingTool: McpToolDefinition = {
   name: 'get_booking',
   description:
-    'Fetch one booking by id with its service, assigned resources, and attendees — the full record for review before a reschedule or cancellation.',
+    'Fetch one booking by id with its service, assigned resources, and attendees: the full record for review before a reschedule or cancellation.',
   scope: 'read:scheduling',
   confirmation: false,
   input: z.object({ bookingId: z.string().uuid() }),
@@ -84,7 +84,7 @@ export const getBookingTool: McpToolDefinition = {
 export const listResourcesTool: McpToolDefinition = {
   name: 'list_scheduling_resources',
   description:
-    "List the tenant's bookable resources — the staff, rooms, tables, or equipment a booking consumes. A service offers no times unless at least one ACTIVE, online-bookable resource of the kind it needs has weekly hours, so start here when availability comes back empty.",
+    "List the tenant's bookable resources: the staff, rooms, tables, or equipment a booking consumes. A service offers no times unless at least one ACTIVE, online-bookable resource of the kind it needs has weekly hours, so start here when availability comes back empty.",
   scope: 'read:scheduling',
   confirmation: false,
   input: z.object({
@@ -109,7 +109,7 @@ export const listResourcesTool: McpToolDefinition = {
 export const listResourceHoursTool: McpToolDefinition = {
   name: 'list_resource_hours',
   description:
-    "A resource's recurring weekly hours — the days and local times it is open for bookings. An empty list means the resource can never be booked, however many services point at it.",
+    "A resource's recurring weekly hours: the days and local times it is open for bookings. An empty list means the resource can never be booked, however many services point at it.",
   scope: 'read:scheduling',
   confirmation: false,
   input: z.object({ resourceId: z.string().uuid() }),
@@ -120,7 +120,7 @@ export const listResourceHoursTool: McpToolDefinition = {
 export const listLocationsTool: McpToolDefinition = {
   name: 'list_scheduling_locations',
   description:
-    "List the tenant's business locations — the physical places customers are served from. Resources, services and bookings each reference one, so this is where to find a `locationId`. A location with no site links serves every site the tenant runs.",
+    "List the tenant's business locations: the physical places customers are served from. Resources, services and bookings each reference one, so this is where to find a `locationId`. A location with no site links serves every site the tenant runs.",
   scope: 'read:scheduling',
   confirmation: false,
   input: z.object({ activeOnly: z.boolean().optional() }),

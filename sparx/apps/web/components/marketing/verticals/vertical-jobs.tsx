@@ -37,7 +37,7 @@ export function VerticalJobs({ vertical }: { vertical: Vertical }) {
             <span className="text-primary">.</span>
           </Heading>
           <Text variant="lead" className="text-xl">
-            Not a tour of everything the platform can do — the six jobs that decide whether the week
+            Not a tour of everything the platform can do: the six jobs that decide whether the week
             runs smoothly, and the part of sparx that does each one.
           </Text>
         </div>

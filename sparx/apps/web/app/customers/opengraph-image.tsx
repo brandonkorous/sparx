@@ -7,13 +7,13 @@ import { renderStoryOg } from '@/lib/og-story';
 // story-card system (lib/og-story.tsx), a different vertical.
 
 export const runtime = 'nodejs';
-export const alt = 'sparx — Your story, multiplied. Every kind of operator, one platform.';
+export const alt = 'sparx. Your story, multiplied. Every kind of operator, one platform.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 const DISTRIBUTOR = STORY_EXAMPLES.find((e) => e.label === 'a distributor');
 if (!DISTRIBUTOR)
-  throw new Error('STORY_EXAMPLES is missing the distributor — the /customers OG card needs it.');
+  throw new Error('STORY_EXAMPLES is missing the distributor: the /customers OG card needs it.');
 const DISTRIBUTOR_STORY = DISTRIBUTOR.story;
 
 export default function Image() {

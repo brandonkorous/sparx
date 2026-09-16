@@ -48,7 +48,7 @@ const v = LEGAL.versions.dpa;
 export const metadata: Metadata = {
   title: 'Data processing addendum',
   description:
-    'How WizeWorks handles the personal data you put into Piggles on your own customers’ behalf — roles, security, sub-processors, deletion, and what happens if something goes wrong.',
+    'How WizeWorks handles the personal data you put into Piggles on your own customers’ behalf: roles, security, sub-processors, deletion, and what happens if something goes wrong.',
 };
 
 const ENTITY = 'WizeWorks LLC';
@@ -63,8 +63,8 @@ const CLAUSES: Clause[] = [
     heading: '1. Who is who',
     paras: [
       `For the information you put into Piggles about your own customers, you are the CONTROLLER and ${ENTITY} is the PROCESSOR. In plain terms: you decide what is collected and why, and we only handle it to run the software for you.`,
-      'We act on your instructions. Your instructions are this addendum, the terms, and the choices you make in the software — switching on an app, connecting an outside service, sending a mailout, deleting a record.',
-      'For your OWN account details — your name, your email, what you pay us — we are the controller, because that relationship is between you and us. Those are covered by the privacy page rather than by this addendum.',
+      'We act on your instructions. Your instructions are this addendum, the terms, and the choices you make in the software: switching on an app, connecting an outside service, sending a mailout, deleting a record.',
+      'For your OWN account details (your name, your email, what you pay us) we are the controller, because that relationship is between you and us. Those are covered by the privacy page rather than by this addendum.',
     ],
   },
   {
@@ -73,14 +73,14 @@ const CLAUSES: Clause[] = [
       'The subject matter is running your business in Piggles: storing your customers and orders, taking bookings, sending the messages you send, publishing the site you build, and showing all of it back to you.',
       'It lasts as long as your subscription, plus the short wind-down window described in §8.',
       'Whose data: your customers, your leads, the people who book with you, the people who fill in your forms, and anyone who contacts you through something you have connected.',
-      'What data: names, contact details, addresses, order and booking history, messages and notes you record, and whatever else you choose to put in a field. Piggles does not require you to collect anything in particular — which means you control how much of this there is.',
+      'What data: names, contact details, addresses, order and booking history, messages and notes you record, and whatever else you choose to put in a field. Piggles does not require you to collect anything in particular, which means you control how much of this there is.',
     ],
   },
   {
     heading: '3. What we will not do with it',
     paras: [
       'We do not sell it. We do not share it with data brokers or advertisers. There is no arrangement under which it leaves us for money.',
-      'We do not train AI on it — not a model of ours, not a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, so it goes where you agreed and nowhere else.',
+      'We do not train AI on it, not a model of ours, not a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, so it goes where you agreed and nowhere else.',
       'We do not use it to build anything, and we do not look at it except where you ask us to help with a support request, or where we have to in order to keep the service running or to comply with the law.',
     ],
   },
@@ -94,8 +94,8 @@ const CLAUSES: Clause[] = [
   {
     heading: '5. How it is kept safe',
     paras: [
-      'Every business’ information is isolated at the database level, not merely filtered by the application — the separation is enforced underneath the software, so a bug in a screen cannot reach across it.',
-      'It is encrypted in transit and at rest. Passwords are stored so that they cannot be read back, including by us. Card numbers never reach us at all — they go straight to the payment provider and come back as a token.',
+      'Every business’ information is isolated at the database level, not merely filtered by the application: the separation is enforced underneath the software, so a bug in a screen cannot reach across it.',
+      'It is encrypted in transit and at rest. Passwords are stored so that they cannot be read back, including by us. Card numbers never reach us at all. They go straight to the payment provider and come back as a token.',
       'Signing in is per person, with a second factor available. Backups run continuously.',
       'These measures can change as the technology does. They will not get weaker: anything that materially reduces protection is a change we would tell you about under §7.',
     ],
@@ -103,7 +103,7 @@ const CLAUSES: Clause[] = [
   {
     heading: '6. If something goes wrong',
     paras: [
-      'If personal data you are responsible for is exposed, lost or accessed by somebody who should not have it, we will tell you WITHOUT UNDUE DELAY once we know — and in any case within 72 hours of becoming aware.',
+      'If personal data you are responsible for is exposed, lost or accessed by somebody who should not have it, we will tell you WITHOUT UNDUE DELAY once we know, and in any case within 72 hours of becoming aware.',
       'We will tell you what happened, what information was involved, what we have done about it, and what we suggest you do. We will keep telling you as we learn more rather than waiting until we have the whole picture.',
       'The law usually puts the duty to notify a regulator or your own customers on YOU, as the controller. We will give you what you need to do that, promptly, and we will not make you chase it.',
     ],
@@ -111,7 +111,7 @@ const CLAUSES: Clause[] = [
   {
     heading: '7. The other companies involved',
     paras: [
-      'Running Piggles means some information reaches other companies — the people who host the servers, send the email, take the payments, and whatever you choose to connect yourself. Every one of them is named on the privacy page, in two groups: the ones always involved, and the ones that exist only because you switched them on.',
+      'Running Piggles means some information reaches other companies: the people who host the servers, send the email, take the payments, and whatever you choose to connect yourself. Every one of them is named on the privacy page, in two groups: the ones always involved, and the ones that exist only because you switched them on.',
       'You authorise the ones in the first group by agreeing to this addendum. The second group you authorise by connecting them, and you can disconnect any of them at any time.',
       'If we add or change a company in the first group, we will tell you before it starts and you have the right to object. Each one is bound by terms at least as protective as this addendum, and we stay responsible to you for what they do with your information.',
     ],
@@ -135,21 +135,21 @@ const CLAUSES: Clause[] = [
     heading: '10. Checking that we do what we say',
     paras: [
       'You can ask us for the information you need to satisfy yourself that this addendum is being kept, and we will provide it.',
-      'If that is genuinely not enough for your regulator, we will agree an audit — at a reasonable frequency, with reasonable notice, without disrupting other customers, and covering only what relates to your own information.',
+      'If that is genuinely not enough for your regulator, we will agree an audit: at a reasonable frequency, with reasonable notice, without disrupting other customers, and covering only what relates to your own information.',
     ],
   },
   {
     heading: '11. Where in the world it is',
     paras: [
       `${ENTITY} is based in the United States, and Piggles runs on infrastructure that may be located outside the UK and the European Economic Area.`,
-      'Where information is transferred out of the UK or the EEA, that transfer relies on the appropriate safeguards recognised by law — currently the UK International Data Transfer Addendum and the European Commission’s Standard Contractual Clauses, which are incorporated into this addendum by reference and take precedence over anything here that conflicts with them.',
+      'Where information is transferred out of the UK or the EEA, that transfer relies on the appropriate safeguards recognized by law: currently the UK International Data Transfer Addendum and the European Commission’s Standard Contractual Clauses, which are incorporated into this addendum by reference and take precedence over anything here that conflicts with them.',
     ],
   },
   {
     heading: '12. How this fits with everything else',
     paras: [
       'This addendum forms part of the terms. Where it and the terms disagree about personal data, this addendum wins.',
-      'It applies automatically from the moment you use Piggles to handle anybody else’s personal data. There is nothing to sign and nothing to request — if you need a countersigned copy for your own records, ask and we will provide one.',
+      'It applies automatically from the moment you use Piggles to handle anybody else’s personal data. There is nothing to sign and nothing to request: if you need a countersigned copy for your own records, ask and we will provide one.',
       'If any part of it is found to be unenforceable, the rest still stands.',
     ],
   },
@@ -166,7 +166,7 @@ export default function DataProcessingPage() {
     <>
       <PageHero
         heading="Looking after other people’s information."
-        lede="Your customers’ details are yours, and we are handling them for you. This is the agreement that says exactly what that means — who decides what, how it is protected, who else is involved, and what happens if something goes wrong."
+        lede="Your customers’ details are yours, and we are handling them for you. This is the agreement that says exactly what that means, who decides what, how it is protected, who else is involved, and what happens if something goes wrong."
         figure={
           <DocumentFigure
             sections={`${CLAUSES.length} clauses`}

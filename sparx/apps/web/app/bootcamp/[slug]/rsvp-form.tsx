@@ -142,7 +142,7 @@ function Confirmation({ waitlisted }: { waitlisted: boolean }) {
       </span>
       <p className="text-md m-0 max-w-[320px]">
         {waitlisted
-          ? 'This bootcamp is full — we’ll let you know the moment a seat opens up.'
+          ? 'This bootcamp is full: we’ll let you know the moment a seat opens up.'
           : 'The hosting partner has your details and will be in touch with everything you need.'}
       </p>
     </div>

@@ -31,7 +31,7 @@ const ORDERS = [
 
 export function DataTile() {
   return (
-    <BoardTile title="Rows and numbers" hint="Orders, invoices and stock — where the day is spent.">
+    <BoardTile title="Rows and numbers" hint="Orders, invoices and stock: where the day is spent.">
       <Stats>
         <Stat>
           <StatTitle>This month</StatTitle>

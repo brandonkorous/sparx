@@ -43,7 +43,7 @@ export function PartnersEarningsBand() {
           </Heading>
           <Text variant="lead" className="max-w-3xl">
             Percentages are easy to publish and impossible to act on. Set it to the work you
-            actually do and the page will do the arithmetic — both halves of it, yours and your
+            actually do and the page will do the arithmetic. Both halves of it, yours and your
             client&rsquo;s.
           </Text>
         </div>

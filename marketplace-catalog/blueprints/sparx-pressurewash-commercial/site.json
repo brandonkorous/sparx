@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "ProWash Exterior Cleaning — commercial pressure washing",
-      "seoDescription": "ProWash Exterior Cleaning keeps commercial storefronts, buildings, lots and fleets sharp — insured, on schedule, minimal disruption. Book a free assessment online.",
+      "seoTitle": "ProWash Exterior Cleaning: commercial pressure washing",
+      "seoDescription": "ProWash Exterior Cleaning keeps commercial storefronts, buildings, lots and fleets sharp: insured, on schedule, minimal disruption. Book a free assessment online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -598,7 +598,7 @@
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
                     "children": [
-                      "Commercial exteriors, cleaned on schedule — without disrupting your business."
+                      "Commercial exteriors, cleaned on schedule, without disrupting your business."
                     ],
                     "id": "dc0fe6cc-8029-49c1-804d-f34acad8df6c",
                     "ord": "a0"
@@ -685,7 +685,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Licensed, insured and trained on water-reclamation and safe-access rules — with certificates of insurance sent to your office before we ever set up."
+                              "Licensed, insured and trained on water-reclamation and safe-access rules, with certificates of insurance sent to your office before we ever set up."
                             ],
                             "id": "dbd08daf-5c78-45b2-9197-4f9d9a8f5dc7",
                             "ord": "a1"
@@ -739,7 +739,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Glass facades, building exteriors, walkways, parking lots, garages and vehicle fleets — one crew and one point of contact for every exterior surface you own."
+                              "Glass facades, building exteriors, walkways, parking lots, garages and vehicle fleets. One crew and one point of contact for every exterior surface you own."
                             ],
                             "id": "de07c794-c3f2-4ae5-b05e-61a9a6bfd8b7",
                             "ord": "a1"
@@ -766,7 +766,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We work early mornings, evenings and weekends, cordon cleanly and keep your entrances and traffic flowing — your customers barely notice we were there."
+                              "We work early mornings, evenings and weekends, cordon cleanly and keep your entrances and traffic flowing. Your customers barely notice we were there."
                             ],
                             "id": "c4387b9a-b01c-4442-9904-aee66ac47c68",
                             "ord": "a1"
@@ -815,7 +815,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The assessments and consultations businesses book most. Full details and live availability are on the booking page — a lead comes to you."
+                          "The assessments and consultations businesses book most. Full details and live availability are on the booking page: a lead comes to you."
                         ],
                         "id": "f21b3a0a-599a-4720-af23-a46f9f21cdc6",
                         "ord": "a1"
@@ -930,7 +930,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Know what you need? A written, itemized quote — one-time or scheduled."
+                              "Know what you need? A written, itemized quote. One-time or scheduled."
                             ],
                             "id": "83c904c8-1307-4dc8-b585-9eb985583116",
                             "ord": "a2"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Grime, algae, gum and oil don’t take a season off — and chasing a different washer every time is how a property slips from sharp to shabby. A scheduled contract keeps it handled: we build a cadence around each surface and site, then simply show up."
+                          "Grime, algae, gum and oil don’t take a season off, and chasing a different washer every time is how a property slips from sharp to shabby. A scheduled contract keeps it handled: we build a cadence around each surface and site, then simply show up."
                         ],
                         "id": "245e5df1-b2c8-4877-ac8c-e8ccb1155780",
                         "ord": "a1"
@@ -1208,7 +1208,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A crew lead walks your property with you — checking the facade material, glass, walkways, drains and lot — and flags what needs attention, what method it calls for, and how often it should be done to stay ahead of buildup."
+                          "A crew lead walks your property with you (checking the facade material, glass, walkways, drains and lot) and flags what needs attention, what method it calls for, and how often it should be done to stay ahead of buildup."
                         ],
                         "id": "54ffd3db-1ed9-44f8-b32c-89b2c315c341",
                         "ord": "a1"
@@ -1218,7 +1218,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "You get a clear, written scope: the surfaces, the approach, the access and timing, and a price you can put in a budget. No jargon and no pressure — just a plan and honest numbers. The assessment is always free."
+                          "You get a clear, written scope: the surfaces, the approach, the access and timing, and a price you can put in a budget. No jargon and no pressure. Just a plan and honest numbers. The assessment is always free."
                         ],
                         "id": "101c3144-b624-440c-a0c7-8d8ed405f770",
                         "ord": "a2"
@@ -1263,7 +1263,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Real people, background-checked and trained — you’ll know who’s coming, what they specialize in, and when to expect them before they arrive."
+                          "Real people, background-checked and trained: you’ll know who’s coming, what they specialize in, and when to expect them before they arrive."
                         ],
                         "id": "50e423a9-ed97-45b3-8b6e-26c9adcfbb70",
                         "ord": "a1"
@@ -1320,7 +1320,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Facades, glass and retail fronts done clean and streak-free — Ray runs most on-site assessments."
+                                  "Facades, glass and retail fronts done clean and streak-free: Ray runs most on-site assessments."
                                 ],
                                 "id": "d49b5156-f8fa-4444-8819-84f7ea3491b2",
                                 "ord": "a2"
@@ -1432,7 +1432,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Recurring fleet routes and multi-site contracts — Devon keeps every location on cadence."
+                                  "Recurring fleet routes and multi-site contracts: Devon keeps every location on cadence."
                                 ],
                                 "id": "1d14fb5a-0d89-4aa3-815a-b44b215d8c6c",
                                 "ord": "a2"
@@ -1516,7 +1516,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a free on-site assessment or a quote and get a clear, honest scope for your storefronts, buildings, lots or fleet — with numbers you can budget around."
+                      "Book a free on-site assessment or a quote and get a clear, honest scope for your storefronts, buildings, lots or fleet, with numbers you can budget around."
                     ],
                     "id": "dafa9aa0-47de-4031-94cc-8b9450d1e465",
                     "ord": "a1"
@@ -1547,7 +1547,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — ProWash Exterior Cleaning",
+      "seoTitle": "Book: ProWash Exterior Cleaning",
       "seoDescription": "See what ProWash Exterior Cleaning offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1598,7 +1598,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose an assessment or consultation to see what it covers, how long it takes and live availability — then pick your crew lead and time."
+                      "Choose an assessment or consultation to see what it covers, how long it takes and live availability, then pick your crew lead and time."
                     ],
                     "id": "bcab97c2-3a1a-465b-9caa-f98c125ce779",
                     "ord": "a1"
@@ -1671,7 +1671,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "fce56c8b-0856-48f1-8451-0f50bbf826e9",
                         "ord": "a1"
@@ -1778,7 +1778,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — ProWash Exterior Cleaning",
+      "seoTitle": "About: ProWash Exterior Cleaning",
       "seoDescription": "Who ProWash Exterior Cleaning is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1827,7 +1827,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started ProWash because commercial properties deserve better than a washer who shows up once, leaves streaks, and never answers the phone again. A clean exterior is the first thing a customer sees — it should be handled by people who treat it like it matters."
+                          "We started ProWash because commercial properties deserve better than a washer who shows up once, leaves streaks, and never answers the phone again. A clean exterior is the first thing a customer sees. It should be handled by people who treat it like it matters."
                         ],
                         "id": "f0255999-c44b-4358-9fc9-db37887973a1",
                         "ord": "a1"
@@ -1915,7 +1915,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every scope starts with a real walk-through of your property — the right method for each surface, never a template quote guessed from the curb."
+                              "Every scope starts with a real walk-through of your property: the right method for each surface, never a template quote guessed from the curb."
                             ],
                             "id": "ddddd68f-8594-404b-a2df-4d3e5204f4e6",
                             "ord": "a1"
@@ -1969,7 +1969,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Recurring visits scheduled and reminded before each service — your property stays presentable without a single call from you."
+                              "Recurring visits scheduled and reminded before each service. Your property stays presentable without a single call from you."
                             ],
                             "id": "007940ca-d54c-496f-9403-421d600de8b8",
                             "ord": "a1"
@@ -1997,7 +1997,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — ProWash Exterior Cleaning",
+      "seoTitle": "Visit: ProWash Exterior Cleaning",
       "seoDescription": "Where to find ProWash Exterior Cleaning, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2034,7 +2034,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and ProWash Exterior Cleaning will get back to you — usually the same day."
+                          "Questions before you book? Send a note and ProWash Exterior Cleaning will get back to you, usually the same day."
                         ],
                         "id": "abd564ea-0cc5-4ce2-9677-988391a23925",
                         "ord": "a1"
@@ -2486,7 +2486,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a crew lead online — pick an assessment or consultation, a day and a time in about a minute."
+                      "See live availability and reserve a crew lead online. Pick an assessment or consultation, a day and a time in about a minute."
                     ],
                     "id": "8f65bb90-175a-4eb3-acc7-e275c9379d68",
                     "ord": "a1"

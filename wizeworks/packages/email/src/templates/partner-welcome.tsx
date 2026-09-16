@@ -35,7 +35,7 @@ export function PartnerWelcomeEmail({
   const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview={`You're approved — welcome to the ${platform} Partner Program`}
+      preview={`You're approved: welcome to the ${platform} Partner Program`}
       footerLinks={url ? [{ label: 'Partner guide', href: `${url}/partners` }] : []}
       footerReason={`You're receiving this because your ${platform} partner application was approved.`}
     >
@@ -43,7 +43,7 @@ export function PartnerWelcomeEmail({
         Welcome to the Partner Program{name ? `, ${name}` : ''}.
       </EmailDisplayHeading>
       <EmailLead>
-        You&apos;re officially a {platform} partner — your workspace is ready and there&apos;s money
+        You&apos;re officially a {platform} partner. Your workspace is ready and there&apos;s money
         to be made.
       </EmailLead>
       <EmailParagraph>Here&apos;s how to get going:</EmailParagraph>
@@ -53,7 +53,7 @@ export function PartnerWelcomeEmail({
           {
             title: needsPassword ? 'Set your password' : 'Sign in to your workspace',
             description: needsPassword
-              ? "We've sent a separate email with a link to set your password — do that first, then sign in."
+              ? "We've sent a separate email with a link to set your password: do that first, then sign in."
               : 'Switch to your new partner workspace from the account menu.',
           },
           {
@@ -75,4 +75,4 @@ export function PartnerWelcomeEmail({
 /** A function rather than a constant, because a constant cannot ask which brand
  *  approved them — `send.tsx` resolves the name once per send. */
 export const partnerWelcomeSubject = (platform: string): string =>
-  `You're approved — welcome to the ${platform} Partner Program`;
+  `You're approved: welcome to the ${platform} Partner Program`;

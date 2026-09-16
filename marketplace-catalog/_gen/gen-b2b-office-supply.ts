@@ -163,7 +163,7 @@ function hero(): Node {
                                     text: 'Everything the office runs on, one account, one invoice.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Worksmith is a workplace-supplies distributor. We stock the paper, ink, pens, furniture and breakroom lines every office burns through — sold by the box and the case, priced for the trade, and dispatched next day.',
+                                    text: 'Worksmith is a workplace-supplies distributor. We stock the paper, ink, pens, furniture and breakroom lines every office burns through: sold by the box and the case, priced for the trade, and dispatched next day.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -240,16 +240,16 @@ function tradeTermsBand(): Node {
                                 text: 'Built for the way offices buy',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Open a trade account and you order the way a business should — by the box and the case, at wholesale rates, on terms. One catalog for the whole office, no consumer markups, no runaround.',
+                                text: 'Open a trade account and you order the way a business should: by the box and the case, at wholesale rates, on terms. One catalog for the whole office, no consumer markups, no runaround.',
                             }),
                         ],
                     }),
                     el('div', 'grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6', {
                         children: [
-                            card('Trade pricing', 'Per-box wholesale rates with volume breaks that deepen as the order grows. Kit out one desk or forty — the more you buy, the less each box costs.'),
+                            card('Trade pricing', 'Per-box wholesale rates with volume breaks that deepen as the order grows. Kit out one desk or forty: the more you buy, the less each box costs.'),
                             card('Net-30 terms', 'Approved accounts order now and pay later on net-30, so a supply run never ties up the company card or waits on an expense report.'),
-                            card('Next-day delivery', 'In-stock lines ship the same or next business day and land on the desk, not a loading dock — so nobody is rationing the last ream by Thursday.'),
-                            card('Your account manager', 'A direct line to a real person who knows your office, your standing order and what you go through — not a ticket queue and a hold tone.'),
+                            card('Next-day delivery', 'In-stock lines ship the same or next business day and land on the desk, not a loading dock, so nobody is rationing the last ream by Thursday.'),
+                            card('Your account manager', 'A direct line to a real person who knows your office, your standing order and what you go through, not a ticket queue and a hold tone.'),
                         ],
                     }),
                     el('a', 'btn btn-primary btn-lg w-fit', { attrs: { href: '/contact' }, text: 'Open a trade account' }),
@@ -345,7 +345,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & terms' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'The price shown is the per-box list rate. Trade accounts unlock volume breaks — deeper per-box pricing by the case, the pallet, or a standing order — set for your account in your dashboard.',
+                                        text: 'The price shown is the per-box list rate. Trade accounts unlock volume breaks (deeper per-box pricing by the case, the pallet, or a standing order) set for your account in your dashboard.',
                                     }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
                                         text: 'Approved accounts buy on net-30. Not set up yet? Open a trade account and we will price your regular lines and get you on terms.',
@@ -391,11 +391,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The catalog',
-        'Every line we stock — paper & ink, writing, furniture, and breakroom supplies, sold by the box and the case. Filter by department or sort by price; trade accounts see their contract pricing at checkout.'
+        'Every line we stock: paper & ink, writing, furniture, and breakroom supplies, sold by the box and the case. Filter by department or sort by price; trade accounts see their contract pricing at checkout.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The catalog grouped the way an office manager actually buys — best sellers, new lines just in, the everyday workspace essentials, a furniture fit-out, the breakroom restock, and a kit to set up a new desk from empty.'),
+    pageMasthead('Collections', 'The catalog grouped the way an office manager actually buys: best sellers, new lines just in, the everyday workspace essentials, a furniture fit-out, the breakroom restock, and a kit to set up a new desk from empty.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search the catalog', 'Know the SKU, the size, or the line you reorder? Search the whole catalog and the guides below.'),
@@ -421,7 +421,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The supply room' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Practical guidance for whoever keeps the office running — how to stock a supply closet, set up a desk that does not wreck a back, and keep the breakroom from running dry. Written for the person doing the ordering.',
+                        text: 'Practical guidance for whoever keeps the office running: how to stock a supply closet, set up a desk that does not wreck a back, and keep the breakroom from running dry. Written for the person doing the ordering.',
                     }),
                 ],
             }),
@@ -438,13 +438,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Worksmith' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Worksmith Supply Co. is a workplace-supplies distributor. We stock the everyday, essential lines that keep an office, a clinic or a job site running — paper and ink, pens and pads, furniture and breakroom supplies — and we sell them to the trade by the box and the case, at wholesale, on terms.',
+                        text: 'Worksmith Supply Co. is a workplace-supplies distributor. We stock the everyday, essential lines that keep an office, a clinic or a job site running (paper and ink, pens and pads, furniture and breakroom supplies) and we sell them to the trade by the box and the case, at wholesale, on terms.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We built the business around one idea: whoever keeps an office stocked should not have to juggle a dozen consumer accounts, eat retail markups, or wait a week for a carton of paper. One catalog, one account, one invoice, and stock that is actually on the shelf when you order it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No membership hoops, no mystery lead times, no pricing that changes because you asked. Just the supplies, priced fairly and on the desk next day — the quiet reliability an office is built on.',
+                        text: 'No membership hoops, no mystery lead times, no pricing that changes because you asked. Just the supplies, priced fairly and on the desk next day: the quiet reliability an office is built on.',
                     }),
                 ],
             }),
@@ -532,9 +532,9 @@ const caseItem = (opts: {
 const PRODUCTS: Product[] = [
     {
         handle: 'copier-paper-carton',
-        title: 'Copier Paper — Carton of 5 Reams',
+        title: 'Copier Paper: Carton of 5 Reams',
         description:
-            'Bright 20 lb, 92-bright multipurpose paper that runs clean through copiers, laser and inkjet without jamming or curling. A carton is 5 reams — 2,500 sheets. MOQ 1 carton. Pick the sheet size your machines take.',
+            'Bright 20 lb, 92-bright multipurpose paper that runs clean through copiers, laser and inkjet without jamming or curling. A carton is 5 reams: 2,500 sheets. MOQ 1 carton. Pick the sheet size your machines take.',
         status: 'active',
         productType: 'Paper',
         vendor: VENDOR,
@@ -553,9 +553,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'ballpoint-pens-box',
-        title: 'Retractable Ballpoint Pens — Box of 50',
+        title: 'Retractable Ballpoint Pens: Box of 50',
         description:
-            'Smooth 1.0 mm medium-point retractable ballpoints with a cushioned grip and a click that survives a year of meetings. A box is 50 pens. MOQ 2 boxes — enough to stock the supply drawer and the ones that walk off. Pick your ink.',
+            'Smooth 1.0 mm medium-point retractable ballpoints with a cushioned grip and a click that survives a year of meetings. A box is 50 pens. MOQ 2 boxes: enough to stock the supply drawer and the ones that walk off. Pick your ink.',
         status: 'active',
         productType: 'Writing',
         vendor: VENDOR,
@@ -574,7 +574,7 @@ const PRODUCTS: Product[] = [
     },
     caseItem({
         handle: 'wirebound-notebooks-case',
-        title: 'Wirebound Notebooks — Case of 24',
+        title: 'Wirebound Notebooks: Case of 24',
         description:
             'College-ruled wirebound notebooks, 70 sheets of 20 lb paper that does not bleed through, with a poly cover that survives a bag. A case is 24 books. MOQ 1 case. The pad every desk, meeting room and new hire goes through.',
         price: 46,
@@ -589,7 +589,7 @@ const PRODUCTS: Product[] = [
     }),
     {
         handle: 'laser-toner-box',
-        title: 'Laser Toner Cartridges — Box of 2',
+        title: 'Laser Toner Cartridges: Box of 2',
         description:
             'High-quality compatible black laser toner that drops straight into the workhorse mono printers most offices run, at a fraction of the branded-cartridge price. A box is 2 cartridges. MOQ 1 box. Pick standard or high-yield for the heavy printers.',
         status: 'active',
@@ -609,9 +609,9 @@ const PRODUCTS: Product[] = [
     },
     caseItem({
         handle: 'desk-organiser-case',
-        title: 'Desk Organiser Sets — Case of 6',
+        title: 'Desk Organiser Sets: Case of 6',
         description:
-            'A five-piece steel-mesh desk set — pen cup, letter tray, sorter, memo holder and clip caddy — that turns a cluttered desk into one someone can actually work at. A case is 6 sets. MOQ 1 case. Ideal for a new-hire fit-out or a whole-floor refresh.',
+            'A five-piece steel-mesh desk set (pen cup, letter tray, sorter, memo holder and clip caddy) that turns a cluttered desk into one someone can actually work at. A case is 6 sets. MOQ 1 case. Ideal for a new-hire fit-out or a whole-floor refresh.',
         price: 84,
         sku: 'WSS-FUR-ORG-6',
         productType: 'Furniture',
@@ -624,9 +624,9 @@ const PRODUCTS: Product[] = [
     }),
     {
         handle: 'ergonomic-task-chair',
-        title: 'Ergonomic Mesh Task Chair — Carton of 1',
+        title: 'Ergonomic Mesh Task Chair: Carton of 1',
         description:
-            'A breathable mesh-back task chair with adjustable lumbar, seat height and armrests — the chair a team can sit in for eight hours without a physio bill. Ships one to a carton, assembled in minutes. MOQ 4 chairs — enough to fit out a room. Pick the frame color.',
+            'A breathable mesh-back task chair with adjustable lumbar, seat height and armrests: the chair a team can sit in for eight hours without a physio bill. Ships one to a carton, assembled in minutes. MOQ 4 chairs, enough to fit out a room. Pick the frame color.',
         status: 'active',
         productType: 'Furniture',
         vendor: VENDOR,
@@ -644,9 +644,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'dry-erase-whiteboards-case',
-        title: 'Dry-Erase Whiteboards — Case of 2',
+        title: 'Dry-Erase Whiteboards: Case of 2',
         description:
-            'Magnetic dry-erase boards with an aluminium frame and a marker tray, wiping clean with no ghosting after months of stand-ups. A case is 2 boards. MOQ 1 case. Pick the size that fits the wall — a huddle room or a whole planning wall.',
+            'Magnetic dry-erase boards with an aluminium frame and a marker tray, wiping clean with no ghosting after months of stand-ups. A case is 2 boards. MOQ 1 case. Pick the size that fits the wall: a huddle room or a whole planning wall.',
         status: 'active',
         productType: 'Furniture',
         vendor: VENDOR,
@@ -664,9 +664,9 @@ const PRODUCTS: Product[] = [
     },
     caseItem({
         handle: 'disinfecting-wipes-case',
-        title: 'Disinfecting Wipes — Case of 12',
+        title: 'Disinfecting Wipes: Case of 12',
         description:
-            'Alcohol-free disinfecting wipes that clean desks, keyboards, phones and door handles without leaving a film — 75 wipes a canister, a case of 12. MOQ 2 cases. The line a shared office burns through fastest, and the one you never want to run short of.',
+            'Alcohol-free disinfecting wipes that clean desks, keyboards, phones and door handles without leaving a film: 75 wipes a canister, a case of 12. MOQ 2 cases. The line a shared office burns through fastest, and the one you never want to run short of.',
         price: 54,
         sku: 'WSS-BRK-WIPES-12',
         productType: 'Breakroom & cleaning',
@@ -681,7 +681,7 @@ const PRODUCTS: Product[] = [
         handle: 'breakroom-restock-case',
         title: 'Breakroom Restock Case',
         description:
-            'The breakroom staples in one carton — a tin of ground coffee, a sleeve of paper cups, stir sticks, sugar, creamer and napkins — enough to keep a small team caffeinated and fed for a month. MOQ 1 case. Put it on a standing order and the breakroom never runs dry.',
+            'The breakroom staples in one carton: a tin of ground coffee, a sleeve of paper cups, stir sticks, sugar, creamer and napkins, enough to keep a small team caffeinated and fed for a month. MOQ 1 case. Put it on a standing order and the breakroom never runs dry.',
         price: 68,
         sku: 'WSS-BRK-RESTOCK',
         productType: 'Breakroom & cleaning',
@@ -690,13 +690,13 @@ const PRODUCTS: Product[] = [
         tags: ['breakroom', 'coffee', 'supplies', 'consumable'],
         asset: 'prod-breakroom',
         seoTitle: 'Breakroom Restock Case | Worksmith Supply',
-        seoDescription: 'A breakroom restock carton — coffee, cups, stir sticks, sugar, creamer and napkins. One month for a small team.',
+        seoDescription: 'A breakroom restock carton: coffee, cups, stir sticks, sugar, creamer and napkins. One month for a small team.',
     }),
     caseItem({
         handle: 'office-starter-bundle',
         title: 'Office Starter Bundle',
         description:
-            'Everything a new office or satellite desk runs out of first — a carton of copier paper, a box of pens, a case of notebooks, a desk organiser set and a case of disinfecting wipes, packed together and priced below the sum of its boxes. MOQ 1 bundle. The fastest way to stock a workspace from empty.',
+            'Everything a new office or satellite desk runs out of first: a carton of copier paper, a box of pens, a case of notebooks, a desk organiser set and a case of disinfecting wipes, packed together and priced below the sum of its boxes. MOQ 1 bundle. The fastest way to stock a workspace from empty.',
         price: 179,
         sku: 'WSS-KIT-STARTER',
         productType: 'Bundle',
@@ -705,7 +705,7 @@ const PRODUCTS: Product[] = [
         tags: ['bundle', 'starter', 'office-setup', 'kit'],
         asset: 'prod-starter-kit',
         seoTitle: 'Office Starter Bundle | Worksmith Supply',
-        seoDescription: 'A curated starter bundle — paper, pens, notebooks, a desk organiser and wipes, priced below the sum of its boxes.',
+        seoDescription: 'A curated starter bundle: paper, pens, notebooks, a desk organiser and wipes, priced below the sum of its boxes.',
     }),
 ];
 
@@ -786,13 +786,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('A supply closet exists to do one thing: make sure the paper, the pens and the toner are there the moment someone needs them. Get it wrong and a two-dollar cartridge holds up a proposal that is due at five. The good news is that keeping it right does not take software or a full-time office manager — it takes a min/max system and the discipline to follow it.'),
+                    para('A supply closet exists to do one thing: make sure the paper, the pens and the toner are there the moment someone needs them. Get it wrong and a two-dollar cartridge holds up a proposal that is due at five. The good news is that keeping it right does not take software or a full-time office manager. It takes a min/max system and the discipline to follow it.'),
                     h2('Set a min and a max for every line'),
-                    para('For each supply, decide two numbers. The MIN is the reorder point — the quantity that should trigger a new order, set high enough to cover your usage over the delivery lead time so you never hit zero while a case is in transit. The MAX is how much you hold when full — enough to buy at a sensible case price without turning the shelf into dead stock. When a line drops to its min, you order back up to the max. That is the whole system.'),
+                    para('For each supply, decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover your usage over the delivery lead time so you never hit zero while a case is in transit. The MAX is how much you hold when full, enough to buy at a sensible case price without turning the shelf into dead stock. When a line drops to its min, you order back up to the max. That is the whole system.'),
                     h2('Label the shelf, not your memory'),
                     para('Write the line, the size and the min/max on the shelf edge itself. When anyone can see at a glance that the copier paper is below its min, ordering stops depending on one person remembering. A two-bin trick makes it simpler still: when the front box empties, that is the signal to reorder, and the back box covers you until the carton arrives.'),
                     h2('Put the fast movers on a standing order'),
-                    para('The lines you burn through on a predictable schedule — paper, pens, wipes, coffee — do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves.'),
+                    para('The lines you burn through on a predictable schedule (paper, pens, wipes, coffee) do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves.'),
                 ],
             },
         },
@@ -803,18 +803,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Set up a desk that does not wreck a back',
-            excerpt: 'Most office aches trace back to a chair set wrong and a monitor too low. Here is how to set up a workstation people can sit at all day — and what to buy so they can.',
+            excerpt: 'Most office aches trace back to a chair set wrong and a monitor too low. Here is how to set up a workstation people can sit at all day, and what to buy so they can.',
             featuredImage: { $asset: 'post-ergonomics' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The cheapest sick day is the one nobody takes. A workstation set up badly — chair too low, screen too far, wrists bent up at the keyboard — quietly builds the aches that turn into physio appointments and lost afternoons. Getting it right is not expensive or complicated; it is a chair that adjusts and five minutes to set it.'),
+                    para('The cheapest sick day is the one nobody takes. A workstation set up badly (chair too low, screen too far, wrists bent up at the keyboard) quietly builds the aches that turn into physio appointments and lost afternoons. Getting it right is not expensive or complicated; it is a chair that adjusts and five minutes to set it.'),
                     h2('Start with the chair'),
-                    para('Set the seat height so feet rest flat on the floor and knees sit level with the hips. Adjust the lumbar support into the small of the back, and set the armrests so shoulders can relax and elbows bend at about ninety degrees. A chair that cannot do those things is not saving you money — it is deferring a cost onto the person sitting in it. A mesh task chair with real adjustments is the single best supply an office buys.'),
+                    para('Set the seat height so feet rest flat on the floor and knees sit level with the hips. Adjust the lumbar support into the small of the back, and set the armrests so shoulders can relax and elbows bend at about ninety degrees. A chair that cannot do those things is not saving you money. It is deferring a cost onto the person sitting in it. A mesh task chair with real adjustments is the single best supply an office buys.'),
                     h2('Then the screen and the input'),
-                    para('Raise the monitor so the top of the screen is at or just below eye level and about an arm’s length away — that stops the head-forward slump that wrecks necks. Keep the keyboard and mouse close enough that wrists stay flat, not cocked up. A monitor riser and a keyboard tray cost little and do more for comfort than almost anything else on the desk.'),
+                    para('Raise the monitor so the top of the screen is at or just below eye level and about an arm’s length away. That stops the head-forward slump that wrecks necks. Keep the keyboard and mouse close enough that wrists stay flat, not cocked up. A monitor riser and a keyboard tray cost little and do more for comfort than almost anything else on the desk.'),
                     h2('Buy it once, for everyone'),
-                    para('Ergonomics falls apart when it is done one exception at a time. Spec a good task chair and a riser as the standard desk kit, buy them by the carton at trade pricing, and every new hire gets a workstation that works from day one — instead of a folding chair and a promise to sort it out later.'),
+                    para('Ergonomics falls apart when it is done one exception at a time. Spec a good task chair and a riser as the standard desk kit, buy them by the carton at trade pricing, and every new hire gets a workstation that works from day one: instead of a folding chair and a promise to sort it out later.'),
                 ],
             },
         },
@@ -825,18 +825,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Keep the breakroom stocked without thinking about it',
-            excerpt: 'An empty coffee tin at 9am is a small thing that sours a whole morning. Here is how to keep the breakroom running on autopilot — and why it is worth the small spend.',
+            excerpt: 'An empty coffee tin at 9am is a small thing that sours a whole morning. Here is how to keep the breakroom running on autopilot, and why it is worth the small spend.',
             featuredImage: { $asset: 'post-restock' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The breakroom is the one supply nobody puts on the budget and everybody notices when it is empty. A missing coffee filter or the last cup gone by mid-morning is trivial on paper and genuinely deflating in practice — it is the little signal that says nobody is looking after the place. Keeping it stocked is cheap insurance against a soured morning.'),
+                    para('The breakroom is the one supply nobody puts on the budget and everybody notices when it is empty. A missing coffee filter or the last cup gone by mid-morning is trivial on paper and genuinely deflating in practice. It is the little signal that says nobody is looking after the place. Keeping it stocked is cheap insurance against a soured morning.'),
                     h2('Bundle the staples, buy the case'),
-                    para('Coffee, cups, stir sticks, sugar, creamer and napkins move together and run out together, so buy them together. A restock case covers a small team for about a month, and buying the case beats grabbing packets from the corner shop at retail — both on price and on the hour you get back from not doing supply runs.'),
+                    para('Coffee, cups, stir sticks, sugar, creamer and napkins move together and run out together, so buy them together. A restock case covers a small team for about a month, and buying the case beats grabbing packets from the corner shop at retail. Both on price and on the hour you get back from not doing supply runs.'),
                     h2('Put it on a standing order'),
-                    para('The whole point of a breakroom is that no one should have to manage it. Set a standing order for a restock case on a monthly cadence and it simply arrives — no reminder, no run, no empty tin. Adjust the frequency once you see how fast a team actually gets through it, and then forget about it.'),
+                    para('The whole point of a breakroom is that no one should have to manage it. Set a standing order for a restock case on a monthly cadence and it simply arrives: no reminder, no run, no empty tin. Adjust the frequency once you see how fast a team actually gets through it, and then forget about it.'),
                     h2('It is not a perk, it is friction removed'),
-                    para('A stocked breakroom is not about pampering anyone. It is about removing a dozen tiny frictions from the day — the hunt for a clean cup, the cold coffee, the trip out for milk — that each cost a few minutes and a little goodwill. Keep it full for the price of a case a month, and the whole office runs a touch smoother.'),
+                    para('A stocked breakroom is not about pampering anyone. It is about removing a dozen tiny frictions from the day (the hunt for a clean cup, the cold coffee, the trip out for milk) that each cost a few minutes and a little goodwill. Keep it full for the price of a case a month, and the whole office runs a touch smoother.'),
                 ],
             },
         },
@@ -851,7 +851,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Office Supply (B2B / Wholesale)',
     theme: THEME,
     summary:
-        'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case — paper & ink, writing, furniture and breakroom supplies — with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme — cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',
+        'A complete, working wholesale shop for a workplace-supplies distributor: a real trade catalogue sold by the box and case, paper & ink, writing, furniture and breakroom supplies, with categories, collections, a bespoke trade PDP (per-box pricing, volume breaks, net-30), and a full merchandised home page. Clean corporate theme, cool slate ground, confident blue, teal accent. Shipped as Worksmith Supply Co.',
     tagline: 'A wholesale storefront built for trade buyers.',
     vertical: 'b2b',
     industry: 'Office & workplace supplies',
@@ -864,17 +864,17 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Worksmith Supply Co. — office & workplace supplies distributor',
+            title: 'Worksmith Supply Co. office & workplace supplies distributor',
             description:
-                'Worksmith is a workplace-supplies distributor — paper, ink, pens, notebooks, furniture and breakroom supplies sold by the box and case at trade prices, with net-30 terms and next-day delivery. Open a trade account.',
+                'Worksmith is a workplace-supplies distributor: paper, ink, pens, notebooks, furniture and breakroom supplies sold by the box and case at trade prices, with net-30 terms and next-day delivery. Open a trade account.',
         },
         about: {
             title: 'About Worksmith Supply Co.',
             description:
-                'How Worksmith stocks, prices and ships — one catalog, one account, one invoice, wholesale by the box, and stock that is actually on the shelf when you order it.',
+                'How Worksmith stocks, prices and ships. One catalog, one account, one invoice, wholesale by the box, and stock that is actually on the shelf when you order it.',
         },
         contact: {
-            title: 'Open a trade account — Worksmith Supply Co.',
+            title: 'Open a trade account: Worksmith Supply Co.',
             description:
                 'Set up a trade account with Worksmith: wholesale per-box pricing, volume breaks, net-30 terms and a dedicated account manager. Wholesale enquiries and bulk quotes start here.',
         },

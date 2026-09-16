@@ -230,14 +230,14 @@ export function installCrmDepthActions(): void {
     module: 'crm',
     gates: [],
     manifestNote:
-      "internal CRM write (assignment); no external effect — the person is told by a separate notify action, which is the tenant's choice to add",
+      "internal CRM write (assignment); no external effect: the person is told by a separate notify action, which is the tenant's choice to add",
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = RotateOwnerConfig.parse(effect.config);
       const svcCtx = { tenantId: ctx.tenantId, tx: ctx.tx };
 
       const pool = cfg.userIds.length > 0 ? cfg.userIds : await tenantUserIds(ctx);
       if (pool.length === 0) {
-        throw new Error('crm.rotate_owner: nobody to assign to — the rotation is empty.');
+        throw new Error('crm.rotate_owner: nobody to assign to, the rotation is empty.');
       }
 
       const next = await nextInRotation(ctx, cfg.target, pool);
@@ -322,7 +322,7 @@ export function installCrmDepthActions(): void {
     module: 'crm',
     gates: [],
     manifestNote:
-      'internal CRM write (a task to call someone back, plus the activity recording why); places no call and touches no voice provider — the name says log, not dial',
+      'internal CRM write (a task to call someone back, plus the activity recording why); places no call and touches no voice provider: the name says log, not dial',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = LogCallTaskConfig.parse(effect.config);
       const svcCtx = { tenantId: ctx.tenantId, tx: ctx.tx };

@@ -5,7 +5,7 @@
     "doc": {
       "version": "1",
       "subject": "Welcome to {{site.name}}",
-      "preheader": "So glad you found us — here’s where to start.",
+      "preheader": "So glad you found us: here’s where to start.",
       "root": {
         "id": "def-s-body-15",
         "kind": "body",
@@ -81,7 +81,7 @@
               {
                 "id": "def-s-text-7",
                 "kind": "text",
-                "html": "See live availability, pick the time that works for you, and you’re done — no phone tag.",
+                "html": "See live availability, pick the time that works for you, and you’re done: no phone tag.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
@@ -113,7 +113,7 @@
               {
                 "id": "def-s-text-11",
                 "kind": "text",
-                "html": "Reschedule, cancel, or book again any time — your visits live in one place.",
+                "html": "Reschedule, cancel, or book again any time. Your visits live in one place.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,

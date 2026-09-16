@@ -163,7 +163,7 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <Text>
-            Give it a name — like Category or Tag. Once you create it, you can add the individual
+            Give it a name, like Category or Tag. Once you create it, you can add the individual
             labels that go inside it.
           </Text>
 
@@ -185,7 +185,7 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
                   />
                 }
               />
-              <FieldDescription>The singular — what you would call just one.</FieldDescription>
+              <FieldDescription>The singular: what you would call just one.</FieldDescription>
             </Field>
             <Field>
               <FieldLabel>Many of them</FieldLabel>
@@ -203,7 +203,7 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                The plural — how this appears as a heading, like a list of “Categories”.
+                The plural: how this appears as a heading, like a list of “Categories”.
               </FieldDescription>
             </Field>
           </FormSection>
@@ -248,7 +248,7 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
               />
               <FieldDescription>
                 {key !== '' && !keyOk
-                  ? 'Use lowercase letters, numbers and underscores, starting with a letter — like blog_category.'
+                  ? 'Use lowercase letters, numbers and underscores, starting with a letter, like blog_category.'
                   : 'A short code used to connect this to your content. We made one from the name; change it only if you have a reason to. This cannot be changed later.'}
               </FieldDescription>
             </Field>
@@ -445,7 +445,7 @@ function ManageBody({
         count === 0
           ? 'This removes this way of filing content. This cannot be undone.'
           : elsewhere > 0
-            ? `This removes this way of filing from every one of your websites, along with all ${String(count)} of its labels — ${String(elsewhere)} of ${elsewhere === 1 ? 'them is' : 'them are'} on your other sites — and takes those labels off any content using them. This cannot be undone.`
+            ? `This removes this way of filing from every one of your websites, along with all ${String(count)} of its labels: ${String(elsewhere)} of ${elsewhere === 1 ? 'them is' : 'them are'} on your other sites, and takes those labels off any content using them. This cannot be undone.`
             : `This removes this way of filing and all ${String(count)} of its labels, and takes those labels off any content using them. This cannot be undone.`,
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
@@ -510,7 +510,7 @@ function ManageBody({
         <div className={COLUMN}>
           <FormSection title="Settings">
             <Field>
-              <FieldLabel>Name — one of them</FieldLabel>
+              <FieldLabel>Name for one of them</FieldLabel>
               <FieldControl
                 render={
                   <Input
@@ -526,11 +526,11 @@ function ManageBody({
                   />
                 }
               />
-              <FieldDescription>The singular — what you would call just one.</FieldDescription>
+              <FieldDescription>The singular: what you would call just one.</FieldDescription>
             </Field>
 
             <Field>
-              <FieldLabel>Name — many of them</FieldLabel>
+              <FieldLabel>Name for many of them</FieldLabel>
               <FieldControl
                 render={
                   <Input
@@ -546,7 +546,7 @@ function ManageBody({
                   />
                 }
               />
-              <FieldDescription>The plural — how this appears as a heading.</FieldDescription>
+              <FieldDescription>The plural: how this appears as a heading.</FieldDescription>
             </Field>
 
             <Field>
@@ -686,7 +686,7 @@ function TermsSection({
         </Text>
       ) : terms.length === 0 ? (
         <Text className="text-sm">
-          No {lowerPlural} yet. Add your first one above — it is what readers will click to see
+          No {lowerPlural} yet. Add your first one above. It is what readers will click to see
           everything filed under it.
         </Text>
       ) : (
@@ -757,7 +757,7 @@ function TermRow({
     const ok = await confirm({
       title: `Delete “${term.name}”?`,
       description: hasChildren
-        ? `This takes “${term.name}” off any content using it. Anything filed under it moves up to the top level — it is not deleted. This cannot be undone.`
+        ? `This takes “${term.name}” off any content using it. Anything filed under it moves up to the top level. It is not deleted. This cannot be undone.`
         : `This takes “${term.name}” off any content using it. This cannot be undone.`,
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
@@ -937,7 +937,7 @@ function TermEditor({
               color="module"
               rows={2}
               value={description}
-              placeholder="Optional — a sentence about what belongs here."
+              placeholder="Optional: a sentence about what belongs here."
               onChange={(event) => {
                 setDescription(event.target.value);
               }}

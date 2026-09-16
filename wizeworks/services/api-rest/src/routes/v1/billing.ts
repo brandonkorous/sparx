@@ -43,9 +43,9 @@ function checkoutReturnUrl(returnUrl: string, status: 'success' | 'cancelled'): 
 }
 
 const CHECKOUT_MESSAGES: Record<'unconfigured' | 'no_paid_modules' | 'already_active', string> = {
-  unconfigured: 'Billing is not set up yet — this environment has no payment provider configured.',
+  unconfigured: 'Billing is not set up yet. This environment has no payment provider configured.',
   no_paid_modules:
-    'Turn on a paid feature first — there’s nothing to bill for until at least one paid module is active.',
+    'Turn on a paid feature first: there’s nothing to bill for until at least one paid module is active.',
   already_active:
     'You already have a subscription. Use “Manage billing & card” to update your card or plan.',
 };
@@ -62,7 +62,7 @@ const billingRoutes: FastifyPluginAsync = (app) => {
     const url = await createPortalSession(auth.tenantId, returnUrl);
     if (!url) {
       throw badRequest(
-        'Billing is not set up yet — a Stripe customer is created the first time you activate a paid module while billing is configured.'
+        'Billing is not set up yet: a Stripe customer is created the first time you activate a paid module while billing is configured.'
       );
     }
     return ok({ url });

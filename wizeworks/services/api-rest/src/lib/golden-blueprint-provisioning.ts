@@ -113,7 +113,7 @@ export async function installGoldenForTenant(
   if (!(await blueprintVisibleTo(goldenKey, brand))) {
     logger.error(
       { tenantId, goldenKey, brand },
-      'golden-blueprint: refusing a starter that does not belong to this brand — check <BRAND>_GOLDEN_BLUEPRINT'
+      'golden-blueprint: refusing a starter that does not belong to this brand. Check <BRAND>_GOLDEN_BLUEPRINT'
     );
     return { installed: false, reason: 'not-this-brand' };
   }
@@ -237,7 +237,7 @@ export function startGoldenBlueprintReconcileLoop(
     try {
       await reconcileGoldenBlueprint(logger);
     } catch (err) {
-      logger.error({ err }, 'golden-blueprint-reconcile: tick threw — will retry next interval');
+      logger.error({ err }, 'golden-blueprint-reconcile: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

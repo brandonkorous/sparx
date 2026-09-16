@@ -167,7 +167,7 @@ function hero(): Node {
                                     text: 'Fewer, better things for city and trail.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Tarn makes a small line of technical essentials that work as well on the 7am commute as on a Sunday ridgeline. Considered materials, quiet design, nothing you have to explain — pieces you reach for every day and keep for years.',
+                                    text: 'Tarn makes a small line of technical essentials that work as well on the 7am commute as on a Sunday ridgeline. Considered materials, quiet design, nothing you have to explain: pieces you reach for every day and keep for years.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -261,7 +261,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New in' }),
     editorialBand({
         heading: 'Designed to be owned, not replaced',
-        lead: 'We keep the range deliberately short. Each piece earns its place — the right fabric, the details that matter and none that don’t — so a Tarn shell or tee is one you buy once and wear for years. Fewer, better things, made to be lived in.',
+        lead: 'We keep the range deliberately short. Each piece earns its place (the right fabric, the details that matter and none that don’t) so a Tarn shell or tee is one you buy once and wear for years. Fewer, better things, made to be lived in.',
         assetId: 'tarn-band-fewer',
         cta: 'How we design',
         href: '/blog/fewer-better-things',
@@ -270,7 +270,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.apparel', layout: 'carousel', heading: 'The apparel edit' }),
     editorialBand({
         heading: 'One kit, city to trail',
-        lead: 'A day that starts on a train and ends on a ridge shouldn’t need two wardrobes. Everything Tarn makes is built to move between them — technical enough for the weather, quiet enough for the office — so you pack lighter and think about it less.',
+        lead: 'A day that starts on a train and ends on a ridge shouldn’t need two wardrobes. Everything Tarn makes is built to move between them (technical enough for the weather, quiet enough for the office) so you pack lighter and think about it less.',
         assetId: 'tarn-band-citytotrail',
         cta: 'Build a city-to-trail kit',
         href: '/blog/city-to-trail',
@@ -355,11 +355,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop the edit',
-        'The whole Tarn range in one place — apparel, bags, accessories and the everyday essentials that go everywhere. Filter by category or sort however you like; each piece is considered, versatile and built to be kept.'
+        'The whole Tarn range in one place: apparel, bags, accessories and the everyday essentials that go everywhere. Filter by category or sort however you like; each piece is considered, versatile and built to be kept.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The range grouped the way you actually shop it — what just landed, the pieces people reach for daily, a full city-to-trail kit, and the merino edit we’re quietly known for.'),
+    pageMasthead('Collections', 'The range grouped the way you actually shop it: what just landed, the pieces people reach for daily, a full city-to-trail kit, and the merino edit we’re quietly known for.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Tarn', 'Looking for a shell, a size, a color or a guide? Search the whole shop and the journal below.'),
@@ -385,7 +385,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl', { text: 'The journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes on design and everyday carry — why we make fewer things, how to build one kit for the city and the trail, and what actually makes a fabric worth keeping. Plain and useful, no hype.',
+                        text: 'Notes on design and everyday carry: why we make fewer things, how to build one kit for the city and the trail, and what actually makes a fabric worth keeping. Plain and useful, no hype.',
                     }),
                 ],
             }),
@@ -402,7 +402,7 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-semibold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Tarn' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Tarn started with a simple frustration: a wardrobe split between technical gear that looked out of place in the city and city clothes that fell apart on the trail. So we set out to make one small line that quietly does both — considered, versatile pieces you can wear on a Monday commute and a Saturday summit without a second thought.',
+                        text: 'Tarn started with a simple frustration: a wardrobe split between technical gear that looked out of place in the city and city clothes that fell apart on the trail. So we set out to make one small line that quietly does both, considered, versatile pieces you can wear on a Monday commute and a Saturday summit without a second thought.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We keep the range short on purpose. Every piece is designed around the fabric first, stripped of anything it doesn’t need, and made in small runs with makers we know. If it isn’t genuinely better than what you already own, we don’t make it.',
@@ -423,7 +423,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Get in touch',
-        intro: 'Questions about fit, a color, a repair or an order? Tell us what you’re after and a real person who wears the pieces will get back to you — usually within a day.',
+        intro: 'Questions about fit, a color, a repair or an order? Tell us what you’re after and a real person who wears the pieces will get back to you, usually within a day.',
         submitLabel: 'Email the studio',
     }),
 ];
@@ -638,14 +638,14 @@ const PRODUCTS: Product[] = [
         tags: ['apparel', 'shell', 'waterproof', 'outerwear'],
         colors: ['Fog', 'Ink', 'Sage'],
         asset: 'prod-shell-jacket',
-        seoTitle: 'Featherline Shell Jacket — packable 2.5-layer waterproof | Tarn',
+        seoTitle: 'Featherline Shell Jacket: packable 2.5-layer waterproof | Tarn',
         seoDescription: 'A minimal, packable 2.5-layer waterproof shell with taped seams and pit vents. City-clean, trail-ready.',
     }),
     garment({
         handle: 'everyday-merino-tee',
         title: 'Everyday Merino Tee',
         description:
-            'A fine-gauge merino tee that behaves like your favourite cotton one but wicks, breathes and resists odour for days between washes. A clean crew neck, a trim-but-not-tight cut and a hand that stays soft wash after wash — the layer you’ll pack for one day and end up wearing for three.',
+            'A fine-gauge merino tee that behaves like your favourite cotton one but wicks, breathes and resists odour for days between washes. A clean crew neck, a trim-but-not-tight cut and a hand that stays soft wash after wash: the layer you’ll pack for one day and end up wearing for three.',
         price: 68,
         sku: 'TARN-TEE',
         category: 'apparel',
@@ -653,14 +653,14 @@ const PRODUCTS: Product[] = [
         tags: ['apparel', 'merino', 'base-layer', 'tee'],
         colors: ['Bone', 'Ink', 'Slate'],
         asset: 'prod-merino-tee',
-        seoTitle: 'Everyday Merino Tee — fine-gauge merino crew | Tarn',
+        seoTitle: 'Everyday Merino Tee: fine-gauge merino crew | Tarn',
         seoDescription: 'A soft, odour-resistant fine-gauge merino tee with a clean crew neck and a trim everyday cut.',
     }),
     garment({
         handle: 'traverse-trousers',
         title: 'Traverse Trousers',
         description:
-            'A technical trouser cut clean enough for the office and stretchy enough for a scramble. A four-way stretch weave sheds light rain and dries fast, a gusseted crotch moves with you, and zip security pockets keep a phone and keys close. Tailored lines, hidden performance — trousers that never look like gear.',
+            'A technical trouser cut clean enough for the office and stretchy enough for a scramble. A four-way stretch weave sheds light rain and dries fast, a gusseted crotch moves with you, and zip security pockets keep a phone and keys close. Tailored lines, hidden performance: trousers that never look like gear.',
         price: 118,
         sku: 'TARN-TROU',
         category: 'apparel',
@@ -668,14 +668,14 @@ const PRODUCTS: Product[] = [
         tags: ['apparel', 'trousers', 'technical', 'stretch'],
         colors: ['Ink', 'Stone', 'Olive'],
         asset: 'prod-trousers',
-        seoTitle: 'Traverse Trousers — technical stretch trousers | Tarn',
+        seoTitle: 'Traverse Trousers: technical stretch trousers | Tarn',
         seoDescription: 'A clean-cut four-way-stretch technical trouser that sheds light rain and dries fast. Office to trail.',
     }),
     colorGood({
         handle: 'commuter-pack-20',
         title: 'Commuter Pack 20',
         description:
-            'A 20-litre daypack pared back to what a day actually needs — a padded laptop sleeve, a clean single main compartment, and a weatherproof roll-top that flexes from a light load to a full one. No dangling straps, no logos, no clutter. The pack that looks right in a meeting and a downpour both.',
+            'A 20-litre daypack pared back to what a day actually needs: a padded laptop sleeve, a clean single main compartment, and a weatherproof roll-top that flexes from a light load to a full one. No dangling straps, no logos, no clutter. The pack that looks right in a meeting and a downpour both.',
         price: 165,
         sku: 'TARN-PACK20',
         productType: 'Bag',
@@ -684,7 +684,7 @@ const PRODUCTS: Product[] = [
         tags: ['bags', 'daypack', 'commuter'],
         colors: ['Ink', 'Fog', 'Olive'],
         asset: 'prod-pack',
-        seoTitle: 'Commuter Pack 20 — 20L weatherproof daypack | Tarn',
+        seoTitle: 'Commuter Pack 20: 20L weatherproof daypack | Tarn',
         seoDescription: 'A pared-back 20L roll-top daypack with a padded laptop sleeve. Clean enough for the office, sealed for the rain.',
     }),
     colorGood({
@@ -700,7 +700,7 @@ const PRODUCTS: Product[] = [
         tags: ['bags', 'tote', 'packable'],
         colors: ['Bone', 'Ink', 'Sage'],
         asset: 'prod-tote',
-        seoTitle: 'Packable Tote — 18L ripstop tote | Tarn',
+        seoTitle: 'Packable Tote: 18L ripstop tote | Tarn',
         seoDescription: 'A light, water-resistant 18L ripstop tote that folds into its own pocket. For the market run and the overflow.',
     }),
     colorGood({
@@ -716,14 +716,14 @@ const PRODUCTS: Product[] = [
         tags: ['accessories', 'cap', 'headwear'],
         colors: ['Ink', 'Stone', 'Sage'],
         asset: 'prod-cap',
-        seoTitle: 'Six-Panel Cap — packable technical cap | Tarn',
+        seoTitle: 'Six-Panel Cap: packable technical cap | Tarn',
         seoDescription: 'A clean, unstructured six-panel cap in quick-drying twill with a soft packable brim. Understated and tonal.',
     }),
     colorGood({
         handle: 'merino-trail-socks',
         title: 'Merino Trail Socks',
         description:
-            'A fine merino-blend sock cushioned exactly where it counts and thin where it doesn’t — a supportive arch, a seamless toe and enough wool to stay warm damp and fresh for days. Cut to sit neat under a trainer or a boot alike, and knit to hold its shape long past the point most socks give up.',
+            'A fine merino-blend sock cushioned exactly where it counts and thin where it doesn’t: a supportive arch, a seamless toe and enough wool to stay warm damp and fresh for days. Cut to sit neat under a trainer or a boot alike, and knit to hold its shape long past the point most socks give up.',
         price: 22,
         sku: 'TARN-SOCK',
         productType: 'Accessories',
@@ -732,7 +732,7 @@ const PRODUCTS: Product[] = [
         tags: ['accessories', 'socks', 'merino'],
         colors: ['Bone', 'Charcoal', 'Sage'],
         asset: 'prod-socks',
-        seoTitle: 'Merino Trail Socks — cushioned merino-blend socks | Tarn',
+        seoTitle: 'Merino Trail Socks: cushioned merino-blend socks | Tarn',
         seoDescription: 'A fine merino-blend sock with targeted cushioning, an arch band and a seamless toe. Warm, fresh and hard-wearing.',
     }),
     sizedGood({
@@ -751,7 +751,7 @@ const PRODUCTS: Product[] = [
         collections: ['new-in', 'the-everyday', 'best-loved'],
         tags: ['essentials', 'bottle', 'hydration'],
         asset: 'prod-bottle',
-        seoTitle: 'Insulated Bottle — matte double-walled stainless | Tarn',
+        seoTitle: 'Insulated Bottle: matte double-walled stainless | Tarn',
         seoDescription: 'A matte double-walled stainless bottle in 500 and 750ml with a leak-proof one-handed lid. Built to be the last one.',
     }),
 ];
@@ -825,11 +825,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The easiest thing in the world is to make more. Another colorway, a seasonal print, a slightly different pocket — every one is a small sale and a small piece of clutter, and enough of them turn a considered brand into a catalogue. We decided early that Tarn would be defined by what we don’t make, which means most ideas have to fail a test before the good ones can pass it.'),
+                    para('The easiest thing in the world is to make more. Another colorway, a seasonal print, a slightly different pocket: every one is a small sale and a small piece of clutter, and enough of them turn a considered brand into a catalogue. We decided early that Tarn would be defined by what we don’t make, which means most ideas have to fail a test before the good ones can pass it.'),
                     h2('Does it earn its place?'),
-                    para('Before anything is designed we ask one question: is this genuinely better than what you already own, or just different? If a new trouser doesn’t beat the trouser in your drawer on fabric, fit or longevity, there’s no reason for it to exist and we don’t make it. That single filter kills most of what we sketch — and it’s why the pieces that survive tend to be the ones you keep reaching for.'),
+                    para('Before anything is designed we ask one question: is this genuinely better than what you already own, or just different? If a new trouser doesn’t beat the trouser in your drawer on fabric, fit or longevity, there’s no reason for it to exist and we don’t make it. That single filter kills most of what we sketch, and it’s why the pieces that survive tend to be the ones you keep reaching for.'),
                     h2('Design around the fabric, then subtract'),
-                    para('We start with the material, not the silhouette. Get the fabric right and half the design decisions make themselves; get it wrong and no amount of detailing rescues it. From there the work is mostly removal — every seam, tab and logo has to justify itself, and the ones that can’t come off. What’s left looks simple, which is the hardest thing to arrive at and the whole point of the exercise.'),
+                    para('We start with the material, not the silhouette. Get the fabric right and half the design decisions make themselves; get it wrong and no amount of detailing rescues it. From there the work is mostly removal: every seam, tab and logo has to justify itself, and the ones that can’t come off. What’s left looks simple, which is the hardest thing to arrive at and the whole point of the exercise.'),
                 ],
             },
         },
@@ -845,11 +845,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Most of us live in the overlap. The same day holds a commute, a desk, a walk that turns into more of a walk than planned, and weather that can’t make up its mind. Dressing for it usually means a compromise in one direction — gear that looks out of place indoors, or clothes that quit the moment the path tilts up. It doesn’t have to. A small, deliberate kit covers the whole range if each piece is chosen to cross over.'),
+                    para('Most of us live in the overlap. The same day holds a commute, a desk, a walk that turns into more of a walk than planned, and weather that can’t make up its mind. Dressing for it usually means a compromise in one direction: gear that looks out of place indoors, or clothes that quit the moment the path tilts up. It doesn’t have to. A small, deliberate kit covers the whole range if each piece is chosen to cross over.'),
                     h2('Layers that read both ways'),
-                    para('Start with a merino tee — it wicks and resists odour for the active half of the day and looks like a plain, good tee for the rest. Add a technical trouser cut clean enough for the office, and a packable shell that lives in your bag until the sky opens. Nothing here announces itself as outdoor gear, and nothing gives up when you actually use it that way. That’s the whole trick: performance you can’t see.'),
+                    para('Start with a merino tee. It wicks and resists odour for the active half of the day and looks like a plain, good tee for the rest. Add a technical trouser cut clean enough for the office, and a packable shell that lives in your bag until the sky opens. Nothing here announces itself as outdoor gear, and nothing gives up when you actually use it that way. That’s the whole trick: performance you can’t see.'),
                     h2('Carry light, decide less'),
-                    para('The bag matters as much as what’s in it. A pared-back daypack with a laptop sleeve and a weatherproof roll-top handles the commute and the trail without a second one, and a tote that folds to wallet-size covers the overflow on the way home. Pack it once and you stop thinking about it — which is really the point. The best kit is the one you never have to plan around.'),
+                    para('The bag matters as much as what’s in it. A pared-back daypack with a laptop sleeve and a weatherproof roll-top handles the commute and the trail without a second one, and a tote that folds to wallet-size covers the overflow on the way home. Pack it once and you stop thinking about it, which is really the point. The best kit is the one you never have to plan around.'),
                 ],
             },
         },
@@ -860,16 +860,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Why we keep coming back to merino',
-            excerpt: 'It’s the closest thing to a do-everything fabric — and once you understand why, most synthetics start to look like a compromise.',
+            excerpt: 'It’s the closest thing to a do-everything fabric, and once you understand why, most synthetics start to look like a compromise.',
             featuredImage: { $asset: 'post-merino' },
             body: {
                 type: 'doc',
                 content: [
-                    para('If you could only own one performance fabric, it would be merino wool. Not the itchy, heavy wool of an old jumper — the fine-gauge kind, spun from fibres a fraction the width, that feels like a soft cotton and behaves like nothing else. We keep coming back to it because it quietly solves problems other materials only trade between.'),
+                    para('If you could only own one performance fabric, it would be merino wool. Not the itchy, heavy wool of an old jumper: the fine-gauge kind, spun from fibres a fraction the width, that feels like a soft cotton and behaves like nothing else. We keep coming back to it because it quietly solves problems other materials only trade between.'),
                     h2('Warm, cool, and hard to smell'),
-                    para('Merino regulates temperature in both directions: the same tee that keeps you warm on a cold platform breathes and wicks when you’re moving, so you’re rarely the too-hot or too-cold one. And because of how the fibre handles moisture and bacteria, it resists odour for days — the reason a merino layer is the traveller’s secret for packing light and wearing the same thing far longer than seems decent.'),
+                    para('Merino regulates temperature in both directions: the same tee that keeps you warm on a cold platform breathes and wicks when you’re moving, so you’re rarely the too-hot or too-cold one. And because of how the fibre handles moisture and bacteria, it resists odour for days, the reason a merino layer is the traveller’s secret for packing light and wearing the same thing far longer than seems decent.'),
                     h2('Made to be kept'),
-                    para('Good merino also wears in rather than out. It holds its shape, resists wrinkles, and only needs a wash when it genuinely does, which is gentler on the fabric and on your time. Cared for simply — cool wash, dry flat — a fine merino piece stays good for years. That longevity is the whole reason it fits how we build: a material worth keeping, in things designed to be kept.'),
+                    para('Good merino also wears in rather than out. It holds its shape, resists wrinkles, and only needs a wash when it genuinely does, which is gentler on the fabric and on your time. Cared for simply (cool wash, dry flat) a fine merino piece stays good for years. That longevity is the whole reason it fits how we build: a material worth keeping, in things designed to be kept.'),
                 ],
             },
         },
@@ -884,7 +884,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Outdoor Essentials (Minimal)',
     theme: THEME,
     summary:
-        'A complete, working shop for a clean, design-led urban-outdoor label: a real catalogue of a packable shell, a merino tee, technical trousers, a commuter pack, a packable tote, a cap, an insulated bottle and merino socks — with categories, collections, a minimal PDP and a fully merchandised home page. Design-studio theme — a cool near-white ground, a near-black primary and a single restrained blue accent, under a crisp grotesk. Shipped as Tarn.',
+        'A complete, working shop for a clean, design-led urban-outdoor label: a real catalogue of a packable shell, a merino tee, technical trousers, a commuter pack, a packable tote, a cap, an insulated bottle and merino socks, with categories, collections, a minimal PDP and a fully merchandised home page. Design-studio theme, a cool near-white ground, a near-black primary and a single restrained blue accent, under a crisp grotesk. Shipped as Tarn.',
     tagline: 'A clean, working storefront for a design-led outdoor label.',
     vertical: 'retail',
     industry: 'Outdoor & technical essentials',
@@ -897,14 +897,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Tarn — considered technical essentials for city and trail',
+            title: 'Tarn: considered technical essentials for city and trail',
             description:
-                'Tarn makes a small, design-led line of technical essentials — a packable shell, merino layers, clean bags and everyday-carry hardware — built to move between the commute and the trail. Fewer, better things.',
+                'Tarn makes a small, design-led line of technical essentials (a packable shell, merino layers, clean bags and everyday-carry hardware) built to move between the commute and the trail. Fewer, better things.',
         },
         about: {
             title: 'About Tarn',
             description:
-                'Why Tarn keeps the range short — pieces designed around the fabric, stripped of what they don’t need, and built to be kept rather than replaced.',
+                'Why Tarn keeps the range short: pieces designed around the fabric, stripped of what they don’t need, and built to be kept rather than replaced.',
         },
     },
     home: HOME,

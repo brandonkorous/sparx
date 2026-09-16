@@ -280,7 +280,7 @@ export class MetaAdapter implements ChannelAdapter {
   /** The catalog id lives on the connection's externalId; a push needs it set. */
   private requireCatalog(auth: ChannelAuth): string {
     if (!auth.externalId)
-      throw new Error('Meta connection has no catalog id (externalId) — reconnect to resolve one.');
+      throw new Error('Meta connection has no catalog id (externalId): reconnect to resolve one.');
     return auth.externalId;
   }
 }

@@ -406,7 +406,7 @@ export async function remove(ctx: ServiceContext, categoryId: string): Promise<v
     });
     if (descendants > 0) {
       throw new CommerceConflictError(
-        `Category "${before.name}" has ${descendants} descendant categor${descendants === 1 ? 'y' : 'ies'} — remove or reparent them first`,
+        `Category "${before.name}" has ${descendants} descendant categor${descendants === 1 ? 'y' : 'ies'}: remove or reparent them first`,
         'descendants'
       );
     }

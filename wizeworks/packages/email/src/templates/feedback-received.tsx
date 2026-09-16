@@ -25,10 +25,10 @@ export function FeedbackReceivedEmail({
   const platform = usePlatformName();
   return (
     <PlatformEmailLayout
-      preview="Thanks — we got your feedback"
+      preview="Thanks: we got your feedback"
       footerReason={`You're receiving this because you submitted feedback in your ${platform} dashboard.`}
     >
-      <EmailDisplayHeading>Thanks — we got it</EmailDisplayHeading>
+      <EmailDisplayHeading>Thanks. We got it</EmailDisplayHeading>
       <EmailParagraph>
         {recipientName ? `Hi ${recipientName}, ` : ''}thanks for taking the time to share this with
         us. A real person on the {platform} team reads every piece of feedback, and we&apos;ll
@@ -39,12 +39,12 @@ export function FeedbackReceivedEmail({
       <EmailParagraph flush>{feedbackTitle}</EmailParagraph>
 
       <EmailFinePrint>
-        No need to reply — we&apos;ll reach out if we have a question or an update.
+        No need to reply. We&apos;ll reach out if we have a question or an update.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );
 }
 
 export function feedbackReceivedSubject(feedbackTitle: string): string {
-  return `We got your feedback — ${feedbackTitle}`;
+  return `We got your feedback: ${feedbackTitle}`;
 }

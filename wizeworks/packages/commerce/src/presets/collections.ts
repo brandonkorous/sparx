@@ -48,7 +48,7 @@ export const collectionPresets = [
     slug: 'collection-featured',
     name: 'Featured products',
     description:
-      'A hand-curated collection for your bestsellers and staff picks — add products to it manually and surface it on your home page.',
+      'A hand-curated collection for your bestsellers and staff picks. Add products to it manually and surface it on your home page.',
     iconKey: 'star',
     tags: ['featured', 'manual', 'curated'],
     chip: 'Hand-picked',
@@ -64,7 +64,7 @@ export const collectionPresets = [
     slug: 'collection-new-arrivals',
     name: 'New arrivals',
     description:
-      'A smart collection that automatically gathers anything tagged “new”, “just-in”, or “featured” — keeps a fresh-products surface current with no manual upkeep.',
+      'A smart collection that automatically gathers anything tagged “new”, “just-in”, or “featured”: keeps a fresh-products surface current with no manual upkeep.',
     iconKey: 'sparkles',
     tags: ['new', 'smart', 'tags'],
     chip: 'Tagged new / just-in',
@@ -83,7 +83,7 @@ export const collectionPresets = [
     slug: 'collection-budget-under-25',
     name: 'Under $25',
     description:
-      'A smart collection of every product priced $25 or less — a built-in value/budget surface that refreshes itself as prices change.',
+      'A smart collection of every product priced $25 or less: a built-in value/budget surface that refreshes itself as prices change.',
     iconKey: 'piggy-bank',
     tags: ['budget', 'smart', 'price'],
     chip: 'Price ≤ $25',

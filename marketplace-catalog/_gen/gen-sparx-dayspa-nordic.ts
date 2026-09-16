@@ -199,7 +199,7 @@ const SCHEDULING = {
       handle: 'thermal-soak',
       name: 'Thermal soak session',
       description:
-        'An unhurried hour in the mineral-warm soaking pool. Come as you are — no treatment, no schedule, just warm water and quiet.',
+        'An unhurried hour in the mineral-warm soaking pool. Come as you are: no treatment, no schedule, just warm water and quiet.',
       bookingType: 'reservation',
       durationMinutes: 90,
       priceCents: 4500,
@@ -213,7 +213,7 @@ const SCHEDULING = {
       handle: 'sauna-plunge-circuit',
       name: 'Sauna & cold-plunge circuit',
       description:
-        'The full hot-and-cold ritual — dry sauna, cold plunge, rest, repeat. A guided first round if it’s new to you.',
+        'The full hot-and-cold ritual: dry sauna, cold plunge, rest, repeat. A guided first round if it’s new to you.',
       bookingType: 'reservation',
       durationMinutes: 75,
       priceCents: 4000,
@@ -225,7 +225,7 @@ const SCHEDULING = {
     },
     {
       handle: 'massage-60',
-      name: 'Massage — 60 minutes',
+      name: 'Massage: 60 minutes',
       description: 'A calm, pressure-to-taste massage in a still room. Book a therapist by name.',
       durationMinutes: 60,
       priceCents: 12000,
@@ -239,8 +239,8 @@ const SCHEDULING = {
     },
     {
       handle: 'massage-90',
-      name: 'Massage — 90 minutes',
-      description: 'The longer session — full-body, unrushed, with time to actually let go.',
+      name: 'Massage: 90 minutes',
+      description: 'The longer session: full-body, unrushed, with time to actually let go.',
       durationMinutes: 90,
       priceCents: 16500,
       bufferAfterMin: 15,
@@ -255,7 +255,7 @@ const SCHEDULING = {
       handle: 'mineral-facial',
       name: 'Mineral facial',
       description:
-        'A clean, mineral-rich facial — cleanse, a warm-and-cool contrast, and a light finish. Nothing fussy.',
+        'A clean, mineral-rich facial: cleanse, a warm-and-cool contrast, and a light finish. Nothing fussy.',
       durationMinutes: 60,
       priceCents: 13500,
       bufferAfterMin: 10,
@@ -285,7 +285,7 @@ const SCHEDULING = {
       handle: 'private-bathhouse',
       name: 'Private bathhouse hour',
       description:
-        'The whole bathhouse to yourselves — pool, sauna and plunge, for up to eight. An hour that belongs to no one else.',
+        'The whole bathhouse to yourselves: pool, sauna and plunge, for up to eight. An hour that belongs to no one else.',
       bookingType: 'reservation',
       durationMinutes: 60,
       priceCents: 22000,
@@ -304,7 +304,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Warm water. Cold air. A quieter you.',
-    sub: 'Kald is a mineral bathhouse and day spa — a spare, elemental place to soak, sweat, plunge and slow all the way down. Book an hour that’s genuinely yours.',
+    sub: 'Kald is a mineral bathhouse and day spa: a spare, elemental place to soak, sweat, plunge and slow all the way down. Book an hour that’s genuinely yours.',
     primary: { label: 'Book online', href: '/book' },
     secondary: { label: 'See the menu', href: '/book' },
     surface: 'base',
@@ -337,7 +337,7 @@ const HOME = [
         desc: 'The full hot-and-cold ritual, guided if it’s new.',
       },
       {
-        name: 'Massage — 60 minutes',
+        name: 'Massage: 60 minutes',
         priceCents: 12000,
         durationMin: 60,
         desc: 'A calm, pressure-to-taste massage in a still room.',
@@ -356,7 +356,7 @@ const HOME = [
     alt: 'Warm and cold water meeting over smooth rock',
     heading: 'The ritual is the point',
     body: [
-      'Warm, then cold, then rest — again. It’s an old idea and a simple one: the contrast is what settles the body and clears the head. There’s nothing to master, and no wrong way to do it.',
+      'Warm, then cold, then rest: again. It’s an old idea and a simple one: the contrast is what settles the body and clears the head. There’s nothing to master, and no wrong way to do it.',
       'We keep the rooms quiet and the day unhurried, so an hour here feels like a proper reset rather than an appointment to get through.',
     ],
     cta: { label: 'Book your hour', href: '/book' },
@@ -365,7 +365,7 @@ const HOME = [
     items: [
       {
         title: 'Water, stone and steam',
-        body: 'A geothermal soaking pool, a timber sauna and a cold plunge — the whole elemental circuit, kept spotless and calm.',
+        body: 'A geothermal soaking pool, a timber sauna and a cold plunge: the whole elemental circuit, kept spotless and calm.',
       },
       {
         title: 'Unhurried by design',
@@ -373,13 +373,13 @@ const HOME = [
       },
       {
         title: 'Hands that know the work',
-        body: 'Massage, mineral facials and body treatments from therapists you book by name — quiet, skilled, unrushed.',
+        body: 'Massage, mineral facials and body treatments from therapists you book by name: quiet, skilled, unrushed.',
       },
     ],
   }),
   teamRow({
     heading: 'Who you’ll be in hands with',
-    intro: 'Book a therapist by name — you’ll see the same person each visit.',
+    intro: 'Book a therapist by name: you’ll see the same person each visit.',
     members: [
       {
         name: 'Eir Halvorsen',
@@ -416,7 +416,7 @@ const BOOK_INTRO = [
     image: url(IMG.pool),
     alt: 'A steaming geothermal soaking pool at first light',
     title: 'Book your session',
-    sub: 'Choose a session to see prices and live availability, then pick your time — or your therapist.',
+    sub: 'Choose a session to see prices and live availability, then pick your time, or your therapist.',
     primary: { label: 'See sessions below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -429,7 +429,7 @@ const ABOUT = [
     alt: 'Still mineral water under a pale, quiet sky',
     heading: 'About Kald',
     body: [
-      'We built Kald around one thing: warm water, cold air, and the quiet in between. No noise, no upsell, no rush — just the old ritual of soaking and plunging, done well.',
+      'We built Kald around one thing: warm water, cold air, and the quiet in between. No noise, no upsell, no rush. Just the old ritual of soaking and plunging, done well.',
       'It’s a spare, elemental place on purpose. Fewer people in the water, more room to breathe, and an hour that feels like it actually belongs to you.',
     ],
     cta: { label: 'Book a session', href: '/book' },
@@ -440,7 +440,7 @@ const ABOUT = [
     items: [
       {
         title: 'Arrive and settle',
-        body: 'Come ten minutes early. We’ll show you the circuit and let you set your own pace — warm, cold, rest, repeat.',
+        body: 'Come ten minutes early. We’ll show you the circuit and let you set your own pace: warm, cold, rest, repeat.',
       },
       {
         title: 'Soak, sweat, plunge',
@@ -468,7 +468,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your session online — no phone tag.',
+    sub: 'See live availability and reserve your session online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -479,8 +479,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-dayspa-nordic',
   name: 'Day Spa (Nordic)',
   summary:
-    'A cool, mineral day spa and bathhouse site — a glacial off-white palette, a blue-teal primary and a clean minimal sans, with quiet, elemental photography. Installs a working booking flow: thermal soak sessions, a sauna and cold-plunge circuit, 60/90-minute massage, a mineral facial and body treatment, plus a private bathhouse hour with a deposit. Three therapists and three pools and rooms carry real hours. Ships as “Kald”.',
-  tagline: 'A calm, mineral template for day spas and bathhouses — book online from day one.',
+    'A cool, mineral day spa and bathhouse site: a glacial off-white palette, a blue-teal primary and a clean minimal sans, with quiet, elemental photography. Installs a working booking flow: thermal soak sessions, a sauna and cold-plunge circuit, 60/90-minute massage, a mineral facial and body treatment, plus a private bathhouse hour with a deposit. Three therapists and three pools and rooms carry real hours. Ships as “Kald”.',
+  tagline: 'A calm, mineral template for day spas and bathhouses. Book online from day one.',
   industry: 'Day spa',
   sortWeight: 79,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -489,7 +489,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Kald — a Nordic day spa & bathhouse',
+      title: 'Kald: a Nordic day spa & bathhouse',
       description:
         'Kald is a mineral bathhouse and day spa for thermal soaks, a sauna and cold-plunge circuit, massage and facials. Book your session online.',
     },

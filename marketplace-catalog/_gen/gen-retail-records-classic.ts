@@ -166,7 +166,7 @@ function hero(): Node {
                                     text: 'Records, the way they were meant to be sold.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Sunset Sounds is a neighbourhood record shop with the lamp on and the turntable running. New pressings and clean reissues across soul, jazz, folk and the classics — filed by hand, played before we shelve them, and sent to you in proper brown paper.',
+                                    text: 'Sunset Sounds is a neighbourhood record shop with the lamp on and the turntable running. New pressings and clean reissues across soul, jazz, folk and the classics: filed by hand, played before we shelve them, and sent to you in proper brown paper.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -268,7 +268,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.records', layout: 'carousel', heading: 'New on the wall' }),
     editorialBand({
         heading: 'One record a month, wrapped in paper',
-        lead: 'The Monthly Spin is a record in the mail every month — a new pressing or a reissue we think you should hear, matched to the corners of the shop you love. Skip a month, change your taste, or cancel any time. The warmest way to keep the shelf growing.',
+        lead: 'The Monthly Spin is a record in the mail every month: a new pressing or a reissue we think you should hear, matched to the corners of the shop you love. Skip a month, change your taste, or cancel any time. The warmest way to keep the shelf growing.',
         assetId: 'sun-band-club',
         cta: 'Join the Monthly Spin',
         href: '/products/the-monthly-spin',
@@ -313,7 +313,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Wrapped in paper, packed to survive the post' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Every record ships in a rigid LP mailer with the corners protected, checked for warps and seam splits before it leaves the counter. In the neighbourhood? Reserve online and collect from the shop — we’ll hold it under the register for a week.',
+                                        text: 'Every record ships in a rigid LP mailer with the corners protected, checked for warps and seam splits before it leaves the counter. In the neighbourhood? Reserve online and collect from the shop: we’ll hold it under the register for a week.',
                                     }),
                                 ],
                             }),
@@ -352,13 +352,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The bins',
-        'Everything on the shelves right now — new pressings, clean reissues, the turntables and gear to play them, and a bit of shop merch. Filter by genre or sort however you like; every record is checked and played before it’s filed.'
+        'Everything on the shelves right now: new pressings, clean reissues, the turntables and gear to play them, and a bit of shop merch. Filter by genre or sort however you like; every record is checked and played before it’s filed.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'The bins grouped the way people actually browse — this month’s arrivals, the staff favourites, the soul-and-funk corner, the folk-and-country shelf, and a starter kit if you’re just setting the deck up.'
+        'The bins grouped the way people actually browse. This month’s arrivals, the staff favourites, the soul-and-funk corner, the folk-and-country shelf, and a starter kit if you’re just setting the deck up.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -385,7 +385,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The shop notes' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from behind the counter — where to start a collection, how the bins are laid out, and how to keep your records sounding like the day you bought them. No gatekeeping, no snobbery, just the warm stuff.',
+                        text: 'Notes from behind the counter: where to start a collection, how the bins are laid out, and how to keep your records sounding like the day you bought them. No gatekeeping, no snobbery, just the warm stuff.',
                     }),
                 ],
             }),
@@ -402,10 +402,10 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl', { text: 'About Sunset Sounds' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Sunset Sounds began as a folding table of records at a Sunday flea market and a stubborn belief that an album is meant to be heard front to back, with the sleeve in your hands. It grew the slow way — one regular, one recommendation, one trade-in at a time — into a shop with real wooden bins and a lamp that never quite gets turned off.',
+                        text: 'Sunset Sounds began as a folding table of records at a Sunday flea market and a stubborn belief that an album is meant to be heard front to back, with the sleeve in your hands. It grew the slow way (one regular, one recommendation, one trade-in at a time) into a shop with real wooden bins and a lamp that never quite gets turned off.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We lean warm and classic — soul, jazz, folk, country and the soft-rock records that sound like a summer evening — but we stock across every genre, because good music doesn’t care about your shelf labels. New pressings, clean reissues, the occasional gem that walks in the door: all of it checked for warps and splits, all of it played before it’s filed.',
+                        text: 'We lean warm and classic: soul, jazz, folk, country and the soft-rock records that sound like a summer evening, but we stock across every genre, because good music doesn’t care about your shelf labels. New pressings, clean reissues, the occasional gem that walks in the door: all of it checked for warps and splits, all of it played before it’s filed.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'No mystery grades, no gouging on the good stuff, and no attitude if you’re buying your very first record. Just a shop that still wraps your record in brown paper and hopes you’ll come back to tell us how it sounded.',
@@ -484,7 +484,7 @@ const lp = (opts: {
     seoDescription: string;
 }): Product => ({
     handle: opts.handle,
-    title: `${opts.title} — ${opts.artist}`,
+    title: `${opts.title}: ${opts.artist}`,
     description: opts.description,
     status: 'active',
     productType: 'Vinyl record',
@@ -508,13 +508,13 @@ const PRODUCTS: Product[] = [
         title: 'Golden Hour',
         artist: 'Marigold Avenue',
         description:
-            'Sun-warmed soft-rock that sounds like the last hour of a long summer day — jangling twelve-strings, close harmonies, and a rhythm section that never hurries. Sequenced to play from the porch light coming on to the crickets starting up. A record made for a slow evening.',
+            'Sun-warmed soft-rock that sounds like the last hour of a long summer day: jangling twelve-strings, close harmonies, and a rhythm section that never hurries. Sequenced to play from the porch light coming on to the crickets starting up. A record made for a slow evening.',
         price: 27,
         sku: 'SUN-LP-GOLDEN',
         collections: ['this-month', 'staff-favourites', 'folk-country'],
         tags: ['soft-rock', 'folk', 'new-arrival', 'color-vinyl'],
         asset: 'prod-golden-hour',
-        seoTitle: 'Marigold Avenue — Golden Hour (LP) | Sunset Sounds',
+        seoTitle: 'Marigold Avenue: Golden Hour (LP) | Sunset Sounds',
         seoDescription: 'Sun-warmed soft-rock from Marigold Avenue on 180g vinyl. Limited Sunset color pressing available.',
     }),
     lp({
@@ -522,13 +522,13 @@ const PRODUCTS: Product[] = [
         title: 'Paper Moon Radio',
         artist: 'The Clementine Sisters',
         description:
-            'Vintage-soul pop with three voices braided into one — handclaps, a walking bassline, and hooks that lodge for a week. It swings like an AM radio station you can’t quite find again the next morning. Warm, analogue, and impossible to sit still to.',
+            'Vintage-soul pop with three voices braided into one: handclaps, a walking bassline, and hooks that lodge for a week. It swings like an AM radio station you can’t quite find again the next morning. Warm, analogue, and impossible to sit still to.',
         price: 26,
         sku: 'SUN-LP-PAPER',
         collections: ['this-month', 'staff-favourites', 'soul-funk'],
         tags: ['soul', 'pop', 'new-arrival'],
         asset: 'prod-paper-moon',
-        seoTitle: 'The Clementine Sisters — Paper Moon Radio (LP) | Sunset Sounds',
+        seoTitle: 'The Clementine Sisters: Paper Moon Radio (LP) | Sunset Sounds',
         seoDescription: 'Vintage-soul pop from The Clementine Sisters, pressed on 180g vinyl.',
     }),
     lp({
@@ -536,13 +536,13 @@ const PRODUCTS: Product[] = [
         title: 'Dust & Diamonds',
         artist: 'Wendell Rhodes',
         description:
-            'Dusty-road country from a voice with gravel and honey in it — pedal steel that cries in all the right places, songs about leaving and the roads that bring you back. The kind of record that sounds even better on a rainy afternoon with the lamp on.',
+            'Dusty-road country from a voice with gravel and honey in it: pedal steel that cries in all the right places, songs about leaving and the roads that bring you back. The kind of record that sounds even better on a rainy afternoon with the lamp on.',
         price: 25,
         sku: 'SUN-LP-DUST',
         collections: ['this-month', 'folk-country'],
         tags: ['country', 'americana', 'new-arrival'],
         asset: 'prod-dust-diamonds',
-        seoTitle: 'Wendell Rhodes — Dust & Diamonds (LP) | Sunset Sounds',
+        seoTitle: 'Wendell Rhodes: Dust & Diamonds (LP) | Sunset Sounds',
         seoDescription: 'Dusty-road country and americana from Wendell Rhodes on 180g vinyl.',
     }),
     lp({
@@ -550,27 +550,27 @@ const PRODUCTS: Product[] = [
         title: 'Harbor Lights',
         artist: 'The Ambergris Quartet',
         description:
-            'A late-night jazz session cut straight to tape — brushed drums, a bass you can lean on, and a tenor sax that leaves plenty of room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room after everyone’s gone home.',
+            'A late-night jazz session cut straight to tape: brushed drums, a bass you can lean on, and a tenor sax that leaves plenty of room to breathe. An audiophile 180g pressing that rewards a good stylus and a quiet room after everyone’s gone home.',
         price: 33,
         sku: 'SUN-LP-HARBOR',
         collections: ['this-month', 'staff-favourites', 'soul-funk'],
         tags: ['jazz', 'audiophile', 'reissue'],
         asset: 'prod-harbor-lights',
-        seoTitle: 'The Ambergris Quartet — Harbor Lights (LP) | Sunset Sounds',
-        seoDescription: 'A late-night jazz session on audiophile 180g vinyl — brushed drums, walking bass, room to breathe.',
+        seoTitle: 'The Ambergris Quartet: Harbor Lights (LP) | Sunset Sounds',
+        seoDescription: 'A late-night jazz session on audiophile 180g vinyl: brushed drums, walking bass, room to breathe.',
     }),
     lp({
         handle: 'slow-sunday',
         title: 'Slow Sunday',
         artist: 'June Calloway',
         description:
-            'Deep, unhurried soul from a singer who never wastes a note — a Hammond organ that simmers, horns that punch just enough, and a voice that sounds like it’s telling you the truth. The record that clears the counter every time we drop the needle on it.',
+            'Deep, unhurried soul from a singer who never wastes a note: a Hammond organ that simmers, horns that punch just enough, and a voice that sounds like it’s telling you the truth. The record that clears the counter every time we drop the needle on it.',
         price: 28,
         sku: 'SUN-LP-SLOW',
         collections: ['staff-favourites', 'soul-funk', 'best-sellers'],
         tags: ['soul', 'funk', 'best-seller'],
         asset: 'prod-slow-sunday',
-        seoTitle: 'June Calloway — Slow Sunday (LP) | Sunset Sounds',
+        seoTitle: 'June Calloway: Slow Sunday (LP) | Sunset Sounds',
         seoDescription: 'Deep, unhurried soul from June Calloway on 180g vinyl.',
     }),
     lp({
@@ -578,20 +578,20 @@ const PRODUCTS: Product[] = [
         title: 'Ferris Wheel',
         artist: 'The Tangerine Set',
         description:
-            'Sunny psych-pop with the top down — fuzz guitars, a farfisa organ, and choruses built for a carnival at dusk. Ten tracks and not a dull one, sequenced to flip straight back over the second side B runs out. Play it loud with the windows open.',
+            'Sunny psych-pop with the top down: fuzz guitars, a farfisa organ, and choruses built for a carnival at dusk. Ten tracks and not a dull one, sequenced to flip straight back over the second side B runs out. Play it loud with the windows open.',
         price: 27,
         sku: 'SUN-LP-FERRIS',
         collections: ['this-month', 'best-sellers'],
         tags: ['psych', 'classic-rock', 'color-vinyl'],
         asset: 'prod-ferris-wheel',
-        seoTitle: 'The Tangerine Set — Ferris Wheel (LP) | Sunset Sounds',
+        seoTitle: 'The Tangerine Set: Ferris Wheel (LP) | Sunset Sounds',
         seoDescription: 'Sunny psych-pop from The Tangerine Set on 180g vinyl. Limited Sunset color pressing available.',
     }),
     {
         handle: 'sl-70-turntable',
         title: 'Sunset SL-70 Belt-Drive Turntable',
         description:
-            'The deck we set up for people getting back into records — a belt-drive turntable in a warm walnut plinth, with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. An adjustable counterweight that’s actually easy to set, felt feet, and a hush to the background you’ll notice on the first play. Sounds far better than it has any right to at the price.',
+            'The deck we set up for people getting back into records: a belt-drive turntable in a warm walnut plinth, with a pre-mounted cartridge and a built-in preamp, so it plugs straight into powered speakers or an amp with no fuss. An adjustable counterweight that’s actually easy to set, felt feet, and a hush to the background you’ll notice on the first play. Sounds far better than it has any right to at the price.',
         status: 'active',
         productType: 'Equipment',
         vendor: 'Sunset Sounds',
@@ -599,7 +599,7 @@ const PRODUCTS: Product[] = [
         categoryHandles: ['gear'],
         collectionHandles: ['best-sellers', 'starter-kit'],
         seoTitle: 'Sunset SL-70 Belt-Drive Turntable | Sunset Sounds',
-        seoDescription: 'A walnut belt-drive turntable with a pre-mounted cartridge and built-in preamp — plug-and-play into powered speakers or an amp.',
+        seoDescription: 'A walnut belt-drive turntable with a pre-mounted cartridge and built-in preamp: plug-and-play into powered speakers or an amp.',
         variants: [{ sku: 'SUN-GEAR-SL70', priceCents: money(329), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-turntable', isPrimary: true, alt: 'The Sunset Sounds belt-drive turntable in walnut' }],
     },
@@ -614,7 +614,7 @@ const PRODUCTS: Product[] = [
         tags: ['gear', 'slipmat', 'accessory'],
         categoryHandles: ['gear'],
         collectionHandles: ['starter-kit'],
-        seoTitle: 'Wool-Felt Slipmat — turntable accessory | Sunset Sounds',
+        seoTitle: 'Wool-Felt Slipmat: turntable accessory | Sunset Sounds',
         seoDescription: 'A soft wool-felt slipmat that keeps static and dust down between plays. Fits any 12-inch platter.',
         variants: [{ sku: 'SUN-GEAR-MAT', priceCents: money(16), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-slipmat', isPrimary: true, alt: 'A wool-felt turntable slipmat' }],
@@ -623,14 +623,14 @@ const PRODUCTS: Product[] = [
         handle: 'record-revival-kit',
         title: 'Record Revival Cleaning Kit',
         description:
-            'Everything to bring a tired record back to life — an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a soft microfibre cloth, in a little tin that lives next to the deck. Two minutes before a play and most of the pops and crackle simply go away.',
+            'Everything to bring a tired record back to life: an anti-static carbon-fibre brush, a bottle of alcohol-free cleaning fluid, and a soft microfibre cloth, in a little tin that lives next to the deck. Two minutes before a play and most of the pops and crackle simply go away.',
         status: 'active',
         productType: 'Equipment',
         vendor: 'Sunset Sounds',
         tags: ['gear', 'cleaning', 'care'],
         categoryHandles: ['gear'],
         collectionHandles: ['starter-kit'],
-        seoTitle: 'Record Revival Cleaning Kit — record care | Sunset Sounds',
+        seoTitle: 'Record Revival Cleaning Kit: record care | Sunset Sounds',
         seoDescription: 'An anti-static brush, alcohol-free fluid and a microfibre cloth to bring a tired record back to life.',
         variants: [{ sku: 'SUN-GEAR-CLEAN', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-cleaning-kit', isPrimary: true, alt: 'A record-revival cleaning kit with brush and fluid' }],
@@ -639,7 +639,7 @@ const PRODUCTS: Product[] = [
         handle: 'canvas-record-tote',
         title: 'Sunset Canvas Record Tote',
         description:
-            'A heavy 16oz natural-canvas tote sized to carry a dozen LPs home without the corners going soft — a flat bottom, reinforced straps, and the sunset mark printed low on the side. The bag you’ll grab on the way out the door every single time.',
+            'A heavy 16oz natural-canvas tote sized to carry a dozen LPs home without the corners going soft: a flat bottom, reinforced straps, and the sunset mark printed low on the side. The bag you’ll grab on the way out the door every single time.',
         status: 'active',
         productType: 'Merch',
         vendor: 'Sunset Sounds',
@@ -653,16 +653,16 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'the-monthly-spin',
-        title: 'The Monthly Spin — Vinyl Subscription',
+        title: 'The Monthly Spin: Vinyl Subscription',
         description:
-            'One record in the mail every month, wrapped in brown paper and chosen by the people behind the counter to match the corners of the shop you love — a new pressing or a clean reissue we think you should hear, with the hand-written card that tells you why. Skip a month, change your taste, or cancel any time. The warmest way to keep the shelf growing.',
+            'One record in the mail every month, wrapped in brown paper and chosen by the people behind the counter to match the corners of the shop you love: a new pressing or a clean reissue we think you should hear, with the hand-written card that tells you why. Skip a month, change your taste, or cancel any time. The warmest way to keep the shelf growing.',
         status: 'active',
         productType: 'Subscription',
         vendor: 'Sunset Sounds',
         tags: ['subscription', 'monthly-spin', 'gift'],
         categoryHandles: ['subscription'],
         collectionHandles: ['best-sellers', 'staff-favourites'],
-        seoTitle: 'The Monthly Spin — Vinyl Subscription | Sunset Sounds',
+        seoTitle: 'The Monthly Spin: Vinyl Subscription | Sunset Sounds',
         seoDescription: 'A hand-picked record in the mail every month, wrapped in paper and matched to your taste. Skip, swap or cancel any time.',
         options: [
             { name: 'Plan', displayType: 'dropdown', values: [{ value: 'One record' }, { value: 'Two records' }] },
@@ -752,11 +752,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('People put off buying their first records because they think they need to spend a fortune first — a rare pressing, an audiophile deck, a special shelf. You don’t. The best-sounding record collection in the world is the one you actually play, and that starts with three cheap, honest things.'),
+                    para('People put off buying their first records because they think they need to spend a fortune first: a rare pressing, an audiophile deck, a special shelf. You don’t. The best-sounding record collection in the world is the one you actually play, and that starts with three cheap, honest things.'),
                     h2('A deck, not a museum piece'),
                     para('You want a belt-drive turntable with a decent cartridge already fitted and a preamp built in, so it plugs straight into powered speakers or an amp with nothing to configure. That’s the whole ask. Our SL-70 is the one we set up for people getting started, but any deck that meets that description will keep you happy for years. Skip the vintage garage-sale find until you know what a good one sounds like.'),
                     h2('Five records you love, not fifty you should'),
-                    para('Don’t buy for the shelf. Buy the five albums you already know every word of, put them on front to back, and let the collection grow from there — a staff-pick card that catches your eye, a reissue of something your parents played, the record a friend won’t shut up about. A collection built out of real affection sounds better than one built out of obligation, every time.'),
+                    para('Don’t buy for the shelf. Buy the five albums you already know every word of, put them on front to back, and let the collection grow from there: a staff-pick card that catches your eye, a reissue of something your parents played, the record a friend won’t shut up about. A collection built out of real affection sounds better than one built out of obligation, every time.'),
                 ],
             },
         },
@@ -772,11 +772,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('First time in, the wall of records can look like a wall. It isn’t — there’s a logic to it, and once you know it you’ll find what you’re after in a minute and lose an hour to everything you weren’t. Here’s how we file things.'),
+                    para('First time in, the wall of records can look like a wall. It isn’t: there’s a logic to it, and once you know it you’ll find what you’re after in a minute and lose an hour to everything you weren’t. Here’s how we file things.'),
                     h2('Arrivals up front, genres along the wall'),
-                    para('The front table is always this month’s arrivals — whatever’s newest, restocked, or just came in as a trade. Past that, the wooden bins run by genre along the wall: soul and funk, jazz, folk and country, the classic-rock and psych corner, and a soft-rock shelf we love more than we’ll admit. The hand-lettered dividers are there to be flipped past, not tiptoed around.'),
+                    para('The front table is always this month’s arrivals: whatever’s newest, restocked, or just came in as a trade. Past that, the wooden bins run by genre along the wall: soul and funk, jazz, folk and country, the classic-rock and psych corner, and a soft-rock shelf we love more than we’ll admit. The hand-lettered dividers are there to be flipped past, not tiptoed around.'),
                     h2('The cards are us talking to you'),
-                    para('Anywhere you see a little hand-written card tucked into a sleeve, that’s a staff pick — a record someone here will personally vouch for, with a line about why. They’re not marketing; they’re just the fastest way to hear something great you’d never have pulled out yourself. Follow the cards and you’ll rarely go wrong.'),
+                    para('Anywhere you see a little hand-written card tucked into a sleeve, that’s a staff pick: a record someone here will personally vouch for, with a line about why. They’re not marketing; they’re just the fastest way to hear something great you’d never have pulled out yourself. Follow the cards and you’ll rarely go wrong.'),
                 ],
             },
         },
@@ -787,16 +787,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to keep your records sounding new',
-            excerpt: 'Most pops and crackle aren’t damage — they’re dust and static. Two minutes of care before each play does more than any upgrade you can buy.',
+            excerpt: 'Most pops and crackle aren’t damage: they’re dust and static. Two minutes of care before each play does more than any upgrade you can buy.',
             featuredImage: { $asset: 'post-care' },
             body: {
                 type: 'doc',
                 content: [
-                    para('People spend a fortune chasing a quieter record and skip the two things that actually cause the noise: dust down in the groove, and a static charge that keeps pulling more of it in. Handle both and most of the crackle disappears — no new cartridge, no new deck required.'),
+                    para('People spend a fortune chasing a quieter record and skip the two things that actually cause the noise: dust down in the groove, and a static charge that keeps pulling more of it in. Handle both and most of the crackle disappears, no new cartridge, no new deck required.'),
                     h2('Before every play'),
-                    para('Give the record a pass with an anti-static carbon-fibre brush while it turns on the platter — hold the bristles lightly in the groove for a rotation or two and let it lift the loose dust away. Always hold records by the edge and the label, never the playing surface; the oil from your fingers is exactly what dust sticks to in the first place.'),
+                    para('Give the record a pass with an anti-static carbon-fibre brush while it turns on the platter. Hold the bristles lightly in the groove for a rotation or two and let it lift the loose dust away. Always hold records by the edge and the label, never the playing surface; the oil from your fingers is exactly what dust sticks to in the first place.'),
                     h2('Every so often, a proper clean'),
-                    para('When a record’s been passed around or bought second-hand, give it a wet clean — a little alcohol-free fluid, a soft microfibre cloth, wiped with the groove and never across it, then left to dry fully before it goes back in the sleeve. Store everything upright, never stacked flat, and keep the deck out of direct sun. Do that and a record you buy today will still sound right in thirty years.'),
+                    para('When a record’s been passed around or bought second-hand, give it a wet clean: a little alcohol-free fluid, a soft microfibre cloth, wiped with the groove and never across it, then left to dry fully before it goes back in the sleeve. Store everything upright, never stacked flat, and keep the deck out of direct sun. Do that and a record you buy today will still sound right in thirty years.'),
                 ],
             },
         },
@@ -811,7 +811,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Record Shop (Vintage)',
     theme: THEME,
     summary:
-        'A complete, working shop for a warm neighbourhood record store: a real catalogue of vinyl LPs across the classic genres, a walnut turntable, a felt slipmat, a cleaning kit, a canvas tote and a monthly vinyl subscription, with categories, collections, a bespoke record-counter PDP and a full merchandised home page. Warm, nostalgic theme — faded-paper ground, burnt-sienna primary, dusty-teal accent, a vintage display serif. Shipped as Sunset Sounds.',
+        'A complete, working shop for a warm neighbourhood record store: a real catalogue of vinyl LPs across the classic genres, a walnut turntable, a felt slipmat, a cleaning kit, a canvas tote and a monthly vinyl subscription, with categories, collections, a bespoke record-counter PDP and a full merchandised home page. Warm, nostalgic theme, faded-paper ground, burnt-sienna primary, dusty-teal accent, a vintage display serif. Shipped as Sunset Sounds.',
     tagline: 'A warm, working storefront for a vintage record shop.',
     vertical: 'retail',
     industry: 'Record shop',
@@ -824,14 +824,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Sunset Sounds — a warm neighbourhood record shop for vinyl',
+            title: 'Sunset Sounds: a warm neighbourhood record shop for vinyl',
             description:
-                'Sunset Sounds is a neighbourhood record shop — new pressings and clean reissues across soul, jazz, folk and the classics, turntables and gear, and a monthly vinyl subscription. Every record played before it’s shelved.',
+                'Sunset Sounds is a neighbourhood record shop: new pressings and clean reissues across soul, jazz, folk and the classics, turntables and gear, and a monthly vinyl subscription. Every record played before it’s shelved.',
         },
         about: {
             title: 'About Sunset Sounds',
             description:
-                'How Sunset Sounds buys, checks and files its records — warm and classic, new pressings and clean reissues, played before they go in the bins. The shop that still wraps your record in brown paper.',
+                'How Sunset Sounds buys, checks and files its records: warm and classic, new pressings and clean reissues, played before they go in the bins. The shop that still wraps your record in brown paper.',
         },
     },
     home: HOME,

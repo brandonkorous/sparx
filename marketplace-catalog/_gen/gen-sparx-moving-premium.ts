@@ -168,7 +168,7 @@ const SCHEDULING = {
       handle: 'consultation',
       name: 'In-home consultation',
       description:
-        'A complimentary walk-through of your home — we take stock of what’s moving, talk timeline and options, and build a precise, honest estimate.',
+        'A complimentary walk-through of your home. We take stock of what’s moving, talk timeline and options, and build a precise, honest estimate.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -181,7 +181,7 @@ const SCHEDULING = {
       handle: 'virtual-estimate',
       name: 'Virtual video estimate',
       description:
-        'A complimentary video call — walk us through your home on your phone and we’ll prepare a detailed written estimate, no visit required.',
+        'A complimentary video call: walk us through your home on your phone and we’ll prepare a detailed written estimate, no visit required.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -194,7 +194,7 @@ const SCHEDULING = {
       handle: 'long-distance-consult',
       name: 'Long-distance & interstate consultation',
       description:
-        'For a cross-country or interstate move — we plan the route, the timeline and the logistics, and assign a dedicated manager for the whole journey.',
+        'For a cross-country or interstate move. We plan the route, the timeline and the logistics, and assign a dedicated manager for the whole journey.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -207,7 +207,7 @@ const SCHEDULING = {
       handle: 'white-glove-packing-consult',
       name: 'White-glove packing consultation',
       description:
-        'Plan full-service, room-by-room packing — every item wrapped, boxed and inventoried by our crew, so you never lift a thing.',
+        'Plan full-service, room-by-room packing: every item wrapped, boxed and inventoried by our crew, so you never lift a thing.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -220,7 +220,7 @@ const SCHEDULING = {
       handle: 'fine-art-move-consult',
       name: 'Fine-art & antiques consultation',
       description:
-        'For paintings, sculpture, pianos and heirlooms — custom crating, climate care and a specialist manager who handles the irreplaceable.',
+        'For paintings, sculpture, pianos and heirlooms: custom crating, climate care and a specialist manager who handles the irreplaceable.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -233,7 +233,7 @@ const SCHEDULING = {
       handle: 'corporate-relocation-consult',
       name: 'Corporate & executive relocation',
       description:
-        'A managed relocation for an executive or a team — coordinated timelines, discreet handling and a single point of contact from start to finish.',
+        'A managed relocation for an executive or a team: coordinated timelines, discreet handling and a single point of contact from start to finish.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -246,7 +246,7 @@ const SCHEDULING = {
       handle: 'storage-consult',
       name: 'Storage & warehousing consultation',
       description:
-        'Short- or long-term storage between moves — secure, climate-controlled and fully inventoried, with delivery on your schedule.',
+        'Short- or long-term storage between moves: secure, climate-controlled and fully inventoried, with delivery on your schedule.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -264,7 +264,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'An elegant home at dusk with movers carrying wrapped furniture with care',
     title: 'A move handled like it’s our own home',
-    sub: 'Whiteglove Movers is a premium long-distance and white-glove moving company — meticulous packing, fine-art and antiques, corporate relocation and storage, with a dedicated manager on every move. Book a consultation to begin.',
+    sub: 'Whiteglove Movers is a premium long-distance and white-glove moving company: meticulous packing, fine-art and antiques, corporate relocation and storage, with a dedicated manager on every move. Book a consultation to begin.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See our services', href: '/book' },
     overlay: 'darker',
@@ -273,7 +273,7 @@ const HOME = [
     items: [
       {
         title: 'A dedicated move manager',
-        body: 'One expert owns your move end to end — the plan, the crew, the timeline. One name, one number, from the first call to the last box.',
+        body: 'One expert owns your move end to end: the plan, the crew, the timeline. One name, one number, from the first call to the last box.',
       },
       {
         title: 'Full white-glove packing',
@@ -281,7 +281,7 @@ const HOME = [
       },
       {
         title: 'Fine art & antiques',
-        body: 'Custom crating, climate care and specialist handling for the pieces that can’t be replaced — paintings, pianos, sculpture and heirlooms.',
+        body: 'Custom crating, climate care and specialist handling for the pieces that can’t be replaced: paintings, pianos, sculpture and heirlooms.',
       },
       {
         title: 'Nationwide & storage',
@@ -291,12 +291,12 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Ways to begin',
-    intro: 'Every move starts with a conversation. Here are a few of the ways in — every consultation and estimate is complimentary, and live availability is on the booking page.',
+    intro: 'Every move starts with a conversation. Here are a few of the ways in: every consultation and estimate is complimentary, and live availability is on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
       { name: 'In-home consultation', priceCents: 0, durationMin: 60, desc: 'A complimentary walk-through and a precise, honest estimate.' },
-      { name: 'Virtual video estimate', priceCents: 0, durationMin: 30, desc: 'A guided video call and a detailed written estimate — no visit needed.' },
+      { name: 'Virtual video estimate', priceCents: 0, durationMin: 30, desc: 'A guided video call and a detailed written estimate: no visit needed.' },
       { name: 'Long-distance & interstate', priceCents: 0, durationMin: 60, desc: 'Route, timeline and logistics for a cross-country move.' },
       { name: 'Fine-art & antiques', priceCents: 0, durationMin: 60, desc: 'Custom crating and specialist handling for the irreplaceable.' },
     ],
@@ -307,14 +307,14 @@ const HOME = [
     alt: 'A packer wrapping a framed artwork in protective material on a padded table',
     heading: 'The white-glove process',
     body: [
-      'It begins with a survey — in your home or over video — where your manager takes a full inventory, understands what matters most, and builds a plan and a fixed, honest estimate before anything is booked.',
-      'On move day our crew arrives on schedule, packs and protects every item by hand, and transports it under one careful watch. At the other end we unpack, place and reassemble — so you arrive to a home that’s ready, not a wall of boxes.',
+      'It begins with a survey (in your home or over video) where your manager takes a full inventory, understands what matters most, and builds a plan and a fixed, honest estimate before anything is booked.',
+      'On move day our crew arrives on schedule, packs and protects every item by hand, and transports it under one careful watch. At the other end we unpack, place and reassemble, so you arrive to a home that’s ready, not a wall of boxes.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
   teamRow({
     heading: 'Your move managers',
-    intro: 'Book by name — the manager you meet is the one who runs your move, start to finish.',
+    intro: 'Book by name: the manager you meet is the one who runs your move, start to finish.',
     members: [
       { name: 'Marcus Bell', role: 'Senior move manager', image: url(IMG.marcus), alt: 'Marcus Bell, senior move manager', bio: 'Twenty years of long-distance moves. Marcus plans the complex ones down to the hour.' },
       { name: 'Céline Ordóñez', role: 'Fine-art & antiques manager', image: url(IMG.celine), alt: 'Céline Ordóñez, fine-art and antiques manager', bio: 'Custom crating and museum-grade care for paintings, pianos and heirlooms.' },
@@ -322,12 +322,12 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'We moved three states away with a house full of antiques and not a single scratch. Our manager handled everything — we just showed up to a home that was already put together. Genuinely the calmest move of our lives.',
+    quote: 'We moved three states away with a house full of antiques and not a single scratch. Our manager handled everything. We just showed up to a home that was already put together. Genuinely the calmest move of our lives.',
     attribution: 'The Ashford family, whole-home interstate relocation',
   }),
   bookingCta({
     title: 'Ready to plan a worry-free move?',
-    sub: 'Start with a complimentary consultation — choose a move manager, see live availability and pick a time that suits you.',
+    sub: 'Start with a complimentary consultation. Choose a move manager, see live availability and pick a time that suits you.',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
 ];
@@ -351,7 +351,7 @@ const ABOUT = [
     heading: 'About Whiteglove Movers',
     body: [
       'Whiteglove Movers began with a simple conviction: a move should feel handled, not endured. We take on a limited number of moves at a time, so every family and every executive gets a dedicated manager and the full attention the day deserves.',
-      'From a cross-country relocation to a single fragile heirloom, we bring the same care — an honest estimate, a meticulous crew, and a calm hand on every detail from the first survey to the last piece placed.',
+      'From a cross-country relocation to a single fragile heirloom, we bring the same care: an honest estimate, a meticulous crew, and a calm hand on every detail from the first survey to the last piece placed.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -359,9 +359,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'One manager, start to finish', body: 'You’re never handed off. The manager who surveys your home is the one who runs the move — the plan, the crew and the timeline all in one pair of hands.' },
-      { title: 'A fixed, honest estimate', body: 'We survey thoroughly and quote precisely, then hold to it. No day-of surprises, no creeping numbers — just the figure we agreed on.' },
-      { title: 'Fully insured, meticulously careful', body: 'Every move is fully insured and every item handled as if it were irreplaceable — because to the family it belongs to, it usually is.' },
+      { title: 'One manager, start to finish', body: 'You’re never handed off. The manager who surveys your home is the one who runs the move: the plan, the crew and the timeline all in one pair of hands.' },
+      { title: 'A fixed, honest estimate', body: 'We survey thoroughly and quote precisely, then hold to it. No day-of surprises, no creeping numbers. Just the figure we agreed on.' },
+      { title: 'Fully insured, meticulously careful', body: 'Every move is fully insured and every item handled as if it were irreplaceable, because to the family it belongs to, it usually is.' },
     ],
   }),
 ];
@@ -379,7 +379,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your complimentary consultation online — no phone tag.',
+    sub: 'See live availability and reserve your complimentary consultation online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -390,8 +390,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-moving-premium',
   name: 'Moving (Premium White-Glove)',
   summary:
-    'A refined, premium site for a white-glove long-distance moving company — a deep charcoal palette, a warm brass accent and an elegant serif display over calm relocation photography. Installs online booking for complimentary consultations and estimates, three move managers you book by name with their own hours, and a deposit policy to reserve a move date. Ships as "Whiteglove Movers".',
-  tagline: 'A premium, white-glove template for moving companies — book consultations online from day one.',
+    'A refined, premium site for a white-glove long-distance moving company: a deep charcoal palette, a warm brass accent and an elegant serif display over calm relocation photography. Installs online booking for complimentary consultations and estimates, three move managers you book by name with their own hours, and a deposit policy to reserve a move date. Ships as "Whiteglove Movers".',
+  tagline: 'A premium, white-glove template for moving companies. Book consultations online from day one.',
   industry: 'Moving',
   sortWeight: 13,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -400,9 +400,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Whiteglove Movers — premium white-glove & long-distance moving',
+      title: 'Whiteglove Movers: premium white-glove & long-distance moving',
       description:
-        'Whiteglove Movers is a premium moving company for long-distance and interstate moves — white-glove packing, fine-art and antiques, corporate relocation and storage. Book a consultation online.',
+        'Whiteglove Movers is a premium moving company for long-distance and interstate moves: white-glove packing, fine-art and antiques, corporate relocation and storage. Book a consultation online.',
     },
   },
   home: HOME,

@@ -143,24 +143,24 @@ export async function buildChannelProduct(
   const data = await loadProductData(tenantId, productId);
 
   if (!data?.product) {
-    log.debug({ productId }, 'channel-sync: product not found / deleted — skipping');
+    log.debug({ productId }, 'channel-sync: product not found / deleted, skipping');
     return null;
   }
   const { product, slug, assets } = data;
   if (!slug) {
-    log.warn({ productId, tenantId }, 'channel-sync: tenant slug unresolved — skipping push');
+    log.warn({ productId, tenantId }, 'channel-sync: tenant slug unresolved, skipping push');
     return null;
   }
   const productUrl = storefrontUrl(slug, product.handle);
   if (!productUrl) {
     log.warn(
       { productId },
-      'channel-sync: SPARX_SITE_BASE unset — cannot build an absolute product URL, skipping'
+      'channel-sync: SPARX_SITE_BASE unset, cannot build an absolute product URL, skipping'
     );
     return null;
   }
   if (product.variants.length === 0) {
-    log.debug({ productId }, 'channel-sync: product has no active variants — skipping');
+    log.debug({ productId }, 'channel-sync: product has no active variants, skipping');
     return null;
   }
 

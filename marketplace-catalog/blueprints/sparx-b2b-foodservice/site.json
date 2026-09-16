@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "The Larder Supply Co. — foodservice wholesale by the case",
-      "seoDescription": "The Larder Supply Co. supplies cafes, restaurants and canteens — bulk pantry, oils and staples, packaging and disposables, by the case at trade prices. One delivery, one invoice, net-30 terms.",
+      "seoTitle": "The Larder Supply Co. foodservice wholesale by the case",
+      "seoDescription": "The Larder Supply Co. supplies cafes, restaurants and canteens: bulk pantry, oils and staples, packaging and disposables, by the case at trade prices. One delivery, one invoice, net-30 terms.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The Larder Supply Co. keeps cafes, restaurants and canteens stocked — bulk pantry, oils and staples, packaging and disposables, all by the case at trade prices. One supplier, one delivery, one invoice a month."
+                          "The Larder Supply Co. keeps cafes, restaurants and canteens stocked: bulk pantry, oils and staples, packaging and disposables, all by the case at trade prices. One supplier, one delivery, one invoice a month."
                         ],
                         "id": "43d9596b-3e8f-4762-a2a4-0e8d36f3bf6a",
                         "ord": "a1"
@@ -1213,7 +1213,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Buying by the case should be simple. Open an account, order what you need, and let us handle the rest — here is exactly what to expect."
+                          "Buying by the case should be simple. Open an account, order what you need, and let us handle the rest. Here is exactly what to expect."
                         ],
                         "id": "eb95b810-ce92-4d49-9eb1-de72efd8c14c",
                         "ord": "a1"
@@ -1245,7 +1245,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every price on the site is the trade price per case, sack or carton — no consumer markup. Volume breaks kick in automatically once you order in quantity, and contract pricing is available on lines you buy every week."
+                              "Every price on the site is the trade price per case, sack or carton: no consumer markup. Volume breaks kick in automatically once you order in quantity, and contract pricing is available on lines you buy every week."
                             ],
                             "id": "2584f09e-0abe-4965-a11a-8838914c2d69",
                             "ord": "a1"
@@ -1272,7 +1272,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Orders start at a $250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low — build a standing order and you will clear it without thinking."
+                              "Orders start at a $250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low. Build a standing order and you will clear it without thinking."
                             ],
                             "id": "ad4dd701-e489-4250-87fb-a20dcbea8e4f",
                             "ord": "a1"
@@ -1299,7 +1299,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We run set delivery days by area — order by 2pm the day before and it is on the next scheduled run. Chilled and ambient come on the same truck, so one drop covers the whole order."
+                              "We run set delivery days by area. Order by 2pm the day before and it is on the next scheduled run. Chilled and ambient come on the same truck, so one drop covers the whole order."
                             ],
                             "id": "8f522848-47a7-495b-8d47-a41c89aaf2a6",
                             "ord": "a1"
@@ -1353,7 +1353,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You get a named account manager who knows your kitchen — someone to call about a substitution, a rush, or a new line, who will actually pick up. Not a call centre."
+                              "You get a named account manager who knows your kitchen. Someone to call about a substitution, a rush, or a new line, who will actually pick up. Not a call centre."
                             ],
                             "id": "9b1ae5c0-4b08-4dac-abb6-413bfa3445c6",
                             "ord": "a1"
@@ -1715,7 +1715,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every account gets a named manager who knows your kitchen — for a substitution, a rush order or a new line. Open a trade account and get trade pricing, net-30 terms and someone who answers."
+                          "Every account gets a named manager who knows your kitchen, for a substitution, a rush order or a new line. Open a trade account and get trade pricing, net-30 terms and someone who answers."
                         ],
                         "id": "788d82d0-dd5c-4326-8da3-e492cf5c458d",
                         "ord": "a1"
@@ -1750,7 +1750,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — The Larder Supply Co.",
+      "seoTitle": "Shop: The Larder Supply Co.",
       "seoDescription": "Browse everything The Larder Supply Co. makes, with prices and options at a glance. Foodservice wholesale.",
       "root": {
         "kind": "element",
@@ -1782,7 +1782,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we carry, by the case, sack and carton — pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order $250 for delivery."
+                      "Everything we carry, by the case, sack and carton: pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order $250 for delivery."
                     ],
                     "id": "6492d8ff-8867-451a-abc8-6530f3e78ec0",
                     "ord": "a1"
@@ -1810,7 +1810,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — The Larder Supply Co.",
+      "seoTitle": "Collections: The Larder Supply Co.",
       "seoDescription": "Explore the collections at The Larder Supply Co., grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1842,7 +1842,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalogue grouped the way a kitchen actually orders — trade favourites, the essentials a new account starts with, the dry-store staples, and the back-of-house packaging and disposables run."
+                      "The catalogue grouped the way a kitchen actually orders: trade favourites, the essentials a new account starts with, the dry-store staples, and the back-of-house packaging and disposables run."
                     ],
                     "id": "fe54f57d-d87b-4099-b1ff-b602a3e1969b",
                     "ord": "a1"
@@ -1870,7 +1870,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — The Larder Supply Co.",
+      "seoTitle": "Your cart: The Larder Supply Co.",
       "seoDescription": "Review what is in your cart and check out securely at The Larder Supply Co..",
       "root": {
         "kind": "element",
@@ -1902,7 +1902,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Delivery starts at a $250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms — one statement at month end, not a charge per order."
+                      "Delivery starts at a $250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms. One statement at month end, not a charge per order."
                     ],
                     "id": "eba3b0bb-c384-44f9-a763-368f76c60f2a",
                     "ord": "a1"
@@ -1930,7 +1930,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — The Larder Supply Co.",
+      "seoTitle": "Search: The Larder Supply Co.",
       "seoDescription": "Search The Larder Supply Co. for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1990,7 +1990,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — The Larder Supply Co.",
+      "seoTitle": "Journal: The Larder Supply Co.",
       "seoDescription": "Stories, guides and notes from The Larder Supply Co..",
       "root": {
         "kind": "element",
@@ -2022,7 +2022,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical notes for the people who run the kitchen — how we source, how to set a standing order that runs itself, and how to keep a dry store that never runs short. Plain and useful, no fluff."
+                      "Practical notes for the people who run the kitchen: how we source, how to set a standing order that runs itself, and how to keep a dry store that never runs short. Plain and useful, no fluff."
                     ],
                     "id": "ae5cea36-4e9c-4957-9df8-a52de6a99a39",
                     "ord": "a1"
@@ -2156,7 +2156,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About The Larder Supply Co.",
-      "seoDescription": "How The Larder buys in volume, carries the whole order and delivers on your day — trade pricing, net-30 terms and a named account manager for every kitchen.",
+      "seoDescription": "How The Larder buys in volume, carries the whole order and delivers on your day: trade pricing, net-30 terms and a named account manager for every kitchen.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2187,7 +2187,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The Larder Supply Co. started on a single van, supplying a handful of cafes that were tired of chasing six different suppliers for one week’s order. It grew the way good trade relationships do — one kitchen, one standing order, one reliable delivery at a time — and it still runs on the same promise: carry the whole order, price it fairly, and turn up when we said we would."
+                      "The Larder Supply Co. started on a single van, supplying a handful of cafes that were tired of chasing six different suppliers for one week’s order. It grew the way good trade relationships do (one kitchen, one standing order, one reliable delivery at a time) and it still runs on the same promise: carry the whole order, price it fairly, and turn up when we said we would."
                     ],
                     "id": "a3aa6938-338c-4907-9c23-6dfcd3091df8",
                     "ord": "a1"
@@ -2197,7 +2197,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We buy in volume and pass the price on — pantry by the sack, oils and staples by the case, packaging and disposables by the carton. Because we carry the breadth, a cafe, a bistro and a staff canteen can all clear their order with one supplier and one invoice, instead of a drawer full of dockets."
+                      "We buy in volume and pass the price on: pantry by the sack, oils and staples by the case, packaging and disposables by the carton. Because we carry the breadth, a cafe, a bistro and a staff canteen can all clear their order with one supplier and one invoice, instead of a drawer full of dockets."
                     ],
                     "id": "3aa56633-6a96-48c9-987d-48af577421fe",
                     "ord": "a2"
@@ -2227,8 +2227,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — The Larder Supply Co.",
-      "seoDescription": "Open a wholesale trade account with The Larder Supply Co. — trade pricing, net-30 terms, set delivery days and a named account manager for your kitchen.",
+      "seoTitle": "Open a trade account: The Larder Supply Co.",
+      "seoDescription": "Open a wholesale trade account with The Larder Supply Co. trade pricing, net-30 terms, set delivery days and a named account manager for your kitchen.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2264,7 +2264,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tell us about your kitchen — what you run, roughly what you order, and where you are. We will set up your account, run a quick credit check for net-30 terms, and get a named manager on your first delivery."
+                          "Tell us about your kitchen: what you run, roughly what you order, and where you are. We will set up your account, run a quick credit check for net-30 terms, and get a named manager on your first delivery."
                         ],
                         "id": "7a6bc4bc-1dcd-4f41-855d-3bc4bd6c7f9d",
                         "ord": "a1"
@@ -2535,8 +2535,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — The Larder Supply Co.",
-      "seoDescription": "Product details at The Larder Supply Co. — foodservice wholesale, with options and pricing.",
+      "seoTitle": "Product: The Larder Supply Co.",
+      "seoDescription": "Product details at The Larder Supply Co. foodservice wholesale, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

@@ -344,7 +344,7 @@ function EnrollModal({
       onError: (e) => {
         toast.add({
           title: 'Could not add them',
-          description: sequenceErrorMessage(e, 'Nothing was changed — try again in a moment.'),
+          description: sequenceErrorMessage(e, 'Nothing was changed. Try again in a moment.'),
           type: 'error',
         });
       },

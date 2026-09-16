@@ -109,7 +109,7 @@ function validate(raw: unknown): BillingPlan {
     fail(`plan "${plan.id}" has shape "${String(plan.shape)}" (expected per_module or flat)`);
   }
   if (plan.shape === 'flat' && !plan.base) {
-    fail(`flat plan "${plan.id}" has no base item — there would be nothing to charge`);
+    fail(`flat plan "${plan.id}" has no base item: there would be nothing to charge`);
   }
   return plan as BillingPlan;
 }

@@ -213,7 +213,7 @@ const fetchFrameEnvelope = cache(
     if (read.kind === 'failed') {
       console.warn(
         `[silica] could not read the published frame for '${tenantSlug}' after a retry ` +
-          `(${read.reason}) — this render falls back to the starter chrome and the base ` +
+          `(${read.reason}): this render falls back to the starter chrome and the base ` +
           `theme, so a site that HAS published a theme is not wearing it.`
       );
       return null;

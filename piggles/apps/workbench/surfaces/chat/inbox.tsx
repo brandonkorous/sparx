@@ -265,7 +265,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title="Could not load your conversations"
-            description="This is a problem reaching the server. Your conversations are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your conversations are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading conversations…" />

@@ -79,14 +79,14 @@
     {
       "handle": "ethiopia-guji",
       "title": "Ethiopia Guji",
-      "description": "A washed Ethiopia from the Guji highlands — bright and floral, with jasmine on the nose and a clean, tea-like finish. The one to reach for when you want coffee that tastes like a place, not just like coffee.",
+      "description": "A washed Ethiopia from the Guji highlands: bright and floral, with jasmine on the nose and a clean, tea-like finish. The one to reach for when you want coffee that tastes like a place, not just like coffee.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["single-origin", "ethiopia", "washed", "light-roast"],
       "categoryHandles": ["single-origin"],
       "collectionHandles": ["this-week", "single-origins"],
-      "seoTitle": "Ethiopia Guji — washed single-origin coffee | Cairn",
+      "seoTitle": "Ethiopia Guji: washed single-origin coffee | Cairn",
       "seoDescription": "A bright, floral washed Ethiopia from the Guji highlands, roasted light. Jasmine and stone fruit.",
       "options": [
         {
@@ -143,15 +143,15 @@
     {
       "handle": "colombia-huila",
       "title": "Colombia Huila",
-      "description": "A washed Colombia from smallholders in Huila — the crowd-pleaser of the shelf. Milk chocolate, red apple and caramel, medium-bodied and endlessly easy to drink, black or with milk.",
+      "description": "A washed Colombia from smallholders in Huila: the crowd-pleaser of the shelf. Milk chocolate, red apple and caramel, medium-bodied and endlessly easy to drink, black or with milk.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["single-origin", "colombia", "washed", "medium-roast"],
       "categoryHandles": ["single-origin"],
       "collectionHandles": ["this-week", "single-origins"],
-      "seoTitle": "Colombia Huila — washed single-origin coffee | Cairn",
-      "seoDescription": "A sweet, balanced washed Colombia — milk chocolate, red apple and caramel. Roasted medium.",
+      "seoTitle": "Colombia Huila: washed single-origin coffee | Cairn",
+      "seoDescription": "A sweet, balanced washed Colombia: milk chocolate, red apple and caramel. Roasted medium.",
       "options": [
         {
           "name": "Grind",
@@ -207,14 +207,14 @@
     {
       "handle": "house-blend",
       "title": "Cairn House Blend",
-      "description": "Our everyday blend and the coffee we drink most — a balance of Latin American and East African beans that’s sweet, round and forgiving. Great in a filter, great in a French press, great half-asleep at 6am.",
+      "description": "Our everyday blend and the coffee we drink most: a balance of Latin American and East African beans that’s sweet, round and forgiving. Great in a filter, great in a French press, great half-asleep at 6am.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["blend", "everyday", "medium-roast"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["this-week", "blends", "best-sellers"],
-      "seoTitle": "Cairn House Blend — everyday coffee | Cairn",
+      "seoTitle": "Cairn House Blend: everyday coffee | Cairn",
       "seoDescription": "A sweet, round, forgiving everyday blend that works in any brewer. Roasted medium.",
       "options": [
         {
@@ -271,14 +271,14 @@
     {
       "handle": "espresso-roast",
       "title": "Foundry Espresso",
-      "description": "A blend built for the machine — a touch darker, syrupy and chocolatey, with a heavy body that stands up to milk without disappearing. Pulls a sweet, forgiving shot and makes a flat white you’ll want twice.",
+      "description": "A blend built for the machine: a touch darker, syrupy and chocolatey, with a heavy body that stands up to milk without disappearing. Pulls a sweet, forgiving shot and makes a flat white you’ll want twice.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["blend", "espresso", "dark-roast"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["blends", "best-sellers"],
-      "seoTitle": "Foundry Espresso — espresso blend | Cairn",
+      "seoTitle": "Foundry Espresso: espresso blend | Cairn",
       "seoDescription": "A syrupy, chocolatey espresso blend with a heavy body that stands up to milk. Roasted dark.",
       "options": [
         {
@@ -335,15 +335,15 @@
     {
       "handle": "decaf",
       "title": "Nightcap Decaf",
-      "description": "A sugarcane-process decaf that actually tastes like coffee — cocoa, roasted almond and a little dried cherry, with none of the flat, papery thing decaf is famous for. The 4pm cup that won’t keep you up.",
+      "description": "A sugarcane-process decaf that actually tastes like coffee: cocoa, roasted almond and a little dried cherry, with none of the flat, papery thing decaf is famous for. The 4pm cup that won’t keep you up.",
       "status": "active",
       "productType": "Coffee",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["decaf", "medium-roast"],
       "categoryHandles": ["blends"],
       "collectionHandles": ["blends"],
-      "seoTitle": "Nightcap Decaf — sugarcane-process decaf coffee | Cairn",
-      "seoDescription": "A genuinely good sugarcane-process decaf — cocoa, almond and dried cherry. Roasted medium.",
+      "seoTitle": "Nightcap Decaf: sugarcane-process decaf coffee | Cairn",
+      "seoDescription": "A genuinely good sugarcane-process decaf: cocoa, almond and dried cherry. Roasted medium.",
       "options": [
         {
           "name": "Grind",
@@ -399,14 +399,14 @@
     {
       "handle": "pour-over-dripper",
       "title": "Ceramic Pour-Over Dripper",
-      "description": "A single-cup ceramic dripper that holds heat and pours clean — the simplest way to make café-quality coffee at home. Pairs with standard cone filters; no gadgets, no power, no fuss.",
+      "description": "A single-cup ceramic dripper that holds heat and pours clean: the simplest way to make café-quality coffee at home. Pairs with standard cone filters; no gadgets, no power, no fuss.",
       "status": "active",
       "productType": "Equipment",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["gear", "brewing", "pour-over"],
       "categoryHandles": ["gear"],
       "collectionHandles": ["gear", "starter-kit"],
-      "seoTitle": "Ceramic Pour-Over Dripper — brew gear | Cairn",
+      "seoTitle": "Ceramic Pour-Over Dripper: brew gear | Cairn",
       "seoDescription": "A single-cup ceramic pour-over dripper that holds heat and pours clean.",
       "variants": [
         {
@@ -427,14 +427,14 @@
     {
       "handle": "pour-over-filters",
       "title": "Pour-Over Filters (100)",
-      "description": "A hundred natural paper filters for the cone dripper — unbleached, so there’s no papery taste to rinse out. The consumable you always forget to reorder, so put it on the subscription.",
+      "description": "A hundred natural paper filters for the cone dripper: unbleached, so there’s no papery taste to rinse out. The consumable you always forget to reorder, so put it on the subscription.",
       "status": "active",
       "productType": "Equipment",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["gear", "brewing", "filters"],
       "categoryHandles": ["gear"],
       "collectionHandles": ["gear", "starter-kit"],
-      "seoTitle": "Pour-Over Filters, 100 pack — brew gear | Cairn",
+      "seoTitle": "Pour-Over Filters, 100 pack: brew gear | Cairn",
       "seoDescription": "A hundred unbleached natural paper filters for a cone pour-over dripper.",
       "variants": [
         {
@@ -455,14 +455,14 @@
     {
       "handle": "stoneware-mug",
       "title": "Cairn Stoneware Mug",
-      "description": "A heavy, hand-glazed stoneware mug that keeps coffee hot and feels right in the hand. Made in small runs by a local pottery, so no two glazes are exactly the same. 10oz — the size of a proper morning cup.",
+      "description": "A heavy, hand-glazed stoneware mug that keeps coffee hot and feels right in the hand. Made in small runs by a local pottery, so no two glazes are exactly the same. 10oz: the size of a proper morning cup.",
       "status": "active",
       "productType": "Equipment",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["gear", "mug", "ceramics"],
       "categoryHandles": ["gear"],
       "collectionHandles": ["gear"],
-      "seoTitle": "Cairn Stoneware Mug — 10oz coffee mug | Cairn",
+      "seoTitle": "Cairn Stoneware Mug: 10oz coffee mug | Cairn",
       "seoDescription": "A heavy hand-glazed stoneware coffee mug, 10oz, made in small runs by a local pottery.",
       "variants": [
         {
@@ -483,15 +483,15 @@
     {
       "handle": "subscription",
       "title": "Coffee Subscription",
-      "description": "Freshly roasted coffee on your schedule — pick a size and how often, and we roast and ship it to match. Rotate through single origins or stick with the house blend; skip, swap or cancel any time. The easiest way to never run out.",
+      "description": "Freshly roasted coffee on your schedule. Pick a size and how often, and we roast and ship it to match. Rotate through single origins or stick with the house blend; skip, swap or cancel any time. The easiest way to never run out.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Cairn Coffee Roasters",
       "tags": ["subscription", "gift"],
       "categoryHandles": ["subscription"],
       "collectionHandles": ["this-week", "best-sellers"],
-      "seoTitle": "Coffee Subscription — freshly roasted, on your schedule | Cairn",
-      "seoDescription": "A flexible coffee subscription — pick a size and cadence; skip, swap or cancel any time.",
+      "seoTitle": "Coffee Subscription: freshly roasted, on your schedule | Cairn",
+      "seoDescription": "A flexible coffee subscription. Pick a size and cadence; skip, swap or cancel any time.",
       "options": [
         {
           "name": "Plan",

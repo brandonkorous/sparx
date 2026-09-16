@@ -88,7 +88,7 @@ export function buildSignatureHtml(d: SignatureData, layout: SignatureLayout): s
     return (
       `<table cellpadding="0" cellspacing="0" border="0" role="presentation"><tr><td style="border-left:3px solid ${d.accent};padding-left:12px;">` +
       `<div style="${FONT}font-size:15px;font-weight:bold;color:#111111;">${esc(d.name) || 'Your Name'}` +
-      `${d.title ? `<span style="font-weight:normal;color:#555555;"> — ${esc(d.title)}${d.company ? `, ${esc(d.company)}` : ''}</span>` : ''}</div>` +
+      `${d.title ? `<span style="font-weight:normal;color:#555555;">, ${esc(d.title)}${d.company ? `, ${esc(d.company)}` : ''}</span>` : ''}</div>` +
       `${contact ? `<div style="${FONT}font-size:13px;color:#555555;padding-top:4px;">${contact}</div>` : ''}` +
       `</td></tr></table>`
     );

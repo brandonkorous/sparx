@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Gilded — a luxe nail studio",
+      "seoTitle": "Gilded: a luxe nail studio",
       "seoDescription": "Gilded is a calm, upscale nail studio for luxury manicures, spa pedicures, gel extensions and bespoke nail art. Book your technician online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A hushed champagne studio for considered manicures, spa pedicures and softly gilded nail art — unhurried, and entirely yours."
+                      "A hushed champagne studio for considered manicures, spa pedicures and softly gilded nail art: unhurried, and entirely yours."
                     ],
                     "id": "fc1363fc-a549-4ffd-865d-87fde47a23c6",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A few tables, softly lit and calm. No queue, no noise — just a quiet room that feels like a small reset."
+                              "A few tables, softly lit and calm. No queue, no noise. Just a quiet room that feels like a small reset."
                             ],
                             "id": "b8f93e07-46bf-4c68-855d-50c1ea82475a",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Gentle, salon-grade gels and care, applied with real precision — so your nails still look considered two weeks on."
+                              "Gentle, salon-grade gels and care, applied with real precision, so your nails still look considered two weeks on."
                             ],
                             "id": "af351789-3b84-4688-ac94-9672d2b6e245",
                             "ord": "a1"
@@ -1084,7 +1084,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Gilded is a small studio by design — a handful of tables and two quiet pedicure chairs, kept calm on purpose so every appointment gets real attention and a proper finish."
+                          "Gilded is a small studio by design: a handful of tables and two quiet pedicure chairs, kept calm on purpose so every appointment gets real attention and a proper finish."
                         ],
                         "id": "133e097f-e1f3-4ff3-b26e-a4c2c007e469",
                         "ord": "a1"
@@ -1158,7 +1158,7 @@
                         "kind": "element",
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
-                        "children": ["Book by name — you’ll see the same technician each time."],
+                        "children": ["Book by name: you’ll see the same technician each time."],
                         "id": "4839d696-309d-4e3c-bf26-9b7f5c25804c",
                         "ord": "a1"
                       }
@@ -1512,7 +1512,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Gilded",
+      "seoTitle": "Book: Gilded",
       "seoDescription": "See what Gilded offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1636,7 +1636,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "3eb5538f-94fd-4dbc-9305-af922e677f3d",
                         "ord": "a1"
@@ -1743,7 +1743,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Gilded",
+      "seoTitle": "About: Gilded",
       "seoDescription": "Who Gilded is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1792,7 +1792,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Gilded to do nails the way we always wished it were done — slowly, quietly, and with a technician who remembers your hands."
+                          "We opened Gilded to do nails the way we always wished it were done: slowly, quietly, and with a technician who remembers your hands."
                         ],
                         "id": "9e100631-64e1-4cff-a261-aa20b7fdc389",
                         "ord": "a1"
@@ -1907,7 +1907,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Gentle, salon-grade gels and care — and honest advice on the short list of things worth taking home."
+                              "Gentle, salon-grade gels and care, and honest advice on the short list of things worth taking home."
                             ],
                             "id": "94f21dff-53ca-45a3-a168-39f7c999d476",
                             "ord": "a1"
@@ -1962,7 +1962,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Gilded",
+      "seoTitle": "Visit: Gilded",
       "seoDescription": "Where to find Gilded, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1999,7 +1999,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Gilded will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Gilded will get back to you, usually the same day."
                         ],
                         "id": "9b69df92-a07e-45dd-b1cc-f21e115615a1",
                         "ord": "a1"
@@ -2449,7 +2449,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your time online — no phone tag."
+                      "See live availability and reserve your time online: no phone tag."
                     ],
                     "id": "52854de5-ff30-43fa-adb5-1ab1f38bdd63",
                     "ord": "a1"

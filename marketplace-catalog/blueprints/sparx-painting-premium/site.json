@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Heritage Painters — a fine-finishes painting studio",
-      "seoDescription": "Heritage Painters is a premium fine-finishes studio — high-end interiors, cabinet refinishing, fine woodwork, specialty finishes and historic-home work. Book a consultation online.",
+      "seoTitle": "Heritage Painters: a fine-finishes painting studio",
+      "seoDescription": "Heritage Painters is a premium fine-finishes studio: high-end interiors, cabinet refinishing, fine woodwork, specialty finishes and historic-home work. Book a consultation online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Heritage Painters is a fine-finishes studio for discerning homes — meticulous prep, specialty finishes and cabinet and woodwork refinishing, finished to a craftsman’s standard. Book a consultation to begin."
+                      "Heritage Painters is a fine-finishes studio for discerning homes: meticulous prep, specialty finishes and cabinet and woodwork refinishing, finished to a craftsman’s standard. Book a consultation to begin."
                     ],
                     "id": "2db1ae2c-85af-47f1-9105-30e5c52e7d95",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Seasoned finishers who have spent careers on brush and blade. You get the same steady hands, start to finish — never a rotating crew."
+                              "Seasoned finishers who have spent careers on brush and blade. You get the same steady hands, start to finish, never a rotating crew."
                             ],
                             "id": "35e67fa3-ff5d-4ed3-8864-3e4edc9f8804",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Limewash, Venetian plaster, hand-glazing, metallics and hand-rubbed lacquers — techniques most crews don’t offer, done properly."
+                              "Limewash, Venetian plaster, hand-glazing, metallics and hand-rubbed lacquers: techniques most crews don’t offer, done properly."
                             ],
                             "id": "438d7f3d-cbb0-4893-83d9-42aec0bc171d",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every project starts with a conversation. Here are a few of the ways in — full prices and live availability are on the booking page."
+                          "Every project starts with a conversation. Here are a few of the ways in: full prices and live availability are on the booking page."
                         ],
                         "id": "a90968f0-97b1-483f-955d-09cb9c0cacd1",
                         "ord": "a1"
@@ -1117,7 +1117,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We begin with a walk-through and a plan — the right primer, the right sheen, the order of work — then the slow, careful part: filling, sanding and caulking until every surface is honest and true, so the color has something worthy to sit on."
+                          "We begin with a walk-through and a plan (the right primer, the right sheen, the order of work) then the slow, careful part: filling, sanding and caulking until every surface is honest and true, so the color has something worthy to sit on."
                         ],
                         "id": "ddb60bd2-78a5-44ac-af66-022f933b6fa9",
                         "ord": "a1"
@@ -1306,7 +1306,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a consultation — choose a craftsman, see live availability and pick a time that suits you."
+                      "Start with a consultation. Choose a craftsman, see live availability and pick a time that suits you."
                     ],
                     "id": "32b01589-39c7-4a34-9f51-9d05cb9623d4",
                     "ord": "a1"
@@ -1337,7 +1337,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Heritage Painters",
+      "seoTitle": "Book: Heritage Painters",
       "seoDescription": "See what Heritage Painters offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1461,7 +1461,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "2c2ace27-a7c7-4f25-82b6-18e741a9ddc2",
                         "ord": "a1"
@@ -1568,7 +1568,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Heritage Painters",
+      "seoTitle": "About: Heritage Painters",
       "seoDescription": "Who Heritage Painters is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1627,7 +1627,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "From a single hand-painted room to a whole-home refinish, we bring the same craft — honest advice, meticulous preparation and finishes made to be lived with for years, not repainted in two."
+                          "From a single hand-painted room to a whole-home refinish, we bring the same craft: honest advice, meticulous preparation and finishes made to be lived with for years, not repainted in two."
                         ],
                         "id": "fac8d9f2-7afc-42f4-9775-f43a8cbefd1a",
                         "ord": "a2"
@@ -1705,7 +1705,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We take on a handful of projects at once. That’s deliberate — it’s how each room gets the preparation and finishing it needs to last."
+                              "We take on a handful of projects at once. That’s deliberate: it’s how each room gets the preparation and finishing it needs to last."
                             ],
                             "id": "df8ec947-c77b-4f82-a7da-7401f18813bc",
                             "ord": "a1"
@@ -1732,7 +1732,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We plan to your home and your budget from the first visit and keep it visible throughout — no creeping numbers, no shortcuts hidden under the paint."
+                              "We plan to your home and your budget from the first visit and keep it visible throughout: no creeping numbers, no shortcuts hidden under the paint."
                             ],
                             "id": "0659b3b2-5593-43fa-896c-6243ce5a79a4",
                             "ord": "a1"
@@ -1787,7 +1787,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Heritage Painters",
+      "seoTitle": "Visit: Heritage Painters",
       "seoDescription": "Where to find Heritage Painters, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1824,7 +1824,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Heritage Painters will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Heritage Painters will get back to you, usually the same day."
                         ],
                         "id": "c538bf25-3c03-477d-b1f1-d19253f88d7b",
                         "ord": "a1"
@@ -2251,7 +2251,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your consultation online — no phone tag."
+                      "See live availability and reserve your consultation online: no phone tag."
                     ],
                     "id": "40b24524-b100-4b4f-9c5d-0cc3f8c96a70",
                     "ord": "a1"

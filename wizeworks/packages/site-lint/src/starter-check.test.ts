@@ -60,7 +60,7 @@ describe('Check, run on the starter a new tenant is given', () => {
     // means sparx does not get to hand the owner a broken one.
     const errors = report()
       .findings.filter((f) => f.severity === 'error')
-      .map((f) => `${f.rule} — ${f.title}`);
+      .map((f) => `${f.rule}: ${f.title}`);
     expect(errors.join('\n')).toBe('');
   });
 

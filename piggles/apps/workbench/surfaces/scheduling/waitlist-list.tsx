@@ -248,7 +248,7 @@ export function WaitlistSurface({ ctx }: { ctx: SurfaceContext }) {
             module={MODULE}
             icon={<Icon glyph={faHourglass} className="size-6" aria-hidden />}
             title="Could not load the waiting list"
-            description="Something went wrong reaching the server. Nobody has lost their place — the list just could not be read just now."
+            description="Something went wrong reaching the server. Nobody has lost their place: the list just could not be read just now."
             onRetry={() => {
               void refetch();
             }}
@@ -443,7 +443,7 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
   const bookError = accept.isError
     ? schedulingErrorMessage(
         accept.error,
-        'Could not book that time. It may have just been taken — try another within their window.'
+        'Could not book that time. It may have just been taken. Try another within their window.'
       )
     : null;
 

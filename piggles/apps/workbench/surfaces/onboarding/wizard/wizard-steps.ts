@@ -44,19 +44,19 @@ export const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting
   workspace: {
     title: 'Name your workspace',
     supporting:
-      'Your company and its first site. We pre-filled what you told us at signup — change anything. Your free web address goes live the moment you launch.',
+      'Your company and its first site. We pre-filled what you told us at signup. Change anything. Your free web address goes live the moment you launch.',
   },
   domain: {
     title: 'Make it yours',
     supporting: productCopy(
       'onboarding.domain.pitch',
-      `A web address of your own builds trust — and it is yours to keep. Set one up now, or start free on your ${PRODUCT.tenantSites.suffix} address and add your own anytime.`
+      `A web address of your own builds trust, and it is yours to keep. Set one up now, or start free on your ${PRODUCT.tenantSites.suffix} address and add your own anytime.`
     ),
   },
   payments: {
     title: 'Get paid',
     supporting:
-      'Connect Stripe so your site can take customer payments. You can go live now and connect this whenever you are ready — checkout simply stays off until then.',
+      'Connect Stripe so your site can take customer payments. You can go live now and connect this whenever you are ready: checkout simply stays off until then.',
   },
 };
 

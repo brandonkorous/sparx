@@ -29,7 +29,7 @@ export interface DomainChargeResult {
   paymentIntentId: string;
 }
 
-const UNAVAILABLE = 'Domain checkout is not available yet — tenant billing is still being set up.';
+const UNAVAILABLE = 'Domain checkout is not available yet: tenant billing is still being set up.';
 
 /** Charge the tenant for a domain registration/renewal BEFORE we call GoDaddy.
  *  Disabled until Stripe card-on-file lands; throws so the caller aborts before

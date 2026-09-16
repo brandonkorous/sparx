@@ -84,7 +84,7 @@ function PagesBody({
       <PaneLoadError
         icon={GLYPH}
         title="Could not load your pages"
-        description="This is a problem reaching the server. None of your pages are affected — nothing has been lost."
+        description="This is a problem reaching the server. None of your pages are affected. Nothing has been lost."
         onRetry={onRetry}
       />
     );
@@ -95,7 +95,7 @@ function PagesBody({
       <EmptyState
         icon={GLYPH}
         title="No pages yet"
-        description="Name one above — “Prices”, “About us” — and it opens straight into the editor, empty and ready to build."
+        description="Name one above (“Prices”, “About us”) and it opens straight into the editor, empty and ready to build."
       />
     );
   }
@@ -165,7 +165,7 @@ function AddPage({
         <Input
           size="sm"
           value={name}
-          placeholder="Name a new page — “Prices”, “About us”"
+          placeholder="Name a new page: “Prices”, “About us”"
           onChange={(event) => setName(event.currentTarget.value)}
           onKeyDown={(event) => {
             if (event.key === 'Enter') void add();

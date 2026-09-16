@@ -109,12 +109,12 @@ interface Asset {
 const ASSETS: Asset[] = [
   { id: 'vesper-hero', url: src('vesper-hero'), alt: 'A candle-lit fine-dining room at dusk, tables set with white linen and low golden light' },
   { id: 'vesper-tasting', url: src('vesper-tasting'), alt: 'A delicate tasting-menu course plated with tweezers on a dark ceramic plate' },
-  { id: 'vesper-fish', url: src('vesper-fish'), alt: 'A fish course — a fillet of turbot in a pale beurre blanc, garnished with sea herbs' },
-  { id: 'vesper-meat', url: src('vesper-meat'), alt: 'A meat course — dry-aged beef, bone marrow and girolles, glazed dark' },
-  { id: 'vesper-dessert', url: src('vesper-dessert'), alt: 'A composed dessert — dark chocolate, hazelnut praline and a quenelle of ice cream' },
-  { id: 'vesper-counter', url: src('vesper-counter'), alt: 'The chef’s counter — diners seated at the pass watching the kitchen plate' },
+  { id: 'vesper-fish', url: src('vesper-fish'), alt: 'A fish course: a fillet of turbot in a pale beurre blanc, garnished with sea herbs' },
+  { id: 'vesper-meat', url: src('vesper-meat'), alt: 'A meat course: dry-aged beef, bone marrow and girolles, glazed dark' },
+  { id: 'vesper-dessert', url: src('vesper-dessert'), alt: 'A composed dessert: dark chocolate, hazelnut praline and a quenelle of ice cream' },
+  { id: 'vesper-counter', url: src('vesper-counter'), alt: 'The chef’s counter: diners seated at the pass watching the kitchen plate' },
   { id: 'vesper-cellar', url: src('vesper-cellar'), alt: 'A candle-lit wine cellar, bottles racked from floor to ceiling' },
-  { id: 'vesper-room', url: src('vesper-room'), alt: 'The dining room in detail — a single set table, a lit candle, a glass of red' },
+  { id: 'vesper-room', url: src('vesper-room'), alt: 'The dining room in detail: a single set table, a lit candle, a glass of red' },
 ];
 
 const assetUrl = (id: string): string => {
@@ -144,7 +144,7 @@ function heroBand(): Node {
                   text: 'Vesper',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'A tasting-menu restaurant. One nightly menu that changes with the day, a wine list read like a story, and a room kept low and quiet. Dinner, Tuesday through Saturday — as an occasion, not an errand.',
+                  text: 'A tasting-menu restaurant. One nightly menu that changes with the day, a wine list read like a story, and a room kept low and quiet. Dinner, Tuesday through Saturday: as an occasion, not an errand.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-5', {
                   children: [
@@ -180,7 +180,7 @@ function tastingBand(): Node {
                 text: 'One menu, written each morning',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Dinner at Vesper is a single tasting menu of seven courses, built around what the boats and the growers sent that day. There is no à la carte on the busiest nights — you sit, and we cook for you.',
+                text: 'Dinner at Vesper is a single tasting menu of seven courses, built around what the boats and the growers sent that day. There is no à la carte on the busiest nights. You sit, and we cook for you.',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
                 text: 'A considered wine pairing follows the menu glass for glass; the cellar is open if you would rather choose your own. Tell us about allergies when you book and the kitchen writes around them.',
@@ -242,8 +242,8 @@ function coursesBand(): Node {
           }),
           el('div', 'grid grid-cols-1 gap-8 @3xl:grid-cols-3', {
             children: [
-              card('vesper-fish', 'From the sea', 'Cornish turbot roasted on the bone, mussels and a beurre blanc bright with sea herbs and a spoon of caviar.', 'A fish course — turbot in a pale butter sauce'),
-              card('vesper-meat', 'From the land', 'Dry-aged Highland beef over embers, bone marrow, girolles and a sauce reduced from its own bones.', 'A meat course — dry-aged beef with bone marrow'),
+              card('vesper-fish', 'From the sea', 'Cornish turbot roasted on the bone, mussels and a beurre blanc bright with sea herbs and a spoon of caviar.', 'A fish course: turbot in a pale butter sauce'),
+              card('vesper-meat', 'From the land', 'Dry-aged Highland beef over embers, bone marrow, girolles and a sauce reduced from its own bones.', 'A meat course: dry-aged beef with bone marrow'),
               card('vesper-dessert', 'To close', 'Valrhona chocolate and hazelnut praline, a whisper of sea salt, and a quenelle churned to order.', 'A composed chocolate dessert'),
             ],
           }),
@@ -264,7 +264,7 @@ function reserveBand(): Node {
       el('div', 'mx-auto grid w-full max-w-5xl gap-10 @3xl:grid-cols-2 @3xl:items-center @3xl:gap-16', {
         children: [
           el('img', 'aspect-video w-full rounded-box border border-base-300 object-cover', {
-            attrs: { src: assetUrl('vesper-counter'), alt: 'The chef’s counter — diners seated at the pass', loading: 'lazy' },
+            attrs: { src: assetUrl('vesper-counter'), alt: 'The chef’s counter: diners seated at the pass', loading: 'lazy' },
           }),
           el('div', 'flex flex-col gap-6', {
             children: [
@@ -272,7 +272,7 @@ function reserveBand(): Node {
                 text: 'The best seat is at the pass',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Six stools sit at the chef’s counter, looking straight into the kitchen — the courses come from the hands that made them, with the story of each one told across the pass. Book a table in the room, or take a seat at the counter.',
+                text: 'Six stools sit at the chef’s counter, looking straight into the kitchen: the courses come from the hands that made them, with the story of each one told across the pass. Book a table in the room, or take a seat at the counter.',
               }),
               el('p', 'text-base leading-relaxed text-secondary', {
                 text: 'Reserve online in under a minute; you’ll see live availability for the weeks ahead. A small per-guest deposit holds the table and comes straight off the bill on the night.',
@@ -314,7 +314,7 @@ function hoursBand(): Node {
                 ],
               }),
               el('p', 'text-base leading-relaxed text-secondary', {
-                text: 'One seating a night. The kitchen sends the last course close to eleven — stay for a final glass.',
+                text: 'One seating a night. The kitchen sends the last course close to eleven: stay for a final glass.',
               }),
             ],
           }),
@@ -322,7 +322,7 @@ function hoursBand(): Node {
             children: [
               el('h2', 'text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl', { text: 'Find us' }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'No. 9 Vesper Court, behind the old exchange on the harbour side. There is no sign on the door — look for the single lit lamp. Valet from six; the last train leaves at midnight.',
+                text: 'No. 9 Vesper Court, behind the old exchange on the harbour side. There is no sign on the door: look for the single lit lamp. Valet from six; the last train leaves at midnight.',
               }),
               el('a', 'inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4', {
                 attrs: { href: '/contact' },
@@ -393,19 +393,19 @@ function tastingFeature(): Node {
             children: [
               el('h2', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', { text: 'The tasting menu' }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Seven courses, one seating, written the morning of your visit. This is the shape of a night with us — the detail changes with the market. $145 per guest; wine pairing $95.',
+                text: 'Seven courses, one seating, written the morning of your visit. This is the shape of a night with us: the detail changes with the market. $145 per guest; wine pairing $95.',
               }),
             ],
           }),
           el('div', 'flex flex-col', {
             children: [
-              course('Snacks at the counter', 'A handful of one-bite things to open — cured, fried, and cold from the pass, with a glass of something sparkling.'),
+              course('Snacks at the counter', 'A handful of one-bite things to open: cured, fried, and cold from the pass, with a glass of something sparkling.'),
               course('Oyster & cucumber', 'A native oyster, barely dressed, with cucumber, dill oil and a granita of its own liquor.'),
               course('Hand-dived scallop', 'Roasted in the shell, brown-butter hollandaise, toasted hazelnut and a squeeze of blood orange.'),
               course('Turbot on the bone', 'Cornish turbot, mussels steamed in cider, a beurre blanc bright with sea herbs and a spoon of caviar.'),
               course('Dry-aged beef & marrow', 'Highland beef over embers, roast bone marrow, girolles and a sauce reduced from its own bones.'),
-              course('Cheese from the trolley', 'A short board of British farmhouse cheeses, quince, walnut and warm oatcakes — as much or as little as you like.'),
-              course('Chocolate & hazelnut', 'Valrhona chocolate, hazelnut praline, sea salt and a quenelle churned to order — coffee and petits fours to follow.'),
+              course('Cheese from the trolley', 'A short board of British farmhouse cheeses, quince, walnut and warm oatcakes: as much or as little as you like.'),
+              course('Chocolate & hazelnut', 'Valrhona chocolate, hazelnut praline, sea salt and a quenelle churned to order: coffee and petits fours to follow.'),
             ],
           }),
         ],
@@ -428,7 +428,7 @@ const MENU: Node[] = [
     ],
   }),
   tastingFeature(),
-  menuSection('À la carte — to begin', 'Offered Tuesday to Thursday, alongside the tasting menu.', [
+  menuSection('À la carte: to begin', 'Offered Tuesday to Thursday, alongside the tasting menu.', [
     { name: 'Native oyster, cucumber, dill', desc: 'Barely dressed, with a granita of its own liquor. Each.', price: '5' },
     { name: 'Hand-dived scallop, brown butter, hazelnut', desc: 'Roasted in the shell, blood orange, toasted hazelnut.', price: '24' },
     { name: 'Foie gras, quince, brioche', desc: 'Torchon of foie gras, poached quince, warm buttered brioche.', price: '26' },
@@ -452,7 +452,7 @@ const MENU: Node[] = [
   menuSection('Wine & pairing', 'A cellar built over years, poured by a sommelier who lives in it.', [
     { name: 'The tasting pairing', desc: 'Seven glasses chosen to follow the tasting menu, course for course.', price: '95' },
     { name: 'The reserve pairing', desc: 'Older vintages and rare bottles, for the table that wants to go deeper.', price: '165' },
-    { name: 'By the glass, by the bottle', desc: 'A long list, low-intervention and classic alike — ask the sommelier.', price: '' },
+    { name: 'By the glass, by the bottle', desc: 'A long list, low-intervention and classic alike. Ask the sommelier.', price: '' },
   ]),
 ];
 
@@ -465,7 +465,7 @@ const BOOK_INTRO: Node[] = [
         children: [
           el('h1', 'text-6xl font-bold leading-none tracking-tight text-base-content @3xl:text-7xl', { text: 'Reserve' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Choose your party size and a night below — you’ll see live availability for the weeks ahead. A small per-guest deposit holds the table and comes off your bill on the night.',
+            text: 'Choose your party size and a night below: you’ll see live availability for the weeks ahead. A small per-guest deposit holds the table and comes off your bill on the night.',
           }),
           el('p', 'max-w-2xl text-base leading-relaxed text-secondary', {
             text: 'For the chef’s counter, private dining, or a party of seven or more, write to us and we’ll arrange it personally.',
@@ -488,10 +488,10 @@ const ABOUT: Node[] = [
             text: 'Vesper is a small tasting-menu restaurant behind the old exchange on the harbour side. We opened with a single idea: cook one menu a night, built entirely around what the day brought in, and serve it in a room quiet enough to hear the kitchen work.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'There is no fixed carte. The chef writes the menu each morning after the boats land and the growers call, so the courses turn with the tide and the season and are never quite the same twice. Nearly everything is made in-house — the bread, the butter, the pastry, the petits fours that close the night.',
+            text: 'There is no fixed carte. The chef writes the menu each morning after the boats land and the growers call, so the courses turn with the tide and the season and are never quite the same twice. Nearly everything is made in-house: the bread, the butter, the pastry, the petits fours that close the night.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The room seats a few more than thirty, with six stools at the chef’s counter for those who want to watch it happen. One seating a night means the evening is yours — book ahead, especially at the weekend, and come as you are for the long, unhurried kind of dinner an occasion deserves.',
+            text: 'The room seats a few more than thirty, with six stools at the chef’s counter for those who want to watch it happen. One seating a night means the evening is yours. Book ahead, especially at the weekend, and come as you are for the long, unhurried kind of dinner an occasion deserves.',
           }),
         ],
       }),
@@ -508,7 +508,7 @@ const ABOUT: Node[] = [
             children: [
               el('h2', 'text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl', { text: 'The cellar' }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Under the dining room is a cellar built over years — classic estates beside low-intervention growers, a deep bench of older vintages, and a sommelier who would rather talk you into something surprising than something safe.',
+                text: 'Under the dining room is a cellar built over years: classic estates beside low-intervention growers, a deep bench of older vintages, and a sommelier who would rather talk you into something surprising than something safe.',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
                 text: 'Take the pairing and let the list follow the menu glass for glass, or come down before dinner and choose your own. Either way, nothing on it is off-limits to a curious table.',
@@ -528,7 +528,7 @@ const CONTACT: Node[] = [
         children: [
           el('h1', 'text-6xl font-bold tracking-tight text-base-content @2xl:text-7xl', { text: 'Visit Vesper' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'No. 9 Vesper Court, behind the old exchange on the harbour side. Dinner Tuesday to Saturday, one seating a night; closed Sunday and Monday. There is no sign on the door — look for the single lit lamp.',
+            text: 'No. 9 Vesper Court, behind the old exchange on the harbour side. Dinner Tuesday to Saturday, one seating a night; closed Sunday and Monday. There is no sign on the door: look for the single lit lamp.',
           }),
           el('div', 'flex flex-wrap gap-4', {
             children: [
@@ -572,7 +572,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 180],
       policyText:
-        'A $25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change — cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day.',
+        'A $25 per-guest deposit secures your table and comes straight off the bill on the night. Plans change. Cancel or move your booking by 48 hours before and the deposit is refunded in full. We’ll remind you two days ahead and again on the day.',
     },
     {
       handle: 'chefs-counter',
@@ -599,7 +599,7 @@ const SCHEDULING = {
       handle: 'table-for-two',
       name: 'Table for two',
       description:
-        'A table for two in the dining room, for the full tasting menu. Two hours, unhurried — the evening is yours.',
+        'A table for two in the dining room, for the full tasting menu. Two hours, unhurried: the evening is yours.',
       bookingType: 'reservation',
       durationMinutes: 120,
       priceCents: 0,
@@ -611,7 +611,7 @@ const SCHEDULING = {
       handle: 'table-for-four',
       name: 'Table for four',
       description:
-        'A table for three or four in the dining room. Make a night of it — a birthday, an anniversary, or no reason at all.',
+        'A table for three or four in the dining room. Make a night of it: a birthday, an anniversary, or no reason at all.',
       bookingType: 'reservation',
       durationMinutes: 120,
       priceCents: 0,
@@ -640,7 +640,7 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-fine-dining',
   name: 'Fine Dining',
   summary:
-    'A complete, working site for a tasting-menu restaurant: a real seven-course menu with à la carte and wine pairing, and a live reservations flow (tables and a chef’s counter as bookable resources, party-size services, dinner-only hours, a per-cover deposit) on the /reserve page. Dark, candle-lit theme — warm charcoal, gold, copper. Pages: Home, Menu, Reserve, About, Visit. Shipped as Vesper.',
+    'A complete, working site for a tasting-menu restaurant: a real seven-course menu with à la carte and wine pairing, and a live reservations flow (tables and a chef’s counter as bookable resources, party-size services, dinner-only hours, a per-cover deposit) on the /reserve page. Dark, candle-lit theme, warm charcoal, gold, copper. Pages: Home, Menu, Reserve, About, Visit. Shipped as Vesper.',
   tagline: 'A dark, elegant template for a restaurant that takes reservations.',
   industry: 'Restaurant & fine dining',
   sortWeight: 84,
@@ -666,14 +666,14 @@ const SPEC: ServiceSiteSpec = {
   },
   seo: {
     home: {
-      title: 'Vesper — a tasting-menu restaurant',
+      title: 'Vesper: a tasting-menu restaurant',
       description:
-        'Vesper is a tasting-menu restaurant — one nightly menu built around the day’s market, a deep cellar, and a chef’s counter. Open Tue–Sat for dinner. See the menu and reserve a table.',
+        'Vesper is a tasting-menu restaurant. One nightly menu built around the day’s market, a deep cellar, and a chef’s counter. Open Tue–Sat for dinner. See the menu and reserve a table.',
     },
     about: {
-      title: 'About Vesper — the tasting-menu restaurant',
+      title: 'About Vesper: the tasting-menu restaurant',
       description:
-        'A small, chef-led tasting-menu restaurant on the harbour side — one menu a night, written each morning, cooked over embers, with a cellar built over years.',
+        'A small, chef-led tasting-menu restaurant on the harbour side. One menu a night, written each morning, cooked over embers, with a cellar built over years.',
     },
   },
   home: HOME,

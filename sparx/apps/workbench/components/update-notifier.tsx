@@ -111,7 +111,7 @@ export function UpdateNotifier(): null {
       title: 'Reload and lose unsaved work?',
       description: `${describe(titles)} ${
         titles.length === 1 ? 'has' : 'have'
-      } changes that were never saved. Reloading loads the new version and discards them. Your panel arrangement comes back either way — the unsaved changes do not.`,
+      } changes that were never saved. Reloading loads the new version and discards them. Your panel arrangement comes back either way: the unsaved changes do not.`,
       confirmLabel: 'Reload anyway',
       cancelLabel: 'Let me save first',
       color: 'danger',

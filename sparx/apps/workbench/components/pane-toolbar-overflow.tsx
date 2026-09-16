@@ -96,7 +96,7 @@ export function PaneToolbarOverflow({
         // Right-most control on the bar, so a centred tooltip hangs off the pane
         // edge — same reasoning as RefreshButton.
         align="end"
-        content={activeCount > 0 ? `${label} — ${String(activeCount)} in use` : label}
+        content={activeCount > 0 ? `${label} (${String(activeCount)} in use)` : label}
       >
         <PopoverTrigger>
           <Button

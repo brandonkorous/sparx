@@ -123,7 +123,7 @@
     {
       "handle": "design-consultation",
       "name": "Design consultation",
-      "description": "A relaxed on-site walk-through of your property — your goals, your budget, and what’s possible. No charge, no pressure.",
+      "description": "A relaxed on-site walk-through of your property. Your goals, your budget, and what’s possible. No charge, no pressure.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -174,7 +174,7 @@
     {
       "handle": "hardscape-patio-consult",
       "name": "Hardscape & patio consultation",
-      "description": "Patios, walls, walkways and fire features — we walk the space, talk materials and lay out a plan and estimate.",
+      "description": "Patios, walls, walkways and fire features. We walk the space, talk materials and lay out a plan and estimate.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "planting-plan-consult",
       "name": "Planting plan consultation",
-      "description": "A garden built for your light, soil and climate — four-season interest, sensible upkeep, and plants that thrive.",
+      "description": "A garden built for your light, soil and climate: four-season interest, sensible upkeep, and plants that thrive.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -225,7 +225,7 @@
     {
       "handle": "outdoor-living-consult",
       "name": "Outdoor living design engagement",
-      "description": "Kitchens, pergolas, lighting and living spaces — a design engagement for the yard you actually want to spend evenings in.",
+      "description": "Kitchens, pergolas, lighting and living spaces: a design engagement for the yard you actually want to spend evenings in.",
       "durationMinutes": 75,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

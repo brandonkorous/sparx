@@ -15,7 +15,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Webhooks & events',
   description:
-    'Subscribe to sparx events over HTTP. Create a signed webhook subscription, verify the HMAC-SHA256 signature, and handle retries — with the full event catalog.',
+    'Subscribe to sparx events over HTTP. Create a signed webhook subscription, verify the HMAC-SHA256 signature, and handle retries, with the full event catalog.',
   alternates: { canonical: '/docs/guides/webhooks' },
 };
 
@@ -36,7 +36,7 @@ const CREATE_RESPONSE = `{
     "url": "https://example.com/hooks/sparx",
     "events": ["content.entry.published", "content.entry.updated"],
     "active": true,
-    "signingSecret": "whsec_3f9a…e21",   // shown ONCE — store it now
+    "signingSecret": "whsec_3f9a…e21",   // shown ONCE: store it now
     "createdAt": "2026-06-05T17:41:09Z"
   }
 }`;
@@ -52,7 +52,7 @@ X-sparx-Signature: sha256=9d1e7c…f04b
   "id": "2b9f0c14-7e6a-4d33-9b2f-5a1c8e0d44a1",   // the delivery id
   "type": "content.entry.published",
   "tenant_id": "a1c2d3e4-…",
-  "data": { /* the event payload — shape varies by event type */ },
+  "data": { /* the event payload: shape varies by event type */ },
   "delivered_at": "2026-06-05T17:41:10Z"
 }`;
 
@@ -88,7 +88,7 @@ export default function WebhooksPage() {
         { label: 'Webhooks & events' },
       ]}
       title="Webhooks & events"
-      lede="sparx publishes a business event for everything that happens — an order is paid, a content entry is published, a customer is created. Subscribe a URL to the events you care about and sparx delivers each one as a signed HTTP POST, with retries."
+      lede="sparx publishes a business event for everything that happens: an order is paid, a content entry is published, a customer is created. Subscribe a URL to the events you care about and sparx delivers each one as a signed HTTP POST, with retries."
       meta={
         <>
           <span>Updated 2026-06-05</span>
@@ -124,7 +124,7 @@ export default function WebhooksPage() {
           </li>
           <li>
             <strong>At-least-once.</strong> A non-2xx response is retried with exponential backoff
-            for up to ~7.5 hours — design your handler to be idempotent.
+            for up to ~7.5 hours: design your handler to be idempotent.
           </li>
           <li>
             <strong>Tenant-scoped.</strong> A subscription only ever receives its own tenant’s
@@ -140,14 +140,14 @@ export default function WebhooksPage() {
 
       <DocSection id="subscribe" title="Create a subscription">
         <p>
-          Subscriptions are created via the API today — a tenant admin posts a name, a URL, and the
+          Subscriptions are created via the API today: a tenant admin posts a name, a URL, and the
           events to listen for. (A dashboard editor is on the roadmap; until it ships, the dashboard
           points you here.) Creating one returns a <strong>signing secret exactly once</strong>;
           store it immediately, because every later read shows only a redacted preview.
         </p>
         <DocImage
           src="/docs/dash-webhooks.png"
-          alt="The CMS → Webhooks screen, marked ‘coming soon’ — it explains that backend wiring is live and directs you to configure subscriptions via POST /v1/webhooks/subscriptions, and lists the subscribable content events."
+          alt="The CMS → Webhooks screen, marked ‘coming soon’. It explains that backend wiring is live and directs you to configure subscriptions via POST /v1/webhooks/subscriptions, and lists the subscribable content events."
           caption="The dashboard webhook editor is on the roadmap; today you create subscriptions through the API."
         />
         <EndpointChip method="POST" path="/v1/webhooks/subscriptions" />
@@ -243,7 +243,7 @@ export default function WebhooksPage() {
           The full platform <DocLink href="#catalog">event catalog</DocLink> is much larger (orders,
           carts, inventory, email, and more). Those events flow on the internal Pub/Sub bus today;
           additional event families are being opened up for webhook subscription over time. If you
-          need one that isn’t listed above yet, it’s on the roadmap — not missing by design.
+          need one that isn’t listed above yet, it’s on the roadmap, not missing by design.
         </Callout>
       </DocSection>
 
@@ -272,14 +272,14 @@ export default function WebhooksPage() {
               <td>
                 <code>X-sparx-Delivery</code>
               </td>
-              <td>A unique id for this delivery attempt — use it to dedupe.</td>
+              <td>A unique id for this delivery attempt. Use it to dedupe.</td>
             </tr>
             <tr>
               <td>
                 <code>X-sparx-Signature</code>
               </td>
               <td>
-                <code>sha256=&lt;hex&gt;</code> — the HMAC of the raw body (see below).
+                <code>sha256=&lt;hex&gt;</code>: the HMAC of the raw body (see below).
               </td>
             </tr>
           </tbody>
@@ -288,7 +288,7 @@ export default function WebhooksPage() {
         <p>
           The body is stable across event types: <InlineCode>id</InlineCode> (the delivery id),{' '}
           <InlineCode>type</InlineCode>, <InlineCode>tenant_id</InlineCode>,{' '}
-          <InlineCode>delivered_at</InlineCode>, and <InlineCode>data</InlineCode> — the event
+          <InlineCode>delivered_at</InlineCode>, and <InlineCode>data</InlineCode>: the event
           payload, whose shape depends on the event type.
         </p>
       </DocSection>
@@ -302,7 +302,7 @@ export default function WebhooksPage() {
         <CodeBlock tabs={[{ label: 'verify.ts', code: VERIFY }]} />
         <Callout type="danger" title="Always sign the raw body">
           Verify the bytes you received, not a re-serialized object. If your framework parses JSON
-          before you can read the raw body, capture the raw payload first (e.g. a raw-body parser) —
+          before you can read the raw body, capture the raw payload first (e.g. a raw-body parser),
           otherwise the signature will never match. Use a constant-time compare (
           <InlineCode>timingSafeEqual</InlineCode>), never <InlineCode>===</InlineCode>.
         </Callout>
@@ -310,7 +310,7 @@ export default function WebhooksPage() {
 
       <DocSection id="retries" title="Retries & failure">
         <p>
-          Respond <InlineCode>2xx</InlineCode> quickly to acknowledge a delivery — do the real work
+          Respond <InlineCode>2xx</InlineCode> quickly to acknowledge a delivery: do the real work
           afterward, off the request path. Any non-2xx response, a timeout (10s), or a network error
           schedules a retry with exponential backoff:
         </p>
@@ -355,7 +355,7 @@ export default function WebhooksPage() {
         <p>
           After <strong>8 attempts</strong> (≈ 7.5 hours total) a delivery is marked{' '}
           <InlineCode>failed</InlineCode> and no longer retried. Because deliveries are retried, the
-          same event may arrive more than once — <strong>make your handler idempotent</strong> by
+          same event may arrive more than once: <strong>make your handler idempotent</strong> by
           deduping on <InlineCode>X-sparx-Delivery</InlineCode>.
         </p>
       </DocSection>
@@ -364,7 +364,7 @@ export default function WebhooksPage() {
         <p>List your subscriptions (secrets come back redacted):</p>
         <EndpointChip method="GET" path="/v1/webhooks/subscriptions" />
         <p>
-          Update a subscription’s name, URL, or event list — or pause it without deleting by setting{' '}
+          Update a subscription’s name, URL, or event list, or pause it without deleting by setting{' '}
           <InlineCode>active: false</InlineCode>:
         </p>
         <EndpointChip method="PATCH" path="/v1/webhooks/subscriptions/:id" />
@@ -382,7 +382,7 @@ export default function WebhooksPage() {
           For reference, here is the platform’s event taxonomy (defined in{' '}
           <InlineCode>@wizeworks/events</InlineCode>), grouped by domain. The subset available for{' '}
           <DocLink href="#events">webhook subscription</DocLink> is called out above; the rest are
-          consumed internally — by platform workers and MCP — as modules adopt the shared bus.
+          consumed internally (by platform workers and MCP) as modules adopt the shared bus.
         </p>
 
         <DocSubsection id="catalog-platform" title="Platform & content">
@@ -490,7 +490,7 @@ export default function WebhooksPage() {
           </ul>
           <p>
             Email engagement and delivery events (opens, clicks, bounces, broadcast lifecycle) are
-            tracked within the Email module rather than the cross-module bus — see the Email module
+            tracked within the Email module rather than the cross-module bus: see the Email module
             docs for those.
           </p>
         </DocSubsection>

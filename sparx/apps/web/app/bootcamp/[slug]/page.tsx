@@ -35,11 +35,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const b = await fetchBootcamp(slug);
-  if (!b) return { title: 'Bootcamp — sparx' };
+  if (!b) return { title: 'Bootcamp: sparx' };
   const where = bootcampLocation(b);
   const desc = `${FORMAT_LABEL[b.format]} bootcamp hosted by ${b.host.displayName} · ${bootcampDates(b)} · ${where}. Build a real business on sparx and graduate when you publish.`;
   return {
-    title: `${b.title} — sparx Bootcamp`,
+    title: `${b.title} · sparx Bootcamp`,
     description: desc,
     alternates: { canonical: `/bootcamp/${b.slug}` },
     openGraph: { title: b.title, description: desc, url: `/bootcamp/${b.slug}`, type: 'website' },
@@ -171,7 +171,7 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
     { k: 'Location', v: bootcampLocation(b) },
     { k: 'Price', v: price },
   ];
-  if (seats) rows.push({ k: 'Seats', v: seats.full ? 'Full — waitlist open' : seats.text });
+  if (seats) rows.push({ k: 'Seats', v: seats.full ? 'Full: waitlist open' : seats.text });
 
   const externalUrl = b.registrationMode === 'external' ? b.registrationUrl : null;
 

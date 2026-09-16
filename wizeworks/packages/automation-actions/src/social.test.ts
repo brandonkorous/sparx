@@ -57,8 +57,8 @@ describe('buildSocialDraft', () => {
   });
 
   it('interpolates a custom template', () => {
-    const d = buildSocialDraft({ template: 'New arrival — {{announce.title}}' }, ANNOUNCE);
-    expect(d.body).toBe('New arrival — Aurora Down Jacket');
+    const d = buildSocialDraft({ template: 'New arrival: {{announce.title}}' }, ANNOUNCE);
+    expect(d.body).toBe('New arrival: Aurora Down Jacket');
   });
 
   it('drops the link + image when told to', () => {

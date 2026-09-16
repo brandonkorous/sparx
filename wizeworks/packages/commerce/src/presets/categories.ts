@@ -73,7 +73,7 @@ export const categoryPresets = [
     slug: 'categories-apparel',
     name: 'Apparel taxonomy',
     description:
-      'A clothing, footwear, and accessories tree with Men / Women / Kids splits — a ready spine for a fashion or apparel catalog.',
+      'A clothing, footwear, and accessories tree with Men / Women / Kids splits: a ready spine for a fashion or apparel catalog.',
     iconKey: 'shirt',
     tags: ['apparel', 'clothing', 'fashion'],
     topLabels: 'Clothing · Footwear · Accessories',
@@ -116,7 +116,7 @@ export const categoryPresets = [
     slug: 'categories-food-beverage',
     name: 'Food & beverage taxonomy',
     description:
-      'A grocery-style tree across produce, pantry, beverages, and specialty — a base for a food, grocery, or specialty-foods catalog.',
+      'A grocery-style tree across produce, pantry, beverages, and specialty: a base for a food, grocery, or specialty-foods catalog.',
     iconKey: 'apple',
     tags: ['food', 'beverage', 'grocery'],
     topLabels: 'Produce · Pantry · Beverages · Specialty',
@@ -158,7 +158,7 @@ export const categoryPresets = [
     slug: 'categories-electronics',
     name: 'Electronics taxonomy',
     description:
-      'A consumer-electronics tree across computers, audio, mobile, and accessories — a starting spine for a tech or gadget catalog.',
+      'A consumer-electronics tree across computers, audio, mobile, and accessories: a starting spine for a tech or gadget catalog.',
     iconKey: 'cpu',
     tags: ['electronics', 'tech', 'gadgets'],
     topLabels: 'Computers · Audio · Mobile · Accessories',

@@ -151,7 +151,7 @@ function LayoutStatus({
   // Never published is not the same as published-then-edited: there is no last
   // published header for a visitor to still be seeing.
   if (unpublished && publishedAt === null) {
-    return <span>Saved, but never published — visitors still see the starter header.</span>;
+    return <span>Saved, but never published: visitors still see the starter header.</span>;
   }
   if (unpublished) return <span>Saved. Visitors still see the last published header.</span>;
   if (catchingUp) return <span>Published. Your site catches up within a few minutes.</span>;

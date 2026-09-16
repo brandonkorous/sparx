@@ -149,7 +149,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Plan visits repeat on the schedule you choose — monthly, bi-monthly or quarterly — with the same technician each time. Skip or reschedule any single visit with 24 hours’ notice; nothing is locked in.',
+        'Plan visits repeat on the schedule you choose (monthly, bi-monthly or quarterly) with the same technician each time. Skip or reschedule any single visit with 24 hours’ notice; nothing is locked in.',
     },
   ],
   resources: [
@@ -180,7 +180,7 @@ const SCHEDULING = {
       handle: 'free-inspection',
       name: 'Free inspection',
       description:
-        'A no-pressure visit to walk your home and yard, find where pests are getting in, and lay out a plan — with a clear, no-obligation quote. Always free, and always safe for kids and pets.',
+        'A no-pressure visit to walk your home and yard, find where pests are getting in, and lay out a plan, with a clear, no-obligation quote. Always free, and always safe for kids and pets.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -193,7 +193,7 @@ const SCHEDULING = {
       handle: 'botanical-pest-treatment',
       name: 'Botanical pest treatment',
       description:
-        'A targeted treatment using plant-derived, low-toxicity products for common household pests — ants, spiders, roaches — with no harsh fumes and no need to clear the house for hours.',
+        'A targeted treatment using plant-derived, low-toxicity products for common household pests (ants, spiders, roaches) with no harsh fumes and no need to clear the house for hours.',
       durationMinutes: 60,
       priceCents: 14000,
       assignmentStrategy: 'any_available',
@@ -206,7 +206,7 @@ const SCHEDULING = {
       handle: 'natural-rodent-control',
       name: 'Natural rodent control',
       description:
-        'Humane, exclusion-first rodent control — sealing entry points and using tamper-resistant, pet-safe stations rather than loose poisons, so mice and rats leave and stay gone.',
+        'Humane, exclusion-first rodent control: sealing entry points and using tamper-resistant, pet-safe stations rather than loose poisons, so mice and rats leave and stay gone.',
       durationMinutes: 90,
       priceCents: 22000,
       assignmentStrategy: 'any_available',
@@ -219,7 +219,7 @@ const SCHEDULING = {
       handle: 'ipm-assessment',
       name: 'IPM assessment',
       description:
-        'A deeper integrated-pest-management review — habitat, moisture, entry points and food sources — with a prevention plan that stops pests coming back instead of just spraying what’s here now.',
+        'A deeper integrated-pest-management review (habitat, moisture, entry points and food sources) with a prevention plan that stops pests coming back instead of just spraying what’s here now.',
       durationMinutes: 75,
       priceCents: 12000,
       assignmentStrategy: 'any_available',
@@ -232,7 +232,7 @@ const SCHEDULING = {
       handle: 'ant-treatment',
       name: 'Ant treatment',
       description:
-        'A focused treatment for an active ant trail or colony, using bait and botanical barriers placed where they matter — effective on the nest, gentle on the rest of your home.',
+        'A focused treatment for an active ant trail or colony, using bait and botanical barriers placed where they matter: effective on the nest, gentle on the rest of your home.',
       durationMinutes: 45,
       priceCents: 11000,
       assignmentStrategy: 'any_available',
@@ -245,7 +245,7 @@ const SCHEDULING = {
       handle: 'mosquito-natural-treatment',
       name: 'Mosquito natural treatment',
       description:
-        'A yard treatment that knocks mosquito numbers down with plant-based products and larval-source control — so the garden is usable again without coating it in synthetics.',
+        'A yard treatment that knocks mosquito numbers down with plant-based products and larval-source control, so the garden is usable again without coating it in synthetics.',
       durationMinutes: 60,
       priceCents: 15000,
       assignmentStrategy: 'any_available',
@@ -258,7 +258,7 @@ const SCHEDULING = {
       handle: 'recurring-plan-setup',
       name: 'Recurring plan setup',
       description:
-        'Set up an ongoing prevention plan — monthly, bi-monthly or quarterly — with the same technician each visit. This first visit dials in your home; the rhythm keeps it pest-free from there.',
+        'Set up an ongoing prevention plan (monthly, bi-monthly or quarterly) with the same technician each visit. This first visit dials in your home; the rhythm keeps it pest-free from there.',
       durationMinutes: 60,
       priceCents: 13000,
       assignmentStrategy: 'any_available',
@@ -276,7 +276,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm family home with a green garden on a bright, still morning',
     title: 'Pest control that’s kind to your home',
-    sub: 'Botanical, low-toxicity treatments and prevention-first care — safe for kids, pets and the garden, and tough on the pests you actually want gone.',
+    sub: 'Botanical, low-toxicity treatments and prevention-first care: safe for kids, pets and the garden, and tough on the pests you actually want gone.',
     primary: { label: 'Book a free inspection', href: '/book' },
     secondary: { label: 'See our treatments', href: '/book' },
     overlay: 'dark',
@@ -285,7 +285,7 @@ const HOME = [
     items: [
       {
         title: 'Botanical & low-toxicity',
-        body: 'We treat with plant-derived, low-toxicity products — no chemical haze, no clearing the house for hours after we leave.',
+        body: 'We treat with plant-derived, low-toxicity products: no chemical haze, no clearing the house for hours after we leave.',
       },
       {
         title: 'Safe for kids & pets',
@@ -293,11 +293,11 @@ const HOME = [
       },
       {
         title: 'Prevention-first IPM',
-        body: 'Integrated pest management finds why pests are here and shuts it down — so the problem stops coming back, not just today’s bugs.',
+        body: 'Integrated pest management finds why pests are here and shuts it down, so the problem stops coming back, not just today’s bugs.',
       },
       {
         title: 'Satisfaction guaranteed',
-        body: 'If pests return between visits, so do we — at no extra charge. We’re not done until your home is genuinely settled.',
+        body: 'If pests return between visits, so do we: at no extra charge. We’re not done until your home is genuinely settled.',
       },
     ],
   }),
@@ -323,7 +323,7 @@ const HOME = [
         name: 'Natural rodent control',
         priceCents: 22000,
         durationMin: 90,
-        desc: 'Humane, exclusion-first — seal them out, keep them out.',
+        desc: 'Humane, exclusion-first: seal them out, keep them out.',
       },
       {
         name: 'Mosquito natural treatment',
@@ -339,14 +339,14 @@ const HOME = [
     alt: 'A technician inspecting a garden bed, checking for pests by hand',
     heading: 'Why we lead with prevention',
     body: [
-      'Spraying kills what’s in front of you today. It doesn’t answer why the pests came — the gap under the door, the standing water, the food left out overnight — so a week later they’re back and the can comes out again.',
+      'Spraying kills what’s in front of you today. It doesn’t answer why the pests came (the gap under the door, the standing water, the food left out overnight) so a week later they’re back and the can comes out again.',
       'Integrated pest management works the other way around. We find the cause first, close it off, and use the gentlest thing that works. Fewer chemicals, fewer callbacks, and a home that stays settled instead of being sprayed on a schedule.',
     ],
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
   teamRow({
     heading: 'Who comes to your home',
-    intro: 'Book by name — you’ll see the same technician each visit, and they’ll get to know your home and yard.',
+    intro: 'Book by name: you’ll see the same technician each visit, and they’ll get to know your home and yard.',
     members: [
       {
         name: 'Elena Ortiz',
@@ -360,7 +360,7 @@ const HOME = [
         role: 'IPM & rodent specialist',
         image: url(IMG.marco),
         alt: 'Marco Deyn, IPM and rodent specialist',
-        bio: 'Exclusion, rodent work and the deeper IPM assessments — the find-the-cause, seal-it-out visits.',
+        bio: 'Exclusion, rodent work and the deeper IPM assessments: the find-the-cause, seal-it-out visits.',
       },
       {
         name: 'Priya Anand',
@@ -379,7 +379,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Start with a free inspection',
-    sub: 'We’ll find the problem, show you the plan and quote it — no obligation. Booking takes about a minute.',
+    sub: 'We’ll find the problem, show you the plan and quote it: no obligation. Booking takes about a minute.',
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
 ];
@@ -402,8 +402,8 @@ const ABOUT = [
     alt: 'A lush backyard garden with herbs and flowers along the fence line',
     heading: 'About GreenShield Pest Solutions',
     body: [
-      'GreenShield started from a simple conviction: getting rid of pests shouldn’t mean filling your home with chemicals — especially with kids, pets and a garden you actually want to use.',
-      'So we built a pest-control company around botanical, low-toxicity treatments and integrated pest management — the kind of results you can trust, delivered by the same technician who learns your home.',
+      'GreenShield started from a simple conviction: getting rid of pests shouldn’t mean filling your home with chemicals, especially with kids, pets and a garden you actually want to use.',
+      'So we built a pest-control company around botanical, low-toxicity treatments and integrated pest management: the kind of results you can trust, delivered by the same technician who learns your home.',
     ],
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
@@ -413,7 +413,7 @@ const ABOUT = [
     items: [
       {
         title: 'Cause before cure',
-        body: 'Every visit starts by finding why pests are here — entry points, moisture, food — not just treating what’s crawling today.',
+        body: 'Every visit starts by finding why pests are here (entry points, moisture, food) not just treating what’s crawling today.',
       },
       {
         title: 'The gentlest thing that works',
@@ -440,7 +440,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your free inspection online — no phone tag, no quote forms to chase.',
+    sub: 'See live availability and reserve your free inspection online: no phone tag, no quote forms to chase.',
     surface: 'muted',
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
@@ -451,8 +451,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-pest-eco',
   name: 'Pest Control (Eco)',
   summary:
-    'An eco, botanical pest-control site — a natural sage-and-clay palette on a soft cream ground, refined type and calm, natural photography. Installs a working booking flow: real inspections and treatments (free inspection, botanical treatment, natural rodent control, IPM assessment, ant and mosquito treatments, recurring-plan setup), three technicians you book by name with their own hours, and a low-toxicity promise safe for kids and pets. Ships as "GreenShield Pest Solutions".',
-  tagline: 'A natural, prevention-first template for pest-control services — book online from day one.',
+    'An eco, botanical pest-control site: a natural sage-and-clay palette on a soft cream ground, refined type and calm, natural photography. Installs a working booking flow: real inspections and treatments (free inspection, botanical treatment, natural rodent control, IPM assessment, ant and mosquito treatments, recurring-plan setup), three technicians you book by name with their own hours, and a low-toxicity promise safe for kids and pets. Ships as "GreenShield Pest Solutions".',
+  tagline: 'A natural, prevention-first template for pest-control services. Book online from day one.',
   industry: 'Pest control',
   sortWeight: 27,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -461,9 +461,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'GreenShield Pest Solutions — eco, botanical pest control',
+      title: 'GreenShield Pest Solutions: eco, botanical pest control',
       description:
-        'GreenShield is an eco pest-control company using botanical, low-toxicity treatments and integrated pest management — safe for kids and pets. Book a free inspection online.',
+        'GreenShield is an eco pest-control company using botanical, low-toxicity treatments and integrated pest management: safe for kids and pets. Book a free inspection online.',
     },
   },
   home: HOME,

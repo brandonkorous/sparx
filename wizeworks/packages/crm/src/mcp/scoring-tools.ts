@@ -22,7 +22,7 @@ import type { McpToolDefinition } from './registry';
 export const explainScore: McpToolDefinition = {
   name: 'explain_crm_score',
   description:
-    'Why a customer or a sales deal has the score it has. Returns the changes that produced it, most recent first, each with what moved it and by how much — so the number can be checked rather than taken on trust. Use this before repeating a score to anybody: a score with no reasons behind it is a number, not an answer.',
+    'Why a customer or a sales deal has the score it has. Returns the changes that produced it, most recent first, each with what moved it and by how much, so the number can be checked rather than taken on trust. Use this before repeating a score to anybody: a score with no reasons behind it is a number, not an answer.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -37,7 +37,7 @@ export const explainScore: McpToolDefinition = {
 export const listScoringModels: McpToolDefinition = {
   name: 'list_crm_scoring_models',
   description:
-    'The rules this business uses to score its customers and sales deals — what earns points, what loses them, and whether points bleed away when somebody goes quiet. Read this before explaining or changing anybody’s score.',
+    'The rules this business uses to score its customers and sales deals: what earns points, what loses them, and whether points bleed away when somebody goes quiet. Read this before explaining or changing anybody’s score.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({ objectKey: z.enum(['contact', 'deal']).optional() }),
@@ -47,7 +47,7 @@ export const listScoringModels: McpToolDefinition = {
 export const listScoringFields: McpToolDefinition = {
   name: 'list_crm_scoring_fields',
   description:
-    'What a scoring rule is allowed to ask about — the full list, for customers and for sales deals. Use it before writing a rule: anything not on this list cannot be scored on, and a rule that references it would simply never match.',
+    'What a scoring rule is allowed to ask about: the full list, for customers and for sales deals. Use it before writing a rule: anything not on this list cannot be scored on, and a rule that references it would simply never match.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({}),
@@ -61,7 +61,7 @@ export const listScoringFields: McpToolDefinition = {
 export const previewScore: McpToolDefinition = {
   name: 'preview_crm_score',
   description:
-    'What a set of scoring rules WOULD give one real record, without saving anything or changing the record. The way to check a rule before it goes live — pass `rules` to try an unsaved set, or leave it out to see what the current rules make of somebody.',
+    'What a set of scoring rules WOULD give one real record, without saving anything or changing the record. The way to check a rule before it goes live: pass `rules` to try an unsaved set, or leave it out to see what the current rules make of somebody.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -90,7 +90,7 @@ export const previewScore: McpToolDefinition = {
 export const listMembershipHistory: McpToolDefinition = {
   name: 'get_crm_list_history',
   description:
-    "Who joined or left a list, and when. Answers the question a current membership list cannot — 'who dropped out of at-risk this month' — because leaving a list removes the membership but not the record of it. Filter with `kind` for just the joins or just the departures.",
+    "Who joined or left a list, and when. Answers the question a current membership list cannot ('who dropped out of at-risk this month') because leaving a list removes the membership but not the record of it. Filter with `kind` for just the joins or just the departures.",
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -113,7 +113,7 @@ export const listMembershipHistory: McpToolDefinition = {
 export const createScoringModel: McpToolDefinition = {
   name: 'create_crm_scoring_model',
   description:
-    'Set up how this business scores its customers or its sales deals. Each rule is a question plus what it is worth; every rule that matches adds its points, so rules can be read one at a time and in any order. Points can be negative — "unsubscribed: −40" is what stops a list of hot leads filling up with people who cannot be contacted. Only one model can be active per object, so creating an active one retires the previous one.',
+    'Set up how this business scores its customers or its sales deals. Each rule is a question plus what it is worth; every rule that matches adds its points, so rules can be read one at a time and in any order. Points can be negative: "unsubscribed: −40" is what stops a list of hot leads filling up with people who cannot be contacted. Only one model can be active per object, so creating an active one retires the previous one.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({
@@ -139,7 +139,7 @@ export const createScoringModel: McpToolDefinition = {
 export const updateScoringModel: McpToolDefinition = {
   name: 'update_crm_scoring_model',
   description:
-    'Change a scoring model. Editing the rules does NOT re-score anybody on its own — existing scores stay as they are until records are re-scored, which is deliberate: a rule change that silently rewrote every number would make the history unreadable.',
+    'Change a scoring model. Editing the rules does NOT re-score anybody on its own: existing scores stay as they are until records are re-scored, which is deliberate: a rule change that silently rewrote every number would make the history unreadable.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({
@@ -169,7 +169,7 @@ export const updateScoringModel: McpToolDefinition = {
 export const adjustScore: McpToolDefinition = {
   name: 'adjust_crm_score',
   description:
-    "Move one record's score by hand, with a reason — for when somebody is worth talking to whatever the rules say. Recorded as a manual change against whoever made it, so it never looks like the rules did it. The next re-score puts the number back to what the rules produce, so this is a nudge, not a permanent override.",
+    "Move one record's score by hand, with a reason, for when somebody is worth talking to whatever the rules say. Recorded as a manual change against whoever made it, so it never looks like the rules did it. The next re-score puts the number back to what the rules produce, so this is a nudge, not a permanent override.",
   scope: 'write:crm',
   confirmation: true,
   input: z.object({
@@ -184,7 +184,7 @@ export const adjustScore: McpToolDefinition = {
 export const recomputeScores: McpToolDefinition = {
   name: 'recompute_crm_scores',
   description:
-    'Re-score records against the current rules. Works in pages — the reply carries a `nextCursor`; call again with it until it comes back empty. Only records whose score actually changes are written, so running this twice in a row is harmless.',
+    'Re-score records against the current rules. Works in pages: the reply carries a `nextCursor`; call again with it until it comes back empty. Only records whose score actually changes are written, so running this twice in a row is harmless.',
   scope: 'write:crm_bulk',
   confirmation: true,
   input: z.object({
@@ -199,7 +199,7 @@ export const recomputeScores: McpToolDefinition = {
 export const addToList: McpToolDefinition = {
   name: 'add_to_crm_list',
   description:
-    'Put people on a hand-picked list. Only works on lists whose membership is chosen by hand — a list that works its members out from rules will refuse, because anything added there would be removed again the next time the rules ran.',
+    'Put people on a hand-picked list. Only works on lists whose membership is chosen by hand: a list that works its members out from rules will refuse, because anything added there would be removed again the next time the rules ran.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({

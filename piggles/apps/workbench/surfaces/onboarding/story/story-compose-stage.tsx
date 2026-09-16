@@ -44,8 +44,8 @@ export function StoryComposeStage({
         </Heading>
         <Text className="max-w-[58ch] text-base">
           {started
-            ? 'Tap any phrase to change it, and add as much as you want — there’s always room for more. Changed your mind? Pick a different starting point below to begin again.'
-            : 'Tell it the way you’d tell a friend — what you make, who it’s for, and how they buy from you. Say as little or as much as you like, and we’ll build everything it takes to run it. Start from one of these, or begin with a blank page.'}
+            ? 'Tap any phrase to change it, and add as much as you want: there’s always room for more. Changed your mind? Pick a different starting point below to begin again.'
+            : 'Tell it the way you’d tell a friend: what you make, who it’s for, and how they buy from you. Say as little or as much as you like, and we’ll build everything it takes to run it. Start from one of these, or begin with a blank page.'}
         </Text>
       </div>
 

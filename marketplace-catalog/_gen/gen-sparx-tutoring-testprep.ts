@@ -172,7 +172,7 @@ const SCHEDULING = {
       handle: 'sat-prep-session',
       name: 'SAT prep session',
       description:
-        'One-on-one SAT coaching — targeted drilling on the sections costing you points, with real test tactics and pacing.',
+        'One-on-one SAT coaching: targeted drilling on the sections costing you points, with real test tactics and pacing.',
       durationMinutes: 60,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -183,7 +183,7 @@ const SCHEDULING = {
       handle: 'act-prep-session',
       name: 'ACT prep session',
       description:
-        'Focused ACT coaching built around the clock — the science section, the math grind and the reading speed that wins the test.',
+        'Focused ACT coaching built around the clock: the science section, the math grind and the reading speed that wins the test.',
       durationMinutes: 60,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -194,7 +194,7 @@ const SCHEDULING = {
       handle: 'ap-subject-session',
       name: 'AP subject session',
       description:
-        'Exam-focused coaching for an AP subject — the frameworks, the free-response structure and the content gaps that hold the score down.',
+        'Exam-focused coaching for an AP subject: the frameworks, the free-response structure and the content gaps that hold the score down.',
       durationMinutes: 60,
       priceCents: 9000,
       assignmentStrategy: 'customer_choice',
@@ -205,7 +205,7 @@ const SCHEDULING = {
       handle: 'admissions-essay-session',
       name: 'Admissions essay session',
       description:
-        'Work through your personal statement and supplements with an admissions coach — from a blank page to a draft that sounds like you.',
+        'Work through your personal statement and supplements with an admissions coach: from a blank page to a draft that sounds like you.',
       durationMinutes: 60,
       priceCents: 11000,
       assignmentStrategy: 'customer_choice',
@@ -216,7 +216,7 @@ const SCHEDULING = {
       handle: 'strategy-consultation',
       name: 'College strategy consultation',
       description:
-        'A planning session for the whole road ahead — test timeline, target schools, and where to put the effort for the biggest return.',
+        'A planning session for the whole road ahead: test timeline, target schools, and where to put the effort for the biggest return.',
       durationMinutes: 45,
       priceCents: 7500,
       assignmentStrategy: 'customer_choice',
@@ -227,7 +227,7 @@ const SCHEDULING = {
       handle: 'practice-test-review',
       name: 'Practice test review',
       description:
-        'Bring a full-length practice test and we’ll break it down question by question — the misses, the patterns, and the fastest points to reclaim.',
+        'Bring a full-length practice test and we’ll break it down question by question: the misses, the patterns, and the fastest points to reclaim.',
       durationMinutes: 90,
       priceCents: 13500,
       assignmentStrategy: 'customer_choice',
@@ -241,7 +241,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Turn the score you have into the one you need.',
-    sub: 'One-on-one SAT, ACT, AP and admissions coaching built around your target — a clear plan, real practice tests, and coaches who’ve moved thousands of points. Start with a free diagnostic.',
+    sub: 'One-on-one SAT, ACT, AP and admissions coaching built around your target: a clear plan, real practice tests, and coaches who’ve moved thousands of points. Start with a free diagnostic.',
     primary: { label: 'Book a diagnostic', href: '/book' },
     secondary: { label: 'See prep options', href: '/book' },
     surface: 'base',
@@ -250,7 +250,7 @@ const HOME = [
     items: [
       {
         title: 'Proven score gains',
-        body: 'Our students average a 140-point SAT jump and a 4-point ACT lift. We coach to the score, not to a syllabus — and we track every point.',
+        body: 'Our students average a 140-point SAT jump and a 4-point ACT lift. We coach to the score, not to a syllabus, and we track every point.',
       },
       {
         title: 'Expert coaches',
@@ -262,7 +262,7 @@ const HOME = [
       },
       {
         title: 'Real practice tests',
-        body: 'Full-length, timed, official-format exams under real conditions — then a question-by-question review so test day feels like a rerun.',
+        body: 'Full-length, timed, official-format exams under real conditions, then a question-by-question review so test day feels like a rerun.',
       },
     ],
   }),
@@ -304,14 +304,14 @@ const HOME = [
     alt: 'A coach and a student reviewing a scored practice test together',
     heading: 'How we move the score',
     body: [
-      'Every point on the SAT and ACT is predictable — which is why we start with a diagnostic that maps exactly where yours are being lost. No guessing, no generic worksheets.',
+      'Every point on the SAT and ACT is predictable, which is why we start with a diagnostic that maps exactly where yours are being lost. No guessing, no generic worksheets.',
       'From there it’s a tight loop: coach the weak spots, drill under real timing, sit a full practice test, review every miss, and repeat. The score climbs because the plan is aimed, and you can see it move week to week.',
     ],
     cta: { label: 'Book a diagnostic', href: '/book' },
   }),
   teamRow({
     heading: 'Your coaches',
-    intro: 'Book by name — you’ll work with the same coach every session, someone who knows your test cold.',
+    intro: 'Book by name: you’ll work with the same coach every session, someone who knows your test cold.',
     members: [
       {
         name: 'Jordan Ellis',
@@ -363,7 +363,7 @@ const ABOUT = [
     alt: 'A focused one-on-one coaching session at a study table',
     heading: 'About Apex Test Prep',
     body: [
-      'We started Apex because test prep had become a box of tricks sold by the hour, disconnected from the one thing that matters: the score on the page. We do the opposite — every session is aimed at points, and every point is tracked.',
+      'We started Apex because test prep had become a box of tricks sold by the hour, disconnected from the one thing that matters: the score on the page. We do the opposite, every session is aimed at points, and every point is tracked.',
       'Our coaches all scored in the top 1% of the exam they teach, and they coach one student at a time. No lecture halls, no filler, no “just do more problems.” A plan built for your target, run by someone who’s already been there.',
     ],
     cta: { label: 'Book a diagnostic', href: '/book' },
@@ -382,7 +382,7 @@ const ABOUT = [
       },
       {
         title: 'You can see it move',
-        body: 'We track every practice-test score, so progress is a number you watch climb — not a feeling or a promise.',
+        body: 'We track every practice-test score, so progress is a number you watch climb, not a feeling or a promise.',
       },
     ],
   }),
@@ -402,7 +402,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your free diagnostic online — no phone tag.',
+    sub: 'See live availability and reserve your free diagnostic online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a diagnostic', href: '/book' },
   }),
@@ -413,8 +413,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-tutoring-testprep',
   name: 'Tutoring (Test Prep)',
   summary:
-    'A bold, confident test-prep site — a deep-indigo primary, a punchy amber accent and sharp Space Grotesk headings on a crisp near-white ground. Installs a working booking flow: a free diagnostic plus SAT, ACT, AP and admissions-essay sessions, with three coaches you book by name and their own after-school and weekend hours. Ships as "Apex Test Prep", a results-driven SAT/ACT and college-admissions coaching studio.',
-  tagline: 'A sharp, score-focused template for tutoring & test prep — book online from day one.',
+    'A bold, confident test-prep site: a deep-indigo primary, a punchy amber accent and sharp Space Grotesk headings on a crisp near-white ground. Installs a working booking flow: a free diagnostic plus SAT, ACT, AP and admissions-essay sessions, with three coaches you book by name and their own after-school and weekend hours. Ships as "Apex Test Prep", a results-driven SAT/ACT and college-admissions coaching studio.',
+  tagline: 'A sharp, score-focused template for tutoring & test prep. Book online from day one.',
   industry: 'Tutoring',
   sortWeight: 31,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -423,7 +423,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Apex Test Prep — SAT, ACT & college-admissions coaching',
+      title: 'Apex Test Prep: SAT, ACT & college-admissions coaching',
       description:
         'Apex Test Prep is one-on-one SAT, ACT, AP and admissions coaching built around your target score. Book a free diagnostic and strategy session online.',
     },

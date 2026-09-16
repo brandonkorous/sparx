@@ -118,7 +118,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Route className="size-6" aria-hidden />}
           title="Could not load the walks"
-          description="This is a problem reaching the server. Nobody's walk is affected — the list just could not be read just now."
+          description="This is a problem reaching the server. Nobody's walk is affected: the list just could not be read just now."
         />
       );
     }

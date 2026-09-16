@@ -129,7 +129,7 @@ function ServiceRules({
                 onSet('policyId', event.target.value);
               }}
             >
-              <option value="">No rules — and no reminders</option>
+              <option value="">No rules, and no reminders</option>
               {(policies.data?.items ?? []).map((policy) => (
                 <option key={policy.id} value={policy.id}>
                   {policy.name}

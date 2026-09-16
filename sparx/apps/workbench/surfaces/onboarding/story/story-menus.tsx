@@ -101,7 +101,7 @@ export function ClauseListMenu({
         />
       ))}
       {!current && ids.length === 0 ? (
-        <div className={styles.mhead}>That&apos;s the whole platform — nice.</div>
+        <div className={styles.mhead}>That&apos;s the whole platform. Nice.</div>
       ) : null}
     </>
   );

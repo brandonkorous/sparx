@@ -222,12 +222,12 @@ export const LOCATION_TYPES = [
   {
     value: 'dropship',
     label: 'Shipped by a supplier',
-    hint: 'Stock you never hold — a supplier ships each order straight to the customer.',
+    hint: 'Stock you never hold: a supplier ships each order straight to the customer.',
   },
   {
     value: 'virtual',
     label: 'On paper only',
-    hint: 'Not a real building — a holding place for stock in transit or counted elsewhere.',
+    hint: 'Not a real building: a holding place for stock in transit or counted elsewhere.',
   },
 ] as const;
 

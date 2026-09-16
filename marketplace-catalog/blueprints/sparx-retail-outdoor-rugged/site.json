@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ridgeline Supply — outdoor & adventure gear built to be used",
-      "seoDescription": "Ridgeline Supply outfits people who actually go outside — hard-wearing apparel, packs and gear, field-tested every season and backed by a repair-first guarantee. Fewer things, made to last.",
+      "seoTitle": "Ridgeline Supply: outdoor & adventure gear built to be used",
+      "seoDescription": "Ridgeline Supply outfits people who actually go outside: hard-wearing apparel, packs and gear, field-tested every season and backed by a repair-first guarantee. Fewer things, made to last.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1256,7 +1256,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Nothing goes in the line until it has done a season on real trips — soaked, dropped, overloaded and left out in the weather. What survives ships; what fails goes back to the bench. If we wouldn’t carry it, we won’t sell it."
+                          "Nothing goes in the line until it has done a season on real trips: soaked, dropped, overloaded and left out in the weather. What survives ships; what fails goes back to the bench. If we wouldn’t carry it, we won’t sell it."
                         ],
                         "id": "1e41d1b6-e9c3-400a-b54e-6558434edf5f",
                         "ord": "a1"
@@ -1530,7 +1530,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Good gear should outlast the trend cycle. Every Ridgeline piece is built to be fixed, not binned — send it back and we’ll patch a shell, restitch a strap or re-loft a bag before you ever pay for a new one. That’s the whole point of buying well once."
+                          "Good gear should outlast the trend cycle. Every Ridgeline piece is built to be fixed, not binned. Send it back and we’ll patch a shell, restitch a strap or re-loft a bag before you ever pay for a new one. That’s the whole point of buying well once."
                         ],
                         "id": "916ec370-f902-4de5-9b38-d42d6373b843",
                         "ord": "a1"
@@ -1565,7 +1565,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Ridgeline Supply",
+      "seoTitle": "Shop: Ridgeline Supply",
       "seoDescription": "Browse everything Ridgeline Supply makes, with prices and options at a glance. Outdoor & adventure gear.",
       "root": {
         "kind": "element",
@@ -1597,7 +1597,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything Ridgeline makes, in one place — apparel, packs, footwear and gear for the trail, the crag and the campsite. Filter by category or sort however you like; every piece is field-tested and covered by the repair guarantee."
+                      "Everything Ridgeline makes, in one place: apparel, packs, footwear and gear for the trail, the crag and the campsite. Filter by category or sort however you like; every piece is field-tested and covered by the repair guarantee."
                     ],
                     "id": "3eecaf95-d0f2-4ce7-91e9-b05102eb7810",
                     "ord": "a1"
@@ -1625,7 +1625,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Ridgeline Supply",
+      "seoTitle": "Collections: Ridgeline Supply",
       "seoDescription": "Explore the collections at Ridgeline Supply, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1657,7 +1657,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The gear grouped the way you actually pack it — this season’s arrivals, the pieces people reorder, a full layering system, and the small essentials no trip should leave without."
+                      "The gear grouped the way you actually pack it. This season’s arrivals, the pieces people reorder, a full layering system, and the small essentials no trip should leave without."
                     ],
                     "id": "e3dce6a8-05eb-407b-8f7b-aba613cfb0ad",
                     "ord": "a1"
@@ -1685,7 +1685,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Ridgeline Supply",
+      "seoTitle": "Your cart: Ridgeline Supply",
       "seoDescription": "Review what is in your cart and check out securely at Ridgeline Supply.",
       "root": {
         "kind": "element",
@@ -1717,7 +1717,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $75, and everything is covered by our repair-first guarantee. Not sure a size or a piece is right? Tell us before you head out and we’ll make it work — gear you can trust starts with getting it right."
+                      "Free shipping on orders over $75, and everything is covered by our repair-first guarantee. Not sure a size or a piece is right? Tell us before you head out and we’ll make it work: gear you can trust starts with getting it right."
                     ],
                     "id": "2eb0d1cd-5010-4e2a-861a-8de02ee146f7",
                     "ord": "a1"
@@ -1745,7 +1745,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Ridgeline Supply",
+      "seoTitle": "Search: Ridgeline Supply",
       "seoDescription": "Search Ridgeline Supply for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1805,7 +1805,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Ridgeline Supply",
+      "seoTitle": "Journal: Ridgeline Supply",
       "seoDescription": "Stories, guides and notes from Ridgeline Supply.",
       "root": {
         "kind": "element",
@@ -1837,7 +1837,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the trail and the workbench — how we test our gear, how to layer for the weather, and how to pack so nothing gets left behind. Plain, useful, no gatekeeping."
+                      "Notes from the trail and the workbench: how we test our gear, how to layer for the weather, and how to pack so nothing gets left behind. Plain, useful, no gatekeeping."
                     ],
                     "id": "dfae7060-b55a-4298-a35d-6dcecb6e1638",
                     "ord": "a1"
@@ -1971,7 +1971,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Ridgeline Supply",
-      "seoDescription": "Why Ridgeline keeps the range small — gear designed by people who use it, tested across a full season, and built to be repaired instead of replaced.",
+      "seoDescription": "Why Ridgeline keeps the range small: gear designed by people who use it, tested across a full season, and built to be repaired instead of replaced.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2002,7 +2002,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Ridgeline Supply started with a torn pack on a week-long traverse and a simple frustration: too much outdoor gear is built for the shelf, not the trail. So we set out to make a short, honest line of kit — apparel, packs and hard goods you can actually rely on when the weather turns and you’re a long way from the car."
+                      "Ridgeline Supply started with a torn pack on a week-long traverse and a simple frustration: too much outdoor gear is built for the shelf, not the trail. So we set out to make a short, honest line of kit, apparel, packs and hard goods you can actually rely on when the weather turns and you’re a long way from the car."
                     ],
                     "id": "851d81ec-c0c9-4ff0-93c9-97d14127d56b",
                     "ord": "a1"
@@ -2022,7 +2022,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "And we build everything to be fixed, not thrown away. Our repair-first guarantee means a worn strap or a torn shell comes back to the bench before it ever costs you a replacement — because the most sustainable gear is the piece you already own, kept in the field for years."
+                      "And we build everything to be fixed, not thrown away. Our repair-first guarantee means a worn strap or a torn shell comes back to the bench before it ever costs you a replacement, because the most sustainable gear is the piece you already own, kept in the field for years."
                     ],
                     "id": "c4d29030-084d-4d57-ae53-d30dc6647022",
                     "ord": "a3"
@@ -2042,8 +2042,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Ridgeline Supply",
-      "seoDescription": "Get in touch with Ridgeline Supply — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Ridgeline Supply",
+      "seoDescription": "Get in touch with Ridgeline Supply: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2350,8 +2350,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Ridgeline Supply",
-      "seoDescription": "Product details at Ridgeline Supply — outdoor & adventure gear, with options and pricing.",
+      "seoTitle": "Product: Ridgeline Supply",
+      "seoDescription": "Product details at Ridgeline Supply: outdoor & adventure gear, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2714,7 +2714,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every piece ships field-ready and covered by our repair-first guarantee — send it back for a patch, a restitch or a re-loft before you ever pay for a replacement. Free shipping over $75, easy 30-day returns, and real people at the shop if you need a hand choosing a size."
+                              "Every piece ships field-ready and covered by our repair-first guarantee. Send it back for a patch, a restitch or a re-loft before you ever pay for a replacement. Free shipping over $75, easy 30-day returns, and real people at the shop if you need a hand choosing a size."
                             ],
                             "id": "c16fbad9-1c2f-4306-9a03-ea7b6aa8db54",
                             "ord": "a1"

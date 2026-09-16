@@ -106,7 +106,7 @@ export class FirstPayGateway implements PaymentGateway {
     return false;
   }
   parseWebhook(): Promise<ParsedWebhookEvent> {
-    return Promise.reject(new Error('1stPay parses per-tenant — use parseWebhookForTenant'));
+    return Promise.reject(new Error('1stPay parses per-tenant: use parseWebhookForTenant'));
   }
 
   async parseWebhookForTenant(tenantId: string, event: WebhookEvent): Promise<ParsedWebhookEvent> {

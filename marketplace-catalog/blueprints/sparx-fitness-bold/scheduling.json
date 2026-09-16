@@ -208,7 +208,7 @@
     {
       "handle": "strength",
       "name": "Strength",
-      "description": "Barbell strength in a capped small group — squat, press, pull, hinge. Every set coached, every load scaled to you. Come for the numbers, stay for the people chasing them with you.",
+      "description": "Barbell strength in a capped small group: squat, press, pull, hinge. Every set coached, every load scaled to you. Come for the numbers, stay for the people chasing them with you.",
       "bookingType": "class",
       "capacity": 14,
       "durationMinutes": 60,
@@ -233,7 +233,7 @@
     {
       "handle": "hiit",
       "name": "HIIT",
-      "description": "Forty-five loud minutes of intervals — bike, rower, bells and bodyweight, hard work and full recoveries. You pick the intensity, we hold the clock.",
+      "description": "Forty-five loud minutes of intervals: bike, rower, bells and bodyweight, hard work and full recoveries. You pick the intensity, we hold the clock.",
       "bookingType": "class",
       "capacity": 16,
       "durationMinutes": 45,
@@ -258,7 +258,7 @@
     {
       "handle": "metcon",
       "name": "Metcon",
-      "description": "Mixed-modal conditioning — the classic \"workout of the day\". Lifts, carries and cardio stitched into one score you chase week over week.",
+      "description": "Mixed-modal conditioning: the classic \"workout of the day\". Lifts, carries and cardio stitched into one score you chase week over week.",
       "bookingType": "class",
       "capacity": 12,
       "durationMinutes": 45,
@@ -283,7 +283,7 @@
     {
       "handle": "foundations",
       "name": "Foundations",
-      "description": "New to the barbell? Start here. A small, unhurried group that drills the six core lifts until they feel like yours — no ego, no rush, no assumed experience.",
+      "description": "New to the barbell? Start here. A small, unhurried group that drills the six core lifts until they feel like yours: no ego, no rush, no assumed experience.",
       "bookingType": "class",
       "capacity": 10,
       "durationMinutes": 45,
@@ -308,7 +308,7 @@
     {
       "handle": "conditioning",
       "name": "Engine",
-      "description": "A thirty-minute pure-conditioning hit — steady intervals that build the engine under everything else. Quick, brutal, done before the day starts.",
+      "description": "A thirty-minute pure-conditioning hit: steady intervals that build the engine under everything else. Quick, brutal, done before the day starts.",
       "bookingType": "class",
       "capacity": 16,
       "durationMinutes": 30,
@@ -333,7 +333,7 @@
     {
       "handle": "personal-training",
       "name": "1:1 Personal training",
-      "description": "You and a coach, a plan built around your goals and your schedule. Pick the coach you want and the time that fits — technique, programming and someone in your corner every rep.",
+      "description": "You and a coach, a plan built around your goals and your schedule. Pick the coach you want and the time that fits: technique, programming and someone in your corner every rep.",
       "bookingType": "appointment",
       "capacity": 1,
       "durationMinutes": 60,
@@ -352,7 +352,7 @@
     {
       "handle": "intro-assessment",
       "name": "Free intro & assessment",
-      "description": "Never trained here? Book a free session — movement screen, goal chat and a walk of the floor so your first class isn’t your first guess. We confirm it once we see it land.",
+      "description": "Never trained here? Book a free session: movement screen, goal chat and a walk of the floor so your first class isn’t your first guess. We confirm it once we see it land.",
       "bookingType": "appointment",
       "capacity": 1,
       "durationMinutes": 30,

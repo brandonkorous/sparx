@@ -87,7 +87,7 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             error={error}
             noun="return"
             title="Could not load this return"
-            description="This is a problem reaching the server. The return itself is unaffected — nothing has been changed or lost."
+            description="This is a problem reaching the server. The return itself is unaffected. Nothing has been changed or lost."
             onRetry={() => {
               void refetch();
             }}

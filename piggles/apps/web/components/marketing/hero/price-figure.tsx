@@ -67,7 +67,7 @@ export function PriceFigure() {
       </div>
 
       <p className="px-5 py-4 text-base font-semibold">
-        The number only moves when your business needs more room — never when you open another app.
+        The number only moves when your business needs more room, never when you open another app.
       </p>
     </HeroPanel>
   );

@@ -76,7 +76,7 @@ export default function SignInPage() {
       setError(
         useBackupCode
           ? 'That backup code did not work. Each code can only be used once.'
-          : 'That code did not work. Codes change every 30 seconds — try the current one.'
+          : 'That code did not work. Codes change every 30 seconds. Try the current one.'
       );
       setCode('');
       setSubmitting(false);

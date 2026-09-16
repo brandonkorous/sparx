@@ -82,7 +82,7 @@ export function ModuleSwitchboard({
         ? `Turns on ${label} for this tenant${
             price ? `, adding ${price} to their bill` : ''
           }, and activates anything ${label} depends on. It appears in the tenant's account activity as a WizeWorks-initiated change.`
-        : `Turns off ${label} for this tenant — its API returns MODULE_DISABLED and its dashboard routes stop. Stored data is kept. It appears in the tenant's account activity as a WizeWorks-initiated change.`,
+        : `Turns off ${label} for this tenant. Its API returns MODULE_DISABLED and its dashboard routes stop. Stored data is kept. It appears in the tenant's account activity as a WizeWorks-initiated change.`,
       confirmLabel: next ? 'Activate module' : 'Deactivate module',
       color: next ? 'module' : 'warning',
     });

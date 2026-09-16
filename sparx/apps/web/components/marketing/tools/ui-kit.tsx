@@ -46,7 +46,7 @@ export function useCopy(): { copied: boolean; copy: (value: string, label?: stri
         clear(timer);
         timer.current = setTimeout(() => setCopied(false), 1600);
       },
-      () => toast.error('Could not copy — your browser blocked clipboard access')
+      () => toast.error('Could not copy: your browser blocked clipboard access')
     );
   }, []);
   return { copied, copy };

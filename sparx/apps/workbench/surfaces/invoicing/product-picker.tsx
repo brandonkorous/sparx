@@ -209,7 +209,7 @@ export function ProductPicker({
             onPick({
               productId: activeProduct.id,
               variantId: option.variant.id,
-              description: `${activeProduct.title} — ${option.variant.title ?? option.variant.sku}`,
+              description: `${activeProduct.title} (${option.variant.title ?? option.variant.sku})`,
               unitPrice: option.variant.priceCents / 100,
             });
           }}
@@ -218,7 +218,7 @@ export function ProductPicker({
 
       {total > products.length ? (
         <Text className="text-sm">
-          Showing {products.length} of {total} products — refine your search, or open the full
+          Showing {products.length} of {total} products: refine your search, or open the full
           catalog in Selling.
         </Text>
       ) : null}

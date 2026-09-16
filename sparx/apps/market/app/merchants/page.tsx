@@ -20,7 +20,7 @@ const PER_PAGE = 24;
 export const metadata: Metadata = {
   title: 'Merchants',
   description:
-    'Meet the independent sellers on sparx.market — real shops and makers shipping direct from across the sparx network.',
+    'Meet the independent sellers on sparx.market: real shops and makers shipping direct from across the sparx network.',
 };
 
 function one(v: string | string[] | undefined): string | undefined {
@@ -49,7 +49,7 @@ export default async function MerchantsPage({
         <p className="mt-2 max-w-2xl text-base">
           {q
             ? `Sellers matching “${q}”.`
-            : 'Real shops and makers selling direct on sparx.market — shipped from across the network.'}
+            : 'Real shops and makers selling direct on sparx.market: shipped from across the network.'}
         </p>
         <div className="mt-5">
           <MerchantSearch initialQuery={q ?? ''} />
@@ -72,7 +72,7 @@ export default async function MerchantsPage({
           description={
             q
               ? 'Try a different name, or browse the full directory.'
-              : 'Independent sellers are joining the marketplace all the time — check back soon.'
+              : 'Independent sellers are joining the marketplace all the time. Check back soon.'
           }
         />
       )}

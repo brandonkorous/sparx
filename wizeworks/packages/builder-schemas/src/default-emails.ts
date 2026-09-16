@@ -140,7 +140,7 @@ const welcomeCustomer = (): BuilderNode =>
   body([
     heading('Welcome to {{site.name}}'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — thanks for creating an account. You’re all set: browse the latest, track your orders, and check out faster every time.'
+      'Hi {{customer.firstName ?? "there"}}: thanks for creating an account. You’re all set: browse the latest, track your orders, and check out faster every time.'
     ),
     button('Start shopping', '{{site.url}}'),
   ]);
@@ -149,7 +149,7 @@ const winBack = (): BuilderNode =>
   body([
     heading('It’s been a while'),
     para(
-      'We haven’t seen you at {{site.name}} in a bit, {{customer.firstName ?? "there"}}. There’s plenty new since your last visit — come take a look.'
+      'We haven’t seen you at {{site.name}} in a bit, {{customer.firstName ?? "there"}}. There’s plenty new since your last visit: come take a look.'
     ),
     button('See what’s new', '{{site.url}}'),
     ...complianceFooter(),
@@ -180,7 +180,7 @@ const b2bAccountApproved = (): BuilderNode =>
   body([
     heading('You’re approved'),
     para(
-      'Good news — {{b2bAccount.companyName}} has been approved for a wholesale account with {{site.name}}. You can sign in and order at your account pricing now.'
+      'Good news: {{b2bAccount.companyName}} has been approved for a wholesale account with {{site.name}}. You can sign in and order at your account pricing now.'
     ),
     conditional('b2bAccount.creditLimit', [
       para('Your credit line is {{b2bAccount.creditLimit}} on {{b2bAccount.paymentTerms}} terms.'),
@@ -210,7 +210,7 @@ const b2bQuoteExpiring = (): BuilderNode =>
   body([
     heading('Your quote expires soon'),
     para(
-      'Heads-up — quote {{quote.number}} expires on {{quote.validUntil}}. Approve it before then to lock in your pricing.'
+      'Heads-up: quote {{quote.number}} expires on {{quote.validUntil}}. Approve it before then to lock in your pricing.'
     ),
     para('Total: {{quote.total}} · Expires {{quote.validUntil}}'),
     button('Approve now', '{{quote.reviewUrl}}'),
@@ -264,7 +264,7 @@ const invoicingOverdueFinal = (): BuilderNode =>
 
 const invoicingReceipt = (): BuilderNode =>
   body([
-    heading('Payment received — thank you!'),
+    heading('Payment received: thank you!'),
     para(
       'We’ve received your payment in full for invoice {{invoice.number}}. Here’s a summary for your records:'
     ),
@@ -287,7 +287,7 @@ const orderConfirmation = (): BuilderNode =>
   body([
     heading('Your order is confirmed'),
     para(
-      'Thanks for your order, {{customer.firstName ?? "there"}} — we’re getting it ready. Here’s a summary of order {{order.number}}:'
+      'Thanks for your order, {{customer.firstName ?? "there"}}: we’re getting it ready. Here’s a summary of order {{order.number}}:'
     ),
     lineItems('order.items'),
     para('Total: {{order.total}}'),
@@ -304,7 +304,7 @@ const orderConfirmation = (): BuilderNode =>
 const shippingConfirmation = (): BuilderNode =>
   body([
     heading('Your order is on its way'),
-    para('Good news, {{customer.firstName ?? "there"}} — order {{order.number}} has shipped.'),
+    para('Good news, {{customer.firstName ?? "there"}}: order {{order.number}} has shipped.'),
     para('Carrier: {{shipping.carrier}} · Tracking: {{shipping.trackingNumber}}'),
     conditional('shipping.trackingNumber', [
       button('Track your package', '{{shipping.trackingUrl}}'),
@@ -321,7 +321,7 @@ const orderDelivered = (): BuilderNode =>
   body([
     heading('Your order was delivered'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your order {{order.number}} has been delivered. We hope it’s everything you expected.'
+      'Hi {{customer.firstName ?? "there"}}. Your order {{order.number}} has been delivered. We hope it’s everything you expected.'
     ),
     para('Order total: {{order.total}}'),
     button('Leave a review', '{{order.reviewUrl}}'),
@@ -331,7 +331,7 @@ const orderCancelled = (): BuilderNode =>
   body([
     heading('Your order was cancelled'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} has been cancelled. Order total: {{order.total}}.'
+      'Hi {{customer.firstName ?? "there"}}: order {{order.number}} has been cancelled. Order total: {{order.total}}.'
     ),
     conditional('order.cancelReason', [para('Reason: {{order.cancelReason}}')]),
     para(
@@ -344,7 +344,7 @@ const orderRefunded = (): BuilderNode =>
   body([
     heading('Your refund is on the way'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we’ve processed a refund of {{order.refundTotal}} for order {{order.number}}.'
+      'Hi {{customer.firstName ?? "there"}}: we’ve processed a refund of {{order.refundTotal}} for order {{order.number}}.'
     ),
     para(
       'Refunds are returned to your original payment method and usually take 5–10 business days to appear.'
@@ -356,9 +356,9 @@ const paymentFailed = (): BuilderNode =>
   body([
     heading('There was a problem with your payment'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for order {{order.number}}, so it’s on hold. Amount due: {{order.total}}.'
+      'Hi {{customer.firstName ?? "there"}}. We couldn’t process the payment for order {{order.number}}, so it’s on hold. Amount due: {{order.total}}.'
     ),
-    para('Update your payment details to complete your order — we’ll take it from there.'),
+    para('Update your payment details to complete your order: we’ll take it from there.'),
     button('Update payment', '{{order.statusUrl}}'),
   ]);
 
@@ -370,7 +370,7 @@ const subscriptionConfirmed = (): BuilderNode =>
   body([
     heading('Your subscription is active'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — you’re all set. We’ll send each order automatically, {{subscription.interval}}. Next order: {{subscription.nextOrderDate}} ({{subscription.amount}}).'
+      'Hi {{customer.firstName ?? "there"}}: you’re all set. We’ll send each order automatically, {{subscription.interval}}. Next order: {{subscription.nextOrderDate}} ({{subscription.amount}}).'
     ),
     button('Manage subscription', '{{subscription.manageUrl}}'),
   ]);
@@ -379,7 +379,7 @@ const subscriptionRenewed = (): BuilderNode =>
   body([
     heading('Your subscription renewed'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your latest order is on its way. Amount charged: {{subscription.amount}}. Next order: {{subscription.nextOrderDate}}.'
+      'Hi {{customer.firstName ?? "there"}}. Your latest order is on its way. Amount charged: {{subscription.amount}}. Next order: {{subscription.nextOrderDate}}.'
     ),
     button('Manage subscription', '{{subscription.manageUrl}}'),
   ]);
@@ -388,7 +388,7 @@ const subscriptionPaymentFailed = (): BuilderNode =>
   body([
     heading('There was a problem with your subscription payment'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for your latest order ({{subscription.amount}}), so it’s paused. Update your payment details and we’ll retry automatically.'
+      'Hi {{customer.firstName ?? "there"}}. We couldn’t process the payment for your latest order ({{subscription.amount}}), so it’s paused. Update your payment details and we’ll retry automatically.'
     ),
     button('Update payment', '{{subscription.manageUrl}}'),
   ]);
@@ -397,7 +397,7 @@ const subscriptionAuthenticationRequired = (): BuilderNode =>
   body([
     heading('Your bank needs you to confirm this payment'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your card is fine, but your bank asked us to check it’s really you before your next order ({{subscription.amount}}) goes through.'
+      'Hi {{customer.firstName ?? "there"}}. Your card is fine, but your bank asked us to check it’s really you before your next order ({{subscription.amount}}) goes through.'
     ),
     button('Confirm payment', '{{subscription.confirmUrl}}'),
   ]);
@@ -406,7 +406,7 @@ const subscriptionInvoice = (): BuilderNode =>
   body([
     heading('Your repeat order is ready'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — here’s the bill for your latest order ({{subscription.amount}}). Once it’s paid we’ll get it on its way.'
+      'Hi {{customer.firstName ?? "there"}}: here’s the bill for your latest order ({{subscription.amount}}). Once it’s paid we’ll get it on its way.'
     ),
     button('Pay now', '{{subscription.payUrl}}'),
   ]);
@@ -415,7 +415,7 @@ const subscriptionPaused = (): BuilderNode =>
   body([
     heading('Your subscription is paused'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your subscription is on hold. No orders will ship until it resumes.'
+      'Hi {{customer.firstName ?? "there"}}. Your subscription is on hold. No orders will ship until it resumes.'
     ),
     conditional('subscription.pausedUntil', [para('Paused until {{subscription.pausedUntil}}.')]),
     button('Resume subscription', '{{subscription.manageUrl}}'),
@@ -425,7 +425,7 @@ const subscriptionResumed = (): BuilderNode =>
   body([
     heading('Your subscription is active again'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — welcome back. Your subscription has resumed; next order: {{subscription.nextOrderDate}}.'
+      'Hi {{customer.firstName ?? "there"}}: welcome back. Your subscription has resumed; next order: {{subscription.nextOrderDate}}.'
     ),
     button('Manage subscription', '{{subscription.manageUrl}}'),
   ]);
@@ -434,7 +434,7 @@ const subscriptionCancelled = (): BuilderNode =>
   body([
     heading('Your subscription was cancelled'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your subscription has been cancelled and no further orders will ship.'
+      'Hi {{customer.firstName ?? "there"}}. Your subscription has been cancelled and no further orders will ship.'
     ),
     conditional('subscription.currentPeriodEnd', [
       para('You’ll keep access until {{subscription.currentPeriodEnd}}.'),
@@ -450,7 +450,7 @@ const returnApproved = (): BuilderNode =>
   body([
     heading('Your return is approved'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we’ve approved your return for order {{order.number}} (for a {{return.outcome}}). Pack the items securely and send them back.'
+      'Hi {{customer.firstName ?? "there"}}: we’ve approved your return for order {{order.number}} (for a {{return.outcome}}). Pack the items securely and send them back.'
     ),
     conditional('return.hasLabel', [button('Print your return label', '{{return.labelUrl}}')]),
   ]);
@@ -459,7 +459,7 @@ const returnReceived = (): BuilderNode =>
   body([
     heading('We’ve received your return'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your return for order {{order.number}} is back with us. We’re processing your {{return.outcome}} and will email you again shortly.'
+      'Hi {{customer.firstName ?? "there"}}. Your return for order {{order.number}} is back with us. We’re processing your {{return.outcome}} and will email you again shortly.'
     ),
     button('View your order', '{{return.manageUrl}}'),
   ]);
@@ -468,16 +468,43 @@ const returnRefunded = (): BuilderNode =>
   body([
     heading('Your refund is complete'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — we’ve refunded {{return.refundAmount}} for your return on order {{order.number}}. Refunds usually take 5–10 business days to appear.'
+      'Hi {{customer.firstName ?? "there"}}: we’ve refunded {{return.refundAmount}} for your return on order {{order.number}}. Refunds usually take 5–10 business days to appear.'
     ),
     button('View your order', '{{return.manageUrl}}'),
+  ]);
+
+const returnExchanged = (): BuilderNode =>
+  body([
+    heading('Your replacement is on its way'),
+    para(
+      'Hi {{customer.firstName ?? "there"}}: we’ve sent out {{return.replacement}} for order {{order.number}}. Nothing more to pay; this is a straight swap for what you sent back.'
+    ),
+    button('View your order', '{{return.manageUrl}}'),
+  ]);
+
+const returnReplacementShipped = (): BuilderNode =>
+  body([
+    heading('Here’s how to follow your replacement'),
+    para(
+      'Hi {{customer.firstName ?? "there"}}: the replacement for order {{order.number}} is in the post. Follow it with tracking number {{return.replacementTracking}}.'
+    ),
+    button('Track your replacement', '{{return.replacementTrackingUrl}}'),
+  ]);
+
+const returnDenied = (): BuilderNode =>
+  body([
+    heading('About your return request'),
+    para(
+      'Hi {{customer.firstName ?? "there"}}: we’ve looked at your request to send something back from order {{order.number}}, and we’re not able to take this one back. {{return.deniedReason}} The item stays with you and nothing has been charged or refunded.'
+    ),
+    para('If you think we’ve got this wrong, just reply to this email.'),
   ]);
 
 const b2bOrderApproved = (): BuilderNode =>
   body([
     heading('Your order is approved'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} ({{order.total}}) has been approved and is now being processed.'
+      'Hi {{customer.firstName ?? "there"}}: order {{order.number}} ({{order.total}}) has been approved and is now being processed.'
     ),
     button('View your order', '{{order.statusUrl}}'),
   ]);
@@ -486,7 +513,7 @@ const b2bOrderRejected = (): BuilderNode =>
   body([
     heading('Your order wasn’t approved'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} wasn’t approved, so it hasn’t been placed. Reach out to your account manager with any questions.'
+      'Hi {{customer.firstName ?? "there"}}: order {{order.number}} wasn’t approved, so it hasn’t been placed. Reach out to your account manager with any questions.'
     ),
     button('View your order', '{{order.statusUrl}}'),
   ]);
@@ -502,7 +529,7 @@ const bookingConfirmation = (): BuilderNode =>
   body([
     heading('Your booking is confirmed'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} is booked for {{booking.when}}.'
+      'Hi {{customer.firstName ?? "there"}}. Your {{booking.service}} is booked for {{booking.when}}.'
     ),
     conditional('booking.location', [para('Location: {{booking.location}}')]),
     conditional('booking.staff', [para('With: {{booking.staff}}')]),
@@ -516,7 +543,7 @@ const bookingReminder = (): BuilderNode =>
   body([
     heading('A reminder about your upcoming booking'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — a reminder that your {{booking.service}} is coming up on {{booking.when}}.'
+      'Hi {{customer.firstName ?? "there"}}: a reminder that your {{booking.service}} is coming up on {{booking.when}}.'
     ),
     conditional('booking.location', [para('Location: {{booking.location}}')]),
     conditional('booking.staff', [para('With: {{booking.staff}}')]),
@@ -530,7 +557,7 @@ const bookingRescheduled = (): BuilderNode =>
   body([
     heading('Your booking has been rescheduled'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} has been moved to {{booking.when}}.'
+      'Hi {{customer.firstName ?? "there"}}. Your {{booking.service}} has been moved to {{booking.when}}.'
     ),
     conditional('booking.location', [para('Location: {{booking.location}}')]),
     button('Manage booking', '{{booking.manageUrl}}'),
@@ -543,7 +570,7 @@ const bookingCancelled = (): BuilderNode =>
   body([
     heading('Your booking was cancelled'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} scheduled for {{booking.when}} has been cancelled.'
+      'Hi {{customer.firstName ?? "there"}}. Your {{booking.service}} scheduled for {{booking.when}} has been cancelled.'
     ),
     conditional('booking.cancellationReason', [para('Reason: {{booking.cancellationReason}}')]),
     button('Book another time', '{{booking.bookUrl}}'),
@@ -562,7 +589,7 @@ const bookingNotificationInternal = (): BuilderNode =>
     para('{{customer.fullName ?? "A customer"}} booked {{booking.service}} for {{booking.when}}.'),
     conditional('booking.pendingApproval', [
       para(
-        'This booking is a request awaiting your approval — confirm or decline it from your dashboard.'
+        'This booking is a request awaiting your approval. Confirm or decline it from your dashboard.'
       ),
     ]),
     conditional('booking.staff', [para('With: {{booking.staff}}')]),
@@ -582,7 +609,7 @@ const waitlistOffer = (): BuilderNode =>
   body([
     heading('A spot just opened up'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — good news: a spot opened for {{waitlist.service}} in your requested window ({{waitlist.window}}). Book now to claim it.'
+      'Hi {{customer.firstName ?? "there"}}: good news: a spot opened for {{waitlist.service}} in your requested window ({{waitlist.window}}). Book now to claim it.'
     ),
     conditional('waitlist.offerExpires', [
       para('This offer is held until {{waitlist.offerExpires}}.'),
@@ -628,7 +655,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'welcome',
     subject: 'Welcome to {{site.name}}',
-    preheader: 'Thanks for joining — here’s what’s next.',
+    preheader: 'Thanks for joining: here’s what’s next.',
     sources: ['customer', 'tenant'],
     refs: ['customerId'],
     tree: welcomeCustomer(),
@@ -688,7 +715,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     name: 'B2B quote received',
     type: 'transactional',
     category: 'notification',
-    subject: 'Quote received — {{quote.number}}',
+    subject: 'Quote received: {{quote.number}}',
     preheader: 'Here are your quote details.',
     sources: ['customer', 'quote', 'tenant'],
     refs: ['customerId', 'quoteId'],
@@ -700,7 +727,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'invoice',
     subject: 'Invoice due in {{invoice.daysUntilDue}} days',
-    preheader: 'Invoice {{invoice.number}} — {{invoice.balance}} due.',
+    preheader: 'Invoice {{invoice.number}}: {{invoice.balance}} due.',
     sources: ['customer', 'invoice', 'tenant'],
     refs: ['customerId', 'billingDocumentId'],
     tree: b2bInvoiceDue(),
@@ -721,7 +748,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     name: 'Invoice reminder',
     type: 'transactional',
     category: 'invoice',
-    subject: 'Friendly reminder — {{invoice.number}} due {{invoice.dueDate}}',
+    subject: 'Friendly reminder: {{invoice.number}} due {{invoice.dueDate}}',
     preheader: '{{invoice.balance}} due {{invoice.dueDate}}.',
     sources: ['customer', 'invoice', 'tenant'],
     refs: ['customerId', 'billingDocumentId'],
@@ -740,10 +767,10 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   },
   {
     key: 'invoicing-overdue-2',
-    name: 'Invoice overdue — second notice',
+    name: 'Invoice overdue: second notice',
     type: 'transactional',
     category: 'dunning',
-    subject: 'Second notice — {{invoice.number}}',
+    subject: 'Second notice: {{invoice.number}}',
     preheader: '{{invoice.balance}} remains unpaid.',
     sources: ['customer', 'invoice', 'tenant'],
     refs: ['customerId', 'billingDocumentId'],
@@ -751,10 +778,10 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
   },
   {
     key: 'invoicing-overdue-final',
-    name: 'Invoice overdue — final notice',
+    name: 'Invoice overdue: final notice',
     type: 'transactional',
     category: 'dunning',
-    subject: 'Final notice — {{invoice.number}}',
+    subject: 'Final notice: {{invoice.number}}',
     preheader: 'Immediate action required.',
     sources: ['customer', 'invoice', 'tenant'],
     refs: ['customerId', 'billingDocumentId'],
@@ -765,7 +792,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     name: 'Payment receipt',
     type: 'transactional',
     category: 'invoice',
-    subject: 'Receipt — {{invoice.number}} paid in full',
+    subject: 'Receipt: {{invoice.number}} paid in full',
     preheader: 'Thank you for your payment.',
     sources: ['customer', 'invoice', 'tenant'],
     refs: ['customerId', 'billingDocumentId'],
@@ -788,7 +815,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'order',
     subject: 'Your order {{order.number}} is confirmed',
-    preheader: 'Thanks for your order — here are the details.',
+    preheader: 'Thanks for your order. Here are the details.',
     sources: ['customer', 'order', 'tenant'],
     refs: ['customerId', 'orderId'],
     tree: orderConfirmation(),
@@ -799,7 +826,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'order',
     subject: 'Your order {{order.number}} has shipped',
-    preheader: 'It’s on the way — track your package.',
+    preheader: 'It’s on the way: track your package.',
     sources: ['customer', 'order', 'shipping', 'tenant'],
     refs: ['customerId', 'orderId', 'fulfillmentId'],
     tree: shippingConfirmation(),
@@ -810,7 +837,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'order',
     subject: 'Your order {{order.number}} was delivered',
-    preheader: 'It’s arrived — we hope you love it.',
+    preheader: 'It’s arrived. We hope you love it.',
     sources: ['customer', 'order', 'tenant'],
     refs: ['customerId', 'orderId'],
     tree: orderDelivered(),
@@ -890,7 +917,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     type: 'transactional',
     category: 'subscription',
     subject: 'Confirm your payment to keep your order on track',
-    preheader: 'Your bank needs one quick check — it takes a moment.',
+    preheader: 'Your bank needs one quick check. It takes a moment.',
     sources: ['customer', 'subscription', 'tenant'],
     refs: ['customerId', 'subscriptionId'],
     tree: subscriptionAuthenticationRequired(),
@@ -973,6 +1000,39 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     sources: ['customer', 'order', 'return', 'tenant'],
     refs: ['customerId', 'orderId', 'returnId'],
     tree: returnRefunded(),
+  },
+  {
+    key: 'return-exchanged',
+    name: 'Replacement sent',
+    type: 'transactional',
+    category: 'return',
+    subject: 'Your replacement for {{order.number}} is on its way',
+    preheader: 'We’ve sent {{return.replacement}}.',
+    sources: ['customer', 'order', 'return', 'tenant'],
+    refs: ['customerId', 'orderId', 'returnId'],
+    tree: returnExchanged(),
+  },
+  {
+    key: 'return-replacement-shipped',
+    name: 'Replacement tracking',
+    type: 'transactional',
+    category: 'return',
+    subject: 'Tracking for your replacement from {{order.number}}',
+    preheader: 'Follow it with {{return.replacementTracking}}.',
+    sources: ['customer', 'order', 'return', 'tenant'],
+    refs: ['customerId', 'orderId', 'returnId'],
+    tree: returnReplacementShipped(),
+  },
+  {
+    key: 'return-denied',
+    name: 'Return turned down',
+    type: 'transactional',
+    category: 'return',
+    subject: 'About your return request for {{order.number}}',
+    preheader: 'We’re not able to take this one back.',
+    sources: ['customer', 'order', 'return', 'tenant'],
+    refs: ['customerId', 'orderId', 'returnId'],
+    tree: returnDenied(),
   },
   {
     key: 'b2b-order-approved',
@@ -1060,7 +1120,7 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     // `displayName` is the never-blank form of `fullName` and says the same thing when
     // absent ("A customer"), so this loses nothing and gains a preheader the editor can
     // actually display while an author edits it.
-    preheader: '{{customer.displayName}} — {{booking.when}}.',
+    preheader: '{{customer.displayName}}: {{booking.when}}.',
     sources: ['customer', 'booking', 'tenant'],
     refs: ['customerId', 'bookingId'],
     tree: bookingNotificationInternal(),

@@ -47,7 +47,7 @@ export default async function SitesPage({
     <Stack gap={6}>
       <PageHeader
         title="Sites"
-        description="Every website across the platform — each tenant’s public-facing site. Search by name or address; open a site to see its addresses and pause, archive, or reactivate it."
+        description="Every website across the platform. Each tenant’s public-facing site. Search by name or address; open a site to see its addresses and pause, archive, or reactivate it."
       />
 
       <form method="get" className="flex flex-wrap gap-2">

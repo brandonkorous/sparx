@@ -317,11 +317,11 @@ function departmentsBand(): Node {
           }),
           el('div', 'grid gap-x-10 @3xl:grid-cols-2 @5xl:grid-cols-3', {
             children: [
-              dept('Essays', 'Arguments given the room to develop — on culture, memory, work, and how we live now.'),
+              dept('Essays', 'Arguments given the room to develop: on culture, memory, work, and how we live now.'),
               dept('Reporting', 'People and places, reported patiently and told at length.'),
               dept('Fiction', 'New short stories from writers we are proud to publish first.'),
               dept('Criticism', 'Close, generous reading of books, film, and the ideas underneath them.'),
-              dept('Notebook', 'Shorter dispatches — observation, doubt, the thinking before the essay.'),
+              dept('Notebook', 'Shorter dispatches: observation, doubt, the thinking before the essay.'),
               dept('The Archive', 'Ten years of the magazine, open to read whenever the mood is right.'),
             ],
           }),
@@ -439,7 +439,7 @@ const JOURNAL: Node[] = [
             text: 'The Meridian',
           }),
           el('p', 'max-w-2xl text-xl leading-relaxed text-base-content', {
-            text: 'Essays, reporting, fiction and criticism — writing worth your evening, published a little more slowly than the rest of the internet.',
+            text: 'Essays, reporting, fiction and criticism: writing worth your evening, published a little more slowly than the rest of the internet.',
           }),
         ],
       }),
@@ -458,10 +458,10 @@ const ABOUT: Node[] = [
             text: 'About The Meridian',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The Meridian is a magazine of essays and ideas. We publish long — a piece here can run four thousand words if the argument earns them — because the writing we care about is the kind that needs room to breathe. We would rather run one essay that changes how you see a thing than ten posts that confirm what you already believed.',
+            text: 'The Meridian is a magazine of essays and ideas. We publish long (a piece here can run four thousand words if the argument earns them) because the writing we care about is the kind that needs room to breathe. We would rather run one essay that changes how you see a thing than ten posts that confirm what you already believed.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'We are reader-funded, and that is not a detail. It means our only obligation is to you, the person reading — not to an advertiser, not to an algorithm, not to whatever the feed decided was urgent this morning. A membership pays a writer to spend three weeks on a piece, and pays us to hold it until it is finished.',
+            text: 'We are reader-funded, and that is not a detail. It means our only obligation is to you, the person reading, not to an advertiser, not to an algorithm, not to whatever the feed decided was urgent this morning. A membership pays a writer to spend three weeks on a piece, and pays us to hold it until it is finished.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We come out four times a year in print, and every week online. The archive is open. Start anywhere.',
@@ -479,7 +479,7 @@ const CONTACT: Node[] = [
   // `mailto:` to a placeholder domain, which was the only way to reach the business.
   contactSection({
     heading: 'Write to the editors',
-    intro: 'A pitch, a letter about something we ran, a correction we should make — we read all of it. Submissions and letters go to the same desk, and a real person writes back.',
+    intro: 'A pitch, a letter about something we ran, a correction we should make. We read all of it. Submissions and letters go to the same desk, and a real person writes back.',
     submitLabel: 'Email the editors',
   }),
 ];
@@ -513,16 +513,16 @@ interface Product {
 const PRODUCTS: Product[] = [
   {
     handle: 'meridian-quarterly-membership',
-    title: 'The Meridian Quarterly — annual membership',
+    title: 'The Meridian Quarterly: annual membership',
     description:
-      'Four printed issues a year, delivered, plus everything on the site and the full archive. The membership that pays a writer to spend a month on an essay and lets us hold it until it is ready. This is how the magazine is funded — there is no advertiser behind it.',
+      'Four printed issues a year, delivered, plus everything on the site and the full archive. The membership that pays a writer to spend a month on an essay and lets us hold it until it is ready. This is how the magazine is funded. There is no advertiser behind it.',
     status: 'active',
     productType: 'Membership',
     vendor: 'The Meridian',
     tags: ['membership', 'subscription', 'print'],
     categoryHandles: ['subscriptions'],
     collectionHandles: ['featured'],
-    seoTitle: 'The Meridian Quarterly — annual print membership',
+    seoTitle: 'The Meridian Quarterly: annual print membership',
     seoDescription:
       'Four printed issues a year plus the full archive online. Reader-funded essays, reporting, fiction and criticism.',
     variants: [
@@ -534,7 +534,7 @@ const PRODUCTS: Product[] = [
   },
   {
     handle: 'the-long-view-anthology',
-    title: 'The Long View — ten years of The Meridian',
+    title: 'The Long View: ten years of The Meridian',
     description:
       'A hardback anthology: thirty of the essays, stories and pieces of reporting that defined the magazine’s first decade, chosen by the editors and introduced by the people who wrote them. 464 pages, sewn binding, made to be kept.',
     status: 'active',
@@ -543,7 +543,7 @@ const PRODUCTS: Product[] = [
     tags: ['book', 'anthology'],
     categoryHandles: ['books'],
     collectionHandles: ['featured'],
-    seoTitle: 'The Long View — a ten-year Meridian anthology',
+    seoTitle: 'The Long View: a ten-year Meridian anthology',
     seoDescription: 'A hardback anthology of thirty essays, stories and reports from the magazine’s first decade.',
     variants: [
       { sku: 'MER-BOOK-LONGVIEW', priceCents: money(38), isDefault: true, inventoryPolicy: 'continue' },
@@ -552,7 +552,7 @@ const PRODUCTS: Product[] = [
   },
   {
     handle: 'the-fiction-issue',
-    title: 'The Fiction Issue — collected',
+    title: 'The Fiction Issue: collected',
     description:
       'A slim paperback gathering the best short stories we have published, including three that were never online. A single evening of new fiction, on paper, the way it reads best.',
     status: 'active',
@@ -561,7 +561,7 @@ const PRODUCTS: Product[] = [
     tags: ['book', 'fiction'],
     categoryHandles: ['books'],
     collectionHandles: ['featured'],
-    seoTitle: 'The Fiction Issue — collected short stories | The Meridian',
+    seoTitle: 'The Fiction Issue: collected short stories | The Meridian',
     seoDescription: 'A paperback of the best short fiction from The Meridian, three of them never published online.',
     variants: [
       { sku: 'MER-BOOK-FICTION', priceCents: money(19), isDefault: true, inventoryPolicy: 'continue' },
@@ -579,7 +579,7 @@ const PRODUCTS: Product[] = [
     tags: ['merch', 'tote'],
     categoryHandles: ['merch'],
     collectionHandles: [],
-    seoTitle: 'The Meridian Tote — heavyweight canvas tote',
+    seoTitle: 'The Meridian Tote: heavyweight canvas tote',
     seoDescription: 'A heavyweight natural-canvas tote with the Meridian masthead.',
     variants: [{ sku: 'MER-TOTE', priceCents: money(26), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'tote-bag', isPrimary: true, alt: 'The Meridian canvas tote' }],
@@ -656,7 +656,7 @@ const CONTENT = [
             'Somewhere in the last twenty years the paragraph got shorter, and then it got shorter again. Open almost anything written to be read on a phone and you will find sentences standing alone, each granted its own white margin of importance, none of them touching. It looks like clarity. It is closer to the opposite.',
           ),
           para(
-            'A paragraph is not a container for a sentence. It is an argument in miniature — a place where one idea is stated, complicated, resisted, and finally either earned or abandoned. That work needs length. It needs the second sentence that qualifies the first, and the third that admits the qualification went too far. Break those apart into standalone lines and you have not made the thinking clearer; you have removed the thinking and kept only the conclusions.',
+            'A paragraph is not a container for a sentence. It is an argument in miniature: a place where one idea is stated, complicated, resisted, and finally either earned or abandoned. That work needs length. It needs the second sentence that qualifies the first, and the third that admits the qualification went too far. Break those apart into standalone lines and you have not made the thinking clearer; you have removed the thinking and kept only the conclusions.',
           ),
           h2('What we are actually optimising for'),
           para(
@@ -667,7 +667,7 @@ const CONTENT = [
           ),
           h2('An argument with room to breathe'),
           para(
-            'This is not nostalgia. Prose is not better because it is old, and a wall of text is not automatically wise. Plenty of long paragraphs are long because the writer would not stop, not because the thought required it. The discipline is to make the length load-bearing — to write the paragraph that could not be three tweets without losing the turn in the middle where the argument actually happens.',
+            'This is not nostalgia. Prose is not better because it is old, and a wall of text is not automatically wise. Plenty of long paragraphs are long because the writer would not stop, not because the thought required it. The discipline is to make the length load-bearing: to write the paragraph that could not be three tweets without losing the turn in the middle where the argument actually happens.',
           ),
           para(
             'We started this magazine, in part, to keep a place where that turn can still happen. Give a good writer room and time and the assumption that you will stay to the end, and they will tell you something you did not already believe. That is the whole proposition. It has never scaled well, and it never needed to.',
@@ -692,21 +692,21 @@ const CONTENT = [
         type: 'doc',
         content: [
           para(
-            'The shop smells of oil and warm paper before you see anything, and the first thing you see is the drawers — hundreds of them, shallow and wide, each one a compartmented tray holding a single font in a single size. Margaret Okafor has been reaching into those drawers for forty-one years, and she does it now without looking, the way you find a light switch in your own house in the dark.',
+            'The shop smells of oil and warm paper before you see anything, and the first thing you see is the drawers: hundreds of them, shallow and wide, each one a compartmented tray holding a single font in a single size. Margaret Okafor has been reaching into those drawers for forty-one years, and she does it now without looking, the way you find a light switch in your own house in the dark.',
           ),
           para(
             'She is setting a wedding invitation. Each letter is a small metal block she lifts from its compartment and stands in a handheld frame called a composing stick, backwards and upside down, reading it in a mirror in her head. A single line of text takes her a few minutes. A page takes an afternoon. When she is done she will ink it, lay a sheet on top, and pull a lever that presses the two together with a force you feel in your sternum from across the room.',
           ),
           h2('Why anyone still does this'),
           para(
-            'You can print the same invitation from a laptop in nine seconds, and it will be, by every measurable standard, identical. Okafor knows this better than anyone; she owns a laptop. What the machine cannot make is the bite — the faint valley the type presses into thick cotton paper, the thing your thumb finds before your eye does. People drive from two valleys over to order paper they will run their thumb across for the rest of their lives.',
+            'You can print the same invitation from a laptop in nine seconds, and it will be, by every measurable standard, identical. Okafor knows this better than anyone; she owns a laptop. What the machine cannot make is the bite: the faint valley the type presses into thick cotton paper, the thing your thumb finds before your eye does. People drive from two valleys over to order paper they will run their thumb across for the rest of their lives.',
           ),
           para(
             'The economics should not work, and mostly they do not. She keeps the lights on with the wedding trade and the occasional gallery commission, and she keeps the drawers full because a foundry in Wisconsin still casts type for the handful of shops like hers. When that foundry closes, and it will, she has enough type to last her out. She has thought about this more than she lets on.',
           ),
           h2('An apprentice, maybe'),
           para(
-            'There is a young man who comes in on Saturdays. He found the shop the way everyone under thirty finds anything, through a video, and he has stayed the way almost none of them do. Okafor does not call him an apprentice — she says the word would jinx it — but she has started letting him pull the lever, and last month she let him set a whole line alone. He got two letters backwards. She made him find them himself. He did, eventually, and she said nothing, which from Margaret Okafor is the highest thing there is.',
+            'There is a young man who comes in on Saturdays. He found the shop the way everyone under thirty finds anything, through a video, and he has stayed the way almost none of them do. Okafor does not call him an apprentice (she says the word would jinx it) but she has started letting him pull the lever, and last month she let him set a whole line alone. He got two letters backwards. She made him find them himself. He did, eventually, and she said nothing, which from Margaret Okafor is the highest thing there is.',
           ),
         ],
       },
@@ -735,7 +735,7 @@ const CONTENT = [
           ),
           h2('The knock she did not make'),
           para(
-            'A reasonable person knocks. She rehearsed it — a light rap, a neighbourly face, a sentence about the sound that she softened and re-softened until it meant nothing. She got as far as the landing twice. Both times she stood in front of the brown shoes and could not raise her hand, because underneath the neighbourly sentence was a second sentence she could not unthink, which was: what if he answers, and it is fine, and I have to keep living beneath a person I have now decided to be afraid of.',
+            'A reasonable person knocks. She rehearsed it: a light rap, a neighbourly face, a sentence about the sound that she softened and re-softened until it meant nothing. She got as far as the landing twice. Both times she stood in front of the brown shoes and could not raise her hand, because underneath the neighbourly sentence was a second sentence she could not unthink, which was: what if he answers, and it is fine, and I have to keep living beneath a person I have now decided to be afraid of.',
           ),
           para(
             'So she did not knock, and the not-knocking became its own tenancy, a thing she lived inside. She learned the sound the way Okafor down the road learned her drawers, without looking. Drag, and stop, and drag. Some nights she lay awake and moved with it, shifting an inch when he shifted, a slow duet through a ceiling, two people rearranging a weight that neither of them could name and neither would put down.',
@@ -763,21 +763,21 @@ const CONTENT = [
         type: 'doc',
         content: [
           para(
-            'There is a certain kind of review that treats difficulty as a moral failing, and another that treats it as a badge, and both are lazy in the same way: they have decided what difficulty means before they have finished the book. Difficulty is not one thing. A sentence can be hard because the writer is confused, or because the reader is, or because the idea genuinely is — and these are not remotely the same problem, though they arrive wearing the same coat.',
+            'There is a certain kind of review that treats difficulty as a moral failing, and another that treats it as a badge, and both are lazy in the same way: they have decided what difficulty means before they have finished the book. Difficulty is not one thing. A sentence can be hard because the writer is confused, or because the reader is, or because the idea genuinely is, and these are not remotely the same problem, though they arrive wearing the same coat.',
           ),
           para(
-            'The confused sentence is the only real failure of the three. When a writer has not worked out what they think, the prose thickens to hide it, and no amount of rereading rewards you, because there is nothing underneath. We have all been fooled by this book. It flatters us into mistaking our own effort for depth, and the tell is that the effort never resolves — you work and work and arrive nowhere, and blame yourself.',
+            'The confused sentence is the only real failure of the three. When a writer has not worked out what they think, the prose thickens to hide it, and no amount of rereading rewards you, because there is nothing underneath. We have all been fooled by this book. It flatters us into mistaking our own effort for depth, and the tell is that the effort never resolves. You work and work and arrive nowhere, and blame yourself.',
           ),
           h2('The difficulty that keeps its promise'),
           para(
-            'The other kind is different in a way you can feel in your body. A genuinely hard idea, honestly rendered, is difficult the way a steep path is difficult: the effort is the point, and it goes somewhere. You reread the sentence not because it is hiding something but because it is holding something too large to take in on one pass. When you finally have it, the difficulty vanishes in retrospect — you cannot imagine why you struggled — and that disappearance is the sign that the difficulty was real and was kept.',
+            'The other kind is different in a way you can feel in your body. A genuinely hard idea, honestly rendered, is difficult the way a steep path is difficult: the effort is the point, and it goes somewhere. You reread the sentence not because it is hiding something but because it is holding something too large to take in on one pass. When you finally have it, the difficulty vanishes in retrospect (you cannot imagine why you struggled), and that disappearance is the sign that the difficulty was real and was kept.',
           ),
           para(
-            'A critic’s actual job, most of the time, is simply to tell those two apart. Not to forgive difficulty, not to celebrate it, but to report honestly whether the climb led anywhere. That requires finishing the book, and finishing it twice, and being willing to say of a famously hard writer that this time there was nothing at the top — and of an easy one that they had done the hardest thing of all, which is to make it look like no work.',
+            'A critic’s actual job, most of the time, is simply to tell those two apart. Not to forgive difficulty, not to celebrate it, but to report honestly whether the climb led anywhere. That requires finishing the book, and finishing it twice, and being willing to say of a famously hard writer that this time there was nothing at the top, and of an easy one that they had done the hardest thing of all, which is to make it look like no work.',
           ),
           h2('Against the shortcut'),
           para(
-            'We live in a golden age of the shortcut: the summary, the thread, the ten-minute version that promises the payoff without the path. For most books this is a mercy, and I use it too. But a certain small number of books are difficult in the way that cannot be summarised, because the difficulty is the meaning — you cannot be told the view, you have to make the climb. Those are the books this magazine exists to point at. They are worth your evening precisely because they will not fit in your morning.',
+            'We live in a golden age of the shortcut: the summary, the thread, the ten-minute version that promises the payoff without the path. For most books this is a mercy, and I use it too. But a certain small number of books are difficult in the way that cannot be summarised, because the difficulty is the meaning. You cannot be told the view, you have to make the climb. Those are the books this magazine exists to point at. They are worth your evening precisely because they will not fit in your morning.',
           ),
         ],
       },
@@ -799,14 +799,14 @@ const CONTENT = [
         type: 'doc',
         content: [
           para(
-            'A city keeps its face on all day. It is a working face, a face for commerce and strangers, and it does not come off at dusk — dusk is only the day’s last and most flattering hour. It comes off around one in the morning, when the last of the going-out has gone out and the earliest of the coming-in has not yet begun, and for a while the place is not showing you anything because it does not know you are there.',
+            'A city keeps its face on all day. It is a working face, a face for commerce and strangers, and it does not come off at dusk: dusk is only the day’s last and most flattering hour. It comes off around one in the morning, when the last of the going-out has gone out and the earliest of the coming-in has not yet begun, and for a while the place is not showing you anything because it does not know you are there.',
           ),
           para(
-            'That is the hour to walk. Not for safety and not for danger, both of which are mostly a matter of which streets, but for honesty. The shop that looks prosperous by day shows you its taped window. The grand avenue admits how few people it is really for. A back street you would never choose turns out to be where the city actually lives — a lit kitchen, a delivery, two cooks on a step, the whole undercarriage of the daytime performance quietly doing the work that makes the performance possible.',
+            'That is the hour to walk. Not for safety and not for danger, both of which are mostly a matter of which streets, but for honesty. The shop that looks prosperous by day shows you its taped window. The grand avenue admits how few people it is really for. A back street you would never choose turns out to be where the city actually lives: a lit kitchen, a delivery, two cooks on a step, the whole undercarriage of the daytime performance quietly doing the work that makes the performance possible.',
           ),
           h2('What you can only see when no one is selling you anything'),
           para(
-            'By day everything is addressed to you: the signs, the lights, the arranged windows, all of it a soft continuous sentence that ends in buy, or enter, or believe. At night that sentence stops, and what is left is the grammar underneath — the actual shape of the streets, the way the ground really slopes, which corners the wind has chosen. You see the city as an object rather than an argument, and it is almost unbearably beautiful in a way it never lets itself be while it is trying to convince you of something.',
+            'By day everything is addressed to you: the signs, the lights, the arranged windows, all of it a soft continuous sentence that ends in buy, or enter, or believe. At night that sentence stops, and what is left is the grammar underneath, the actual shape of the streets, the way the ground really slopes, which corners the wind has chosen. You see the city as an object rather than an argument, and it is almost unbearably beautiful in a way it never lets itself be while it is trying to convince you of something.',
           ),
           para(
             'I do not recommend it as a lifestyle. The night walker is a slightly ridiculous figure, and the truths you collect out there do not survive contact with a reasonable bedtime. But once in a while, in a city you think you know, go out at the wrong hour and simply look. You will find it has been keeping a second self from you the whole time, the way people do, and that the second self is the one worth writing down.',
@@ -824,7 +824,7 @@ const SPEC: TemplateSiteSpec = {
   key: 'sparx-longform-literary',
   name: 'Longform Literary',
   summary:
-    'A serif, reading-first front page for a literary magazine — a single ranked lead essay over a contents rail, a live journal, a curated "in this issue" table of contents, magazine departments, and a bespoke serif article page tuned for reading an essay end to end, in a warm-paper one-red theme. Modelled on the literary-longform archetype; shipped as The Meridian. Ships a light store (a print membership, an anthology, merch) to demonstrate content + commerce together.',
+    'A serif, reading-first front page for a literary magazine: a single ranked lead essay over a contents rail, a live journal, a curated "in this issue" table of contents, magazine departments, and a bespoke serif article page tuned for reading an essay end to end, in a warm-paper one-red theme. Modelled on the literary-longform archetype; shipped as The Meridian. Ships a light store (a print membership, an anthology, merch) to demonstrate content + commerce together.',
   tagline: 'A serif longform template for a magazine that publishes and sells.',
   vertical: 'content',
   industry: 'Essays, ideas & criticism',
@@ -839,14 +839,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'The Meridian — essays, ideas & criticism',
+      title: 'The Meridian: essays, ideas & criticism',
       description:
-        'The Meridian is a reader-funded magazine of essays, reporting, fiction and criticism — writing worth your evening, published a little more slowly than the rest of the internet.',
+        'The Meridian is a reader-funded magazine of essays, reporting, fiction and criticism: writing worth your evening, published a little more slowly than the rest of the internet.',
     },
     about: {
-      title: 'About The Meridian — a reader-funded magazine of ideas',
+      title: 'About The Meridian: a reader-funded magazine of ideas',
       description:
-        'Who The Meridian is and how it is funded — reader-supported longform with no advertiser behind it, in print four times a year and online every week.',
+        'Who The Meridian is and how it is funded: reader-supported longform with no advertiser behind it, in print four times a year and online every week.',
     },
   },
   home: HOME,

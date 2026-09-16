@@ -85,7 +85,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Set up a repeating booking — hold Shift to open alongside, Alt for a new window"
+            title="Set up a repeating booking. Hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('scheduling.series.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -152,7 +152,7 @@ export function SeriesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No repeating bookings yet',
               description:
-                'Set one up when the same appointment happens on a regular pattern — a standing weekly slot, a monthly service visit. Each one it creates appears in your Bookings list like any other.',
+                'Set one up when the same appointment happens on a regular pattern: a standing weekly slot, a monthly service visit. Each one it creates appears in your Bookings list like any other.',
               actions: (
                 <Button
                   color="module"

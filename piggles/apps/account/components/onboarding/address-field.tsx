@@ -105,7 +105,7 @@ export function AddressField({
         <FieldDescription>
           Where your website lives, and what you read out over the counter. We fill it in from your
           business name. Point your own domain at it whenever you like, and this one keeps working
-          underneath — so it is worth a moment now, because it does not change afterwards.
+          underneath, so it is worth a moment now, because it does not change afterwards.
         </FieldDescription>
       )}
     </Field>

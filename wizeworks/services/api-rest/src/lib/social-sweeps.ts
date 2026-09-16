@@ -277,7 +277,7 @@ export function startSocialSweepLoops(logger: FastifyBaseLogger): () => void {
       try {
         await run(logger);
       } catch (err) {
-        logger.error({ err }, `social-sweep ${name}: tick threw — will retry next interval`);
+        logger.error({ err }, `social-sweep ${name}: tick threw, will retry next interval`);
       }
       if (stopped) return;
       timers.push(setTimeout(() => void tick(), intervalMs));

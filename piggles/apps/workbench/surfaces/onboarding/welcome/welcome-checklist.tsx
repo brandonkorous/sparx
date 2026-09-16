@@ -31,7 +31,7 @@ export function WelcomeSurface({ ctx }: { ctx: SurfaceContext }) {
             You&rsquo;re set up. Here&rsquo;s what&rsquo;s next.
           </Heading>
           <Text className="mt-2">
-            Your business is live. These are the few things worth doing next — do them in any order,
+            Your business is live. These are the few things worth doing next: do them in any order,
             or come back whenever you&rsquo;re ready.
           </Text>
         </div>

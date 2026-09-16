@@ -166,7 +166,7 @@ function hero(): Node {
                                     text: 'The parts to finish the job, in stock and priced for the trade.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Livewire is an electrical wholesaler for electricians and contractors. We carry the cable, consumer units, accessories, lighting and protection a first or second fix needs — sold by the reel and the box, at trade prices, ready on the counter or on the van next morning.',
+                                    text: 'Livewire is an electrical wholesaler for electricians and contractors. We carry the cable, consumer units, accessories, lighting and protection a first or second fix needs: sold by the reel and the box, at trade prices, ready on the counter or on the van next morning.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -244,7 +244,7 @@ function tradeTermsBand(): Node {
                                 text: 'Built for the way sparkies buy',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Open a trade account and you buy the way a contractor should — by the reel and the box, at wholesale rates, on terms. No consumer markups, no queueing behind a retail till.',
+                                text: 'Open a trade account and you buy the way a contractor should: by the reel and the box, at wholesale rates, on terms. No consumer markups, no queueing behind a retail till.',
                             }),
                         ],
                     }),
@@ -253,7 +253,7 @@ function tradeTermsBand(): Node {
                             card('Trade prices', 'Per-unit wholesale rates with volume breaks that deepen by the reel, the box and the pallet. The bigger the job, the less each metre and each unit costs.'),
                             card('Net-30 terms', 'Approved accounts buy now and settle later on net-30. Kit out the whole job without tying up cash flow before the customer has even paid you.'),
                             card('Counter & next-day', 'Reserve online and collect same-day from the trade counter, or take next-day delivery to site or the yard. The stock is here, not on back-order.'),
-                            card('Your account manager', 'A direct line to a real person who knows your firm, your standing lines and the jobs you run — not a call centre and a ticket number.'),
+                            card('Your account manager', 'A direct line to a real person who knows your firm, your standing lines and the jobs you run, not a call centre and a ticket number.'),
                         ],
                     }),
                     el('a', 'btn btn-primary btn-lg w-fit', { attrs: { href: '/contact' }, text: 'Open a trade account' }),
@@ -303,7 +303,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.cable-wiring', layout: 'carousel', heading: 'Cable & wiring, by the reel' }),
     editorialBand({
         heading: 'One wholesaler, one invoice, one account manager',
-        lead: 'Stop chasing four merchants for a single fix. Put the cable, the board, the accessories and the lighting on one trade account — one catalog to price a job from, one statement to reconcile, and one number to call when a line is short.',
+        lead: 'Stop chasing four merchants for a single fix. Put the cable, the board, the accessories and the lighting on one trade account. One catalog to price a job from, one statement to reconcile, and one number to call when a line is short.',
         assetId: 'elec-band-trade',
         cta: 'Open a trade account',
         href: '/contact',
@@ -349,7 +349,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & terms' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'The price shown is the per-unit list rate. Trade accounts unlock volume breaks — deeper pricing by the reel, the box or a standing order — set for your account in your dashboard.',
+                                        text: 'The price shown is the per-unit list rate. Trade accounts unlock volume breaks (deeper pricing by the reel, the box or a standing order) set for your account in your dashboard.',
                                     }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
                                         text: 'Approved accounts buy on net-30, collect same-day from the counter, or take next-day delivery to site. Not set up yet? Open a trade account and we will price your regular lines and get you on terms.',
@@ -395,11 +395,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The catalog',
-        'Every line we stock — cable and wiring, wiring accessories, lighting and circuit protection, sold by the reel, the box and the pack. Filter by trade or sort by price; trade accounts see their contract pricing at checkout.'
+        'Every line we stock: cable and wiring, wiring accessories, lighting and circuit protection, sold by the reel, the box and the pack. Filter by trade or sort by price; trade accounts see their contract pricing at checkout.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The catalog grouped the way a spark actually buys — best sellers, new lines just in, the first-fix essentials, lighting for the fit-out, and the circuit protection every board needs.'),
+    pageMasthead('Collections', 'The catalog grouped the way a spark actually buys: best sellers, new lines just in, the first-fix essentials, lighting for the fit-out, and the circuit protection every board needs.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search the catalog', 'Know the part number, the cable size, or the breaker rating you need? Search the whole catalog and the wiring notes below.'),
@@ -425,7 +425,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Wiring notes' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Practical guidance from the trade counter — sizing cable and breakers, spec-ing a consumer unit, and stocking a van so you never lose a day to a missing part. Written for the people on the tools, not for a catalog.',
+                        text: 'Practical guidance from the trade counter: sizing cable and breakers, spec-ing a consumer unit, and stocking a van so you never lose a day to a missing part. Written for the people on the tools, not for a catalog.',
                     }),
                 ],
             }),
@@ -442,13 +442,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl', { text: 'About Livewire' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Livewire Trade is an electrical wholesaler. We stock the cable, consumer units, accessories, lighting and protection that a domestic rewire, a commercial fit-out or a maintenance call runs on — and we sell them to the trade by the reel and the box, at wholesale, on terms.',
+                        text: 'Livewire Trade is an electrical wholesaler. We stock the cable, consumer units, accessories, lighting and protection that a domestic rewire, a commercial fit-out or a maintenance call runs on, and we sell them to the trade by the reel and the box, at wholesale, on terms.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We built the business around one idea: a working electrician should not have to drive between four merchants, eat retail markups, or find the one line they need is on back-order. One catalog, one account, one invoice, and stock that is actually on the shelf when you order it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No minimum-order gymnastics, no mystery lead times, no pricing that jumps because you asked twice. Just the parts, to spec and priced fairly, ready on the counter or on the van — the boring reliability a job is built on.',
+                        text: 'No minimum-order gymnastics, no mystery lead times, no pricing that jumps because you asked twice. Just the parts, to spec and priced fairly, ready on the counter or on the van: the boring reliability a job is built on.',
                     }),
                 ],
             }),
@@ -536,9 +536,9 @@ const packItem = (opts: {
 const PRODUCTS: Product[] = [
     {
         handle: 'twin-and-earth-cable-reel',
-        title: 'Twin & Earth Cable — 100 m Reel',
+        title: 'Twin & Earth Cable: 100 m Reel',
         description:
-            'Grey PVC twin-and-earth (6242Y) flat cable on a 100 m reel — the everyday wiring for lighting and ring finals. Pick the CSA the circuit calls for: 1.0 mm² and 1.5 mm² for lighting, 2.5 mm² for sockets. MOQ 1 reel; the more reels, the better the per-metre rate.',
+            'Grey PVC twin-and-earth (6242Y) flat cable on a 100 m reel: the everyday wiring for lighting and ring finals. Pick the CSA the circuit calls for: 1.0 mm² and 1.5 mm² for lighting, 2.5 mm² for sockets. MOQ 1 reel; the more reels, the better the per-metre rate.',
         status: 'active',
         productType: 'Cable',
         vendor: VENDOR,
@@ -557,9 +557,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'consumer-unit',
-        title: 'Metal Consumer Unit — Populated',
+        title: 'Metal Consumer Unit: Populated',
         description:
-            'A steel-enclosure consumer unit to the latest wiring regs, pre-populated with a main switch, dual RCDs and a bank of MCBs — the board a domestic rewire or a new install drops straight in. Choose the way count for the circuits on the job. MOQ 1 unit.',
+            'A steel-enclosure consumer unit to the latest wiring regs, pre-populated with a main switch, dual RCDs and a bank of MCBs: the board a domestic rewire or a new install drops straight in. Choose the way count for the circuits on the job. MOQ 1 unit.',
         status: 'active',
         productType: 'Protection',
         vendor: VENDOR,
@@ -577,9 +577,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'double-sockets-box',
-        title: 'Double Switched Sockets — Box of 20',
+        title: 'Double Switched Sockets: Box of 20',
         description:
-            '13 A twin switched sockets with a clean flat plate, a box of 20 — the accessory a second fix eats through. White moulded as standard; step up to brushed steel for the feature rooms. MOQ 1 box. Buy the box and stop running back for singles.',
+            '13 A twin switched sockets with a clean flat plate, a box of 20: the accessory a second fix eats through. White moulded as standard; step up to brushed steel for the feature rooms. MOQ 1 box. Buy the box and stop running back for singles.',
         status: 'active',
         productType: 'Accessories',
         vendor: VENDOR,
@@ -597,9 +597,9 @@ const PRODUCTS: Product[] = [
     },
     packItem({
         handle: 'light-switches-box',
-        title: 'Light Switches, 1-Gang 2-Way — Box of 20',
+        title: 'Light Switches, 1-Gang 2-Way: Box of 20',
         description:
-            '1-gang 2-way 10 A light switches on a slim flat plate, a box of 20 — the workhorse switch for landings, hallways and every room on the job. White moulded, screwless clip-on plate. MOQ 1 box.',
+            '1-gang 2-way 10 A light switches on a slim flat plate, a box of 20: the workhorse switch for landings, hallways and every room on the job. White moulded, screwless clip-on plate. MOQ 1 box.',
         price: 33,
         sku: 'LWT-ACC-SW-1G',
         productType: 'Accessories',
@@ -612,9 +612,9 @@ const PRODUCTS: Product[] = [
     }),
     {
         handle: 'led-downlights-box',
-        title: 'Fire-Rated LED Downlights — Box of 10',
+        title: 'Fire-Rated LED Downlights: Box of 10',
         description:
-            'Integrated fire-rated LED downlights, 6 W, dimmable, IP65 for bathrooms and kitchens — a box of 10 with a 90-minute fire rating and a flush white bezel. Pick the color temperature the room wants: warm 3000K or cool 4000K. MOQ 1 box.',
+            'Integrated fire-rated LED downlights, 6 W, dimmable, IP65 for bathrooms and kitchens: a box of 10 with a 90-minute fire rating and a flush white bezel. Pick the color temperature the room wants: warm 3000K or cool 4000K. MOQ 1 box.',
         status: 'active',
         productType: 'Lighting',
         vendor: VENDOR,
@@ -632,9 +632,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'mcb-circuit-breakers-pack',
-        title: 'MCB Circuit Breakers — Pack of 10',
+        title: 'MCB Circuit Breakers: Pack of 10',
         description:
-            'Type B single-pole miniature circuit breakers, 6 kA, a pack of 10 to populate a board or restock the van — the everyday protection for lighting and socket circuits. Pick the rating: 6 A for lighting, 16 A or 32 A for socket and appliance circuits. MOQ 2 packs.',
+            'Type B single-pole miniature circuit breakers, 6 kA, a pack of 10 to populate a board or restock the van: the everyday protection for lighting and socket circuits. Pick the rating: 6 A for lighting, 16 A or 32 A for socket and appliance circuits. MOQ 2 packs.',
         status: 'active',
         productType: 'Protection',
         vendor: VENDOR,
@@ -653,9 +653,9 @@ const PRODUCTS: Product[] = [
     },
     packItem({
         handle: 'trunking-conduit-bundle',
-        title: 'PVC Trunking & Conduit — Trade Bundle',
+        title: 'PVC Trunking & Conduit: Trade Bundle',
         description:
-            'A mixed bundle of white PVC mini-trunking and round conduit with couplers and clips — the surface containment for a quick rewire or a garage circuit. 3 m lengths, self-adhesive backing on the trunking. MOQ 1 bundle. The tidy way to run cable on show.',
+            'A mixed bundle of white PVC mini-trunking and round conduit with couplers and clips: the surface containment for a quick rewire or a garage circuit. 3 m lengths, self-adhesive backing on the trunking. MOQ 1 bundle. The tidy way to run cable on show.',
         price: 41,
         sku: 'LWT-CON-TRUNK-BDL',
         productType: 'Conduit & Trunking',
@@ -668,9 +668,9 @@ const PRODUCTS: Product[] = [
     }),
     packItem({
         handle: 'cable-clips-tub',
-        title: 'Cable Clips — Tub of 1000',
+        title: 'Cable Clips: Tub of 1000',
         description:
-            'Twin-and-earth cable clips in a bulk tub of 1000 — the fixing you go through faster than any other on a first fix. Sized for 1.5 and 2.5 mm² T&E, with a hardened masonry nail that drives into brick and timber alike. MOQ 1 tub.',
+            'Twin-and-earth cable clips in a bulk tub of 1000: the fixing you go through faster than any other on a first fix. Sized for 1.5 and 2.5 mm² T&E, with a hardened masonry nail that drives into brick and timber alike. MOQ 1 tub.',
         price: 19,
         sku: 'LWT-ACC-CLIP-1000',
         productType: 'Accessories',
@@ -685,7 +685,7 @@ const PRODUCTS: Product[] = [
         handle: 'installation-tester',
         title: 'Multifunction Installation Tester',
         description:
-            'A multifunction installation tester in a hard case — insulation resistance, continuity, loop impedance and RCD trip in one instrument, so you can certify a job to the regs without carrying four boxes. Calibration certificate included. MOQ 1 unit.',
+            'A multifunction installation tester in a hard case: insulation resistance, continuity, loop impedance and RCD trip in one instrument, so you can certify a job to the regs without carrying four boxes. Calibration certificate included. MOQ 1 unit.',
         price: 429,
         sku: 'LWT-TST-MFT',
         productType: 'Test Equipment',
@@ -694,13 +694,13 @@ const PRODUCTS: Product[] = [
         tags: ['test-equipment', 'tester', 'certification', 'tools'],
         asset: 'prod-tester',
         seoTitle: 'Multifunction Installation Tester | Livewire Trade',
-        seoDescription: 'A multifunction installation tester — insulation, continuity, loop impedance and RCD trip in one, with calibration cert.',
+        seoDescription: 'A multifunction installation tester: insulation, continuity, loop impedance and RCD trip in one, with calibration cert.',
     }),
     packItem({
         handle: 'first-fix-bundle',
         title: 'First-Fix Trade Bundle',
         description:
-            'A curated bundle of the lines a first fix runs out of first — a reel of 2.5 mm² T&E, a box of back boxes, a tub of cable clips and a pack of MCBs, packed together and priced below the sum of its parts. MOQ 1 bundle. The fastest way to kit a job from empty.',
+            'A curated bundle of the lines a first fix runs out of first: a reel of 2.5 mm² T&E, a box of back boxes, a tub of cable clips and a pack of MCBs, packed together and priced below the sum of its parts. MOQ 1 bundle. The fastest way to kit a job from empty.',
         price: 129,
         sku: 'LWT-KIT-FIRSTFIX',
         productType: 'Bundle',
@@ -709,7 +709,7 @@ const PRODUCTS: Product[] = [
         tags: ['bundle', 'first-fix', 'kit', 'starter'],
         asset: 'prod-first-fix',
         seoTitle: 'First-Fix Trade Bundle | Livewire Trade',
-        seoDescription: 'A curated first-fix bundle — 2.5 mm² T&E reel, back boxes, cable clips and MCBs, priced below the sum.',
+        seoDescription: 'A curated first-fix bundle: 2.5 mm² T&E reel, back boxes, cable clips and MCBs, priced below the sum.',
     }),
 ];
 
@@ -806,11 +806,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Every circuit is a partnership between the cable and the protective device in front of it. The cable can only carry so much current before it heats up; the breaker is there to trip before the cable ever gets there. Get the pairing wrong — an oversized breaker on an undersized cable — and the protection is protecting nothing. Get it right and the circuit runs cool and trips clean for the life of the install.'),
+                    para('Every circuit is a partnership between the cable and the protective device in front of it. The cable can only carry so much current before it heats up; the breaker is there to trip before the cable ever gets there. Get the pairing wrong (an oversized breaker on an undersized cable) and the protection is protecting nothing. Get it right and the circuit runs cool and trips clean for the life of the install.'),
                     h2('Match the breaker to the cable, not the load'),
                     para('The common trap is sizing the breaker to the appliance and forgetting the cable. Work the other way: pick the cable for the load and the run, then choose a breaker whose rating the cable can safely carry even under fault. A 2.5 mm² twin-and-earth on a ring final sits behind a 32 A breaker; a 1.5 mm² lighting circuit behind a 6 A. When in doubt, the cable is the thing you cannot change once it is buried in a wall, so spec it generously.'),
                     h2('Do not forget the derating'),
-                    para('The number on the cable is a best-case rating. Bunch several cables together, run them through insulation, or push a long distance, and the safe current drops — sometimes a lot. Volt-drop bites on the long runs too. The regs give you the correction factors; the habit worth building is to assume a cable in a real wall carries less than the datasheet says, and to size up rather than sail close to the limit.'),
+                    para('The number on the cable is a best-case rating. Bunch several cables together, run them through insulation, or push a long distance, and the safe current drops: sometimes a lot. Volt-drop bites on the long runs too. The regs give you the correction factors; the habit worth building is to assume a cable in a real wall carries less than the datasheet says, and to size up rather than sail close to the limit.'),
                 ],
             },
         },
@@ -828,9 +828,9 @@ const CONTENT = [
                 content: [
                     para('The consumer unit is the heart of a domestic install, and the one part a customer never sees until something trips at 11pm. Spec it well and it is a five-minute reset and a clear label; spec it badly and it is a nuisance-tripping headache that takes out the whole house every time the kettle and the shower run together. The choices are simple once you break them down.'),
                     h2('Metal enclosure, to the current regs'),
-                    para('Domestic boards are steel-enclosure now, for the fire rating, and they come to the latest amendment as standard. Do not fit a stripped-out board and populate it from a mixed drawer of old breakers — a populated unit from one maker keeps the device curves matched and the warranty intact. It also drops in faster, which is the difference between finishing the job today and coming back tomorrow.'),
+                    para('Domestic boards are steel-enclosure now, for the fire rating, and they come to the latest amendment as standard. Do not fit a stripped-out board and populate it from a mixed drawer of old breakers: a populated unit from one maker keeps the device curves matched and the warranty intact. It also drops in faster, which is the difference between finishing the job today and coming back tomorrow.'),
                     h2('RCD arrangement and way count'),
-                    para('Split the load so a single fault does not black out the house: dual-RCD or, better, RCBOs per circuit so only the faulty circuit drops. Then count the circuits — lighting up and down, ring finals, cooker, shower, outside — add a couple of spare ways for the extension nobody has mentioned yet, and pick the board a size up. Spare ways cost pennies now and save a board swap later.'),
+                    para('Split the load so a single fault does not black out the house: dual-RCD or, better, RCBOs per circuit so only the faulty circuit drops. Then count the circuits (lighting up and down, ring finals, cooker, shower, outside) add a couple of spare ways for the extension nobody has mentioned yet, and pick the board a size up. Spare ways cost pennies now and save a board swap later.'),
                 ],
             },
         },
@@ -846,11 +846,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Ask any electrician where the day goes and a good chunk of it is the drive back to the merchant for a line they should have had on the van. A missing box of clips or the wrong breaker turns a half-day job into a full one. A stocked van is not about carrying everything — it is about never running out of the handful of lines you use on every single job.'),
+                    para('Ask any electrician where the day goes and a good chunk of it is the drive back to the merchant for a line they should have had on the van. A missing box of clips or the wrong breaker turns a half-day job into a full one. A stocked van is not about carrying everything. It is about never running out of the handful of lines you use on every single job.'),
                     h2('Rack the fast movers, and only the fast movers'),
-                    para('Twin-and-earth in the common sizes, a box of sockets and switches, a tub of clips, a spread of MCBs, back boxes, connectors and a reel of flex. That short list covers the bulk of what a first and second fix consumes. Rack it so you can see at a glance when a bin is low — an open van bin that shows empty is worth more than a neat closed drawer you never check.'),
+                    para('Twin-and-earth in the common sizes, a box of sockets and switches, a tub of clips, a spread of MCBs, back boxes, connectors and a reel of flex. That short list covers the bulk of what a first and second fix consumes. Rack it so you can see at a glance when a bin is low: an open van bin that shows empty is worth more than a neat closed drawer you never check.'),
                     h2('Top up on a schedule, not a panic'),
-                    para('The failure mode is topping up only when you hit zero on site, which is exactly when you cannot. Set a reorder point for each van line — half a box, a quarter tub — and top up on a standing order with your wholesaler so the stock is waiting on the counter before you run dry. Reserve online, collect on the way to the job, and the drive-back day disappears.'),
+                    para('The failure mode is topping up only when you hit zero on site, which is exactly when you cannot. Set a reorder point for each van line (half a box, a quarter tub) and top up on a standing order with your wholesaler so the stock is waiting on the counter before you run dry. Reserve online, collect on the way to the job, and the drive-back day disappears.'),
                 ],
             },
         },
@@ -865,7 +865,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Electrical Supply (B2B / Wholesale)',
     theme: THEME,
     summary:
-        'A complete, working wholesale shop for an electrical wholesaler: a real trade catalogue sold by the reel, box and pack — twin & earth cable, consumer units, sockets & switches, LED downlights, circuit breakers, conduit and a tester — with categories, collections, a bespoke trade PDP (per-unit pricing, volume breaks, net-30), and a full merchandised home page. Cool electrical theme — slate ground, deep electric-blue, live-amber accent. Shipped as Livewire Trade.',
+        'A complete, working wholesale shop for an electrical wholesaler: a real trade catalogue sold by the reel, box and pack, twin & earth cable, consumer units, sockets & switches, LED downlights, circuit breakers, conduit and a tester, with categories, collections, a bespoke trade PDP (per-unit pricing, volume breaks, net-30), and a full merchandised home page. Cool electrical theme, slate ground, deep electric-blue, live-amber accent. Shipped as Livewire Trade.',
     tagline: 'A wholesale storefront built for electricians and contractors.',
     vertical: 'b2b',
     industry: 'Electrical wholesale',
@@ -878,17 +878,17 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Livewire Trade — electrical wholesaler for the trade',
+            title: 'Livewire Trade: electrical wholesaler for the trade',
             description:
-                'Livewire is an electrical wholesaler — cable, consumer units, accessories, lighting and protection sold by the reel and the box at trade prices, with net-30 terms, same-day counter collection and next-day delivery. Open a trade account.',
+                'Livewire is an electrical wholesaler: cable, consumer units, accessories, lighting and protection sold by the reel and the box at trade prices, with net-30 terms, same-day counter collection and next-day delivery. Open a trade account.',
         },
         about: {
             title: 'About Livewire Trade',
             description:
-                'How Livewire stocks, prices and ships — one catalog, one account, one invoice, wholesale by the reel and the box, and stock that is actually on the shelf when you order it.',
+                'How Livewire stocks, prices and ships. One catalog, one account, one invoice, wholesale by the reel and the box, and stock that is actually on the shelf when you order it.',
         },
         contact: {
-            title: 'Open a trade account — Livewire Trade',
+            title: 'Open a trade account: Livewire Trade',
             description:
                 'Set up a trade account with Livewire: wholesale per-unit pricing, volume breaks, net-30 terms, counter collection and next-day delivery, and a dedicated account manager. Wholesale enquiries and bulk quotes start here.',
         },

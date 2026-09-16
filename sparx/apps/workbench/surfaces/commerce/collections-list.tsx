@@ -161,7 +161,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Add a collection — hold Shift to open alongside, Alt for a new window"
+            title="Add a collection: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -205,7 +205,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             title="Could not load your collections"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -222,7 +222,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No collections yet',
               description:
-                'A collection is a themed group of products you show together — a sale, a gift guide, new arrivals. Add your first one to get started.',
+                'A collection is a themed group of products you show together: a sale, a gift guide, new arrivals. Add your first one to get started.',
             }}
           />
         ) : (

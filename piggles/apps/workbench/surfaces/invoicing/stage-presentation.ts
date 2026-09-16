@@ -22,32 +22,32 @@ import type { DocumentStageType } from './types';
 export const STAGE_TYPES: { value: DocumentStageType; label: string; hint: string }[] = [
   {
     value: 'draft',
-    label: 'Draft — still being put together',
+    label: 'Draft: still being put together',
     hint: 'Nothing is promised to the customer yet.',
   },
   {
     value: 'open',
-    label: 'Open — sent, still changeable',
+    label: 'Open: sent, still changeable',
     hint: 'The customer can see it and you can still edit it.',
   },
   {
     value: 'committed',
-    label: 'Committed — the customer approved it',
+    label: 'Committed: the customer approved it',
     hint: 'They have said yes. The work can start.',
   },
   {
     value: 'final',
-    label: 'Final — billable, awaiting payment',
+    label: 'Final: billable, awaiting payment',
     hint: 'This is what they owe. Usually where you stop editing.',
   },
   {
     value: 'paid',
-    label: 'Paid — settled',
+    label: 'Paid: settled',
     hint: 'The money has arrived and the document is done.',
   },
   {
     value: 'void',
-    label: 'Void — cancelled',
+    label: 'Void: canceled',
     hint: 'Kept for the record, but it is not owed and not collectable.',
   },
 ];
@@ -55,7 +55,7 @@ export const STAGE_TYPES: { value: DocumentStageType; label: string; hint: strin
 /** The short half of the option label — the part before the em dash. */
 export function typeLabel(type: DocumentStageType): string {
   return (
-    (STAGE_TYPES.find((option) => option.value === type)?.label ?? type).split(' — ')[0] ?? type
+    (STAGE_TYPES.find((option) => option.value === type)?.label ?? type).split(': ')[0] ?? type
   );
 }
 

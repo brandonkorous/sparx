@@ -174,7 +174,7 @@
     {
       "handle": "meet-consult",
       "name": "Meet & greet consultation",
-      "description": "A calm first visit — we meet your pet, talk through coat, temperament and the look you love, and plan the perfect groom. Booked before your first signature visit.",
+      "description": "A calm first visit. We meet your pet, talk through coat, temperament and the look you love, and plan the perfect groom. Booked before your first signature visit.",
       "durationMinutes": 30,
       "priceCents": 0,
       "requiresApproval": true,
@@ -198,7 +198,7 @@
     {
       "handle": "signature-spa-groom",
       "name": "Signature spa groom",
-      "description": "Our full experience: a gentle warm bath, hand-fluff dry, breed-appropriate finish, nails, ears and a spritz of light cologne — never crated, never rushed.",
+      "description": "Our full experience: a gentle warm bath, hand-fluff dry, breed-appropriate finish, nails, ears and a spritz of light cologne, never crated, never rushed.",
       "durationMinutes": 120,
       "priceCents": 11500,
       "bufferAfterMin": 15,
@@ -222,7 +222,7 @@
     {
       "handle": "breed-hand-style",
       "name": "Breed-specific hand styling",
-      "description": "Scissored and hand-finished to your breed’s standard — poodle, doodle, terrier, spaniel and more. A master groomer shapes every line by hand.",
+      "description": "Scissored and hand-finished to your breed’s standard: poodle, doodle, terrier, spaniel and more. A master groomer shapes every line by hand.",
       "durationMinutes": 150,
       "priceCents": 15500,
       "bufferAfterMin": 15,
@@ -246,7 +246,7 @@
     {
       "handle": "hand-strip",
       "name": "Hand-stripping (wire coats)",
-      "description": "Traditional hand-stripping for wire-coated breeds — pulling, not clipping, to keep color and texture true. Patient, careful, and kind to the coat.",
+      "description": "Traditional hand-stripping for wire-coated breeds: pulling, not clipping, to keep color and texture true. Patient, careful, and kind to the coat.",
       "durationMinutes": 150,
       "priceCents": 16500,
       "bufferAfterMin": 15,
@@ -270,7 +270,7 @@
     {
       "handle": "spa-refresh",
       "name": "Spa refresh & tidy",
-      "description": "A between-grooms freshen-up — bath, blow-out, sanitary trim, paws and a face tidy. In and out feeling soft and clean.",
+      "description": "A between-grooms freshen-up: bath, blow-out, sanitary trim, paws and a face tidy. In and out feeling soft and clean.",
       "durationMinutes": 75,
       "priceCents": 7500,
       "assignmentStrategy": "any_available",
@@ -316,7 +316,7 @@
     {
       "handle": "cat-spa-groom",
       "name": "Cat spa groom",
-      "description": "A gentle, unhurried groom for cats in our quiet room away from the dogs — bath, de-shed or lion trim, nails and ears, handled with a soft touch.",
+      "description": "A gentle, unhurried groom for cats in our quiet room away from the dogs: bath, de-shed or lion trim, nails and ears, handled with a soft touch.",
       "durationMinutes": 90,
       "priceCents": 9500,
       "bufferAfterMin": 15,

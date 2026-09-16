@@ -81,7 +81,7 @@ export function SaveCardFlow({ tenantSlug }: { tenantSlug: string }) {
     started.current = true;
 
     if (redirectStatus === 'failed') {
-      setError('Your bank did not approve that card. Nothing was saved — you can try another.');
+      setError('Your bank did not approve that card. Nothing was saved. You can try another.');
       return;
     }
     completeCardSetup(tenantSlug, { setupRef: returnedSetupIntent })

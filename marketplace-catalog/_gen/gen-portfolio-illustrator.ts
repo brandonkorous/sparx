@@ -69,8 +69,8 @@ interface Asset {
 }
 
 const ASSETS: Asset[] = [
-    { id: 'riso-editorial', url: src('riso-editorial'), alt: 'A riso-printed editorial cover illustration in coral and cobalt — a nightjar mid-flight over a city' },
-    { id: 'riso-character', url: src('riso-character'), alt: 'A character design sheet — a brass automaton drawn from several angles in bold flat color' },
+    { id: 'riso-editorial', url: src('riso-editorial'), alt: 'A riso-printed editorial cover illustration in coral and cobalt: a nightjar mid-flight over a city' },
+    { id: 'riso-character', url: src('riso-character'), alt: 'A character design sheet: a brass automaton drawn from several angles in bold flat color' },
     { id: 'riso-motion', url: src('riso-motion'), alt: 'A strip of animation frames of a dancing figure, printed in overlapping coral and blue' },
     { id: 'riso-packaging', url: src('riso-packaging'), alt: 'A set of hand-drawn juice labels for an orchard brand, loud saturated fruit on cream' },
     { id: 'riso-mural', url: src('riso-mural'), alt: 'A large painted wall mural of tangled plants and faces in coral, cobalt and cream' },
@@ -157,7 +157,7 @@ function heroBand(): Node {
                                 }
                             ),
                             el('p', 'max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl', {
-                                text: 'I’m Pilar Ortega — an illustrator drawing editorial covers with a pulse, characters you’d recognise on the street, and pictures that move. Big color, big feeling, no beige.',
+                                text: 'I’m Pilar Ortega: an illustrator drawing editorial covers with a pulse, characters you’d recognise on the street, and pictures that move. Big color, big feeling, no beige.',
                             }),
                         ],
                     }),
@@ -192,7 +192,7 @@ function workWallBand(): Node {
                                 text: 'The work wall',
                             }),
                             el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                                text: 'Recent commissions and personal pieces. Give one a poke — they open to the whole story.',
+                                text: 'Recent commissions and personal pieces. Give one a poke. They open to the whole story.',
                             }),
                         ],
                     }),
@@ -259,7 +259,7 @@ function commissionsCtaBand(): Node {
                         text: 'Got a story that needs pictures?',
                     }),
                     el('p', 'text-lg leading-relaxed text-primary-content', {
-                        text: 'I take on a handful of commissions a season — editorial, covers, characters, packaging, motion. Tell me what you’re making and roughly when, and I’ll tell you how I’d draw it.',
+                        text: 'I take on a handful of commissions a season: editorial, covers, characters, packaging, motion. Tell me what you’re making and roughly when, and I’ll tell you how I’d draw it.',
                     }),
                     el('a', 'btn btn-lg mt-2 bg-base-100 text-base-content', {
                         attrs: { href: '/contact' },
@@ -286,7 +286,7 @@ const WORK: Node[] = [
                         { text: 'Work' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Every commission and personal piece, loudest first. Each one opens to the whole story — the brief, the making, and where it ran.',
+                        text: 'Every commission and personal piece, loudest first. Each one opens to the whole story: the brief, the making, and where it ran.',
                     }),
                 ],
             }),
@@ -388,7 +388,7 @@ const ABOUT: Node[] = [
                                 text: 'I’m an illustrator working out of a studio full of risograph prints and half-finished characters. For ten years I’ve drawn for magazines, record labels, publishers, and small brands who’d rather look like themselves than like everyone else.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'My work is loud on purpose — saturated color, heavy line, real feeling. I’d rather a picture take a swing and miss than sit there being tasteful. Most jobs start as a scribble and a stubborn idea, and I love the part where a client’s vague brief turns into a face nobody expected.',
+                                text: 'My work is loud on purpose: saturated color, heavy line, real feeling. I’d rather a picture take a swing and miss than sit there being tasteful. Most jobs start as a scribble and a stubborn idea, and I love the part where a client’s vague brief turns into a face nobody expected.',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
                                 text: 'When I’m not drawing to a deadline you’ll find me pulling prints, painting the odd very large wall, or teaching a color workshop and getting ink on everything.',
@@ -435,7 +435,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Let’s make something loud',
-        intro: 'I take on editorial, covers, character design, packaging and short motion — commissions and the occasional wall. Tell me what you’re making, who it’s for, and roughly when you need it. A rough idea and a deadline is a perfect place to start; I’ll come back with how I’d draw it and what it costs.',
+        intro: 'I take on editorial, covers, character design, packaging and short motion: commissions and the occasional wall. Tell me what you’re making, who it’s for, and roughly when you need it. A rough idea and a deadline is a perfect place to start; I’ll come back with how I’d draw it and what it costs.',
         submitLabel: 'Email me',
         secondary: { label: 'See the work first', href: '/work' },
     }),
@@ -447,7 +447,7 @@ const AUTHORS = [
     {
         slug: 'pilar-ortega',
         displayName: 'Pilar Ortega',
-        bio: 'Pilar Ortega is an illustrator working across editorial, character design and motion — loud, saturated pictures for magazines, labels and brands who’d rather look like themselves. Ten years in, still getting ink on everything.',
+        bio: 'Pilar Ortega is an illustrator working across editorial, character design and motion: loud, saturated pictures for magazines, labels and brands who’d rather look like themselves. Ten years in, still getting ink on everything.',
         avatarAssetId: 'riso-portrait',
     },
 ];
@@ -470,7 +470,7 @@ const CONTENT = [
         categories: ['Editorial'],
         tags: ['Editorial', 'Cover', 'Riso'],
         body: {
-            title: 'Nightjar — a cover that had to fly off the shelf',
+            title: 'Nightjar: a cover that had to fly off the shelf',
             excerpt:
                 'A magazine cover for a feature on city wildlife: one nightjar, mid-flight, drawn to catch the eye across a crowded newsstand.',
             featuredImage: { $asset: 'riso-editorial' },
@@ -479,12 +479,12 @@ const CONTENT = [
                 content: [
                     para('Client: a monthly city magazine. Brief: the cover for a long feature about the wild animals quietly sharing the streets after dark. It had to work small, on a phone thumbnail, and loud, on a rack of forty other magazines.'),
                     h2('The brief'),
-                    para('The editors wanted “nature, but not gentle” — nothing soft or sentimental, no watercolor foxes. They wanted the city to feel like it belonged to the animals for a few hours a night. The one rule: the cover lines had to stay readable over whatever I drew.'),
+                    para('The editors wanted “nature, but not gentle” nothing soft or sentimental, no watercolor foxes. They wanted the city to feel like it belonged to the animals for a few hours a night. The one rule: the cover lines had to stay readable over whatever I drew.'),
                     h2('The making'),
-                    para('I built the whole thing around a single nightjar caught mid-wingbeat, cropped so it breaks the frame — the bird owns the page. I drew it in two riso passes, coral over cobalt, letting the misregistration do the work so the wings have a shivery, in-motion edge. The city sits underneath as a flat indigo silhouette, low enough to leave a clean band for the masthead and the cover lines.'),
-                    para('The color was the argument: warm bird, cold city, and nothing in between to soften it. I tested the whole thing at thumbnail size before I inked a single final line — if it didn’t read at 2cm, it didn’t make the cut.'),
+                    para('I built the whole thing around a single nightjar caught mid-wingbeat, cropped so it breaks the frame: the bird owns the page. I drew it in two riso passes, coral over cobalt, letting the misregistration do the work so the wings have a shivery, in-motion edge. The city sits underneath as a flat indigo silhouette, low enough to leave a clean band for the masthead and the cover lines.'),
+                    para('The color was the argument: warm bird, cold city, and nothing in between to soften it. I tested the whole thing at thumbnail size before I inked a single final line: if it didn’t read at 2cm, it didn’t make the cut.'),
                     h2('Where it ran'),
-                    para('It ran as the print cover and the whole digital package — social cards, the animated header on the article, and a poster the magazine sold in its shop. It was the best-selling single issue of that year, and the poster sold out twice. Not bad for one bird.'),
+                    para('It ran as the print cover and the whole digital package: social cards, the animated header on the article, and a poster the magazine sold in its shop. It was the best-selling single issue of that year, and the poster sold out twice. Not bad for one bird.'),
                 ],
             },
         },
@@ -497,7 +497,7 @@ const CONTENT = [
         categories: ['Character'],
         tags: ['Character', 'Games', 'Design'],
         body: {
-            title: 'Brass Hollow — a cast of characters with a pulse',
+            title: 'Brass Hollow: a cast of characters with a pulse',
             excerpt:
                 'Character design for an indie adventure game: a whole cast of brass automatons, each one readable in a single silhouette.',
             featuredImage: { $asset: 'riso-character' },
@@ -508,10 +508,10 @@ const CONTENT = [
                     h2('The brief'),
                     para('The studio had the writing and the world but no faces yet. The one hard requirement was silhouette: each character had to be identifiable as a black shape alone, because the game’s lighting would often reduce them to exactly that.'),
                     h2('The making'),
-                    para('I started with silhouettes only — no detail, no color, just black shapes I could tell apart at a glance. Once the cast read as a group, I gave each one a single strong form idea (a lopsided lantern head, a barrel chest, a too-tall stoop) and drew turnarounds so the modellers had every angle.'),
-                    para('Color came last and stayed disciplined: brass and bone as the base, then one saturated riso accent per character — coral for the reckless one, cobalt for the cautious one — so you learn a personality from a palette before anyone speaks a line.'),
+                    para('I started with silhouettes only: no detail, no color, just black shapes I could tell apart at a glance. Once the cast read as a group, I gave each one a single strong form idea (a lopsided lantern head, a barrel chest, a too-tall stoop) and drew turnarounds so the modellers had every angle.'),
+                    para('Color came last and stayed disciplined: brass and bone as the base, then one saturated riso accent per character (coral for the reckless one, cobalt for the cautious one) so you learn a personality from a palette before anyone speaks a line.'),
                     h2('Where it ran'),
-                    para('The designs became the in-game models, the key art, and a printed art book that shipped with the collector’s edition. Players started fan-drawing the cast within a week of launch — the surest sign the characters actually landed as characters, not just assets.'),
+                    para('The designs became the in-game models, the key art, and a printed art book that shipped with the collector’s edition. Players started fan-drawing the cast within a week of launch: the surest sign the characters actually landed as characters, not just assets.'),
                 ],
             },
         },
@@ -524,18 +524,18 @@ const CONTENT = [
         categories: ['Motion'],
         tags: ['Motion', 'Animation', 'Social'],
         body: {
-            title: 'Kinetic Supper — a menu that dances',
+            title: 'Kinetic Supper: a menu that dances',
             excerpt:
-                'A set of looping animated illustrations for a restaurant’s launch — food that moves, built to stop a thumb mid-scroll.',
+                'A set of looping animated illustrations for a restaurant’s launch: food that moves, built to stop a thumb mid-scroll.',
             featuredImage: { $asset: 'riso-motion' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Client: a new supper club opening in an old dance hall. Brief: a launch campaign of short looping animations for social — the food and the room brought to life, playful enough to make someone stop scrolling and book a table.'),
+                    para('Client: a new supper club opening in an old dance hall. Brief: a launch campaign of short looping animations for social, the food and the room brought to life, playful enough to make someone stop scrolling and book a table.'),
                     h2('The brief'),
-                    para('They didn’t want photographs of plates; every restaurant has those. They wanted the feeling of the place — a bit theatrical, a bit late-night — as a run of GIFs and short clips that felt hand-made, not slick.'),
+                    para('They didn’t want photographs of plates; every restaurant has those. They wanted the feeling of the place (a bit theatrical, a bit late-night) as a run of GIFs and short clips that felt hand-made, not slick.'),
                     h2('The making'),
-                    para('I drew every frame by hand and animated on twos to keep the boil — that lovely wobble where the line never quite sits still — so even a plate of noodles looks like it’s mid-dance. Each loop is built around one gag: a fork that conducts, a glass that pours itself, a chair that scoots in. Riso-style overprint gives the motion a flickering coral-and-blue trail.'),
+                    para('I drew every frame by hand and animated on twos to keep the boil (that lovely wobble where the line never quite sits still) so even a plate of noodles looks like it’s mid-dance. Each loop is built around one gag: a fork that conducts, a glass that pours itself, a chair that scoots in. Riso-style overprint gives the motion a flickering coral-and-blue trail.'),
                     para('I kept every loop under two seconds and readable with the sound off, because that’s how anyone actually watches these. Twelve loops, one visual language, endlessly recombinable.'),
                     h2('Where it ran'),
                     para('The loops carried the whole pre-launch on social, plus the animated screens inside the restaurant itself. The opening month sold out on reservations, and the venue kept the loops running on its in-house screens long after the campaign ended.'),
@@ -551,18 +551,18 @@ const CONTENT = [
         categories: ['Packaging'],
         tags: ['Packaging', 'Branding', 'Illustration'],
         body: {
-            title: 'Pulp Orchard — labels loud enough to pick up',
+            title: 'Pulp Orchard: labels loud enough to pick up',
             excerpt:
-                'A full range of hand-drawn juice labels for a farm cooperative — saturated fruit on cream, built to win the supermarket shelf.',
+                'A full range of hand-drawn juice labels for a farm cooperative: saturated fruit on cream, built to win the supermarket shelf.',
             featuredImage: { $asset: 'riso-packaging' },
             body: {
                 type: 'doc',
                 content: [
                     para('Client: a growers’ cooperative bottling cold-pressed juice. Brief: a label system for a starting range of six flavours that would stand out against the glossy national brands without pretending to be one of them.'),
                     h2('The brief'),
-                    para('The co-op’s whole pitch was that the fruit was real, local, and a bit wonky — so the packaging couldn’t be sterile and corporate. It had to feel drawn by a person, scale across six flavours (and however many they added later), and survive being printed cheaply on a matte cream stock.'),
+                    para('The co-op’s whole pitch was that the fruit was real, local, and a bit wonky, so the packaging couldn’t be sterile and corporate. It had to feel drawn by a person, scale across six flavours (and however many they added later), and survive being printed cheaply on a matte cream stock.'),
                     h2('The making'),
-                    para('I hand-drew every fruit at full, unapologetic size — a whole pear filling the label, a fistful of berries spilling past the edge — in flat saturated color on the warm cream of the bare stock. One coral accent runs across the range so the shelf reads as a family, while each flavour gets its own dominant hue so you can grab the right one without reading.'),
+                    para('I hand-drew every fruit at full, unapologetic size (a whole pear filling the label, a fistful of berries spilling past the edge) in flat saturated color on the warm cream of the bare stock. One coral accent runs across the range so the shelf reads as a family, while each flavour gets its own dominant hue so you can grab the right one without reading.'),
                     para('The system was the deliverable, not six one-off labels: a fixed layout grid, a drawn logotype, and a color rule any new flavour drops straight into. The co-op can add a seventh juice next season without calling me.'),
                     h2('Where it ran'),
                     para('The range launched across regional supermarkets and the co-op’s own market stall. Sell-through beat the co-op’s forecast by half again, and two more grocers picked up the line on the strength of the shelf presence alone.'),
@@ -579,7 +579,7 @@ const SPEC: PortfolioSiteSpec = {
     key: 'sparx-portfolio-illustrator',
     name: 'Illustrator Portfolio',
     summary:
-        'A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand — warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.',
+        'A personality-first portfolio for an illustrator: a loud two-tone hero, a dense playful work wall of tiled pieces that tilt on hover, a warm “hi, I’m me” band, and case-study pages that walk the brief, the making and where it ran. The palette IS the brand, warm riso-cream carried by a coral primary and a cobalt accent, expressive Syne display. Shipped as Pilar Ortega.',
     tagline: 'A loud, work-wall portfolio for an illustrator.',
     industry: 'Illustrator & visual artist',
     requiresModules: ['builder', 'cms', 'email'],
@@ -593,14 +593,14 @@ const SPEC: PortfolioSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Pilar Ortega — illustrator',
+            title: 'Pilar Ortega: illustrator',
             description:
-                'Pilar Ortega is an illustrator working across editorial, character design and motion — loud, saturated pictures. Selected work, commissions, and how to start one.',
+                'Pilar Ortega is an illustrator working across editorial, character design and motion: loud, saturated pictures. Selected work, commissions, and how to start one.',
         },
         about: {
-            title: 'About Pilar Ortega — illustrator',
+            title: 'About Pilar Ortega: illustrator',
             description:
-                'Ten years of loud, saturated illustration across editorial, character design, motion and murals — for magazines, labels and brands who’d rather look like themselves.',
+                'Ten years of loud, saturated illustration across editorial, character design, motion and murals, for magazines, labels and brands who’d rather look like themselves.',
         },
     },
     home: HOME,

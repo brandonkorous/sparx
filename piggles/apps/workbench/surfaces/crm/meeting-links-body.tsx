@@ -39,7 +39,7 @@ export function MeetingLinksBody({
             <AlertContent>
               <AlertTitle>You need something bookable first</AlertTitle>
               <AlertDescription>
-                A booking link points at one of your bookable services — that is where the length,
+                A booking link points at one of your bookable services. That is where the length,
                 your availability and your cancellation terms come from. Set one up under
                 Scheduling, then come back.
               </AlertDescription>
@@ -64,7 +64,7 @@ export function MeetingLinksBody({
             </Heading>
             <Text>
               Make one and you get a web address you can put in an email signature, on a quote, or
-              in a reply — anyone who opens it picks a time from your real availability and the
+              in a reply. Anyone who opens it picks a time from your real availability and the
               booking lands in your calendar, with the customer already attached.
             </Text>
           </div>

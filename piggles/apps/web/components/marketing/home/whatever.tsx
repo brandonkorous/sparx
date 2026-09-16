@@ -25,7 +25,7 @@ function TheArgument() {
               take it. */}
       <p className="mt-5 text-lg">
         Piggles is built for the kind of business you actually run, not to make you run the kind of
-        business we imagined. A bakery, a barber, a potter, a garage — whatever you do, it&rsquo;s
+        business we imagined. A bakery, a barber, a potter, a garage: whatever you do, it&rsquo;s
         already in the product.
       </p>
       {/* Three words, and the label is the reason this page stopped rocking

@@ -648,7 +648,7 @@ export async function moveStage(
         companyId: updated.companyId,
         type: isResolved || isClosed ? 'ticket.resolved' : 'ticket.replied',
         description: input.note
-          ? `Request #${String(updated.number)}: ${before.stage.name} → ${toStage.name} — ${input.note}`
+          ? `Request #${String(updated.number)}: ${before.stage.name} → ${toStage.name}: ${input.note}`
           : `Request #${String(updated.number)}: ${before.stage.name} → ${toStage.name}`,
         actorId: ctx.userId ?? null,
         actorType: ctx.userId ? 'staff' : 'system',

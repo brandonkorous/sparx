@@ -161,7 +161,7 @@ const operatorBillingRoutes: FastifyPluginAsync = async (app) => {
       if (!tenant) throw notFound('Tenant not found.');
       if (!tenant.stripeCustomerId) {
         throw badRequest(
-          'That tenant has no platform Stripe customer yet — it needs a billing relationship before a code can be locked to it.'
+          'That tenant has no platform Stripe customer yet. It needs a billing relationship before a code can be locked to it.'
         );
       }
       customerId = tenant.stripeCustomerId;
@@ -199,7 +199,7 @@ const operatorBillingRoutes: FastifyPluginAsync = async (app) => {
     });
     if (!tenant) throw notFound('Tenant not found.');
     if (!tenant.stripeCustomerId) {
-      throw badRequest('Tenant has no platform Stripe customer yet — no billing relationship.');
+      throw badRequest('Tenant has no platform Stripe customer yet: no billing relationship.');
     }
     return createEnterpriseInvoice({
       customerId: tenant.stripeCustomerId,

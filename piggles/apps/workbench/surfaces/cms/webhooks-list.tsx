@@ -104,7 +104,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
           label: 'Set one up',
           icon: faPlus,
           onClick: create,
-          title: 'Set up a new notification — hold Shift to open alongside, Alt for a new window',
+          title: 'Set up a new notification. Hold Shift to open alongside, Alt for a new window',
         }}
         views={{
           target: '/cms/webhooks',
@@ -171,7 +171,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'Nothing is being told yet',
               description:
-                'You can have us tell another system the moment something happens here — a page goes live, a file is uploaded, stock runs out. Useful when someone is building on top of your content and wants to know without having to keep checking.',
+                'You can have us tell another system the moment something happens here: a page goes live, a file is uploaded, stock runs out. Useful when someone is building on top of your content and wants to know without having to keep checking.',
               actions: (
                 <Button
                   size="sm"

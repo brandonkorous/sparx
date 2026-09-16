@@ -125,7 +125,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Reschedule or cancel with at least 24 hours’ notice — plans move, and we get it. We send a reminder the day before and two hours ahead so nothing slips.',
+        'Reschedule or cancel with at least 24 hours’ notice: plans move, and we get it. We send a reminder the day before and two hours ahead so nothing slips.',
     },
     {
       handle: 'no-show',
@@ -134,7 +134,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Your dietitian blocks the full session for you. Cancel inside 24 hours or miss it without notice and a no-show fee applies — one heads-up, then it’s the policy for everyone’s time.',
+        'Your dietitian blocks the full session for you. Cancel inside 24 hours or miss it without notice and a no-show fee applies. One heads-up, then it’s the policy for everyone’s time.',
     },
   ],
   resources: [
@@ -165,7 +165,7 @@ const SCHEDULING = {
       handle: 'free-strategy-call',
       name: 'Free strategy call',
       description:
-        'A no-cost 20-minute call to talk goals, your sport and where fueling is holding you back — and to map the right first step. Zero pressure, all direction.',
+        'A no-cost 20-minute call to talk goals, your sport and where fueling is holding you back, and to map the right first step. Zero pressure, all direction.',
       durationMinutes: 20,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -176,7 +176,7 @@ const SCHEDULING = {
       handle: 'initial-assessment',
       name: 'Initial performance assessment',
       description:
-        'The deep first session — training load, current intake, bloodwork if you have it, and your competitive calendar — built into a baseline and a clear plan of attack.',
+        'The deep first session: training load, current intake, bloodwork if you have it, and your competitive calendar, built into a baseline and a clear plan of attack.',
       durationMinutes: 60,
       priceCents: 16500,
       assignmentStrategy: 'customer_choice',
@@ -187,7 +187,7 @@ const SCHEDULING = {
       handle: 'fueling-plan-consult',
       name: 'Fueling plan consult',
       description:
-        'Build the day-to-day plan: what to eat around training, carbs by session type, hydration and race-day timing — the numbers dialed to your schedule, not a generic template.',
+        'Build the day-to-day plan: what to eat around training, carbs by session type, hydration and race-day timing, the numbers dialed to your schedule, not a generic template.',
       durationMinutes: 45,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -198,7 +198,7 @@ const SCHEDULING = {
       handle: 'body-composition-consult',
       name: 'Body-composition consult',
       description:
-        'Track lean mass and composition with real measurement, then set a fuelling target that changes the number on the scale for the right reasons — performance, not punishment.',
+        'Track lean mass and composition with real measurement, then set a fuelling target that changes the number on the scale for the right reasons: performance, not punishment.',
       durationMinutes: 45,
       priceCents: 12500,
       assignmentStrategy: 'customer_choice',
@@ -231,7 +231,7 @@ const SCHEDULING = {
       handle: 'follow-up-session',
       name: 'Follow-up & check-in',
       description:
-        'A 30-minute check-in to read the data, adjust the plan and keep momentum — the accountability that turns a good plan into a better season.',
+        'A 30-minute check-in to read the data, adjust the plan and keep momentum: the accountability that turns a good plan into a better season.',
       durationMinutes: 30,
       priceCents: 7500,
       assignmentStrategy: 'customer_choice',
@@ -247,7 +247,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'An endurance athlete refueling mid-training under stadium light',
     title: 'Fuel like your results depend on it',
-    sub: 'Sports dietitians who turn how you eat into how you perform — data-driven fueling built around your sport, your training load and your next start line.',
+    sub: 'Sports dietitians who turn how you eat into how you perform: data-driven fueling built around your sport, your training load and your next start line.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See the consults', href: '/book' },
     overlay: 'darker',
@@ -257,7 +257,7 @@ const HOME = [
     items: [
       {
         title: 'Sports-certified dietitians',
-        body: 'Board-certified specialists in sports nutrition — not influencers or apps. Real credentials, real practice, working with athletes at every level.',
+        body: 'Board-certified specialists in sports nutrition, not influencers or apps. Real credentials, real practice, working with athletes at every level.',
       },
       {
         title: 'Data-driven fueling plans',
@@ -265,7 +265,7 @@ const HOME = [
       },
       {
         title: 'Built for your sport',
-        body: 'Endurance, strength or team — the fueling changes completely. You get a protocol for how you actually train and compete, not a one-size handout.',
+        body: 'Endurance, strength or team: the fueling changes completely. You get a protocol for how you actually train and compete, not a one-size handout.',
       },
       {
         title: 'Accountability that sticks',
@@ -293,14 +293,14 @@ const HOME = [
     alt: 'A dietitian reviewing performance and fueling data on a tablet',
     heading: 'The performance-fueling method',
     body: [
-      'We start with measurement — training load, current intake, body composition and your competition calendar — because a plan built on guesses fails at exactly the wrong moment.',
-      'From there it’s a protocol you can execute: carbs matched to session type, protein and recovery timed to your blocks, hydration and race-day fueling rehearsed before it matters. Then we check the data and adjust — every season is an experiment we run with you.',
+      'We start with measurement (training load, current intake, body composition and your competition calendar) because a plan built on guesses fails at exactly the wrong moment.',
+      'From there it’s a protocol you can execute: carbs matched to session type, protein and recovery timed to your blocks, hydration and race-day fueling rehearsed before it matters. Then we check the data and adjust, every season is an experiment we run with you.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
   teamRow({
     heading: 'Your dietitians',
-    intro: 'Book by name — the specialist who fits your sport, one-to-one, every session.',
+    intro: 'Book by name: the specialist who fits your sport, one-to-one, every session.',
     members: [
       { name: 'Casey Nolan', role: 'Endurance dietitian', image: url(IMG.casey), alt: 'Casey Nolan, endurance sports dietitian', bio: 'Marathoners, cyclists and triathletes. Carb strategy, gut training and race-week protocols that hold up on the day.' },
       { name: 'Jordan Reyes', role: 'Strength & body-comp dietitian', image: url(IMG.jordan), alt: 'Jordan Reyes, strength & body-composition dietitian', bio: 'Lifters and field athletes. Lean-gain and cut plans, protein timing and body composition tracked with real data.' },
@@ -308,7 +308,7 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'I bonked every long run and blamed my legs. Casey rebuilt my fueling around the actual numbers and I took nine minutes off my marathon PR — first time I ever finished strong. Turns out it was never my legs.',
+    quote: 'I bonked every long run and blamed my legs. Casey rebuilt my fueling around the actual numbers and I took nine minutes off my marathon PR: first time I ever finished strong. Turns out it was never my legs.',
     attribution: 'Priya M., marathoner',
     surface: 'primary',
   }),
@@ -337,8 +337,8 @@ const ABOUT = [
     alt: 'An endurance athlete refueling mid-training under stadium light',
     heading: 'About Fuel Performance Nutrition',
     body: [
-      'We started Fuel because too many athletes train like professionals and eat like an afterthought — leaving real performance on the table for want of a plan built on evidence.',
-      'So we do it the other way around: measure first, build a protocol you can execute, then track the data and adjust. No fad diets, no guilt, no generic handouts — just fueling engineered for how you actually train and compete.',
+      'We started Fuel because too many athletes train like professionals and eat like an afterthought: leaving real performance on the table for want of a plan built on evidence.',
+      'So we do it the other way around: measure first, build a protocol you can execute, then track the data and adjust. No fad diets, no guilt, no generic handouts. Just fueling engineered for how you actually train and compete.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -346,7 +346,7 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'Measure, then plan', body: 'Every athlete starts with a real baseline — training load, intake, body composition and calendar. The plan comes from your numbers, not a template.' },
+      { title: 'Measure, then plan', body: 'Every athlete starts with a real baseline: training load, intake, body composition and calendar. The plan comes from your numbers, not a template.' },
       { title: 'Evidence over trends', body: 'Board-certified sports dietitians working from the science, not the latest diet. If it doesn’t move your performance, it doesn’t make the plan.' },
       { title: 'Adjust every season', body: 'We read the data at each check-in and change what the results tell us to. Your fueling evolves as your training and goals do.' },
     ],
@@ -367,7 +367,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your consult online — in person in Austin or virtual anywhere. No phone tag.',
+    sub: 'See live availability and reserve your consult online: in person in Austin or virtual anywhere. No phone tag.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -378,8 +378,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-nutrition-sports',
   name: 'Nutrition (Sports & Performance)',
   summary:
-    'A bold, athletic sports-nutrition site — a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as "Fuel Performance Nutrition".',
-  tagline: 'A bold, data-driven template for sports & performance nutrition — book consults from day one.',
+    'A bold, athletic sports-nutrition site: a crisp near-white ground, an electric-blue primary and a lime accent with a sturdy condensed display. Installs a working booking flow: a real consult menu (free strategy call, performance assessment, fueling plans, endurance & strength sessions, body-composition testing, follow-ups), three sports dietitians booked by name with their own hours, and a no-show policy. Ships as "Fuel Performance Nutrition".',
+  tagline: 'A bold, data-driven template for sports & performance nutrition. Book consults from day one.',
   industry: 'Nutrition',
   sortWeight: 19,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -388,7 +388,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Fuel Performance Nutrition — sports dietitians',
+      title: 'Fuel Performance Nutrition: sports dietitians',
       description:
         'Fuel Performance Nutrition is a sports & performance nutrition practice: data-driven fueling plans, body-composition testing and sport-specific consults with board-certified sports dietitians. Book online.',
     },

@@ -8,7 +8,7 @@
     "tags": ["Attention", "Decisions"],
     "body": {
       "title": "The quiet power of doing less",
-      "excerpt": "We treat a full calendar as proof of a full life. In this talk, Ada Okonkwo makes the case that most of what we call productivity is just motion — and that the hardest, most valuable skill is choosing what not to do.",
+      "excerpt": "We treat a full calendar as proof of a full life. In this talk, Ada Okonkwo makes the case that most of what we call productivity is just motion, and that the hardest, most valuable skill is choosing what not to do.",
       "featuredImage": {
         "$asset": "talk-doing-less"
       },
@@ -20,7 +20,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Ask someone how they are and they will tell you how busy they are, as if the two were the same answer. We have built a culture that reads a packed day as evidence of a well-lived one — and it is quietly making us worse at the things that actually matter."
+                "text": "Ask someone how they are and they will tell you how busy they are, as if the two were the same answer. We have built a culture that reads a packed day as evidence of a well-lived one, and it is quietly making us worse at the things that actually matter."
               }
             ]
           },
@@ -88,7 +88,7 @@
     "tags": ["Rivers", "Patience"],
     "body": {
       "title": "What a river taught me about time",
-      "excerpt": "Ren Castellano spent a year walking the length of one river, from spring to sea. What he found was less a lesson about water than about time — how slowly the important things move, and how much we miss by hurrying.",
+      "excerpt": "Ren Castellano spent a year walking the length of one river, from spring to sea. What he found was less a lesson about water than about time: how slowly the important things move, and how much we miss by hurrying.",
       "featuredImage": {
         "$asset": "talk-river-time"
       },
@@ -121,7 +121,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Everything a river does that matters — the canyon, the delta, the bend that moves a mile in a century — it does slowly, at a pace no single day would ever reveal. We are built to notice the flood and ignore the erosion, and so we mistake the dramatic for the important. The river is almost never dramatic. It is almost always working."
+                "text": "Everything a river does that matters (the canyon, the delta, the bend that moves a mile in a century) it does slowly, at a pace no single day would ever reveal. We are built to notice the flood and ignore the erosion, and so we mistake the dramatic for the important. The river is almost never dramatic. It is almost always working."
               }
             ]
           },
@@ -168,7 +168,7 @@
     "tags": ["Longevity", "Craft"],
     "body": {
       "title": "Designing for the next hundred years",
-      "excerpt": "Most of what we build is designed to be replaced. Mira Halvorsen asks what changes when you design instead for the person who will use the thing in a century — and why that question makes better objects, buildings and institutions today.",
+      "excerpt": "Most of what we build is designed to be replaced. Mira Halvorsen asks what changes when you design instead for the person who will use the thing in a century, and why that question makes better objects, buildings and institutions today.",
       "featuredImage": {
         "$asset": "talk-hundred-years"
       },
@@ -180,7 +180,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "We design almost everything to be replaced. The phone is built for three years, the building for thirty, the software for whenever the next version ships. Planned replacement is not a scandal — it is just the default — but it quietly shapes everything we make into something a little disposable."
+                "text": "We design almost everything to be replaced. The phone is built for three years, the building for thirty, the software for whenever the next version ships. Planned replacement is not a scandal (it is just the default) but it quietly shapes everything we make into something a little disposable."
               }
             ]
           },
@@ -201,7 +201,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "I ask my students to design for a person who will use the thing in a hundred years — someone they will never meet, in a world they cannot predict. It sounds like an impossible constraint. In practice it is clarifying. You stop optimising for the launch and start asking what will still make sense, still be repairable, still be legible, long after the trend that produced it is forgotten."
+                "text": "I ask my students to design for a person who will use the thing in a hundred years. Someone they will never meet, in a world they cannot predict. It sounds like an impossible constraint. In practice it is clarifying. You stop optimising for the launch and start asking what will still make sense, still be repairable, still be legible, long after the trend that produced it is forgotten."
               }
             ]
           },
@@ -222,7 +222,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "A thing built to last is a kindness to a stranger. It says: someone before you thought about you. The best old buildings, tools and institutions all carry that quality — they were made by people who assumed the future would arrive and tried to leave it something worth having."
+                "text": "A thing built to last is a kindness to a stranger. It says: someone before you thought about you. The best old buildings, tools and institutions all carry that quality. They were made by people who assumed the future would arrive and tried to leave it something worth having."
               }
             ]
           },
@@ -248,7 +248,7 @@
     "tags": ["Probability", "Fairness"],
     "body": {
       "title": "The math of second chances",
-      "excerpt": "A single failure tells you almost nothing. Ada Okonkwo walks through the simple probability that explains why our instinct to judge people on one bad outcome is not just unkind — it is statistically wrong.",
+      "excerpt": "A single failure tells you almost nothing. Ada Okonkwo walks through the simple probability that explains why our instinct to judge people on one bad outcome is not just unkind. It is statistically wrong.",
       "featuredImage": {
         "$asset": "talk-second-chances"
       },
@@ -281,7 +281,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Any outcome is a mix of skill, effort and luck, and from a single result you genuinely cannot separate them. The same coin that just came up tails is not a worse coin than the one that came up heads. Judging a person on one attempt is drawing a line through one point — and a line through one point can go anywhere you already wanted it to."
+                "text": "Any outcome is a mix of skill, effort and luck, and from a single result you genuinely cannot separate them. The same coin that just came up tails is not a worse coin than the one that came up heads. Judging a person on one attempt is drawing a line through one point, and a line through one point can go anywhere you already wanted it to."
               }
             ]
           },
@@ -302,7 +302,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "This is not a soft argument, it is a statistical one: the second attempt is where the signal lives. Give people another try and their true ability starts to show through the noise. Systems that offer second chances are not being generous so much as being accurate — they are collecting the data that a first impression threw away."
+                "text": "This is not a soft argument, it is a statistical one: the second attempt is where the signal lives. Give people another try and their true ability starts to show through the noise. Systems that offer second chances are not being generous so much as being accurate. They are collecting the data that a first impression threw away."
               }
             ]
           },

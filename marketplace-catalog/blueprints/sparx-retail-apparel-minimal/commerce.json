@@ -35,7 +35,7 @@
     {
       "handle": "the-essentials",
       "name": "The essentials",
-      "description": "The core of the wardrobe — start here.",
+      "description": "The core of the wardrobe. Start here.",
       "type": "manual",
       "featured": true,
       "productHandles": [
@@ -83,14 +83,14 @@
     {
       "handle": "everyday-tee",
       "title": "The Everyday Tee",
-      "description": "A heavyweight organic-cotton crew that holds its shape — a proper tee, not an undershirt. Boxy-but-clean through the body, ribbed at the neck so it never gapes, and dense enough to wear on its own. The one you’ll reach for first, in every color.",
+      "description": "A heavyweight organic-cotton crew that holds its shape: a proper tee, not an undershirt. Boxy-but-clean through the body, ribbed at the neck so it never gapes, and dense enough to wear on its own. The one you’ll reach for first, in every color.",
       "status": "active",
       "productType": "Apparel",
       "vendor": "Kestrel",
       "tags": ["tee", "cotton", "everyday"],
       "categoryHandles": ["tops"],
       "collectionHandles": ["the-essentials", "new-in"],
-      "seoTitle": "The Everyday Tee — heavyweight organic cotton | Kestrel",
+      "seoTitle": "The Everyday Tee: heavyweight organic cotton | Kestrel",
       "seoDescription": "A dense, boxy heavyweight organic-cotton crew tee that holds its shape. In bone, charcoal and slate.",
       "options": [
         {
@@ -279,14 +279,14 @@
     {
       "handle": "oxford-shirt",
       "title": "The Oxford Shirt",
-      "description": "A relaxed button-down in a soft, textured oxford cotton — crisp enough to wear open over a tee, easy enough to sleep in. Cut a little longer with a curved hem, mother-of-pearl buttons, and a collar that stands whether it’s buttoned or not.",
+      "description": "A relaxed button-down in a soft, textured oxford cotton: crisp enough to wear open over a tee, easy enough to sleep in. Cut a little longer with a curved hem, mother-of-pearl buttons, and a collar that stands whether it’s buttoned or not.",
       "status": "active",
       "productType": "Apparel",
       "vendor": "Kestrel",
       "tags": ["shirt", "oxford", "cotton"],
       "categoryHandles": ["tops"],
       "collectionHandles": ["the-essentials"],
-      "seoTitle": "The Oxford Shirt — soft-washed oxford cotton | Kestrel",
+      "seoTitle": "The Oxford Shirt: soft-washed oxford cotton | Kestrel",
       "seoDescription": "A relaxed, longer-cut oxford button-down in soft textured cotton. In ecru, chambray and charcoal.",
       "options": [
         {
@@ -475,14 +475,14 @@
     {
       "handle": "fisherman-knit",
       "title": "The Fisherman Knit",
-      "description": "A heavyweight cable-knit in undyed British wool, knitted to an old gansey pattern by a mill that still does it properly. Thick, warm, and built to soften with wear — the sweater you keep for twenty winters and hand on after that.",
+      "description": "A heavyweight cable-knit in undyed British wool, knitted to an old gansey pattern by a mill that still does it properly. Thick, warm, and built to soften with wear: the sweater you keep for twenty winters and hand on after that.",
       "status": "active",
       "productType": "Knitwear",
       "vendor": "Kestrel",
       "tags": ["knit", "wool", "heavyweight"],
       "categoryHandles": ["knitwear"],
       "collectionHandles": ["the-knitwear-edit", "winter-layers"],
-      "seoTitle": "The Fisherman Knit — heavyweight British wool cable | Kestrel",
+      "seoTitle": "The Fisherman Knit: heavyweight British wool cable | Kestrel",
       "seoDescription": "A thick undyed British-wool cable-knit sweater in a traditional gansey pattern. In oatmeal, ecru and charcoal.",
       "options": [
         {
@@ -678,7 +678,7 @@
       "tags": ["knit", "merino", "layer"],
       "categoryHandles": ["knitwear"],
       "collectionHandles": ["the-knitwear-edit", "the-essentials"],
-      "seoTitle": "The Merino Crew — extra-fine merino sweater | Kestrel",
+      "seoTitle": "The Merino Crew: extra-fine merino sweater | Kestrel",
       "seoDescription": "A fine-gauge extra-fine merino crew that layers without bulk. In camel, navy and charcoal.",
       "options": [
         {
@@ -867,14 +867,14 @@
     {
       "handle": "wide-trouser",
       "title": "The Wide-Leg Trouser",
-      "description": "A high, clean-fronted trouser in a substantial wool-blend that drapes rather than clings — full through the leg, breaking just so over a shoe. Side adjusters instead of a belt, deep real pockets, and a press that holds all day.",
+      "description": "A high, clean-fronted trouser in a substantial wool-blend that drapes rather than clings: full through the leg, breaking just so over a shoe. Side adjusters instead of a belt, deep real pockets, and a press that holds all day.",
       "status": "active",
       "productType": "Trousers",
       "vendor": "Kestrel",
       "tags": ["trouser", "wool", "wide-leg"],
       "categoryHandles": ["trousers"],
       "collectionHandles": ["the-tailoring", "new-in"],
-      "seoTitle": "The Wide-Leg Trouser — draped wool blend | Kestrel",
+      "seoTitle": "The Wide-Leg Trouser: draped wool blend | Kestrel",
       "seoDescription": "A high, clean-fronted wide-leg trouser in a draping wool blend with side adjusters. In stone, charcoal and navy.",
       "options": [
         {
@@ -1063,14 +1063,14 @@
     {
       "handle": "pleated-trouser",
       "title": "The Pleated Trouser",
-      "description": "A single-pleat tailored trouser that reads sharp without trying — tapered gently to the ankle, cut to sit at the natural waist. Dress it up with the oxford or down with the tee; it’s the trouser that quietly does both.",
+      "description": "A single-pleat tailored trouser that reads sharp without trying: tapered gently to the ankle, cut to sit at the natural waist. Dress it up with the oxford or down with the tee; it’s the trouser that quietly does both.",
       "status": "active",
       "productType": "Trousers",
       "vendor": "Kestrel",
       "tags": ["trouser", "pleated", "tailored"],
       "categoryHandles": ["trousers"],
       "collectionHandles": ["the-tailoring"],
-      "seoTitle": "The Pleated Trouser — single-pleat tailored | Kestrel",
+      "seoTitle": "The Pleated Trouser: single-pleat tailored | Kestrel",
       "seoDescription": "A single-pleat tailored trouser, gently tapered, cut to the natural waist. In charcoal, taupe and black.",
       "options": [
         {
@@ -1259,14 +1259,14 @@
     {
       "handle": "overcoat",
       "title": "The Overcoat",
-      "description": "A double-faced wool overcoat with no lining and no bulk — just two layers of cloth stitched together and bound by hand at every edge. Roomy enough for a knit underneath, long enough to mean it. The one coat, done once, done right.",
+      "description": "A double-faced wool overcoat with no lining and no bulk. Just two layers of cloth stitched together and bound by hand at every edge. Roomy enough for a knit underneath, long enough to mean it. The one coat, done once, done right.",
       "status": "active",
       "productType": "Outerwear",
       "vendor": "Kestrel",
       "tags": ["coat", "wool", "outerwear"],
       "categoryHandles": ["outerwear"],
       "collectionHandles": ["winter-layers", "new-in"],
-      "seoTitle": "The Overcoat — double-faced wool | Kestrel",
+      "seoTitle": "The Overcoat: double-faced wool | Kestrel",
       "seoDescription": "An unlined double-faced wool overcoat, hand-bound at every edge. In camel, charcoal and black.",
       "options": [
         {
@@ -1462,7 +1462,7 @@
       "tags": ["scarf", "lambswool", "accessory"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["winter-layers", "the-essentials"],
-      "seoTitle": "The Lambswool Scarf — brushed soft, long | Kestrel",
+      "seoTitle": "The Lambswool Scarf: brushed soft, long | Kestrel",
       "seoDescription": "A generously long brushed-lambswool scarf with a hand-knotted fringe. In oatmeal, charcoal and camel.",
       "options": [
         {
@@ -1519,14 +1519,14 @@
     {
       "handle": "leather-tote",
       "title": "The Leather Tote",
-      "description": "A roomy vegetable-tanned leather tote, cut from a single hide and stitched to last — no hardware to fail, no lining to tear. It carries a laptop and a lunch, and it earns a patina the way good leather should. Buy it once.",
+      "description": "A roomy vegetable-tanned leather tote, cut from a single hide and stitched to last: no hardware to fail, no lining to tear. It carries a laptop and a lunch, and it earns a patina the way good leather should. Buy it once.",
       "status": "active",
       "productType": "Accessory",
       "vendor": "Kestrel",
       "tags": ["bag", "leather", "accessory"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["the-essentials"],
-      "seoTitle": "The Leather Tote — vegetable-tanned, unlined | Kestrel",
+      "seoTitle": "The Leather Tote: vegetable-tanned, unlined | Kestrel",
       "seoDescription": "A roomy vegetable-tanned leather tote, cut from a single hide, made to patina. In tan, black and chocolate.",
       "options": [
         {

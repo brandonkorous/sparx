@@ -40,7 +40,7 @@ function useDeleteChosen(selection: Chosen) {
     const ok = await confirm({
       title: `Delete ${count(ids.length)}?`,
       description:
-        'Their prices, codes, descriptions and every version of them go too, and they disappear from your website immediately. Orders that already contain them keep their record of what was bought. This cannot be undone — retire them instead if you might sell them again.',
+        'Their prices, codes, descriptions and every version of them go too, and they disappear from your website immediately. Orders that already contain them keep their record of what was bought. This cannot be undone: retire them instead if you might sell them again.',
       confirmLabel: `Delete ${count(ids.length)}`,
       cancelLabel: 'Keep them',
       color: 'danger',

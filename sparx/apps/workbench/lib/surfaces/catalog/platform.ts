@@ -94,7 +94,7 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     key: 'platform.migrate.run',
     title: (params) =>
       typeof params.runId === 'string'
-        ? 'Move in — what happened'
+        ? 'Move in: what happened'
         : typeof params.vendor === 'string'
           ? `Move in from ${String(params.vendor)}`
           : 'Move in',

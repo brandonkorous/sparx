@@ -130,7 +130,7 @@ function PlaceLines({ draft, set }: PartProps) {
           }
         />
         <FieldDescription>
-          The two-letter country code — GB for the United Kingdom, US for the United States, DE for
+          The two-letter country code: GB for the United Kingdom, US for the United States, DE for
           Germany.
         </FieldDescription>
       </Field>

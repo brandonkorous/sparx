@@ -63,7 +63,7 @@
     {
       "handle": "the-daily-walk",
       "name": "The daily walk",
-      "description": "Everything for getting out the door — collars, leads, harnesses and water.",
+      "description": "Everything for getting out the door: collars, leads, harnesses and water.",
       "type": "manual",
       "featured": false,
       "productHandles": [
@@ -92,7 +92,7 @@
     {
       "handle": "gifting",
       "name": "Gift-ready",
-      "description": "Easy to give, better to keep — for the dog who has (almost) everything.",
+      "description": "Easy to give, better to keep, for the dog who has (almost) everything.",
       "type": "manual",
       "featured": false,
       "productHandles": [
@@ -108,14 +108,14 @@
     {
       "handle": "heritage-leather-collar",
       "title": "Heritage Leather Collar",
-      "description": "A collar cut from a single strip of full-grain leather and stitched by a real saddler, with a solid brass buckle and D-ring that won’t bend or rust. It softens as it wears and picks up the character of every walk — the one collar you buy once and never think about again. Measure your dog’s neck and pick the size below.",
+      "description": "A collar cut from a single strip of full-grain leather and stitched by a real saddler, with a solid brass buckle and D-ring that won’t bend or rust. It softens as it wears and picks up the character of every walk: the one collar you buy once and never think about again. Measure your dog’s neck and pick the size below.",
       "status": "active",
       "productType": "Collar",
       "vendor": "Barkwell",
       "tags": ["collar", "leather", "walk"],
       "categoryHandles": ["walk"],
       "collectionHandles": ["new-arrivals", "the-daily-walk", "best-sellers"],
-      "seoTitle": "Heritage Leather Dog Collar — full-grain, brass hardware | Barkwell",
+      "seoTitle": "Heritage Leather Dog Collar: full-grain, brass hardware | Barkwell",
       "seoDescription": "A hand-stitched full-grain leather collar with solid brass hardware, in three sizes and three colors. Buy once, wear it for years.",
       "options": [
         {
@@ -244,14 +244,14 @@
     {
       "handle": "heritage-leather-lead",
       "title": "Heritage Leather Lead",
-      "description": "The lead made to match the collar — the same full-grain leather and solid brass trigger clip, in a comfortable five-foot length that sits soft in the hand from the first walk. No plastic, no fraying nylon; just a lead that ages beautifully and outlasts the dog’s puppyhood many times over.",
+      "description": "The lead made to match the collar: the same full-grain leather and solid brass trigger clip, in a comfortable five-foot length that sits soft in the hand from the first walk. No plastic, no fraying nylon; just a lead that ages beautifully and outlasts the dog’s puppyhood many times over.",
       "status": "active",
       "productType": "Lead",
       "vendor": "Barkwell",
       "tags": ["lead", "leash", "leather", "walk"],
       "categoryHandles": ["walk"],
       "collectionHandles": ["the-daily-walk", "best-sellers"],
-      "seoTitle": "Heritage Leather Dog Lead — full-grain, 5ft | Barkwell",
+      "seoTitle": "Heritage Leather Dog Lead: full-grain, 5ft | Barkwell",
       "seoDescription": "A five-foot full-grain leather lead with a solid brass trigger clip, made to match the Heritage collar. Soft in the hand, built to last.",
       "options": [
         {
@@ -308,14 +308,14 @@
     {
       "handle": "adventure-harness",
       "title": "Adventure Harness",
-      "description": "A padded, no-pull harness for dogs who treat every walk like an expedition — breathable mesh, a chest ring to ease pulling, a back handle for helping over stiles, and reflective trim for dark mornings. Four points of adjustment mean it actually fits, and the whole thing wipes clean after the muddiest field.",
+      "description": "A padded, no-pull harness for dogs who treat every walk like an expedition: breathable mesh, a chest ring to ease pulling, a back handle for helping over stiles, and reflective trim for dark mornings. Four points of adjustment mean it actually fits, and the whole thing wipes clean after the muddiest field.",
       "status": "active",
       "productType": "Harness",
       "vendor": "Barkwell",
       "tags": ["harness", "no-pull", "walk"],
       "categoryHandles": ["walk"],
       "collectionHandles": ["new-arrivals", "the-daily-walk"],
-      "seoTitle": "Adventure No-Pull Dog Harness — padded, reflective | Barkwell",
+      "seoTitle": "Adventure No-Pull Dog Harness: padded, reflective | Barkwell",
       "seoDescription": "A padded no-pull harness with a chest ring, back handle and reflective trim, in three sizes and three colors. Built for real walks.",
       "options": [
         {
@@ -444,14 +444,14 @@
     {
       "handle": "orthopedic-dog-bed",
       "title": "Orthopedic Dog Bed",
-      "description": "A proper bed for a proper sleep — a solid slab of orthopedic memory foam, not shredded off-cuts, topped with a bolster edge for chin-resting and a cover that unzips and machine-washes in one go. It supports ageing joints, holds its shape for years, and gives even a young dog the deep rest they need. Pick the size for your dog below.",
+      "description": "A proper bed for a proper sleep: a solid slab of orthopedic memory foam, not shredded off-cuts, topped with a bolster edge for chin-resting and a cover that unzips and machine-washes in one go. It supports ageing joints, holds its shape for years, and gives even a young dog the deep rest they need. Pick the size for your dog below.",
       "status": "active",
       "productType": "Bed",
       "vendor": "Barkwell",
       "tags": ["bed", "orthopedic", "rest", "sleep"],
       "categoryHandles": ["rest"],
       "collectionHandles": ["new-arrivals", "rest-easy", "best-sellers"],
-      "seoTitle": "Orthopedic Memory-Foam Dog Bed — washable | Barkwell",
+      "seoTitle": "Orthopedic Memory-Foam Dog Bed: washable | Barkwell",
       "seoDescription": "A solid orthopedic memory-foam dog bed with a bolster edge and a fully machine-washable cover, in three sizes. Real support for real sleep.",
       "options": [
         {
@@ -508,14 +508,14 @@
     {
       "handle": "everyday-ceramic-bowl",
       "title": "Everyday Ceramic Bowl",
-      "description": "A hand-glazed stoneware bowl with real heft, a non-slip base and a food-safe finish that won’t harbour the bacteria plastic and steel bowls trap in their scratches. Weighted enough that an enthusiastic eater can’t skate it across the kitchen, dishwasher-safe, and handsome enough to leave out. Sold singly — pair one for water, one for food.",
+      "description": "A hand-glazed stoneware bowl with real heft, a non-slip base and a food-safe finish that won’t harbour the bacteria plastic and steel bowls trap in their scratches. Weighted enough that an enthusiastic eater can’t skate it across the kitchen, dishwasher-safe, and handsome enough to leave out. Sold singly: pair one for water, one for food.",
       "status": "active",
       "productType": "Bowl",
       "vendor": "Barkwell",
       "tags": ["bowl", "ceramic", "eat", "feeding"],
       "categoryHandles": ["eat"],
       "collectionHandles": ["rest-easy", "gifting"],
-      "seoTitle": "Hand-Glazed Ceramic Dog Bowl — non-slip, food-safe | Barkwell",
+      "seoTitle": "Hand-Glazed Ceramic Dog Bowl: non-slip, food-safe | Barkwell",
       "seoDescription": "A weighted hand-glazed stoneware dog bowl with a non-slip base and a food-safe finish, in three colors. Dishwasher-safe and built to stay put.",
       "options": [
         {
@@ -572,14 +572,14 @@
     {
       "handle": "slow-roasted-treats",
       "title": "Slow-Roasted Natural Treats",
-      "description": "Single-ingredient treats slow-roasted from one clean protein — nothing else in the bag. No grain filler, no glycerine, no unpronounceable preservatives; just real meat your dog can smell from the next room and a label you can actually read. Resealable pouch, and gentle enough on the stomach to use for everyday training, not just a rare reward.",
+      "description": "Single-ingredient treats slow-roasted from one clean protein. Nothing else in the bag. No grain filler, no glycerine, no unpronounceable preservatives; just real meat your dog can smell from the next room and a label you can actually read. Resealable pouch, and gentle enough on the stomach to use for everyday training, not just a rare reward.",
       "status": "active",
       "productType": "Treats",
       "vendor": "Barkwell",
       "tags": ["treats", "natural", "grain-free", "eat"],
       "categoryHandles": ["eat"],
       "collectionHandles": ["new-arrivals", "gifting", "best-sellers"],
-      "seoTitle": "Slow-Roasted Single-Ingredient Dog Treats — grain-free | Barkwell",
+      "seoTitle": "Slow-Roasted Single-Ingredient Dog Treats: grain-free | Barkwell",
       "seoDescription": "Single-ingredient, slow-roasted natural dog treats with no filler or preservatives, in three flavours. Gentle enough for everyday training.",
       "options": [
         {
@@ -636,14 +636,14 @@
     {
       "handle": "cotton-rope-tug-toy",
       "title": "Cotton Rope Tug Toy",
-      "description": "A chunky tug toy hand-knotted from undyed natural cotton — tough enough for a serious game of tug, soft enough to be kind on teeth and gums, and just abrasive enough to help floss away plaque as they chew. Machine-washable, and it floats, so it’s as good in the water as on the living-room floor.",
+      "description": "A chunky tug toy hand-knotted from undyed natural cotton: tough enough for a serious game of tug, soft enough to be kind on teeth and gums, and just abrasive enough to help floss away plaque as they chew. Machine-washable, and it floats, so it’s as good in the water as on the living-room floor.",
       "status": "active",
       "productType": "Toy",
       "vendor": "Barkwell",
       "tags": ["toy", "rope", "play", "chew"],
       "categoryHandles": ["play"],
       "collectionHandles": ["playtime", "gifting"],
-      "seoTitle": "Cotton Rope Tug Toy — natural, tooth-friendly | Barkwell",
+      "seoTitle": "Cotton Rope Tug Toy: natural, tooth-friendly | Barkwell",
       "seoDescription": "A hand-knotted natural-cotton rope tug toy that’s tough on play and kind on teeth, in three colors. Machine-washable and it floats.",
       "options": [
         {
@@ -700,14 +700,14 @@
     {
       "handle": "travel-water-bottle",
       "title": "Stainless Travel Water Bottle",
-      "description": "The end of cupped hands at the park water fountain — a leak-proof stainless steel bottle with a fold-out silicone bowl built into the lid, so a drink is one thumb-press away on any walk. Holds a proper 500ml, keeps water cool, and any your dog doesn’t finish pours neatly back in rather than down your leg.",
+      "description": "The end of cupped hands at the park water fountain: a leak-proof stainless steel bottle with a fold-out silicone bowl built into the lid, so a drink is one thumb-press away on any walk. Holds a proper 500ml, keeps water cool, and any your dog doesn’t finish pours neatly back in rather than down your leg.",
       "status": "active",
       "productType": "Travel",
       "vendor": "Barkwell",
       "tags": ["travel", "water", "bottle", "walk"],
       "categoryHandles": ["walk", "eat"],
       "collectionHandles": ["the-daily-walk", "gifting"],
-      "seoTitle": "Stainless Travel Dog Water Bottle — leak-proof, 500ml | Barkwell",
+      "seoTitle": "Stainless Travel Dog Water Bottle: leak-proof, 500ml | Barkwell",
       "seoDescription": "A leak-proof 500ml stainless steel travel water bottle with a fold-out bowl in the lid. One-handed hydration on every walk.",
       "variants": [
         {
@@ -728,7 +728,7 @@
     {
       "handle": "bamboo-grooming-brush",
       "title": "Bamboo Grooming Brush",
-      "description": "A double-sided brush with a warm bamboo handle — fine bent pins to work through tangles and undercoat on one side, a soft bristle to bring up shine and spread natural oils on the other. Five minutes a week keeps a coat healthy, cuts the shedding on your sofa, and — most dogs quickly decide — feels rather good.",
+      "description": "A double-sided brush with a warm bamboo handle: fine bent pins to work through tangles and undercoat on one side, a soft bristle to bring up shine and spread natural oils on the other. Five minutes a week keeps a coat healthy, cuts the shedding on your sofa, and (most dogs quickly decide) feels rather good.",
       "status": "active",
       "productType": "Grooming",
       "vendor": "Barkwell",
@@ -736,7 +736,7 @@
       "categoryHandles": ["grooming"],
       "collectionHandles": ["gifting"],
       "seoTitle": "Bamboo Double-Sided Dog Grooming Brush | Barkwell",
-      "seoDescription": "A double-sided bamboo grooming brush — bent pins for tangles, soft bristle for shine. Five minutes a week for a healthy coat.",
+      "seoDescription": "A double-sided bamboo grooming brush: bent pins for tangles, soft bristle for shine. Five minutes a week for a healthy coat.",
       "variants": [
         {
           "sku": "BARK-BRUSH-BAMBOO",
@@ -756,14 +756,14 @@
     {
       "handle": "subscription",
       "title": "Companion Subscription Box",
-      "description": "The box that turns up before you run out — a freshly packed selection of treats, a new toy and the everyday consumables (poop bags, dental chews) matched to your dog, on the schedule you choose. Skip, swap or cancel any time, and every box works out cheaper than buying the same things one at a time. The easiest way to keep a happy dog stocked.",
+      "description": "The box that turns up before you run out: a freshly packed selection of treats, a new toy and the everyday consumables (poop bags, dental chews) matched to your dog, on the schedule you choose. Skip, swap or cancel any time, and every box works out cheaper than buying the same things one at a time. The easiest way to keep a happy dog stocked.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Barkwell",
       "tags": ["subscription", "box", "gift"],
       "categoryHandles": ["eat"],
       "collectionHandles": ["new-arrivals", "best-sellers"],
-      "seoTitle": "Companion Subscription Box — treats, toys & essentials | Barkwell",
+      "seoTitle": "Companion Subscription Box: treats, toys & essentials | Barkwell",
       "seoDescription": "A flexible monthly box of treats, a toy and everyday essentials matched to your dog. Skip, swap or cancel any time.",
       "options": [
         {

@@ -107,7 +107,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Add a trade account — hold Shift to open alongside, Alt for a new window"
+            title="Add a trade account. Hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('b2b.account.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -161,7 +161,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
             title="Could not load your trade accounts"
-            description="This is a problem reaching the server. Your accounts are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your accounts are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <PaneWaiting />
@@ -177,7 +177,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No trade accounts yet',
               description:
-                'A trade account is a business you supply on agreed prices and terms — a garage, a builder, a reseller — rather than a shopper paying card at checkout. Add your first one to give them their own prices and let their people order.',
+                'A trade account is a business you supply on agreed prices and terms (a garage, a builder, a reseller) rather than a shopper paying card at checkout. Add your first one to give them their own prices and let their people order.',
             }}
           />
         ) : (

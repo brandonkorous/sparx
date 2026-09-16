@@ -100,12 +100,12 @@ export async function create(
 const DEFAULT_QUICK_REPLIES: { title: string; body: string; shortcut: string }[] = [
   {
     title: 'Greeting',
-    body: 'Hi there! 👋 Thanks for reaching out — how can we help you today?',
+    body: 'Hi there! 👋 Thanks for reaching out. How can we help you today?',
     shortcut: 'hi',
   },
   {
     title: 'One moment',
-    body: 'Thanks for your patience — let me look into that for you right now.',
+    body: 'Thanks for your patience. Let me look into that for you right now.',
     shortcut: 'wait',
   },
   {
@@ -120,7 +120,7 @@ const DEFAULT_QUICK_REPLIES: { title: string; body: string; shortcut: string }[]
   },
   {
     title: 'Returns',
-    body: "No problem — eligible items can be returned within 30 days of delivery. I can start a return for you whenever you're ready.",
+    body: "No problem: eligible items can be returned within 30 days of delivery. I can start a return for you whenever you're ready.",
     shortcut: 'returns',
   },
   {

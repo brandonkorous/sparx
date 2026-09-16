@@ -58,7 +58,7 @@ export function halfCreatedToast(error: unknown, name: string): HalfCreatedToast
   }
   return {
     title: `${name} was added, but its price was not`,
-    description: productErrorMessage(error, 'Set its price here — nobody can buy it until you do.'),
+    description: productErrorMessage(error, 'Set its price here. Nobody can buy it until you do.'),
     type: 'warning',
   };
 }

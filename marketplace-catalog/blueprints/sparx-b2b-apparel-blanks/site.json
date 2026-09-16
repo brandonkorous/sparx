@@ -719,7 +719,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Blankstock — wholesale blank apparel for decorators",
+      "seoTitle": "Blankstock: wholesale blank apparel for decorators",
       "seoDescription": "Blankstock is a wholesale supplier of blank tees, fleece, headwear and bags for screen-printers, embroiderers and merch makers. Sold by the case, priced per unit, net-30 for approved trade.",
       "root": {
         "kind": "element",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Blankstock is a wholesale supplier of blank apparel for screen-printers, embroiderers and merch makers. Tees, fleece, headwear and bags — stocked deep in consistent dye lots, sold by the case, and priced per unit so the bigger the run, the lower your cost."
+                          "Blankstock is a wholesale supplier of blank apparel for screen-printers, embroiderers and merch makers. Tees, fleece, headwear and bags: stocked deep in consistent dye lots, sold by the case, and priced per unit so the bigger the run, the lower your cost."
                         ],
                         "id": "02f09886-e7f4-49a2-8dcf-7bea831950fa",
                         "ord": "a1"
@@ -1225,7 +1225,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We stock garments chosen for how they decorate — combed and ring-spun cottons with a tight, even face, side-seamed bodies that lie flat on the platen, and set-in collars that survive a wash. If a blank fights the press, it doesn’t earn a spot on the shelf."
+                          "We stock garments chosen for how they decorate: combed and ring-spun cottons with a tight, even face, side-seamed bodies that lie flat on the platen, and set-in collars that survive a wash. If a blank fights the press, it doesn’t earn a spot on the shelf."
                         ],
                         "id": "972ddcd1-8664-4cb9-ad34-022bb5f4e6b4",
                         "ord": "a1"
@@ -1281,7 +1281,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Everything here is set up for people who decorate for a living — priced by the case, stocked to reorder, and shipped fast enough to keep a press schedule moving."
+                          "Everything here is set up for people who decorate for a living: priced by the case, stocked to reorder, and shipped fast enough to keep a press schedule moving."
                         ],
                         "id": "b5f9c8e0-49c6-4b63-8610-ac38d1f682e1",
                         "ord": "a1"
@@ -1313,7 +1313,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Unit price steps down at 24, 72 and 144. Quote the run, not the piece — the bigger the order, the lower the cost per shirt."
+                              "Unit price steps down at 24, 72 and 144. Quote the run, not the piece: the bigger the order, the lower the cost per shirt."
                             ],
                             "id": "125700c6-1207-490c-866f-60a5e6a5056a",
                             "ord": "a1"
@@ -1394,7 +1394,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Open a wholesale account, get approved once, and order on terms — buy now, pay in 30, reorder without re-quoting."
+                              "Open a wholesale account, get approved once, and order on terms: buy now, pay in 30, reorder without re-quoting."
                             ],
                             "id": "21adf67a-9b8f-4f81-bd62-b4bc7435d9ac",
                             "ord": "a1"
@@ -1715,7 +1715,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tell us about your shop and we’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start — just better pricing the more you run."
+                          "Tell us about your shop and we’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start. Just better pricing the more you run."
                         ],
                         "id": "bb2ef426-fa74-44d7-91db-7d597f9d3294",
                         "ord": "a1"
@@ -1750,7 +1750,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Blankstock",
+      "seoTitle": "Shop: Blankstock",
       "seoDescription": "Browse everything Blankstock makes, with prices and options at a glance. Wholesale blank apparel.",
       "root": {
         "kind": "element",
@@ -1782,7 +1782,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The full stock — tees, fleece, headwear and bags, all sold by the case and priced per unit. Filter by category or color, or sort by price; every style is blank and ready to screenprint, embroider or DTG."
+                      "The full stock: tees, fleece, headwear and bags, all sold by the case and priced per unit. Filter by category or color, or sort by price; every style is blank and ready to screenprint, embroider or DTG."
                     ],
                     "id": "690a6dbe-b33d-4c06-9f6d-8c333709b930",
                     "ord": "a1"
@@ -1810,7 +1810,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Blankstock",
+      "seoTitle": "Collections: Blankstock",
       "seoDescription": "Explore the collections at Blankstock, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1842,7 +1842,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Blanks grouped the way a shop actually orders — this season’s new stock, the best-selling core styles, tees and tops, fleece by weight, and a print-ready starter kit for a first run."
+                      "Blanks grouped the way a shop actually orders. This season’s new stock, the best-selling core styles, tees and tops, fleece by weight, and a print-ready starter kit for a first run."
                     ],
                     "id": "a1d0a6fd-9c90-4d78-9ad1-441d711d2085",
                     "ord": "a1"
@@ -1870,7 +1870,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Blankstock",
+      "seoTitle": "Your cart: Blankstock",
       "seoDescription": "Review what is in your cart and check out securely at Blankstock.",
       "root": {
         "kind": "element",
@@ -1902,7 +1902,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Mix sizes within a style to reach the next price tier — the discount applies at 24, 72 and 144 units. Approved wholesale accounts check out on net-30 terms; new to Blankstock? Open an account and we’ll get you set up."
+                      "Mix sizes within a style to reach the next price tier: the discount applies at 24, 72 and 144 units. Approved wholesale accounts check out on net-30 terms; new to Blankstock? Open an account and we’ll get you set up."
                     ],
                     "id": "bf95ce20-b8e6-4690-9be8-906cd996c978",
                     "ord": "a1"
@@ -1930,7 +1930,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Blankstock",
+      "seoTitle": "Search: Blankstock",
       "seoDescription": "Search Blankstock for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1990,7 +1990,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Blankstock",
+      "seoTitle": "Journal: Blankstock",
       "seoDescription": "Stories, guides and notes from Blankstock.",
       "root": {
         "kind": "element",
@@ -2022,7 +2022,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Straight-talking guides from people who stock blanks for a living — choosing the right garment, matching a blank to your print method, and getting a size run right the first time."
+                      "Straight-talking guides from people who stock blanks for a living: choosing the right garment, matching a blank to your print method, and getting a size run right the first time."
                     ],
                     "id": "61c2a3f8-cde2-43b1-b540-d8e96deca074",
                     "ord": "a1"
@@ -2156,7 +2156,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Blankstock",
-      "seoDescription": "The blank-apparel supplier a print shop built for itself — a tight catalogue chosen for how it decorates, stocked deep, priced by the run, shipped fast.",
+      "seoDescription": "The blank-apparel supplier a print shop built for itself: a tight catalogue chosen for how it decorates, stocked deep, priced by the run, shipped fast.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2197,7 +2197,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We carry fewer styles on purpose. Every tee, hoodie, cap and bag on the shelf earned its place on the press — smooth faces that take ink and thread cleanly, side-seamed bodies that lie flat, and collars and cuffs that survive an industrial wash. No mystery goods, no surprise substitutions."
+                      "We carry fewer styles on purpose. Every tee, hoodie, cap and bag on the shelf earned its place on the press: smooth faces that take ink and thread cleanly, side-seamed bodies that lie flat, and collars and cuffs that survive an industrial wash. No mystery goods, no surprise substitutions."
                     ],
                     "id": "440433db-3505-42ff-a6f2-5f1a03085a46",
                     "ord": "a2"
@@ -2207,7 +2207,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Order by the case, pay per unit, and pay on net-30 once you’re approved. We ship fast, we answer the phone, and we treat your deadline like ours — because when your order lands late, your customer’s does too."
+                      "Order by the case, pay per unit, and pay on net-30 once you’re approved. We ship fast, we answer the phone, and we treat your deadline like ours, because when your order lands late, your customer’s does too."
                     ],
                     "id": "ce329df7-23a0-4a26-b127-ac2c882f9516",
                     "ord": "a3"
@@ -2227,8 +2227,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Blankstock",
-      "seoDescription": "Get in touch with Blankstock — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Blankstock",
+      "seoDescription": "Get in touch with Blankstock: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2264,7 +2264,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tell us about your shop — what you print, roughly how much you run, and what you’re looking for. We’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start."
+                          "Tell us about your shop: what you print, roughly how much you run, and what you’re looking for. We’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start."
                         ],
                         "id": "7b37268f-0b67-4d16-84f1-56450fac5633",
                         "ord": "a1"
@@ -2535,8 +2535,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Blankstock",
-      "seoDescription": "Product details at Blankstock — wholesale blank apparel, with options and pricing.",
+      "seoTitle": "Product: Blankstock",
+      "seoDescription": "Product details at Blankstock: wholesale blank apparel, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2916,7 +2916,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Priced per unit and sold by the case. Unit price steps down at 24, 72 and 144 pieces — mix sizes within a style to hit the next tier. Every garment ships blank and ready to decorate for screenprint, embroidery or DTG."
+                              "Priced per unit and sold by the case. Unit price steps down at 24, 72 and 144 pieces: mix sizes within a style to hit the next tier. Every garment ships blank and ready to decorate for screenprint, embroidery or DTG."
                             ],
                             "id": "30245680-cc2b-43a7-beb8-1624bf079273",
                             "ord": "a1"

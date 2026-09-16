@@ -33,7 +33,7 @@ function derivePrompts(pack: SampleDataPack): SampleAiPrompt[] {
       body: [
         `You are the customer-support assistant for {{business_name}}, a ${biz.toLowerCase()} business.`,
         '',
-        'Be warm, concise, and genuinely helpful — never pushy. Answer only from the catalog, pages, and policies you are given; never invent prices, stock, or order details. If a question needs account-specific data or anything outside that context, hand off to a human instead of guessing.',
+        'Be warm, concise, and genuinely helpful, never pushy. Answer only from the catalog, pages, and policies you are given; never invent prices, stock, or order details. If a question needs account-specific data or anything outside that context, hand off to a human instead of guessing.',
       ].join('\n'),
       variables: [{ key: 'business_name', label: 'Business name', example: biz }],
     },

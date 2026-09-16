@@ -294,7 +294,7 @@ async function draftForPeriod(
            ABS(m.delta)   AS "units",
            -- What the goods cost when they sold. The movement's own recorded
            -- cost of goods, per unit; falling back to the unit cost stamped on
-           -- the movement. Deliberately NOT the level's average today — what you
+           -- the movement. Deliberately NOT the level's average today: what you
            -- owe is what it cost at the time, and today's average has been moved
            -- by every receipt since.
            COALESCE(
@@ -421,7 +421,7 @@ export async function refreshConsignmentSettlement(
     if (!row) throw new InventoryNotFoundError('ConsignmentSettlement', id);
     if (row.status !== 'draft') {
       throw new InventoryConflictError(
-        'A settled period cannot be rebuilt — put the correction in the next one.',
+        'A settled period cannot be rebuilt. Put the correction in the next one.',
         'status'
       );
     }
@@ -484,7 +484,7 @@ export async function closeConsignmentSettlement(
     if (draft.unpricedUnits > 0) {
       throw new InventoryValidationError(
         `${draft.unpricedUnits} units sold from consigned stock with no cost recorded. ` +
-          'Settling now would pay the owner short — put a cost on them first.',
+          'Settling now would pay the owner short. Put a cost on them first.',
         [{ field: 'lines', message: `${draft.unpricedUnits} units have no cost.` }]
       );
     }
@@ -563,7 +563,7 @@ export async function cancelConsignmentSettlement(ctx: ServiceContext, id: strin
     if (!row) throw new InventoryNotFoundError('ConsignmentSettlement', id);
     if (row.status === 'paid') {
       throw new InventoryConflictError(
-        `${row.number} has been paid — cancelling it would erase a payment that happened.`,
+        `${row.number} has been paid: canceling it would erase a payment that happened.`,
         'status'
       );
     }

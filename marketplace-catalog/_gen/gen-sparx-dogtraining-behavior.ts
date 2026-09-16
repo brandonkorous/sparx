@@ -284,7 +284,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A focused working dog holding a steady sit, eyes locked on its handler',
     title: 'Real behavior change, led by specialists',
-    sub: 'Private training and board-and-train for the dogs other programs give up on — reactivity, aggression, puppy foundations and service-dog work. It starts with an assessment.',
+    sub: 'Private training and board-and-train for the dogs other programs give up on: reactivity, aggression, puppy foundations and service-dog work. It starts with an assessment.',
     primary: { label: 'Book an assessment', href: '/book' },
     secondary: { label: 'See services', href: '/book' },
     overlay: 'darker',
@@ -293,7 +293,7 @@ const HOME = [
     items: [
       {
         title: 'Behavior specialists, not generalists',
-        body: 'Every trainer here works cases full-time — reactivity, aggression, anxiety and obedience. You get the specialist your dog’s behavior actually calls for.',
+        body: 'Every trainer here works cases full-time: reactivity, aggression, anxiety and obedience. You get the specialist your dog’s behavior actually calls for.',
       },
       {
         title: 'A proven method, not guesswork',
@@ -301,7 +301,7 @@ const HOME = [
       },
       {
         title: 'In-home & board-and-train',
-        body: 'Train where the behavior happens — in your home and your routine — or send your dog for immersive board-and-train and get the skills handed back to you.',
+        body: 'Train where the behavior happens (in your home and your routine) or send your dog for immersive board-and-train and get the skills handed back to you.',
       },
       {
         title: 'Lifetime support',
@@ -329,14 +329,14 @@ const HOME = [
     alt: 'A trainer coaching a dog and owner through a calm leash exercise at home',
     heading: 'The K9 Method: assess, plan, transform',
     body: [
-      'Most training fails because it treats symptoms and skips the cause. We do the opposite — a real assessment to understand why your dog does what it does, then a step-by-step plan that changes the behavior at its root.',
+      'Most training fails because it treats symptoms and skips the cause. We do the opposite: a real assessment to understand why your dog does what it does, then a step-by-step plan that changes the behavior at its root.',
       'And we train you as much as the dog. When you understand the method and can run it yourself, the calm, confident dog you met in session is the one you keep at home.',
     ],
     cta: { label: 'Book an assessment', href: '/book' },
   }),
   teamRow({
     heading: 'Your specialists',
-    intro: 'Book by name — you’ll work with the specialist whose expertise fits your dog.',
+    intro: 'Book by name: you’ll work with the specialist whose expertise fits your dog.',
     members: [
       {
         name: 'Dana Cole',
@@ -350,7 +350,7 @@ const HOME = [
         role: 'Reactivity & aggression specialist',
         image: url(IMG.marcus),
         alt: 'Marcus Reyes, reactivity & aggression specialist',
-        bio: 'Calm under pressure with the toughest cases — leash reactivity, resource guarding and bite histories handled safely and humanely.',
+        bio: 'Calm under pressure with the toughest cases: leash reactivity, resource guarding and bite histories handled safely and humanely.',
       },
       {
         name: 'Priya Shah',
@@ -362,7 +362,7 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'We were ready to rehome our dog after two bad bites. Six weeks with K9 Method and he greets guests calmly at the door. They didn’t just fix the dog — they taught us how to keep him that way.',
+    quote: 'We were ready to rehome our dog after two bad bites. Six weeks with K9 Method and he greets guests calmly at the door. They didn’t just fix the dog. They taught us how to keep him that way.',
     attribution: 'The Alvarez family, K9 Method graduates',
     surface: 'primary',
   }),
@@ -391,8 +391,8 @@ const ABOUT = [
     alt: 'A focused working dog holding a steady sit, eyes locked on its handler',
     heading: 'About K9 Method',
     body: [
-      'K9 Method exists for the dogs that group classes and quick fixes couldn’t reach — the reactive, the anxious, the ones with a bite history and an owner running out of options. We take those cases seriously, and we get results.',
-      'Our promise is simple: an honest assessment, a plan grounded in how dogs actually learn, and a specialist who treats your dog’s behavior — and your family’s safety — like it matters. Because it does.',
+      'K9 Method exists for the dogs that group classes and quick fixes couldn’t reach: the reactive, the anxious, the ones with a bite history and an owner running out of options. We take those cases seriously, and we get results.',
+      'Our promise is simple: an honest assessment, a plan grounded in how dogs actually learn, and a specialist who treats your dog’s behavior (and your family’s safety) like it matters. Because it does.',
     ],
     cta: { label: 'Book an assessment', href: '/book' },
   }),
@@ -406,7 +406,7 @@ const ABOUT = [
       },
       {
         title: 'Humane, modern methods',
-        body: 'Clear, consistent, science-based training — no intimidation, no gimmicks. We change behavior by teaching, not by force.',
+        body: 'Clear, consistent, science-based training: no intimidation, no gimmicks. We change behavior by teaching, not by force.',
       },
       {
         title: 'Built to last',
@@ -430,7 +430,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your assessment online — no phone tag, no waiting on a callback.',
+    sub: 'See live availability and reserve your assessment online: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Book an assessment', href: '/book' },
   }),
@@ -441,8 +441,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-dogtraining-behavior',
   name: 'Dog Training (Behavior)',
   summary:
-    'A bold, professional dog-training & behavior site — a deep charcoal-navy palette, a confident amber accent and sturdy condensed type. Installs a working booking flow: online booking for assessments and private sessions, specialist trainers you choose by name with their own hours, and a program-deposit policy for board-and-train. Covers reactivity, aggression, puppy foundations and service-dog work. Ships as "K9 Method".',
-  tagline: 'A bold, results-driven template for private dog trainers — book assessments from day one.',
+    'A bold, professional dog-training & behavior site: a deep charcoal-navy palette, a confident amber accent and sturdy condensed type. Installs a working booking flow: online booking for assessments and private sessions, specialist trainers you choose by name with their own hours, and a program-deposit policy for board-and-train. Covers reactivity, aggression, puppy foundations and service-dog work. Ships as "K9 Method".',
+  tagline: 'A bold, results-driven template for private dog trainers. Book assessments from day one.',
   industry: 'Dog training',
   sortWeight: 51,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -451,7 +451,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'K9 Method — private dog training & behavior',
+      title: 'K9 Method: private dog training & behavior',
       description:
         'K9 Method is a results-driven private dog-training and behavior practice: reactivity, aggression, puppy foundations, board-and-train and service-dog work. Book your assessment online.',
     },

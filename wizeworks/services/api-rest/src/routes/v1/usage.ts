@@ -77,7 +77,7 @@ const usageRoutes: FastifyPluginAsync = (app) => {
       // here — a misconfigured ceiling silently becomes no ceiling at all.
       request.log.warn(
         { brand: tenant?.platformBrand ?? null, rejected: report.rejected },
-        'capacity allowance has unreadable entries — those meters are unlimited'
+        'capacity allowance has unreadable entries: those meters are unlimited'
       );
     }
 

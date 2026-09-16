@@ -19,9 +19,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const role = getRole(slug);
-  if (!role) return { title: 'Careers — sparx' };
+  if (!role) return { title: 'Careers: sparx' };
   return {
-    title: `${role.title} — Careers at sparx`,
+    title: `${role.title} · Careers at sparx`,
     description: role.summary,
     alternates: { canonical: `/careers/${slug}` },
   };

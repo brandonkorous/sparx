@@ -69,8 +69,8 @@ describe('gatewayCatalog', () => {
   it('says the same thing to both brands apart from the name', () => {
     const piggles = getGatewayDescriptor('stripe_direct', 'piggles');
     const sparx = getGatewayDescriptor('stripe_direct', 'sparx');
-    expect(piggles?.feeNote).toBe('No Piggles fee — you pay Stripe’s rates directly.');
-    expect(sparx?.feeNote).toBe('No sparx fee — you pay Stripe’s rates directly.');
+    expect(piggles?.feeNote).toBe('No Piggles fee. You pay Stripe’s rates directly.');
+    expect(sparx?.feeNote).toBe('No sparx fee. You pay Stripe’s rates directly.');
     expect(piggles?.capabilities).toEqual(sparx?.capabilities);
   });
 

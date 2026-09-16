@@ -59,7 +59,7 @@ const overrideFields = {
 const listPricingTiers: McpToolDefinition = {
   name: 'list_b2b_pricing_tiers',
   description:
-    'List B2B pricing tiers — the named trade discounts (percentage or fixed) assigned to wholesale accounts. Optionally filter by name/description text.',
+    'List B2B pricing tiers: the named trade discounts (percentage or fixed) assigned to wholesale accounts. Optionally filter by name/description text.',
   scope: 'read:b2b',
   confirmation: false,
   input: z.object({
@@ -126,7 +126,7 @@ const resolveB2bPrice: McpToolDefinition = {
 const getProductPricing: McpToolDefinition = {
   name: 'get_b2b_product_pricing',
   description:
-    'Every trade-pricing RULE that touches one product — its variants, all tiers, tier overrides, account overrides, and contract prices — joined in one call for a pricing panel.',
+    'Every trade-pricing RULE that touches one product (its variants, all tiers, tier overrides, account overrides, and contract prices) joined in one call for a pricing panel.',
   scope: 'read:b2b',
   confirmation: false,
   input: z.object({ productId: uuid() }),
@@ -137,7 +137,7 @@ const getProductPricing: McpToolDefinition = {
 const listApprovalRules: McpToolDefinition = {
   name: 'list_b2b_approval_rules',
   description:
-    'List purchase-approval rules — the spending thresholds (per account and/or per site) above which a B2B order parks for staff approval before it can place.',
+    'List purchase-approval rules: the spending thresholds (per account and/or per site) above which a B2B order parks for staff approval before it can place.',
   scope: 'read:b2b',
   confirmation: false,
   input: z.object({}),
@@ -419,7 +419,7 @@ const updateApprovalRule: McpToolDefinition = {
 
 const deleteApprovalRule: McpToolDefinition = {
   name: 'delete_b2b_approval_rule',
-  description: 'Deactivate a purchase-approval rule (soft — preserves its history).',
+  description: 'Deactivate a purchase-approval rule (soft: preserves its history).',
   scope: 'write:b2b',
   confirmation: true,
   input: z.object({ ruleId: uuid() }),
@@ -450,7 +450,7 @@ const approveOrder: McpToolDefinition = {
 
 const rejectOrder: McpToolDefinition = {
   name: 'reject_b2b_order',
-  description: 'Reject a pending B2B order — cancels it and records the reason on the customer.',
+  description: 'Reject a pending B2B order: cancels it and records the reason on the customer.',
   scope: 'write:b2b',
   confirmation: true,
   input: z.object({ orderId: uuid(), reason: z.string().max(1000).optional() }),

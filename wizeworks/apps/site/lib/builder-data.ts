@@ -306,7 +306,7 @@ export async function loadBuilderData(
           setAtPath(root, `cms.${type}HasMore`, hasMore);
           if (hasMore) {
             console.warn(
-              `[builder-data] cms.${type}: showing ${shown.length} entries, more exist — ` +
+              `[builder-data] cms.${type}: showing ${shown.length} entries, more exist: ` +
                 `no pagination on the storefront yet (docs/127 §8).`
             );
           }
@@ -326,7 +326,7 @@ export async function loadBuilderData(
           setAtPath(root, 'commerce.productHasMore', total > products.length);
           if (total > products.length) {
             console.warn(
-              `[builder-data] product catalog: showing ${products.length} of ${total} — ` +
+              `[builder-data] product catalog: showing ${products.length} of ${total}: ` +
                 `the rest are not rendered and there is no pagination yet (docs/127 §8).`
             );
           }

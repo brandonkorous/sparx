@@ -106,7 +106,7 @@ const getOversellIncidents: McpToolDefinition = {
 const getShrinkageReport: McpToolDefinition = {
   name: 'get_shrinkage_report',
   description:
-    'What left the building without being sold, over a period: losses, damage and negative count corrections, in units and at cost, broken down by reason, by warehouse, by month, and by worst-offending item — plus shrinkage as a percentage of current inventory value. Positive count corrections are reported alongside rather than netted off, because a business that finds as much as it loses has a counting problem rather than a theft problem.',
+    'What left the building without being sold, over a period: losses, damage and negative count corrections, in units and at cost, broken down by reason, by warehouse, by month, and by worst-offending item, plus shrinkage as a percentage of current inventory value. Positive count corrections are reported alongside rather than netted off, because a business that finds as much as it loses has a counting problem rather than a theft problem.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -120,7 +120,7 @@ const getShrinkageReport: McpToolDefinition = {
 const runInventoryReconciliation: McpToolDefinition = {
   name: 'run_inventory_reconciliation',
   description:
-    'Re-derive the movement ledger against the recorded stock levels right now and report any that disagree. Scope "variant" checks one item, "sample" the most recently touched levels, "full" everything. Records a run row and can close drifts that have healed; it never changes a stock quantity — a real drift is resolved by posting a count, not by overwriting the number.',
+    'Re-derive the movement ledger against the recorded stock levels right now and report any that disagree. Scope "variant" checks one item, "sample" the most recently touched levels, "full" everything. Records a run row and can close drifts that have healed; it never changes a stock quantity: a real drift is resolved by posting a count, not by overwriting the number.',
   scope: 'write:inventory',
   // Confirmation-gated not because it is dangerous but because a full pass on a
   // large catalogue is expensive, and an agent should say so before spending it.

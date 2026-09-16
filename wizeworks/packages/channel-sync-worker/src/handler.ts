@@ -53,6 +53,6 @@ export async function handle(event: SparxEvent<unknown>, log: Logger): Promise<v
       break;
 
     default:
-      log.debug({ type }, 'channel-sync-worker: unhandled event type — acking');
+      log.debug({ type }, 'channel-sync-worker: unhandled event type, acking');
   }
 }

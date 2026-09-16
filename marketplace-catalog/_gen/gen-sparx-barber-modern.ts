@@ -172,7 +172,7 @@ const SCHEDULING = {
     {
       handle: 'taper-fade',
       name: 'Taper fade',
-      description: 'A gradual taper around the ears and neckline — sharp, but a touch more grown-in.',
+      description: 'A gradual taper around the ears and neckline: sharp, but a touch more grown-in.',
       durationMinutes: 45,
       priceCents: 3800,
       assignmentStrategy: 'customer_choice',
@@ -182,7 +182,7 @@ const SCHEDULING = {
     {
       handle: 'scissor-cut',
       name: 'Scissor cut',
-      description: 'A scissor-over-comb cut for length and texture on top — no clippers, all shape.',
+      description: 'A scissor-over-comb cut for length and texture on top: no clippers, all shape.',
       durationMinutes: 45,
       priceCents: 4200,
       assignmentStrategy: 'customer_choice',
@@ -202,7 +202,7 @@ const SCHEDULING = {
     {
       handle: 'cut-beard',
       name: 'Cut + beard',
-      description: 'The full reset — a fresh cut and a shaped, lined-up beard in one sitting.',
+      description: 'The full reset: a fresh cut and a shaped, lined-up beard in one sitting.',
       durationMinutes: 60,
       priceCents: 5500,
       bufferAfterMin: 5,
@@ -215,7 +215,7 @@ const SCHEDULING = {
     {
       handle: 'kids-cut',
       name: 'Kids cut',
-      description: 'A quick, easy cut for the under-12s — in the chair, cleaned up and out the door.',
+      description: 'A quick, easy cut for the under-12s: in the chair, cleaned up and out the door.',
       durationMinutes: 30,
       priceCents: 2800,
       assignmentStrategy: 'any_available',
@@ -225,7 +225,7 @@ const SCHEDULING = {
     {
       handle: 'buzz-hot-towel',
       name: 'Buzz + hot towel',
-      description: 'A one-length buzz finished with a hot-towel neck shave — fast, clean, done right.',
+      description: 'A one-length buzz finished with a hot-towel neck shave: fast, clean, done right.',
       durationMinutes: 30,
       priceCents: 3000,
       assignmentStrategy: 'any_available',
@@ -239,7 +239,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Sharp cuts. No waiting. Book the chair.',
-    sub: 'Fade Room is a modern barbershop built for one thing — a clean cut, done fast, done right. Pick your barber, grab a time, walk in sharp.',
+    sub: 'Fade Room is a modern barbershop built for one thing: a clean cut, done fast, done right. Pick your barber, grab a time, walk in sharp.',
     primary: { label: 'Book a chair', href: '/book' },
     secondary: { label: 'See the menu', href: '/book' },
     surface: 'base',
@@ -271,7 +271,7 @@ const HOME = [
       },
       {
         title: 'One flat price, up front',
-        body: 'What you see is what you pay. No mystery upsells at the mirror — just a straight rate for a straight cut.',
+        body: 'What you see is what you pay. No mystery upsells at the mirror. Just a straight rate for a straight cut.',
       },
     ],
   }),
@@ -280,14 +280,14 @@ const HOME = [
     alt: 'A bright, modern barbershop with white walls and chrome chairs',
     heading: 'Built like a machine, run like a shop',
     body: [
-      'Fade Room is bright, fast and dialed in — clean stations, sharp tools and barbers who take the fade seriously. No clutter, no chaos.',
+      'Fade Room is bright, fast and dialed in: clean stations, sharp tools and barbers who take the fade seriously. No clutter, no chaos.',
       'You book online, you show up, you get the cut. We keep the line moving so the chair is always ready when your time comes around.',
     ],
     cta: { label: 'Grab a time', href: '/book' },
   }),
   teamRow({
     heading: 'Your barbers',
-    intro: 'Book by name — you’ll sit with the same barber every time.',
+    intro: 'Book by name: you’ll sit with the same barber every time.',
     members: [
       { name: 'Marcus Reed', role: 'Master barber', image: url(IMG.marcus), alt: 'Marcus Reed, master barber', bio: 'Fades, tapers and razor line-ups. Marcus runs the floor.' },
       { name: 'DeShawn Wells', role: 'Barber', image: url(IMG.deshawn), alt: 'DeShawn Wells, barber', bio: 'Skin fades and beard work, tight and clean every time.' },
@@ -329,7 +329,7 @@ const ABOUT = [
     alt: 'A bright, modern barbershop with white walls and chrome chairs',
     heading: 'About Fade Room',
     body: [
-      'We started Fade Room because getting a good cut shouldn’t mean guessing at a wait time and hoping for the best. So we built the shop around the booking — pick your barber, pick your slot, done.',
+      'We started Fade Room because getting a good cut shouldn’t mean guessing at a wait time and hoping for the best. So we built the shop around the booking. Pick your barber, pick your slot, done.',
       'Bright room, sharp tools, barbers who actually care about the fade. No frills, no waiting bench, no surprise prices. Just a clean cut on your schedule.',
     ],
     cta: { label: 'Book a chair', href: '/book' },
@@ -358,7 +358,7 @@ const CONTACT = [
     ],
   }),
   bookingCta({
-    title: 'Skip the call — book online',
+    title: 'Skip the call. Book online',
     sub: 'See live times and lock in your chair in about a minute. No phone tag.',
     surface: 'muted',
     cta: { label: 'Book a chair', href: '/book' },
@@ -370,8 +370,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-barber-modern',
   name: 'Barbershop (Modern)',
   summary:
-    'A modern, high-energy barbershop site — a clean near-white palette, an electric-blue primary and a bold-red accent, with a tall condensed display and a type-first hero that leads with attitude over a photo. Installs a working booking flow: a real service menu (skin fade, taper, cut + beard, kids cut), three barbers you book by name with their own hours, and a standard no-deposit policy. Ships as "Fade Room", a fast, dialed-in fade shop.',
-  tagline: 'A punchy, modern template for barbershops — book online from day one.',
+    'A modern, high-energy barbershop site: a clean near-white palette, an electric-blue primary and a bold-red accent, with a tall condensed display and a type-first hero that leads with attitude over a photo. Installs a working booking flow: a real service menu (skin fade, taper, cut + beard, kids cut), three barbers you book by name with their own hours, and a standard no-deposit policy. Ships as "Fade Room", a fast, dialed-in fade shop.',
+  tagline: 'A punchy, modern template for barbershops. Book online from day one.',
   industry: 'Barbershop',
   sortWeight: 87,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -380,7 +380,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Fade Room — a modern barbershop',
+      title: 'Fade Room: a modern barbershop',
       description:
         'Fade Room is a fast, dialed-in barbershop for skin fades, tapers, cuts and beard work. Book your barber online in about a minute.',
     },

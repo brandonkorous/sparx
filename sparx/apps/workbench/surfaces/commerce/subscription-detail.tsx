@@ -100,7 +100,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
       const ok = await confirm({
         title: `Pause ${customer}'s repeat order?`,
         description:
-          'No more deliveries go out and no more payments are taken until you resume it. Nothing is cancelled — you can start it again at any time.',
+          'No more deliveries go out and no more payments are taken until you resume it. Nothing is canceled. You can start it again at any time.',
         confirmLabel: 'Pause it',
         cancelLabel: 'Leave it running',
       });
@@ -155,7 +155,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
       const ok = await confirm({
         title: `Bill ${customer} instead of charging them?`,
         description:
-          'Each order will still be created on schedule, but nothing is taken automatically — they get an invoice with a link to pay. Useful for customers on account terms, or when a card keeps failing.',
+          'Each order will still be created on schedule, but nothing is taken automatically. They get an invoice with a link to pay. Useful for customers on account terms, or when a card keeps failing.',
         confirmLabel: 'Bill them instead',
         cancelLabel: 'Keep charging the card',
       });
@@ -176,7 +176,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
     void (async () => {
       const ok = await confirm({
         title: `Stop ${customer}'s repeat order?`,
-        description: `It will not renew again, so no further deliveries go out and no more payments are taken. This can't be undone — ${customer} would have to set up a new repeat order to start again. Past orders are unaffected.`,
+        description: `It will not renew again, so no further deliveries go out and no more payments are taken. This can't be undone: ${customer} would have to set up a new repeat order to start again. Past orders are unaffected.`,
         confirmLabel: 'Stop it',
         cancelLabel: 'Keep it',
         color: 'danger',
@@ -268,7 +268,7 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
         title="How it gets paid"
         description={
           sub.billingMode === 'invoice'
-            ? 'Each order is billed to the customer and they pay it — nothing is charged automatically.'
+            ? 'Each order is billed to the customer and they pay it. Nothing is charged automatically.'
             : 'The saved card is charged automatically each time this repeat order comes round.'
         }
       >
@@ -527,7 +527,7 @@ export function SubscriptionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             error={error}
             noun="repeat order"
             title="Could not load this repeat order"
-            description="This is a problem reaching the server. The repeat order itself is unaffected — nothing has been changed or lost."
+            description="This is a problem reaching the server. The repeat order itself is unaffected. Nothing has been changed or lost."
             onRetry={() => {
               void refetch();
             }}

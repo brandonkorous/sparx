@@ -150,7 +150,7 @@ export function CollectionEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A group is a set of products you show together — a summer sale, a gift guide, this
+              A group is a set of products you show together: a summer sale, a gift guide, this
               month&apos;s arrivals. Unlike a category, it is not part of your menu: it is a set you
               can place anywhere on your site.
             </Text>
@@ -185,12 +185,12 @@ export function CollectionEditor({
           {!isNew && collection ? (
             <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
               <Text className="text-sm">
-                A group&apos;s kind — hand-picked or automatic — is fixed once it is created. To
+                A group&apos;s kind (hand-picked or automatic) is fixed once it is created. To
                 switch, delete this one and make a new one.
               </Text>
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <Text className="text-sm">
-                  Deleting removes this group from your website. The products in it are kept — only
+                  Deleting removes this group from your website. The products in it are kept. Only
                   the grouping goes.
                 </Text>
                 <Button

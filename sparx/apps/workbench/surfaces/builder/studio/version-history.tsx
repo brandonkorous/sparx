@@ -176,13 +176,13 @@ function releaseActor(source: string): { label: string; color: string; icon: typ
  */
 function rollbackSummary(result: RestoreReleaseResult): string {
   const pages = `${result.pagesRestored} page${result.pagesRestored === 1 ? '' : 's'}`;
-  if (result.pagesUnpublished === 0) return `Your live site is back to that version — ${pages}.`;
+  if (result.pagesUnpublished === 0) return `Your live site is back to that version: ${pages}.`;
   const gone = `${result.pagesUnpublished} page${result.pagesUnpublished === 1 ? '' : 's'}`;
   return (
-    `Your live site is back to that version — ${pages}. ${gone} you added later ` +
+    `Your live site is back to that version: ${pages}. ${gone} you added later ` +
     `${result.pagesUnpublished === 1 ? 'is' : 'are'} no longer public, because ` +
     `${result.pagesUnpublished === 1 ? 'it did' : 'they did'}n’t exist yet. ` +
-    `Nothing you wrote is lost — publish again to bring ${result.pagesUnpublished === 1 ? 'it' : 'them'} back.`
+    `Nothing you wrote is lost: publish again to bring ${result.pagesUnpublished === 1 ? 'it' : 'them'} back.`
   );
 }
 
@@ -297,7 +297,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
     const ok = await confirm({
       title: `Put the version from ${timeAgo(r.createdAt)} back on your live site?`,
       description:
-        'Visitors will see that version straight away — this changes your public website, not ' +
+        'Visitors will see that version straight away. This changes your public website, not ' +
         'just your working copy. Anything you’ve published since goes back to how it was then, ' +
         'and pages you added later stop being public until you publish them again. Nothing you ' +
         'have written is deleted, and this itself can be rolled back.',
@@ -366,7 +366,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
 
       <TabsPanel value="drafts" className="flex flex-col gap-3">
         <p className="text-base">
-          Restoring changes your working copy only — visitors see nothing until you publish.
+          Restoring changes your working copy only: visitors see nothing until you publish.
         </p>
         {versions.isPending ? (
           <p className="text-base" role="status">
@@ -415,7 +415,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
           <AlertContent>
             <AlertDescription>
               These are the versions your visitors have seen. Putting one back changes your live
-              website straight away — no publishing step. Your working copy is left alone.
+              website straight away: no publishing step. Your working copy is left alone.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -426,7 +426,7 @@ export function VersionHistoryPanel({ onReload }: Props) {
           </p>
         ) : releases.isError ? (
           <p className="text-base">
-            We couldn’t load your publish history just now. Your live site is unaffected — try again
+            We couldn’t load your publish history just now. Your live site is unaffected. Try again
             in a moment.
           </p>
         ) : !releases.data || releases.data.length === 0 ? (

@@ -165,7 +165,7 @@ export function useBlueprintActions(input: ActionsInput) {
     if (!current) return;
     const ok = await confirm({
       title: `Publish “${blueprint.name}” on ${targetName}?`,
-      description: `This makes everything the design added — its pages, look, and anything else it created — live on ${targetName} for visitors to see. You can still edit any of it afterwards.`,
+      description: `This makes everything the design added (its pages, look, and anything else it created) live on ${targetName} for visitors to see. You can still edit any of it afterwards.`,
       confirmLabel: 'Publish it live',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -184,7 +184,7 @@ export function useBlueprintActions(input: ActionsInput) {
     if (!current) return;
     const ok = await confirm({
       title: `Update “${blueprint.name}” on ${targetName}?`,
-      description: `This updates the design from version ${current.blueprint_version} to ${blueprint.version} on ${targetName}.${changeLine(plan)} Anything you have changed yourself is kept — the update never overwrites your edits.`,
+      description: `This updates the design from version ${current.blueprint_version} to ${blueprint.version} on ${targetName}.${changeLine(plan)} Anything you have changed yourself is kept: the update never overwrites your edits.`,
       confirmLabel: 'Update it',
       cancelLabel: 'Cancel',
       color: 'module',
@@ -210,7 +210,7 @@ export function useBlueprintActions(input: ActionsInput) {
     if (!current) return;
     const ok = await confirm({
       title: `Remove “${blueprint.name}” from ${targetName}?`,
-      description: `This tears the whole design back out of ${targetName} — the pages, content, products and email designs it added are deleted, and its look is cleared. This cannot be undone. Anything you created yourself is left alone.`,
+      description: `This tears the whole design back out of ${targetName}: the pages, content, products and email designs it added are deleted, and its look is cleared. This cannot be undone. Anything you created yourself is left alone.`,
       confirmLabel: 'Remove it',
       cancelLabel: 'Keep it',
       color: 'danger',

@@ -89,7 +89,7 @@ export function lifecycleStageMeta(stage: LifecycleStage): AxisMeta {
       return {
         label: 'Subscriber',
         color: 'neutral',
-        description: 'Opted in to hear from you — a newsletter or updates — nothing more yet.',
+        description: 'Opted in to hear from you (a newsletter or updates), nothing more yet.',
       };
     case 'lead':
       return {

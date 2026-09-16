@@ -99,7 +99,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Set up a new webhook — hold Shift to open alongside, Alt for a new window"
+            title="Set up a new webhook. Hold Shift to open alongside, Alt for a new window"
             onClick={create}
           >
             <Plus className="size-4" aria-hidden />
@@ -173,7 +173,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No webhooks yet',
               description:
-                'A webhook tells another system the moment something happens here — a page is published, a file is uploaded. It is useful when a developer is building on top of your content and wants to be notified automatically.',
+                'A webhook tells another system the moment something happens here: a page is published, a file is uploaded. It is useful when a developer is building on top of your content and wants to be notified automatically.',
               actions: (
                 <Button
                   size="sm"

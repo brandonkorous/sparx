@@ -29,7 +29,7 @@ export function FeaturesFinalCta() {
           </Heading>
           <Text variant="lead" className="text-base-content max-w-xl">
             Switch on a single module from $10 a month and have a live site in five minutes. The
-            other {counts.modules - 1} are one click away the day you need them — same login, same
+            other {counts.modules - 1} are one click away the day you need them: same login, same
             customers, same bill. Nothing to migrate, nothing to rebuild.
           </Text>
         </div>

@@ -99,7 +99,7 @@ export function QuotesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faFileText} className="size-6" aria-hidden />}
             title="Could not load your quotes"
-            description="This is a problem reaching the server. Your quotes are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your quotes are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <PaneWaiting label="Loading quotes…" />

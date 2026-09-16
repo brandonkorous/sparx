@@ -53,7 +53,7 @@ export function CommerceJourney() {
       surface: 'fulfillment',
       title: 'Shipped',
       dot: 'bg-success',
-      body: 'Pick, pack, add tracking — send part of the order now and the rest later. Tracking sends the shipping email; a refund puts the stock back.',
+      body: 'Pick, pack, add tracking. Send part of the order now and the rest later. Tracking sends the shipping email; a refund puts the stock back.',
     },
   ];
   return (
@@ -61,7 +61,7 @@ export function CommerceJourney() {
       <SectionHeader
         accent={C.color}
         headline="One order, catalog to fulfilled"
-        lede="Every order takes the same path, and everything it touches lives in one place — so there is no second system to keep in step and nothing to reconcile on Monday. Stock, pricing, and what this customer has bought before are all re-checked as it moves."
+        lede="Every order takes the same path, and everything it touches lives in one place, so there is no second system to keep in step and nothing to reconcile on Monday. Stock, pricing, and what this customer has bought before are all re-checked as it moves."
       />
       <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s, i) => (
@@ -110,12 +110,12 @@ export function CommerceCheckout() {
     {
       n: 'A',
       title: 'Address autocomplete',
-      body: 'Suggestions as they type — fewer failed deliveries, fewer typos, faster fills.',
+      body: 'Suggestions as they type: fewer failed deliveries, fewer typos, faster fills.',
     },
     {
       n: 'B',
       title: 'Wallets & one-click',
-      body: 'Apple Pay, Google Pay, and Link — Stripe’s one-click checkout — for buyers in a hurry.',
+      body: 'Apple Pay, Google Pay, and Link (Stripe’s one-click checkout) for buyers in a hurry.',
     },
     {
       n: 'C',
@@ -125,7 +125,7 @@ export function CommerceCheckout() {
     {
       n: 'D',
       title: 'Live tax & shipping',
-      body: 'Real sales tax and real carrier rates, worked out and shown before they pay — not a guess they discover on the receipt.',
+      body: 'Real sales tax and real carrier rates, worked out and shown before they pay, not a guess they discover on the receipt.',
     },
   ];
   return (

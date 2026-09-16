@@ -334,7 +334,7 @@ describe('the provisioned defaults pass sparx own email lint', () => {
     const offenders = DEFAULT_EMAIL_TEMPLATES.flatMap((t) =>
       lintOf(t)
         .filter((c) => c.level === 'error')
-        .map((c) => `${t.key} · ${c.id} — ${c.title}: ${c.detail}`)
+        .map((c) => `${t.key} · ${c.id}: ${c.title}: ${c.detail}`)
     );
     expect(offenders).toEqual([]);
   });

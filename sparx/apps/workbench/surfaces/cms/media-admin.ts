@@ -56,7 +56,7 @@ export function assetStatusState(status: string): { label: string; tone: Tone; d
       return {
         label: 'Processing',
         tone: 'warning',
-        detail: 'Still being prepared. It will be ready to use in a moment — refresh to check.',
+        detail: 'Still being prepared. It will be ready to use in a moment. Refresh to check.',
       };
     case 'failed':
       return {

@@ -44,7 +44,7 @@ function requireAzure(): { account: string; key: string } {
   const key = process.env.AZURE_STORAGE_KEY;
   if (!account || !key) {
     console.error(
-      'AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY must both be set — this task writes to Blob.'
+      'AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY must both be set. This task writes to Blob.'
     );
     process.exit(78); // EX_CONFIG
   }
@@ -153,7 +153,7 @@ async function main(): Promise<void> {
 
   const mib = (bytes / 1024 / 1024).toFixed(1);
   console.log(
-    `\n${apply ? 'Copied' : 'Would copy'} ${copied} object(s) (${mib} MiB) — ` +
+    `\n${apply ? 'Copied' : 'Would copy'} ${copied} object(s) (${mib} MiB): ` +
       `${skipped} already present, ${failed} failed, ${seen} seen.`
   );
   if (!apply) console.log('Dry run. Re-run with --apply to write.');

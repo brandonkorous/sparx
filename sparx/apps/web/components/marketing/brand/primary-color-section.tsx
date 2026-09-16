@@ -16,13 +16,13 @@ const RAMP = [
     value: 'var(--color-primary)',
     theme: 'dark' as const,
     token: '--color-primary',
-    note: 'The very same token, resolved in dark — Ember holds in both modes.',
+    note: 'The very same token, resolved in dark: Ember holds in both modes.',
   },
   {
     name: 'Soft tint',
     value: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
     token: 'bg-primary bg-soft',
-    note: 'Background washes and chips — a theme-aware computed mix, never a baked hex.',
+    note: 'Background washes and chips: a theme-aware computed mix, never a baked hex.',
   },
 ] as const;
 
@@ -33,7 +33,7 @@ export function PrimaryColorSection() {
         <SectionHeader
           accent="var(--color-primary)"
           headline="sparx Ember"
-          lede="One brand color carries the platform. It is the “x” in the wordmark, the color of the spark, and the default accent on every sparx surface — the instant of ignition, made into a hex. (Each module keeps its own hue for wayfinding; Ember is the brand.)"
+          lede="One brand color carries the platform. It is the “x” in the wordmark, the color of the spark, and the default accent on every sparx surface: the instant of ignition, made into a hex. (Each module keeps its own hue for wayfinding; Ember is the brand.)"
         />
 
         <div className="bg-primary flex min-h-[240px] flex-col justify-end gap-5 rounded-xl p-[clamp(32px,5vw,56px)]">

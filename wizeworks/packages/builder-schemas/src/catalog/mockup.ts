@@ -41,7 +41,7 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'app-window',
     description:
-      'A browser chrome frame — window dots and an address pill above a content slot for a screenshot or live preview.',
+      'A browser chrome frame: window dots and an address pill above a content slot for a screenshot or live preview.',
     surfaces: ['page', 'site'],
     tags: ['browser', 'window', 'chrome', 'mockup', 'frame', 'screenshot', 'preview'],
     // The Browser atom (st-mockup-browser) renders the dots + address bar; the content
@@ -138,7 +138,7 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'app-window-mac',
     description:
-      'A generic desktop window — traffic-light controls and a title above a flexible body slot.',
+      'A generic desktop window: traffic-light controls and a title above a flexible body slot.',
     surfaces: ['page', 'site'],
     tags: ['window', 'desktop', 'app', 'mockup', 'frame', 'titlebar', 'os'],
     // The Window atom (st-mockup-window) renders the dots + title bar; the body slot
@@ -149,7 +149,7 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
           atom('Heading', 'text-base-content', { level: 'h3', text: 'Welcome back' }),
           atom('Text', 'text-base-content', {
             variant: 'body',
-            text: 'Replace this body with any layout — a chart, a form, or a screenshot.',
+            text: 'Replace this body with any layout: a chart, a form, or a screenshot.',
           }),
           el('div', 'flex gap-3', {
             children: [
@@ -174,7 +174,7 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'terminal',
     description:
-      'A terminal window — a shell prompt with commands, their output, and a blinking cursor.',
+      'A terminal window: a shell prompt with commands, their output, and a blinking cursor.',
     surfaces: ['page', 'site'],
     tags: ['terminal', 'shell', 'console', 'cli', 'mockup', 'command', 'prompt'],
     tree: el(
@@ -186,7 +186,7 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
           el('div', 'flex items-center gap-3 border-b border-base-content/10 px-4 py-3', {
             children: [
               trafficLights(),
-              el('span', 'font-mono text-xs text-neutral-content/60', { text: 'zsh — sparx' }),
+              el('span', 'font-mono text-xs text-neutral-content/60', { text: 'zsh: sparx' }),
             ],
           }),
           // Transcript — prompts in <pre>; the $ and path are colored, then a cursor.

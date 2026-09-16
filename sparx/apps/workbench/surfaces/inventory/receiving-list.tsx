@@ -71,7 +71,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<PackageCheck className="size-6" aria-hidden />}
           title="Could not load your deliveries"
-          description="This is a problem reaching the server. Your records are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your records are unaffected: the list just could not be read just now."
         />
       );
     }
@@ -92,7 +92,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             searching
               ? 'Try part of a receipt number, an order number, or a packing-slip reference.'
-              : 'When goods arrive against a placed order, book them in here — that is the moment your stock numbers go up.'
+              : 'When goods arrive against a placed order, book them in here. That is the moment your stock numbers go up.'
           }
           actions={
             searching ? undefined : (

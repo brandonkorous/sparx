@@ -587,8 +587,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Decant — a wine bar",
-      "seoDescription": "Decant is an evening wine bar — a rotating dozen by the glass, a wall of low-intervention bottles, and a few good plates. Open Tue–Sat. See the list and reserve a table.",
+      "seoTitle": "Decant: a wine bar",
+      "seoDescription": "Decant is an evening wine bar: a rotating dozen by the glass, a wall of low-intervention bottles, and a few good plates. Open Tue–Sat. See the list and reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -636,7 +636,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A wine bar. Low-intervention bottles, a wall of things worth opening, and a few good plates to go with them. No fuss, no lecture — pull up a stool. Open evenings, Tuesday through Saturday."
+                          "A wine bar. Low-intervention bottles, a wall of things worth opening, and a few good plates to go with them. No fuss, no lecture: pull up a stool. Open evenings, Tuesday through Saturday."
                         ],
                         "id": "6040912d-e1b1-4c21-9ac8-18088cb078fe",
                         "ord": "a1"
@@ -712,7 +712,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We keep a dozen or so open by the glass and rotate them constantly — whatever’s drinking well and whatever we’re excited about. A few of this week’s pours. The rest is on the list, and the bottle wall is always open to browse."
+                          "We keep a dozen or so open by the glass and rotate them constantly: whatever’s drinking well and whatever we’re excited about. A few of this week’s pours. The rest is on the list, and the bottle wall is always open to browse."
                         ],
                         "id": "546b37d5-d719-44ed-aa29-66186c7d07d0",
                         "ord": "a1"
@@ -942,7 +942,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-sm leading-relaxed text-secondary",
-                                "children": ["A pét-nat rosato — salty, foamy, joyful."],
+                                "children": ["A pét-nat rosato: salty, foamy, joyful."],
                                 "id": "4961dd4e-62f0-4513-a00d-3e5982dbc5f6",
                                 "ord": "a1"
                               }
@@ -1002,7 +1002,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Not a restaurant — a short list of small plates built to drink with. Cured things, a proper cheese board, and a couple of warm plates when you want more than a nibble."
+                          "Not a restaurant: a short list of small plates built to drink with. Cured things, a proper cheese board, and a couple of warm plates when you want more than a nibble."
                         ],
                         "id": "3a316813-d5dd-4a14-bb37-2bb1960683a0",
                         "ord": "a1"
@@ -1049,7 +1049,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Olives, cured fish, house pickles — the salty little things a first glass wants."
+                              "Olives, cured fish, house pickles: the salty little things a first glass wants."
                             ],
                             "id": "3beb2b46-c2f3-452b-b8e6-c37b2e35fb12",
                             "ord": "a2"
@@ -1091,7 +1091,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A board built to order from the counter — three, five or seven, with honey and bread."
+                              "A board built to order from the counter: three, five or seven, with honey and bread."
                             ],
                             "id": "3ff01a49-e03f-4be8-903d-22f739dc88a3",
                             "ord": "a2"
@@ -1133,7 +1133,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A handful of hot things off the little kitchen — grilled greens, beans, a plate of the day."
+                              "A handful of hot things off the little kitchen: grilled greens, beans, a plate of the day."
                             ],
                             "id": "eb5e00fd-d2e6-4112-92ba-613e6eab5012",
                             "ord": "a2"
@@ -1196,7 +1196,7 @@
                     "class": "aspect-video w-full rounded-box border border-base-300 object-cover",
                     "attrs": {
                       "src": "https://images.unsplash.com/photo-1720694924759-2a2daaa98987?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8d2luZSUyMGJhciUyMGludGVyaW9yJTIwbWFyYmxlJTIwY291bnRlciUyMGJhciUyMHN0b29sc3xlbnwwfDB8fHwxNzg2NDE1Mzg1fDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                      "alt": "The wine bar interior — a marble counter and bar stools",
+                      "alt": "The wine bar interior: a marble counter and bar stools",
                       "loading": "lazy"
                     },
                     "id": "676f1d66-afa3-4f39-958f-bdf8e75f8f08",
@@ -1220,7 +1220,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book a table for a proper sit-down, or reserve a couple of stools at the counter — the best seats in the house, right across from the open bottles. Book online in under a minute; we keep a few spots back for walk-ins every night."
+                          "Book a table for a proper sit-down, or reserve a couple of stools at the counter: the best seats in the house, right across from the open bottles. Book online in under a minute; we keep a few spots back for walk-ins every night."
                         ],
                         "id": "10f963d3-019d-4910-88a9-5fadc5a5d162",
                         "ord": "a1"
@@ -1461,8 +1461,8 @@
       "name": "Menu",
       "kind": "singleton",
       "slug": "menu",
-      "seoTitle": "Menu — Decant",
-      "seoDescription": "See the full menu at Decant — dishes, drinks and prices — then reserve a table.",
+      "seoTitle": "Menu: Decant",
+      "seoDescription": "See the full menu at Decant (dishes, drinks and prices) then reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1493,7 +1493,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "A rotating dozen by the glass, a deeper wall by the bottle, and a short kitchen built to drink with. Nothing here is forever — ask what’s open, tell us what you like, and we’ll pour you something. Low-intervention where we can, always honest about what’s in the glass."
+                      "A rotating dozen by the glass, a deeper wall by the bottle, and a short kitchen built to drink with. Nothing here is forever. Ask what’s open, tell us what you like, and we’ll pour you something. Low-intervention where we can, always honest about what’s in the glass."
                     ],
                     "id": "34ebebee-024b-4a35-b351-abf91d98a7f8",
                     "ord": "a1"
@@ -1529,7 +1529,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "A rotating dozen — this is roughly this week. All available in a 125ml pour; ask for a taste before you commit."
+                      "A rotating dozen. This is roughly this week. All available in a 125ml pour; ask for a taste before you commit."
                     ],
                     "id": "9e359f2b-ac9c-4b05-bc57-dbd5fafcebe5",
                     "ord": "a1"
@@ -1741,7 +1741,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["A pét-nat rosato — salty, foamy, joyful."],
+                            "children": ["A pét-nat rosato: salty, foamy, joyful."],
                             "id": "dcf77c6e-5c40-4b51-9d41-360c346b7563",
                             "ord": "a1"
                           }
@@ -2209,7 +2209,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Five — the sweet spot for two or three of you."],
+                            "children": ["Five: the sweet spot for two or three of you."],
                             "id": "232de80c-84d7-4a79-bc64-2049d752691f",
                             "ord": "a1"
                           }
@@ -2380,7 +2380,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["Blistered, spicy, sweet — the one everyone orders."],
+                            "children": ["Blistered, spicy, sweet: the one everyone orders."],
                             "id": "7b393973-b15a-4bc6-9d98-f17244da05f3",
                             "ord": "a1"
                           }
@@ -2551,7 +2551,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "A short peek at the wall — hundreds more downstairs. Corkage on anything you spot on the shelf is $10 to drink in."
+                      "A short peek at the wall: hundreds more downstairs. Corkage on anything you spot on the shelf is $10 to drink in."
                     ],
                     "id": "a3fd16ea-a86d-4c4c-b568-da9e1184cf2c",
                     "ord": "a1"
@@ -2763,7 +2763,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
-                            "children": ["For a crowd — pops loud, drinks easy."],
+                            "children": ["For a crowd: pops loud, drinks easy."],
                             "id": "91b40120-f87b-4d18-8f94-6fdc31ca9de3",
                             "ord": "a1"
                           }
@@ -2790,7 +2790,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Decant",
+      "seoTitle": "Book: Decant",
       "seoDescription": "See what Decant offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -2822,7 +2822,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Pick your party size and a time below — you’ll see live availability for the next few weeks, tables and bar stools alike. For groups of six or more, or to enquire about hiring the room on a Sunday, drop us a line and we’ll sort it."
+                      "Pick your party size and a time below: you’ll see live availability for the next few weeks, tables and bar stools alike. For groups of six or more, or to enquire about hiring the room on a Sunday, drop us a line and we’ll sort it."
                     ],
                     "id": "a34ec95e-fb6d-4687-bc8e-5d4daab2a8bf",
                     "ord": "a1"
@@ -2875,7 +2875,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "3eef1f43-af04-456d-8e76-58c0874097ab",
                         "ord": "a1"
@@ -2907,7 +2907,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll send a reminder the day before and a few hours ahead."
+                              "Tables are held for 15 minutes past your time. Plans change. Just let us know by the day before and we’ll free your table for someone else. We’ll send a reminder the day before and a few hours ahead."
                             ],
                             "id": "34ec558d-4ee5-4867-94d3-7ccd52b5f209",
                             "ord": "a1"
@@ -2944,7 +2944,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Bar stools are the loosest booking we do — grab them for a glass and a plate. If you can’t make it, a quick heads-up frees them for the next walk-in."
+                              "Bar stools are the loosest booking we do: grab them for a glass and a plate. If you can’t make it, a quick heads-up frees them for the next walk-in."
                             ],
                             "id": "250ca847-b84f-4324-b65a-245b3568fba6",
                             "ord": "a1"
@@ -2982,8 +2982,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Decant — the wine bar",
-      "seoDescription": "A small, low-lit wine bar off the old cloth market — mostly low-intervention bottles from growers we can name, a short kitchen, and no ceremony. Pull up a stool.",
+      "seoTitle": "About Decant: the wine bar",
+      "seoDescription": "A small, low-lit wine bar off the old cloth market: mostly low-intervention bottles from growers we can name, a short kitchen, and no ceremony. Pull up a stool.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -3014,7 +3014,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Decant is a small wine bar down a side street off the old cloth market. We opened with one idea: pour the wines we actually want to drink — mostly low-intervention, mostly from growers we can name — without the ceremony that usually comes attached. No sommelier speech, no white tablecloth. Just good bottles, a warm room, and someone behind the bar who’s happy to talk if you want to and happy not to if you don’t."
+                      "Decant is a small wine bar down a side street off the old cloth market. We opened with one idea: pour the wines we actually want to drink (mostly low-intervention, mostly from growers we can name) without the ceremony that usually comes attached. No sommelier speech, no white tablecloth. Just good bottles, a warm room, and someone behind the bar who’s happy to talk if you want to and happy not to if you don’t."
                     ],
                     "id": "dc018ae0-5af7-4efb-b643-e1a4c6d05b90",
                     "ord": "a1"
@@ -3024,7 +3024,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The list changes every week — a rotating dozen by the glass, a wall of bottles you can browse, and a few things kept back for the regulars. The kitchen is small on purpose: a handful of plates built to go with what’s in your glass, not to compete with it."
+                      "The list changes every week: a rotating dozen by the glass, a wall of bottles you can browse, and a few things kept back for the regulars. The kitchen is small on purpose: a handful of plates built to go with what’s in your glass, not to compete with it."
                     ],
                     "id": "c6a4e1ec-d048-4a98-9eb8-1ce1c2adf984",
                     "ord": "a2"
@@ -3034,7 +3034,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The room’s not big, so book ahead for a table — but there’s almost always a stool free at the bar for a glass and a plate. Come in from the cold."
+                      "The room’s not big, so book ahead for a table, but there’s almost always a stool free at the bar for a glass and a plate. Come in from the cold."
                     ],
                     "id": "19fbda15-e557-47e5-89be-1fa71e93af48",
                     "ord": "a3"
@@ -3054,7 +3054,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Decant",
+      "seoTitle": "Visit: Decant",
       "seoDescription": "Where to find Decant, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -3091,7 +3091,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Decant will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Decant will get back to you, usually the same day."
                         ],
                         "id": "8f3f2037-f17f-4433-a2a6-58bf0d9213bd",
                         "ord": "a1"

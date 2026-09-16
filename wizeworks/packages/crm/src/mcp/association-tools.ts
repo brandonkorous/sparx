@@ -23,7 +23,7 @@ import type { McpToolDefinition } from './registry';
 export const listAssociations: McpToolDefinition = {
   name: 'list_crm_associations',
   description:
-    'List everything related to one record — the people on a deal, the deals a person is involved in, the companies under a parent group — with what each relationship is called from this record\'s point of view. Works from either end of a link. Call this before answering "who else is involved", or before emailing everyone connected to a deal.',
+    'List everything related to one record: the people on a deal, the deals a person is involved in, the companies under a parent group, with what each relationship is called from this record\'s point of view. Works from either end of a link. Call this before answering "who else is involved", or before emailing everyone connected to a deal.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -44,7 +44,7 @@ export const listAssociations: McpToolDefinition = {
 export const listAssociationLabels: McpToolDefinition = {
   name: 'list_crm_relationship_types',
   description:
-    'List the kinds of relationship this business records between records — "Signs it off", "Works there", "Introduced by" — and what each is called from both ends. Call this before relating two records, so the link carries the right name instead of being left unlabelled.',
+    'List the kinds of relationship this business records between records ("Signs it off", "Works there", "Introduced by") and what each is called from both ends. Call this before relating two records, so the link carries the right name instead of being left unlabelled.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -60,7 +60,7 @@ export const listAssociationLabels: McpToolDefinition = {
 export const relateRecords: McpToolDefinition = {
   name: 'relate_crm_records',
   description:
-    'Relate two records and say how they are related — add a second contact to a deal as the person who signs it off, record which company someone works at, note who introduced whom. Use `list_crm_relationship_types` first to find the right labelKey; leaving it out records the link without naming it, which is fine when you genuinely do not know.',
+    'Relate two records and say how they are related. Add a second contact to a deal as the person who signs it off, record which company someone works at, note who introduced whom. Use `list_crm_relationship_types` first to find the right labelKey; leaving it out records the link without naming it, which is fine when you genuinely do not know.',
   scope: 'write:crm',
   confirmation: true,
   input: CreateAssociationInput,
@@ -90,7 +90,7 @@ export const updateAssociation: McpToolDefinition = {
 export const makeAssociationPrimary: McpToolDefinition = {
   name: 'make_crm_association_primary',
   description:
-    "Make this the MAIN relationship of its kind — the deal's main customer, the company someone mainly works for. This changes what shows on lists, invoices and reports, because the main relationship is the one the rest of the system reads. There can only be one at a time; whichever held it before steps down.",
+    "Make this the MAIN relationship of its kind: the deal's main customer, the company someone mainly works for. This changes what shows on lists, invoices and reports, because the main relationship is the one the rest of the system reads. There can only be one at a time; whichever held it before steps down.",
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ associationId: z.string().uuid() }),
@@ -101,7 +101,7 @@ export const makeAssociationPrimary: McpToolDefinition = {
 export const unrelateRecords: McpToolDefinition = {
   name: 'unrelate_crm_records',
   description:
-    'Remove a relationship between two records. Neither record is deleted — only the link between them. If it was the main relationship of its kind, another one of the same kind takes over where there is one.',
+    'Remove a relationship between two records. Neither record is deleted. Only the link between them. If it was the main relationship of its kind, another one of the same kind takes over where there is one.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ associationId: z.string().uuid() }),
@@ -114,7 +114,7 @@ export const unrelateRecords: McpToolDefinition = {
 export const createAssociationLabel: McpToolDefinition = {
   name: 'create_crm_relationship_type',
   description:
-    'Invent a new kind of relationship this business records — "Referred by", "Installed at", "Reports to". Needs BOTH wordings: how it reads from the first record ("Signs it off") and from the second ("Deals they sign off"), because a panel on either side shows one of them. This reshapes what every relationship panel offers, so confirm the wording with the person first.',
+    'Invent a new kind of relationship this business records: "Referred by", "Installed at", "Reports to". Needs BOTH wordings: how it reads from the first record ("Signs it off") and from the second ("Deals they sign off"), because a panel on either side shows one of them. This reshapes what every relationship panel offers, so confirm the wording with the person first.',
   scope: 'write:crm',
   confirmation: true,
   input: CreateAssociationLabelInput,

@@ -116,7 +116,7 @@ export default function PaymentMethodsPage() {
       <div className="flex flex-col gap-2">
         <h1 className="text-2xl font-semibold">Payment methods</h1>
         <p className="text-md">
-          Cards you have saved for repeat orders. We never see or store your card number — your card
+          Cards you have saved for repeat orders. We never see or store your card number. Your card
           is held securely by our payment processor.
         </p>
       </div>
@@ -217,7 +217,7 @@ export default function PaymentMethodsPage() {
                 </span>
                 <span className="text-sm">
                   {sub.status === 'past_due'
-                    ? 'A payment did not go through — choosing a different card will retry it.'
+                    ? 'A payment did not go through: choosing a different card will retry it.'
                     : sub.nextOccurrenceAt
                       ? `Next order ${new Date(sub.nextOccurrenceAt).toLocaleDateString()}`
                       : 'No next order scheduled'}

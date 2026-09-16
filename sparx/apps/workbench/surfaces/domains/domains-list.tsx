@@ -197,7 +197,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Connect a domain — hold Shift to open alongside, Alt for a new window"
+            title="Connect a domain: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('platform.settings.domain', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -247,7 +247,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
             title={needle ? 'No addresses match that' : 'No web addresses yet'}
             description={
               needle
-                ? 'Try part of the address or the name of the site it belongs to — or clear the search to see them all.'
+                ? 'Try part of the address or the name of the site it belongs to, or clear the search to see them all.'
                 : 'Every site comes with a free sparx.zone address, so this list should not be empty. Try reloading.'
             }
           />

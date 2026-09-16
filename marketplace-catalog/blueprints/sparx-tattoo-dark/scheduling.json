@@ -15,7 +15,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Consultations are free and take about half an hour. Give us a day’s notice if you need to move it — no charge either way."
+      "policyText": "Consultations are free and take about half an hour. Give us a day’s notice if you need to move it: no charge either way."
     }
   ],
   "resources": [
@@ -141,7 +141,7 @@
     {
       "handle": "small-tattoo",
       "name": "Small tattoo",
-      "description": "A single, self-contained piece — up to palm-sized. Design, stencil and tattoo in one sitting.",
+      "description": "A single, self-contained piece: up to palm-sized. Design, stencil and tattoo in one sitting.",
       "durationMinutes": 120,
       "priceCents": 18000,
       "assignmentStrategy": "customer_choice",
@@ -176,7 +176,7 @@
     {
       "handle": "full-day-session",
       "name": "Full-day session",
-      "description": "A seven-hour sitting for major work — sleeves, back pieces and full custom builds, with breaks.",
+      "description": "A seven-hour sitting for major work: sleeves, back pieces and full custom builds, with breaks.",
       "durationMinutes": 420,
       "priceCents": 84000,
       "bufferAfterMin": 15,
@@ -194,7 +194,7 @@
     {
       "handle": "fine-line-piece",
       "name": "Fine-line piece",
-      "description": "Delicate single-needle work — script, botanicals and small, precise line designs.",
+      "description": "Delicate single-needle work: script, botanicals and small, precise line designs.",
       "durationMinutes": 180,
       "priceCents": 32000,
       "bufferAfterMin": 10,
@@ -212,7 +212,7 @@
     {
       "handle": "cover-up-consultation",
       "name": "Cover-up consultation",
-      "description": "A longer sit-down for reworking or covering existing ink. We assess what’s there and map out a design that lives on top of it — booked with approval first.",
+      "description": "A longer sit-down for reworking or covering existing ink. We assess what’s there and map out a design that lives on top of it: booked with approval first.",
       "durationMinutes": 45,
       "priceCents": 0,
       "requiresApproval": true,

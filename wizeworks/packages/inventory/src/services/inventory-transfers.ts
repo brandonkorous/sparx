@@ -13,6 +13,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Prisma, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -178,6 +179,7 @@ async function createOnce(
         after: { number: transfer.number, lineCount: input.lines.length },
       },
     });
+    await indexInventoryEntityOnCommit(ctx, 'inventory_transfer', transfer.id);
 
     return transfer.id;
   });
@@ -316,6 +318,7 @@ export async function deleteInventoryTransfer(
       entityId: transferId,
       diff: { before: { id: transferId } },
     });
+    await indexInventoryEntityOnCommit(ctx, 'inventory_transfer', transferId, 'delete');
   });
 }
 
@@ -331,7 +334,7 @@ async function loadTransferForEdit(
   if (!transfer) throw new InventoryNotFoundError('InventoryTransfer', transferId);
   if (transfer.status !== 'draft') {
     throw new InventoryConflictError(
-      `Cannot edit a transfer while ${transfer.status} — it has already shipped`,
+      `Cannot edit a transfer while ${transfer.status}: it has already shipped`,
       'status'
     );
   }

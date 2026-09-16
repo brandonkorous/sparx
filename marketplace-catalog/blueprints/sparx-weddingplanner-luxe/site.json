@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ever After Events — luxury wedding planning",
-      "seoDescription": "Ever After Events is a full-service wedding studio — planning, design and day-of coordination. Book a consultation online and start with a complimentary discovery call.",
+      "seoTitle": "Ever After Events: luxury wedding planning",
+      "seoDescription": "Ever After Events is a full-service wedding studio: planning, design and day-of coordination. Book a consultation online and start with a complimentary discovery call.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Ever After Events is a full-service wedding studio for couples who want a beautiful day and a calm road to it. Design, planning and flawless coordination — all in one place."
+                      "Ever After Events is a full-service wedding studio for couples who want a beautiful day and a calm road to it. Design, planning and flawless coordination. All in one place."
                     ],
                     "id": "c6f2624b-fcb3-46df-be21-00244d4608a6",
                     "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Florists, photographers, caterers and venues we know and love — matched to your style and your budget, never a cold guess from a directory."
+                              "Florists, photographers, caterers and venues we know and love: matched to your style and your budget, never a cold guess from a directory."
                             ],
                             "id": "ac8ef4fa-7556-49e1-b792-a8a7bd528b91",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "On the day, we run the timeline and the vendors so you don’t touch a thing. You get to be fully present — and so does everyone you love."
+                              "On the day, we run the timeline and the vendors so you don’t touch a thing. You get to be fully present, and so does everyone you love."
                             ],
                             "id": "974dd7a0-dd51-4f9e-b72c-aafc3b7881e1",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every couple starts with a consultation. Choose the one that fits where you are — full prices and live availability are on the booking page."
+                          "Every couple starts with a consultation. Choose the one that fits where you are: full prices and live availability are on the booking page."
                         ],
                         "id": "f9ef1742-62ff-45bf-acb5-909e0e99781e",
                         "ord": "a1"
@@ -1218,7 +1218,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We take on a small number of weddings each season so every couple gets our full attention — not a template with your name dropped in. Your day is designed from your story, not last season’s trend board."
+                          "We take on a small number of weddings each season so every couple gets our full attention, not a template with your name dropped in. Your day is designed from your story, not last season’s trend board."
                         ],
                         "id": "320814ee-d318-429f-9ff4-c1be60137964",
                         "ord": "a1"
@@ -1228,7 +1228,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "From the first mood board to the last dance, one team stays with you the whole way. No handoffs, no surprises — just a calm, considered plan and people who genuinely care that it goes beautifully."
+                          "From the first mood board to the last dance, one team stays with you the whole way. No handoffs, no surprises. Just a calm, considered plan and people who genuinely care that it goes beautifully."
                         ],
                         "id": "e517e9ba-7a45-486d-b6fc-c1fb5707055d",
                         "ord": "a2"
@@ -1280,7 +1280,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“We honestly enjoyed our engagement instead of drowning in spreadsheets. On the day we didn’t lift a finger — everything was exactly as we’d dreamed, only better. Worth every penny and then some.”"
+                      "“We honestly enjoyed our engagement instead of drowning in spreadsheets. On the day we didn’t lift a finger. Everything was exactly as we’d dreamed, only better. Worth every penny and then some.”"
                     ],
                     "id": "98687f4f-1206-4155-b6fb-001982ff7dc7",
                     "ord": "a0"
@@ -1355,7 +1355,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Ever After Events",
+      "seoTitle": "Book: Ever After Events",
       "seoDescription": "See what Ever After Events offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1406,7 +1406,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose a consultation to see what it covers, how long it takes and live availability — then pick your planner and time."
+                      "Choose a consultation to see what it covers, how long it takes and live availability, then pick your planner and time."
                     ],
                     "id": "2ff80583-13f5-4a82-96f3-c82a0303870c",
                     "ord": "a1"
@@ -1479,7 +1479,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "f17360e5-194d-497f-a2ac-e17c99d0cdc3",
                         "ord": "a1"
@@ -1586,7 +1586,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Ever After Events",
+      "seoTitle": "About: Ever After Events",
       "seoDescription": "Who Ever After Events is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1645,7 +1645,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a full-service studio — design, planning and coordination under one roof — led by planners who’ve shaped hundreds of celebrations, from intimate garden ceremonies to multi-day destination weddings."
+                          "We’re a full-service studio (design, planning and coordination under one roof) led by planners who’ve shaped hundreds of celebrations, from intimate garden ceremonies to multi-day destination weddings."
                         ],
                         "id": "bffc6668-9881-4cf7-bcec-8120386631cb",
                         "ord": "a2"
@@ -1723,7 +1723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every plan begins with a real conversation about the two of you — how you met, how you celebrate, and the day you’ve always pictured."
+                              "Every plan begins with a real conversation about the two of you: how you met, how you celebrate, and the day you’ve always pictured."
                             ],
                             "id": "0b9801b1-1d3d-40a7-8e8e-e08359b081bf",
                             "ord": "a1"
@@ -1750,7 +1750,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The people you meet on your first call are the people running your wedding. No handoffs, no strangers on the day — just familiar faces who know your plan cold."
+                              "The people you meet on your first call are the people running your wedding. No handoffs, no strangers on the day. Just familiar faces who know your plan cold."
                             ],
                             "id": "90ebe4ca-6cf4-42c0-aeca-e7c57a943540",
                             "ord": "a1"
@@ -1777,7 +1777,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We obsess over the look and the logistics in equal measure — the tablescape and the timeline — so your day is as smooth as it is stunning."
+                              "We obsess over the look and the logistics in equal measure (the tablescape and the timeline) so your day is as smooth as it is stunning."
                             ],
                             "id": "8fa8eaed-319f-4738-9204-f5dadb4325cb",
                             "ord": "a1"
@@ -1876,7 +1876,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Ever After Events",
+      "seoTitle": "Visit: Ever After Events",
       "seoDescription": "Where to find Ever After Events, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1913,7 +1913,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Ever After Events will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Ever After Events will get back to you, usually the same day."
                         ],
                         "id": "f61e2eb5-746e-4e7f-88f2-c7d6ddca5c44",
                         "ord": "a1"
@@ -2340,7 +2340,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a consultation online — no phone tag, and the first call is complimentary."
+                      "See live availability and reserve a consultation online: no phone tag, and the first call is complimentary."
                     ],
                     "id": "034e531a-a2e5-4c34-a321-d57406f73161",
                     "ord": "a1"

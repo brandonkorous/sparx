@@ -144,7 +144,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Please give at least 24 hours’ notice to reschedule or cancel — no charge when you let us know in time. We send a reminder the day before and two hours ahead.',
+        'Please give at least 24 hours’ notice to reschedule or cancel: no charge when you let us know in time. We send a reminder the day before and two hours ahead.',
     },
     {
       handle: 'coaching-no-show',
@@ -200,7 +200,7 @@ const SCHEDULING = {
       handle: 'career-strategy-session',
       name: 'Career strategy session',
       description:
-        'A focused working session to name your next move and reverse-engineer the plan — the conversations, the visibility and the skills that get you there.',
+        'A focused working session to name your next move and reverse-engineer the plan: the conversations, the visibility and the skills that get you there.',
       durationMinutes: 60,
       priceCents: 20000,
       assignmentStrategy: 'customer_choice',
@@ -213,7 +213,7 @@ const SCHEDULING = {
       handle: 'executive-coaching-session',
       name: 'Executive coaching session',
       description:
-        'One-to-one coaching for senior leaders — executive presence, influence and high-stakes decision-making, with a coach who’s led at the top.',
+        'One-to-one coaching for senior leaders: executive presence, influence and high-stakes decision-making, with a coach who’s led at the top.',
       durationMinutes: 60,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -226,7 +226,7 @@ const SCHEDULING = {
       handle: 'leadership-coaching-session',
       name: 'Leadership coaching session',
       description:
-        'Grow into the leader the role needs — managing up, leading a team for the first time, and building the confidence to make the call.',
+        'Grow into the leader the role needs: managing up, leading a team for the first time, and building the confidence to make the call.',
       durationMinutes: 60,
       priceCents: 22000,
       assignmentStrategy: 'customer_choice',
@@ -239,7 +239,7 @@ const SCHEDULING = {
       handle: 'interview-prep-session',
       name: 'Interview prep session',
       description:
-        'Walk in ready — sharpen your positioning, rehearse the hard questions and turn your story into answers that land.',
+        'Walk in ready: sharpen your positioning, rehearse the hard questions and turn your story into answers that land.',
       durationMinutes: 45,
       priceCents: 18000,
       assignmentStrategy: 'customer_choice',
@@ -252,7 +252,7 @@ const SCHEDULING = {
       handle: 'promotion-strategy-session',
       name: 'Promotion strategy session',
       description:
-        'Build the case for your promotion — the results to surface, the stakeholders to win over and the ask that makes it obvious.',
+        'Build the case for your promotion: the results to surface, the stakeholders to win over and the ask that makes it obvious.',
       durationMinutes: 45,
       priceCents: 19000,
       assignmentStrategy: 'customer_choice',
@@ -281,7 +281,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Take charge of where your career goes',
-    sub: 'One-to-one coaching for ambitious professionals — sharpen your executive presence, navigate the next move, and get promoted on purpose. It starts with one honest conversation.',
+    sub: 'One-to-one coaching for ambitious professionals: sharpen your executive presence, navigate the next move, and get promoted on purpose. It starts with one honest conversation.',
     primary: { label: 'Book a discovery call', href: '/book' },
     secondary: { label: 'See how it works', href: '/book' },
     surface: 'base',
@@ -291,19 +291,19 @@ const HOME = [
     items: [
       {
         title: 'Certified executive coaches',
-        body: 'Work with credentialed coaches who’ve sat in the leadership seat — not theorists, but practitioners who’ve led teams and hired for the roles you want.',
+        body: 'Work with credentialed coaches who’ve sat in the leadership seat, not theorists, but practitioners who’ve led teams and hired for the roles you want.',
       },
       {
         title: 'Proven frameworks',
-        body: 'Every session runs on tested models for goal-setting, executive presence and decision-making — structure you can put to work the moment the call ends.',
+        body: 'Every session runs on tested models for goal-setting, executive presence and decision-making: structure you can put to work the moment the call ends.',
       },
       {
         title: 'Career & leadership focus',
-        body: 'This is coaching built for professionals on the rise — transitions, promotions, first-time leadership and the jump to the executive table.',
+        body: 'This is coaching built for professionals on the rise: transitions, promotions, first-time leadership and the jump to the executive table.',
       },
       {
         title: 'Flexible virtual sessions',
-        body: 'Meet by secure video around a real schedule — early mornings and evenings included, so your momentum never waits for a free afternoon.',
+        body: 'Meet by secure video around a real schedule: early mornings and evenings included, so your momentum never waits for a free afternoon.',
       },
     ],
   }),
@@ -336,7 +336,7 @@ const HOME = [
         name: 'Interview prep session',
         priceCents: 18000,
         durationMin: 45,
-        desc: 'Walk in ready — positioning, stories and the hard questions.',
+        desc: 'Walk in ready: positioning, stories and the hard questions.',
       },
     ],
     cta: { label: 'See everything & book', href: '/book' },
@@ -346,14 +346,14 @@ const HOME = [
     alt: 'A focused professional mapping out a career plan on a whiteboard',
     heading: 'A method that turns ambition into offers',
     body: [
-      'Motivation fades; a system doesn’t. Every engagement starts by naming exactly where you want to be in six months, then reverse-engineers the moves — the conversations, the visibility, the skills — that get you there.',
+      'Motivation fades; a system doesn’t. Every engagement starts by naming exactly where you want to be in six months, then reverse-engineers the moves (the conversations, the visibility, the skills) that get you there.',
       'You leave each session with specific actions and a way to measure them, so progress is something you can see on a calendar, not just feel. The result is fewer sideways years and more deliberate, well-timed leaps.',
     ],
     cta: { label: 'Book a discovery call', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your coaches',
-    intro: 'Book by name — you’ll work with the same coach throughout, someone who learns your goals and holds you to them.',
+    intro: 'Book by name: you’ll work with the same coach throughout, someone who learns your goals and holds you to them.',
     members: [
       {
         name: 'Daniela Reyes',
@@ -380,12 +380,12 @@ const HOME = [
   }),
   testimonial({
     quote:
-      'Six months in, I went from passed over to promoted to director — with a raise I’d never have asked for on my own. The plan made the ask obvious.',
+      'Six months in, I went from passed over to promoted to director, with a raise I’d never have asked for on my own. The plan made the ask obvious.',
     attribution: 'Rachel M., Director of Operations',
   }),
   bookingCta({
     title: 'Your next move is a conversation away',
-    sub: 'Start with a free 30-minute discovery call — no cost, no pitch, just a clear read on where you are and where you could be. It takes about a minute to book.',
+    sub: 'Start with a free 30-minute discovery call: no cost, no pitch, just a clear read on where you are and where you could be. It takes about a minute to book.',
     cta: { label: 'Book a discovery call', href: '/book' },
   }),
 ];
@@ -393,7 +393,7 @@ const HOME = [
 const BOOK_INTRO = [
   typeHero({
     title: 'Book your discovery call',
-    sub: 'Choose a session to see live availability, then pick your coach and a time that works for you. New here? Start with the free discovery call — it’s the right first step.',
+    sub: 'Choose a session to see live availability, then pick your coach and a time that works for you. New here? Start with the free discovery call: it’s the right first step.',
     primary: { label: 'See sessions below', href: '/book' },
     surface: 'muted',
   }),
@@ -405,7 +405,7 @@ const ABOUT = [
     alt: 'A confident one-to-one coaching conversation over video',
     heading: 'About Ascend Coaching',
     body: [
-      'Ascend exists for the professionals who know they’re capable of more and are done leaving the next move to chance. We pair ambition with a plan — and a coach who’s been there — so the growth you want stops being someday and starts being scheduled.',
+      'Ascend exists for the professionals who know they’re capable of more and are done leaving the next move to chance. We pair ambition with a plan (and a coach who’s been there) so the growth you want stops being someday and starts being scheduled.',
       'No fluff, no motivational posters. Just clear goals, honest feedback and a structured path to the role, the raise and the confidence you’re after. Your ambition is the fuel; our job is the map and the accountability.',
     ],
     cta: { label: 'Book a discovery call', href: '/book' },
@@ -420,7 +420,7 @@ const ABOUT = [
       },
       {
         title: 'Feedback is a gift',
-        body: 'Growth needs someone who’ll tell you the truth — kindly, directly, and with a way forward. That honesty is the whole point.',
+        body: 'Growth needs someone who’ll tell you the truth: kindly, directly, and with a way forward. That honesty is the whole point.',
       },
       {
         title: 'Momentum compounds',
@@ -448,7 +448,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than email?',
-    sub: 'See live availability and reserve your free discovery call online — no phone tag, no back-and-forth.',
+    sub: 'See live availability and reserve your free discovery call online: no phone tag, no back-and-forth.',
     surface: 'muted',
     cta: { label: 'Book a discovery call', href: '/book' },
   }),
@@ -459,8 +459,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-lifecoach-career',
   name: 'Life Coaching (Career)',
   summary:
-    'A sharp, empowering career-coaching site — a deep-navy palette, a confident amber accent and a modern sans, built for ambitious professionals. Installs a working booking flow: a free discovery call plus career-strategy, executive, leadership, interview-prep and promotion sessions, three coaches you book by name with evening hours, and a no-show policy. Ships as "Ascend Coaching", a results-focused practice you can book in about a minute.',
-  tagline: 'A sharp template for career & executive coaches — book discovery calls from day one.',
+    'A sharp, empowering career-coaching site: a deep-navy palette, a confident amber accent and a modern sans, built for ambitious professionals. Installs a working booking flow: a free discovery call plus career-strategy, executive, leadership, interview-prep and promotion sessions, three coaches you book by name with evening hours, and a no-show policy. Ships as "Ascend Coaching", a results-focused practice you can book in about a minute.',
+  tagline: 'A sharp template for career & executive coaches. Book discovery calls from day one.',
   industry: 'Life coaching',
   sortWeight: 12,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -469,9 +469,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Ascend Coaching — career & executive coaching',
+      title: 'Ascend Coaching: career & executive coaching',
       description:
-        'Ascend is a results-focused coaching practice for ambitious professionals — career strategy, executive presence, leadership and interview prep by secure video. Book a free discovery call.',
+        'Ascend is a results-focused coaching practice for ambitious professionals: career strategy, executive presence, leadership and interview prep by secure video. Book a free discovery call.',
     },
   },
   home: HOME,

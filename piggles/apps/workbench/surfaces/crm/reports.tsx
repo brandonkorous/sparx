@@ -141,7 +141,7 @@ function KpiTile({
   return (
     <ClickableCard
       className={`text-left ${tone}`}
-      aria-label={`${label}: ${value} — open the list`}
+      aria-label={`${label}: ${value}: open the list`}
       onClick={(event) => {
         onOpen(event);
       }}

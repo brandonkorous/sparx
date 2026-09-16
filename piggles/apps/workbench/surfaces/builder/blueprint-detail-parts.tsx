@@ -168,8 +168,8 @@ export function BlueprintContentsSection({
       )}
       {themeName ? (
         <Text className="text-sm">
-          Comes with the <span className="font-medium">{themeName}</span> look — colors, fonts and
-          spacing — applied for you.
+          Comes with the <span className="font-medium">{themeName}</span> look (colors, fonts and
+          spacing) applied for you.
         </Text>
       ) : null}
 
@@ -191,7 +191,7 @@ export function BlueprintContentsSection({
           {' ('}
           {offModules.map((slug) => moduleLabel(slug)).join(', ')}
           {'). '}
-          Those parts are skipped — turn the feature on first if you want them included.
+          Those parts are skipped. Turn the feature on first if you want them included.
         </Text>
       ) : null}
     </FormSection>

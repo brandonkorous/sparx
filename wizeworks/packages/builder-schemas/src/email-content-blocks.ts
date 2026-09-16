@@ -49,7 +49,7 @@ export const EMAIL_CONTENT_BLOCKS: EmailPaletteItem[] = [
   block('text-block', 'Text block', 'A heading, a line of copy, and a button', 'stack', () =>
     copyBlock([
       heading('Add a heading'),
-      para('Write a line or two that gets to the point — what this is, and what to do next.'),
+      para('Write a line or two that gets to the point: what this is, and what to do next.'),
       button('Take action', '#'),
     ])
   ),

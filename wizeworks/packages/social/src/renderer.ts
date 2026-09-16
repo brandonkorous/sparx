@@ -74,7 +74,7 @@ export function renderForTarget(
     issues.push({
       severity: 'error',
       code: 'media_required',
-      message: `${platform} can't publish a text-only post — add an image or video.`,
+      message: `${platform} can't publish a text-only post. Add an image or video.`,
     });
   }
 

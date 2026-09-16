@@ -84,7 +84,7 @@ export function FaviconPreviews({
           </div>
         </div>
         <Text size={15} className="text-[#1a0dab]">
-          {name} — official site
+          {name}: official site
         </Text>
       </Preview>
 

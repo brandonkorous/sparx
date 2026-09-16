@@ -299,7 +299,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -727,8 +727,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Marginalia Books — an independent bookshop, hand-selling the ones we loved",
-      "seoDescription": "Marginalia is a small independent bookshop — staff-picked fiction and nonfiction, gifts for readers, and a hand-picked book club. Every recommendation gets a card that says why.",
+      "seoTitle": "Marginalia Books: an independent bookshop, hand-selling the ones we loved",
+      "seoDescription": "Marginalia is a small independent bookshop: staff-picked fiction and nonfiction, gifts for readers, and a hand-picked book club. Every recommendation gets a card that says why.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1233,7 +1233,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A shelf-talker is a small handwritten card that says, in plain words, why a bookseller loved a book and who it’s for. We write one for everything we recommend — so a stranger’s taste becomes something you can actually use."
+                          "A shelf-talker is a small handwritten card that says, in plain words, why a bookseller loved a book and who it’s for. We write one for everything we recommend, so a stranger’s taste becomes something you can actually use."
                         ],
                         "id": "bf044ba6-d449-4b5c-9fd7-a86e28527051",
                         "ord": "a1"
@@ -1713,7 +1713,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The Marginalia Book Club is the easy way to keep reading widely: tell us what you like, and each month we choose a book we’d press into your hands ourselves, wrap it, and post it — with the card that says why. Skip or cancel any time."
+                          "The Marginalia Book Club is the easy way to keep reading widely: tell us what you like, and each month we choose a book we’d press into your hands ourselves, wrap it, and post it, with the card that says why. Skip or cancel any time."
                         ],
                         "id": "361d930d-d22c-4674-9345-11f30e3d4962",
                         "ord": "a1"
@@ -1748,7 +1748,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Marginalia Books",
+      "seoTitle": "Shop: Marginalia Books",
       "seoDescription": "Browse everything Marginalia Books makes, with prices and options at a glance. Independent bookshop.",
       "root": {
         "kind": "element",
@@ -1780,7 +1780,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything on the tables right now — staff picks, new fiction and nonfiction, and gifts for the readers in your life. Filter by shelf, or sort however you like; if you can’t decide, that’s what the shelf-talkers are for."
+                      "Everything on the tables right now: staff picks, new fiction and nonfiction, and gifts for the readers in your life. Filter by shelf, or sort however you like; if you can’t decide, that’s what the shelf-talkers are for."
                     ],
                     "id": "dedb725f-39c5-47db-907e-6049e7efeb48",
                     "ord": "a1"
@@ -1808,7 +1808,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Marginalia Books",
+      "seoTitle": "Collections: Marginalia Books",
       "seoDescription": "Explore the collections at Marginalia Books, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1840,7 +1840,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The books grouped the way we actually pile them on the tables — this month’s staff picks, what’s new this season, the fiction shelf, the nonfiction shelf, and gifts for readers."
+                      "The books grouped the way we actually pile them on the tables. This month’s staff picks, what’s new this season, the fiction shelf, the nonfiction shelf, and gifts for readers."
                     ],
                     "id": "c18c62e4-97b9-495c-95d2-ad3f43293fa1",
                     "ord": "a1"
@@ -1868,7 +1868,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Marginalia Books",
+      "seoTitle": "Your cart: Marginalia Books",
       "seoDescription": "Review what is in your cart and check out securely at Marginalia Books.",
       "root": {
         "kind": "element",
@@ -1900,7 +1900,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $40, and we’ll gift-wrap anything on request — just say so in the notes. Every order is packed by hand at the shop, usually the same day."
+                      "Free shipping on orders over $40, and we’ll gift-wrap anything on request. Just say so in the notes. Every order is packed by hand at the shop, usually the same day."
                     ],
                     "id": "06d8d880-94fd-4349-9130-f735963ad0cf",
                     "ord": "a1"
@@ -1928,7 +1928,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Marginalia Books",
+      "seoTitle": "Search: Marginalia Books",
       "seoDescription": "Search Marginalia Books for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1960,7 +1960,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Looking for a title, an author, or a subject? Search the whole shop and the journal below — and if we don’t have it, we can almost always order it in."
+                      "Looking for a title, an author, or a subject? Search the whole shop and the journal below, and if we don’t have it, we can almost always order it in."
                     ],
                     "id": "9386a33b-2387-49ce-bd85-c034d028f567",
                     "ord": "a1"
@@ -1988,7 +1988,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Marginalia Books",
+      "seoTitle": "Journal: Marginalia Books",
       "seoDescription": "Stories, guides and notes from Marginalia Books.",
       "root": {
         "kind": "element",
@@ -2154,7 +2154,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Marginalia Books",
-      "seoDescription": "How Marginalia chooses, shelves and hand-sells books — small presses and big houses alike, a signed shelf-talker on everything we recommend, and nothing we couldn’t tell you something true about.",
+      "seoDescription": "How Marginalia chooses, shelves and hand-sells books: small presses and big houses alike, a signed shelf-talker on everything we recommend, and nothing we couldn’t tell you something true about.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2185,7 +2185,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Marginalia opened in a narrow shop with a wobbly front table and a hand-lettered sign, on the simple bet that people still want a bookseller who has actually read the thing. It grew the slow way — one recommendation, one regular, one book-club box at a time — and it still runs on the same idea: read widely, keep the good ones, and say honestly why."
+                      "Marginalia opened in a narrow shop with a wobbly front table and a hand-lettered sign, on the simple bet that people still want a bookseller who has actually read the thing. It grew the slow way (one recommendation, one regular, one book-club box at a time) and it still runs on the same idea: read widely, keep the good ones, and say honestly why."
                     ],
                     "id": "9b9a1b47-43e7-47d3-a725-3a156d9f8ef1",
                     "ord": "a1"
@@ -2225,8 +2225,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Marginalia Books",
-      "seoDescription": "Get in touch with Marginalia Books — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Marginalia Books",
+      "seoDescription": "Get in touch with Marginalia Books: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2262,7 +2262,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Chasing a title, planning an event, or want a recommendation for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back — we love this part."
+                          "Chasing a title, planning an event, or want a recommendation for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back. We love this part."
                         ],
                         "id": "bc4d99cc-a221-4c31-9ac5-dcc03eb73d83",
                         "ord": "a1"
@@ -2533,8 +2533,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Marginalia Books",
-      "seoDescription": "Product details at Marginalia Books — independent bookshop, with options and pricing.",
+      "seoTitle": "Product: Marginalia Books",
+      "seoDescription": "Product details at Marginalia Books: independent bookshop, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2897,7 +2897,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Everything we sell has been read by someone here, and everything we recommend gets a card. Ask us at the counter or in your order notes and we’ll tell you what to read next — a real bookseller, not an algorithm."
+                              "Everything we sell has been read by someone here, and everything we recommend gets a card. Ask us at the counter or in your order notes and we’ll tell you what to read next: a real bookseller, not an algorithm."
                             ],
                             "id": "0dc5e5da-4928-45a5-9686-803551751e6d",
                             "ord": "a1"

@@ -2,7 +2,7 @@ import type { AppMarketing } from './types';
 
 export const CONTENT: AppMarketing = {
   heading: 'Write it once. Use it everywhere it belongs.',
-  lede: 'Content holds the writing, pictures and reusable information behind your site — the guides, the notices, the staff profiles, the frequently asked questions — so the same thing does not get retyped in four places and go out of date in three of them.',
+  lede: 'Content holds the writing, pictures and reusable information behind your site (the guides, the notices, the staff profiles, the frequently asked questions) so the same thing does not get retyped in four places and go out of date in three of them.',
   alsoKnownAs: ['CMS', 'content management system', 'headless CMS', 'blog platform'],
   does: [
     {
@@ -45,7 +45,7 @@ export const CONTENT: AppMarketing = {
         },
         {
           title: 'The legal pages, as pages',
-          body: 'Terms, privacy and returns kept with the rest of your content and versioned like it — not a PDF from 2021 nobody can edit.',
+          body: 'Terms, privacy and returns kept with the rest of your content and versioned like it, not a PDF from 2021 nobody can edit.',
         },
         {
           title: 'Who wrote it',

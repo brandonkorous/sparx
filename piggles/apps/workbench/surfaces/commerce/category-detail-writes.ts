@@ -144,7 +144,7 @@ export function useCategoryWrites({
       title: `Delete ${category.name}?`,
       description:
         filed > 0
-          ? `This category comes off your website menu. The ${String(filed)} product${filed === 1 ? '' : 's'} filed here ${filed === 1 ? 'is' : 'are'} kept — ${filed === 1 ? 'it' : 'they'} just stop appearing under this heading. This cannot be undone.`
+          ? `This category comes off your website menu. The ${String(filed)} product${filed === 1 ? '' : 's'} filed here ${filed === 1 ? 'is' : 'are'} kept: ${filed === 1 ? 'it' : 'they'} just stop appearing under this heading. This cannot be undone.`
           : 'This category comes off your website menu. This cannot be undone. Categories with sub-categories underneath them cannot be deleted until those are moved or removed first.',
       confirmLabel: 'Delete this category',
       cancelLabel: 'Keep it',

@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Maintenance plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. We confirm your first service the day before, then keep your home on the same schedule automatically."
+      "policyText": "Maintenance plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. We confirm your first service the day before, then keep your home on the same schedule automatically."
     }
   ],
   "resources": [
@@ -127,7 +127,7 @@
     {
       "handle": "free-quote",
       "name": "Free washing quote",
-      "description": "We stop by, walk your property, and send a clear flat-rate quote — no pressure, no obligation. The fastest way to get started.",
+      "description": "We stop by, walk your property, and send a clear flat-rate quote: no pressure, no obligation. The fastest way to get started.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -144,7 +144,7 @@
     {
       "handle": "driveway-cleaning",
       "name": "Driveway & concrete cleaning",
-      "description": "High-pressure surface cleaning that lifts years of dirt, oil, algae and tire marks — concrete, pavers and walkways brought back to bright, even and new.",
+      "description": "High-pressure surface cleaning that lifts years of dirt, oil, algae and tire marks: concrete, pavers and walkways brought back to bright, even and new.",
       "durationMinutes": 90,
       "priceCents": 15900,
       "assignmentStrategy": "any_available",
@@ -161,7 +161,7 @@
     {
       "handle": "house-soft-wash",
       "name": "House soft-wash",
-      "description": "A gentle, low-pressure soft-wash that safely strips grime, mildew and green off siding, stucco and brick — deep-clean results without ever blasting your home.",
+      "description": "A gentle, low-pressure soft-wash that safely strips grime, mildew and green off siding, stucco and brick: deep-clean results without ever blasting your home.",
       "durationMinutes": 120,
       "priceCents": 29900,
       "assignmentStrategy": "any_available",
@@ -178,7 +178,7 @@
     {
       "handle": "deck-patio-cleaning",
       "name": "Deck & patio cleaning",
-      "description": "Wood, composite and stone cleaned at the right pressure for the surface — greyed decks freshened and patios cleared of moss and buildup, ready to enjoy.",
+      "description": "Wood, composite and stone cleaned at the right pressure for the surface: greyed decks freshened and patios cleared of moss and buildup, ready to enjoy.",
       "durationMinutes": 90,
       "priceCents": 22900,
       "assignmentStrategy": "any_available",
@@ -195,7 +195,7 @@
     {
       "handle": "roof-soft-wash",
       "name": "Roof soft-wash",
-      "description": "A no-pressure treatment that kills and removes the black streaks and moss on your roof without damaging shingles — the safe way to get years of curb appeal back.",
+      "description": "A no-pressure treatment that kills and removes the black streaks and moss on your roof without damaging shingles: the safe way to get years of curb appeal back.",
       "durationMinutes": 150,
       "priceCents": 39900,
       "assignmentStrategy": "any_available",
@@ -229,7 +229,7 @@
     {
       "handle": "full-exterior-package",
       "name": "Full exterior package",
-      "description": "The whole house done in one visit — house soft-wash, driveway, walkways and patio — and set up on an annual refresh so it stays looking new year after year.",
+      "description": "The whole house done in one visit (house soft-wash, driveway, walkways and patio) and set up on an annual refresh so it stays looking new year after year.",
       "durationMinutes": 180,
       "priceCents": 74900,
       "assignmentStrategy": "any_available",

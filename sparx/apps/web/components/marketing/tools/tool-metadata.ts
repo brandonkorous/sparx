@@ -16,7 +16,7 @@ export function toolMetadata(slug: string): Metadata {
   const seo = getToolSeo(slug);
   const path = `/tools/${tool.slug}`;
   const url = `https://sparx.works${path}`;
-  const title = `${seo?.seoTitle ?? `${tool.name} — free, in your browser`} · sparx`;
+  const title = `${seo?.seoTitle ?? `${tool.name} · free, in your browser`} · sparx`;
   const image = `https://sparx.works/tools/og/${tool.slug}`;
 
   return {

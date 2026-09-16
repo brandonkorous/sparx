@@ -168,7 +168,7 @@ function hero(): Node {
                   text: 'Kit out the line. Keep it running.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Pass Supply Co. outfits commercial kitchens — restaurants, cafés, caterers and ghost kitchens. The prep tables, cooking gear, storage and smallwares a working line runs on, sold by the unit and by the case, priced for the trade and dispatched fast.',
+                  text: 'Pass Supply Co. outfits commercial kitchens: restaurants, cafés, caterers and ghost kitchens. The prep tables, cooking gear, storage and smallwares a working line runs on, sold by the unit and by the case, priced for the trade and dispatched fast.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -246,16 +246,16 @@ function tradeTermsBand(): Node {
                 text: 'Built for the way kitchens buy',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Open a trade account and you buy the way an operator should — by the unit and the case, at wholesale rates, on terms. No consumer markups, no runaround when a line goes down mid-service.',
+                text: 'Open a trade account and you buy the way an operator should: by the unit and the case, at wholesale rates, on terms. No consumer markups, no runaround when a line goes down mid-service.',
               }),
             ],
           }),
           el('div', 'grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6', {
             children: [
-              card('Trade pricing', 'Per-unit and per-case wholesale rates with volume breaks that deepen as your order grows. Kit a whole line or restock a station — the more you buy, the less each piece costs.'),
+              card('Trade pricing', 'Per-unit and per-case wholesale rates with volume breaks that deepen as your order grows. Kit a whole line or restock a station: the more you buy, the less each piece costs.'),
               card('Net-30 terms', 'Approved accounts order now and pay later on net-30. Open a second location or restock the walk-in without tying up the operating cash on every run.'),
               card('Fast dispatch', 'In-stock lines ship the same or next business day from our warehouse, so a broken mixer or a short case of pans never idles a shift.'),
-              card('Your account manager', 'A direct line to a real person who knows your kitchen, your standing order and what you burn through — not a ticket queue at 4pm on a Friday.'),
+              card('Your account manager', 'A direct line to a real person who knows your kitchen, your standing order and what you burn through, not a ticket queue at 4pm on a Friday.'),
             ],
           }),
           el('a', 'btn btn-primary btn-lg w-fit', { attrs: { href: '/contact' }, text: 'Open a trade account' }),
@@ -351,7 +351,7 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & terms' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'The price shown is the list rate — per unit for equipment, per case for smallwares. Trade accounts unlock volume breaks — deeper pricing when you kit a full line, open a second location, or order to a standing schedule — set for your account in your dashboard.',
+                    text: 'The price shown is the list rate: per unit for equipment, per case for smallwares. Trade accounts unlock volume breaks, deeper pricing when you kit a full line, open a second location, or order to a standing schedule. Set for your account in your dashboard.',
                   }),
                   el('p', 'text-base leading-relaxed text-base-content', {
                     text: 'Approved accounts buy on net-30. Not set up yet? Open a trade account and we will price your regular lines and get you on terms.',
@@ -397,11 +397,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The catalog',
-    'Every line we stock — cooking, prep and storage, front of house, and smallwares, sold by the unit and the case. Filter by station or sort by price; trade accounts see their contract pricing at checkout.'
+    'Every line we stock: cooking, prep and storage, front of house, and smallwares, sold by the unit and the case. Filter by station or sort by price; trade accounts see their contract pricing at checkout.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The catalog grouped the way an operator actually buys — best sellers, new lines just in, everything to open a kitchen from empty, the front-of-house service kit, and the smallwares you reorder by the case.'),
+  pageMasthead('Collections', 'The catalog grouped the way an operator actually buys: best sellers, new lines just in, everything to open a kitchen from empty, the front-of-house service kit, and the smallwares you reorder by the case.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search the catalog', 'Know the model, the size, or the spec you need? Search the whole catalog and the field notes below.'),
@@ -427,7 +427,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Field notes' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Practical guidance from operators and our warehouse floor — how to kit out a new kitchen, choose cookware that survives service, and buy smallwares that last. Written for the people running the line, not for a catalog.',
+            text: 'Practical guidance from operators and our warehouse floor: how to kit out a new kitchen, choose cookware that survives service, and buy smallwares that last. Written for the people running the line, not for a catalog.',
           }),
         ],
       }),
@@ -444,13 +444,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Pass Supply' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Pass Supply Co. is a commercial kitchen and restaurant-equipment distributor. We stock the durable, essential gear a working kitchen runs on — prep tables, cooking equipment, food storage, front-of-house service and smallwares — and we sell it to the trade by the unit and the case, at wholesale, on terms.',
+            text: 'Pass Supply Co. is a commercial kitchen and restaurant-equipment distributor. We stock the durable, essential gear a working kitchen runs on: prep tables, cooking equipment, food storage, front-of-house service and smallwares, and we sell it to the trade by the unit and the case, at wholesale, on terms.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We built the business around one idea: an operator opening a room or restocking a line should not have to chase a dozen suppliers, eat consumer markups, or wait a week for a case of sheet pans. One catalog, one account, one invoice, and stock that is actually on the shelf when service depends on it.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just kitchen-grade gear, priced fairly and out the door — the boring reliability a good kitchen is built on.',
+            text: 'No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just kitchen-grade gear, priced fairly and out the door: the boring reliability a good kitchen is built on.',
           }),
         ],
       }),
@@ -540,7 +540,7 @@ const PRODUCTS: Product[] = [
     handle: 'stainless-prep-table',
     title: 'Stainless Prep Table, 18-Gauge',
     description:
-      'A workhorse 18-gauge 304 stainless prep table with a welded frame, adjustable galvanised undershelf and bullet feet — the flat, cleanable surface every station is built around. Ships flat-packed, one table. MOQ 1. Pick your length to fit the line.',
+      'A workhorse 18-gauge 304 stainless prep table with a welded frame, adjustable galvanised undershelf and bullet feet: the flat, cleanable surface every station is built around. Ships flat-packed, one table. MOQ 1. Pick your length to fit the line.',
     status: 'active',
     productType: 'Prep & storage',
     vendor: VENDOR,
@@ -561,7 +561,7 @@ const PRODUCTS: Product[] = [
     handle: 'countertop-induction-range',
     title: 'Countertop Induction Range, 1800W',
     description:
-      'A commercial 1800W countertop induction range with digital power and temperature control and a schott-glass top — fast, precise, flameless heat for a prep station, a satellite line or a front-of-house action station. 120V, plugs into a standard outlet. Sold by the unit. MOQ 1.',
+      'A commercial 1800W countertop induction range with digital power and temperature control and a schott-glass top: fast, precise, flameless heat for a prep station, a satellite line or a front-of-house action station. 120V, plugs into a standard outlet. Sold by the unit. MOQ 1.',
     price: 289,
     sku: 'PSC-COOK-IND-1800',
     productType: 'Cooking',
@@ -574,9 +574,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'fry-pans-case',
-    title: 'Aluminium Fry Pans, 10 in — Case of 6',
+    title: 'Aluminium Fry Pans, 10 in: Case of 6',
     description:
-      'Heavy-gauge 3004 aluminium fry pans, 10", with a natural finish and a riveted stay-cool handle — the everyday sauté pan a line burns through and replaces. Case of 6. MOQ 2 cases. Even heat, fast response, tough enough for the flat-top.',
+      'Heavy-gauge 3004 aluminium fry pans, 10", with a natural finish and a riveted stay-cool handle: the everyday sauté pan a line burns through and replaces. Case of 6. MOQ 2 cases. Even heat, fast response, tough enough for the flat-top.',
     price: 96,
     sku: 'PSC-COOK-FRY-10',
     productType: 'Cooking',
@@ -589,9 +589,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'sheet-pans-case',
-    title: 'Aluminium Sheet Pans, Full Size — Case of 12',
+    title: 'Aluminium Sheet Pans, Full Size: Case of 12',
     description:
-      '18" x 26" full-size 19-gauge aluminium sheet pans with a wire-reinforced rolled rim that will not warp on a hot deck. Case of 12. MOQ 2 cases. The single most-used pan in any kitchen — buy the case, you always need more.',
+      '18" x 26" full-size 19-gauge aluminium sheet pans with a wire-reinforced rolled rim that will not warp on a hot deck. Case of 12. MOQ 2 cases. The single most-used pan in any kitchen: buy the case, you always need more.',
     price: 84,
     sku: 'PSC-COOK-SHEET-FS',
     productType: 'Cooking',
@@ -604,9 +604,9 @@ const PRODUCTS: Product[] = [
   }),
   caseItem({
     handle: 'chef-knife-case',
-    title: "Chef's Knife, 8 in — Case of 6",
+    title: "Chef's Knife, 8 in: Case of 6",
     description:
-      'A forged high-carbon stainless 8" chef\'s knife with a full tang and a moulded, dishwasher-safe polypropylene handle rated NSF — sharp out of the box and easy to hone. Case of 6. MOQ 1 case. Kit the whole line or keep spares in the drawer.',
+      'A forged high-carbon stainless 8" chef\'s knife with a full tang and a moulded, dishwasher-safe polypropylene handle rated NSF: sharp out of the box and easy to hone. Case of 6. MOQ 1 case. Kit the whole line or keep spares in the drawer.',
     price: 132,
     sku: 'PSC-SW-CHEF-8',
     productType: 'Smallwares',
@@ -619,9 +619,9 @@ const PRODUCTS: Product[] = [
   }),
   {
     handle: 'food-storage-containers-case',
-    title: 'Polycarbonate Food Storage Containers — Case of 12',
+    title: 'Polycarbonate Food Storage Containers: Case of 12',
     description:
-      'Clear, break-resistant polycarbonate food storage containers with graduated measure marks, stackable and rated for the walk-in and the reach-in — the square container that organises every prep shelf. Case of 12, lids sold separately. MOQ 1 case. Pick your size.',
+      'Clear, break-resistant polycarbonate food storage containers with graduated measure marks, stackable and rated for the walk-in and the reach-in: the square container that organises every prep shelf. Case of 12, lids sold separately. MOQ 1 case. Pick your size.',
     status: 'active',
     productType: 'Prep & storage',
     vendor: VENDOR,
@@ -642,7 +642,7 @@ const PRODUCTS: Product[] = [
     handle: 'planetary-floor-mixer',
     title: 'Planetary Floor Mixer',
     description:
-      'A gear-driven commercial planetary mixer with a #12 hub, three fixed speeds and a stainless bowl, whip, hook and paddle included — the bench a bakery or a busy prep kitchen leans on for dough, batter and everything in between. Sold by the unit. MOQ 1. Pick the capacity your volume needs.',
+      'A gear-driven commercial planetary mixer with a #12 hub, three fixed speeds and a stainless bowl, whip, hook and paddle included: the bench a bakery or a busy prep kitchen leans on for dough, batter and everything in between. Sold by the unit. MOQ 1. Pick the capacity your volume needs.',
     status: 'active',
     productType: 'Prep & storage',
     vendor: VENDOR,
@@ -681,9 +681,9 @@ const PRODUCTS: Product[] = [
   },
   caseItem({
     handle: 'coupe-dinner-plates-case',
-    title: 'Coupe Dinner Plates, 10½ in — Case of 24',
+    title: 'Coupe Dinner Plates, 10½ in: Case of 24',
     description:
-      'Bright-white, fully vitrified coupe dinner plates, 10½", with a rolled edge that resists chipping through the dish pit — the clean, rimless plate that lets the food do the talking. Case of 24. MOQ 2 cases. Restaurant-grade and rewash-after-rewash durable.',
+      'Bright-white, fully vitrified coupe dinner plates, 10½", with a rolled edge that resists chipping through the dish pit: the clean, rimless plate that lets the food do the talking. Case of 24. MOQ 2 cases. Restaurant-grade and rewash-after-rewash durable.',
     price: 168,
     sku: 'PSC-FOH-PLATE-105',
     productType: 'Front of house',
@@ -698,7 +698,7 @@ const PRODUCTS: Product[] = [
     handle: 'smallwares-starter-kit',
     title: 'Line Cook Smallwares Starter Kit',
     description:
-      'A curated kit of the smallwares a new line or a satellite station runs out of first — a chef\'s knife, a set of tongs, a fish spatula, measuring cups and spoons, a bench scraper, mixing bowls and quarter-pans — packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to arm a station from empty.',
+      'A curated kit of the smallwares a new line or a satellite station runs out of first: a chef\'s knife, a set of tongs, a fish spatula, measuring cups and spoons, a bench scraper, mixing bowls and quarter-pans, packed together and priced below the sum of its cases. MOQ 1 kit. The fastest way to arm a station from empty.',
     price: 219,
     sku: 'PSC-SW-KIT-STARTER',
     productType: 'Smallwares',
@@ -707,7 +707,7 @@ const PRODUCTS: Product[] = [
     tags: ['smallwares', 'kit', 'starter', 'bundle'],
     asset: 'prod-smallwares-kit',
     seoTitle: 'Line Cook Smallwares Starter Kit | Pass Supply Co.',
-    seoDescription: 'A curated starter kit of essential line smallwares — knife, tongs, spatula, measures and more, priced below the sum.',
+    seoDescription: 'A curated starter kit of essential line smallwares: knife, tongs, spatula, measures and more, priced below the sum.',
   }),
 ];
 
@@ -783,18 +783,18 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'How to kit out a new kitchen line without overspending',
-      excerpt: 'Opening a room is where budgets get blown — on equipment you did not need or a spec you paid double for. Here is how to outfit a line that cooks well and costs right.',
+      excerpt: 'Opening a room is where budgets get blown: on equipment you did not need or a spec you paid double for. Here is how to outfit a line that cooks well and costs right.',
       featuredImage: { $asset: 'post-open-kitchen' },
       body: {
         type: 'doc',
         content: [
           para('The equipment bill for a new kitchen is the easiest place to overspend, because everything looks essential when the room is empty and the opening date is close. It is not. A working line is built from a short list of things you genuinely use every service and a longer list of things a rep will happily sell you. Get the first list right, buy the second only when a dish demands it, and you open on budget.'),
           h2('Start with the stations, not the catalog'),
-          para('Walk the menu, not the showroom. For each dish, ask what station cooks it and what that station physically needs — a flat surface to work on, a heat source, storage for mise, and the smallwares to handle it. That exercise turns "a kitchen" into a concrete list: this many prep tables, this cooking gear, this much food storage, these knives and pans. Buy that list. Everything not on it is a maybe, and a maybe can wait until you are open and know you need it.'),
+          para('Walk the menu, not the showroom. For each dish, ask what station cooks it and what that station physically needs: a flat surface to work on, a heat source, storage for mise, and the smallwares to handle it. That exercise turns "a kitchen" into a concrete list: this many prep tables, this cooking gear, this much food storage, these knives and pans. Buy that list. Everything not on it is a maybe, and a maybe can wait until you are open and know you need it.'),
           h2('Buy the durable things once, the consumables by the case'),
-          para('Split the list in two. The durable equipment — prep tables, a range, a mixer, a heat lamp — you buy once, so buy it in a spec that survives a decade of service; the cheap version fails in year two and costs you a closed station to replace. The consumables — pans, containers, knives, plates — you buy again and again, so buy them by the case at trade pricing and keep a backup on the shelf. The mistake is doing it backwards: over-speccing the disposable and cutting the corner on the thing that has to last.'),
+          para('Split the list in two. The durable equipment: prep tables, a range, a mixer, a heat lamp. You buy once, so buy it in a spec that survives a decade of service; the cheap version fails in year two and costs you a closed station to replace. The consumables (pans, containers, knives, plates) you buy again and again, so buy them by the case at trade pricing and keep a backup on the shelf. The mistake is doing it backwards: over-speccing the disposable and cutting the corner on the thing that has to last.'),
           h2('Put it on one account'),
-          para('Sourcing a fit-out from a dozen vendors turns opening week into a spreadsheet of tracking numbers. Kit the whole line from one trade account instead — one catalog, one delivery window, one invoice, and one person to call when a table shows up scratched. Open the account before you order the first table; the volume pricing on a full fit-out is the whole reason to.'),
+          para('Sourcing a fit-out from a dozen vendors turns opening week into a spreadsheet of tracking numbers. Kit the whole line from one trade account instead. One catalog, one delivery window, one invoice, and one person to call when a table shows up scratched. Open the account before you order the first table; the volume pricing on a full fit-out is the whole reason to.'),
         ],
       },
     },
@@ -805,18 +805,18 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Choosing commercial cookware that survives service',
-      excerpt: 'Home cookware dies in a commercial kitchen — wrong metal, wrong gauge, wrong handle. Here is how to spec pans and cookware that take the abuse of a real line.',
+      excerpt: 'Home cookware dies in a commercial kitchen: wrong metal, wrong gauge, wrong handle. Here is how to spec pans and cookware that take the abuse of a real line.',
       featuredImage: { $asset: 'post-cookware' },
       body: {
         type: 'doc',
         content: [
-          para('A commercial line destroys consumer cookware in weeks. The heat is higher, the pans get slammed on burners and stacked wet, and nobody babies them. Cookware that lasts is not about the brand on the handle — it is about matching the metal, the gauge and the handle to the work. Spec it right and a pan outlasts the cook using it.'),
+          para('A commercial line destroys consumer cookware in weeks. The heat is higher, the pans get slammed on burners and stacked wet, and nobody babies them. Cookware that lasts is not about the brand on the handle. It is about matching the metal, the gauge and the handle to the work. Spec it right and a pan outlasts the cook using it.'),
           h2('Metal and gauge do the work'),
-          para('For most line cooking, heavy-gauge aluminium is the workhorse: it heats fast and even, responds instantly when you pull it off the flame, and it is cheap enough to replace without flinching. Reach for stainless where you need durability and a non-reactive surface for acidic sauces, and for induction where the top demands a magnetic base. The number that matters is the gauge — the thickness of the metal. A thin pan warps on a hot burner and cooks in hot spots; a heavier gauge stays flat and even for years. Pay for the gauge; it is the difference between a pan and a frisbee.'),
+          para('For most line cooking, heavy-gauge aluminium is the workhorse: it heats fast and even, responds instantly when you pull it off the flame, and it is cheap enough to replace without flinching. Reach for stainless where you need durability and a non-reactive surface for acidic sauces, and for induction where the top demands a magnetic base. The number that matters is the gauge, the thickness of the metal. A thin pan warps on a hot burner and cooks in hot spots; a heavier gauge stays flat and even for years. Pay for the gauge; it is the difference between a pan and a frisbee.'),
           h2('The handle is what fails first'),
-          para('On a busy line the handle is what gives out — it loosens, it heats up, or it snaps. Look for a riveted handle, not spot-welded, because rivets survive the thermal cycling and the drops that kill a weld. For anything going in a hot oven, skip the silicone sleeve that melts and spec a metal stay-cool handle instead. And check that the whole pan is dishwasher-and-oven rated, because in a real kitchen it will see both, whether the spec sheet expected it or not.'),
+          para('On a busy line the handle is what gives out. It loosens, it heats up, or it snaps. Look for a riveted handle, not spot-welded, because rivets survive the thermal cycling and the drops that kill a weld. For anything going in a hot oven, skip the silicone sleeve that melts and spec a metal stay-cool handle instead. And check that the whole pan is dishwasher-and-oven rated, because in a real kitchen it will see both, whether the spec sheet expected it or not.'),
           h2('Buy the movers by the case'),
-          para('Sauté pans, sheet pans and the everyday sizes are consumables — they get used every service and they wear out. Keep a case of the ones you burn through on the shelf, set a reorder point, and buy them at trade pricing so a warped pan gets retired, not nursed along. The only real cookware mistake is running a station on the last good pan in the rack.'),
+          para('Sauté pans, sheet pans and the everyday sizes are consumables. They get used every service and they wear out. Keep a case of the ones you burn through on the shelf, set a reorder point, and buy them at trade pricing so a warped pan gets retired, not nursed along. The only real cookware mistake is running a station on the last good pan in the rack.'),
         ],
       },
     },
@@ -832,13 +832,13 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Smallwares are the quiet line item that adds up. Any single knife, container or pair of tongs is cheap, so nobody sweats the spec — and then the kitchen rebuys the whole drawer every few months because none of it was built to last. Buy smallwares the way you buy equipment: to a standard, in volume, once.'),
+          para('Smallwares are the quiet line item that adds up. Any single knife, container or pair of tongs is cheap, so nobody sweats the spec, and then the kitchen rebuys the whole drawer every few months because none of it was built to last. Buy smallwares the way you buy equipment: to a standard, in volume, once.'),
           h2('Look for the NSF mark'),
-          para('The NSF certification on a piece of smallware is not red tape — it is a promise the thing can be cleaned and will survive being cleaned, over and over, in a commercial dish pit. It means smooth, non-porous surfaces with no seams for bacteria to hide in, and materials rated for the temperatures a sanitiser and a dishwasher hit. A health inspector looks for it; so should you. If a container or a handle is not NSF-rated, assume it will not last and may not pass.'),
+          para('The NSF certification on a piece of smallware is not red tape. It is a promise the thing can be cleaned and will survive being cleaned, over and over, in a commercial dish pit. It means smooth, non-porous surfaces with no seams for bacteria to hide in, and materials rated for the temperatures a sanitiser and a dishwasher hit. A health inspector looks for it; so should you. If a container or a handle is not NSF-rated, assume it will not last and may not pass.'),
           h2('Dishwasher-safe or it will not survive'),
-          para('Everything in a kitchen goes through the machine, whatever the label says — so buy as if it will. Polypropylene and moulded handles take the heat; wood and cheap silicone do not. Polycarbonate food containers survive the walk-in and the wash; the clear ones you can see stock through save a cook from opening five lids to find the demi. Spec for the dish pit up front and you stop replacing warped, cracked and delaminated smallwares on a quarterly cycle.'),
+          para('Everything in a kitchen goes through the machine, whatever the label says, so buy as if it will. Polypropylene and moulded handles take the heat; wood and cheap silicone do not. Polycarbonate food containers survive the walk-in and the wash; the clear ones you can see stock through save a cook from opening five lids to find the demi. Spec for the dish pit up front and you stop replacing warped, cracked and delaminated smallwares on a quarterly cycle.'),
           h2('Standardise, then buy by the case'),
-          para('Pick one chef\'s knife, one container system, one plate, and kit the whole kitchen with it. Standardising means a lid always fits, a spare is always the same, and a new hire is not learning three different tools. Then buy your standard by the case at trade pricing and keep backups on the shelf — so a lost knife or a cracked container is a two-minute swap from stock, not a special order that leaves a station short through service.'),
+          para('Pick one chef\'s knife, one container system, one plate, and kit the whole kitchen with it. Standardising means a lid always fits, a spare is always the same, and a new hire is not learning three different tools. Then buy your standard by the case at trade pricing and keep backups on the shelf, so a lost knife or a cracked container is a two-minute swap from stock, not a special order that leaves a station short through service.'),
         ],
       },
     },
@@ -853,7 +853,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Restaurant Equipment (B2B / Wholesale)',
   theme: THEME,
   summary:
-    'A complete, working wholesale shop for a commercial kitchen & restaurant-equipment distributor: a real trade catalogue sold by the unit and the case — prep tables, cooking gear, food storage, front-of-house service and smallwares — with categories, collections, a bespoke trade PDP (per-unit/per-case pricing, volume breaks, net-30), and a full merchandised home page. Kitchen-grade theme — warm steel ground, deep graphite, an ember copper accent. Shipped as Pass Supply Co.',
+    'A complete, working wholesale shop for a commercial kitchen & restaurant-equipment distributor: a real trade catalogue sold by the unit and the case, prep tables, cooking gear, food storage, front-of-house service and smallwares, with categories, collections, a bespoke trade PDP (per-unit/per-case pricing, volume breaks, net-30), and a full merchandised home page. Kitchen-grade theme, warm steel ground, deep graphite, an ember copper accent. Shipped as Pass Supply Co.',
   tagline: 'A wholesale storefront built for commercial kitchens.',
   vertical: 'b2b',
   industry: 'Restaurant equipment & smallwares',
@@ -866,17 +866,17 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Pass Supply Co. — commercial kitchen & restaurant equipment',
+      title: 'Pass Supply Co. commercial kitchen & restaurant equipment',
       description:
-        'Pass Supply is a commercial kitchen and restaurant-equipment distributor — prep tables, cooking gear, food storage, front-of-house service and smallwares, sold by the unit and the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.',
+        'Pass Supply is a commercial kitchen and restaurant-equipment distributor: prep tables, cooking gear, food storage, front-of-house service and smallwares, sold by the unit and the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.',
     },
     about: {
       title: 'About Pass Supply Co.',
       description:
-        'How Pass Supply stocks, prices and ships — one catalog, one account, one invoice, wholesale by the unit and the case, and kitchen-grade gear that is on the shelf when service depends on it.',
+        'How Pass Supply stocks, prices and ships. One catalog, one account, one invoice, wholesale by the unit and the case, and kitchen-grade gear that is on the shelf when service depends on it.',
     },
     contact: {
-      title: 'Open a trade account — Pass Supply Co.',
+      title: 'Open a trade account: Pass Supply Co.',
       description:
         'Set up a trade account with Pass Supply: wholesale per-unit and per-case pricing, volume breaks, net-30 terms and a dedicated account manager. Fit-out quotes and multi-location supply start here.',
     },

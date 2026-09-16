@@ -392,11 +392,11 @@ export function countLabel(entity: CanonicalEntity, count: number): string {
 export function summarize(report: ValidationReport): string {
   if (report.blocked) {
     const problems = report.issues.filter((issue) => issue.rowIndex === -1).length;
-    return `This file cannot be imported yet — ${problems} problem${problems === 1 ? '' : 's'} to fix first.`;
+    return `This file cannot be imported yet: ${problems} problem${problems === 1 ? '' : 's'} to fix first.`;
   }
   if (report.errorCount === 0 && report.warningCount === 0)
     return `${countLabel(report.entity, report.rowCount)} ready to import.`;
   if (report.errorCount === 0)
-    return `${countLabel(report.entity, report.okCount)} ready — ${report.warningCount} thing${report.warningCount === 1 ? '' : 's'} to know about.`;
-  return `${countLabel(report.entity, report.okCount)} ready — ${report.errorRows.length} row${report.errorRows.length === 1 ? '' : 's'} of ${report.rowCount.toLocaleString()} will be skipped.`;
+    return `${countLabel(report.entity, report.okCount)} ready: ${report.warningCount} thing${report.warningCount === 1 ? '' : 's'} to know about.`;
+  return `${countLabel(report.entity, report.okCount)} ready: ${report.errorRows.length} row${report.errorRows.length === 1 ? '' : 's'} of ${report.rowCount.toLocaleString()} will be skipped.`;
 }

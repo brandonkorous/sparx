@@ -255,7 +255,7 @@
     {
       "handle": "swedish-90",
       "name": "Swedish relaxation · 90 min",
-      "description": "The full unhurried hour and a half — nowhere to be, nothing to do, every knot given the time it needs to let go.",
+      "description": "The full unhurried hour and a half. Nowhere to be, nothing to do, every knot given the time it needs to let go.",
       "durationMinutes": 90,
       "priceCents": 15500,
       "bufferAfterMin": 10,
@@ -303,7 +303,7 @@
     {
       "handle": "aromatherapy",
       "name": "Aromatherapy massage · 75 min",
-      "description": "You choose the blend — calm, restore or breathe — and we work it in with slow, grounding pressure. You’ll carry the quiet home with you.",
+      "description": "You choose the blend (calm, restore or breathe) and we work it in with slow, grounding pressure. You’ll carry the quiet home with you.",
       "durationMinutes": 75,
       "priceCents": 14000,
       "bufferAfterMin": 10,
@@ -374,7 +374,7 @@
     {
       "handle": "couples-retreat",
       "name": "Couples massage · 90 min",
-      "description": "Two therapists, one candlelit suite, side by side. Arrive together, breathe out together — the most-gifted hour on the menu.",
+      "description": "Two therapists, one candlelit suite, side by side. Arrive together, breathe out together: the most-gifted hour on the menu.",
       "durationMinutes": 90,
       "priceCents": 32000,
       "bufferAfterMin": 20,

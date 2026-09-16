@@ -90,7 +90,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'New sequence — hold Shift to open alongside, Alt for a new window',
+          title: 'New sequence: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <div className="w-40 shrink-0">
@@ -134,7 +134,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faRoute} className="size-6" aria-hidden />}
             title="Could not load your sequences"
-            description="Something went wrong reaching the server. Anyone already in a sequence is unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Anyone already in a sequence is unaffected. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -153,7 +153,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No sequences yet',
               description:
-                'A sequence follows up with someone over time — a welcome today, a nudge in two days, an offer in a week — sending each email on its own schedule. Create your first to get started.',
+                'A sequence follows up with someone over time (a welcome today, a nudge in two days, an offer in a week) sending each email on its own schedule. Create your first to get started.',
               actions: (
                 <Button
                   size="sm"

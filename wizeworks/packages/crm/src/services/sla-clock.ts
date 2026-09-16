@@ -118,7 +118,7 @@ export function addBusinessMinutes(from: Date, minutes: number, calendar: Busine
   }
 
   throw new Error(
-    `This schedule has no open hours to count against — check the policy's business hours and holidays (timezone ${calendar.timezone}).`
+    `This schedule has no open hours to count against. Check the policy's business hours and holidays (timezone ${calendar.timezone}).`
   );
 }
 

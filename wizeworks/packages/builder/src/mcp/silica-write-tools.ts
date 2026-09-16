@@ -29,7 +29,7 @@ const propertyIdArg = z
   .optional()
   .describe(
     'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
-      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'MULTIPLE sites. Call list_sites first to get each site’s id, then pass it here to target ' +
       'that specific site.'
   );
 
@@ -47,9 +47,9 @@ function countOutlets(node: SilicaNode): number {
 export const upsertSilicaPage: McpToolDefinition = {
   name: 'upsert_silica_page',
   description:
-    'Create or replace one page’s content. `sections` are the page’s top-level children — never the outer page ' +
+    'Create or replace one page’s content. `sections` are the page’s top-level children, never the outer page ' +
     'wrapper, never ids (the service stamps both). Omit `id` to CREATE a page (a fresh id is returned); pass an ' +
-    'existing id to REPLACE that page’s content. A slugless page (empty `slug`) is the site home. Saves to DRAFT — ' +
+    'existing id to REPLACE that page’s content. A slugless page (empty `slug`) is the site home. Saves to DRAFT: ' +
     'call publish_silica_site to take it live. See describe_silica_authoring for composing `sections` from real ' +
     'blocks/composites, and set_page_seo / set_page_record_type / set_page_default for metadata this tool does NOT ' +
     'carry.',
@@ -98,7 +98,7 @@ export const upsertSilicaPage: McpToolDefinition = {
 export const deleteSilicaPage: McpToolDefinition = {
   name: 'delete_silica_page',
   description:
-    'Delete one silica page permanently. Refused if it is the site’s only page (a site needs at least one) — ' +
+    'Delete one silica page permanently. Refused if it is the site’s only page (a site needs at least one): ' +
     'replace its content with upsert_silica_page instead. Confirmation-gated.',
   scope: 'write:builder',
   confirmation: true,
@@ -119,7 +119,7 @@ export const deleteSilicaPage: McpToolDefinition = {
 export const setSilicaFrame: McpToolDefinition = {
   name: 'set_silica_frame',
   description:
-    'Replace the site’s FRAME (chrome) — the shared navbar/Outlet/footer every page renders through. `root` must ' +
+    'Replace the site’s FRAME (chrome): the shared navbar/Outlet/footer every page renders through. `root` must ' +
     'contain EXACTLY ONE Outlet node (marks where the routed page renders). Requires the site to already have at ' +
     'least one page (author the home page first via upsert_silica_page). Saves to DRAFT.',
   scope: 'write:builder',
@@ -130,7 +130,7 @@ export const setSilicaFrame: McpToolDefinition = {
     const outlets = countOutlets(root);
     if (outlets !== 1) {
       throw new BuilderValidationError(
-        `A frame must contain exactly one Outlet node (found ${outlets}) — it marks where the routed page renders ` +
+        `A frame must contain exactly one Outlet node (found ${outlets}): it marks where the routed page renders ` +
           'between your header and footer.'
       );
     }
@@ -149,7 +149,7 @@ export const setSilicaFrame: McpToolDefinition = {
 export const setSilicaTheme: McpToolDefinition = {
   name: 'set_silica_theme',
   description:
-    'Replace the site’s authored THEME. This REPLACES the whole theme object — pass every token to keep, not just ' +
+    'Replace the site’s authored THEME. This REPLACES the whole theme object: pass every token to keep, not just ' +
     'the ones changing. Optionally replace the saved-theme library too (`savedThemes`; pass `[]` to clear it, omit ' +
     'to leave it as-is). Requires the site to already have at least one page. Saves to DRAFT.',
   scope: 'write:builder',
@@ -179,7 +179,7 @@ export const setSilicaTheme: McpToolDefinition = {
 export const publishSilicaSite: McpToolDefinition = {
   name: 'publish_silica_site',
   description:
-    'Publish the whole site live — snapshots every DRAFT (pages, frame, theme, symbols) to its published ' +
+    'Publish the whole site live: snapshots every DRAFT (pages, frame, theme, symbols) to its published ' +
     'counterpart in one call. Confirmation-gated.',
   scope: 'write:builder',
   confirmation: true,
@@ -195,7 +195,7 @@ export const resetSilicaSite: McpToolDefinition = {
   name: 'reset_silica_site',
   description:
     'Discard ALL silica-materialized pages, the frame, and saved symbols, so the editor reopens on the current ' +
-    'starter seed. The authored THEME survives a reset. DESTRUCTIVE — confirmation-gated. Use this to clear out ' +
+    'starter seed. The authored THEME survives a reset. DESTRUCTIVE: confirmation-gated. Use this to clear out ' +
     'stale/throwaway content before a fresh authoring pass.',
   scope: 'write:builder',
   confirmation: true,

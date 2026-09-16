@@ -88,7 +88,7 @@ function VendorTile({ vendor, onPick }: { vendor: VendorCard; onPick: () => void
         {connectorOnly.length > 0 ? (
           <Text className="text-sm">
             {sentenceList(connectorOnly.map((entity) => entity.label))} only come across through the
-            live connection — {vendor.name} has no export that produces{' '}
+            live connection: {vendor.name} has no export that produces{' '}
             {connectorOnly.length === 1 ? 'it' : 'them'}.
           </Text>
         ) : null}

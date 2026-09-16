@@ -116,7 +116,7 @@ function Verdict({ f }: { f: Figures }) {
           {`${usd(f.difference * 12)}${NB}a year, on the software alone.`}
         </p>
         <p className="mt-3 text-base">
-          {`That is the difference between what you typed in and ${PRICE_LABEL} — your figures, not ours. ${
+          {`That is the difference between what you typed in and ${PRICE_LABEL}: your figures, not ours. ${
             f.bills > 1
               ? `The renewal dates, the logins, and ${count(f.bills, 'thing that has', 'things that have')} never once spoken to each other go with it.`
               : 'The renewal date and the separate login go with it.'
@@ -133,7 +133,7 @@ function Verdict({ f }: { f: Figures }) {
       <p className="mt-4 text-lg font-bold">
         {f.bills > 1
           ? `Exactly what you pay now, for one bill instead of ${count(f.bills, 'bill', 'bills')}.`
-          : 'Exactly what that one thing costs you — for all fifteen apps.'}
+          : 'Exactly what that one thing costs you, for all fifteen apps.'}
       </p>
     );
   }
@@ -144,7 +144,7 @@ function Verdict({ f }: { f: Figures }) {
         Piggles is not the cheaper option for you.
       </p>
       <p className="mt-3 text-base">
-        {`You are spending ${usd(f.monthly)}${NB}a month, which is under the price. What you would be buying is the joining up — one place, one login, and never typing the same customer’s name into the fourth thing. If that is not worth ${usd(-f.difference)} to you, it is not, and we would rather you knew that here than in month three.`}
+        {`You are spending ${usd(f.monthly)}${NB}a month, which is under the price. What you would be buying is the joining up. One place, one login, and never typing the same customer’s name into the fourth thing. If that is not worth ${usd(-f.difference)} to you, it is not, and we would rather you knew that here than in month three.`}
       </p>
     </>
   );
@@ -160,7 +160,7 @@ function TimeCost({ hoursYearly }: { hoursYearly: number }) {
       </p>
       <p className="mt-2 text-base">
         A year of your own hours, at the value you put on them. Piggles cannot hand you back the
-        work — it can hand you back the part where you do it twice, because there is only one place
+        work. It can hand you back the part where you do it twice, because there is only one place
         to type it.
       </p>
     </div>
@@ -225,7 +225,7 @@ export function WhatYouPayReceipt({ bills, f }: { bills: Bills; f: Figures }) {
         <Ours f={f} />
       ) : (
         <p className="mt-6 text-lg">
-          {`Put what each one costs beside it and this works out where you stand. Or leave them empty — ${count(f.bills, 'thing', 'things')} to keep paying for is an answer on its own, and Piggles is one.`}
+          {`Put what each one costs beside it and this works out where you stand. Or leave them empty: ${count(f.bills, 'thing', 'things')} to keep paying for is an answer on its own, and Piggles is one.`}
         </p>
       )}
 
@@ -238,7 +238,7 @@ export function WhatYouPayReceipt({ bills, f }: { bills: Bills; f: Figures }) {
         Start free for 14 days
       </a>
       <p className="mt-3 text-base">
-        No card needed. {PRICE_LABEL} covers one business, one website and three people — the whole
+        No card needed. {PRICE_LABEL} covers one business, one website and three people: the whole
         list is right below.
       </p>
     </div>

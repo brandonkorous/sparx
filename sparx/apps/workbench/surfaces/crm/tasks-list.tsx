@@ -93,7 +93,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New task — hold Shift to open alongside, Alt for a new window"
+            title="New task: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('crm.task.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -134,7 +134,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<ListChecks className="size-6" aria-hidden />}
             title="Could not load your tasks"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             actions={
               <Button
                 size="sm"
@@ -158,7 +158,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
               icon: <ListChecks className="size-6" aria-hidden />,
               title: 'No tasks match those filters',
               description:
-                'Try a different word, or change the filter — done and cancelled tasks are hidden unless you ask for them.',
+                'Try a different word, or change the filter: done and canceled tasks are hidden unless you ask for them.',
             }}
             firstRun={{
               title: 'No tasks to do',

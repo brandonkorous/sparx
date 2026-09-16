@@ -33,7 +33,7 @@ export function EmailBroadcast() {
           <SectionHeader
             accent={E.color}
             headline="Send to a segment, watch it land"
-            lede="Pick a saved CRM segment, compose, and send — or schedule it. Opens, clicks, bounces, and unsubscribes report back per send, and revenue is attributed to orders placed within 24 hours of a click. The list never leaves sparx."
+            lede="Pick a saved CRM segment, compose, and send, or schedule it. Opens, clicks, bounces, and unsubscribes report back per send, and revenue is attributed to orders placed within 24 hours of a click. The list never leaves sparx."
           />
           <ul className="mt-[30px] flex list-none flex-wrap items-center gap-2.5 p-0">
             {chips.map((c) => (
@@ -138,7 +138,7 @@ export function EmailAutomations() {
       <SectionHeader
         accent={E.color}
         headline="The automations are already on"
-        lede="Activate Email and the default flows run from minute one — zero configuration. Each is a when → then rule on a real platform event, and you can tune, pause, or disable the optional ones whenever you like."
+        lede="Activate Email and the default flows run from minute one: zero configuration. Each is a when → then rule on a real platform event, and you can tune, pause, or disable the optional ones whenever you like."
       />
       <div className="bg-base-300 border-base-300 mt-13 flex flex-col gap-px overflow-hidden rounded-[14px] border">
         {rows.map((r) => (
@@ -174,7 +174,7 @@ export function EmailCapabilities() {
     },
     {
       title: 'Engagement analytics',
-      body: 'Sent, delivered, opened, clicked, bounced, and unsubscribed per send — plus attributed revenue and your best send time.',
+      body: 'Sent, delivered, opened, clicked, bounced, and unsubscribed per send: plus attributed revenue and your best send time.',
     },
     {
       title: 'Suppressions, handled',
@@ -182,7 +182,7 @@ export function EmailCapabilities() {
     },
     {
       title: 'Segments from CRM',
-      body: 'Target any live segment — spend, recency, tags, B2B tier — straight from the CRM. The audience recomputes itself; no export, ever.',
+      body: 'Target any live segment (spend, recency, tags, B2B tier) straight from the CRM. The audience recomputes itself; no export, ever.',
     },
     {
       title: 'Inbox placement',
@@ -190,7 +190,7 @@ export function EmailCapabilities() {
     },
     {
       title: 'Drive it over MCP',
-      body: 'Your AI assistant can pull email stats and send a broadcast in plain English — with a confirmation step before anything goes out.',
+      body: 'Your AI assistant can pull email stats and send a broadcast in plain English, with a confirmation step before anything goes out.',
     },
   ];
   return (
@@ -198,7 +198,7 @@ export function EmailCapabilities() {
       <SectionHeader
         accent={E.color}
         headline={<>Everything a sender needs</>}
-        lede="The parts that make email actually work — building, measuring, and keeping a clean list — are all in the box, not add-ons."
+        lede="The parts that make email actually work (building, measuring, and keeping a clean list) are all in the box, not add-ons."
       />
       <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {caps.map((c) => (

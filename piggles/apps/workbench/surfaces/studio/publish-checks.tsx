@@ -25,7 +25,7 @@ function whereOf(finding: CheckFinding): string {
   if (location.scope === 'frame') return 'Your header and footer';
   if (location.scope === 'site') return 'Your site';
   if (location.seenOn.length > 1) {
-    return `${location.ownerName} — seen on ${String(location.seenOn.length)} pages`;
+    return `${location.ownerName}: seen on ${String(location.seenOn.length)} pages`;
   }
   return location.ownerName;
 }
@@ -59,7 +59,7 @@ export function PublishChecks({
         <CheckReport report={report} />
       ) : (
         <p className="text-base-content text-sm">
-          A quick look for the things visitors notice — links that go nowhere, pictures with no
+          A quick look for the things visitors notice: links that go nowhere, pictures with no
           description, words that are hard to read. It never stops you publishing.
         </p>
       )}
@@ -88,8 +88,8 @@ function CheckReport({ report }: { report: SiteCheckReport }) {
       {missed.length ? (
         <Alert color="warning">
           {missed.length === 1
-            ? `We could not look at ${missed[0]?.name ?? 'one page'} — it has never been opened and saved, so there is nothing there to check yet.`
-            : `We could not look at ${String(missed.length)} pages — ${missed.map((page) => page.name).join(', ')}. They have never been opened and saved, so there is nothing there to check yet.`}
+            ? `We could not look at ${missed[0]?.name ?? 'one page'}: it has never been opened and saved, so there is nothing there to check yet.`
+            : `We could not look at ${String(missed.length)} pages: ${missed.map((page) => page.name).join(', ')}. They have never been opened and saved, so there is nothing there to check yet.`}
         </Alert>
       ) : null}
 

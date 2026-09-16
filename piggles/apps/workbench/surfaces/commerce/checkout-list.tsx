@@ -123,7 +123,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faCreditCard} className="size-6" aria-hidden />}
             title="Could not load checkout sessions"
-            description="This is a problem reaching the server. Your sales are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your sales are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading checkout sessions…" />
@@ -142,7 +142,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 ? 'Every checkout either went through or timed out. Nothing is sitting half-paid.'
                 : filtered
                   ? `No sessions are at “${activeFilter.label}” right now. Switch to All to see the rest.`
-                  : 'When a shopper starts paying, their progress shows up here — useful for spotting where a payment got stuck.'
+                  : 'When a shopper starts paying, their progress shows up here: useful for spotting where a payment got stuck.'
             }
           />
         ) : (

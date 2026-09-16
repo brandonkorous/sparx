@@ -16,7 +16,7 @@ import type { McpToolDefinition } from './registry';
 export const listAutomationsTool: McpToolDefinition = {
   name: 'list_automations',
   description:
-    'List the tenant\'s automations, optionally filtered by status (draft/active/paused), triggerType, or origin. `origin:"system"` are platform-managed rules (some Locked — they reject edits, duplicate them to adapt); `origin:"user"` are tenant-authored.',
+    'List the tenant\'s automations, optionally filtered by status (draft/active/paused), triggerType, or origin. `origin:"system"` are platform-managed rules (some Locked, they reject edits, duplicate them to adapt); `origin:"user"` are tenant-authored.',
   scope: 'read:automations',
   confirmation: false,
   input: z.object({
@@ -30,7 +30,7 @@ export const listAutomationsTool: McpToolDefinition = {
 export const getAutomationTool: McpToolDefinition = {
   name: 'get_automation',
   description:
-    'Fetch one automation by id — its trigger, conditions, actions, status, and tier flags (origin/locked/clonedFrom).',
+    'Fetch one automation by id. Its trigger, conditions, actions, status, and tier flags (origin/locked/clonedFrom).',
   scope: 'read:automations',
   confirmation: false,
   input: z.object({ automationId: z.string().uuid() }),
@@ -45,7 +45,7 @@ export const getAutomationTool: McpToolDefinition = {
 export const getAutomationRunsTool: McpToolDefinition = {
   name: 'get_automation_runs',
   description:
-    'Recent execution history for one automation — each run with its status (completed / failed / waiting / gated). Use this to see whether a rule is actually firing and why.',
+    'Recent execution history for one automation. Each run with its status (completed / failed / waiting / gated). Use this to see whether a rule is actually firing and why.',
   scope: 'read:automations',
   confirmation: false,
   input: z.object({

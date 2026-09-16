@@ -128,8 +128,8 @@ const ASSETS: Asset[] = [
     { id: 'prod-cassis', url: src('prod-cassis'), alt: 'The Cassis round hand-polished sunglasses' },
     { id: 'prod-study', url: src('prod-study'), alt: 'The Study Reader acetate reading glasses' },
     { id: 'prod-1932', url: src('prod-1932'), alt: 'The 1932 Anniversary limited-run acetate frame' },
-    { id: 'prod-case', url: src('prod-case'), alt: 'The Saddle Case — hand-stitched leather glasses case' },
-    { id: 'prod-kit', url: src('prod-kit'), alt: 'The Bench Kit — lens cloth, alcohol-free spray and hinge oil' },
+    { id: 'prod-case', url: src('prod-case'), alt: 'The Saddle Case: hand-stitched leather glasses case' },
+    { id: 'prod-kit', url: src('prod-kit'), alt: 'The Bench Kit: lens cloth, alcohol-free spray and hinge oil' },
     { id: 'post-acetate', url: src('post-acetate'), alt: 'Sheets of tortoise acetate stacked at a frame-making workshop' },
     { id: 'post-fit', url: src('post-fit'), alt: 'An optician measuring a frame against a face' },
     { id: 'post-1932', url: src('post-1932'), alt: 'An archival photograph of the founding workshop' },
@@ -162,7 +162,7 @@ function hero(): Node {
                                     text: 'Hand-finished acetate, made the slow way.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Atelier Optique has cut, shaped and polished frames by hand since 1932. Every pair is turned from a single block of Italian acetate over five weeks and forty pairs of hands — glasses built to be worn for a lifetime, and handed on after it.',
+                                    text: 'Atelier Optique has cut, shaped and polished frames by hand since 1932. Every pair is turned from a single block of Italian acetate over five weeks and forty pairs of hands: glasses built to be worn for a lifetime, and handed on after it.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -288,7 +288,7 @@ function pdpBuyRegion(): Node {
                             el('div', 'flex flex-col gap-4', {
                                 children: [
                                     el('p', 'text-sm font-semibold uppercase tracking-widest text-secondary', {
-                                        text: 'Atelier Optique — since 1932',
+                                        text: 'Atelier Optique, since 1932',
                                     }),
                                     pdpTitle('h1', 'text-4xl font-bold leading-none tracking-tight text-base-content @3xl:text-5xl'),
                                     pdpPriceRow({
@@ -309,7 +309,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Hand-finished & glazed in-house' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Choose your lens at checkout — prescription, blue-light or plain — and add your prescription now or later. Every pair is hand-polished, five-barrel riveted and cut to your lenses on our own bench, then delivered in a hand-stitched leather case. Adjustments and repairs are free, for life.',
+                                        text: 'Choose your lens at checkout (prescription, blue-light or plain) and add your prescription now or later. Every pair is hand-polished, five-barrel riveted and cut to your lenses on our own bench, then delivered in a hand-stitched leather case. Adjustments and repairs are free, for life.',
                                     }),
                                 ],
                             }),
@@ -348,11 +348,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The collection',
-        'Every frame the house makes — optical, sun and reading — each hand-finished in its own acetate colorways, with the lens choice built in. Filter by shape or category, or sort however you like; all of it is cut and glazed to order on our bench.'
+        'Every frame the house makes (optical, sun and reading) each hand-finished in its own acetate colorways, with the lens choice built in. Filter by shape or category, or sort however you like; all of it is cut and glazed to order on our bench.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The frames grouped the way people actually shop — new off the bench, the best-loved shapes, the full optical line, sun, the reading room, and the 1932 series struck in limited numbers each year.'),
+    pageMasthead('Collections', 'The frames grouped the way people actually shop: new off the bench, the best-loved shapes, the full optical line, sun, the reading room, and the 1932 series struck in limited numbers each year.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Atelier Optique', 'Looking for a shape, a colorway, or a note from the workshop? Search the whole house and the journal below.'),
@@ -364,7 +364,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Complimentary shipping and a leather case with every pair, and thirty days to be sure. Not certain of your prescription? Add it after checkout — we’ll hold your order and email a gentle reminder. Adjustments and repairs are free, for the life of the frame.',
+                        text: 'Complimentary shipping and a leather case with every pair, and thirty days to be sure. Not certain of your prescription? Add it after checkout: we’ll hold your order and email a gentle reminder. Adjustments and repairs are free, for the life of the frame.',
                     }),
                 ],
             }),
@@ -378,7 +378,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The workshop journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the bench — how a frame is made, how to find the shape that suits you, and the ninety-year story behind the house. Plain, unhurried, and written by the people who file the acetate.',
+                        text: 'Notes from the bench: how a frame is made, how to find the shape that suits you, and the ninety-year story behind the house. Plain, unhurried, and written by the people who file the acetate.',
                     }),
                 ],
             }),
@@ -398,10 +398,10 @@ const ABOUT: Node[] = [
                         text: 'In 1932, a young frame-maker set up a bench in a narrow workshop and began cutting spectacle fronts from sheets of acetate by hand. Ninety years on, his grandchildren stand at the same benches, using some of the same tools, making frames the same unhurried way. Little has changed, because little needed to.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We buy our acetate from the same Italian mill our grandfather did, choosing the sheets by eye for depth and figure the way you’d choose timber. Each frame front is milled from a single block, then tumbled in beechwood drums for days and polished by hand until it takes on a lustre no machine can rush. Hinges are set with five barrels and steel rivets — the joint that lasts a lifetime, not a season.',
+                        text: 'We buy our acetate from the same Italian mill our grandfather did, choosing the sheets by eye for depth and figure the way you’d choose timber. Each frame front is milled from a single block, then tumbled in beechwood drums for days and polished by hand until it takes on a lustre no machine can rush. Hinges are set with five barrels and steel rivets: the joint that lasts a lifetime, not a season.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Every lens is glazed on our own bench, every pair fitted by hand, and anything we have ever made, we will always repair. A frame from this house is not meant to be replaced next year. It is meant to be worn until it’s yours, then handed on — which is the only kind of luxury we believe in.',
+                        text: 'Every lens is glazed on our own bench, every pair fitted by hand, and anything we have ever made, we will always repair. A frame from this house is not meant to be replaced next year. It is meant to be worn until it’s yours, then handed on, which is the only kind of luxury we believe in.',
                     }),
                 ],
             }),
@@ -416,7 +416,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Call on the workshop',
-        intro: 'Unsure which shape suits you, need a hand reading your prescription, or want a frame repaired or refitted? Write to the bench and one of the makers — not a call centre — will write back to you personally.',
+        intro: 'Unsure which shape suits you, need a hand reading your prescription, or want a frame repaired or refitted? Write to the bench and one of the makers (not a call centre) will write back to you personally.',
         submitLabel: 'Write to the bench',
     }),
 ];
@@ -515,21 +515,21 @@ const PRODUCTS: Product[] = [
         handle: 'beaumont',
         title: 'The Beaumont',
         description:
-            'The frame the house is known for — a rounded panto in hand-finished acetate, its curve softened by hand until it flatters almost any face. Milled from a single block, tumbled for days and set on five-barrel hinges, it has been cut on this bench, largely unchanged, since 1948.',
+            'The frame the house is known for: a rounded panto in hand-finished acetate, its curve softened by hand until it flatters almost any face. Milled from a single block, tumbled for days and set on five-barrel hinges, it has been cut on this bench, largely unchanged, since 1948.',
         price: 285,
         sku: 'AO-BEAUMONT',
         categories: ['optical'],
         collections: ['off-the-bench', 'optical-line', 'best-loved'],
         tags: ['optical', 'panto', 'round', 'acetate', 'signature'],
         asset: 'prod-beaumont',
-        seoTitle: 'The Beaumont — hand-finished panto optical frame | Atelier Optique',
+        seoTitle: 'The Beaumont: hand-finished panto optical frame | Atelier Optique',
         seoDescription: 'A rounded panto in hand-polished Italian acetate, cut from a single block on five-barrel hinges. Prescription or blue-light.',
     }),
     frame({
         handle: 'ellsworth',
         title: 'The Ellsworth',
         description:
-            'A bold rectangular front for a face that can carry it — deep, architectural and quietly confident, with a heavy brow line and a keen-cut bevel that catches the light. The dark havana is figured like walnut; no two fronts are ever quite the same.',
+            'A bold rectangular front for a face that can carry it: deep, architectural and quietly confident, with a heavy brow line and a keen-cut bevel that catches the light. The dark havana is figured like walnut; no two fronts are ever quite the same.',
         price: 295,
         sku: 'AO-ELLSWORTH',
         categories: ['optical'],
@@ -537,14 +537,14 @@ const PRODUCTS: Product[] = [
         tags: ['optical', 'rectangle', 'acetate', 'bold'],
         asset: 'prod-ellsworth',
         colors: ['Dark Havana', 'Ebony', 'Honey Crystal'],
-        seoTitle: 'The Ellsworth — bold rectangular acetate frame | Atelier Optique',
+        seoTitle: 'The Ellsworth: bold rectangular acetate frame | Atelier Optique',
         seoDescription: 'A deep, architectural rectangular front in figured dark-havana acetate, hand-bevelled and polished. Prescription or blue-light.',
     }),
     frame({
         handle: 'marguerite',
         title: 'The Marguerite',
         description:
-            'A gently lifted cat-eye, drawn from a 1950s pattern still pinned to the workshop wall. The upsweep is filed by hand so the line stays soft rather than sharp — flattering, a little bit of an occasion, and made to be worn every ordinary day as well.',
+            'A gently lifted cat-eye, drawn from a 1950s pattern still pinned to the workshop wall. The upsweep is filed by hand so the line stays soft rather than sharp: flattering, a little bit of an occasion, and made to be worn every ordinary day as well.',
         price: 290,
         sku: 'AO-MARGUERITE',
         categories: ['optical'],
@@ -552,14 +552,14 @@ const PRODUCTS: Product[] = [
         tags: ['optical', 'cat-eye', 'acetate', 'vintage'],
         asset: 'prod-marguerite',
         colors: ['Rose Tortoise', 'Havana', 'Onyx'],
-        seoTitle: 'The Marguerite — hand-filed cat-eye frame | Atelier Optique',
+        seoTitle: 'The Marguerite: hand-filed cat-eye frame | Atelier Optique',
         seoDescription: 'A softly lifted cat-eye drawn from a 1950s workshop pattern, hand-filed in figured acetate. Prescription or blue-light.',
     }),
     frame({
         handle: 'whitfield',
         title: 'The Whitfield',
         description:
-            'A small keyhole panto with a scholarly air — the pince-nez’s well-mannered descendant. Light on the face and quietly characterful, with a hand-cut keyhole bridge and slender temples that disappear into the hair. The reading-room frame, made properly.',
+            'A small keyhole panto with a scholarly air: the pince-nez’s well-mannered descendant. Light on the face and quietly characterful, with a hand-cut keyhole bridge and slender temples that disappear into the hair. The reading-room frame, made properly.',
         price: 275,
         sku: 'AO-WHITFIELD',
         categories: ['optical'],
@@ -567,14 +567,14 @@ const PRODUCTS: Product[] = [
         tags: ['optical', 'keyhole', 'panto', 'small', 'acetate'],
         asset: 'prod-whitfield',
         colors: ['Olive Tortoise', 'Amber', 'Crystal'],
-        seoTitle: 'The Whitfield — keyhole panto optical frame | Atelier Optique',
+        seoTitle: 'The Whitfield: keyhole panto optical frame | Atelier Optique',
         seoDescription: 'A small, scholarly keyhole panto with a hand-cut bridge in figured acetate. Prescription or blue-light.',
     }),
     frame({
         handle: 'riviera',
         title: 'The Riviera',
         description:
-            'A hand-polished sunglass with a mid-century squareness and a warm, glassy finish you only get from days in the drums. UV400 as standard, with the option of polarised lenses ground to cut glare off water and road — the pair for a long drive south, or a slow lunch in the sun.',
+            'A hand-polished sunglass with a mid-century squareness and a warm, glassy finish you only get from days in the drums. UV400 as standard, with the option of polarised lenses ground to cut glare off water and road: the pair for a long drive south, or a slow lunch in the sun.',
         price: 265,
         sku: 'AO-RIVIERA',
         categories: ['sun'],
@@ -583,14 +583,14 @@ const PRODUCTS: Product[] = [
         asset: 'prod-riviera',
         colors: ['Tortoise', 'Bottle Green', 'Ebony'],
         lenses: ['Classic tint', 'Polarised', 'Prescription sun'],
-        seoTitle: 'The Riviera — hand-polished acetate sunglasses | Atelier Optique',
-        seoDescription: 'A mid-century squared sunglass in hand-polished acetate with UV400 lenses — classic, polarised or prescription.',
+        seoTitle: 'The Riviera: hand-polished acetate sunglasses | Atelier Optique',
+        seoDescription: 'A mid-century squared sunglass in hand-polished acetate with UV400 lenses: classic, polarised or prescription.',
     }),
     frame({
         handle: 'cassis',
         title: 'The Cassis',
         description:
-            'A generous round sunglass with a slim acetate rim and a retro tilt — sun-struck and easy, the pair you reach for without thinking. Hand-polished to a deep shine and fitted with UV400 lenses; take it polarised for the water, or prescription so you can finally read the menu.',
+            'A generous round sunglass with a slim acetate rim and a retro tilt: sun-struck and easy, the pair you reach for without thinking. Hand-polished to a deep shine and fitted with UV400 lenses; take it polarised for the water, or prescription so you can finally read the menu.',
         price: 255,
         sku: 'AO-CASSIS',
         categories: ['sun'],
@@ -599,14 +599,14 @@ const PRODUCTS: Product[] = [
         asset: 'prod-cassis',
         colors: ['Honey', 'Tortoise', 'Ebony'],
         lenses: ['Classic tint', 'Polarised', 'Prescription sun'],
-        seoTitle: 'The Cassis — round hand-polished sunglasses | Atelier Optique',
-        seoDescription: 'A generous round acetate sunglass, hand-polished with UV400 lenses — classic, polarised or prescription.',
+        seoTitle: 'The Cassis: round hand-polished sunglasses | Atelier Optique',
+        seoDescription: 'A generous round acetate sunglass, hand-polished with UV400 lenses: classic, polarised or prescription.',
     }),
     frame({
         handle: 'study-reader',
         title: 'The Study Reader',
         description:
-            'A proper reading frame, not a chemist’s afterthought — the same acetate, the same five-barrel hinges and the same hand-polish as the optical line, glazed with magnified reading lenses in the strength you choose. The pair on the bedside table, made to be as good as the one on your face.',
+            'A proper reading frame, not a chemist’s afterthought: the same acetate, the same five-barrel hinges and the same hand-polish as the optical line, glazed with magnified reading lenses in the strength you choose. The pair on the bedside table, made to be as good as the one on your face.',
         price: 165,
         sku: 'AO-STUDY',
         categories: ['reading'],
@@ -615,14 +615,14 @@ const PRODUCTS: Product[] = [
         asset: 'prod-study',
         colors: ['Havana', 'Amber Tortoise', 'Onyx'],
         lenses: ['+1.00', '+1.50', '+2.00', '+2.50'],
-        seoTitle: 'The Study Reader — hand-finished reading glasses | Atelier Optique',
+        seoTitle: 'The Study Reader: hand-finished reading glasses | Atelier Optique',
         seoDescription: 'Well-made reading glasses in hand-polished acetate, glazed to the strength you choose. Havana, amber tortoise or onyx.',
     }),
     frame({
         handle: 'anniversary-1932',
         title: 'The 1932 Anniversary',
         description:
-            'Struck in small numbers each year to mark the year we began — a faithful reissue of the workshop’s very first pattern, cut from a special run of amber-and-ink laminated acetate we lay up by hand. Individually numbered, engraved at the temple, and boxed with a copy of the original 1932 drawing.',
+            'Struck in small numbers each year to mark the year we began: a faithful reissue of the workshop’s very first pattern, cut from a special run of amber-and-ink laminated acetate we lay up by hand. Individually numbered, engraved at the temple, and boxed with a copy of the original 1932 drawing.',
         price: 385,
         sku: 'AO-1932',
         categories: ['optical'],
@@ -631,21 +631,21 @@ const PRODUCTS: Product[] = [
         asset: 'prod-1932',
         colors: ['Archive Amber', 'Ink Tortoise'],
         lenses: ['Prescription', 'Blue-light', 'Plain'],
-        seoTitle: 'The 1932 Anniversary — limited numbered frame | Atelier Optique',
+        seoTitle: 'The 1932 Anniversary: limited numbered frame | Atelier Optique',
         seoDescription: 'A numbered limited-run reissue of the workshop’s first 1932 pattern in hand-laid laminated acetate. Prescription, blue-light or plain.',
     }),
     {
         handle: 'saddle-case',
         title: 'The Saddle Case',
         description:
-            'A hard glasses case cut and stitched by hand from vegetable-tanned saddle leather, lined in soft suede and closed with a solid brass press-stud. It ages the way good leather should — darkening and softening with a decade of pockets — and it comes free with every frame, or on its own here.',
+            'A hard glasses case cut and stitched by hand from vegetable-tanned saddle leather, lined in soft suede and closed with a solid brass press-stud. It ages the way good leather should (darkening and softening with a decade of pockets) and it comes free with every frame, or on its own here.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Atelier Optique',
         tags: ['accessories', 'leather', 'case'],
         categoryHandles: ['accessories'],
         collectionHandles: ['off-the-bench'],
-        seoTitle: 'The Saddle Case — hand-stitched leather glasses case | Atelier Optique',
+        seoTitle: 'The Saddle Case: hand-stitched leather glasses case | Atelier Optique',
         seoDescription: 'A hard glasses case in hand-stitched vegetable-tanned saddle leather, suede-lined with a brass press-stud.',
         variants: [{ sku: 'AO-CASE', priceCents: money(45), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-case', isPrimary: true, alt: 'A hand-stitched leather glasses case' }],
@@ -654,17 +654,17 @@ const PRODUCTS: Product[] = [
         handle: 'bench-kit',
         title: 'The Bench Kit',
         description:
-            'The small kit we keep at the bench, boxed for home — a lint-free polishing cloth, an alcohol-free lens spray that won’t strip a coating, and a phial of hinge oil to keep the temples swinging sweetly. Everything a good pair of glasses needs to last for decades, and nothing it doesn’t.',
+            'The small kit we keep at the bench, boxed for home: a lint-free polishing cloth, an alcohol-free lens spray that won’t strip a coating, and a phial of hinge oil to keep the temples swinging sweetly. Everything a good pair of glasses needs to last for decades, and nothing it doesn’t.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Atelier Optique',
         tags: ['accessories', 'care', 'kit'],
         categoryHandles: ['accessories'],
         collectionHandles: ['off-the-bench'],
-        seoTitle: 'The Bench Kit — lens cloth, spray & hinge oil | Atelier Optique',
-        seoDescription: 'A frame-care kit — lint-free cloth, alcohol-free lens spray and hinge oil — boxed for home from the workshop bench.',
+        seoTitle: 'The Bench Kit: lens cloth, spray & hinge oil | Atelier Optique',
+        seoDescription: 'A frame-care kit (lint-free cloth, alcohol-free lens spray and hinge oil) boxed for home from the workshop bench.',
         variants: [{ sku: 'AO-KIT', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
-        images: [{ assetId: 'prod-kit', isPrimary: true, alt: 'A frame-care kit — cloth, spray and hinge oil' }],
+        images: [{ assetId: 'prod-kit', isPrimary: true, alt: 'A frame-care kit: cloth, spray and hinge oil' }],
     },
 ];
 
@@ -740,16 +740,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The making of a frame, from block to bench',
-            excerpt: 'Five weeks, forty pairs of hands, and a single block of acetate. Here is how a pair of Atelier Optique glasses is actually made — and why we still do it the slow way.',
+            excerpt: 'Five weeks, forty pairs of hands, and a single block of acetate. Here is how a pair of Atelier Optique glasses is actually made, and why we still do it the slow way.',
             featuredImage: { $asset: 'post-acetate' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A frame begins as a flat sheet of acetate — a plant-based plastic pressed from cotton fibre and set with color and figure right through the block, not sprayed on the surface. We buy ours from a mill in northern Italy that has supplied this workshop for three generations, and we choose the sheets by eye, the way you’d choose a cut of timber, for the depth and movement in the pattern.'),
+                    para('A frame begins as a flat sheet of acetate: a plant-based plastic pressed from cotton fibre and set with color and figure right through the block, not sprayed on the surface. We buy ours from a mill in northern Italy that has supplied this workshop for three generations, and we choose the sheets by eye, the way you’d choose a cut of timber, for the depth and movement in the pattern.'),
                     h2('Milled from a single block'),
-                    para('Rather than assemble a frame from moulded parts, we mill each front from one solid block. It is slower and it wastes more material, but it means the grain runs unbroken across the frame and there are no seams to fail. The front is then cut, drilled for hinges, and the rims hollowed for the lenses — still, at this stage, matte and lifeless to look at.'),
+                    para('Rather than assemble a frame from moulded parts, we mill each front from one solid block. It is slower and it wastes more material, but it means the grain runs unbroken across the frame and there are no seams to fail. The front is then cut, drilled for hinges, and the rims hollowed for the lenses: still, at this stage, matte and lifeless to look at.'),
                     h2('Days in the drums, then the hand-polish'),
-                    para('The magic is in the finishing. Each frame goes into rotating beechwood drums with pumice and small wooden pegs and tumbles for days, knocking off every tool mark. Then a maker takes it to a cloth wheel and polishes it by hand until the acetate comes up with a deep, wet lustre — the living shine that tells you a frame was finished by a person, not a machine. Only then do we set the five-barrel hinges with steel rivets, and only then does it earn the name on the temple.'),
+                    para('The magic is in the finishing. Each frame goes into rotating beechwood drums with pumice and small wooden pegs and tumbles for days, knocking off every tool mark. Then a maker takes it to a cloth wheel and polishes it by hand until the acetate comes up with a deep, wet lustre: the living shine that tells you a frame was finished by a person, not a machine. Only then do we set the five-barrel hinges with steel rivets, and only then does it earn the name on the temple.'),
                 ],
             },
         },
@@ -760,16 +760,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Finding the shape that suits you',
-            excerpt: 'The old rule is balance and contrast — round softens angles, angular sharpens curves. Here is how that plays out across the house, with the frames to start from.',
+            excerpt: 'The old rule is balance and contrast: round softens angles, angular sharpens curves. Here is how that plays out across the house, with the frames to start from.',
             featuredImage: { $asset: 'post-fit' },
             body: {
                 type: 'doc',
                 content: [
-                    para('There is one idea behind every guide to choosing glasses: balance and contrast. A frame that gently contrasts with the lines of your face tends to flatter it, while one that echoes your shape can amplify it. It is a rule of thumb, not a law — but it’s a good place to begin, and the house has a shape for each starting point.'),
+                    para('There is one idea behind every guide to choosing glasses: balance and contrast. A frame that gently contrasts with the lines of your face tends to flatter it, while one that echoes your shape can amplify it. It is a rule of thumb, not a law, but it’s a good place to begin, and the house has a shape for each starting point.'),
                     h2('Softer faces, stronger lines'),
-                    para('If your face is round or full, with soft curves and a similar width and length, a little architecture flatters you — the rectangular Ellsworth adds definition, and the lifted line of the Marguerite draws the eye up and out. The idea is to lend the face a few clean edges to play against.'),
+                    para('If your face is round or full, with soft curves and a similar width and length, a little architecture flatters you: the rectangular Ellsworth adds definition, and the lifted line of the Marguerite draws the eye up and out. The idea is to lend the face a few clean edges to play against.'),
                     h2('Stronger faces, softer frames'),
-                    para('If your face is square or angular, with a strong jaw and brow, do the opposite and soften it. The rounded Beaumont is the house answer — its hand-filed panto curve takes the edge off without hiding your features — and the smaller Whitfield does the same in a lighter, more scholarly key. Oval faces, the lucky ones, can wear almost anything; shop by the mood you want and trust your own eye over any rule.'),
+                    para('If your face is square or angular, with a strong jaw and brow, do the opposite and soften it. The rounded Beaumont is the house answer (its hand-filed panto curve takes the edge off without hiding your features) and the smaller Whitfield does the same in a lighter, more scholarly key. Oval faces, the lucky ones, can wear almost anything; shop by the mood you want and trust your own eye over any rule.'),
                 ],
             },
         },
@@ -785,9 +785,9 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The workshop opened in 1932, when our grandfather rented a narrow room, bought a lathe and a set of files, and began cutting spectacle fronts from acetate for the town’s opticians. The first pattern he drew — a modest rounded panto — is still pinned above the bench, and we still strike a numbered run of it every year as the 1932 Anniversary.'),
+                    para('The workshop opened in 1932, when our grandfather rented a narrow room, bought a lathe and a set of files, and began cutting spectacle fronts from acetate for the town’s opticians. The first pattern he drew (a modest rounded panto) is still pinned above the bench, and we still strike a numbered run of it every year as the 1932 Anniversary.'),
                     h2('Three generations, one method'),
-                    para('The tools have barely changed, and neither has the method. We still mill from a single block, still tumble in beechwood drums, still polish by hand and set the hinges with five barrels and steel rivets. New machines can make a frame faster; none can make it better, and we have never been in a hurry. What has grown is only the reach — the same bench now sends frames around the world.'),
+                    para('The tools have barely changed, and neither has the method. We still mill from a single block, still tumble in beechwood drums, still polish by hand and set the hinges with five barrels and steel rivets. New machines can make a frame faster; none can make it better, and we have never been in a hurry. What has grown is only the reach: the same bench now sends frames around the world.'),
                     h2('Made to be handed on'),
                     para('The idea that has kept the lights on for ninety years is a simple, almost old-fashioned one: a good frame should be repaired, not replaced. So we glaze every lens ourselves, adjust and repair anything we have ever made for free, and build each pair heavy enough in the hand to be worn for decades and then passed to someone else. That, and not the price, is what we mean by luxury.'),
                 ],
@@ -804,7 +804,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Eyewear (Heritage)',
     theme: THEME,
     summary:
-        'A complete, working shop for a heritage, hand-made eyewear house: named acetate optical frames (each hand-finished in its own colorways with a lens choice), hand-polished sunglasses, a reading pair, a numbered limited-run frame, a leather case and a care kit, with categories, collections, a bespoke PDP and a merchandised home page. Warm heritage theme — bone/tobacco paper, a bottle-green primary, a tobacco accent, a serif display. Shipped as Atelier Optique.',
+        'A complete, working shop for a heritage, hand-made eyewear house: named acetate optical frames (each hand-finished in its own colorways with a lens choice), hand-polished sunglasses, a reading pair, a numbered limited-run frame, a leather case and a care kit, with categories, collections, a bespoke PDP and a merchandised home page. Warm heritage theme, bone/tobacco paper, a bottle-green primary, a tobacco accent, a serif display. Shipped as Atelier Optique.',
     tagline: 'A warm, working storefront for a heritage hand-made eyewear house.',
     vertical: 'retail',
     industry: 'Eyewear & optical',
@@ -817,14 +817,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'columns', showCta: false },
     seo: {
         home: {
-            title: 'Atelier Optique — hand-finished eyewear, made since 1932',
+            title: 'Atelier Optique: hand-finished eyewear, made since 1932',
             description:
-                'Atelier Optique cuts, shapes and hand-polishes acetate eyewear the slow way, on the same benches since 1932 — optical, sun and reading frames, glazed in-house, repaired for life.',
+                'Atelier Optique cuts, shapes and hand-polishes acetate eyewear the slow way, on the same benches since 1932: optical, sun and reading frames, glazed in-house, repaired for life.',
         },
         about: {
             title: 'About Atelier Optique',
             description:
-                'Ninety years at the same bench — how Atelier Optique mills each frame from a single block of Italian acetate, hand-polishes it, glazes it in-house, and repairs it for life.',
+                'Ninety years at the same bench: how Atelier Optique mills each frame from a single block of Italian acetate, hand-polishes it, glazes it in-house, and repairs it for life.',
         },
     },
     home: HOME,

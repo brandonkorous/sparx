@@ -34,11 +34,11 @@ export const SURFACE_OPTIONS: {
  *  color follows. Naming them by urgency rather than by hue is what stops
  *  "warning" being chosen because amber looked nice. */
 export const TONE_OPTIONS: { value: OperatorAnnouncementTone; label: string }[] = [
-  { value: 'primary', label: 'Announcement — an offer, a launch, news' },
-  { value: 'info', label: 'Information — a change worth knowing about' },
-  { value: 'success', label: 'Good news — something is back, or is done' },
-  { value: 'warning', label: 'Heads-up — planned work, a deadline' },
-  { value: 'danger', label: 'Urgent — an outage or something broken' },
+  { value: 'primary', label: 'Announcement: an offer, a launch, news' },
+  { value: 'info', label: 'Information: a change worth knowing about' },
+  { value: 'success', label: 'Good news: something is back, or is done' },
+  { value: 'warning', label: 'Heads-up: planned work, a deadline' },
+  { value: 'danger', label: 'Urgent: an outage or something broken' },
 ];
 
 export const SURFACE_LABELS: Record<OperatorAnnouncementSurface, string> = {

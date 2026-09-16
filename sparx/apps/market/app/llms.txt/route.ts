@@ -25,7 +25,7 @@ export function GET(): Response {
 
   const body = `# sparx.market
 
-> sparx.market is a public marketplace where shoppers browse and buy from thousands of independent sellers — each one an individual business running its own store on the sparx platform. Products come direct from the seller, not a warehouse reseller.
+> sparx.market is a public marketplace where shoppers browse and buy from thousands of independent sellers. Each one an individual business running its own store on the sparx platform. Products come direct from the seller, not a warehouse reseller.
 
 Every seller here operates their own site and sets their own catalog, pricing, and shipping; sparx.market aggregates those catalogs into one searchable destination. Each seller is the merchant of record for their own orders.
 

@@ -109,7 +109,7 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
               color="module"
               size="sm"
               className="ml-auto shrink-0 whitespace-nowrap"
-              title="New bootcamp — hold Shift to open alongside, Alt for a new window"
+              title="New bootcamp: hold Shift to open alongside, Alt for a new window"
               onClick={openNew}
             >
               <Icon glyph={faPlus} className="size-4" aria-hidden />

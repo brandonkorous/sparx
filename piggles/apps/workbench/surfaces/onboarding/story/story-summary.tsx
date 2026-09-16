@@ -113,7 +113,7 @@ export function StoryExtras({
       {selling ? (
         <Section label="Getting paid">
           <Text className="text-sm">
-            Connect <span className="font-medium">Stripe</span> to take payments — the next beat
+            Connect <span className="font-medium">Stripe</span> to take payments: the next beat
             after you build.
           </Text>
         </Section>

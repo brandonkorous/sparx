@@ -47,7 +47,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     singular: 'blueprint',
     icon: Boxes,
     accent: '#6366f1',
-    tagline: 'Whole themed sites — pages, products, content, and emails.',
+    tagline: 'Whole themed sites: pages, products, content, and emails.',
     status: 'live',
     facets: [
       { key: 'vertical', label: 'Vertical', type: 'multi' },
@@ -65,7 +65,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     singular: 'theme',
     icon: Palette,
     accent: '#8b5cf6',
-    tagline: 'Brand looks — color, type, and shape — applied site-wide.',
+    tagline: 'Brand looks (color, type, and shape) applied site-wide.',
     status: 'live',
     facets: [
       { key: 'industry', label: 'Industry', type: 'multi' },
@@ -99,7 +99,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     singular: 'component',
     icon: Component,
     accent: '#14b8a6',
-    tagline: 'Ready-made sections — drop one straight into any page.',
+    tagline: 'Ready-made sections: drop one straight into any page.',
     status: 'live',
     // Only the "Purpose" dimension filters usefully — every section targets a page,
     // so a Surface facet would be a single dead option.

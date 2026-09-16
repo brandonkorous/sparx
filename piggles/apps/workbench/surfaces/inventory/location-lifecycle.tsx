@@ -73,7 +73,7 @@ export function LocationLifecycle({
             This location is in use
           </Text>
           <Text as="span" className="text-sm">
-            Switch this off to close the location without removing it — it keeps its history but
+            Switch this off to close the location without removing it. It keeps its history but
             takes no new stock, and disappears from the everyday list. Turn it back on any time.
           </Text>
         </span>

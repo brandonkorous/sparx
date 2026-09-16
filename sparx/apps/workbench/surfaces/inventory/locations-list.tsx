@@ -57,8 +57,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 function emptyAdvice(search: string, typeLabel: string | null, includeClosed: boolean): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of a location’s name or its code.');
-  if (typeLabel) parts.push(`You are only seeing “${typeLabel}” places — switch to every kind.`);
-  if (!includeClosed) parts.push('Closed locations are hidden — turn them on to include those.');
+  if (typeLabel) parts.push(`You are only seeing “${typeLabel}” places. Switch to every kind.`);
+  if (!includeClosed) parts.push('Closed locations are hidden. Turn them on to include those.');
   return parts.join(' ');
 }
 
@@ -113,7 +113,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Warehouse className="size-6" aria-hidden />}
           title="Could not load your locations"
-          description="This is a problem reaching the server. Your locations are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your locations are unaffected: the list just could not be read just now."
           actions={
             <Button
               size="sm"
@@ -148,7 +148,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           }}
           firstRun={{
             title: 'No locations yet',
-            description: `A location is any place you keep stock — a warehouse, a shop, a garage, a van. Set up your first and you can start counting what is in it.${
+            description: `A location is any place you keep stock: a warehouse, a shop, a garage, a van. Set up your first and you can start counting what is in it.${
               includeClosed
                 ? ''
                 : ' If you have closed a location before, switch on “Show closed” to see it.'
@@ -293,7 +293,7 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="New location — hold Shift to open alongside, Alt for a new window"
+            title="New location: hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
             <Plus className="size-4" aria-hidden />

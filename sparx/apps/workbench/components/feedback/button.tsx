@@ -22,11 +22,11 @@ export function FeedbackButton() {
 
   const hasUnread = unreadCount > 0;
   const label = hasUnread
-    ? `Your feedback — ${String(unreadCount)} unread ${unreadCount === 1 ? 'reply' : 'replies'}`
+    ? `Your feedback: ${String(unreadCount)} unread ${unreadCount === 1 ? 'reply' : 'replies'}`
     : 'Send feedback';
 
   return (
-    <Tooltip content={hasUnread ? `${label} — Shift-click to open alongside` : label}>
+    <Tooltip content={hasUnread ? `${label}: Shift-click to open alongside` : label}>
       <Button
         variant="ghost"
         size="sm"

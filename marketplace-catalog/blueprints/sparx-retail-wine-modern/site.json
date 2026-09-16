@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Coupe — good wine, zero snobbery",
-      "seoDescription": "Coupe is a bright, modern wine shop and monthly wine club — reds, whites, rosé, bubbles and ready-made cases, all tasted, approved and delivered chilled to your door. No jargon, no gatekeeping.",
+      "seoTitle": "Coupe: good wine, zero snobbery",
+      "seoDescription": "Coupe is a bright, modern wine shop and monthly wine club: reds, whites, rosé, bubbles and ready-made cases, all tasted, approved and delivered chilled to your door. No jargon, no gatekeeping.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Coupe is a wine shop for people who just want a great bottle without the lecture. We taste everything, keep the winners, and tell you what to pour and when — in plain words. Chilled, ready and at your door."
+                          "Coupe is a wine shop for people who just want a great bottle without the lecture. We taste everything, keep the winners, and tell you what to pour and when: in plain words. Chilled, ready and at your door."
                         ],
                         "id": "4c450f17-727a-4d5d-b067-8d31498569a4",
                         "ord": "a1"
@@ -1587,7 +1587,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Tell us the food, the budget or the mood and we will point you at the right bottle. There is no test here and no bad choice — just good wine you will actually enjoy."
+                              "Tell us the food, the budget or the mood and we will point you at the right bottle. There is no test here and no bad choice. Just good wine you will actually enjoy."
                             ],
                             "id": "e7185313-66ef-4f23-8251-999f1bafcba3",
                             "ord": "a1"
@@ -1614,7 +1614,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Everything ships packed to travel safely, and we will tell you exactly how cold to serve it. Open, pour, done — no decanting rituals required."
+                              "Everything ships packed to travel safely, and we will tell you exactly how cold to serve it. Open, pour, done: no decanting rituals required."
                             ],
                             "id": "21357b57-ec92-42e5-83cd-6ea288196652",
                             "ord": "a1"
@@ -1669,7 +1669,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Coupe",
+      "seoTitle": "Shop: Coupe",
       "seoDescription": "Browse everything Coupe makes, with prices and options at a glance. Wine shop.",
       "root": {
         "kind": "element",
@@ -1701,7 +1701,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every bottle we are pouring right now — reds, whites, rosé, bubbles, a monthly wine club and a couple of ready-made cases. Filter by color or sort however you like; all of it is tasted, approved and ready to drink."
+                      "Every bottle we are pouring right now: reds, whites, rosé, bubbles, a monthly wine club and a couple of ready-made cases. Filter by color or sort however you like; all of it is tasted, approved and ready to drink."
                     ],
                     "id": "d26336ec-de4c-4716-b1e0-6374dd5ef5fb",
                     "ord": "a1"
@@ -1729,7 +1729,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Coupe",
+      "seoTitle": "Collections: Coupe",
       "seoDescription": "Explore the collections at Coupe, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1761,7 +1761,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The bottles grouped the way people actually shop — what just landed, the crowd-pleasers, the ones to chill and pour, the party starters and the value picks under twenty."
+                      "The bottles grouped the way people actually shop: what just landed, the crowd-pleasers, the ones to chill and pour, the party starters and the value picks under twenty."
                     ],
                     "id": "aa89a1de-fb57-4c28-b2e1-a659c801c5a1",
                     "ord": "a1"
@@ -1789,7 +1789,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Coupe",
+      "seoTitle": "Your cart: Coupe",
       "seoDescription": "Review what is in your cart and check out securely at Coupe.",
       "root": {
         "kind": "element",
@@ -1821,7 +1821,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free local delivery over $75, and every order is packed to travel safely. Not sure a bottle is right? Tell us what you like and we will help you swap it — buying wine should be fun, never a gamble."
+                      "Free local delivery over $75, and every order is packed to travel safely. Not sure a bottle is right? Tell us what you like and we will help you swap it: buying wine should be fun, never a gamble."
                     ],
                     "id": "ab667fa5-1c90-4ba0-b773-aafefa77f0f0",
                     "ord": "a1"
@@ -1849,7 +1849,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Coupe",
+      "seoTitle": "Search: Coupe",
       "seoDescription": "Search Coupe for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1909,7 +1909,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Coupe",
+      "seoTitle": "Journal: Coupe",
       "seoDescription": "Stories, guides and notes from Coupe.",
       "root": {
         "kind": "element",
@@ -1941,7 +1941,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Plain-words notes from the shop — how to pick a bottle when you know nothing, what to pour at dinner, and what natural wine actually is. No jargon, no eye-rolls, just useful."
+                      "Plain-words notes from the shop: how to pick a bottle when you know nothing, what to pour at dinner, and what natural wine actually is. No jargon, no eye-rolls, just useful."
                     ],
                     "id": "344f2749-88b2-44eb-9be1-35f7dbf69318",
                     "ord": "a1"
@@ -2074,8 +2074,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Coupe — a wine shop without the lecture",
-      "seoDescription": "How Coupe picks and describes its wine — everything tasted, only the winners kept, plain-words notes, and a wine club that does the remembering. Good wine at fair prices.",
+      "seoTitle": "About Coupe: a wine shop without the lecture",
+      "seoDescription": "How Coupe picks and describes its wine. Everything tasted, only the winners kept, plain-words notes, and a wine club that does the remembering. Good wine at fair prices.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2116,7 +2116,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We taste everything before it earns a spot on the shelf, and we only keep the bottles we would happily pour a friend. Then we describe them in plain words — what they taste like, how cold to serve them, and what to eat alongside — so you can pick with confidence, not a guessing game."
+                      "We taste everything before it earns a spot on the shelf, and we only keep the bottles we would happily pour a friend. Then we describe them in plain words (what they taste like, how cold to serve them, and what to eat alongside) so you can pick with confidence, not a guessing game."
                     ],
                     "id": "be7aa811-b657-42fa-b1ab-a6c9061838e8",
                     "ord": "a2"
@@ -2146,8 +2146,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Coupe",
-      "seoDescription": "Get in touch with Coupe — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Coupe",
+      "seoDescription": "Get in touch with Coupe: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2183,7 +2183,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "After a bottle for a dinner, a case for a party, or a hand picking a gift? Tell us what you are after and a real person from the shop will get right back to you — recommendations always welcome."
+                          "After a bottle for a dinner, a case for a party, or a hand picking a gift? Tell us what you are after and a real person from the shop will get right back to you: recommendations always welcome."
                         ],
                         "id": "d16f7d57-8727-42b0-a7f1-16dcad1387e0",
                         "ord": "a1"
@@ -2454,8 +2454,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Coupe",
-      "seoDescription": "Product details at Coupe — wine shop, with options and pricing.",
+      "seoTitle": "Product: Coupe",
+      "seoDescription": "Product details at Coupe: wine shop, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2818,7 +2818,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Ships chilled-friendly and ready to open — no decanting, no fuss. Reds are happiest with a light chill, whites and bubbles want a proper cold, and everything on this shelf is made to pour the day it arrives."
+                              "Ships chilled-friendly and ready to open: no decanting, no fuss. Reds are happiest with a light chill, whites and bubbles want a proper cold, and everything on this shelf is made to pour the day it arrives."
                             ],
                             "id": "f68eb4e5-ea59-4a37-b468-182a8eb064d4",
                             "ord": "a1"

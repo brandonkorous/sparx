@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Frequency — technology & business news, without the hype",
-      "seoDescription": "Frequency is an independent newsroom covering technology and the business of building it — the companies, the money and the policy that decide what gets made.",
+      "seoTitle": "Frequency: technology & business news, without the hype",
+      "seoDescription": "Frequency is an independent newsroom covering technology and the business of building it: the companies, the money and the policy that decide what gets made.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1689,7 +1689,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "A morning with the people building the racks, the grids and the models — on the record, off the hype."
+                                  "A morning with the people building the racks, the grids and the models: on the record, off the hype."
                                 ],
                                 "id": "d5144880-2d3d-4eff-b338-b7cffcfeb226",
                                 "ord": "a1"
@@ -1900,7 +1900,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Frequency",
+      "seoTitle": "Shop: Frequency",
       "seoDescription": "Browse everything Frequency makes, with prices and options at a glance. Technology & business news.",
       "root": {
         "kind": "element",
@@ -1958,7 +1958,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Frequency",
+      "seoTitle": "Collections: Frequency",
       "seoDescription": "Explore the collections at Frequency, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1999,7 +1999,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Frequency",
+      "seoTitle": "Your cart: Frequency",
       "seoDescription": "Review what is in your cart and check out securely at Frequency.",
       "root": {
         "kind": "element",
@@ -2040,7 +2040,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Frequency",
+      "seoTitle": "Search: Frequency",
       "seoDescription": "Search Frequency for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2081,7 +2081,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Frequency",
+      "seoTitle": "Journal: Frequency",
       "seoDescription": "Stories, guides and notes from Frequency.",
       "root": {
         "kind": "element",
@@ -2113,7 +2113,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Technology, business, and the people building what is next — reported plainly, without the hype cycle."
+                      "Technology, business, and the people building what is next: reported plainly, without the hype cycle."
                     ],
                     "id": "b1e22b0a-3b16-4bff-9ae8-d87bfe2856f2",
                     "ord": "a1"
@@ -2246,8 +2246,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Frequency — an independent tech newsroom",
-      "seoDescription": "Who Frequency is and how it is paid for — reader- and member-funded reporting that takes no money from the companies it covers.",
+      "seoTitle": "About Frequency: an independent tech newsroom",
+      "seoDescription": "Who Frequency is and how it is paid for: reader- and member-funded reporting that takes no money from the companies it covers.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2278,7 +2278,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Frequency is an independent newsroom covering technology and the business of building it. We report on the companies, the money and the policy that decide what gets made — for the people who have to make decisions about it on Monday morning."
+                      "Frequency is an independent newsroom covering technology and the business of building it. We report on the companies, the money and the policy that decide what gets made, for the people who have to make decisions about it on Monday morning."
                     ],
                     "id": "da4b4993-1396-4456-8cd5-85dd44a02a34",
                     "ord": "a1"
@@ -2308,8 +2308,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Frequency",
-      "seoDescription": "Get in touch with Frequency — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Frequency",
+      "seoDescription": "Get in touch with Frequency: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2616,8 +2616,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Article — Frequency",
-      "seoDescription": "A story from Frequency — the writing, the reporting and the notes behind it.",
+      "seoTitle": "Article: Frequency",
+      "seoDescription": "A story from Frequency: the writing, the reporting and the notes behind it.",
       "root": {
         "kind": "element",
         "tag": "div",

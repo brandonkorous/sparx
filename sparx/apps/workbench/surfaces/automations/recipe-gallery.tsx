@@ -142,7 +142,7 @@ function RecipeCard({
                   color="module"
                   checked
                   disabled
-                  aria-label={`${meta.title} is always on — sparx manages this and it cannot be turned off`}
+                  aria-label={`${meta.title} is always on: sparx manages this and it cannot be turned off`}
                 />
               </div>
             ) : (
@@ -169,7 +169,7 @@ function RecipeCard({
               size="sm"
               variant="ghost"
               color="module"
-              title="Customize this automation — hold Shift to open alongside, Alt for a new window"
+              title="Customize this automation. Hold Shift to open alongside, Alt for a new window"
               onClick={onCustomize}
             >
               <Settings2 className="size-4" aria-hidden />
@@ -287,7 +287,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
         <div className={COLUMN}>
           <Text>
             These are automations sparx has already set up for your business. Each one runs a job
-            for you in the background — welcoming customers, chasing overdue invoices, following up
+            for you in the background: welcoming customers, chasing overdue invoices, following up
             on a sale. Flip one on to put it to work, and use “Customize” to change how it behaves.
           </Text>
 
@@ -295,7 +295,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Sparkles className="size-6" aria-hidden />}
               title="Could not load your recipes"
-              description="Something went wrong reaching the server. Whatever you have switched on is unaffected and still running — try again in a moment."
+              description="Something went wrong reaching the server. Whatever you have switched on is unaffected and still running. Try again in a moment."
               actions={
                 <Button
                   size="sm"
@@ -336,7 +336,7 @@ export function RecipeGallerySurface({ ctx }: { ctx: SurfaceContext }) {
               <EmptyState
                 icon={<Sparkles className="size-6" aria-hidden />}
                 title="No recipes yet"
-                description="Recipes appear here as you switch on parts of sparx — turn on the Online store, Invoicing or Email and their ready-made automations show up ready to use."
+                description="Recipes appear here as you switch on parts of sparx. Turn on the Online store, Invoicing or Email and their ready-made automations show up ready to use."
               />
             )
           ) : (

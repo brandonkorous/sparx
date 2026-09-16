@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Forge — strength & conditioning studio",
+      "seoTitle": "Forge: strength & conditioning studio",
       "seoDescription": "Forge is a small-group strength & conditioning studio: coached classes, real programming and 1:1 personal training. Book your free intro online.",
       "root": {
         "kind": "element",
@@ -664,7 +664,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every class is run by a certified coach who watches your reps, scales the load and knows your name — not a screen counting you down."
+                              "Every class is run by a certified coach who watches your reps, scales the load and knows your name, not a screen counting you down."
                             ],
                             "id": "0c7f8bc8-6481-4068-a1c6-658e64d6f4e1",
                             "ord": "a1"
@@ -779,7 +779,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Forge runs on a written plan that builds week over week — strength blocks that add load on purpose, conditioning that grows an engine, and deloads before you need them."
+                          "Forge runs on a written plan that builds week over week: strength blocks that add load on purpose, conditioning that grows an engine, and deloads before you need them."
                         ],
                         "id": "12601de6-03a9-44e6-93f7-78c41fd50b76",
                         "ord": "a1"
@@ -1359,7 +1359,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Runs the HIIT, Metcon and Engine floors — the loudest, most contagious energy in the room."
+                                  "Runs the HIIT, Metcon and Engine floors: the loudest, most contagious energy in the room."
                                 ],
                                 "id": "3d09faa4-4912-4051-8461-6cc316679399",
                                 "ord": "a2"
@@ -1582,7 +1582,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Walked in twelve weeks ago unable to squat the empty bar. Hit 135 for five today and the whole class lost their minds for me. That’s Forge — you get strong and nobody lets you do it quietly.”"
+                      "“Walked in twelve weeks ago unable to squat the empty bar. Hit 135 for five today and the whole class lost their minds for me. That’s Forge. You get strong and nobody lets you do it quietly.”"
                     ],
                     "id": "168749db-a054-414a-83ae-aa329f55842c",
                     "ord": "a0"
@@ -1626,7 +1626,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book the free intro, meet a coach and see the floor. No membership, no pressure — just show up."
+                      "Book the free intro, meet a coach and see the floor. No membership, no pressure. Just show up."
                     ],
                     "id": "7c2e0b06-d9ae-4720-ac34-7c9dc393e407",
                     "ord": "a1"
@@ -1657,7 +1657,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Forge",
+      "seoTitle": "Book: Forge",
       "seoDescription": "See what Forge offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1781,7 +1781,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "5b9c3390-487e-437f-87f3-e26b69c26246",
                         "ord": "a1"
@@ -1886,7 +1886,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Forge",
+      "seoTitle": "About: Forge",
       "seoDescription": "Who Forge is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1935,7 +1935,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Forge started because the big-box gym wasn’t working — no coaching, no plan, no one who noticed if you showed up or quit. So we built the opposite: small groups, real programming, and coaches who know your name and your numbers."
+                          "Forge started because the big-box gym wasn’t working: no coaching, no plan, no one who noticed if you showed up or quit. So we built the opposite: small groups, real programming, and coaches who know your name and your numbers."
                         ],
                         "id": "e708a785-e0a4-49d4-acf2-25d2ed63332c",
                         "ord": "a1"
@@ -2023,7 +2023,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A certified coach runs every session — cueing form, scaling load and keeping you honest. You’re never just clocking time on a machine."
+                              "A certified coach runs every session: cueing form, scaling load and keeping you honest. You’re never just clocking time on a machine."
                             ],
                             "id": "7c3f30ed-1c14-4d8d-9464-c8e87ca47370",
                             "ord": "a1"
@@ -2077,7 +2077,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every workout scales up or down on the spot. Injury, first week, off day — we adjust the movement and the load so it’s the right hard for you."
+                              "Every workout scales up or down on the spot. Injury, first week, off day. We adjust the movement and the load so it’s the right hard for you."
                             ],
                             "id": "8bbfa219-acf6-492b-b229-3e65f0696ba7",
                             "ord": "a1"
@@ -2105,7 +2105,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Forge",
+      "seoTitle": "Visit: Forge",
       "seoDescription": "Where to find Forge, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2142,7 +2142,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Forge will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Forge will get back to you, usually the same day."
                         ],
                         "id": "f70010b1-3fab-40c0-9eb2-c69c6250d313",
                         "ord": "a1"
@@ -2594,7 +2594,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book the free intro online and pick a time this week — no phone call, no sales pitch."
+                      "Book the free intro online and pick a time this week: no phone call, no sales pitch."
                     ],
                     "id": "e488a2aa-c1ad-4ed1-a66b-1c7cb4b8e1c8",
                     "ord": "a1"

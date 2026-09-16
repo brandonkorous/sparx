@@ -186,7 +186,7 @@ const SCHEDULING = {
       handle: 'free-quote',
       name: 'Free in-home quote',
       description:
-        'We come out, look at the job and hand you a flat-rate price in writing — no charge, no obligation.',
+        'We come out, look at the job and hand you a flat-rate price in writing: no charge, no obligation.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -197,7 +197,7 @@ const SCHEDULING = {
       handle: 'same-day-repair',
       name: 'Same-day repair visit',
       description:
-        'The everyday fix — a running toilet, a dripping valve, a fixture that quit. Priced flat before we start.',
+        'The everyday fix: a running toilet, a dripping valve, a fixture that quit. Priced flat before we start.',
       durationMinutes: 60,
       priceCents: 14900,
       assignmentStrategy: 'any_available',
@@ -208,7 +208,7 @@ const SCHEDULING = {
       handle: 'drain-clear',
       name: 'Drain clearing',
       description:
-        'A slow or backed-up sink, tub or main line, cleared and tested — one flat price whether it takes ten minutes or an hour.',
+        'A slow or backed-up sink, tub or main line, cleared and tested. One flat price whether it takes ten minutes or an hour.',
       durationMinutes: 75,
       priceCents: 19900,
       assignmentStrategy: 'any_available',
@@ -219,7 +219,7 @@ const SCHEDULING = {
       handle: 'water-heater-swap',
       name: 'Water-heater replacement',
       description:
-        'Out with the old, in with a new tank or tankless — haul-away, hookup and a working hot shower the same day.',
+        'Out with the old, in with a new tank or tankless: haul-away, hookup and a working hot shower the same day.',
       durationMinutes: 120,
       priceCents: 189900,
       assignmentStrategy: 'any_available',
@@ -232,7 +232,7 @@ const SCHEDULING = {
       handle: 'toilet-faucet-install',
       name: 'Toilet or faucet install',
       description:
-        'You bought the fixture, we set it right — clean install, no leaks, old one hauled away. Flat labor price.',
+        'You bought the fixture, we set it right: clean install, no leaks, old one hauled away. Flat labor price.',
       durationMinutes: 90,
       priceCents: 24900,
       assignmentStrategy: 'any_available',
@@ -243,7 +243,7 @@ const SCHEDULING = {
       handle: 'leak-detection',
       name: 'Leak detection',
       description:
-        'A mystery drip, a spiking water bill, a damp wall — we find the source and give you the fix and the price in one visit.',
+        'A mystery drip, a spiking water bill, a damp wall. We find the source and give you the fix and the price in one visit.',
       durationMinutes: 60,
       priceCents: 12900,
       assignmentStrategy: 'any_available',
@@ -269,7 +269,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'A plumber today. A price up front. Zero surprises.',
-    sub: 'Rivet is the on-demand way to fix what’s leaking, clogged or broken — book online in about a minute, get a texted arrival window, and pay a flat rate you see before we start.',
+    sub: 'Rivet is the on-demand way to fix what’s leaking, clogged or broken. Book online in about a minute, get a texted arrival window, and pay a flat rate you see before we start.',
     primary: { label: 'Book in 60 seconds', href: '/book' },
     secondary: { label: 'See flat-rate prices', href: '/book' },
     surface: 'base',
@@ -283,7 +283,7 @@ const HOME = [
       },
       {
         title: 'We text your arrival window',
-        body: 'You get a real window and a heads-up when your tech is on the way — so you’re not stuck home all day guessing.',
+        body: 'You get a real window and a heads-up when your tech is on the way, so you’re not stuck home all day guessing.',
       },
       {
         title: 'Flat-rate fix, same day',
@@ -301,7 +301,7 @@ const HOME = [
         name: 'Free in-home quote',
         priceCents: 0,
         durationMin: 30,
-        desc: 'We look at the job and hand you a written price — no charge.',
+        desc: 'We look at the job and hand you a written price: no charge.',
       },
       {
         name: 'Same-day repair visit',
@@ -313,7 +313,7 @@ const HOME = [
         name: 'Drain clearing',
         priceCents: 19900,
         durationMin: 75,
-        desc: 'Cleared and tested — one price, however long it takes.',
+        desc: 'Cleared and tested. One price, however long it takes.',
       },
       {
         name: 'Water-heater replacement',
@@ -362,7 +362,7 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'Booked at 8am, had a window by 9, and Marcus was done before lunch — for exactly the price the app showed me. First plumber I haven’t had to argue with about the bill.',
+    quote: 'Booked at 8am, had a window by 9, and Marcus was done before lunch, for exactly the price the app showed me. First plumber I haven’t had to argue with about the bill.',
     attribution: 'Renée T., homeowner in Eastside',
   }),
   bookingCta({
@@ -388,7 +388,7 @@ const ABOUT = [
     heading: 'Plumbing, brought up to date',
     body: [
       'Rivet Plumbing Co. started with a simple frustration: why is booking a plumber still a phone call, a four-hour window, and a bill that lands higher than the quote? So we rebuilt the whole thing around the customer.',
-      'Book online. Get a real window. See the flat price before work starts. Track your tech to the door. Same trucks, same licensed people you’d want anyway — just none of the runaround.',
+      'Book online. Get a real window. See the flat price before work starts. Track your tech to the door. Same trucks, same licensed people you’d want anyway. Just none of the runaround.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
   }),
@@ -398,7 +398,7 @@ const ABOUT = [
     items: [
       {
         title: 'Upfront flat pricing',
-        body: 'You approve a written price before we start. It doesn’t move — no hourly clock, no surprise line items.',
+        body: 'You approve a written price before we start. It doesn’t move: no hourly clock, no surprise line items.',
       },
       {
         title: 'Same-day when you need it',
@@ -426,7 +426,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Skip the phone tag',
-    sub: 'Booking online is faster than calling — see live times and lock in your visit in about a minute.',
+    sub: 'Booking online is faster than calling: see live times and lock in your visit in about a minute.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -437,8 +437,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-plumbing-modern',
   name: 'Plumbing (Modern)',
   summary:
-    'A modern, on-demand plumbing site — a crisp near-white palette with a vivid teal primary and warm amber accent, type-led with a "how it works" flow. Installs a working booking spine: flat-rate visits (same-day repair, drain clearing, water-heater swap, leak detection, emergency callout), three technicians dispatched by skill with their own weekly hours, and a same-day priority policy. Ships as "Rivet Plumbing Co.".',
-  tagline: 'A bright, modern template for on-demand plumbers — book online from day one.',
+    'A modern, on-demand plumbing site: a crisp near-white palette with a vivid teal primary and warm amber accent, type-led with a "how it works" flow. Installs a working booking spine: flat-rate visits (same-day repair, drain clearing, water-heater swap, leak detection, emergency callout), three technicians dispatched by skill with their own weekly hours, and a same-day priority policy. Ships as "Rivet Plumbing Co.".',
+  tagline: 'A bright, modern template for on-demand plumbers. Book online from day one.',
   industry: 'Plumbing',
   sortWeight: 77,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -447,7 +447,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Rivet Plumbing Co. — same-day plumbing, flat-rate pricing',
+      title: 'Rivet Plumbing Co. same-day plumbing, flat-rate pricing',
       description:
         'Book a licensed plumber online in about a minute. Flat-rate prices up front, a texted arrival window, and same-day repairs, drains, water heaters and emergencies.',
     },

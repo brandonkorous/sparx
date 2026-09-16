@@ -109,7 +109,7 @@
     {
       "handle": "free-consult",
       "name": "Free discovery consult",
-      "description": "A friendly 30-minute video call to talk through your room, your style and what’s possible — no cost, no pressure.",
+      "description": "A friendly 30-minute video call to talk through your room, your style and what’s possible: no cost, no pressure.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -126,7 +126,7 @@
     {
       "handle": "single-room-edesign",
       "name": "Single-room e-design",
-      "description": "A complete online design for one room — a shoppable design board, layout plan and a shopping list you can buy at your own pace.",
+      "description": "A complete online design for one room: a shoppable design board, layout plan and a shopping list you can buy at your own pace.",
       "durationMinutes": 60,
       "priceCents": 29900,
       "assignmentStrategy": "customer_choice",
@@ -143,7 +143,7 @@
     {
       "handle": "color-consult",
       "name": "Color consult",
-      "description": "Stuck on paint or palette? Bring your room and we’ll land on colors that actually work in your light — with swatches to take away.",
+      "description": "Stuck on paint or palette? Bring your room and we’ll land on colors that actually work in your light, with swatches to take away.",
       "durationMinutes": 45,
       "priceCents": 12900,
       "assignmentStrategy": "customer_choice",
@@ -160,7 +160,7 @@
     {
       "handle": "layout-consult",
       "name": "Layout consult",
-      "description": "A fresh floor plan for a room that isn’t flowing — furniture placement, traffic and scale, mapped out so it just feels right.",
+      "description": "A fresh floor plan for a room that isn’t flowing: furniture placement, traffic and scale, mapped out so it just feels right.",
       "durationMinutes": 45,
       "priceCents": 14900,
       "assignmentStrategy": "customer_choice",
@@ -177,7 +177,7 @@
     {
       "handle": "room-refresh-package",
       "name": "Room refresh package",
-      "description": "A budget-friendly refresh that reworks what you own and adds a few well-chosen pieces — a whole new room without starting over.",
+      "description": "A budget-friendly refresh that reworks what you own and adds a few well-chosen pieces: a whole new room without starting over.",
       "durationMinutes": 60,
       "priceCents": 39900,
       "assignmentStrategy": "customer_choice",
@@ -194,7 +194,7 @@
     {
       "handle": "whole-home-consult",
       "name": "Whole-home consult",
-      "description": "A big-picture session for the whole place — a cohesive palette, a room-by-room plan and a sensible order to tackle it all in.",
+      "description": "A big-picture session for the whole place: a cohesive palette, a room-by-room plan and a sensible order to tackle it all in.",
       "durationMinutes": 60,
       "priceCents": 24900,
       "assignmentStrategy": "customer_choice",
@@ -211,7 +211,7 @@
     {
       "handle": "styling-session",
       "name": "Styling session",
-      "description": "The finishing touch — shelves, art, textiles and the little details that make a room feel finished and personal.",
+      "description": "The finishing touch: shelves, art, textiles and the little details that make a room feel finished and personal.",
       "durationMinutes": 45,
       "priceCents": 15900,
       "assignmentStrategy": "customer_choice",

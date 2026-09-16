@@ -42,7 +42,7 @@ function postCard(): PlatformCatalogEntry['tree'] {
             bound(
               atom('Text', 'text-sm text-base-content', {
                 variant: 'body',
-                text: 'Why the most considerate products do less, more deliberately — and how restraint reads as quality.',
+                text: 'Why the most considerate products do less, more deliberately, and how restraint reads as quality.',
               }),
               'item.excerpt'
             ),
@@ -69,7 +69,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'newspaper',
     description:
-      'A two-column spotlight for one article — cover image beside its title and excerpt, with a read-more link. Pin it to a content entry and it reads that entry.',
+      'A two-column spotlight for one article: cover image beside its title and excerpt, with a read-more link. Pin it to a content entry and it reads that entry.',
     surfaces: ['page', 'site'],
     tags: ['article', 'blog', 'post', 'featured', 'editorial', 'cms', 'content'],
     tree: el('section', 'w-full px-4 py-16', {
@@ -94,7 +94,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
                 bound(
                   atom('Text', 'text-base leading-relaxed text-base-content', {
                     variant: 'body',
-                    text: 'The most considerate products do less, more deliberately. A look at how restraint — fewer prompts, gentler motion, quieter color — reads as quality and earns trust.',
+                    text: 'The most considerate products do less, more deliberately. A look at how restraint (fewer prompts, gentler motion, quieter color) reads as quality and earns trust.',
                   }),
                   'item.excerpt'
                 ),
@@ -119,7 +119,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'text',
     description:
-      'A full article layout — title, byline, hero image, and the rich body. Pin it to a content entry; the body renders that entry’s formatted rich text.',
+      'A full article layout: title, byline, hero image, and the rich body. Pin it to a content entry; the body renders that entry’s formatted rich text.',
     surfaces: ['page', 'site'],
     tags: ['article', 'blog', 'post', 'body', 'prose', 'reading', 'cms', 'content'],
     tree: el('article', 'mx-auto w-full max-w-3xl px-4 py-16', {
@@ -161,7 +161,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'layout-grid',
     description:
-      'A responsive grid that repeats an article card once per content entry — a blog index. Reads the blog_post type by default; re-point it to another type in the Data panel.',
+      'A responsive grid that repeats an article card once per content entry: a blog index. Reads the blog_post type by default; re-point it to another type in the Data panel.',
     surfaces: ['page', 'site'],
     tags: ['blog', 'index', 'articles', 'posts', 'grid', 'archive', 'cms', 'content'],
     tree: el('section', 'w-full px-4 py-12', {
@@ -194,7 +194,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'newspaper',
     description:
-      'A “more to read” strip — a repeating row of article cards over the blog_post type. Re-point it to another content type in the Data panel.',
+      'A “more to read” strip: a repeating row of article cards over the blog_post type. Re-point it to another content type in the Data panel.',
     surfaces: ['page', 'site'],
     tags: ['related', 'more', 'articles', 'posts', 'recommended', 'cms', 'content'],
     tree: el('section', 'w-full px-4 py-12', {
@@ -227,7 +227,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'user-round',
     description:
-      'A byline card — author photo, name, role, a short bio, and social links. Place it at the end of an article or on an author page.',
+      'A byline card: author photo, name, role, a short bio, and social links. Place it at the end of an article or on an author page.',
     surfaces: ['page', 'site'],
     tags: ['author', 'byline', 'bio', 'profile', 'writer', 'cms', 'content'],
     tree: el(
@@ -289,7 +289,7 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'list-tree',
     description:
-      'A long-read layout — a sticky “On this page” table of contents beside the article body. The TOC builds itself from the body’s headings and tracks scroll. Pin it to an entry.',
+      'A long-read layout: a sticky “On this page” table of contents beside the article body. The TOC builds itself from the body’s headings and tracks scroll. Pin it to an entry.',
     surfaces: ['page', 'site'],
     tags: ['article', 'toc', 'contents', 'long read', 'documentation', 'cms', 'content'],
     tree: behave(

@@ -3,7 +3,7 @@ import { Container, Display, Spark } from '@/components/marketing/primitives';
 import { LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
-  title: 'Security — sparx',
+  title: 'Security: sparx',
   description:
     'How sparx protects your data: database-level tenant isolation, encryption everywhere, phishing-resistant sign-in, and a written policy for government data requests.',
   alternates: { canonical: '/security' },
@@ -31,7 +31,7 @@ export default function SecurityPage() {
             <LegalSection heading="Tenant isolation">
               <LegalP>
                 sparx is multi-tenant, and isolation is enforced at the database layer with
-                PostgreSQL row-level security — not just in application code. Every tenant-scoped
+                PostgreSQL row-level security, not just in application code. Every tenant-scoped
                 table carries a tenant id and a policy that makes cross-tenant reads impossible even
                 if application logic has a bug. It is the backstop the rest of the platform is built
                 on.
@@ -49,7 +49,7 @@ export default function SecurityPage() {
             <LegalSection heading="Signing in">
               <LegalP>
                 Every account can turn on a second step at sign-in, and we support two kinds.
-                Passkeys are the stronger one — the secret never leaves your device, so there is
+                Passkeys are the stronger one: the secret never leaves your device, so there is
                 nothing for a fake sign-in page to steal. Authenticator apps work anywhere, on any
                 phone. Backup codes are stored encrypted rather than in plain text, so a database
                 copy does not hand anyone ten working ways into your account.
@@ -60,9 +60,9 @@ export default function SecurityPage() {
               <LegalList
                 items={[
                   'Personal information is excluded from application logs and masked in error reporting.',
-                  'Administrative access is restricted to personnel who need it and is logged. Our support staff cannot assume your session — there is no impersonation.',
-                  'Payments run through a PCI-compliant processor — we never store raw card numbers.',
-                  'Credentials you connect — social accounts, AI keys, payment gateways — are encrypted at rest and never displayed back to you once saved.',
+                  'Administrative access is restricted to personnel who need it and is logged. Our support staff cannot assume your session. There is no impersonation.',
+                  'Payments run through a PCI-compliant processor. We never store raw card numbers.',
+                  'Credentials you connect (social accounts, AI keys, payment gateways) are encrypted at rest and never displayed back to you once saved.',
                   'We hold no AI credential of our own, so your data is never sent to an AI provider on our account and is never used to train a model.',
                 ]}
               />
@@ -74,7 +74,7 @@ export default function SecurityPage() {
                 follow it before anything is disclosed: check that the request is a valid legal
                 instrument, challenge it if it is unlawful or overbroad, disclose only the minimum
                 it compels, tell the affected customer unless a court order forbids it, and log
-                every request — including the ones we refuse. Section 10 of the{' '}
+                every request, including the ones we refuse. Section 10 of the{' '}
                 <a href="/legal/privacy">Privacy Policy</a> and section 9 of the{' '}
                 <a href="/legal/dpa">DPA</a> set out the commitment in full.
               </LegalP>

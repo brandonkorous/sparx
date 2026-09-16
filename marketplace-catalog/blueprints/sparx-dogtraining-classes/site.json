@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Good Dog Academy — friendly, force-free dog training",
-      "seoDescription": "Good Dog Academy runs warm, positive-reinforcement classes for puppies and grown dogs — puppy kindergarten, obedience, tricks, private sessions and a free evaluation. Small classes, certified trainers. Enroll online.",
+      "seoTitle": "Good Dog Academy: friendly, force-free dog training",
+      "seoDescription": "Good Dog Academy runs warm, positive-reinforcement classes for puppies and grown dogs: puppy kindergarten, obedience, tricks, private sessions and a free evaluation. Small classes, certified trainers. Enroll online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Friendly, force-free classes for puppies and grown dogs alike — small groups, big tails, and real-life manners that stick. Come learn together."
+                      "Friendly, force-free classes for puppies and grown dogs alike: small groups, big tails, and real-life manners that stick. Come learn together."
                     ],
                     "id": "02fa935d-8b77-439a-b881-3d13d7a5e6a3",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every class is led by a certified, positive-reinforcement trainer — no fear, no force, just treats, praise and patience that actually works."
+                              "Every class is led by a certified, positive-reinforcement trainer: no fear, no force, just treats, praise and patience that actually works."
                             ],
                             "id": "f82baf26-33f0-4ffa-8b61-7676c67fc949",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Eight-week puppy or eight-year-old rescue, tiny or enormous, shy or bouncy — every dog is welcome, and every one goes at its own happy pace."
+                              "Eight-week puppy or eight-year-old rescue, tiny or enormous, shy or bouncy: every dog is welcome, and every one goes at its own happy pace."
                             ],
                             "id": "3759d6d0-ca51-41b2-8fcd-d26a29849d4a",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We teach the things you actually need — coming when called, walking politely, settling at home — so training works on a Tuesday, not just in class."
+                              "We teach the things you actually need (coming when called, walking politely, settling at home) so training works on a Tuesday, not just in class."
                             ],
                             "id": "d7ff8ee3-ba69-40d9-bda7-25ede8bb6e9e",
                             "ord": "a1"
@@ -872,7 +872,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A no-pressure first visit — start here."],
+                            "children": ["A no-pressure first visit. Start here."],
                             "id": "742c89cd-6b97-4cfb-825b-0b8611a49e0b",
                             "ord": "a2"
                           }
@@ -1084,7 +1084,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Spin, shake, weave — pure fun."],
+                            "children": ["Spin, shake, weave: pure fun."],
                             "id": "413236e6-fa5a-49cf-9cd5-9d1ce6370bde",
                             "ord": "a2"
                           }
@@ -1288,7 +1288,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We train the way dogs actually learn — by rewarding the things we love and setting them up to get it right. No prong collars, no shouting, no fear. Just clear communication and a whole lot of encouragement."
+                          "We train the way dogs actually learn: by rewarding the things we love and setting them up to get it right. No prong collars, no shouting, no fear. Just clear communication and a whole lot of encouragement."
                         ],
                         "id": "4884cffb-2836-4077-9af3-ae1d938b2396",
                         "ord": "a1"
@@ -1298,7 +1298,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It’s kinder, it’s more fun, and it builds a dog who wants to work with you — not one who’s just avoiding a correction. That bond is the whole point, and it’s the part that lasts."
+                          "It’s kinder, it’s more fun, and it builds a dog who wants to work with you, not one who’s just avoiding a correction. That bond is the whole point, and it’s the part that lasts."
                         ],
                         "id": "8d2af6b1-6a30-4168-b335-4e7dd6305fb8",
                         "ord": "a2"
@@ -1476,7 +1476,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Real-world manners and the crowd-favorite tricks class — proof that serious skills can be seriously fun."
+                                  "Real-world manners and the crowd-favorite tricks class: proof that serious skills can be seriously fun."
                                 ],
                                 "id": "783bd6da-c6d3-4a2e-b60a-161a17a6a046",
                                 "ord": "a2"
@@ -1572,7 +1572,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“We came in with a whirlwind of a rescue and left with a dog who actually looks to us. Nobody made us feel like we were failing — they just cheered every tiny win until they added up.”"
+                      "“We came in with a whirlwind of a rescue and left with a dog who actually looks to us. Nobody made us feel like we were failing. They just cheered every tiny win until they added up.”"
                     ],
                     "id": "6c441e9c-2de5-41d5-a152-05d229bd7abe",
                     "ord": "a0"
@@ -1616,7 +1616,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Pick a class or book a free meet & evaluation — choose a time, and you’re set. It takes about a minute."
+                      "Pick a class or book a free meet & evaluation. Choose a time, and you’re set. It takes about a minute."
                     ],
                     "id": "a4356379-6f6e-4f6d-b43b-0193d5d7b89d",
                     "ord": "a1"
@@ -1647,7 +1647,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Good Dog Academy",
+      "seoTitle": "Book: Good Dog Academy",
       "seoDescription": "See what Good Dog Academy offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1698,7 +1698,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose a class or session to see the price, how long it runs and live availability — then pick your trainer and start date."
+                      "Choose a class or session to see the price, how long it runs and live availability, then pick your trainer and start date."
                     ],
                     "id": "ec02711f-c8e7-4090-8ec2-3ee8b58fa9c0",
                     "ord": "a1"
@@ -1771,7 +1771,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "de6e662b-6743-4604-9c28-54eae65c5bab",
                         "ord": "a1"
@@ -1803,7 +1803,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Give us at least 24 hours’ notice to change or cancel and your spot frees up for the next pup — classes are small and fill fast. We send a friendly reminder the day before and two hours ahead."
+                              "Give us at least 24 hours’ notice to change or cancel and your spot frees up for the next pup: classes are small and fill fast. We send a friendly reminder the day before and two hours ahead."
                             ],
                             "id": "cbbe9ed6-4e50-407a-a901-f4644366ed0c",
                             "ord": "a1"
@@ -1878,7 +1878,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Good Dog Academy",
+      "seoTitle": "About: Good Dog Academy",
       "seoDescription": "Who Good Dog Academy is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1927,7 +1927,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Good Dog Academy because training should feel good — for the dog and for you. Too many classes lean on fear and force; we wanted a place built entirely on kindness, treats and encouragement."
+                          "We started Good Dog Academy because training should feel good, for the dog and for you. Too many classes lean on fear and force; we wanted a place built entirely on kindness, treats and encouragement."
                         ],
                         "id": "aa7ee433-579d-46ce-a5f9-de5e2ab40d9c",
                         "ord": "a1"
@@ -2042,7 +2042,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Classes run as a friendly series in our training hall — small, capped, and full of encouragement. You and your dog learn side by side with others doing the same."
+                              "Classes run as a friendly series in our training hall: small, capped, and full of encouragement. You and your dog learn side by side with others doing the same."
                             ],
                             "id": "0196aa03-e52a-422f-b3de-26490236b54d",
                             "ord": "a1"
@@ -2097,7 +2097,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Good Dog Academy",
+      "seoTitle": "Visit: Good Dog Academy",
       "seoDescription": "Where to find Good Dog Academy, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2134,7 +2134,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Good Dog Academy will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Good Dog Academy will get back to you, usually the same day."
                         ],
                         "id": "777779e0-b822-416c-a7b8-78ec4576f393",
                         "ord": "a1"
@@ -2586,7 +2586,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live class times and reserve your spot online — no phone tag, no pressure."
+                      "See live class times and reserve your spot online: no phone tag, no pressure."
                     ],
                     "id": "a022b04f-36c7-4e23-836f-2eafcc67e9d0",
                     "ord": "a1"

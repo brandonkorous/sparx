@@ -212,7 +212,7 @@ export async function updateDomain(
         });
         if (used > 0) {
           throw new CommerceConflictError(
-            `Can't remove level "${removed.join(', ')}" — ${used} node(s) still use it. Delete those first.`,
+            `Can't remove level "${removed.join(', ')}": ${used} node(s) still use it. Delete those first.`,
             'dimensions'
           );
         }

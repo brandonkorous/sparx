@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Brushworks Painting — clean, reliable residential painters",
-      "seoDescription": "Brushworks is a local residential painting company — interior, exterior, cabinets and trim, done tidy and on time. Book a free estimate online.",
+      "seoTitle": "Brushworks Painting: clean, reliable residential painters",
+      "seoDescription": "Brushworks is a local residential painting company: interior, exterior, cabinets and trim, done tidy and on time. Book a free estimate online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Drop cloths, taped edges and shoe covers. We move your things carefully, clean up every day, and you’d never know we were there — except for the paint."
+                              "Drop cloths, taped edges and shoe covers. We move your things carefully, clean up every day, and you’d never know we were there, except for the paint."
                             ],
                             "id": "a29cb76f-21e6-44e6-b59d-6d28ed884b2c",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We paint with top-tier, low-odor paints that cover better and last longer. No thin coats, no cheap substitutes — the finish holds up for years."
+                              "We paint with top-tier, low-odor paints that cover better and last longer. No thin coats, no cheap substitutes: the finish holds up for years."
                             ],
                             "id": "9021b07c-75df-45e8-898a-5e4256efc46e",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You get a real start date and a flat written price up front. We finish when we say we will, for what we quoted — no creeping costs at the end."
+                              "You get a real start date and a flat written price up front. We finish when we say we will, for what we quoted: no creeping costs at the end."
                             ],
                             "id": "fe325deb-1c21-41ca-b034-3d18292ea409",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The visits we book most. Pick one to see how long it takes and grab the next open time — most estimates are free."
+                          "The visits we book most. Pick one to see how long it takes and grab the next open time. Most estimates are free."
                         ],
                         "id": "d85da289-b1a6-4cef-908f-49b8ca398000",
                         "ord": "a1"
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Great paint is mostly great prep. We patch, sand, caulk and prime before a single finish coat goes on — that’s why our lines stay crisp and our walls stay smooth."
+                          "Great paint is mostly great prep. We patch, sand, caulk and prime before a single finish coat goes on: that’s why our lines stay crisp and our walls stay smooth."
                         ],
                         "id": "695719e7-0031-4b93-812c-63f0832f43da",
                         "ord": "a1"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The same familiar faces every visit — skilled painters who care about the details and treat your home like their own."
+                          "The same familiar faces every visit: skilled painters who care about the details and treat your home like their own."
                         ],
                         "id": "17449ecc-b953-4168-866c-945338fed99f",
                         "ord": "a1"
@@ -1395,7 +1395,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“They repainted our whole downstairs and I keep looking for something to nitpick — there’s nothing. Crisp lines, spotless floors, done on the day they promised. We’ve already booked the exterior.”"
+                      "“They repainted our whole downstairs and I keep looking for something to nitpick: there’s nothing. Crisp lines, spotless floors, done on the day they promised. We’ve already booked the exterior.”"
                     ],
                     "id": "4eff13ac-8c45-407b-873e-e604a54d7d2a",
                     "ord": "a0"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Brushworks Painting",
+      "seoTitle": "Book: Brushworks Painting",
       "seoDescription": "See what Brushworks Painting offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1521,7 +1521,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose the visit you need to see how long it takes and the next open time — then pick your painter and day. Most estimates are free."
+                      "Choose the visit you need to see how long it takes and the next open time, then pick your painter and day. Most estimates are free."
                     ],
                     "id": "c0f1ca5c-0b07-4c88-8e60-563646d9077d",
                     "ord": "a1"
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "c7013dfc-1a41-4011-a3eb-159a79248e18",
                         "ord": "a1"
@@ -1664,7 +1664,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Brushworks Painting",
+      "seoTitle": "About: Brushworks Painting",
       "seoDescription": "Who Brushworks Painting is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1713,7 +1713,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Brushworks to do painting the way homeowners actually want it — a crew that arrives on time, protects your home, quotes an honest flat price, and leaves the place cleaner than they found it."
+                          "We started Brushworks to do painting the way homeowners actually want it: a crew that arrives on time, protects your home, quotes an honest flat price, and leaves the place cleaner than they found it."
                         ],
                         "id": "9d6028f3-4df6-44d4-a338-ac924b34d0a4",
                         "ord": "a1"
@@ -1855,7 +1855,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Before we pack up, we walk every room with you in good light. If anything needs another pass, it gets one — that’s the guarantee."
+                              "Before we pack up, we walk every room with you in good light. If anything needs another pass, it gets one: that’s the guarantee."
                             ],
                             "id": "cede19f0-0077-4eb9-8912-148ab1e8ac09",
                             "ord": "a1"
@@ -1883,7 +1883,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Brushworks Painting",
+      "seoTitle": "Visit: Brushworks Painting",
       "seoDescription": "Where to find Brushworks Painting, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1920,7 +1920,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Brushworks Painting will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Brushworks Painting will get back to you, usually the same day."
                         ],
                         "id": "b9263f2c-3079-4531-9fbf-0c5fb02a2e87",
                         "ord": "a1"
@@ -2372,7 +2372,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See the next open times and reserve your free estimate online — no phone tag, no waiting on hold."
+                      "See the next open times and reserve your free estimate online: no phone tag, no waiting on hold."
                     ],
                     "id": "4f8c0c18-6d34-4917-9ffd-4b52d963689f",
                     "ord": "a1"

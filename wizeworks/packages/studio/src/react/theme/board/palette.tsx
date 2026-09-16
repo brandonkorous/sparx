@@ -49,7 +49,7 @@ export function PaletteTile() {
         ))}
       </div>
 
-      <Specimen label="The same colors, softened — how they look behind a label">
+      <Specimen label="The same colors, softened: how they look behind a label">
         <Badge color="primary" variant="soft">
           Main
         </Badge>

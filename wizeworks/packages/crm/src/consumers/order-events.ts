@@ -69,7 +69,7 @@ async function nameOf(
     console.error('[crm-consumer] order has no number to write into its activity', {
       tenantId,
       orderId: payload.orderId,
-      why: 'absent from the payload and not visible in the database — is the producer publishing before its transaction commits?',
+      why: 'absent from the payload and not visible in the database: is the producer publishing before its transaction commits?',
     });
   }
   return found;
@@ -202,7 +202,7 @@ export function registerOrderEventConsumers(ctx: ConsumerContext): (() => void)[
         // Same refusal as the lifecycle rows: money going back out is the last
         // thing that should be recorded against nobody.
         if (!payload.customerId) {
-          console.error('[crm-consumer] refund names no customer — no row written', {
+          console.error('[crm-consumer] refund names no customer: no row written', {
             tenantId: event.tenantId,
             orderId: payload.orderId,
           });
@@ -279,7 +279,7 @@ async function recordLifecycleActivity(
   const occurredAt = payload.occurredAt ? new Date(payload.occurredAt) : new Date();
 
   if (!payload.customerId) {
-    console.error('[crm-consumer] order lifecycle event names no customer — no row written', {
+    console.error('[crm-consumer] order lifecycle event names no customer: no row written', {
       tenantId,
       type,
       orderId: payload.orderId,

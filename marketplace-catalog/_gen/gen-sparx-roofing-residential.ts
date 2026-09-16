@@ -163,7 +163,7 @@ const SCHEDULING = {
       handle: 'free-inspection',
       name: 'Free roof inspection',
       description:
-        'We climb up, check every slope, flashing and valley, and walk you through what we find in plain language — no charge, no pressure.',
+        'We climb up, check every slope, flashing and valley, and walk you through what we find in plain language: no charge, no pressure.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -190,7 +190,7 @@ const SCHEDULING = {
       handle: 'replacement-estimate',
       name: 'Replacement estimate',
       description:
-        'A full measure-up and an honest, itemized written quote to re-roof your home — materials, timeline and price, before any work is booked.',
+        'A full measure-up and an honest, itemized written quote to re-roof your home: materials, timeline and price, before any work is booked.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -216,7 +216,7 @@ const SCHEDULING = {
       handle: 'gutter-service',
       name: 'Gutter cleaning & repair',
       description:
-        'Gutters and downspouts cleared, resecured and tested to run — so water leaves the roof instead of sitting on it.',
+        'Gutters and downspouts cleared, resecured and tested to run, so water leaves the roof instead of sitting on it.',
       durationMinutes: 90,
       priceCents: 14900,
       bufferAfterMin: 15,
@@ -230,7 +230,7 @@ const SCHEDULING = {
       handle: 'maintenance-tune-up',
       name: 'Roof maintenance tune-up',
       description:
-        'A yearly once-over — sealants topped up, loose shingles nailed, debris cleared — to add years to the roof you already have.',
+        'A yearly once-over (sealants topped up, loose shingles nailed, debris cleared) to add years to the roof you already have.',
       durationMinutes: 90,
       priceCents: 16900,
       bufferAfterMin: 15,
@@ -263,7 +263,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A freshly finished asphalt-shingle roof on a suburban home under a clear sky',
     title: 'A roof that lasts, done right',
-    sub: 'Licensed, insured and honest about what your roof actually needs. Book a free inspection online and we’ll show you exactly where it stands — no pressure, no sales pitch.',
+    sub: 'Licensed, insured and honest about what your roof actually needs. Book a free inspection online and we’ll show you exactly where it stands: no pressure, no sales pitch.',
     primary: { label: 'Book a free inspection', href: '/book' },
     secondary: { label: 'See our services', href: '/book' },
     overlay: 'dark',
@@ -272,11 +272,11 @@ const HOME = [
     items: [
       {
         title: 'Licensed & insured',
-        body: 'Fully licensed, bonded and insured — our own uniformed crew on your roof, never a rotating cast of subcontractors.',
+        body: 'Fully licensed, bonded and insured. Our own uniformed crew on your roof, never a rotating cast of subcontractors.',
       },
       {
         title: 'Workmanship & material warranty',
-        body: 'Every roof is backed in writing — the manufacturer’s material warranty plus our own workmanship guarantee on top.',
+        body: 'Every roof is backed in writing: the manufacturer’s material warranty plus our own workmanship guarantee on top.',
       },
       {
         title: 'Upfront, honest quotes',
@@ -290,7 +290,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'What we come out for',
-    intro: 'The visits we book most. Pick one to see the price, how long it takes and the next open time — inspections and estimates are always free.',
+    intro: 'The visits we book most. Pick one to see the price, how long it takes and the next open time: inspections and estimates are always free.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -298,7 +298,7 @@ const HOME = [
         name: 'Free roof inspection',
         priceCents: 0,
         durationMin: 45,
-        desc: 'A full check of every slope, valley and flashing — no charge.',
+        desc: 'A full check of every slope, valley and flashing: no charge.',
       },
       {
         name: 'Roof repair visit',
@@ -326,14 +326,14 @@ const HOME = [
     alt: 'A roofer nailing down new shingles along a clean roof line',
     heading: 'Built to last, and backed to prove it',
     body: [
-      'We install the roof the right way — proper underlayment, sealed valleys, flashing done by hand — because the shortcuts you can’t see are the ones that leak in five years.',
+      'We install the roof the right way (proper underlayment, sealed valleys, flashing done by hand) because the shortcuts you can’t see are the ones that leak in five years.',
       'Then we stand behind it. Every replacement carries the manufacturer’s material warranty and our own workmanship guarantee in writing, so if anything isn’t right, one call brings us back.',
     ],
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
   teamRow({
     heading: 'The crew who’ll be on your roof',
-    intro: 'The same familiar faces every visit — licensed, background-checked, and glad to explain what they’re doing and why.',
+    intro: 'The same familiar faces every visit: licensed, background-checked, and glad to explain what they’re doing and why.',
     members: [
       {
         name: 'Ray Sullivan',
@@ -359,7 +359,7 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'Two other companies told us we needed a full replacement. Ray climbed up, took photos, and showed us it was a flashing repair — a fraction of the price. That honesty is why we’ll never call anyone else.',
+    quote: 'Two other companies told us we needed a full replacement. Ray climbed up, took photos, and showed us it was a flashing repair: a fraction of the price. That honesty is why we’ll never call anyone else.',
     attribution: 'The Delgados, Oakridge homeowners',
   }),
   bookingCta({
@@ -374,7 +374,7 @@ const BOOK_INTRO = [
     image: url(IMG.story),
     alt: 'A roofer nailing down new shingles along a clean roof line',
     title: 'Book your roof visit',
-    sub: 'Choose the visit you need to see the price, how long it takes and the next open time — then pick your roofer and day. Inspections and estimates are always free.',
+    sub: 'Choose the visit you need to see the price, how long it takes and the next open time, then pick your roofer and day. Inspections and estimates are always free.',
     primary: { label: 'See services below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -388,7 +388,7 @@ const ABOUT = [
     heading: 'About Summit Roofing',
     body: [
       'Summit Roofing started with one truck, one crew and a simple rule: tell homeowners the truth about their roof, do the work right, and stand behind it. Two decades later, that rule hasn’t changed.',
-      'We’re a local, family-run roofing company serving homeowners across the area. No high-pressure sales, no scare tactics, no vanishing subcontractors — just honest quotes, quality work, and a roof that’s backed in writing.',
+      'We’re a local, family-run roofing company serving homeowners across the area. No high-pressure sales, no scare tactics, no vanishing subcontractors. Just honest quotes, quality work, and a roof that’s backed in writing.',
     ],
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
@@ -398,7 +398,7 @@ const ABOUT = [
     items: [
       {
         title: 'An honest assessment first',
-        body: 'We inspect the whole roof and show you the photos. If a repair will do, we say so — we’d rather earn the replacement when you actually need it.',
+        body: 'We inspect the whole roof and show you the photos. If a repair will do, we say so: we’d rather earn the replacement when you actually need it.',
       },
       {
         title: 'Clean, protected work',
@@ -406,7 +406,7 @@ const ABOUT = [
       },
       {
         title: 'Guaranteed and here to stay',
-        body: 'Manufacturer material warranties plus our own workmanship guarantee, all in writing — and we’re a local call away if anything ever needs a second look.',
+        body: 'Manufacturer material warranties plus our own workmanship guarantee, all in writing, and we’re a local call away if anything ever needs a second look.',
       },
     ],
   }),
@@ -426,7 +426,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See the next open times and reserve your free inspection online — no phone tag, no waiting on hold.',
+    sub: 'See the next open times and reserve your free inspection online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
@@ -437,8 +437,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-roofing-residential',
   name: 'Roofing (Residential)',
   summary:
-    'A dependable residential-roofing site — a sturdy slate-blue palette with a warm amber accent and photo-led, honest reliability. Installs a working online booking flow: homeowners book a free inspection or replacement estimate and get a real time slot. Ships a full visit menu (inspection, repair, estimate, leak, gutters, maintenance, storm), three roofers as dispatchable staff with their own hours, and a standard visit policy. Ships as "Summit Roofing".',
-  tagline: 'A dependable template for residential roofers — book inspections online from day one.',
+    'A dependable residential-roofing site: a sturdy slate-blue palette with a warm amber accent and photo-led, honest reliability. Installs a working online booking flow: homeowners book a free inspection or replacement estimate and get a real time slot. Ships a full visit menu (inspection, repair, estimate, leak, gutters, maintenance, storm), three roofers as dispatchable staff with their own hours, and a standard visit policy. Ships as "Summit Roofing".',
+  tagline: 'A dependable template for residential roofers. Book inspections online from day one.',
   industry: 'Roofing',
   sortWeight: 30,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -450,7 +450,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Summit Roofing — trusted residential roofers',
+      title: 'Summit Roofing: trusted residential roofers',
       description:
         'Summit Roofing is a local, family-run roofing company with honest quotes, quality work and written warranties. Book a free roof inspection or replacement estimate online.',
     },

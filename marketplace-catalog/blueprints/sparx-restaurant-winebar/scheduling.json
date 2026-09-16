@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 180],
-      "policyText": "Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll send a reminder the day before and a few hours ahead."
+      "policyText": "Tables are held for 15 minutes past your time. Plans change. Just let us know by the day before and we’ll free your table for someone else. We’ll send a reminder the day before and a few hours ahead."
     },
     {
       "handle": "bar-standard",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 12,
       "reminderOffsetsMin": [180],
-      "policyText": "Bar stools are the loosest booking we do — grab them for a glass and a plate. If you can’t make it, a quick heads-up frees them for the next walk-in."
+      "policyText": "Bar stools are the loosest booking we do: grab them for a glass and a plate. If you can’t make it, a quick heads-up frees them for the next walk-in."
     }
   ],
   "resources": [
@@ -287,7 +287,7 @@
     {
       "handle": "table-for-two",
       "name": "Table for two",
-      "description": "A table for two, for the evening. Two hours is plenty for a bottle and a few plates — we won’t rush you.",
+      "description": "A table for two, for the evening. Two hours is plenty for a bottle and a few plates. We won’t rush you.",
       "bookingType": "reservation",
       "durationMinutes": 120,
       "assignmentStrategy": "any_available",
@@ -321,7 +321,7 @@
     {
       "handle": "bar-seats",
       "name": "Bar seats",
-      "description": "A pair of stools at the counter — the best seats in the house, right across from the open bottles. For one or two, a glass and a plate.",
+      "description": "A pair of stools at the counter: the best seats in the house, right across from the open bottles. For one or two, a glass and a plate.",
       "bookingType": "reservation",
       "durationMinutes": 90,
       "assignmentStrategy": "any_available",

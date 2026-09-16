@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Fauna Veterinary — calm, fear-free pet care",
-      "seoDescription": "Fauna Veterinary is a modern, fear-free practice for dogs and cats — wellness visits, nutrition, senior care and telehealth. Book your vet online.",
+      "seoTitle": "Fauna Veterinary: calm, fear-free pet care",
+      "seoDescription": "Fauna Veterinary is a modern, fear-free practice for dogs and cats: wellness visits, nutrition, senior care and telehealth. Book your vet online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A fear-free, whole-pet practice for dogs and cats — preventive medicine, nutrition and gentle, unhurried visits that leave everyone a little calmer."
+                      "A fear-free, whole-pet practice for dogs and cats: preventive medicine, nutrition and gentle, unhurried visits that leave everyone a little calmer."
                     ],
                     "id": "6a303423-85af-4081-a3a4-ae93c7ec06b5",
                     "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We treat the whole animal — conventional medicine paired with nutrition and supportive care, aimed at keeping pets well, not just fixing what’s broken."
+                              "We treat the whole animal: conventional medicine paired with nutrition and supportive care, aimed at keeping pets well, not just fixing what’s broken."
                             ],
                             "id": "dab649f7-666d-4773-90d4-1095797443a2",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Wellness plans that spread care across the year, plus video visits for the small questions — so help is there without the stressful trip."
+                              "Wellness plans that spread care across the year, plus video visits for the small questions, so help is there without the stressful trip."
                             ],
                             "id": "d4095dab-6ef0-4386-81ae-c5408924d012",
                             "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It’s a whole-pet way of working — we look at nutrition, comfort and behaviour alongside the medicine, because the goal isn’t just treating illness. It’s helping your dog or cat thrive for years."
+                          "It’s a whole-pet way of working. We look at nutrition, comfort and behaviour alongside the medicine, because the goal isn’t just treating illness. It’s helping your dog or cat thrive for years."
                         ],
                         "id": "72dd422b-44f8-4299-a991-cf63ce30fd83",
                         "ord": "a2"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you and your pet get to know the same faces over time."
+                          "Book by name. You and your pet get to know the same faces over time."
                         ],
                         "id": "6129f275-3cb9-4f59-bd87-963edab9fb90",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Everyday exams, sick visits and senior care — calm hands and straight answers."
+                                  "Everyday exams, sick visits and senior care: calm hands and straight answers."
                                 ],
                                 "id": "7d77d640-1b3c-4702-92d7-173b926712d6",
                                 "ord": "a2"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Fauna Veterinary",
+      "seoTitle": "Book: Fauna Veterinary",
       "seoDescription": "See what Fauna Veterinary offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "3b6a2526-83eb-40c6-b3ce-d0306f28c719",
                         "ord": "a1"
@@ -1663,7 +1663,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Longer wellness and senior visits are booked as protected time with your vet. If you need to change one, 24 hours’ notice keeps it free — repeated same-day no-shows may carry a small fee so the room stays open for another pet who needs it."
+                              "Longer wellness and senior visits are booked as protected time with your vet. If you need to change one, 24 hours’ notice keeps it free: repeated same-day no-shows may carry a small fee so the room stays open for another pet who needs it."
                             ],
                             "id": "36a4a0ef-5448-4ca3-9092-b0032d7d2041",
                             "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Fauna Veterinary",
+      "seoTitle": "About: Fauna Veterinary",
       "seoDescription": "Who Fauna Veterinary is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Fauna to practice the kind of medicine we always wanted for our own animals — calm, thorough, and centred on the whole pet rather than a single problem."
+                          "We opened Fauna to practice the kind of medicine we always wanted for our own animals: calm, thorough, and centred on the whole pet rather than a single problem."
                         ],
                         "id": "68074b3a-1f22-4b24-88cd-a992df607f86",
                         "ord": "a1"
@@ -1838,7 +1838,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every visit is paced for your pet — treats, patience and gentle handling, never a wrestling match."
+                              "Every visit is paced for your pet: treats, patience and gentle handling, never a wrestling match."
                             ],
                             "id": "1f90b074-aa83-46e8-8f5a-fb7d88d8129c",
                             "ord": "a1"
@@ -1892,7 +1892,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll always leave knowing what we found, what it means, and what it costs — no jargon, no pressure."
+                              "You’ll always leave knowing what we found, what it means, and what it costs: no jargon, no pressure."
                             ],
                             "id": "f4374e57-ca08-42aa-a4f8-38dafae753d3",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Fauna Veterinary",
+      "seoTitle": "Visit: Fauna Veterinary",
       "seoDescription": "Where to find Fauna Veterinary, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Fauna Veterinary will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Fauna Veterinary will get back to you, usually the same day."
                         ],
                         "id": "ed727f9e-89b2-44b1-ae50-786c1afeef80",
                         "ord": "a1"
@@ -2384,7 +2384,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your pet’s time online — no phone tag, no hold music."
+                      "See live availability and reserve your pet’s time online: no phone tag, no hold music."
                     ],
                     "id": "fbb2fafc-bd03-4947-926e-703401e06c4f",
                     "ord": "a1"

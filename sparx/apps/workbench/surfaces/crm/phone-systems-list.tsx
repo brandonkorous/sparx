@@ -65,7 +65,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Disconnect ${fromNumber}?`,
       description:
-        'sparx stops placing calls through this account. The calls already logged on your customers’ records are kept — disconnecting has never meant deleting your call history.',
+        'sparx stops placing calls through this account. The calls already logged on your customers’ records are kept: disconnecting has never meant deleting your call history.',
       confirmLabel: 'Disconnect it',
       cancelLabel: 'Keep it connected',
       color: 'danger',
@@ -91,7 +91,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
               color="module"
               size="sm"
               disabled={forbidden || moduleOff}
-              title="Connect a phone system — hold Shift to open alongside, Alt for a new window"
+              title="Connect a phone system. Hold Shift to open alongside, Alt for a new window"
               onClick={connectPhoneSystem}
             >
               <Plus className="size-4" aria-hidden />
@@ -123,13 +123,13 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<PhoneCall className="size-6" aria-hidden />}
               title="Only an owner or admin can set this up"
-              description="Connecting a phone system means handing over an account token, so it is kept to the people who run the account. Ask one of them to connect it — once it is done, everyone on your team gets the Call button."
+              description="Connecting a phone system means handing over an account token, so it is kept to the people who run the account. Ask one of them to connect it: once it is done, everyone on your team gets the Call button."
             />
           ) : isError ? (
             <EmptyState
               icon={<PhoneCall className="size-6" aria-hidden />}
               title="Could not load your phone systems"
-              description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+              description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
               actions={
                 <Button
                   size="sm"
@@ -150,7 +150,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<PhoneCall className="size-6" aria-hidden />}
               title="No phone system connected yet"
-              description="Connect your phone account and a Call button appears on every customer’s record. sparx rings you first, then dials them and joins the two of you — so the call is logged without anyone writing it down afterwards."
+              description="Connect your phone account and a Call button appears on every customer’s record. sparx rings you first, then dials them and joins the two of you, so the call is logged without anyone writing it down afterwards."
               actions={
                 <Button size="sm" color="module" onClick={connectPhoneSystem}>
                   Connect a phone system
@@ -226,7 +226,7 @@ export function PhoneSystemsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <p className="shrink-0 px-1 text-xs">
         <Phone className="mr-1 inline size-3" aria-hidden />
-        To change the token on a connected number, disconnect it and connect it again — sparx never
+        To change the token on a connected number, disconnect it and connect it again: sparx never
         shows a token back, so there is nothing to edit in place.
       </p>
     </div>

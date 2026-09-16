@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Lumen — a clinical med spa & skin clinic",
-      "seoDescription": "Lumen is a clinical skin studio for HydraFacial, peels, microneedling, laser and IV therapy — planned by licensed providers and measured against real results. Book online.",
+      "seoTitle": "Lumen: a clinical med spa & skin clinic",
+      "seoDescription": "Lumen is a clinical skin studio for HydraFacial, peels, microneedling, laser and IV therapy: planned by licensed providers and measured against real results. Book online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We photograph and baseline your skin first, then check back against it — so progress is something you can see, not just feel."
+                              "We photograph and baseline your skin first, then check back against it, so progress is something you can see, not just feel."
                             ],
                             "id": "ef36b79f-c4f9-4601-8114-894b342bf607",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Clinical devices and pharmaceutical-strength formulations, used at the right depth for your skin — not a generic day-spa menu."
+                              "Clinical devices and pharmaceutical-strength formulations, used at the right depth for your skin, not a generic day-spa menu."
                             ],
                             "id": "d9672dcd-d8f1-4f7d-b10a-4cbea3d0ccb5",
                             "ord": "a1"
@@ -786,7 +786,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A few of the things we do most. Full pricing and live availability are on the booking page — and a free consultation comes first if you’re not sure."
+                          "A few of the things we do most. Full pricing and live availability are on the booking page, and a free consultation comes first if you’re not sure."
                         ],
                         "id": "dee8ef06-9f92-463e-91b1-98e152c49298",
                         "ord": "a1"
@@ -846,7 +846,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Cleanse, exfoliate and hydrate — fresher skin, no downtime."
+                              "Cleanse, exfoliate and hydrate: fresher skin, no downtime."
                             ],
                             "id": "3b097b7b-c5ab-4564-b514-e64d3f7d5d12",
                             "ord": "a2"
@@ -1011,7 +1011,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Comfortable, effective reduction — safe across skin types."
+                              "Comfortable, effective reduction: safe across skin types."
                             ],
                             "id": "cea58602-9409-4a09-ba17-eb8200b1424c",
                             "ord": "a2"
@@ -1200,7 +1200,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We don’t sell you a package on day one. Every plan starts with a consultation and a proper skin analysis, so what we recommend is based on your skin — not a menu we’re trying to move."
+                          "We don’t sell you a package on day one. Every plan starts with a consultation and a proper skin analysis, so what we recommend is based on your skin, not a menu we’re trying to move."
                         ],
                         "id": "15c4cfba-ad90-45ba-a967-2b9058dcba5e",
                         "ord": "a1"
@@ -1275,7 +1275,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — a licensed provider you’ll get to know, with a medical director overseeing every plan."
+                          "Book by name: a licensed provider you’ll get to know, with a medical director overseeing every plan."
                         ],
                         "id": "1504423e-5515-43e9-af09-92b00e70f9e9",
                         "ord": "a1"
@@ -1528,7 +1528,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Tell us what’s bothering you and we’ll build a plan — no pressure, no package. It takes about a minute to book."
+                      "Tell us what’s bothering you and we’ll build a plan: no pressure, no package. It takes about a minute to book."
                     ],
                     "id": "d350ea7b-c981-43bc-beab-aa1d55209097",
                     "ord": "a1"
@@ -1559,7 +1559,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Lumen",
+      "seoTitle": "Book: Lumen",
       "seoDescription": "See what Lumen offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1683,7 +1683,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "6936c6f6-9076-4a6d-b6eb-17ab962a235b",
                         "ord": "a1"
@@ -1790,7 +1790,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Lumen",
+      "seoTitle": "About: Lumen",
       "seoDescription": "Who Lumen is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1839,7 +1839,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Lumen to do aesthetic skincare the way medicine should be done — with a real assessment, licensed hands, and outcomes you can measure rather than promises you can’t."
+                          "We opened Lumen to do aesthetic skincare the way medicine should be done, with a real assessment, licensed hands, and outcomes you can measure rather than promises you can’t."
                         ],
                         "id": "4dd27205-aa42-4c0e-8ec9-b6e45649afa4",
                         "ord": "a1"
@@ -1927,7 +1927,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every plan opens with imaging and a measured baseline, so we treat your actual skin — not a guess."
+                              "Every plan opens with imaging and a measured baseline, so we treat your actual skin, not a guess."
                             ],
                             "id": "65bbf6f4-be48-46ba-9431-d30559afe70b",
                             "ord": "a1"
@@ -2009,7 +2009,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Lumen",
+      "seoTitle": "Visit: Lumen",
       "seoDescription": "Where to find Lumen, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2046,7 +2046,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Lumen will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Lumen will get back to you, usually the same day."
                         ],
                         "id": "2f7c8ff1-492e-4837-b0b4-1e70a46b59c5",
                         "ord": "a1"
@@ -2498,7 +2498,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a consultation or treatment online — no phone tag."
+                      "See live availability and reserve a consultation or treatment online: no phone tag."
                     ],
                     "id": "e5ff7ea5-298b-47c0-8fb9-3093e160210b",
                     "ord": "a1"

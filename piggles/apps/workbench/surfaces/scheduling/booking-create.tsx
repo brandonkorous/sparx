@@ -78,7 +78,7 @@ export function BookingCreate({ ctx }: { ctx: SurfaceContext }) {
   const saveError = create.isError
     ? schedulingErrorMessage(
         create.error,
-        'Nothing was booked. That time may have just been taken — try another.'
+        'Nothing was booked. That time may have just been taken. Try another.'
       )
     : null;
 

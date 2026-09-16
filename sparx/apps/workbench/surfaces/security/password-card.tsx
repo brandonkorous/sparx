@@ -198,7 +198,7 @@ export function PasswordCard() {
           }}
         />
         <Text as="span" className="text-sm">
-          Sign out my other devices — the safe choice if you are changing this because you think
+          Sign out my other devices: the safe choice if you are changing this because you think
           someone else knows it.
         </Text>
       </label>

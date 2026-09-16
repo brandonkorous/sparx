@@ -119,7 +119,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
       <PaneLoadError
         icon={<Component className="size-6" aria-hidden />}
         title="Could not load your saved pieces"
-        description="This is a problem reaching the server. None of your pieces are affected — nothing has been lost."
+        description="This is a problem reaching the server. None of your pieces are affected. Nothing has been lost."
         onRetry={() => {
           void refetch();
         }}
@@ -160,7 +160,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
             variant="outline"
             color="neutral"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Open the editor — hold Shift to open alongside, Alt for a new window"
+            title="Open the editor: hold Shift to open alongside, Alt for a new window"
             onClick={openEditor}
           >
             <Pencil className="size-4" aria-hidden />
@@ -190,12 +190,12 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
               icon: <Component className="size-6" aria-hidden />,
               title: 'No pieces match that',
               description:
-                'Try part of the name or what it is for — or clear the search to see them all.',
+                'Try part of the name or what it is for, or clear the search to see them all.',
             }}
             firstRun={{
               title: 'No saved pieces yet',
               description:
-                'A saved piece is a part of a page you build once and reuse. Open the editor, build something, select it, and choose “Save as a piece” — it then shows up here, and dropping it onto a page keeps it in step everywhere.',
+                'A saved piece is a part of a page you build once and reuse. Open the editor, build something, select it, and choose “Save as a piece”. It then shows up here, and dropping it onto a page keeps it in step everywhere.',
               actions: (
                 <Button
                   size="sm"

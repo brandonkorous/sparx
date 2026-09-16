@@ -97,7 +97,7 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
               href={`/sparx/tenants/${id}/billing`}
               className="text-module text-sm font-medium hover:underline"
             >
-              Billing — charges, refunds & invoices →
+              Billing: charges, refunds & invoices →
             </Link>
           ) : null}
           {hasCapability(operator, 'domain:manage') ? (
@@ -105,21 +105,21 @@ export default async function TenantDetailPage({ params }: { params: Promise<{ i
               href={`/sparx/domains?tenantId=${id}`}
               className="text-module text-sm font-medium hover:underline"
             >
-              Domains — routing, SSL & verification →
+              Domains: routing, SSL & verification →
             </Link>
           ) : null}
           <Link
             href={`/sparx/tenants/${id}/support`}
             className="text-module text-sm font-medium hover:underline"
           >
-            Support — search index & email log →
+            Support. Search index & email log →
           </Link>
           {hasCapability(operator, 'feedback:respond') ? (
             <Link
               href={`/sparx/feedback?tenantId=${id}`}
               className="text-module text-sm font-medium hover:underline"
             >
-              Feedback — this tenant’s submissions →
+              Feedback. This tenant’s submissions →
             </Link>
           ) : null}
         </Stack>

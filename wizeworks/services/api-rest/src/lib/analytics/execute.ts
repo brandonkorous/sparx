@@ -113,7 +113,7 @@ export async function executeQuery(input: ExecuteInput): Promise<MetricResultEnv
       return {
         ...labelled,
         status: 'unavailable',
-        message: 'This is a per-site figure — choose a site to see it.',
+        message: 'This is a per-site figure. Choose a site to see it.',
       };
     }
 

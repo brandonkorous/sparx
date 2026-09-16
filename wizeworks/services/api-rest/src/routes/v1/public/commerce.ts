@@ -234,7 +234,7 @@ async function resolveViewerB2bAccountId(
       return pricingService.resolveActiveB2bAccountId(tx, resolved.customerId, customer?.companyId);
     });
   } catch (err) {
-    request.log.warn({ err }, 'could not resolve viewer for pricing — showing list prices');
+    request.log.warn({ err }, 'could not resolve viewer for pricing: showing list prices');
     return undefined;
   }
 }

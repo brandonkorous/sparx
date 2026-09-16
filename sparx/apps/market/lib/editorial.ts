@@ -52,7 +52,7 @@ export const LIFESTYLE_EDITS: LifestyleEdit[] = [
     sub: 'Ceramics, textiles & warm little details.',
     href: '/home',
     image: pexels(7220437),
-    alt: 'A calm styled corner — a linen throw and woven basket against sage cabinetry',
+    alt: 'A calm styled corner: a linen throw and woven basket against sage cabinetry',
   },
   {
     title: 'Handmade originals',

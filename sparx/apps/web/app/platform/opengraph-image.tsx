@@ -7,13 +7,13 @@ import { renderStoryOg } from '@/lib/og-story';
 // homepage (lib/og-story.tsx), a different vertical: the motto, multiplied.
 
 export const runtime = 'nodejs';
-export const alt = 'sparx — Your story, multiplied. One platform for content and commerce.';
+export const alt = 'sparx. Your story, multiplied. One platform for content and commerce.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 const GROCER = STORY_EXAMPLES.find((e) => e.label === 'a local grocer');
 if (!GROCER)
-  throw new Error('STORY_EXAMPLES is missing the grocer — the /platform OG card needs it.');
+  throw new Error('STORY_EXAMPLES is missing the grocer: the /platform OG card needs it.');
 const GROCER_STORY = GROCER.story;
 
 export default function Image() {

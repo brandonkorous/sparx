@@ -74,7 +74,7 @@ export default async function TenantBillingPage({ params }: { params: Promise<{ 
         <Heading level={1}>{view.name} · Billing</Heading>
         {!view.hasStripeCustomer ? (
           <Text variant="muted">
-            No platform Stripe customer yet — this tenant has no billing relationship, so there are
+            No platform Stripe customer yet. This tenant has no billing relationship, so there are
             no charges to refund and invoices can’t be issued.
           </Text>
         ) : null}
@@ -157,7 +157,7 @@ export default async function TenantBillingPage({ params }: { params: Promise<{ 
             <Stack gap={1}>
               <Heading level={3}>Enterprise invoice</Heading>
               <Text size="sm" variant="muted">
-                Author a one-off invoice against this tenant’s platform Stripe customer — for custom
+                Author a one-off invoice against this tenant’s platform Stripe customer, for custom
                 pricing, professional services, or manual charges.
               </Text>
             </Stack>

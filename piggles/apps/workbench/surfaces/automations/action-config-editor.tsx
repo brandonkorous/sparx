@@ -398,7 +398,7 @@ export function ActionConfigEditor({
 
       {def && !def.available ? (
         <Badge color="warning" variant="soft" size="sm">
-          Not available yet — this step won’t run until its feature ships
+          Not available yet. This step won’t run until its feature ships
         </Badge>
       ) : null}
 

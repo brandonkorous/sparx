@@ -97,7 +97,7 @@ export function renderEmailNode(node: EmailNode, ctx: EmailRenderContext): React
           {emailChildren(node).length ? (
             renderChildren(node, ctx)
           ) : (
-            <EmptySlot label="This band is empty — drop something into it" />
+            <EmptySlot label="This band is empty: drop something into it" />
           )}
         </div>
       );

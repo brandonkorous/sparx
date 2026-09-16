@@ -26,7 +26,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'chevron-down',
     description:
-      'A trigger button that reveals a panel of links — CSS-native disclosure, no script. Closes when focus leaves.',
+      'A trigger button that reveals a panel of links: CSS-native disclosure, no script. Closes when focus leaves.',
     surfaces: ['page', 'site'],
     tags: ['dropdown', 'menu', 'disclosure', 'popover', 'actions'],
     tree: el('details', 'relative inline-block', {
@@ -69,7 +69,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'rows-3',
     description:
-      'A joined row of related buttons that read as one segmented control — first and last ends rounded, inner seams shared.',
+      'A joined row of related buttons that read as one segmented control: first and last ends rounded, inner seams shared.',
     surfaces: ['page', 'site'],
     tags: ['button group', 'segmented', 'joined', 'toolbar', 'actions'],
     tree: el('div', 'inline-flex items-center rounded-field shadow-sm', {
@@ -117,7 +117,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'square-chevron-down',
     description:
-      'A primary action joined to a small caret that opens secondary actions — one default tap, a menu for the rest.',
+      'A primary action joined to a small caret that opens secondary actions. One default tap, a menu for the rest.',
     surfaces: ['page', 'site'],
     tags: ['split button', 'dropdown', 'action', 'menu', 'actions'],
     tree: el('div', 'inline-flex items-center rounded-field shadow-sm', {
@@ -200,7 +200,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'circle-ellipsis',
     description:
-      'A compact row of round, icon-only buttons for quick reactions or share targets — labelled for assistive tech.',
+      'A compact row of round, icon-only buttons for quick reactions or share targets: labelled for assistive tech.',
     surfaces: ['page', 'site'],
     tags: ['icon button', 'round', 'share', 'social', 'reactions', 'actions'],
     tree: el('div', 'flex items-center gap-2', {
@@ -249,7 +249,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'toggle-left',
     description:
-      'A two-state control that swaps its icon and label when checked — pure peer-checkbox, no script. Here: play / pause.',
+      'A two-state control that swaps its icon and label when checked: pure peer-checkbox, no script. Here: play / pause.',
     surfaces: ['page', 'site'],
     tags: ['swap', 'toggle', 'switch', 'play pause', 'state', 'actions'],
     tree: el(
@@ -277,7 +277,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'copy',
     description:
-      'An outline button with a leading clipboard icon for copying a value — pairs with a code snippet or share link.',
+      'An outline button with a leading clipboard icon for copying a value: pairs with a code snippet or share link.',
     surfaces: ['page', 'site'],
     tags: ['copy', 'clipboard', 'duplicate', 'button', 'actions'],
     tree: el('button', 'btn btn-neutral btn-outline btn-sm inline-flex items-center gap-2', {
@@ -294,7 +294,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'arrow-down',
     description:
-      'A centered outline button to fetch the next page of results — the click-to-extend alternative to numbered pagination.',
+      'A centered outline button to fetch the next page of results: the click-to-extend alternative to numbered pagination.',
     surfaces: ['page', 'site'],
     tags: ['load more', 'pagination', 'infinite', 'show more', 'actions'],
     tree: el('div', 'flex w-full justify-center py-2', {
@@ -318,7 +318,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'plus',
     description:
-      'A single high-emphasis round button for the primary page action — large, filled, with a labelled icon.',
+      'A single high-emphasis round button for the primary page action: large, filled, with a labelled icon.',
     surfaces: ['page', 'site'],
     tags: ['fab', 'floating action', 'add', 'compose', 'primary', 'actions'],
     tree: el(
@@ -339,7 +339,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     kind: 'common',
     icon: 'rows-2',
     description:
-      'A vertical stack of full-width buttons — a confirm / cancel pair for a sheet, modal footer, or mobile form.',
+      'A vertical stack of full-width buttons: a confirm / cancel pair for a sheet, modal footer, or mobile form.',
     surfaces: ['page', 'site'],
     tags: ['button stack', 'vertical', 'confirm', 'cancel', 'block', 'actions'],
     tree: el('div', 'flex w-full max-w-sm flex-col gap-3', {

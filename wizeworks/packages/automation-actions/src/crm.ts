@@ -146,7 +146,7 @@ export function installCrmActions(): void {
     type: 'crm.add_tag',
     module: 'crm',
     gates: [],
-    manifestNote: 'internal CRM write (customer tags); no external effect — global gates suffice',
+    manifestNote: 'internal CRM write (customer tags); no external effect: global gates suffice',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = TagConfig.parse(effect.config);
       const customerId = requireEntityId(effect.fields, 'customer.id', 'crm.add_tag');
@@ -162,7 +162,7 @@ export function installCrmActions(): void {
     type: 'crm.remove_tag',
     module: 'crm',
     gates: [],
-    manifestNote: 'internal CRM write (customer tags); no external effect — global gates suffice',
+    manifestNote: 'internal CRM write (customer tags); no external effect: global gates suffice',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = TagConfig.parse(effect.config);
       const customerId = requireEntityId(effect.fields, 'customer.id', 'crm.remove_tag');
@@ -257,7 +257,7 @@ export function installCrmActions(): void {
     module: 'crm',
     gates: [],
     manifestNote:
-      'internal CRM write (upsert a site-form submitter as a prospect + log the message, optionally opening a pipeline deal and/or a support request); no external effect — global gates suffice',
+      'internal CRM write (upsert a site-form submitter as a prospect + log the message, optionally opening a pipeline deal and/or a support request); no external effect: global gates suffice',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       // Self-gate on the form's own toggles (resolved from the server-only
       // FormDefinition). "Add to CRM", "open a deal" OR "open a request" opts the
@@ -295,7 +295,7 @@ export function installCrmActions(): void {
     module: 'crm',
     gates: [],
     manifestNote:
-      'internal CRM write (opens a service request from a chat, form or inbound email, and links the conversation to it); no external effect — global gates suffice',
+      'internal CRM write (opens a service request from a chat, form or inbound email, and links the conversation to it); no external effect: global gates suffice',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = CreateTicketConfig.parse(effect.config);
       const origin = originOf(effect.fields);

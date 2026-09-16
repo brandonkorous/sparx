@@ -91,7 +91,7 @@ const setCheckoutContact: SiteTool = {
 const getShippingQuotes: SiteTool = {
   name: 'get_shipping_quotes',
   description:
-    'Get shipping rate options for a checkout session. Returns { deliveryOffered, rates } — ' +
+    'Get shipping rate options for a checkout session. Returns { deliveryOffered, rates }: ' +
     'deliveryOffered is false for a shop that only hands orders over in person, and such a ' +
     'shop needs no destination at all. Call it with no destination first to find out.',
   kind: 'guest_write',
@@ -124,7 +124,7 @@ const setCheckoutShipping: SiteTool = {
   name: 'set_checkout_shipping',
   description:
     'Set the chosen shipping rate, with the delivery (and optional billing) address. ' +
-    'Omit the address when the chosen rate is collection in person — there is nowhere ' +
+    'Omit the address when the chosen rate is collection in person. There is nowhere ' +
     'to deliver to, and a placeholder would be written onto the order as though it meant ' +
     'something.',
   kind: 'guest_write',
@@ -183,7 +183,7 @@ const applyCheckoutDiscount: SiteTool = {
 const createPaymentIntent: SiteTool = {
   name: 'create_payment_intent',
   description:
-    'Begin payment for a checkout session. Returns a client secret / redirect URL the SHOPPER completes in a browser — the assistant never handles card details. Provide return/cancel URLs for the redirect flow.',
+    'Begin payment for a checkout session. Returns a client secret / redirect URL the SHOPPER completes in a browser: the assistant never handles card details. Provide return/cancel URLs for the redirect flow.',
   kind: 'guest_write',
   module: 'commerce',
   input: z.object({

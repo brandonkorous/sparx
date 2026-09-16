@@ -107,7 +107,7 @@ export function SaveViewDialog({
       <DialogContent>
         <DialogTitle>Save this view</DialogTitle>
         <DialogDescription>
-          What you are looking at right now — the filters, the sort and the columns — kept under a
+          What you are looking at right now (the filters, the sort and the columns) kept under a
           name. It saves the question, not the rows, so it stays true as things change.
         </DialogDescription>
         <div className="flex flex-col gap-3 py-2">

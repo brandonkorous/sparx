@@ -231,7 +231,7 @@ function Reschedule({ purchaseOrderId, expectedArrivalAt }: Props) {
             }
           />
           <FieldDescription>
-            Clear it if they genuinely cannot say — an honest blank is better than a date nobody
+            Clear it if they genuinely cannot say: an honest blank is better than a date nobody
             believes.
           </FieldDescription>
         </Field>
@@ -253,11 +253,11 @@ function Notices({ purchaseOrderId, ctx }: Props) {
   return (
     <FormSection
       title="What they say has shipped"
-      description="Recording a supplier’s dispatch note means receiving starts pre-filled — and means a short delivery is visible instead of being invisible."
+      description="Recording a supplier’s dispatch note means receiving starts pre-filled, and means a short delivery is visible instead of being invisible."
     >
       {notices.isError ? (
         <Text className="text-sm">
-          Could not check for shipment notices — a problem reaching the server, not a statement that
+          Could not check for shipment notices: a problem reaching the server, not a statement that
           there are none.
         </Text>
       ) : rows.length === 0 ? (
@@ -353,7 +353,7 @@ function Bills({ purchaseOrderId, currency, ctx }: Props) {
     >
       {bills.isError ? (
         <Text className="text-sm">
-          Could not check for invoices — a problem reaching the server, not a statement that none
+          Could not check for invoices: a problem reaching the server, not a statement that none
           have arrived.
         </Text>
       ) : rows.length === 0 ? (

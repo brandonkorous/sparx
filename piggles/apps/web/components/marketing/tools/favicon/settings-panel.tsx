@@ -16,11 +16,11 @@ export interface FaviconSettings {
 const BEHIND_HINT: Record<Backdrop, string> = {
   solid: 'The color below is filled in behind your logo, on every icon in the set.',
   'see-through':
-    'Your logo sits straight on whatever color the browser is using — which is white for some people and near-black for others. The home-screen icon is the exception: iPhones turn see-through pixels black, so that one is always filled with the color below.',
+    'Your logo sits straight on whatever color the browser is using, which is white for some people and near-black for others. The home-screen icon is the exception: iPhones turn see-through pixels black, so that one is always filled with the color below.',
 };
 
 const COLOR_HINT: Record<Backdrop, string> = {
-  solid: 'Filled behind your logo on all six icons — exactly this color, nothing adjusted.',
+  solid: 'Filled behind your logo on all six icons: exactly this color, nothing adjusted.',
   'see-through':
     'iPhones turn transparency black, so the home-screen icon has to be solid. This is the color behind your logo there.',
 };

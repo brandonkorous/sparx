@@ -94,7 +94,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
       const ok = await confirm({
         title: `Retire ${product.title}?`,
         description:
-          'It comes off your website and out of your working catalog, but nothing is deleted — past orders keep their record of it and you can bring it back at any time.',
+          'It comes off your website and out of your working catalog, but nothing is deleted: past orders keep their record of it and you can bring it back at any time.',
         confirmLabel: 'Retire it',
         cancelLabel: 'Keep it',
         color: 'warning',
@@ -122,7 +122,7 @@ export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; prod
     const ok = await confirm({
       title: `Delete ${product.title}?`,
       description:
-        'Its price, codes, description and every version of it go with it, and it disappears from your website immediately. Orders that already contain it keep their record of what was bought. This cannot be undone — retire it instead if you might sell it again.',
+        'Its price, codes, description and every version of it go with it, and it disappears from your website immediately. Orders that already contain it keep their record of what was bought. This cannot be undone: retire it instead if you might sell it again.',
       confirmLabel: 'Delete this product',
       cancelLabel: 'Keep it',
       color: 'danger',

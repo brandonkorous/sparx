@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "The Commons — ideas and talks, free for everyone",
-      "seoDescription": "The Commons is a nonprofit stage for public thinking — talks and essays from people worth listening to, gathered in one place and kept free for everyone.",
+      "seoTitle": "The Commons: ideas and talks, free for everyone",
+      "seoDescription": "The Commons is a nonprofit stage for public thinking: talks and essays from people worth listening to, gathered in one place and kept free for everyone.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -792,7 +792,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-xl leading-relaxed text-base-content",
                     "children": [
-                      "The Commons is a nonprofit stage for public thinking — talks and essays from the people worth listening to, gathered in one place and kept free for everyone. Pull up a chair."
+                      "The Commons is a nonprofit stage for public thinking: talks and essays from the people worth listening to, gathered in one place and kept free for everyone. Pull up a chair."
                     ],
                     "id": "da74d076-b1fc-4193-8836-b2d536b1772a",
                     "ord": "a2"
@@ -864,7 +864,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "Curated from the stage — an idea, a person, and the time to make the case."
+                          "Curated from the stage: an idea, a person, and the time to make the case."
                         ],
                         "id": "5411f7f5-3d29-4427-b0af-3f1309cbd178",
                         "ord": "a1"
@@ -1623,7 +1623,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Six speakers, one stage, one long night of ideas — our flagship gathering, open to members and the curious alike."
+                                  "Six speakers, one stage, one long night of ideas. Our flagship gathering, open to members and the curious alike."
                                 ],
                                 "id": "444a42cd-4607-41a5-93b0-2a5294e943c3",
                                 "ord": "a1"
@@ -1841,7 +1841,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                    "children": ["Ideas are worth sharing — help us keep them free"],
+                    "children": ["Ideas are worth sharing: help us keep them free"],
                     "id": "98dbe68b-f9a3-4e2b-9065-2b01b850401c",
                     "ord": "a0"
                   },
@@ -2076,7 +2076,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — The Commons",
+      "seoTitle": "Shop: The Commons",
       "seoDescription": "Browse everything The Commons makes, with prices and options at a glance. Ideas, talks & public thinking.",
       "root": {
         "kind": "element",
@@ -2134,7 +2134,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — The Commons",
+      "seoTitle": "Collections: The Commons",
       "seoDescription": "Explore the collections at The Commons, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2175,7 +2175,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — The Commons",
+      "seoTitle": "Your cart: The Commons",
       "seoDescription": "Review what is in your cart and check out securely at The Commons.",
       "root": {
         "kind": "element",
@@ -2216,7 +2216,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — The Commons",
+      "seoTitle": "Search: The Commons",
       "seoDescription": "Search The Commons for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2257,7 +2257,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — The Commons",
+      "seoTitle": "Journal: The Commons",
       "seoDescription": "Stories, guides and notes from The Commons.",
       "root": {
         "kind": "element",
@@ -2289,7 +2289,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Talks and essays from the stage — the ideas, the people behind them, and the notes we could not fit into an evening."
+                      "Talks and essays from the stage: the ideas, the people behind them, and the notes we could not fit into an evening."
                     ],
                     "id": "b1b89841-8af5-40f9-a327-b14da30d4ec8",
                     "ord": "a1"
@@ -2422,8 +2422,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About The Commons — a nonprofit stage for ideas",
-      "seoDescription": "Who The Commons is and how it is paid for — member-funded talks and essays that keep an open stage free of anyone who would rather we stay quiet.",
+      "seoTitle": "About The Commons: a nonprofit stage for ideas",
+      "seoDescription": "Who The Commons is and how it is paid for: member-funded talks and essays that keep an open stage free of anyone who would rather we stay quiet.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2464,7 +2464,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We take no money from anyone who would rather we not say something. Our talks and essays are paid for by members and supporters, which is the only arrangement that lets a stage stay genuinely open — to the unfashionable idea, the quiet expert, and the argument that needs more than a headline to land."
+                      "We take no money from anyone who would rather we not say something. Our talks and essays are paid for by members and supporters, which is the only arrangement that lets a stage stay genuinely open: to the unfashionable idea, the quiet expert, and the argument that needs more than a headline to land."
                     ],
                     "id": "17cb5fbc-aa9c-4a16-aaa5-e977f6aa397f",
                     "ord": "a2"
@@ -2484,8 +2484,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — The Commons",
-      "seoDescription": "Get in touch with The Commons — questions, orders and anything else you need.",
+      "seoTitle": "Contact: The Commons",
+      "seoDescription": "Get in touch with The Commons: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2792,8 +2792,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Article — The Commons",
-      "seoDescription": "A story from The Commons — the writing, the reporting and the notes behind it.",
+      "seoTitle": "Article: The Commons",
+      "seoDescription": "A story from The Commons: the writing, the reporting and the notes behind it.",
       "root": {
         "kind": "element",
         "tag": "div",

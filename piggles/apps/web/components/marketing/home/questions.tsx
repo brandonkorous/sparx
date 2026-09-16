@@ -7,15 +7,15 @@ import { FaqSection } from '@piggles/ui';
 const QUESTIONS = [
   {
     q: 'Do I need a card to try it?',
-    a: 'No. The trial is fourteen days with no card. If you decide not to carry on, nothing happens — there is no charge to cancel before.',
+    a: 'No. The trial is fourteen days with no card. If you decide not to carry on, nothing happens. There is no charge to cancel before.',
   },
   {
     q: 'What happens if I go over one of the limits?',
-    a: 'Nothing you already have is touched, and nothing you are part way through is stopped. You get a quiet notice as you approach it, and the option to add more room in one tap at the moment it matters — with the price on the button, not behind it. If you do nothing, only new additions of that one kind pause. Your website stays up, your customers stay visible, and order confirmations and password resets always go out regardless.',
+    a: 'Nothing you already have is touched, and nothing you are part way through is stopped. You get a quiet notice as you approach it, and the option to add more room in one tap at the moment it matters, with the price on the button, not behind it. If you do nothing, only new additions of that one kind pause. Your website stays up, your customers stay visible, and order confirmations and password resets always go out regardless.',
   },
   {
     q: 'Can I take my data with me if I leave?',
-    a: 'All of it, whenever you want, in formats other software can actually read — customers, products, orders, invoices and everything you have written. You do not have to ask, and you do not have to be leaving.',
+    a: 'All of it, whenever you want, in formats other software can actually read: customers, products, orders, invoices and everything you have written. You do not have to ask, and you do not have to be leaving.',
   },
   {
     q: 'What if I run two businesses?',
@@ -23,7 +23,7 @@ const QUESTIONS = [
   },
   {
     q: 'Do you use my business data to train AI?',
-    a: 'No. Not to train a model, not to improve a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else — and you can revoke it whenever you want.',
+    a: 'No. Not to train a model, not to improve a shared assistant, not anonymised, not aggregated. Any AI feature runs on a key you connect yourself, which means the data goes where you agreed and nowhere else, and you can revoke it whenever you want.',
   },
   {
     q: 'Is there a discount for paying yearly?',

@@ -189,7 +189,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
           </Text>
           <Text as="span" className="text-sm">
             {usedDescription ||
-              'No summary yet — search engines will pick a sentence from your page.'}
+              'No summary yet. Search engines will pick a sentence from your page.'}
           </Text>
         </div>
 
@@ -209,12 +209,12 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
           />
           <FieldDescription>
             {titleIsFallback
-              ? 'Empty, so the product’s name is used — which is usually right. Write something different only when the name alone would not tell a stranger what this is.'
+              ? 'Empty, so the product’s name is used, which is usually right. Write something different only when the name alone would not tell a stranger what this is.'
               : `Usually shown in full up to about ${String(TITLE_COMFORT)} characters.`}
           </FieldDescription>
           {!titleIsFallback && draft.seoTitle.trim().length > TITLE_COMFORT ? (
             <Badge color="warning" variant="soft" size="sm">
-              Longer than most results show — the end will be cut off
+              Longer than most results show: the end will be cut off
             </Badge>
           ) : null}
         </Field>
@@ -240,12 +240,12 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
             {draft.seoDescription.trim() === ''
               ? descriptionFallback
                 ? 'Empty, so the start of your description is used. Write your own to say something that makes a person click rather than just the first thing on the page.'
-                : 'Empty, and this product has no description either — so search engines will choose a sentence from the page themselves.'
+                : 'Empty, and this product has no description either, so search engines will choose a sentence from the page themselves.'
               : `Usually shown in full up to about ${String(DESCRIPTION_COMFORT)} characters.`}
           </FieldDescription>
           {draft.seoDescription.trim().length > DESCRIPTION_COMFORT ? (
             <Badge color="warning" variant="soft" size="sm">
-              Longer than most results show — the end will be cut off
+              Longer than most results show: the end will be cut off
             </Badge>
           ) : null}
         </Field>
@@ -351,7 +351,7 @@ export function ProductSeoTab({ product }: { ctx: SurfaceContext; product: Produ
               />
               <FieldDescription>
                 {imageIsFallback
-                  ? 'Nothing chosen, so whichever photo is set as the main one is used — and it changes automatically if you change the main photo.'
+                  ? 'Nothing chosen, so whichever photo is set as the main one is used, and it changes automatically if you change the main photo.'
                   : 'This picture is used whatever the main photo is. Choose “Main photo” to let it follow along again.'}
               </FieldDescription>
             </Field>

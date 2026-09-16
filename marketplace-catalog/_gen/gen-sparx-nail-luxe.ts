@@ -207,7 +207,7 @@ const SCHEDULING = {
     {
       handle: 'gel-manicure',
       name: 'Gel manicure',
-      description: 'A long-wearing gel finish — high-gloss, chip-free and set to last a fortnight.',
+      description: 'A long-wearing gel finish: high-gloss, chip-free and set to last a fortnight.',
       durationMinutes: 60,
       priceCents: 7000,
       assignmentStrategy: 'customer_choice',
@@ -231,7 +231,7 @@ const SCHEDULING = {
     {
       handle: 'deluxe-spa-pedicure',
       name: 'Deluxe spa pedicure',
-      description: 'The spa pedicure, unhurried — with an extended lower-leg and foot massage to finish.',
+      description: 'The spa pedicure, unhurried, with an extended lower-leg and foot massage to finish.',
       durationMinutes: 90,
       priceCents: 11000,
       bufferAfterMin: 15,
@@ -258,7 +258,7 @@ const SCHEDULING = {
     {
       handle: 'nail-art',
       name: 'Nail art',
-      description: 'Bespoke, hand-painted detail — a quiet accent or a full set, designed with you.',
+      description: 'Bespoke, hand-painted detail: a quiet accent or a full set, designed with you.',
       durationMinutes: 45,
       priceCents: 4000,
       assignmentStrategy: 'customer_choice',
@@ -288,7 +288,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, champagne-toned nail studio in soft light',
     title: 'Quiet luxury, at your fingertips',
-    sub: 'A hushed champagne studio for considered manicures, spa pedicures and softly gilded nail art — unhurried, and entirely yours.',
+    sub: 'A hushed champagne studio for considered manicures, spa pedicures and softly gilded nail art: unhurried, and entirely yours.',
     primary: { label: 'Book online', href: '/book' },
     secondary: { label: 'See the menu', href: '/book' },
     overlay: 'dark',
@@ -297,7 +297,7 @@ const HOME = [
     items: [
       {
         title: 'A studio, not a salon floor',
-        body: 'A few tables, softly lit and calm. No queue, no noise — just a quiet room that feels like a small reset.',
+        body: 'A few tables, softly lit and calm. No queue, no noise. Just a quiet room that feels like a small reset.',
       },
       {
         title: 'Time to do it properly',
@@ -305,7 +305,7 @@ const HOME = [
       },
       {
         title: 'Finishes that last',
-        body: 'Gentle, salon-grade gels and care, applied with real precision — so your nails still look considered two weeks on.',
+        body: 'Gentle, salon-grade gels and care, applied with real precision, so your nails still look considered two weeks on.',
       },
     ],
   }),
@@ -327,14 +327,14 @@ const HOME = [
     alt: 'A single manicure table with warm natural light',
     heading: 'Considered, unhurried, yours',
     body: [
-      'Gilded is a small studio by design — a handful of tables and two quiet pedicure chairs, kept calm on purpose so every appointment gets real attention and a proper finish.',
+      'Gilded is a small studio by design: a handful of tables and two quiet pedicure chairs, kept calm on purpose so every appointment gets real attention and a proper finish.',
       'That’s the whole idea: fewer people, more care, and hands you’re happy to show off long after you’ve left.',
     ],
     cta: { label: 'Book your table', href: '/book' },
   }),
   teamRow({
     heading: 'Who you’ll sit with',
-    intro: 'Book by name — you’ll see the same technician each time.',
+    intro: 'Book by name: you’ll see the same technician each time.',
     members: [
       { name: 'Elena Marchetti', role: 'Lead technician', image: url(IMG.elena), alt: 'Elena Marchetti, lead nail technician', bio: 'Precise manicures and quiet-luxury finishes. Elena leads the studio.' },
       { name: 'Sofia Reyes', role: 'Nail technician', image: url(IMG.sofia), alt: 'Sofia Reyes, nail technician', bio: 'Spa pedicures and the softest, longest-wearing gels.' },
@@ -380,7 +380,7 @@ const ABOUT = [
     alt: 'A calm, champagne-toned nail studio in soft light',
     heading: 'About Gilded',
     body: [
-      'We opened Gilded to do nails the way we always wished it were done — slowly, quietly, and with a technician who remembers your hands.',
+      'We opened Gilded to do nails the way we always wished it were done: slowly, quietly, and with a technician who remembers your hands.',
       'No rushing, no upselling, no leaving with a finish you can’t live with. Just considered manicures, warm spa pedicures and a calm hour that’s genuinely yours.',
     ],
     cta: { label: 'Book a table', href: '/book' },
@@ -390,7 +390,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'A consultation first', body: 'Every appointment starts with a real look at your nails, your routine and the finish you actually want.' },
-      { title: 'Products we believe in', body: 'Gentle, salon-grade gels and care — and honest advice on the short list of things worth taking home.' },
+      { title: 'Products we believe in', body: 'Gentle, salon-grade gels and care, and honest advice on the short list of things worth taking home.' },
       { title: 'Kind to your natural nail', body: 'Careful application and gentle removal, so your nails stay healthy between visits, not just polished.' },
     ],
   }),
@@ -410,7 +410,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your time online — no phone tag.',
+    sub: 'See live availability and reserve your time online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -421,8 +421,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-nail-luxe',
   name: 'Nail Studio (Luxe)',
   summary:
-    'A quiet, upscale nail-studio site — a warm champagne palette, a soft-gold primary and a Cormorant Garamond serif over Inter, with calm, spacious photography. Installs a working booking flow: a real service menu (luxury and gel manicures, spa pedicures, gel extensions, nail art), three technicians you book by name with their own hours, two pedicure chairs, and a small deposit on extensions. Ships as "Gilded", a calm, considered studio.',
-  tagline: 'A warm, quiet template for nail studios — book online from day one.',
+    'A quiet, upscale nail-studio site: a warm champagne palette, a soft-gold primary and a Cormorant Garamond serif over Inter, with calm, spacious photography. Installs a working booking flow: a real service menu (luxury and gel manicures, spa pedicures, gel extensions, nail art), three technicians you book by name with their own hours, two pedicure chairs, and a small deposit on extensions. Ships as "Gilded", a calm, considered studio.',
+  tagline: 'A warm, quiet template for nail studios. Book online from day one.',
   industry: 'Nail studio',
   sortWeight: 83,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -431,7 +431,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Gilded — a luxe nail studio',
+      title: 'Gilded: a luxe nail studio',
       description:
         'Gilded is a calm, upscale nail studio for luxury manicures, spa pedicures, gel extensions and bespoke nail art. Book your technician online.',
     },

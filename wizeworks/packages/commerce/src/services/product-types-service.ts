@@ -368,7 +368,7 @@ export async function remove(ctx: ServiceContext, key: string): Promise<WireProd
     const inUse = await tx.product.count({ where: { productTypeKey: key, deletedAt: null } });
     if (inUse > 0) {
       throw new CommerceConflictError(
-        `Cannot delete "${key}" — ${inUse} product${inUse === 1 ? '' : 's'} still use it. Change those products' type first.`
+        `Cannot delete "${key}": ${inUse} product${inUse === 1 ? '' : 's'} still use it. Change those products' type first.`
       );
     }
 

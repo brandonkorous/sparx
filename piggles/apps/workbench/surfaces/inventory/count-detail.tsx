@@ -74,7 +74,7 @@ function LoadedCount({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             description={
               gone
                 ? 'It may have been removed. Your stock and its movement history are unaffected.'
-                : 'This is a problem reaching the server. The count is unaffected — it just could not be read just now.'
+                : 'This is a problem reaching the server. The count is unaffected. It just could not be read just now.'
             }
             onRetry={() => {
               void count.refetch();

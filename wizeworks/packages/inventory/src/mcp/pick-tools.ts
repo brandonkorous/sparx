@@ -88,7 +88,7 @@ const getBox: McpToolDefinition = {
 const throughput: McpToolDefinition = {
   name: 'get_pick_throughput',
   description:
-    'How the floor is running: units per hour measured against time actually spent picking, the share of lines confirmed by a scan, the short-pick rate, and — the useful one — which shelves keep coming up empty and what reason the pickers gave. Defaults to the last 30 days.',
+    'How the floor is running: units per hour measured against time actually spent picking, the share of lines confirmed by a scan, the short-pick rate, and (the useful one) which shelves keep coming up empty and what reason the pickers gave. Defaults to the last 30 days.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -107,7 +107,7 @@ export const pickReadTools: AnyMcpTool[] = [listWalks, getWalk, listBoxes, getBo
 const generateWalk: McpToolDefinition = {
   name: 'generate_pick_list',
   description:
-    'Turn orders into a walk. One order makes a single list; several make a batch (one tote each) or a wave (merged by shelf, sorted at the pack bench). Shelves are not chosen here — they were chosen when the order was placed — so the list is bin-sequenced into the shortest sensible route through the building. Refuses orders filled from more than one location rather than silently splitting them.',
+    'Turn orders into a walk. One order makes a single list; several make a batch (one tote each) or a wave (merged by shelf, sorted at the pack bench). Shelves are not chosen here (they were chosen when the order was placed) so the list is bin-sequenced into the shortest sensible route through the building. Refuses orders filled from more than one location rather than silently splitting them.',
   scope: 'write:inventory',
   confirmation: true,
   input: GeneratePickListInput,
@@ -117,7 +117,7 @@ const generateWalk: McpToolDefinition = {
 const assignWalk: McpToolDefinition = {
   name: 'assign_pick_list',
   description:
-    'Put a name on a walk, or hand it back to the pool with null. A walk already in progress stays in progress — the clock the throughput report measures does not restart.',
+    'Put a name on a walk, or hand it back to the pool with null. A walk already in progress stays in progress: the clock the throughput report measures does not restart.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ pickListId: Uuid, assignedTo: z.string().max(127).nullable() }),
@@ -130,7 +130,7 @@ const assignWalk: McpToolDefinition = {
 const confirmLine: McpToolDefinition = {
   name: 'confirm_pick',
   description:
-    'Confirm that units came off a shelf. Omit the quantity to confirm the whole line. Name a shelf only if it was NOT the one on the instruction — saying so is what keeps the shelf records describing the building, and it is the single most useful correction anyone on the floor can make.',
+    'Confirm that units came off a shelf. Omit the quantity to confirm the whole line. Name a shelf only if it was NOT the one on the instruction: saying so is what keeps the shelf records describing the building, and it is the single most useful correction anyone on the floor can make.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -148,7 +148,7 @@ const confirmLine: McpToolDefinition = {
 const recordShort: McpToolDefinition = {
   name: 'short_pick',
   description:
-    'Record that the units were not there. The ones that could not be found go back into stock and are held for the order that still wants them — so nobody else can buy something we have just admitted we cannot find — and the shelf is put on a blind count so a person settles what is actually on it. Give the quantity ONLY if some were found; leave it off when the shelf was empty.',
+    'Record that the units were not there. The ones that could not be found go back into stock and are held for the order that still wants them (so nobody else can buy something we have just admitted we cannot find) and the shelf is put on a blind count so a person settles what is actually on it. Give the quantity ONLY if some were found; leave it off when the shelf was empty.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -168,7 +168,7 @@ const recordShort: McpToolDefinition = {
 const skipLine: McpToolDefinition = {
   name: 'skip_pick',
   description:
-    'Leave a line for later without deciding it is missing. The walk will not finish while any remain — a skip is "coming back to it", not "done".',
+    'Leave a line for later without deciding it is missing. The walk will not finish while any remain: a skip is "coming back to it", not "done".',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ pickListId: Uuid, lineId: Uuid }),
@@ -181,7 +181,7 @@ const skipLine: McpToolDefinition = {
 const scanPick: McpToolDefinition = {
   name: 'scan_to_pick',
   description:
-    'One trigger pull against a walk: pass the barcode and the right instruction is found and confirmed. Scanning something the walk does not want, or standing at the wrong shelf, is refused and told why — that refusal is the whole reason to scan rather than tap. `idempotencyKey` must be a stable value you REUSE on retry; the same key twice applies once.',
+    'One trigger pull against a walk: pass the barcode and the right instruction is found and confirmed. Scanning something the walk does not want, or standing at the wrong shelf, is refused and told why. That refusal is the whole reason to scan rather than tap. `idempotencyKey` must be a stable value you REUSE on retry; the same key twice applies once.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -205,7 +205,7 @@ const scanPick: McpToolDefinition = {
 const cancelWalk: McpToolDefinition = {
   name: 'cancel_pick_list',
   description:
-    'Abandon a walk. Lines already picked stay picked — the units are in a tote and cancelling paperwork does not put them back on the shelf.',
+    'Abandon a walk. Lines already picked stay picked: the units are in a tote and canceling paperwork does not put them back on the shelf.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({ pickListId: Uuid, reason: z.string().max(500).optional() }),
@@ -239,7 +239,7 @@ const openBox: McpToolDefinition = {
 const putInBox: McpToolDefinition = {
   name: 'pack_item',
   description:
-    'Put units of an order line in a box. The quantity is the TOTAL for that line in that box, not an amount to add — correcting a mistake means typing the right number. Zero takes it back out. More than the order wants, or more than the other boxes have left room for, is refused.',
+    'Put units of an order line in a box. The quantity is the TOTAL for that line in that box, not an amount to add: correcting a mistake means typing the right number. Zero takes it back out. More than the order wants, or more than the other boxes have left room for, is refused.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -259,7 +259,7 @@ const putInBox: McpToolDefinition = {
 const scanPack: McpToolDefinition = {
   name: 'scan_to_pack',
   description:
-    'One trigger pull at the pack bench. Scanning something the order does not contain is REFUSED — that is what pack verification is for, and a bench that warns and continues has replaced a control with a notification. `idempotencyKey` must be reused on retry.',
+    'One trigger pull at the pack bench. Scanning something the order does not contain is REFUSED. That is what pack verification is for, and a bench that warns and continues has replaced a control with a notification. `idempotencyKey` must be reused on retry.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -282,7 +282,7 @@ const scanPack: McpToolDefinition = {
 const sealBox: McpToolDefinition = {
   name: 'close_package',
   description:
-    'Seal a box and capture its weight and dimensions. A box that does not complete the order is refused unless `allowPartial` says the partial shipment is deliberate — the refusal names exactly what is still to pack. Sealing does not hand it to shipping; that is a separate, deliberate step.',
+    'Seal a box and capture its weight and dimensions. A box that does not complete the order is refused unless `allowPartial` says the partial shipment is deliberate: the refusal names exactly what is still to pack. Sealing does not hand it to shipping; that is a separate, deliberate step.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({

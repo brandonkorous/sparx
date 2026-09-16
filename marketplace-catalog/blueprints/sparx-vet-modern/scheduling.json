@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Longer wellness and senior visits are booked as protected time with your vet. If you need to change one, 24 hours’ notice keeps it free — repeated same-day no-shows may carry a small fee so the room stays open for another pet who needs it."
+      "policyText": "Longer wellness and senior visits are booked as protected time with your vet. If you need to change one, 24 hours’ notice keeps it free: repeated same-day no-shows may carry a small fee so the room stays open for another pet who needs it."
     }
   ],
   "resources": [
@@ -221,7 +221,7 @@
     {
       "handle": "wellness-visit",
       "name": "Wellness visit",
-      "description": "An unhurried preventive check-up — nose to tail, vaccines if they’re due, and a calm conversation about how your pet is doing at home.",
+      "description": "An unhurried preventive check-up: nose to tail, vaccines if they’re due, and a calm conversation about how your pet is doing at home.",
       "durationMinutes": 30,
       "priceCents": 6500,
       "assignmentStrategy": "customer_choice",
@@ -244,7 +244,7 @@
     {
       "handle": "new-patient-consult",
       "name": "New patient consult",
-      "description": "A relaxed first meeting for you and your pet — we review history, get to know each other with no rush, and set a plan together. Always free.",
+      "description": "A relaxed first meeting for you and your pet. We review history, get to know each other with no rush, and set a plan together. Always free.",
       "durationMinutes": 45,
       "priceCents": 0,
       "bufferAfterMin": 10,
@@ -268,7 +268,7 @@
     {
       "handle": "nutrition-consult",
       "name": "Nutrition consult",
-      "description": "A sit-down about food, weight and gut health — honest, practical guidance tailored to your dog or cat, with no upsell. Free introductory session.",
+      "description": "A sit-down about food, weight and gut health: honest, practical guidance tailored to your dog or cat, with no upsell. Free introductory session.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -314,7 +314,7 @@
     {
       "handle": "senior-wellness",
       "name": "Senior wellness",
-      "description": "Extra time and care for older pets — mobility, comfort and quality of life, plus the bloodwork and screening that catch changes early.",
+      "description": "Extra time and care for older pets: mobility, comfort and quality of life, plus the bloodwork and screening that catch changes early.",
       "durationMinutes": 60,
       "priceCents": 14000,
       "bufferAfterMin": 10,
@@ -338,7 +338,7 @@
     {
       "handle": "telehealth-consult",
       "name": "Telehealth consult",
-      "description": "A quick video visit for questions, follow-ups and small worries — real advice from your vet without a car ride or a stressed carrier.",
+      "description": "A quick video visit for questions, follow-ups and small worries: real advice from your vet without a car ride or a stressed carrier.",
       "durationMinutes": 20,
       "priceCents": 4000,
       "assignmentStrategy": "customer_choice",
@@ -361,7 +361,7 @@
     {
       "handle": "integrative-consult",
       "name": "Integrative consult",
-      "description": "A whole-pet session that blends conventional medicine with supportive therapies — for chronic issues, recovery, or simply thriving longer.",
+      "description": "A whole-pet session that blends conventional medicine with supportive therapies, for chronic issues, recovery, or simply thriving longer.",
       "durationMinutes": 45,
       "priceCents": 9500,
       "bufferAfterMin": 10,

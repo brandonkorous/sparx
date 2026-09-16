@@ -136,7 +136,7 @@ const SCHEDULING = {
             cancellationWindowHours: 24,
             reminderOffsetsMin: [1440, 120],
             policyText:
-                'Life happens — just give us 24 hours if you need to move or cancel. We’ll text you a reminder the day before and again two hours ahead.',
+                'Life happens. Just give us 24 hours if you need to move or cancel. We’ll text you a reminder the day before and again two hours ahead.',
         },
         {
             handle: 'color-deposit',
@@ -186,7 +186,7 @@ const SCHEDULING = {
         {
             handle: 'curly-cut',
             name: 'Curly & textured cut',
-            description: 'A dry, curl-by-curl cut for coils, curls and waves — shaped to your pattern, styled to last.',
+            description: 'A dry, curl-by-curl cut for coils, curls and waves: shaped to your pattern, styled to last.',
             durationMinutes: 75,
             priceCents: 8500,
             bufferAfterMin: 10,
@@ -208,7 +208,7 @@ const SCHEDULING = {
         {
             handle: 'balayage',
             name: 'Balayage & highlights',
-            description: 'Hand-painted, sun-kissed lightness with a soft grow-out — the low-maintenance kind.',
+            description: 'Hand-painted, sun-kissed lightness with a soft grow-out: the low-maintenance kind.',
             durationMinutes: 180,
             priceCents: 21000,
             bufferAfterMin: 15,
@@ -240,7 +240,7 @@ const SCHEDULING = {
         {
             handle: 'kids-cut',
             name: 'Kids’ cut',
-            description: 'An easy, patient cut for little ones (12 and under) — no rush, no fuss.',
+            description: 'An easy, patient cut for little ones (12 and under): no rush, no fuss.',
             durationMinutes: 30,
             priceCents: 3500,
             assignmentStrategy: 'any_available',
@@ -256,7 +256,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A sunlit salon full of plants and warm wood',
         title: 'Come as you are, leave feeling like you',
-        sub: 'A warm, plant-filled little salon for real hair and real people — cuts, color and curls done at a human pace, never a rushed one.',
+        sub: 'A warm, plant-filled little salon for real hair and real people: cuts, color and curls done at a human pace, never a rushed one.',
         primary: { label: 'Book online', href: '/book' },
         secondary: { label: 'See the menu', href: '/book' },
         overlay: 'dark',
@@ -265,7 +265,7 @@ const HOME = [
         items: [
             {
                 title: 'Curls and texture are our thing',
-                body: 'Coils, curls, waves and everything in between — cut dry, curl by curl, by people who actually specialise in it. No more leaving hoping it dries right.',
+                body: 'Coils, curls, waves and everything in between: cut dry, curl by curl, by people who actually specialise in it. No more leaving hoping it dries right.',
             },
             {
                 title: 'No rushing, ever',
@@ -282,7 +282,7 @@ const HOME = [
         alt: 'A styling corner with trailing plants and natural light',
         heading: 'A little green, a lot of light',
         body: [
-            'Wildroot is a small studio we built to feel like a warm living room — reclaimed wood, natural light, and honestly more plants than we can keep count of.',
+            'Wildroot is a small studio we built to feel like a warm living room: reclaimed wood, natural light, and honestly more plants than we can keep count of.',
             'It’s a deliberate kind of calm. Fewer chairs means more attention, a slower pace, and a space you actually want to sit in for an hour.',
         ],
         cta: { label: 'Come see it', href: '/book' },
@@ -306,18 +306,18 @@ const HOME = [
         heading: 'Curly & textured hair, done right',
         body: [
             'If you’ve ever left a salon with a great cut you could never quite recreate, this is for you. We cut curls dry and in their natural shape, so what you see in the chair is what you get at home.',
-            'We’ll teach you the routine too — the products, the technique, the shortcuts — so your hair works on an ordinary Wednesday, not just the day you leave.',
+            'We’ll teach you the routine too (the products, the technique, the shortcuts) so your hair works on an ordinary Wednesday, not just the day you leave.',
         ],
         reverse: true,
         cta: { label: 'Book a curl consult', href: '/book' },
     }),
     teamRow({
         heading: 'The people behind the chairs',
-        intro: 'Book by name — you’ll see the same person each time, someone who gets to know your hair.',
+        intro: 'Book by name: you’ll see the same person each time, someone who gets to know your hair.',
         members: [
             { name: 'Rowan Ellis', role: 'Curl & cut specialist', image: url(IMG.rowan), alt: 'Rowan Ellis, curl and cut specialist', bio: 'Lives for curls and texture. Cuts dry, teaches the routine, sends you home confident.' },
             { name: 'Juniper Vale', role: 'Color specialist', image: url(IMG.juniper), alt: 'Juniper Vale, color specialist', bio: 'Balayage, lived-in color and glosses that grow out soft and low-upkeep.' },
-            { name: 'Marisol Reyes', role: 'Stylist', image: url(IMG.marisol), alt: 'Marisol Reyes, stylist', bio: 'Easy, wearable cuts and color — and endlessly patient with the little ones.' },
+            { name: 'Marisol Reyes', role: 'Stylist', image: url(IMG.marisol), alt: 'Marisol Reyes, stylist', bio: 'Easy, wearable cuts and color, and endlessly patient with the little ones.' },
         ],
     }),
     galleryStrip({
@@ -359,7 +359,7 @@ const ABOUT = [
         alt: 'A sunlit salon full of plants and warm wood',
         heading: 'About Wildroot',
         body: [
-            'We started Wildroot because we wanted a salon that felt like a real place, not a production line — somewhere warm and unhurried, where curly and textured hair is the specialty rather than the afterthought.',
+            'We started Wildroot because we wanted a salon that felt like a real place, not a production line: somewhere warm and unhurried, where curly and textured hair is the specialty rather than the afterthought.',
             'No upselling, no rushing, no leaving with a look you can’t recreate. Just honest cuts, soft color, a lot of plants, and an hour that’s genuinely yours.',
         ],
         cta: { label: 'Book a chair', href: '/book' },
@@ -369,7 +369,7 @@ const ABOUT = [
         heading: 'How we work',
         items: [
             { title: 'Consult first, always', body: 'Every appointment opens with a real conversation about your hair, your routine and what you actually want to walk out with.' },
-            { title: 'Gentle, good products', body: 'Salon-grade, kinder-on-your-hair color and care — and honest advice on the short list of things worth taking home.' },
+            { title: 'Gentle, good products', body: 'Salon-grade, kinder-on-your-hair color and care, and honest advice on the short list of things worth taking home.' },
             { title: 'You leave knowing how', body: 'We show you how to get the look again yourself, so it holds up long after you’ve left the chair.' },
         ],
     }),
@@ -388,7 +388,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and grab your time online — no phone tag, no waiting on hold.',
+        sub: 'See live availability and grab your time online: no phone tag, no waiting on hold.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -399,8 +399,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-salon-modern',
     name: 'Salon (Modern)',
     summary:
-        'A modern, warm, boho hair-salon site — an oat-cream palette, a terracotta primary and a sage-green accent, with natural-light photography and a relaxed, friendly voice. Installs a working booking flow: a real service menu (cuts, curly & textured cuts, color, balayage), three stylists you book by name with their own hours, and a color-deposit policy. Ships as "Wildroot", a plant-filled little studio that specialises in curls and texture.',
-    tagline: 'A warm, modern-boho template for hair salons — book online from day one.',
+        'A modern, warm, boho hair-salon site: an oat-cream palette, a terracotta primary and a sage-green accent, with natural-light photography and a relaxed, friendly voice. Installs a working booking flow: a real service menu (cuts, curly & textured cuts, color, balayage), three stylists you book by name with their own hours, and a color-deposit policy. Ships as "Wildroot", a plant-filled little studio that specialises in curls and texture.',
+    tagline: 'A warm, modern-boho template for hair salons. Book online from day one.',
     industry: 'Hair salon',
     sortWeight: 89,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -409,9 +409,9 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Wildroot — a modern hair salon for curls & texture',
+            title: 'Wildroot: a modern hair salon for curls & texture',
             description:
-                'Wildroot is a warm, plant-filled salon in Asheville specialising in curly and textured hair — cuts, color and balayage at a human pace. Book your stylist online.',
+                'Wildroot is a warm, plant-filled salon in Asheville specialising in curly and textured hair: cuts, color and balayage at a human pace. Book your stylist online.',
         },
     },
     home: HOME,

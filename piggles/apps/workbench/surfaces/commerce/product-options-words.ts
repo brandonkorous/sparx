@@ -9,7 +9,7 @@ export function consequenceLines(consequence: Consequence): string[] {
 
   if (consequence.loose.length > 0) {
     const count = consequence.loose.length;
-    lines.push('Shoppers stop choosing anything — this goes back to being sold one way.');
+    lines.push('Shoppers stop choosing anything. This goes back to being sold one way.');
     lines.push(
       `${countOf(count, 'version', 'versions')} stay${count === 1 ? 's' : ''} on sale with no choice attached (${skus(consequence.loose)}). Retire the ones you do not want on the Variants tab.`
     );
@@ -37,7 +37,7 @@ export function consequenceLines(consequence: Consequence): string[] {
   if (consequence.returning.length > 0) {
     const count = consequence.returning.length;
     lines.push(
-      `${countOf(count, 'version', 'versions')} you stopped selling ${count === 1 ? 'comes' : 'come'} back with ${count === 1 ? 'its' : 'their'} price, code and stock — ${skus(consequence.returning.map((entry) => entry.variant))}. Put ${count === 1 ? 'it' : 'them'} on sale again from the Variants tab.`
+      `${countOf(count, 'version', 'versions')} you stopped selling ${count === 1 ? 'comes' : 'come'} back with ${count === 1 ? 'its' : 'their'} price, code and stock: ${skus(consequence.returning.map((entry) => entry.variant))}. Put ${count === 1 ? 'it' : 'them'} on sale again from the Variants tab.`
     );
   }
   if (consequence.blank > 0) {
@@ -49,7 +49,7 @@ export function consequenceLines(consequence: Consequence): string[] {
   if (consequence.retire.length > 0) {
     const count = consequence.retire.length;
     lines.push(
-      `${countOf(count, 'version', 'versions')} ${count === 1 ? 'loses its place and stops' : 'lose their place and stop'} being sold — ${skus(consequence.retire)}. Orders already placed keep their record, and you can bring ${count === 1 ? 'it' : 'them'} back by adding that choice again.`
+      `${countOf(count, 'version', 'versions')} ${count === 1 ? 'loses its place and stops' : 'lose their place and stop'} being sold: ${skus(consequence.retire)}. Orders already placed keep their record, and you can bring ${count === 1 ? 'it' : 'them'} back by adding that choice again.`
     );
   }
   if (consequence.combinations > 100) {
@@ -84,7 +84,7 @@ export function committedToast(consequence: Consequence): Told {
   if (blank === 0 && back > 0) {
     return {
       title: 'This product is sold differently now',
-      description: `${countOf(back, 'version', 'versions')} came back with ${back === 1 ? 'its' : 'their'} price and code — put ${back === 1 ? 'it' : 'them'} on sale again on the Variants tab.`,
+      description: `${countOf(back, 'version', 'versions')} came back with ${back === 1 ? 'its' : 'their'} price and code: put ${back === 1 ? 'it' : 'them'} on sale again on the Variants tab.`,
       type: 'success',
     };
   }
@@ -92,7 +92,7 @@ export function committedToast(consequence: Consequence): Told {
     title: 'This product is sold differently now',
     description:
       blank > 0
-        ? `${countOf(blank, 'combination', 'combinations')} still ${blank === 1 ? 'needs a price' : 'need a price'} — set them on the Variants tab.`
+        ? `${countOf(blank, 'combination', 'combinations')} still ${blank === 1 ? 'needs a price' : 'need a price'}. Set them on the Variants tab.`
         : 'Every combination has a price.',
     type: 'success',
   };

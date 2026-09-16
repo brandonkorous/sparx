@@ -15,7 +15,7 @@ export const INVOICES_GUIDE: Guide = {
       app: 'invoices',
       anchor: 'nav-invoicing.invoices.list',
       title: 'Everything you have billed',
-      body: 'Draft, sent, paid, overdue — the whole lot in one list, newest first. Somebody can pay straight from the one you send them, and it marks itself off when they do.',
+      body: 'Draft, sent, paid, overdue: the whole lot in one list, newest first. Somebody can pay straight from the one you send them, and it marks itself off when they do.',
     },
     {
       id: 'invoices.templates',
@@ -29,7 +29,7 @@ export const INVOICES_GUIDE: Guide = {
       app: 'invoices',
       anchor: 'nav-invoicing.workflows',
       title: 'Chasing, without doing the chasing',
-      body: 'Decide what happens when one goes unpaid — a polite reminder after a week, a firmer one after a fortnight. Piggles sends them, and stops the moment they pay.',
+      body: 'Decide what happens when one goes unpaid: a polite reminder after a week, a firmer one after a fortnight. Piggles sends them, and stops the moment they pay.',
     },
   ],
 };
@@ -43,7 +43,7 @@ export const MONEY_GUIDE: Guide = {
       app: 'money',
       anchor: 'nav-finance.payments.list',
       title: 'What came in',
-      body: 'Every payment, however it reached you — a card on your site, a bank transfer against an invoice, cash you put in by hand. This is the money side of what the other apps have been recording.',
+      body: 'Every payment, however it reached you: a card on your site, a bank transfer against an invoice, cash you put in by hand. This is the money side of what the other apps have been recording.',
     },
     {
       id: 'money.spending',
@@ -57,7 +57,7 @@ export const MONEY_GUIDE: Guide = {
       app: 'money',
       anchor: 'nav-finance.profit',
       title: 'What you kept',
-      body: 'In, minus out, by month and by what you sell. It only tells you the truth once your costs are in — until then it is honest about being incomplete rather than quietly flattering.',
+      body: 'In, minus out, by month and by what you sell. It only tells you the truth once your costs are in: until then it is honest about being incomplete rather than quietly flattering.',
     },
     {
       id: 'money.accounting',

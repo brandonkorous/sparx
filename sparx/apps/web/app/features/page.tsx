@@ -14,10 +14,10 @@ const totalFloor = Math.floor(counts.total / 10) * 10; // 310
 const upcoming = counts.building + counts.planned; // in-build + planned
 
 const OG_TITLE = `One platform. Over ${totalFloor} capabilities.`;
-const OG_DESCRIPTION = `${liveFloor}+ live today across ${counts.modules} modules, ${upcoming} more on the way — all on one data layer, one dashboard, one bill. The whole platform, in one place.`;
+const OG_DESCRIPTION = `${liveFloor}+ live today across ${counts.modules} modules, ${upcoming} more on the way. All on one data layer, one dashboard, one bill. The whole platform, in one place.`;
 
 export const metadata: Metadata = {
-  title: 'Features — everything inside sparx',
+  title: 'Features: everything inside sparx',
   description: `The pricing page lists ${counts.modules} modules. This is what's inside them: ${counts.live} shipped capabilities, ${counts.building} more in build, all on one data layer and one bill. Activate only what you need.`,
   alternates: { canonical: '/features' },
   // The marketing site historically headlines modules; this page (and its share
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: OG_TITLE,
-    description: `${liveFloor}+ capabilities live across ${counts.modules} modules — one data layer, one bill. See everything sparx does.`,
+    description: `${liveFloor}+ capabilities live across ${counts.modules} modules. One data layer, one bill. See everything sparx does.`,
   },
 };
 

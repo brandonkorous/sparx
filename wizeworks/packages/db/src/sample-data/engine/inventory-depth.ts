@@ -227,7 +227,7 @@ export async function applyInventoryDepth(ctx: ApplyCtx, pack: SampleDataPack): 
         data: {
           tenantId,
           outputVariantId: output.id,
-          name: `${output.productTitle} — assembly`,
+          name: `${output.productTitle}: assembly`,
           status: 'active',
           outputQuantity: 1,
           notes: 'Sample recipe. Change the components, or delete it with the sample data.',

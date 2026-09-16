@@ -45,14 +45,14 @@ const SPARX_ENTRIES: SilicaCatalogEntry[] = [
     key: 'sparx.products',
     label: 'Products',
     category: 'commerce',
-    hint: 'A product listing — pick the source (all / featured / new / related / a category) and grid or rail.',
+    hint: 'A product listing. Pick the source (all / featured / new / related / a category) and grid or rail.',
     make: () => productsBlock(),
   },
   {
     key: 'sparx.product_card',
     label: 'Product card',
     category: 'commerce',
-    hint: 'A single product tile (image, name, price) — usually used inside a product grid.',
+    hint: 'A single product tile (image, name, price), usually used inside a product grid.',
     make: productCard,
   },
   {
@@ -73,14 +73,14 @@ const SPARX_ENTRIES: SilicaCatalogEntry[] = [
     key: 'sparx.navbar',
     label: 'Sparx navbar',
     category: 'chrome',
-    hint: 'Branded nav bar bound to site.identity — prefer this over the native navbar block for the frame.',
+    hint: 'Branded nav bar bound to site.identity: prefer this over the native navbar block for the frame.',
     make: siteNavbar,
   },
   {
     key: 'sparx.footer',
     label: 'Sparx footer',
     category: 'chrome',
-    hint: 'Branded footer bound to site.identity/site.social — prefer this over the native footer block for the frame.',
+    hint: 'Branded footer bound to site.identity/site.social: prefer this over the native footer block for the frame.',
     make: siteFooter,
   },
 ];

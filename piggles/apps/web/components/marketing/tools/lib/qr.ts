@@ -41,13 +41,13 @@ export const EC_LEVELS: { value: EcLevel; label: string; blurb: string }[] = [
     value: 'L',
     label: 'Low',
     blurb:
-      'Recovers about 7% damage. The simplest pattern — use it for a long address on a clean surface.',
+      'Recovers about 7% damage. The simplest pattern. Use it for a long address on a clean surface.',
   },
   { value: 'M', label: 'Medium', blurb: 'About 15%. The sensible default for almost everything.' },
   {
     value: 'Q',
     label: 'High',
-    blurb: 'About 25%. Worth it for anything that gets handled — a menu, a table card.',
+    blurb: 'About 25%. Worth it for anything that gets handled: a menu, a table card.',
   },
   {
     value: 'H',

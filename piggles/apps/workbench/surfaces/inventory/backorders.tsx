@@ -291,7 +291,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             </AlertTitle>
             <AlertDescription>
               Nobody has told them anything, because nothing here knows when more is coming. Raising
-              a purchase order with an expected arrival is what turns this into a date — and
+              a purchase order with an expected arrival is what turns this into a date, and
               “Re-check dates” picks it up the moment you do.
             </AlertDescription>
           </AlertContent>
@@ -306,7 +306,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             </AlertTitle>
             <AlertDescription>
               These customers were told a date that has now gone by. Chase the order behind them, or
-              give them a new date — and tell them, which the detail pane records.
+              give them a new date, and tell them, which the detail pane records.
             </AlertDescription>
           </AlertContent>
         </Alert>

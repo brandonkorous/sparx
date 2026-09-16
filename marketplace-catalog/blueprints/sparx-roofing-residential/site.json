@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Summit Roofing — trusted residential roofers",
+      "seoTitle": "Summit Roofing: trusted residential roofers",
       "seoDescription": "Summit Roofing is a local, family-run roofing company with honest quotes, quality work and written warranties. Book a free roof inspection or replacement estimate online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Licensed, insured and honest about what your roof actually needs. Book a free inspection online and we’ll show you exactly where it stands — no pressure, no sales pitch."
+                      "Licensed, insured and honest about what your roof actually needs. Book a free inspection online and we’ll show you exactly where it stands: no pressure, no sales pitch."
                     ],
                     "id": "5981a418-a6e1-429f-8d92-671743773db5",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Fully licensed, bonded and insured — our own uniformed crew on your roof, never a rotating cast of subcontractors."
+                              "Fully licensed, bonded and insured. Our own uniformed crew on your roof, never a rotating cast of subcontractors."
                             ],
                             "id": "dca7177b-3148-47cf-90b1-1531f843e619",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every roof is backed in writing — the manufacturer’s material warranty plus our own workmanship guarantee on top."
+                              "Every roof is backed in writing: the manufacturer’s material warranty plus our own workmanship guarantee on top."
                             ],
                             "id": "b27383ee-a0fd-44b7-84f0-77a3c93bd025",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The visits we book most. Pick one to see the price, how long it takes and the next open time — inspections and estimates are always free."
+                          "The visits we book most. Pick one to see the price, how long it takes and the next open time: inspections and estimates are always free."
                         ],
                         "id": "6f8fc3b2-dc64-4933-8803-f23ceaf828f0",
                         "ord": "a1"
@@ -873,7 +873,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A full check of every slope, valley and flashing — no charge."
+                              "A full check of every slope, valley and flashing: no charge."
                             ],
                             "id": "0649611a-9393-421d-90f5-f52aa18d018f",
                             "ord": "a2"
@@ -1115,7 +1115,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We install the roof the right way — proper underlayment, sealed valleys, flashing done by hand — because the shortcuts you can’t see are the ones that leak in five years."
+                          "We install the roof the right way (proper underlayment, sealed valleys, flashing done by hand) because the shortcuts you can’t see are the ones that leak in five years."
                         ],
                         "id": "eace912a-03d2-405e-9371-09ac0f543571",
                         "ord": "a1"
@@ -1190,7 +1190,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The same familiar faces every visit — licensed, background-checked, and glad to explain what they’re doing and why."
+                          "The same familiar faces every visit: licensed, background-checked, and glad to explain what they’re doing and why."
                         ],
                         "id": "ce23fbae-0ca0-44be-91b6-5b86520611d1",
                         "ord": "a1"
@@ -1399,7 +1399,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Two other companies told us we needed a full replacement. Ray climbed up, took photos, and showed us it was a flashing repair — a fraction of the price. That honesty is why we’ll never call anyone else.”"
+                      "“Two other companies told us we needed a full replacement. Ray climbed up, took photos, and showed us it was a flashing repair: a fraction of the price. That honesty is why we’ll never call anyone else.”"
                     ],
                     "id": "db4cc522-519c-42c4-85ab-64b086ba29b3",
                     "ord": "a0"
@@ -1474,7 +1474,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Summit Roofing",
+      "seoTitle": "Book: Summit Roofing",
       "seoDescription": "See what Summit Roofing offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1525,7 +1525,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose the visit you need to see the price, how long it takes and the next open time — then pick your roofer and day. Inspections and estimates are always free."
+                      "Choose the visit you need to see the price, how long it takes and the next open time, then pick your roofer and day. Inspections and estimates are always free."
                     ],
                     "id": "03ac6e28-5fc8-4f95-9636-b25996ba8cc4",
                     "ord": "a1"
@@ -1598,7 +1598,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "2516a49b-27c8-474e-ba9f-68d060e22f34",
                         "ord": "a1"
@@ -1668,7 +1668,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Summit Roofing",
+      "seoTitle": "About: Summit Roofing",
       "seoDescription": "Who Summit Roofing is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1727,7 +1727,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a local, family-run roofing company serving homeowners across the area. No high-pressure sales, no scare tactics, no vanishing subcontractors — just honest quotes, quality work, and a roof that’s backed in writing."
+                          "We’re a local, family-run roofing company serving homeowners across the area. No high-pressure sales, no scare tactics, no vanishing subcontractors. Just honest quotes, quality work, and a roof that’s backed in writing."
                         ],
                         "id": "2d43f8b0-87b1-4024-b3a6-5532d722e985",
                         "ord": "a2"
@@ -1805,7 +1805,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We inspect the whole roof and show you the photos. If a repair will do, we say so — we’d rather earn the replacement when you actually need it."
+                              "We inspect the whole roof and show you the photos. If a repair will do, we say so: we’d rather earn the replacement when you actually need it."
                             ],
                             "id": "18d0aad7-4818-4941-a96b-bc96209b96ce",
                             "ord": "a1"
@@ -1859,7 +1859,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Manufacturer material warranties plus our own workmanship guarantee, all in writing — and we’re a local call away if anything ever needs a second look."
+                              "Manufacturer material warranties plus our own workmanship guarantee, all in writing, and we’re a local call away if anything ever needs a second look."
                             ],
                             "id": "64114729-6d34-4e00-81f3-eb64791eab03",
                             "ord": "a1"
@@ -1887,7 +1887,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Summit Roofing",
+      "seoTitle": "Visit: Summit Roofing",
       "seoDescription": "Where to find Summit Roofing, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1924,7 +1924,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Summit Roofing will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Summit Roofing will get back to you, usually the same day."
                         ],
                         "id": "4f9a2ee0-e9b3-48f0-a06e-82aa9bed5271",
                         "ord": "a1"
@@ -2376,7 +2376,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See the next open times and reserve your free inspection online — no phone tag, no waiting on hold."
+                      "See the next open times and reserve your free inspection online: no phone tag, no waiting on hold."
                     ],
                     "id": "13748bdf-e5fc-4e98-8731-da0840a359b1",
                     "ord": "a1"

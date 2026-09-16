@@ -33,10 +33,10 @@ export function previewOf(submission: FormSubmission): string {
 export function emptyAdvice(statusLabel: string | null, formName: string | null): string {
   const parts: string[] = [];
   if (statusLabel) {
-    parts.push(`You are only seeing “${statusLabel}” — switch to All to see the rest.`);
+    parts.push(`You are only seeing “${statusLabel}”. Switch to All to see the rest.`);
   }
   if (formName) {
-    parts.push(`Only submissions from “${formName}” are showing — choose All forms to widen it.`);
+    parts.push(`Only submissions from “${formName}” are showing. Choose All forms to widen it.`);
   }
   return parts.join(' ');
 }

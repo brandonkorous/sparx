@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Voltline Electric — a modern electrical contractor",
+      "seoTitle": "Voltline Electric: a modern electrical contractor",
       "seoDescription": "Voltline Electric wires the modern home and business: EV chargers, smart-home, solar and battery hookups, and panel upgrades. Book a site assessment or free consult online.",
       "root": {
         "kind": "element",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades — done by certified electricians, for homes and businesses. Book a site assessment and see exactly what your place needs."
+                      "EV chargers, smart-home wiring, solar and battery hookups, and panel upgrades: done by certified electricians, for homes and businesses. Book a site assessment and see exactly what your place needs."
                     ],
                     "id": "f2f2b03c-b707-40f5-9574-f747ced269b4",
                     "ord": "a1"
@@ -664,7 +664,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Wall chargers and breaker-panel upgrades are our core work — sized right, permitted, and inspected, so your home keeps up with your car."
+                              "Wall chargers and breaker-panel upgrades are our core work: sized right, permitted, and inspected, so your home keeps up with your car."
                             ],
                             "id": "eb983680-93fb-4046-940e-461a646a8fd2",
                             "ord": "a1"
@@ -718,7 +718,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We pull the permits, book the inspection, and walk you through the rebates you qualify for — residential or commercial, start to finish."
+                              "We pull the permits, book the inspection, and walk you through the rebates you qualify for: residential or commercial, start to finish."
                             ],
                             "id": "e1ead64c-a79d-4b07-8456-092b8b3262c1",
                             "ord": "a1"
@@ -767,7 +767,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every project starts with someone on-site. Pick a visit type to see live availability — many are free, and none commit you to anything."
+                          "Every project starts with someone on-site. Pick a visit type to see live availability: many are free, and none commit you to anything."
                         ],
                         "id": "545b33eb-ee0b-4410-8887-0c5d589a4ad4",
                         "ord": "a1"
@@ -826,7 +826,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Right-sized home charger, quoted on-site — free."],
+                            "children": ["Right-sized home charger, quoted on-site: free."],
                             "id": "a26885b1-030f-437d-9e31-df95946af3e2",
                             "ord": "a2"
                           }
@@ -1065,7 +1065,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most homes can charge an electric car overnight — but only if the panel has room and the charger is wired to match your vehicle. Guess wrong and you get slow charging or a tripped breaker."
+                          "Most homes can charge an electric car overnight, but only if the panel has room and the charger is wired to match your vehicle. Guess wrong and you get slow charging or a tripped breaker."
                         ],
                         "id": "3abbe689-5615-4c57-8b52-a13efd75a92c",
                         "ord": "a1"
@@ -1253,7 +1253,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Automation, solar tie-ins and home batteries — the connected-home side of the business."
+                                  "Automation, solar tie-ins and home batteries: the connected-home side of the business."
                                 ],
                                 "id": "93495ab2-27ad-492c-a4d5-4ed1f53a18af",
                                 "ord": "a2"
@@ -1309,7 +1309,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Fit-outs, tenant improvements and facility upgrades — the crewed commercial jobs."
+                                  "Fit-outs, tenant improvements and facility upgrades: the crewed commercial jobs."
                                 ],
                                 "id": "cf3932d6-8859-4d66-8772-b22f6f7d40c1",
                                 "ord": "a2"
@@ -1495,7 +1495,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Voltline Electric",
+      "seoTitle": "Book: Voltline Electric",
       "seoDescription": "See what Voltline Electric offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1619,7 +1619,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "cb635cee-327a-46b9-a8bb-99d222966afb",
                         "ord": "a1"
@@ -1726,7 +1726,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Voltline Electric",
+      "seoTitle": "About: Voltline Electric",
       "seoDescription": "Who Voltline Electric is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1785,7 +1785,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a small, certified crew that does the modern work well — chargers, panels, automation, solar tie-ins and commercial fit-outs — and we explain it in plain language, permits and inspections included. No jargon, no upsell, no surprises on the bill."
+                          "We’re a small, certified crew that does the modern work well (chargers, panels, automation, solar tie-ins and commercial fit-outs) and we explain it in plain language, permits and inspections included. No jargon, no upsell, no surprises on the bill."
                         ],
                         "id": "3ab53a1d-aca4-4245-90b6-ce81c81e1390",
                         "ord": "a2"
@@ -1863,7 +1863,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every job starts with someone on-site looking at your actual panel and wiring — so the price you get is the price it costs."
+                              "Every job starts with someone on-site looking at your actual panel and wiring, so the price you get is the price it costs."
                             ],
                             "id": "142db1d2-9463-4ccf-8313-ef731a5ea091",
                             "ord": "a1"
@@ -1945,7 +1945,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Voltline Electric",
+      "seoTitle": "Visit: Voltline Electric",
       "seoDescription": "Where to find Voltline Electric, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1982,7 +1982,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Voltline Electric will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Voltline Electric will get back to you, usually the same day."
                         ],
                         "id": "55f1f831-ff3f-4d9f-90f3-239cd193a074",
                         "ord": "a1"
@@ -2434,7 +2434,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve an electrician online — pick a visit type, a day and a time, no phone tag."
+                      "See live availability and reserve an electrician online. Pick a visit type, a day and a time, no phone tag."
                     ],
                     "id": "ca19b1a8-71f3-4637-b188-a93cd93220ad",
                     "ord": "a1"

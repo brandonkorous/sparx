@@ -614,7 +614,7 @@ export const partnerService = {
           if (err.code === 'EMAIL_TAKEN') {
             // Only reachable on a race (a concurrent signup claimed the email
             // between the lookup and the insert) — safe to retry.
-            throw conflict('That email was just claimed by another signup — try approving again.');
+            throw conflict('That email was just claimed by another signup. Try approving again.');
           }
           if (err.code === 'INVALID_INPUT') throw badRequest(err.message);
         }

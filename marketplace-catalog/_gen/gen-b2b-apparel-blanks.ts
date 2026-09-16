@@ -163,7 +163,7 @@ function hero(): Node {
                                     text: 'Blanks that print clean, priced for the run.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Blankstock is a wholesale supplier of blank apparel for screen-printers, embroiderers and merch makers. Tees, fleece, headwear and bags — stocked deep in consistent dye lots, sold by the case, and priced per unit so the bigger the run, the lower your cost.',
+                                    text: 'Blankstock is a wholesale supplier of blank apparel for screen-printers, embroiderers and merch makers. Tees, fleece, headwear and bags: stocked deep in consistent dye lots, sold by the case, and priced per unit so the bigger the run, the lower your cost.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -275,7 +275,7 @@ function tradeBand(): Node {
                                 text: 'Built for the shop floor',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Everything here is set up for people who decorate for a living — priced by the case, stocked to reorder, and shipped fast enough to keep a press schedule moving.',
+                                text: 'Everything here is set up for people who decorate for a living: priced by the case, stocked to reorder, and shipped fast enough to keep a press schedule moving.',
                             }),
                         ],
                     }),
@@ -283,7 +283,7 @@ function tradeBand(): Node {
                         children: [
                             tradeValue({
                                 heading: 'Bulk pricing tiers',
-                                body: 'Unit price steps down at 24, 72 and 144. Quote the run, not the piece — the bigger the order, the lower the cost per shirt.',
+                                body: 'Unit price steps down at 24, 72 and 144. Quote the run, not the piece: the bigger the order, the lower the cost per shirt.',
                             }),
                             tradeValue({
                                 heading: 'Blanks for every method',
@@ -295,7 +295,7 @@ function tradeBand(): Node {
                             }),
                             tradeValue({
                                 heading: 'Net-30 for approved trade',
-                                body: 'Open a wholesale account, get approved once, and order on terms — buy now, pay in 30, reorder without re-quoting.',
+                                body: 'Open a wholesale account, get approved once, and order on terms: buy now, pay in 30, reorder without re-quoting.',
                             }),
                             tradeValue({
                                 heading: 'Samples before the case',
@@ -319,7 +319,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'This season’s blanks' }),
     editorialBand({
         heading: 'A blank is only as good as the print on it',
-        lead: 'We stock garments chosen for how they decorate — combed and ring-spun cottons with a tight, even face, side-seamed bodies that lie flat on the platen, and set-in collars that survive a wash. If a blank fights the press, it doesn’t earn a spot on the shelf.',
+        lead: 'We stock garments chosen for how they decorate: combed and ring-spun cottons with a tight, even face, side-seamed bodies that lie flat on the platen, and set-in collars that survive a wash. If a blank fights the press, it doesn’t earn a spot on the shelf.',
         assetId: 'band-print',
         cta: 'Read: choosing the right blank',
         href: '/blog/how-to-choose-a-blank',
@@ -329,7 +329,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.tees', layout: 'carousel', heading: 'Tees & tops' }),
     editorialBand({
         heading: 'Open a wholesale account',
-        lead: 'Tell us about your shop and we’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start — just better pricing the more you run.',
+        lead: 'Tell us about your shop and we’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start. Just better pricing the more you run.',
         assetId: 'band-account',
         cta: 'Apply for trade pricing',
         href: '/contact',
@@ -380,7 +380,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & bulk tiers' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Priced per unit and sold by the case. Unit price steps down at 24, 72 and 144 pieces — mix sizes within a style to hit the next tier. Every garment ships blank and ready to decorate for screenprint, embroidery or DTG.',
+                                        text: 'Priced per unit and sold by the case. Unit price steps down at 24, 72 and 144 pieces: mix sizes within a style to hit the next tier. Every garment ships blank and ready to decorate for screenprint, embroidery or DTG.',
                                     }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
                                         text: 'Approved wholesale accounts order on net-30 terms. Not sure of the hand-feel? Order a single at unit price as a sample before you commit to the run.',
@@ -422,13 +422,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop blanks',
-        'The full stock — tees, fleece, headwear and bags, all sold by the case and priced per unit. Filter by category or color, or sort by price; every style is blank and ready to screenprint, embroider or DTG.'
+        'The full stock: tees, fleece, headwear and bags, all sold by the case and priced per unit. Filter by category or color, or sort by price; every style is blank and ready to screenprint, embroider or DTG.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'Blanks grouped the way a shop actually orders — this season’s new stock, the best-selling core styles, tees and tops, fleece by weight, and a print-ready starter kit for a first run.'
+        'Blanks grouped the way a shop actually orders. This season’s new stock, the best-selling core styles, tees and tops, fleece by weight, and a print-ready starter kit for a first run.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -441,7 +441,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your order' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Mix sizes within a style to reach the next price tier — the discount applies at 24, 72 and 144 units. Approved wholesale accounts check out on net-30 terms; new to Blankstock? Open an account and we’ll get you set up.',
+                        text: 'Mix sizes within a style to reach the next price tier: the discount applies at 24, 72 and 144 units. Approved wholesale accounts check out on net-30 terms; new to Blankstock? Open an account and we’ll get you set up.',
                     }),
                 ],
             }),
@@ -455,7 +455,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The print desk' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Straight-talking guides from people who stock blanks for a living — choosing the right garment, matching a blank to your print method, and getting a size run right the first time.',
+                        text: 'Straight-talking guides from people who stock blanks for a living: choosing the right garment, matching a blank to your print method, and getting a size run right the first time.',
                     }),
                 ],
             }),
@@ -475,10 +475,10 @@ const ABOUT: Node[] = [
                         text: 'Blankstock started in the back of a print shop, tired of blanks that arrived in mismatched dye lots and sizes that ran a shirt short. We built the supplier we wished we had: a tight catalogue of garments chosen for how they decorate, stocked deep enough to reorder, and priced so a growing shop actually makes money on the run.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We carry fewer styles on purpose. Every tee, hoodie, cap and bag on the shelf earned its place on the press — smooth faces that take ink and thread cleanly, side-seamed bodies that lie flat, and collars and cuffs that survive an industrial wash. No mystery goods, no surprise substitutions.',
+                        text: 'We carry fewer styles on purpose. Every tee, hoodie, cap and bag on the shelf earned its place on the press: smooth faces that take ink and thread cleanly, side-seamed bodies that lie flat, and collars and cuffs that survive an industrial wash. No mystery goods, no surprise substitutions.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Order by the case, pay per unit, and pay on net-30 once you’re approved. We ship fast, we answer the phone, and we treat your deadline like ours — because when your order lands late, your customer’s does too.',
+                        text: 'Order by the case, pay per unit, and pay on net-30 once you’re approved. We ship fast, we answer the phone, and we treat your deadline like ours, because when your order lands late, your customer’s does too.',
                     }),
                 ],
             }),
@@ -493,7 +493,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Open a wholesale account',
-        intro: 'Tell us about your shop — what you print, roughly how much you run, and what you’re looking for. We’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start.',
+        intro: 'Tell us about your shop: what you print, roughly how much you run, and what you’re looking for. We’ll set you up with trade pricing, net-30 terms once you’re approved, and a rep who knows blanks. No membership fee, no minimum to start.',
         submitLabel: 'Email the trade desk',
     }),
 ];
@@ -660,7 +660,7 @@ const PRODUCTS: Product[] = [
         handle: 'heavyweight-tee',
         title: 'Heavyweight Tee',
         description:
-            'A 6.0 oz ring-spun cotton tee with real body — the blank for retail-quality merch, heavy prints and anything that has to feel like more than a promo shirt. Side-seamed, shoulder-taped, with a tight, smooth face that lays ink down flat.',
+            'A 6.0 oz ring-spun cotton tee with real body: the blank for retail-quality merch, heavy prints and anything that has to feel like more than a promo shirt. Side-seamed, shoulder-taped, with a tight, smooth face that lays ink down flat.',
         price: 6.5,
         sku: 'BLK-HWT',
         productType: 'T-shirt',
@@ -669,14 +669,14 @@ const PRODUCTS: Product[] = [
         collections: ['best-sellers', 'core-tees', 'print-ready-kit'],
         tags: ['tee', 'heavyweight', '6oz', 'ring-spun', 'screenprint'],
         asset: 'prod-heavyweight-tee',
-        seoTitle: 'Heavyweight Tee — 6.0 oz blank for decorators | Blankstock',
+        seoTitle: 'Heavyweight Tee: 6.0 oz blank for decorators | Blankstock',
         seoDescription: 'A 6.0 oz ring-spun, side-seamed blank tee built for retail-quality prints. Sold by the case, priced per unit.',
     }),
     garment({
         handle: 'ringspun-tee',
         title: 'Ringspun Tee',
         description:
-            'A 4.3 oz combed ring-spun tee — soft, light and fashion-fit, the everyday blank for fine-line prints and DTG. Thinner than the heavyweight without going sheer, with a smooth face that holds detail. The volume workhorse of the shelf.',
+            'A 4.3 oz combed ring-spun tee: soft, light and fashion-fit, the everyday blank for fine-line prints and DTG. Thinner than the heavyweight without going sheer, with a smooth face that holds detail. The volume workhorse of the shelf.',
         price: 4.75,
         sku: 'BLK-RST',
         productType: 'T-shirt',
@@ -685,14 +685,14 @@ const PRODUCTS: Product[] = [
         collections: ['new-blanks', 'core-tees'],
         tags: ['tee', 'ringspun', '4.3oz', 'dtg', 'fashion-fit'],
         asset: 'prod-ringspun-tee',
-        seoTitle: 'Ringspun Tee — 4.3 oz soft blank for DTG & fine prints | Blankstock',
+        seoTitle: 'Ringspun Tee: 4.3 oz soft blank for DTG & fine prints | Blankstock',
         seoDescription: 'A soft 4.3 oz combed ring-spun blank tee, fashion-fit, ideal for DTG and fine-line prints. Priced per unit.',
     }),
     garment({
         handle: 'long-sleeve-tee',
         title: 'Long-Sleeve Tee',
         description:
-            'A 5.5 oz long-sleeve tee with rib cuffs that hold their shape through a wash — a print surface front, back and down both sleeves. Side-seamed and set-in, the same clean face as the heavyweight for full-coverage jobs.',
+            'A 5.5 oz long-sleeve tee with rib cuffs that hold their shape through a wash: a print surface front, back and down both sleeves. Side-seamed and set-in, the same clean face as the heavyweight for full-coverage jobs.',
         price: 8.5,
         sku: 'BLK-LST',
         productType: 'T-shirt',
@@ -701,14 +701,14 @@ const PRODUCTS: Product[] = [
         collections: ['core-tees'],
         tags: ['tee', 'long-sleeve', '5.5oz', 'ring-spun'],
         asset: 'prod-longsleeve-tee',
-        seoTitle: 'Long-Sleeve Tee — 5.5 oz blank | Blankstock',
+        seoTitle: 'Long-Sleeve Tee: 5.5 oz blank | Blankstock',
         seoDescription: 'A 5.5 oz side-seamed long-sleeve blank with rib cuffs and a clean print face front, back and sleeves.',
     }),
     garment({
         handle: 'tank-top',
         title: 'Tank Top',
         description:
-            'A 4.2 oz ring-spun tank with a clean, deep armhole and bound neck and straps — the summer-drop and gym blank. Smooth face for a crisp front print, side-seamed so it sits flat on the platen.',
+            'A 4.2 oz ring-spun tank with a clean, deep armhole and bound neck and straps: the summer-drop and gym blank. Smooth face for a crisp front print, side-seamed so it sits flat on the platen.',
         price: 5.25,
         sku: 'BLK-TNK',
         productType: 'Tank top',
@@ -717,14 +717,14 @@ const PRODUCTS: Product[] = [
         collections: ['new-blanks', 'core-tees'],
         tags: ['tank', '4.2oz', 'ring-spun', 'summer'],
         asset: 'prod-tank',
-        seoTitle: 'Tank Top — 4.2 oz ring-spun blank | Blankstock',
-        seoDescription: 'A 4.2 oz side-seamed ring-spun blank tank with bound neck and straps — the summer and gym blank.',
+        seoTitle: 'Tank Top: 4.2 oz ring-spun blank | Blankstock',
+        seoDescription: 'A 4.2 oz side-seamed ring-spun blank tank with bound neck and straps: the summer and gym blank.',
     }),
     garment({
         handle: 'pullover-hoodie',
         title: 'Pullover Hoodie',
         description:
-            'An 8.5 oz fleece pullover hoodie — brushed inside, dense enough for a heavy front print, with a double-lined hood, split kangaroo pocket and rib cuffs and hem. The blank that carries a whole winter drop.',
+            'An 8.5 oz fleece pullover hoodie: brushed inside, dense enough for a heavy front print, with a double-lined hood, split kangaroo pocket and rib cuffs and hem. The blank that carries a whole winter drop.',
         price: 18,
         sku: 'BLK-HOOD',
         productType: 'Hoodie',
@@ -733,14 +733,14 @@ const PRODUCTS: Product[] = [
         collections: ['best-sellers', 'new-blanks', 'fleece-weights', 'print-ready-kit'],
         tags: ['hoodie', 'fleece', '8.5oz', 'pullover'],
         asset: 'prod-hoodie',
-        seoTitle: 'Pullover Hoodie — 8.5 oz fleece blank | Blankstock',
-        seoDescription: 'An 8.5 oz brushed-fleece pullover hoodie blank with a double-lined hood — built for heavy front prints.',
+        seoTitle: 'Pullover Hoodie: 8.5 oz fleece blank | Blankstock',
+        seoDescription: 'An 8.5 oz brushed-fleece pullover hoodie blank with a double-lined hood: built for heavy front prints.',
     }),
     garment({
         handle: 'crewneck-sweatshirt',
         title: 'Crewneck Sweatshirt',
         description:
-            'An 8.0 oz fleece crewneck — the clean-canvas fleece, no hood, no pocket, just a smooth brushed-back panel front and back for embroidery or a big print. Set-in sleeves, rib collar, cuffs and hem that keep their shape.',
+            'An 8.0 oz fleece crewneck: the clean-canvas fleece, no hood, no pocket, just a smooth brushed-back panel front and back for embroidery or a big print. Set-in sleeves, rib collar, cuffs and hem that keep their shape.',
         price: 15,
         sku: 'BLK-CREW',
         productType: 'Sweatshirt',
@@ -749,8 +749,8 @@ const PRODUCTS: Product[] = [
         collections: ['fleece-weights'],
         tags: ['crewneck', 'fleece', '8oz', 'embroidery'],
         asset: 'prod-crewneck',
-        seoTitle: 'Crewneck Sweatshirt — 8.0 oz fleece blank | Blankstock',
-        seoDescription: 'An 8.0 oz brushed-fleece crewneck blank — a clean front and back panel for embroidery or a big print.',
+        seoTitle: 'Crewneck Sweatshirt: 8.0 oz fleece blank | Blankstock',
+        seoDescription: 'An 8.0 oz brushed-fleece crewneck blank: a clean front and back panel for embroidery or a big print.',
     }),
     accessory({
         handle: 'structured-cap',
@@ -765,14 +765,14 @@ const PRODUCTS: Product[] = [
         collections: ['new-blanks', 'best-sellers', 'headwear-bags'],
         tags: ['cap', 'headwear', 'structured', 'embroidery', 'snapback'],
         asset: 'prod-cap',
-        seoTitle: 'Structured Cap — six-panel blank for embroidery | Blankstock',
-        seoDescription: 'A structured mid-profile six-panel blank cap with a snap back — a clean, firm face for embroidery.',
+        seoTitle: 'Structured Cap: six-panel blank for embroidery | Blankstock',
+        seoDescription: 'A structured mid-profile six-panel blank cap with a snap back: a clean, firm face for embroidery.',
     }),
     accessory({
         handle: 'cotton-tote',
         title: 'Cotton Tote',
         description:
-            'A 6 oz cotton canvas tote with reinforced handles and a flat, boxy front — a large, forgiving print area for a one-color logo or a full-bleed job. The add-on blank that lifts an order value and moves at events.',
+            'A 6 oz cotton canvas tote with reinforced handles and a flat, boxy front: a large, forgiving print area for a one-color logo or a full-bleed job. The add-on blank that lifts an order value and moves at events.',
         price: 4,
         sku: 'BLK-TOTE',
         productType: 'Bag',
@@ -781,7 +781,7 @@ const PRODUCTS: Product[] = [
         collections: ['new-blanks', 'headwear-bags', 'print-ready-kit'],
         tags: ['tote', 'bag', 'canvas', '6oz'],
         asset: 'prod-tote',
-        seoTitle: 'Cotton Tote — 6 oz canvas blank | Blankstock',
+        seoTitle: 'Cotton Tote: 6 oz canvas blank | Blankstock',
         seoDescription: 'A 6 oz cotton canvas blank tote with reinforced handles and a large flat print area. Priced per unit.',
     }),
 ];
@@ -865,11 +865,11 @@ const CONTENT = [
                 content: [
                     para('A blank is the ninety percent of a decorated garment you don’t print. Get it right and the artwork does what you drew; get it wrong and the best print in the world sits on a shirt nobody wants to wear twice. Three things decide it: weight, knit and fit.'),
                     h2('Weight: what the shirt feels like'),
-                    para('Fabric weight is measured in ounces per square yard, and it’s the fastest read on a blank. A 4.2–4.5 oz tee is soft, light and fashion-fit — great for DTG and fine-line prints, less forgiving of a heavy plastisol slab. A 5.5–6.0 oz tee has body and opacity, hides the platen, and reads as retail quality. Fleece runs 8.0 oz and up; the higher the number, the denser the hand and the better it carries a big front print.'),
+                    para('Fabric weight is measured in ounces per square yard, and it’s the fastest read on a blank. A 4.2–4.5 oz tee is soft, light and fashion-fit: great for DTG and fine-line prints, less forgiving of a heavy plastisol slab. A 5.5–6.0 oz tee has body and opacity, hides the platen, and reads as retail quality. Fleece runs 8.0 oz and up; the higher the number, the denser the hand and the better it carries a big front print.'),
                     h2('Knit and face: how it takes ink'),
-                    para('Ring-spun and combed cotton have a tighter, smoother face than open-end (carded) cotton, so ink lays flat and edges stay crisp. That smoothness is what lets a halftone or a small logo hold detail. For embroidery, you want a firm, stable panel — a structured cap crown or a crewneck back — so the stitches don’t pucker the fabric.'),
+                    para('Ring-spun and combed cotton have a tighter, smoother face than open-end (carded) cotton, so ink lays flat and edges stay crisp. That smoothness is what lets a halftone or a small logo hold detail. For embroidery, you want a firm, stable panel (a structured cap crown or a crewneck back) so the stitches don’t pucker the fabric.'),
                     h2('Fit: who it’s for'),
-                    para('Fit is the quiet decider of reorders. A boxier, side-seamed classic fit suits workwear and events; a slimmer fashion fit suits retail drops and a younger crowd. Whatever you pick, order it in a consistent dye lot and a full size run — a program that looks sharp in medium and runs a shirt short in 2XL is a program that generates returns.'),
+                    para('Fit is the quiet decider of reorders. A boxier, side-seamed classic fit suits workwear and events; a slimmer fashion fit suits retail drops and a younger crowd. Whatever you pick, order it in a consistent dye lot and a full size run: a program that looks sharp in medium and runs a shirt short in 2XL is a program that generates returns.'),
                 ],
             },
         },
@@ -885,13 +885,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The same blank does not print equally well every way. The method you’re running should steer which garment goes on the order — here’s what each one wants.'),
+                    para('The same blank does not print equally well every way. The method you’re running should steer which garment goes on the order: here’s what each one wants.'),
                     h2('Screenprint wants a smooth, opaque face'),
                     para('Plastisol and water-based inks sit best on a tight, ring-spun face with enough weight to hide the platen behind it. A 5.5–6.0 oz tee is the safe default for multi-color and heavy coverage; lighter blanks work for one- and two-color jobs but show the platen and can grin through on a stretch. Side-seamed bodies lie flatter on the pallet, which keeps registration honest across a run.'),
                     h2('Embroidery wants a firm, stable panel'),
-                    para('Stitches need something to bite into that won’t pucker. Structured cap crowns, crewneck backs and the dense panel of a heavier fleece all hold a design flat with the right backing. Avoid thin, stretchy jersey for anything but the smallest left-chest — a large stitch count on a light tee will draw the fabric in no matter how well it’s hooped.'),
+                    para('Stitches need something to bite into that won’t pucker. Structured cap crowns, crewneck backs and the dense panel of a heavier fleece all hold a design flat with the right backing. Avoid thin, stretchy jersey for anything but the smallest left-chest: a large stitch count on a light tee will draw the fabric in no matter how well it’s hooped.'),
                     h2('DTG wants soft, high-cotton and light-to-mid weight'),
-                    para('Direct-to-garment ink bonds to cotton fibres, so the higher the cotton content and the smoother the face, the sharper the result. A combed ring-spun 4.3 oz tee is the classic DTG blank — soft enough for retail, smooth enough to hold photographic detail, light enough to dry fast. Save the heaviest fleece for screenprint or embroidery; DTG on a thick brushed back fights you.'),
+                    para('Direct-to-garment ink bonds to cotton fibres, so the higher the cotton content and the smoother the face, the sharper the result. A combed ring-spun 4.3 oz tee is the classic DTG blank: soft enough for retail, smooth enough to hold photographic detail, light enough to dry fast. Save the heaviest fleece for screenprint or embroidery; DTG on a thick brushed back fights you.'),
                 ],
             },
         },
@@ -907,13 +907,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Ordering the right quantity of a shirt is easy. Ordering the right spread of sizes is where a run makes or loses money — buy the wrong shape and you’re either back-ordering mediums mid-drop or eating a stack of 2XLs at the end.'),
+                    para('Ordering the right quantity of a shirt is easy. Ordering the right spread of sizes is where a run makes or loses money: buy the wrong shape and you’re either back-ordering mediums mid-drop or eating a stack of 2XLs at the end.'),
                     h2('Start from a real curve, not an even split'),
-                    para('Sizes don’t sell evenly, so don’t order them evenly. A common starting curve for a general audience is roughly 1 : 2 : 3 : 2 : 1 across S–M–L–XL–2XL — the middle sizes carry the run. Skew it larger for workwear and an older crowd, smaller and slimmer for a fashion or youth drop. Whatever you pick, write it down: your reorder curve is only useful if you can compare it to what actually sold.'),
+                    para('Sizes don’t sell evenly, so don’t order them evenly. A common starting curve for a general audience is roughly 1 : 2 : 3 : 2 : 1 across S–M–L–XL–2XL, the middle sizes carry the run. Skew it larger for workwear and an older crowd, smaller and slimmer for a fashion or youth drop. Whatever you pick, write it down: your reorder curve is only useful if you can compare it to what actually sold.'),
                     h2('Mind the extended-size upcharge'),
-                    para('2XL and up cost more because they use more fabric, and that shows up as a per-unit upcharge. Price it into the job from the start rather than discovering it at invoice — and remember you can mix sizes within a style to hit the next bulk tier, so a split of S–2XL still counts toward the 72- or 144-piece break.'),
+                    para('2XL and up cost more because they use more fabric, and that shows up as a per-unit upcharge. Price it into the job from the start rather than discovering it at invoice, and remember you can mix sizes within a style to hit the next bulk tier, so a split of S–2XL still counts toward the 72- or 144-piece break.'),
                     h2('Keep dye lots consistent for reorders'),
-                    para('If a design sells and you reorder, you want the second batch to match the first on the shelf. Ordering from deep, steady stock in the same colorway keeps a black looking like the same black three months later — the difference between a clean reorder and a customer asking why the new shirts look off.'),
+                    para('If a design sells and you reorder, you want the second batch to match the first on the shelf. Ordering from deep, steady stock in the same colorway keeps a black looking like the same black three months later: the difference between a clean reorder and a customer asking why the new shirts look off.'),
                 ],
             },
         },
@@ -928,7 +928,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Blank Apparel (Wholesale)',
     theme: THEME,
     summary:
-        'A complete, working wholesale shop for a blank-apparel supplier: a real catalogue of blank tees, fleece, headwear and bags sold by the case and priced per unit, with Color × Size variant grids, categories, collections, a bespoke trade PDP carrying bulk price breaks and net-terms, and a merchandised home page pitched at decorators. Clean, catalogue-efficient theme — cool slate paper, near-black ink, one confident cobalt accent. Shipped as Blankstock.',
+        'A complete, working wholesale shop for a blank-apparel supplier: a real catalogue of blank tees, fleece, headwear and bags sold by the case and priced per unit, with Color × Size variant grids, categories, collections, a bespoke trade PDP carrying bulk price breaks and net-terms, and a merchandised home page pitched at decorators. Clean, catalogue-efficient theme, cool slate paper, near-black ink, one confident cobalt accent. Shipped as Blankstock.',
     tagline: 'A working wholesale storefront for a blank-apparel supplier.',
     vertical: 'b2b',
     industry: 'Wholesale blank apparel',
@@ -941,14 +941,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Blankstock — wholesale blank apparel for decorators',
+            title: 'Blankstock: wholesale blank apparel for decorators',
             description:
                 'Blankstock is a wholesale supplier of blank tees, fleece, headwear and bags for screen-printers, embroiderers and merch makers. Sold by the case, priced per unit, net-30 for approved trade.',
         },
         about: {
             title: 'About Blankstock',
             description:
-                'The blank-apparel supplier a print shop built for itself — a tight catalogue chosen for how it decorates, stocked deep, priced by the run, shipped fast.',
+                'The blank-apparel supplier a print shop built for itself: a tight catalogue chosen for how it decorates, stocked deep, priced by the run, shipped fast.',
         },
     },
     home: HOME,

@@ -67,27 +67,27 @@ const HEAD: Partial<Record<OnboardingStepKey, { title: string; supporting: strin
   modules: {
     title: 'Switch on what you use',
     supporting:
-      'Every module is one toggle — flip it and your plan updates the instant you do. You are free for 14 days with no card; this is just what you would pay after. Your picks narrow the starting points next.',
+      'Every module is one toggle: flip it and your plan updates the instant you do. You are free for 14 days with no card; this is just what you would pay after. Your picks narrow the starting points next.',
   },
   template: {
     title: 'Pick a starting point',
     supporting:
-      'Complete, themed sites — pages, design, products, and copy in place from the first second. Filtered to the modules you chose; pick one to load it into your setup.',
+      'Complete, themed sites: pages, design, products, and copy in place from the first second. Filtered to the modules you chose; pick one to load it into your setup.',
   },
   workspace: {
     title: 'Name your workspace',
     supporting:
-      'Your company and its first site. We pre-filled what you told us at signup — change anything. Your free web address goes live the moment you launch.',
+      'Your company and its first site. We pre-filled what you told us at signup. Change anything. Your free web address goes live the moment you launch.',
   },
   domain: {
     title: 'Make it yours',
     supporting:
-      'A custom domain builds trust — and it is yours to keep. Grab the perfect one now, or start free on your sparx.zone address and add a domain anytime.',
+      'A custom domain builds trust, and it is yours to keep. Grab the perfect one now, or start free on your sparx.zone address and add a domain anytime.',
   },
   payments: {
     title: 'Get paid',
     supporting:
-      'Connect Stripe so your site can take customer payments. You can go live now and connect this whenever you are ready — checkout simply stays off until then.',
+      'Connect Stripe so your site can take customer payments. You can go live now and connect this whenever you are ready: checkout simply stays off until then.',
   },
 };
 

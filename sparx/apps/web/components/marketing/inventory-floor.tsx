@@ -31,10 +31,10 @@ import { signupHref } from './cta';
 // so the mock-up has to honour it or the page is advertising something else.
 
 const WALK: { shelf: string; item: string; qty: string; state: 'done' | 'here' | 'next' }[] = [
-  { shelf: 'A · 02 · 1', item: 'House Espresso — 1kg', qty: '6', state: 'done' },
-  { shelf: 'B · 03 · 2', item: 'Guji Natural — 1kg', qty: '2', state: 'here' },
-  { shelf: 'B · 07 · 4', item: 'Kenya Peaberry — 1kg', qty: '1', state: 'next' },
-  { shelf: 'C · 01 · 3', item: 'Decaf Colombia — 250g', qty: '4', state: 'next' },
+  { shelf: 'A · 02 · 1', item: 'House Espresso: 1kg', qty: '6', state: 'done' },
+  { shelf: 'B · 03 · 2', item: 'Guji Natural: 1kg', qty: '2', state: 'here' },
+  { shelf: 'B · 07 · 4', item: 'Kenya Peaberry: 1kg', qty: '1', state: 'next' },
+  { shelf: 'C · 01 · 3', item: 'Decaf Colombia: 250g', qty: '4', state: 'next' },
 ];
 
 export function InventoryFloor() {
@@ -49,7 +49,7 @@ export function InventoryFloor() {
               A number is only ever as good as the last time somebody touched the stock behind it.
               So everything that happens on the floor happens through a phone camera: receiving a
               delivery, putting it away, walking a pick, counting a shelf, moving stock between your
-              own places. No handheld to buy, no app store, no training day — it is the camera they
+              own places. No handheld to buy, no app store, no training day. It is the camera they
               already carry, and it refuses the wrong item rather than trusting anyone to notice.
             </>
           }
@@ -111,7 +111,7 @@ export function InventoryFloor() {
                 Wrong shelf
               </Badge>
               <Text as="span">
-                is what a scan at B · 07 · 4 gets right now — and it says which aisle to go to
+                is what a scan at B · 07 · 4 gets right now, and it says which aisle to go to
                 instead.
               </Text>
             </div>
@@ -139,8 +139,8 @@ export function InventoryFloor() {
               </Heading>
               <Text>
                 Decide that the fast-moving, high-value lines get counted monthly and the long tail
-                twice a year, and sparx tells you what is due. Count blind — no expected figure on
-                the screen — and a variance worth real money waits for someone to approve it before
+                twice a year, and sparx tells you what is due. Count blind (no expected figure on
+                the screen) and a variance worth real money waits for someone to approve it before
                 it posts.
               </Text>
             </CardBody>
@@ -200,7 +200,7 @@ interface ReorderRow {
 
 const REORDER: ReorderRow[] = [
   {
-    item: 'Kenya Peaberry — 1kg',
+    item: 'Kenya Peaberry: 1kg',
     cover: '2 days',
     stockout: 'Fri 20 Feb',
     atRisk: '$1,880',
@@ -208,7 +208,7 @@ const REORDER: ReorderRow[] = [
     tone: 'error',
   },
   {
-    item: 'Guji Natural — 1kg',
+    item: 'Guji Natural: 1kg',
     cover: '6 days',
     stockout: 'Tue 24 Feb',
     atRisk: '$3,140',
@@ -216,7 +216,7 @@ const REORDER: ReorderRow[] = [
     tone: 'warning',
   },
   {
-    item: 'House Espresso — 1kg',
+    item: 'House Espresso: 1kg',
     cover: '31 days',
     stockout: '—',
     atRisk: '—',
@@ -243,7 +243,7 @@ export function InventoryBuying() {
             <>
               A reorder point typed in last spring is a guess that has stopped being true. sparx
               works yours out from what actually sells, how long each supplier really takes rather
-              than what they promised, and what time of year it is — then puts the consequence next
+              than what they promised, and what time of year it is, then puts the consequence next
               to it in money, because “low stock” is not a reason to spend three thousand dollars
               and “you lose $3,140 next Tuesday” is.
             </>
@@ -312,7 +312,7 @@ export function InventoryBuying() {
                 Draft the orders
               </span>
               <Text as="span">
-                — grouped by supplier, net of what is already on its way, ready to check and send.
+                Grouped by supplier, net of what is already on its way, ready to check and send.
               </Text>
             </div>
           </CardBody>
@@ -351,7 +351,7 @@ export function InventoryBuying() {
             <Text className="border-base-300 border-t pt-4">
               Fifty-two out of a hundred businesses name supplier reliability as their biggest stock
               problem, and almost nothing in the category measures it. sparx does, from your own
-              deliveries — and the twenty-one days it learned is the number your reorder points
+              deliveries, and the twenty-one days it learned is the number your reorder points
               quietly start using, instead of the fourteen on the price list.
             </Text>
           </CardBody>
@@ -375,7 +375,7 @@ export function InventoryAssistant() {
   const points: { title: string; body: string }[] = [
     {
       title: 'Your assistant, your data',
-      body: 'Connect the AI client you already use and it can read your stock the way a person would — what should I reorder, why did this drop, which supplier is slipping, what is expiring next month. The account is yours and the model is yours; sparx never runs one on your behalf.',
+      body: 'Connect the AI client you already use and it can read your stock the way a person would: what should I reorder, why did this drop, which supplier is slipping, what is expiring next month. The account is yours and the model is yours; sparx never runs one on your behalf.',
     },
     {
       title: 'It cannot spend your money',
@@ -383,11 +383,11 @@ export function InventoryAssistant() {
     },
     {
       title: 'Tell your other systems',
-      body: 'Twenty-five things that happen to your stock can be sent to any address you name the moment they happen — something running low, a count coming up short, a delivery landing, a feed going quiet. Set it up on a screen, no developer needed.',
+      body: 'Twenty-five things that happen to your stock can be sent to any address you name the moment they happen. Something running low, a count coming up short, a delivery landing, a feed going quiet. Set it up on a screen, no developer needed.',
     },
     {
       title: 'Your columns, your words',
-      body: 'Add fields sparx has never heard of to items, shelves, suppliers or purchase orders — a bond number, a customs code, a bay. They appear in the grid, in exports, and in the API alongside everything else.',
+      body: 'Add fields sparx has never heard of to items, shelves, suppliers or purchase orders: a bond number, a customs code, a bay. They appear in the grid, in exports, and in the API alongside everything else.',
     },
   ];
   return (
@@ -399,7 +399,7 @@ export function InventoryAssistant() {
           lede={
             <>
               Eight in ten businesses say they want AI somewhere in how they run stock; about one in
-              ten has any. The reason is not enthusiasm — it is that pointing a model at numbers
+              ten has any. The reason is not enthusiasm. It is that pointing a model at numbers
               nobody can verify produces confident nonsense. Everything on this page is the part
               that has to be true first.
             </>
@@ -442,7 +442,7 @@ const SETUP: { step: string; title: string; body: string }[] = [
   {
     step: 'Then',
     title: 'Bring the sheet you already keep',
-    body: 'Upload it as it is. sparx reads your column names and matches them to its own — “Qty on hand”, “QTY”, “stock” — and asks you about the ones it is unsure of rather than guessing.',
+    body: 'Upload it as it is. sparx reads your column names and matches them to its own (“Qty on hand”, “QTY”, “stock”) and asks you about the ones it is unsure of rather than guessing.',
   },
   {
     step: 'Before anything changes',
@@ -452,7 +452,7 @@ const SETUP: { step: string; title: string; body: string }[] = [
   {
     step: 'Finally',
     title: 'Count it once, for real',
-    body: 'The setup ends with an opening count, so day one is a number somebody walked out and verified — not an imported guess that everything afterwards inherits.',
+    body: 'The setup ends with an opening count, so day one is a number somebody walked out and verified, not an imported guess that everything afterwards inherits.',
   },
 ];
 
@@ -465,7 +465,7 @@ export function InventorySetup() {
           headline={<>You can be off the spreadsheet by the end of the afternoon</>}
           lede={
             <>
-              The thing this actually replaces, for most businesses, is a spreadsheet — and the
+              The thing this actually replaces, for most businesses, is a spreadsheet, and the
               spreadsheet is winning for one honest reason: you can start using it in ten minutes
               and nobody has to be trained. So the setup is built to beat that, not to beat an
               enterprise feature list. Four steps, ending in a real count, with a thirty-minute
@@ -508,7 +508,7 @@ export function InventorySetup() {
           </Heading>
           <Text className="mt-4 max-w-[52ch]">
             Every list, every report and the entire movement history downloads as a spreadsheet from
-            a button, without a support ticket and without asking anyone — and every export sparx
+            a button, without a support ticket and without asking anyone, and every export sparx
             produces imports back into sparx unchanged, which is the only test of an export that
             means anything. A record you cannot take with you is not really yours.
           </Text>

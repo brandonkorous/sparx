@@ -116,7 +116,7 @@ export function TimezoneField({
       </FieldDescription>
       {value === '' ? (
         <Text className="text-warning text-sm">
-          Nothing set, so times are being read as {zoneLabel(thisComputersTimezone(), zones)} —
+          Nothing set, so times are being read as {zoneLabel(thisComputersTimezone(), zones)},
           whatever clock the computer you are on is set to. Choose it here and it stops depending on
           the device.
         </Text>

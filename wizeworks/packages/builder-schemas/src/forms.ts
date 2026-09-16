@@ -83,7 +83,7 @@ export interface ContactFormConfig {
 /** The catalog/default authoring props for a fresh Form block. */
 export const DEFAULT_CONTACT_FORM_PROPS: Record<string, unknown> = {
   submitLabel: 'Send message',
-  successMessage: 'Thanks — we got your message and will be in touch soon.',
+  successMessage: 'Thanks. We got your message and will be in touch soon.',
   color: 'primary',
   notify: true,
   addToCrm: false,
@@ -92,7 +92,7 @@ export const DEFAULT_CONTACT_FORM_PROPS: Record<string, unknown> = {
   autoresponder: false,
   autoresponderSubject: 'We received your message',
   autoresponderMessage:
-    "Thanks for reaching out — we've received your message and will get back to you shortly.",
+    "Thanks for reaching out: we've received your message and will get back to you shortly.",
   recipients: [],
 };
 
@@ -161,7 +161,7 @@ export function readContactFormConfig(
     submitLabel: asStr(p.submitLabel, 'Send message'),
     successMessage: asStr(
       p.successMessage,
-      'Thanks — we got your message and will be in touch soon.'
+      'Thanks. We got your message and will be in touch soon.'
     ),
     color: asStr(p.color, 'primary'),
     notify: asBool(p.notify, true),
@@ -172,7 +172,7 @@ export function readContactFormConfig(
     autoresponderSubject: asStr(p.autoresponderSubject, 'We received your message'),
     autoresponderMessage: asStr(
       p.autoresponderMessage,
-      "Thanks for reaching out — we've received your message and will get back to you shortly."
+      "Thanks for reaching out: we've received your message and will get back to you shortly."
     ),
     recipients: Array.isArray(p.recipients)
       ? p.recipients.filter((r): r is string => typeof r === 'string' && r.trim() !== '')

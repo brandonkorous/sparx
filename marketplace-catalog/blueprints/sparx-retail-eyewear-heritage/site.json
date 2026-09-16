@@ -696,8 +696,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Atelier Optique — hand-finished eyewear, made since 1932",
-      "seoDescription": "Atelier Optique cuts, shapes and hand-polishes acetate eyewear the slow way, on the same benches since 1932 — optical, sun and reading frames, glazed in-house, repaired for life.",
+      "seoTitle": "Atelier Optique: hand-finished eyewear, made since 1932",
+      "seoDescription": "Atelier Optique cuts, shapes and hand-polishes acetate eyewear the slow way, on the same benches since 1932: optical, sun and reading frames, glazed in-house, repaired for life.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -745,7 +745,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Atelier Optique has cut, shaped and polished frames by hand since 1932. Every pair is turned from a single block of Italian acetate over five weeks and forty pairs of hands — glasses built to be worn for a lifetime, and handed on after it."
+                          "Atelier Optique has cut, shaped and polished frames by hand since 1932. Every pair is turned from a single block of Italian acetate over five weeks and forty pairs of hands: glasses built to be worn for a lifetime, and handed on after it."
                         ],
                         "id": "cddf52e1-3cc0-4ee1-9a50-58c8ac13cf33",
                         "ord": "a1"
@@ -1511,7 +1511,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Atelier Optique",
+      "seoTitle": "Shop: Atelier Optique",
       "seoDescription": "Browse everything Atelier Optique makes, with prices and options at a glance. Eyewear & optical.",
       "root": {
         "kind": "element",
@@ -1543,7 +1543,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every frame the house makes — optical, sun and reading — each hand-finished in its own acetate colorways, with the lens choice built in. Filter by shape or category, or sort however you like; all of it is cut and glazed to order on our bench."
+                      "Every frame the house makes (optical, sun and reading) each hand-finished in its own acetate colorways, with the lens choice built in. Filter by shape or category, or sort however you like; all of it is cut and glazed to order on our bench."
                     ],
                     "id": "a4a5c9e0-d5c5-4d95-8326-d849ce773bc2",
                     "ord": "a1"
@@ -1571,7 +1571,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Atelier Optique",
+      "seoTitle": "Collections: Atelier Optique",
       "seoDescription": "Explore the collections at Atelier Optique, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1603,7 +1603,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The frames grouped the way people actually shop — new off the bench, the best-loved shapes, the full optical line, sun, the reading room, and the 1932 series struck in limited numbers each year."
+                      "The frames grouped the way people actually shop: new off the bench, the best-loved shapes, the full optical line, sun, the reading room, and the 1932 series struck in limited numbers each year."
                     ],
                     "id": "b7fe4520-c8c1-49aa-b226-d0f2b8ed90fa",
                     "ord": "a1"
@@ -1631,7 +1631,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Atelier Optique",
+      "seoTitle": "Your cart: Atelier Optique",
       "seoDescription": "Review what is in your cart and check out securely at Atelier Optique.",
       "root": {
         "kind": "element",
@@ -1663,7 +1663,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Complimentary shipping and a leather case with every pair, and thirty days to be sure. Not certain of your prescription? Add it after checkout — we’ll hold your order and email a gentle reminder. Adjustments and repairs are free, for the life of the frame."
+                      "Complimentary shipping and a leather case with every pair, and thirty days to be sure. Not certain of your prescription? Add it after checkout: we’ll hold your order and email a gentle reminder. Adjustments and repairs are free, for the life of the frame."
                     ],
                     "id": "c3508e07-814e-4089-98d9-06e79130bfcc",
                     "ord": "a1"
@@ -1691,7 +1691,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Atelier Optique",
+      "seoTitle": "Search: Atelier Optique",
       "seoDescription": "Search Atelier Optique for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1751,7 +1751,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Atelier Optique",
+      "seoTitle": "Journal: Atelier Optique",
       "seoDescription": "Stories, guides and notes from Atelier Optique.",
       "root": {
         "kind": "element",
@@ -1783,7 +1783,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the bench — how a frame is made, how to find the shape that suits you, and the ninety-year story behind the house. Plain, unhurried, and written by the people who file the acetate."
+                      "Notes from the bench: how a frame is made, how to find the shape that suits you, and the ninety-year story behind the house. Plain, unhurried, and written by the people who file the acetate."
                     ],
                     "id": "5e0ade72-d08d-4a37-901f-00849aee3353",
                     "ord": "a1"
@@ -1917,7 +1917,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Atelier Optique",
-      "seoDescription": "Ninety years at the same bench — how Atelier Optique mills each frame from a single block of Italian acetate, hand-polishes it, glazes it in-house, and repairs it for life.",
+      "seoDescription": "Ninety years at the same bench: how Atelier Optique mills each frame from a single block of Italian acetate, hand-polishes it, glazes it in-house, and repairs it for life.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1958,7 +1958,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We buy our acetate from the same Italian mill our grandfather did, choosing the sheets by eye for depth and figure the way you’d choose timber. Each frame front is milled from a single block, then tumbled in beechwood drums for days and polished by hand until it takes on a lustre no machine can rush. Hinges are set with five barrels and steel rivets — the joint that lasts a lifetime, not a season."
+                      "We buy our acetate from the same Italian mill our grandfather did, choosing the sheets by eye for depth and figure the way you’d choose timber. Each frame front is milled from a single block, then tumbled in beechwood drums for days and polished by hand until it takes on a lustre no machine can rush. Hinges are set with five barrels and steel rivets: the joint that lasts a lifetime, not a season."
                     ],
                     "id": "308710a2-79ec-45d2-aa94-ab4617649da8",
                     "ord": "a2"
@@ -1968,7 +1968,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every lens is glazed on our own bench, every pair fitted by hand, and anything we have ever made, we will always repair. A frame from this house is not meant to be replaced next year. It is meant to be worn until it’s yours, then handed on — which is the only kind of luxury we believe in."
+                      "Every lens is glazed on our own bench, every pair fitted by hand, and anything we have ever made, we will always repair. A frame from this house is not meant to be replaced next year. It is meant to be worn until it’s yours, then handed on, which is the only kind of luxury we believe in."
                     ],
                     "id": "be7c98cd-296d-41e9-824a-2e6f398173ee",
                     "ord": "a3"
@@ -1988,8 +1988,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Atelier Optique",
-      "seoDescription": "Get in touch with Atelier Optique — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Atelier Optique",
+      "seoDescription": "Get in touch with Atelier Optique: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2025,7 +2025,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Unsure which shape suits you, need a hand reading your prescription, or want a frame repaired or refitted? Write to the bench and one of the makers — not a call centre — will write back to you personally."
+                          "Unsure which shape suits you, need a hand reading your prescription, or want a frame repaired or refitted? Write to the bench and one of the makers (not a call centre) will write back to you personally."
                         ],
                         "id": "7b4fd404-1d60-4c71-b026-83835d4b7162",
                         "ord": "a1"
@@ -2296,8 +2296,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Atelier Optique",
-      "seoDescription": "Product details at Atelier Optique — eyewear & optical, with options and pricing.",
+      "seoTitle": "Product: Atelier Optique",
+      "seoDescription": "Product details at Atelier Optique: eyewear & optical, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2342,7 +2342,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-semibold uppercase tracking-widest text-secondary",
-                            "children": ["Atelier Optique — since 1932"],
+                            "children": ["Atelier Optique, since 1932"],
                             "id": "cf3857f0-9b3e-484c-af55-1af923f1f32e",
                             "ord": "a0"
                           },
@@ -2660,7 +2660,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Choose your lens at checkout — prescription, blue-light or plain — and add your prescription now or later. Every pair is hand-polished, five-barrel riveted and cut to your lenses on our own bench, then delivered in a hand-stitched leather case. Adjustments and repairs are free, for life."
+                              "Choose your lens at checkout (prescription, blue-light or plain) and add your prescription now or later. Every pair is hand-polished, five-barrel riveted and cut to your lenses on our own bench, then delivered in a hand-stitched leather case. Adjustments and repairs are free, for life."
                             ],
                             "id": "7068cf39-52b9-44f4-acc5-ae47a79632b2",
                             "ord": "a1"

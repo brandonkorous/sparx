@@ -34,7 +34,7 @@ export function DirectoryHero({
     { v: String(total), s: total === 1 ? 'partner listed today.' : 'partners listed today.' },
     {
       v: String(certified),
-      s: 'of them certified — they sat the course on the platform they are selling.',
+      s: 'of them certified. They sat the course on the platform they are selling.',
     },
     {
       v: String(specialtyCount),
@@ -60,7 +60,7 @@ export function DirectoryHero({
           </Heading>
           <Text variant="lead" className="text-base-content max-w-2xl text-xl">
             Consultants, agencies and developers who set businesses up on sparx and keep them
-            running. Filter by the work you need doing, then contact them directly — there is no
+            running. Filter by the work you need doing, then contact them directly. There is no
             middleman and no introduction fee.
           </Text>
           <div className="flex flex-wrap gap-3">

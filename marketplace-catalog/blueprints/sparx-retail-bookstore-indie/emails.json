@@ -5,7 +5,7 @@
     "doc": {
       "version": "1",
       "subject": "Welcome to {{site.name}}",
-      "preheader": "So glad you found us — here’s where to start.",
+      "preheader": "So glad you found us: here’s where to start.",
       "root": {
         "id": "def-s-body-15",
         "kind": "body",
@@ -81,7 +81,7 @@
               {
                 "id": "def-s-text-7",
                 "kind": "text",
-                "html": "Your cart, orders, and favourites live in your account — sign in any time to pick up where you left off.",
+                "html": "Your cart, orders, and favourites live in your account. Sign in any time to pick up where you left off.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
@@ -113,7 +113,7 @@
               {
                 "id": "def-s-text-11",
                 "kind": "text",
-                "html": "Reply to any email from us and you’ll reach a real person — not a bot.",
+                "html": "Reply to any email from us and you’ll reach a real person, not a bot.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
@@ -242,7 +242,7 @@
               {
                 "id": "def-s-text-21",
                 "kind": "text",
-                "html": "A few fresh arrivals and returning favourites have landed — come take a look and see what’s caught our eye lately.",
+                "html": "A few fresh arrivals and returning favourites have landed: come take a look and see what’s caught our eye lately.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,

@@ -42,7 +42,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Themes, pages, live URLs',
     price: 10,
     elsewhere: 39,
-    long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
+    long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain: automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
     feats: [
       'Theme-first, customize what matters',
       'Custom domain + automatic SSL',
@@ -87,7 +87,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Customers, pipeline, signal',
     price: 49,
     elsewhere: 300,
-    long: 'One customer record across orders, email, support, RFQs, and AI conversations — sitting on the same database as everything else. No sync, no glue, no duplicate records.',
+    long: 'One customer record across orders, email, support, RFQs, and AI conversations: sitting on the same database as everything else. No sync, no glue, no duplicate records.',
     feats: [
       'One record, no deduping',
       'Dynamic segments from any signal',
@@ -102,7 +102,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Transactional + marketing',
     price: 29,
     elsewhere: 165,
-    long: 'Transactional and marketing email from your own sending domain, with SPF, DKIM, and DMARC auto-configured. Flat price — send 10K or 1M a month, same bill.',
+    long: 'Transactional and marketing email from your own sending domain, with SPF, DKIM, and DMARC auto-configured. Flat price. Send 10K or 1M a month, same bill.',
     feats: [
       'Transactional wired into every module',
       'Campaigns + A/B testing',
@@ -117,7 +117,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Wholesale, net terms, fleet',
     price: 99,
     elsewhere: 2400,
-    long: 'Wholesale pricing, net terms, purchase orders, RFQ, fleet accounts, and service scheduling — natively, not a bolt-on. Built for how industrial actually works.',
+    long: 'Wholesale pricing, net terms, purchase orders, RFQ, fleet accounts, and service scheduling: natively, not a bolt-on. Built for how industrial actually works.',
     feats: [
       'Account-tier + contract pricing',
       'Net 15 / 30 / 60 / 90 + PO checkout',
@@ -147,7 +147,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Appointments, classes, reservations',
     price: 29,
     elsewhere: 49,
-    long: 'Online booking for anything time-based — appointments, group classes, table reservations, equipment rentals — on one engine. Availability that prevents double-booking at the database level, deposits and no-show fees, automated reminders, and two-way calendar sync.',
+    long: 'Online booking for anything time-based (appointments, group classes, table reservations, equipment rentals) on one engine. Availability that prevents double-booking at the database level, deposits and no-show fees, automated reminders, and two-way calendar sync.',
     feats: [
       'Appointments, classes, reservations & rentals',
       'No-overlap booking with buffers & lead time',
@@ -162,7 +162,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Suppliers, sync, fulfillment',
     price: 29,
     elsewhere: 60,
-    long: 'Supplier sync, margin math, and automated order routing — on a real platform underneath, not an app stacked on an app. Sell without holding inventory.',
+    long: 'Supplier sync, margin math, and automated order routing: on a real platform underneath, not an app stacked on an app. Sell without holding inventory.',
     feats: [
       'Supplier connectors + CSV/FTP/API',
       'Per-supplier margin rules',
@@ -177,7 +177,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Estimates, invoices, AR',
     price: 19,
     elsewhere: 30,
-    long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
+    long: 'Author estimates, work orders, and invoices line by line (parts marked up, labor by the hour, deposits and partial payments) through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
     feats: [
       'Estimate → invoice workflows you name',
       'Parts, labor, sublet & flat-fee lines',
@@ -193,10 +193,10 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Stock, warehouses, ledger',
     price: 29,
     elsewhere: 99,
-    long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
+    long: 'A real inventory system under your catalog: multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
     feats: [
       'Multi-warehouse on-hand / allocated / available',
-      'Audited movement ledger — every change attributable',
+      'Audited movement ledger: every change attributable',
       'Lots, serials, expiry & recalls',
       'Reorder points + low-stock alerts',
     ],
@@ -213,7 +213,7 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     feats: [
       'Site widget in your theme',
       'AI answers from your own catalog',
-      'Staff inbox — assign, reply, resolve',
+      'Staff inbox: assign, reply, resolve',
       'Web-push + email notifications',
     ],
     replaces: 'a live-chat + AI inbox like Intercom',

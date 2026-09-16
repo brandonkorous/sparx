@@ -188,7 +188,7 @@ export function CollectionRulesEditor({
       {editable.length === 0 ? (
         <div className="border-base-300 rounded border border-dashed p-4">
           <Text>
-            No conditions yet. Add one to describe which products belong here — for example, the
+            No conditions yet. Add one to describe which products belong here, for example, the
             price is at most a set amount, or the brand is one you choose.
           </Text>
         </div>
@@ -250,8 +250,8 @@ export function CollectionRulesEditor({
           </div>
           <Text className="text-sm">
             {fitment.length === 1
-              ? 'This collection also matches products that fit a particular machine or model. That condition is edited on the Fitment screen — it is kept exactly as it is when you save here.'
-              : 'This collection also matches products that fit particular machines or models. Those conditions are edited on the Fitment screen — they are kept exactly as they are when you save here.'}
+              ? 'This collection also matches products that fit a particular machine or model. That condition is edited on the Fitment screen. It is kept exactly as it is when you save here.'
+              : 'This collection also matches products that fit particular machines or models. Those conditions are edited on the Fitment screen. They are kept exactly as they are when you save here.'}
           </Text>
           <ul className="flex flex-col gap-1">
             {fitment.map((entry) => (
@@ -517,7 +517,7 @@ function ValueEditor({
       items={suggestions}
       value={predicate.value as string}
       placeholder="Type or choose a value"
-      emptyMessage="No match — type your own."
+      emptyMessage="No match. Type your own."
       aria-label="Value to match"
       onValueChange={(next) => {
         onChange({ ...predicate, value: next } as CollectionPredicate);

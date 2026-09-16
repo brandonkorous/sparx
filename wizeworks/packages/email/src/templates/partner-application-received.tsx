@@ -45,14 +45,14 @@ export function PartnerApplicationReceivedEmail({
 
   return (
     <PlatformEmailLayout
-      preview={`New partner application — ${applicantName}`}
+      preview={`New partner application: ${applicantName}`}
       mastheadRight="partners"
       footerReason={`You're receiving this because you handle partner applications for ${platform}.`}
     >
       <EmailDisplayHeading>New partner application</EmailDisplayHeading>
       <EmailParagraph>
         <strong>{applicantName}</strong> applied to the {platform} Partner Program. The details are
-        below — review and approve or decline from the console.
+        below. Review and approve or decline from the console.
       </EmailParagraph>
 
       <EmailSectionLabel>Application</EmailSectionLabel>
@@ -64,5 +64,5 @@ export function PartnerApplicationReceivedEmail({
 }
 
 export function partnerApplicationReceivedSubject(applicantName: string): string {
-  return `New partner application — ${applicantName}`;
+  return `New partner application: ${applicantName}`;
 }

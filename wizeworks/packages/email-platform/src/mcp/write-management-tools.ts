@@ -28,7 +28,7 @@ type Rec = Record<string, unknown>;
 const createBroadcast: McpToolDefinition = {
   name: 'create_broadcast',
   description:
-    'Create a broadcast (a one-off marketing email to a CRM segment) as a DRAFT, using a published Email-Builder design. Does not send — schedule_broadcast or send_broadcast dispatches it.',
+    'Create a broadcast (a one-off marketing email to a CRM segment) as a DRAFT, using a published Email-Builder design. Does not send: schedule_broadcast or send_broadcast dispatches it.',
   scope: 'write:email',
   confirmation: true,
   input: CreateBroadcastInput,
@@ -38,7 +38,7 @@ const createBroadcast: McpToolDefinition = {
 const updateBroadcast: McpToolDefinition = {
   name: 'update_broadcast',
   description:
-    'Edit a draft broadcast — name, subject, preheader, design, or target segment. Send only the fields to change.',
+    'Edit a draft broadcast. Name, subject, preheader, design, or target segment. Send only the fields to change.',
   scope: 'write:email',
   confirmation: true,
   input: UpdateBroadcastInput.extend({ broadcastId: uuid() }),
@@ -51,7 +51,7 @@ const updateBroadcast: McpToolDefinition = {
 const scheduleBroadcast: McpToolDefinition = {
   name: 'schedule_broadcast',
   description:
-    'Schedule a draft broadcast to send at a future time (ISO-8601). Sends real email at that time to the whole segment — confirm the segment + timing first.',
+    'Schedule a draft broadcast to send at a future time (ISO-8601). Sends real email at that time to the whole segment. Confirm the segment + timing first.',
   scope: 'write:email_bulk',
   confirmation: true,
   input: ScheduleBroadcastInput.extend({ broadcastId: uuid() }),

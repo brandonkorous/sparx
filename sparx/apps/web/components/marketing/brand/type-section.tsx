@@ -35,7 +35,7 @@ const ROLES: Role[] = [
     role: 'Body',
     specimen: (
       <span className="font-sans text-[17px] leading-[1.6] font-normal">
-        sparx lets typography do the heavy lifting — no decorative elements, no gradients. White
+        sparx lets typography do the heavy lifting: no decorative elements, no gradients. White
         space is intentional, and every element has a reason to exist.
       </span>
     ),
@@ -60,7 +60,7 @@ export function TypeSection() {
         <SectionHeader
           accent="var(--color-module-cms)"
           headline="Geist, doing the heavy lifting"
-          lede="Geist is Vercel’s open-source interface typeface — geometric precision with editorial warmth. Hierarchy comes from size and spacing, never from heavy weights."
+          lede="Geist is Vercel’s open-source interface typeface: geometric precision with editorial warmth. Hierarchy comes from size and spacing, never from heavy weights."
         />
 
         <div className="flex flex-col">
@@ -93,7 +93,7 @@ export function TypeSection() {
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Note title="Two weights only">
-            400 (regular) and 500 (medium) — never 600 or 700, which feel heavy against the clean
+            400 (regular) and 500 (medium), never 600 or 700, which feel heavy against the clean
             sparx UI. The wordmark is the one deliberate exception: it sets in a bold display face
             so its letterforms match the mark.
           </Note>

@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Verdi Clean — eco, plant-based home cleaning",
-      "seoDescription": "Verdi Clean is a green cleaning service using plant-based, non-toxic products — safe for kids, pets and sensitive homes. Book a green clean or a free walkthrough online.",
+      "seoTitle": "Verdi Clean: eco, plant-based home cleaning",
+      "seoDescription": "Verdi Clean is a green cleaning service using plant-based, non-toxic products: safe for kids, pets and sensitive homes. Book a green clean or a free walkthrough online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Plant-based, non-toxic cleaning for real homes — safe for kids, pets and sensitive noses, and gentle on everything you love."
+                      "Plant-based, non-toxic cleaning for real homes: safe for kids, pets and sensitive noses, and gentle on everything you love."
                     ],
                     "id": "63de7731-5e49-42c3-a861-4426c09d1b3c",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Everything we use is plant-derived and low-fume — no bleach haze, no chemical smell lingering after we leave."
+                              "Everything we use is plant-derived and low-fume: no bleach haze, no chemical smell lingering after we leave."
                             ],
                             "id": "62ae734d-fee1-4a95-b3fd-a74a26ec57d7",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll see the same person each visit — someone who learns your home, your preferences and what to leave alone."
+                              "You’ll see the same person each visit. Someone who learns your home, your preferences and what to leave alone."
                             ],
                             "id": "2d255316-38c6-47dd-9192-a00f94eb9bf6",
                             "ord": "a1"
@@ -926,7 +926,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A full reset — appliances, tile, the spots that get missed."
+                              "A full reset: appliances, tile, the spots that get missed."
                             ],
                             "id": "69af56b8-dfb7-4602-83f6-d7e7e31bdd3c",
                             "ord": "a2"
@@ -1113,7 +1113,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most cleaning leaves something behind — a chemical smell, a film on the counter, fumes that hang in a closed room for hours. In a home with kids, pets or anyone who reacts to that, it adds up."
+                          "Most cleaning leaves something behind: a chemical smell, a film on the counter, fumes that hang in a closed room for hours. In a home with kids, pets or anyone who reacts to that, it adds up."
                         ],
                         "id": "2f35d230-3c45-4e7c-bad2-c31dd48eef0d",
                         "ord": "a1"
@@ -1123,7 +1123,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We clean with plant-based products that actually work and don’t off-gas. Same fresh result, none of the residue — so the room you get back is genuinely clean, not just masked."
+                          "We clean with plant-based products that actually work and don’t off-gas. Same fresh result, none of the residue, so the room you get back is genuinely clean, not just masked."
                         ],
                         "id": "2bc4d22f-f034-4292-a776-ffb743a1c99e",
                         "ord": "a2"
@@ -1188,7 +1188,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same cleaner each visit, and they’ll get to know your place."
+                          "Book by name: you’ll see the same cleaner each visit, and they’ll get to know your place."
                         ],
                         "id": "31bc9a12-99db-4529-a2e8-b460b6d04768",
                         "ord": "a1"
@@ -1301,7 +1301,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Deep cleans and move-outs — the thorough, get-into-the-corners work, done gently."
+                                  "Deep cleans and move-outs: the thorough, get-into-the-corners work, done gently."
                                 ],
                                 "id": "85c39060-1113-42b1-ba9b-8fcd261e4f41",
                                 "ord": "a2"
@@ -1472,7 +1472,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Verdi Clean",
+      "seoTitle": "Book: Verdi Clean",
       "seoDescription": "See what Verdi Clean offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1596,7 +1596,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "c563522e-ba0f-44c9-8ed5-5f316879b3d4",
                         "ord": "a1"
@@ -1665,7 +1665,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Recurring cleans repeat on the schedule you set — weekly, fortnightly or monthly — with the same cleaner each visit. Skip or reschedule any single clean with 24 hours’ notice; nothing is locked in."
+                              "Recurring cleans repeat on the schedule you set (weekly, fortnightly or monthly) with the same cleaner each visit. Skip or reschedule any single clean with 24 hours’ notice; nothing is locked in."
                             ],
                             "id": "9094d3aa-fc4e-4799-86a7-45b9ea6bdcb6",
                             "ord": "a1"
@@ -1703,7 +1703,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Verdi Clean",
+      "seoTitle": "About: Verdi Clean",
       "seoDescription": "Who Verdi Clean is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1762,7 +1762,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we built a cleaning service around plant-based products and real care — the kind of clean you can feel good about, delivered by the same trusted person each time."
+                          "So we built a cleaning service around plant-based products and real care: the kind of clean you can feel good about, delivered by the same trusted person each time."
                         ],
                         "id": "a34642ce-3ca4-43b0-9aac-2e4804d0068a",
                         "ord": "a2"
@@ -1840,7 +1840,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every clean uses non-toxic, low-fume products — never as an add-on or an upgrade. It’s just how we clean."
+                              "Every clean uses non-toxic, low-fume products, never as an add-on or an upgrade. It’s just how we clean."
                             ],
                             "id": "3f1088a1-c9f6-4c24-a7df-5fcf5c796b6e",
                             "ord": "a1"
@@ -1867,7 +1867,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We note what to focus on and what to leave alone — fragile pieces, a napping baby, a nervous dog. It carries over every visit."
+                              "We note what to focus on and what to leave alone: fragile pieces, a napping baby, a nervous dog. It carries over every visit."
                             ],
                             "id": "58c98527-9005-4569-b4f4-d5b3569c6cc7",
                             "ord": "a1"
@@ -1894,7 +1894,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Refillable bottles, washable cloths and careful dosing mean less plastic and less down the drain — better for your home and the water it drains to."
+                              "Refillable bottles, washable cloths and careful dosing mean less plastic and less down the drain: better for your home and the water it drains to."
                             ],
                             "id": "ca62a4ca-c4a4-48d1-b2a4-72383828a739",
                             "ord": "a1"
@@ -1922,7 +1922,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Verdi Clean",
+      "seoTitle": "Visit: Verdi Clean",
       "seoDescription": "Where to find Verdi Clean, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1959,7 +1959,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Verdi Clean will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Verdi Clean will get back to you, usually the same day."
                         ],
                         "id": "9411406e-f72e-4a73-bcc2-971eec774521",
                         "ord": "a1"
@@ -2384,7 +2384,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your clean online — no phone tag, no quote forms to chase."
+                      "See live availability and reserve your clean online: no phone tag, no quote forms to chase."
                     ],
                     "id": "ce7efa20-5fb7-477f-9b0e-c3eff858b538",
                     "ord": "a1"

@@ -81,7 +81,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
             '@type': 'HowToStep',
             name: `Export from ${story.name}`,
             text: files
-              .map((file) => `${file.label}: ${file.where} — you get ${file.file}.`)
+              .map((file) => `${file.label}: ${file.where}: you get ${file.file}.`)
               .join(' '),
           },
           {
@@ -92,7 +92,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
           {
             '@type': 'HowToStep',
             name: 'Look at what will happen',
-            text: 'A practice run checks every row against what you already have and reports what would be created, updated or skipped — without saving anything.',
+            text: 'A practice run checks every row against what you already have and reports what would be created, updated or skipped, without saving anything.',
           },
           { '@type': 'HowToStep', name: 'Bring it in', text: story.effort },
         ],
@@ -104,7 +104,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
     {
       id: `${story.slug}-safe`,
       question: `Will this break my ${story.name} ${story.noun}?`,
-      answer: `No. Everything happens on a copy — you export a file, and your ${story.name} account carries on exactly as it is. Plenty of people run both for a few weeks before switching their domain over.`,
+      answer: `No. Everything happens on a copy. You export a file, and your ${story.name} account carries on exactly as it is. Plenty of people run both for a few weeks before switching their domain over.`,
     },
     {
       id: `${story.slug}-goes-wrong`,
@@ -116,13 +116,13 @@ export function MigratePage({ story }: { story: MigrateStory }) {
       id: `${story.slug}-twice`,
       question: 'Can I bring it in twice?',
       answer:
-        'Yes. Records are matched on their natural key — SKU for products, email for customers, order number for orders — so running the same file again updates rather than duplicates. Fix something in the spreadsheet and re-drop it.',
+        'Yes. Records are matched on their natural key (SKU for products, email for customers, order number for orders) so running the same file again updates rather than duplicates. Fix something in the spreadsheet and re-drop it.',
     },
     {
       id: `${story.slug}-done-for-you`,
       question: 'Do you do it for us?',
       answer:
-        'For most businesses there is nothing to do — it is a file and a button. If your data is genuinely awkward, email migrate@sparx.works and we will do the move with you.',
+        'For most businesses there is nothing to do. It is a file and a button. If your data is genuinely awkward, email migrate@sparx.works and we will do the move with you.',
     },
   ];
 
@@ -251,7 +251,7 @@ export function MigratePage({ story }: { story: MigrateStory }) {
           {capability?.hasConnector === true ? (
             <Text size={18}>
               Or connect your {story.name} account with one read-only key and we fetch all of it
-              directly — no exporting, no files.
+              directly: no exporting, no files.
               {connectorOnly.length === 0
                 ? ''
                 : ` It is also the only way ${connectorOnly.join(', ')} can come across, because ${story.name} has no export that produces them.`}

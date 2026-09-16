@@ -63,7 +63,7 @@ export async function signUpAction(input: SignUpActionInput): Promise<SignUpActi
   try {
     await auth.api.signInEmail({ body: { email, password }, headers: hdrs, asResponse: false });
   } catch {
-    return { ok: false, error: 'Account created — but sign-in failed. Try signing in.' };
+    return { ok: false, error: 'Account created, but sign-in failed. Try signing in.' };
   }
 
   return { ok: true, userId };

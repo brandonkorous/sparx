@@ -79,8 +79,8 @@ export function BusinessFields({
           ))}
         </FieldControl>
         <FieldDescription>
-          We use this to fill your account with realistic examples — products, customers, bookings
-          and pages — so nothing is empty when you walk in. Change or clear them whenever you like.
+          We use this to fill your account with realistic examples (products, customers, bookings
+          and pages) so nothing is empty when you walk in. Change or clear them whenever you like.
         </FieldDescription>
       </Field>
     </div>

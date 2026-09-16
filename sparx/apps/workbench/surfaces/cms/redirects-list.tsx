@@ -177,7 +177,7 @@ function AddRedirectDialog({
                 }
               />
               <FieldDescription>
-                The address people are still using — the one you want to catch. Just the part after
+                The address people are still using: the one you want to catch. Just the part after
                 your domain, starting with a slash.
               </FieldDescription>
             </Field>
@@ -202,13 +202,13 @@ function AddRedirectDialog({
                 }
               />
               <FieldDescription>
-                Where the old address should take them instead — another page on this same site.
+                Where the old address should take them instead: another page on this same site.
               </FieldDescription>
             </Field>
 
             {sameAddress ? (
               <Text className="text-sm">
-                The old and new addresses are the same — send visitors somewhere different.
+                The old and new addresses are the same. Send visitors somewhere different.
               </Text>
             ) : null}
 
@@ -222,8 +222,8 @@ function AddRedirectDialog({
                   setPermanent(event.target.value === 'permanent');
                 }}
               >
-                <option value="permanent">Permanent — the page has moved for good</option>
-                <option value="temporary">Temporary — it will move back later</option>
+                <option value="permanent">Permanent: the page has moved for good</option>
+                <option value="temporary">Temporary. It will move back later</option>
               </NativeSelect>
               <FieldDescription>{redirectTypeMeta(permanent ? 301 : 302).detail}</FieldDescription>
             </Field>
@@ -370,7 +370,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
               variant="soft"
               size="sm"
               className="shrink-0 whitespace-nowrap"
-              title="Import a list of redirects — hold Alt to open in a new window"
+              title="Import a list of redirects: hold Alt to open in a new window"
               onClick={openImport}
             >
               <Upload className="size-4" aria-hidden />
@@ -394,7 +394,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>Showing the first {rows.length} redirects</AlertTitle>
             <AlertDescription>
-              This site has {total} in total — more than this pane loads at once. Search and filter
+              This site has {total} in total: more than this pane loads at once. Search and filter
               cover the ones shown here.
             </AlertDescription>
           </AlertContent>
@@ -428,7 +428,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<CornerUpRight className="size-6" aria-hidden />}
             title="Could not load your redirects"
-            description="This is a problem reaching the server. None of your redirects have been lost — they are still sending visitors on as before."
+            description="This is a problem reaching the server. None of your redirects have been lost. They are still sending visitors on as before."
             actions={
               <Button
                 size="sm"

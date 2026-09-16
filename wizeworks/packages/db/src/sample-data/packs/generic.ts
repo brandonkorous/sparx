@@ -12,7 +12,7 @@ export const genericPack: SampleDataPack = {
   industry: 'generic',
   label: 'Generic starter',
   summary:
-    'A neutral starter catalog and activity for any business — products, customers, orders, reviews, and a getting-started guide.',
+    'A neutral starter catalog and activity for any business: products, customers, orders, reviews, and a getting-started guide.',
 
   warehouses: [
     {
@@ -115,7 +115,7 @@ export const genericPack: SampleDataPack = {
       attributes: {
         materials:
           'Hardcover board with a lay-flat binding, filled with 120gsm paper that takes fountain pen, gel, and ballpoint without bleeding through. 192 pages, an elastic closure, a ribbon bookmark, and a back pocket for loose notes and cards.',
-        dimensions: 'A5 — 14.8 × 21 cm, 192 pages',
+        dimensions: 'A5: 14.8 × 21 cm, 192 pages',
         care: 'Wipe the cover with a soft, dry cloth. Keep it out of prolonged direct sun to protect the cover color, and avoid soaking the paper.',
         origin: 'Made in Portugal',
       },
@@ -169,9 +169,9 @@ export const genericPack: SampleDataPack = {
         {
           rating: 5,
           title: 'My everyday notebook now',
-          body: 'Paper is genuinely good — no bleed-through with my fountain pen. The lay-flat binding is the real win.',
+          body: 'Paper is genuinely good: no bleed-through with my fountain pen. The lay-flat binding is the real win.',
           authorPersona: 'avery',
-          response: 'So glad it found a spot on your desk, Avery — thank you!',
+          response: 'So glad it found a spot on your desk, Avery: thank you!',
           helpfulCount: 6,
           daysAgo: 18,
         },
@@ -197,7 +197,7 @@ export const genericPack: SampleDataPack = {
           body: 'Does the dotted version have page numbers?',
           authorPersona: 'maya',
           answer:
-            'It does — every page is numbered in the bottom corner, plus there are two index pages up front.',
+            'It does: every page is numbered in the bottom corner, plus there are two index pages up front.',
           daysAgo: 12,
         },
         {
@@ -213,7 +213,7 @@ export const genericPack: SampleDataPack = {
       title: 'Ceramic Mug',
       handle: 'ceramic-mug',
       description:
-        '<p>A satisfyingly heavy 12oz stoneware mug with a comfortable handle and a glaze that holds its color through years of dishwasher cycles. The slightly wider base keeps it stable on a busy desk.</p><p>Microwave- and dishwasher-safe. Sold in classic white or matte black — both look great with a logo or left clean.</p>',
+        '<p>A satisfyingly heavy 12oz stoneware mug with a comfortable handle and a glaze that holds its color through years of dishwasher cycles. The slightly wider base keeps it stable on a busy desk.</p><p>Microwave- and dishwasher-safe. Sold in classic white or matte black. Both look great with a logo or left clean.</p>',
       productType: 'Drinkware',
       vendor: 'House Goods',
       tags: ['mug', 'drinkware', 'ceramic', 'coffee'],
@@ -221,8 +221,8 @@ export const genericPack: SampleDataPack = {
       attributes: {
         materials:
           'Glazed stoneware ceramic with a comfortable looped handle and a slightly wider base for stability on a busy desk. The durable glaze holds its color through years of dishwasher cycles.',
-        dimensions: '12 oz — Ø 8.5 × H 9.5 cm',
-        care: 'Dishwasher- and microwave-safe. Avoid thermal shock — do not move it straight from the freezer to a hot pour.',
+        dimensions: '12 oz: Ø 8.5 × H 9.5 cm',
+        care: 'Dishwasher- and microwave-safe. Avoid thermal shock: do not move it straight from the freezer to a hot pour.',
         origin: 'Made in Vietnam',
       },
       seoTitle: '12oz Ceramic Stoneware Mug',
@@ -304,7 +304,7 @@ export const genericPack: SampleDataPack = {
         {
           body: 'Is the white one bright white or more of a cream?',
           displayName: 'CoffeeFirst',
-          answer: 'It is a clean, slightly warm white — not a stark bright white and not a cream.',
+          answer: 'It is a clean, slightly warm white, not a stark bright white and not a cream.',
           daysAgo: 10,
         },
       ],
@@ -314,7 +314,7 @@ export const genericPack: SampleDataPack = {
       title: 'Canvas Tote Bag',
       handle: 'canvas-tote-bag',
       description:
-        '<p>A sturdy 12oz cotton canvas tote built for actual hauling — groceries, books, a laptop, a beach day. Reinforced stitching at the strap joins where cheaper totes give out, and long 28" handles clear your shoulder.</p><p>Roomy main compartment with an interior slip pocket. Throw it in the wash when it needs it and it comes out looking lived-in, not worn out.</p>',
+        '<p>A sturdy 12oz cotton canvas tote built for actual hauling: groceries, books, a laptop, a beach day. Reinforced stitching at the strap joins where cheaper totes give out, and long 28" handles clear your shoulder.</p><p>Roomy main compartment with an interior slip pocket. Throw it in the wash when it needs it and it comes out looking lived-in, not worn out.</p>',
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['tote', 'bag', 'canvas', 'reusable'],
@@ -323,7 +323,7 @@ export const genericPack: SampleDataPack = {
         materials:
           '12 oz cotton canvas with reinforced stitching at the strap joins where cheaper totes give out, plus a cotton-webbing handle. Roomy main compartment with an interior slip pocket.',
         dimensions: '38 × 42 cm, 28" handle drop',
-        care: 'Machine wash cold and hang to dry. It comes out looking lived-in, not worn out — expect the canvas to soften a little with age.',
+        care: 'Machine wash cold and hang to dry. It comes out looking lived-in, not worn out: expect the canvas to soften a little with age.',
         origin: 'Made in India',
       },
       seoTitle: 'Heavy-Duty Canvas Tote Bag',
@@ -375,7 +375,7 @@ export const genericPack: SampleDataPack = {
           body: 'Does it stand up on its own when empty?',
           authorPersona: 'avery',
           answer:
-            'Mostly — the heavy canvas holds its shape well, though it leans a bit until you put something in it.',
+            'Mostly: the heavy canvas holds its shape well, though it leans a bit until you put something in it.',
           daysAgo: 8,
         },
       ],
@@ -385,7 +385,7 @@ export const genericPack: SampleDataPack = {
       title: 'Sticker Pack',
       handle: 'sticker-pack',
       description:
-        '<p>A set of ten die-cut vinyl stickers — waterproof, UV-resistant, and dishwasher-safe, so they survive water bottles, laptops, and notebooks without fading or peeling. Matte finish, no cheap glossy glare.</p><p>The easy way to add a little personality to anything flat. Peels clean if you ever change your mind.</p>',
+        '<p>A set of ten die-cut vinyl stickers: waterproof, UV-resistant, and dishwasher-safe, so they survive water bottles, laptops, and notebooks without fading or peeling. Matte finish, no cheap glossy glare.</p><p>The easy way to add a little personality to anything flat. Peels clean if you ever change your mind.</p>',
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['stickers', 'vinyl', 'accessories', 'fun'],
@@ -394,7 +394,7 @@ export const genericPack: SampleDataPack = {
         details: [
           {
             label: "What's included",
-            body: 'A set of ten die-cut vinyl stickers in a matte finish — no cheap glossy glare.',
+            body: 'A set of ten die-cut vinyl stickers in a matte finish: no cheap glossy glare.',
           },
           {
             label: 'Durability',
@@ -458,7 +458,7 @@ export const genericPack: SampleDataPack = {
       title: 'Insulated Water Bottle',
       handle: 'insulated-water-bottle',
       description:
-        '<p>A 20oz double-wall vacuum-insulated stainless steel bottle that keeps drinks cold for 24 hours and hot for 12. The powder-coat finish resists fingerprints and chips, and the leakproof lid sips clean — no splash, no drip down the side.</p><p>Fits a standard cup holder, takes ice cubes through the wide mouth, and is built to live in a bag without leaking. Hand-wash to keep the finish its best.</p>',
+        '<p>A 20oz double-wall vacuum-insulated stainless steel bottle that keeps drinks cold for 24 hours and hot for 12. The powder-coat finish resists fingerprints and chips, and the leakproof lid sips clean: no splash, no drip down the side.</p><p>Fits a standard cup holder, takes ice cubes through the wide mouth, and is built to live in a bag without leaking. Hand-wash to keep the finish its best.</p>',
       productType: 'Drinkware',
       vendor: 'House Goods',
       tags: ['water bottle', 'insulated', 'drinkware', 'stainless steel'],
@@ -466,13 +466,13 @@ export const genericPack: SampleDataPack = {
       attributes: {
         materials:
           'Double-wall vacuum-insulated 18/8 stainless steel with a chip-resistant powder-coat finish and a leakproof lid. Keeps drinks cold for 24 hours and hot for 12.',
-        dimensions: '20 oz — Ø 7 × H 24 cm, fits a standard cup holder',
+        dimensions: '20 oz: Ø 7 × H 24 cm, fits a standard cup holder',
         care: 'Hand-wash to keep the finish its best; the lid is dishwasher-safe. Do not microwave or freeze the bottle.',
         origin: 'Made in China',
       },
       seoTitle: '20oz Insulated Stainless Steel Water Bottle',
       seoDescription:
-        'A 20oz vacuum-insulated steel bottle — cold 24h, hot 12h — with a leakproof lid and a chip-resistant finish.',
+        'A 20oz vacuum-insulated steel bottle (cold 24h, hot 12h) with a leakproof lid and a chip-resistant finish.',
       categoryKeys: ['drinkware'],
       collectionKeys: ['featured', 'new-arrivals'],
       variants: [
@@ -502,7 +502,7 @@ export const genericPack: SampleDataPack = {
           title: 'Ice survives the whole day',
           body: 'Filled it with ice water in the morning, still had cubes at dinner. The lid genuinely does not leak in my bag.',
           authorPersona: 'imani',
-          response: 'Love to hear it — thanks for the leakproof test, Imani!',
+          response: 'Love to hear it: thanks for the leakproof test, Imani!',
           helpfulCount: 8,
           daysAgo: 15,
         },
@@ -519,7 +519,7 @@ export const genericPack: SampleDataPack = {
         {
           body: 'Will it fit in a car cup holder?',
           displayName: 'CommuterCam',
-          answer: 'Yes — the base is sized for a standard cup holder and sits in snugly.',
+          answer: 'Yes: the base is sized for a standard cup holder and sits in snugly.',
           daysAgo: 9,
         },
         {
@@ -535,7 +535,7 @@ export const genericPack: SampleDataPack = {
       title: 'Enamel Pin',
       handle: 'enamel-pin',
       description:
-        '<p>A hard enamel pin with a polished metal finish and crisp, raised color fill — the good kind that feels like a keepsake, not a giveaway. Backed with a rubber clutch that actually holds, so it stays put on a jacket, bag, or lanyard.</p><p>About 1.25 inches, individually carded. A small, easy add-on that people genuinely keep.</p>',
+        '<p>A hard enamel pin with a polished metal finish and crisp, raised color fill: the good kind that feels like a keepsake, not a giveaway. Backed with a rubber clutch that actually holds, so it stays put on a jacket, bag, or lanyard.</p><p>About 1.25 inches, individually carded. A small, easy add-on that people genuinely keep.</p>',
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['pin', 'enamel', 'accessories', 'gift'],
@@ -544,7 +544,7 @@ export const genericPack: SampleDataPack = {
         details: [
           {
             label: 'Construction',
-            body: 'Hard enamel with a polished metal finish and crisp, raised color fill — the keepsake kind, not the giveaway kind.',
+            body: 'Hard enamel with a polished metal finish and crisp, raised color fill: the keepsake kind, not the giveaway kind.',
           },
           {
             label: 'Backing',
@@ -599,7 +599,7 @@ export const genericPack: SampleDataPack = {
       title: 'Starter Pack',
       handle: 'starter-pack',
       description:
-        '<p>Our most popular trio in one bundle: the Classic Notebook, a Ceramic Mug, and a Canvas Tote — the everyday-carry set that makes a great gift or a clean welcome kit. Buy them together and save versus picking each one on its own.</p>',
+        '<p>Our most popular trio in one bundle: the Classic Notebook, a Ceramic Mug, and a Canvas Tote, the everyday-carry set that makes a great gift or a clean welcome kit. Buy them together and save versus picking each one on its own.</p>',
       productType: 'Bundles',
       vendor: 'House Goods',
       tags: ['bundle', 'starter', 'gift', 'value'],
@@ -620,7 +620,7 @@ export const genericPack: SampleDataPack = {
           },
         ],
       },
-      seoTitle: 'Starter Pack — Notebook, Mug & Tote',
+      seoTitle: 'Starter Pack: Notebook, Mug & Tote',
       seoDescription:
         'A value bundle of our Classic Notebook, Ceramic Mug, and Canvas Tote. The everyday-carry set, priced to save.',
       categoryKeys: ['accessories'],
@@ -662,15 +662,15 @@ export const genericPack: SampleDataPack = {
       daysAgo: 6,
       body: doc(
         p(
-          'Welcome! Your store is already live with a sample catalog, a few customers, and some example orders so nothing feels empty while you set up. Everything you see is sample data — you can clear it with one click whenever you are ready to go live with your own products.'
+          'Welcome! Your store is already live with a sample catalog, a few customers, and some example orders so nothing feels empty while you set up. Everything you see is sample data. You can clear it with one click whenever you are ready to go live with your own products.'
         ),
         h2('Make it yours'),
         p(
-          'Start by replacing the placeholder products with your own. Add a title, a few photos, an honest description, and a price — that is genuinely all it takes to publish your first real product. Your store name, logo, and colors live in settings, so the whole site updates the moment you change them.'
+          'Start by replacing the placeholder products with your own. Add a title, a few photos, an honest description, and a price. That is genuinely all it takes to publish your first real product. Your store name, logo, and colors live in settings, so the whole site updates the moment you change them.'
         ),
         h2('Then start selling'),
         p(
-          'Once you have a product or two and a way to take payment connected, you are ready to take a real order. Share your store link, and watch it land on your orders page — the same place these sample orders are sitting right now.'
+          'Once you have a product or two and a way to take payment connected, you are ready to take a real order. Share your store link, and watch it land on your orders page: the same place these sample orders are sitting right now.'
         ),
         p(
           'Take your time exploring. Nothing here is permanent, and you cannot break anything by clicking around.'
@@ -681,7 +681,7 @@ export const genericPack: SampleDataPack = {
       slug: 'five-things-to-set-up-first',
       title: 'Five things to set up first',
       excerpt:
-        'A short, no-pressure checklist to get from sample store to your own store — in roughly the order that matters.',
+        'A short, no-pressure checklist to get from sample store to your own store: in roughly the order that matters.',
       daysAgo: 14,
       body: doc(
         p(
@@ -690,18 +690,18 @@ export const genericPack: SampleDataPack = {
         h2('The checklist'),
         ol(
           'Set your store name, logo, and colors so the site looks like your brand',
-          'Add your first real product — a title, a photo, a description, and a price',
+          'Add your first real product: a title, a photo, a description, and a price',
           'Connect a payment method so you can actually get paid',
           'Set up shipping or pickup so customers know how it arrives',
           'Add your contact details and policies so customers know who they are buying from'
         ),
         h2('What can wait'),
         p(
-          'Collections, discounts, email campaigns, and a custom domain are all worth doing — later. None of them block your first sale, so do not let them slow you down now.'
+          'Collections, discounts, email campaigns, and a custom domain are all worth doing: later. None of them block your first sale, so do not let them slow you down now.'
         ),
         ul(
           'Clear the sample data whenever you are ready for a clean slate',
-          'Add products in batches — you do not have to do them all at once',
+          'Add products in batches: you do not have to do them all at once',
           'Revisit settings any time; nothing here is locked in'
         ),
         p('When in doubt, ship it. You can always refine after the first order comes in.')

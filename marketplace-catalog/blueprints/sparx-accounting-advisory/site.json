@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Northpoint CPA — advisory-led accounting & wealth",
-      "seoDescription": "Northpoint CPA is a modern advisory and wealth firm — proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners. Book a strategy consultation online.",
+      "seoTitle": "Northpoint CPA: advisory-led accounting & wealth",
+      "seoDescription": "Northpoint CPA is a modern advisory and wealth firm: proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners. Book a strategy consultation online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners — built around where you’re going, not just what already happened."
+                      "Proactive tax strategy, CFO-level insight and wealth planning for established businesses and high earners: built around where you’re going, not just what already happened."
                     ],
                     "id": "e27ebb43-1e15-4036-bba8-219a6cb5bb1a",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We plan the year, not just file it — the moves that lower next April’s bill are made in the months before it, together."
+                              "We plan the year, not just file it: the moves that lower next April’s bill are made in the months before it, together."
                             ],
                             "id": "bcda1931-8823-48f8-8315-c60928cd8d74",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You work with one senior advisor who knows your numbers and your goals — not a rotating desk and a portal ticket."
+                              "You work with one senior advisor who knows your numbers and your goals, not a rotating desk and a portal ticket."
                             ],
                             "id": "793b5e3c-d262-4511-a4cc-413aa0057707",
                             "ord": "a1"
@@ -1190,7 +1190,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most firms show up at tax time to record what already happened. We work the other way around — the strategy is set early, revisited every quarter, and measured against the goals you actually care about."
+                          "Most firms show up at tax time to record what already happened. We work the other way around: the strategy is set early, revisited every quarter, and measured against the goals you actually care about."
                         ],
                         "id": "826fc769-8ed0-4c13-8ba7-86a926bea9b6",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with the same advisor from the first call onward."
+                          "Book by name: you’ll work with the same advisor from the first call onward."
                         ],
                         "id": "51b5935f-c1e2-4136-a52f-2a9cffc63897",
                         "ord": "a1"
@@ -1378,7 +1378,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Outsourced-CFO guidance — forecasting, margins and the decisions behind them."
+                                  "Outsourced-CFO guidance: forecasting, margins and the decisions behind them."
                                 ],
                                 "id": "7450bbbe-0cbf-4a6f-a7b7-df33f3fbb34c",
                                 "ord": "a2"
@@ -1474,7 +1474,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“They restructured our entities and rebuilt our tax plan in the first quarter. We kept an extra $180K last year — and for the first time I actually understand why.”"
+                      "“They restructured our entities and rebuilt our tax plan in the first quarter. We kept an extra $180K last year, and for the first time I actually understand why.”"
                     ],
                     "id": "fc1d562f-a7e6-450c-83a9-87d94c97e14c",
                     "ord": "a0"
@@ -1549,7 +1549,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Northpoint CPA",
+      "seoTitle": "Book: Northpoint CPA",
       "seoDescription": "See what Northpoint CPA offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1673,7 +1673,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "7a34de4b-ef99-45d8-b0a7-b9719abe930d",
                         "ord": "a1"
@@ -1780,7 +1780,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Northpoint CPA",
+      "seoTitle": "About: Northpoint CPA",
       "seoDescription": "Who Northpoint CPA is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1839,7 +1839,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We took the parts of accounting that clients value — the strategy, the counsel, the person who knows their whole picture — and made them the whole relationship, not the afterthought at year-end."
+                          "We took the parts of accounting that clients value (the strategy, the counsel, the person who knows their whole picture) and made them the whole relationship, not the afterthought at year-end."
                         ],
                         "id": "bbe5a152-1a7a-48d0-ae9f-c32bb187110a",
                         "ord": "a2"
@@ -1944,7 +1944,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Your advisor holds the full view — tax, cash flow, valuation and personal wealth — so the advice is joined-up, never siloed."
+                              "Your advisor holds the full view (tax, cash flow, valuation and personal wealth) so the advice is joined-up, never siloed."
                             ],
                             "id": "6e42ce6c-51c7-422d-be5d-d671e7979e16",
                             "ord": "a1"
@@ -1999,7 +1999,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Northpoint CPA",
+      "seoTitle": "Visit: Northpoint CPA",
       "seoDescription": "Where to find Northpoint CPA, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2036,7 +2036,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Northpoint CPA will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Northpoint CPA will get back to you, usually the same day."
                         ],
                         "id": "ff44a03d-1161-4610-97f9-6ff9ffd795d0",
                         "ord": "a1"
@@ -2488,7 +2488,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your complimentary strategy call online — no phone tag."
+                      "See live availability and reserve your complimentary strategy call online: no phone tag."
                     ],
                     "id": "bf610890-5513-4011-9b48-ff92fc7f62c2",
                     "ord": "a1"

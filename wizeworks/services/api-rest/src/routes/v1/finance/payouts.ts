@@ -209,7 +209,7 @@ const financePayoutRoutes: FastifyPluginAsync = (app) => {
       } catch (err) {
         request.log.warn(
           { err, tenantId: auth.tenantId },
-          'finance payouts: real Stripe payouts unavailable — using derived model'
+          'finance payouts: real Stripe payouts unavailable, using derived model'
         );
       }
     }

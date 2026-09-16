@@ -138,7 +138,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
           <Text className="text-sm">
             {clientName} wants to work in your business on your behalf. Choose exactly what it can
-            do — you can take it back any time from AI connections.
+            do. You can take it back any time from AI connections.
           </Text>
         </div>
 
@@ -147,7 +147,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
             app they just used. */}
         <Alert color="warning" className="text-sm">
           This gives an outside app live access to your business. Its access is sent to{' '}
-          <strong>{redirectHost}</strong> — only continue if you started this yourself.
+          <strong>{redirectHost}</strong>. Only continue if you started this yourself.
         </Alert>
 
         {queryError ? (

@@ -208,7 +208,7 @@ function howTheClubWorks(): Node {
     return section([
         sectionHead(
             'How the club works',
-            'From your first order to a fresh bag at your door, the whole club is three simple steps — and you can pause or cancel any time.'
+            'From your first order to a fresh bag at your door, the whole club is three simple steps, and you can pause or cancel any time.'
         ),
         el('div', 'grid grid-cols-1 gap-6 @2xl:grid-cols-3', {
             children: [
@@ -216,7 +216,7 @@ function howTheClubWorks(): Node {
                     'how-1',
                     'Choosing a grind and a plan',
                     'Tell us how you brew',
-                    'Pick your grind — whole bean, filter, espresso or Aeropress — and how long you would like to ride along. That is the whole set-up.'
+                    'Pick your grind (whole bean, filter, espresso or Aeropress) and how long you would like to ride along. That is the whole set-up.'
                 ),
                 step(
                     'how-2',
@@ -318,7 +318,7 @@ function planCards(): Node {
     return sectionAlt([
         sectionHead(
             'Choose your cadence',
-            'Every plan sends a new single-origin harvest, roasted to order and shipped free. The longer you stay, the more you save — and you are never locked in.'
+            'Every plan sends a new single-origin harvest, roasted to order and shipped free. The longer you stay, the more you save, and you are never locked in.'
         ),
         el('div', 'grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-4', {
             children: [
@@ -347,7 +347,7 @@ function planCards(): Node {
                     term: '1 month',
                     price: '$21.99',
                     billed: 'Billed monthly. Pause or cancel any time.',
-                    save: 'No commitment — try a single origin first.',
+                    save: 'No commitment. Try a single origin first.',
                 }),
             ],
         }),
@@ -378,7 +378,7 @@ function inclusionList(): Node {
             ]),
             card(CARD, [
                 cardTitle('Your grind, dialled in'),
-                body('Whole bean, filter, espresso or Aeropress — ground to order the day it leaves the roastery.'),
+                body('Whole bean, filter, espresso or Aeropress: ground to order the day it leaves the roastery.'),
             ]),
             card(CARD, [
                 cardTitle('Roasted, then shipped in 48 hours'),
@@ -425,7 +425,7 @@ const HOME: Node[] = [
     howTheClubWorks(),
     editorialBand({
         heading: 'Every bag has a farmer’s name on it',
-        lead: 'We buy whole harvests direct from growers along the bean belt — Ethiopia, Colombia, Kenya — and pay above the fair-trade floor for the pick of the crop. When you know who grew it and how, the coffee simply tastes better.',
+        lead: 'We buy whole harvests direct from growers along the bean belt (Ethiopia, Colombia, Kenya) and pay above the fair-trade floor for the pick of the crop. When you know who grew it and how, the coffee simply tastes better.',
         assetId: 'band-provenance',
         alt: 'Green coffee at a farm on the bean belt',
         cta: 'Read the origin stories',
@@ -435,7 +435,7 @@ const HOME: Node[] = [
     planCards(),
     editorialBand({
         heading: 'Brew it like we do at the roastery',
-        lead: 'Great beans are only half the cup. A ceramic dripper, the right grind and a slow, patient pour turn a good bag into the best coffee you will make all week — and every box tells you exactly how.',
+        lead: 'Great beans are only half the cup. A ceramic dripper, the right grind and a slow, patient pour turn a good bag into the best coffee you will make all week, and every box tells you exactly how.',
         assetId: 'band-brew',
         alt: 'A pour-over brewing on a warm kitchen counter',
         cta: 'Shop brew gear',
@@ -459,13 +459,13 @@ const ABOUT: Node[] = [
                         text: 'About Latitude Coffee Club',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Latitude Coffee Club started with a simple frustration: most coffee at home tastes of nowhere. It is roasted months ago, blended to hide where it came from, and it lands on your shelf a stranger. We wanted the opposite — coffee you could taste a place in, and know the people behind.',
+                        text: 'Latitude Coffee Club started with a simple frustration: most coffee at home tastes of nowhere. It is roasted months ago, blended to hide where it came from, and it lands on your shelf a stranger. We wanted the opposite, coffee you could taste a place in, and know the people behind.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'So every month we follow the harvest around the bean belt and buy a single origin at its peak, direct from the growers. We roast it to order in small batches at our own roastery, grind it the way you brew, and ship it within two days — with a card that tells you whose farm it came from and how this year’s crop turned out.',
+                        text: 'So every month we follow the harvest around the bean belt and buy a single origin at its peak, direct from the growers. We roast it to order in small batches at our own roastery, grind it the way you brew, and ship it within two days, with a card that tells you whose farm it came from and how this year’s crop turned out.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'That is the whole club. No lock-in, no filler, no coffee older than it should be — just a new origin at your door each month, and the story that makes it taste like more than a cup.',
+                        text: 'That is the whole club. No lock-in, no filler, no coffee older than it should be. Just a new origin at your door each month, and the story that makes it taste like more than a cup.',
                     }),
                 ],
             }),
@@ -480,7 +480,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Talk to the roastery',
-        intro: 'A question about a plan, a grind, or which origin to start with? A real person on the team reads every message and answers straight — usually the same day, always over a fresh cup.',
+        intro: 'A question about a plan, a grind, or which origin to start with? A real person on the team reads every message and answers straight, usually the same day, always over a fresh cup.',
         submitLabel: 'Email the roastery',
     }),
 ];
@@ -557,23 +557,23 @@ const PRODUCTS: Product[] = [
         handle: 'ethiopia-guji',
         title: 'Ethiopia Guji',
         description:
-            'A washed lot from the Guji highlands that drinks like a glass of stone fruit — peach and bergamot up front, a jasmine lift, and a clean, tea-like finish. Grown at altitude by smallholders and roasted light to keep every bit of that brightness. The origin we hand people who think they do not like coffee.',
+            'A washed lot from the Guji highlands that drinks like a glass of stone fruit: peach and bergamot up front, a jasmine lift, and a clean, tea-like finish. Grown at altitude by smallholders and roasted light to keep every bit of that brightness. The origin we hand people who think they do not like coffee.',
         status: 'active',
         productType: 'Single-Origin Coffee',
         vendor: VENDOR,
         tags: ['single-origin', 'ethiopia', 'light-roast', 'washed'],
         categoryHandles: ['single-origins'],
         collectionHandles: ['this-months-origins', 'single-origins'],
-        seoTitle: 'Ethiopia Guji — washed light-roast single-origin coffee',
+        seoTitle: 'Ethiopia Guji: washed light-roast single-origin coffee',
         seoDescription: 'A bright, floral washed Ethiopian single origin with peach, bergamot and jasmine notes.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                '100% single-origin arabica coffee — washed Ethiopia Guji, grown at altitude by smallholders in the Guji highlands and roasted light. Nothing else: no flavourings, no blending, no fillers.',
+                '100% single-origin arabica coffee: washed Ethiopia Guji, grown at altitude by smallholders in the Guji highlands and roasted light. Nothing else: no flavourings, no blending, no fillers.',
             allergens: [],
             netWeight: '250 g / 8.8 oz',
             storage:
-                'Keep the bag sealed, cool and out of direct sun — the one-way valve lets the fresh coffee degas without going stale. Grind as you brew and drink within four weeks of the roast date to catch it at its brightest.',
+                'Keep the bag sealed, cool and out of direct sun: the one-way valve lets the fresh coffee degas without going stale. Grind as you brew and drink within four weeks of the roast date to catch it at its brightest.',
             nutrition: [
                 { label: 'Serving', value: '250 ml brewed, black' },
                 { label: 'Calories', value: '2 kcal' },
@@ -589,23 +589,23 @@ const PRODUCTS: Product[] = [
         handle: 'colombia-huila',
         title: 'Colombia Huila',
         description:
-            'The crowd-pleaser of the shelf. A washed Huila lot roasted to a warm medium — red apple and caramel, a round milk-chocolate body, and just enough acidity to keep it lively. Forgiving to brew, lovely with or without milk, and the bag most club members reorder first.',
+            'The crowd-pleaser of the shelf. A washed Huila lot roasted to a warm medium: red apple and caramel, a round milk-chocolate body, and just enough acidity to keep it lively. Forgiving to brew, lovely with or without milk, and the bag most club members reorder first.',
         status: 'active',
         productType: 'Single-Origin Coffee',
         vendor: VENDOR,
         tags: ['single-origin', 'colombia', 'medium-roast', 'washed'],
         categoryHandles: ['single-origins'],
         collectionHandles: ['this-months-origins', 'single-origins'],
-        seoTitle: 'Colombia Huila — washed medium-roast single-origin coffee',
+        seoTitle: 'Colombia Huila: washed medium-roast single-origin coffee',
         seoDescription: 'A balanced washed Colombian single origin with red apple, caramel and milk-chocolate notes.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                '100% single-origin arabica coffee — washed Colombia Huila from a family farm that has grown coffee on the same slope for three generations, roasted to a warm medium. Just coffee, and one origin.',
+                '100% single-origin arabica coffee: washed Colombia Huila from a family farm that has grown coffee on the same slope for three generations, roasted to a warm medium. Just coffee, and one origin.',
             allergens: [],
             netWeight: '250 g / 8.8 oz',
             storage:
-                'Store sealed and cool, away from the sun and the stove. A medium roast is forgiving, but it is still best within four to five weeks of roasting — grind fresh each time and it will thank you.',
+                'Store sealed and cool, away from the sun and the stove. A medium roast is forgiving, but it is still best within four to five weeks of roasting: grind fresh each time and it will thank you.',
             nutrition: [
                 { label: 'Serving', value: '250 ml brewed, black' },
                 { label: 'Calories', value: '2 kcal' },
@@ -621,23 +621,23 @@ const PRODUCTS: Product[] = [
         handle: 'kenya-nyeri',
         title: 'Kenya Nyeri',
         description:
-            'For the drinker who wants their coffee to talk back. A washed Nyeri lot with a blackcurrant snap, a bright grapefruit acidity and a syrupy, brown-sugar body underneath. Bold, structured and unmistakably Kenyan — best as a pour-over where all that fruit has room to open up.',
+            'For the drinker who wants their coffee to talk back. A washed Nyeri lot with a blackcurrant snap, a bright grapefruit acidity and a syrupy, brown-sugar body underneath. Bold, structured and unmistakably Kenyan: best as a pour-over where all that fruit has room to open up.',
         status: 'active',
         productType: 'Single-Origin Coffee',
         vendor: VENDOR,
         tags: ['single-origin', 'kenya', 'light-roast', 'washed'],
         categoryHandles: ['single-origins'],
         collectionHandles: ['this-months-origins', 'single-origins'],
-        seoTitle: 'Kenya Nyeri — washed light-roast single-origin coffee',
+        seoTitle: 'Kenya Nyeri: washed light-roast single-origin coffee',
         seoDescription: 'A bright, structured washed Kenyan single origin with blackcurrant and grapefruit notes.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                '100% single-origin arabica coffee — washed Kenya Nyeri, roasted light to hold on to its blackcurrant snap and syrupy body. One farm, nothing added, nothing hidden.',
+                '100% single-origin arabica coffee: washed Kenya Nyeri, roasted light to hold on to its blackcurrant snap and syrupy body. One farm, nothing added, nothing hidden.',
             allergens: [],
             netWeight: '250 g / 8.8 oz',
             storage:
-                'Keep it sealed, cool and dark. This is a coffee that rewards freshness — all that fruit fades first, so grind right before you brew and finish the bag inside a month of the roast date.',
+                'Keep it sealed, cool and dark. This is a coffee that rewards freshness. All that fruit fades first, so grind right before you brew and finish the bag inside a month of the roast date.',
             nutrition: [
                 { label: 'Serving', value: '250 ml brewed, black' },
                 { label: 'Calories', value: '2 kcal' },
@@ -653,23 +653,23 @@ const PRODUCTS: Product[] = [
         handle: 'house-blend',
         title: 'Latitude House Blend',
         description:
-            'The everyday bag we could not not make. A medium roast built from a rotating base of Latin American and East African lots — chocolate, toasted almond and a gentle citrus lift — tuned to be the coffee you can make half-asleep and still get right. Great in a filter, a cafetière or a milky flat white.',
+            'The everyday bag we could not not make. A medium roast built from a rotating base of Latin American and East African lots (chocolate, toasted almond and a gentle citrus lift) tuned to be the coffee you can make half-asleep and still get right. Great in a filter, a cafetière or a milky flat white.',
         status: 'active',
         productType: 'Coffee Blend',
         vendor: VENDOR,
         tags: ['blend', 'medium-roast', 'everyday', 'filter'],
         categoryHandles: ['blends'],
         collectionHandles: ['this-months-origins', 'blends'],
-        seoTitle: 'Latitude House Blend — everyday medium-roast coffee blend',
+        seoTitle: 'Latitude House Blend: everyday medium-roast coffee blend',
         seoDescription: 'A dependable medium-roast house blend with chocolate, toasted almond and a citrus lift.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                '100% arabica coffee blend — a rotating base of washed Latin American and East African lots, roasted medium. A blend of origins and nothing but coffee: no robusta bulk, no flavouring, no oils sprayed on.',
+                '100% arabica coffee blend: a rotating base of washed Latin American and East African lots, roasted medium. A blend of origins and nothing but coffee: no robusta bulk, no flavouring, no oils sprayed on.',
             allergens: [],
             netWeight: '340 g / 12 oz',
             storage:
-                'A cool, dark shelf and a sealed bag are all it asks. The everyday bag is built to be reliable rather than fleeting, but it is still at its best within five weeks of roasting — grind fresh and keep it out of the fridge.',
+                'A cool, dark shelf and a sealed bag are all it asks. The everyday bag is built to be reliable rather than fleeting, but it is still at its best within five weeks of roasting: grind fresh and keep it out of the fridge.',
             nutrition: [
                 { label: 'Serving', value: '250 ml brewed, black' },
                 { label: 'Calories', value: '2 kcal' },
@@ -685,19 +685,19 @@ const PRODUCTS: Product[] = [
         handle: 'midnight-espresso',
         title: 'Midnight Espresso Blend',
         description:
-            'Our espresso, built for the machine and the moka pot. A darker roast with a heavy, syrupy body — dark chocolate, dried fig and a molasses sweetness that stands right up to milk without turning bitter. Pulls a thick, forgiving shot, and makes the kind of flat white that ruins you for the café down the road.',
+            'Our espresso, built for the machine and the moka pot. A darker roast with a heavy, syrupy body: dark chocolate, dried fig and a molasses sweetness that stands right up to milk without turning bitter. Pulls a thick, forgiving shot, and makes the kind of flat white that ruins you for the café down the road.',
         status: 'active',
         productType: 'Coffee Blend',
         vendor: VENDOR,
         tags: ['blend', 'dark-roast', 'espresso'],
         categoryHandles: ['blends'],
         collectionHandles: ['blends'],
-        seoTitle: 'Midnight Espresso Blend — dark-roast espresso coffee',
+        seoTitle: 'Midnight Espresso Blend: dark-roast espresso coffee',
         seoDescription: 'A dark, syrupy espresso blend with dark chocolate, dried fig and molasses notes.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                '100% arabica coffee blend, roasted dark for espresso and the moka pot. Just coffee — nothing sprayed on, no sweeteners, no chicory. A darker roast, built to stand up to milk.',
+                '100% arabica coffee blend, roasted dark for espresso and the moka pot. Just coffee. Nothing sprayed on, no sweeteners, no chicory. A darker roast, built to stand up to milk.',
             allergens: [],
             netWeight: '340 g / 12 oz',
             storage:
@@ -717,23 +717,23 @@ const PRODUCTS: Product[] = [
         handle: 'brazil-decaf',
         title: 'Brazil Cerrado Decaf',
         description:
-            'The decaf that earns its place in the club. A natural Cerrado lot, sugar-cane decaffeinated so nothing chemical touches the bean, roasted medium for a soft, nutty cup — hazelnut, milk chocolate and a hint of brown sugar. All the ritual and none of the buzz, for the afternoon and the evening cup.',
+            'The decaf that earns its place in the club. A natural Cerrado lot, sugar-cane decaffeinated so nothing chemical touches the bean, roasted medium for a soft, nutty cup: hazelnut, milk chocolate and a hint of brown sugar. All the ritual and none of the buzz, for the afternoon and the evening cup.',
         status: 'active',
         productType: 'Decaf Coffee',
         vendor: VENDOR,
         tags: ['decaf', 'brazil', 'medium-roast', 'natural'],
         categoryHandles: ['decaf'],
         collectionHandles: [],
-        seoTitle: 'Brazil Cerrado Decaf — sugar-cane decaffeinated coffee',
+        seoTitle: 'Brazil Cerrado Decaf: sugar-cane decaffeinated coffee',
         seoDescription: 'A soft, nutty sugar-cane-decaffeinated Brazilian coffee with hazelnut and chocolate notes.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                '100% arabica coffee — a natural Brazil Cerrado lot, roasted medium and sugar-cane decaffeinated. Caffeine is removed with a cane-sugar derivative and water, so nothing chemical ever touches the bean.',
+                '100% arabica coffee: a natural Brazil Cerrado lot, roasted medium and sugar-cane decaffeinated. Caffeine is removed with a cane-sugar derivative and water, so nothing chemical ever touches the bean.',
             allergens: [],
             netWeight: '250 g / 8.8 oz',
             storage:
-                'Store sealed, cool and out of the sun, exactly like the caffeinated bags. Decaf keeps no better and no worse — grind fresh and enjoy within a month, and it is just as good after dinner as before work.',
+                'Store sealed, cool and out of the sun, exactly like the caffeinated bags. Decaf keeps no better and no worse: grind fresh and enjoy within a month, and it is just as good after dinner as before work.',
             nutrition: [
                 { label: 'Serving', value: '250 ml brewed, black' },
                 { label: 'Calories', value: '2 kcal' },
@@ -749,23 +749,23 @@ const PRODUCTS: Product[] = [
         handle: 'cold-brew-blend',
         title: 'Cold Brew Blend',
         description:
-            'Coarse-ground and built for the fridge. A blend roasted a touch darker and ground for a long, slow steep — twelve hours in cold water and you have a smooth, low-acid concentrate that tastes of cocoa and dried cherry. Comes in steep bags you drop straight into a jug. Summer in a glass, over ice, all week.',
+            'Coarse-ground and built for the fridge. A blend roasted a touch darker and ground for a long, slow steep: twelve hours in cold water and you have a smooth, low-acid concentrate that tastes of cocoa and dried cherry. Comes in steep bags you drop straight into a jug. Summer in a glass, over ice, all week.',
         status: 'active',
         productType: 'Coffee Blend',
         vendor: VENDOR,
         tags: ['blend', 'cold-brew', 'coarse'],
         categoryHandles: ['blends'],
         collectionHandles: ['blends'],
-        seoTitle: 'Cold Brew Blend — coarse-ground cold brew coffee',
+        seoTitle: 'Cold Brew Blend: coarse-ground cold brew coffee',
         seoDescription: 'A smooth, low-acid cold brew blend in steep bags, with cocoa and dried-cherry notes.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                'Coarse-ground 100% arabica coffee blend in unbleached, biodegradable steep bags. Just coffee, roasted a touch darker and ground for a long cold steep — add cold water and time.',
+                'Coarse-ground 100% arabica coffee blend in unbleached, biodegradable steep bags. Just coffee, roasted a touch darker and ground for a long cold steep. Add cold water and time.',
             allergens: [],
             netWeight: '4 steep bags, 60 g each',
             storage:
-                'Keep the sealed pouch somewhere dry and cool. Once brewed, the concentrate keeps in a covered jug in the fridge for up to a week — dilute one part concentrate to one part water or milk over plenty of ice.',
+                'Keep the sealed pouch somewhere dry and cool. Once brewed, the concentrate keeps in a covered jug in the fridge for up to a week: dilute one part concentrate to one part water or milk over plenty of ice.',
             nutrition: [
                 { label: 'Serving', value: '250 ml prepared, black' },
                 { label: 'Calories', value: '3 kcal' },
@@ -793,7 +793,7 @@ const PRODUCTS: Product[] = [
         tags: ['gear', 'pour-over', 'ceramic', 'brewing'],
         categoryHandles: ['gear'],
         collectionHandles: ['gear'],
-        seoTitle: 'Ceramic Pour-Over Dripper — hand-glazed coffee dripper',
+        seoTitle: 'Ceramic Pour-Over Dripper: hand-glazed coffee dripper',
         seoDescription: 'A hand-glazed ceramic pour-over dripper with a tall rib pattern, for an even, controlled brew.',
         productTypeKey: 'food_beverage',
         attributes: {
@@ -802,7 +802,7 @@ const PRODUCTS: Product[] = [
             allergens: [],
             netWeight: '380 g / 13 oz',
             storage:
-                'Hand wash in warm water and air dry — the glaze is dishwasher-safe, but hand washing keeps it looking new. Warm it through with a rinse of hot water before you brew so it does not steal heat from the pour.',
+                'Hand wash in warm water and air dry: the glaze is dishwasher-safe, but hand washing keeps it looking new. Warm it through with a rinse of hot water before you brew so it does not steal heat from the pour.',
             nutrition: [],
         },
         options: [
@@ -825,12 +825,12 @@ const PRODUCTS: Product[] = [
         tags: ['gear', 'filters', 'brewing'],
         categoryHandles: ['gear'],
         collectionHandles: ['gear'],
-        seoTitle: 'Pour-Over Filters — 100 paper coffee filters',
+        seoTitle: 'Pour-Over Filters: 100 paper coffee filters',
         seoDescription: 'A box of 100 oxygen-bleached paper pour-over filters, cut to fit the Latitude dripper.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                'Oxygen-bleached paper — no chlorine, no adhesives, and nothing that leaves a papery taste in the cup. One hundred filters, cut to fit the Latitude dripper.',
+                'Oxygen-bleached paper: no chlorine, no adhesives, and nothing that leaves a papery taste in the cup. One hundred filters, cut to fit the Latitude dripper.',
             allergens: [],
             netWeight: '100 filters, ~120 g',
             storage:
@@ -844,23 +844,23 @@ const PRODUCTS: Product[] = [
         handle: 'enamel-mug',
         title: 'Latitude Enamel Mug',
         description:
-            'The mug that comes free with the year-long plan, and that you will reach for every morning anyway. A proper enamel camp mug — chip-resistant, keeps its heat, and just as happy on the kitchen table as halfway up a hill. Holds a generous twelve ounces, which is exactly one good pour-over.',
+            'The mug that comes free with the year-long plan, and that you will reach for every morning anyway. A proper enamel camp mug: chip-resistant, keeps its heat, and just as happy on the kitchen table as halfway up a hill. Holds a generous twelve ounces, which is exactly one good pour-over.',
         status: 'active',
         productType: 'Brew Gear',
         vendor: VENDOR,
         tags: ['gear', 'mug', 'enamel'],
         categoryHandles: ['gear'],
         collectionHandles: ['gear'],
-        seoTitle: 'Latitude Enamel Mug — 12oz enamel coffee mug',
+        seoTitle: 'Latitude Enamel Mug: 12oz enamel coffee mug',
         seoDescription: 'A chip-resistant 12oz enamel coffee mug that keeps its heat, at home or on the trail.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                'Enamel-coated steel with a food-safe, chip-resistant vitreous finish and a rolled rim. Holds a generous 12 oz / 350 ml — exactly one good pour-over.',
+                'Enamel-coated steel with a food-safe, chip-resistant vitreous finish and a rolled rim. Holds a generous 12 oz / 350 ml: exactly one good pour-over.',
             allergens: [],
             netWeight: '220 g / 7.8 oz',
             storage:
-                'Hand wash and dry — the enamel is happy on a stovetop and around a campfire, but keep it out of the microwave. A chip earned on a trail is character, not a fault; the steel underneath will not rust.',
+                'Hand wash and dry: the enamel is happy on a stovetop and around a campfire, but keep it out of the microwave. A chip earned on a trail is character, not a fault; the steel underneath will not rust.',
             nutrition: [],
         },
         options: [
@@ -876,14 +876,14 @@ const PRODUCTS: Product[] = [
         handle: 'hand-grinder',
         title: 'Hand Coffee Grinder',
         description:
-            'Grinding fresh is the single biggest upgrade you can make to your coffee, and this is the tool for it. A compact hand grinder with conical steel burrs and a stepped dial that goes from espresso-fine to cold-brew-coarse. Quiet, consistent, and small enough to pack — so a great cup travels with you.',
+            'Grinding fresh is the single biggest upgrade you can make to your coffee, and this is the tool for it. A compact hand grinder with conical steel burrs and a stepped dial that goes from espresso-fine to cold-brew-coarse. Quiet, consistent, and small enough to pack, so a great cup travels with you.',
         status: 'active',
         productType: 'Brew Gear',
         vendor: VENDOR,
         tags: ['gear', 'grinder', 'burr', 'brewing'],
         categoryHandles: ['gear'],
         collectionHandles: ['gear'],
-        seoTitle: 'Hand Coffee Grinder — conical burr hand grinder',
+        seoTitle: 'Hand Coffee Grinder: conical burr hand grinder',
         seoDescription: 'A compact conical-steel-burr hand coffee grinder, adjustable from espresso-fine to coarse.',
         productTypeKey: 'food_beverage',
         attributes: {
@@ -892,7 +892,7 @@ const PRODUCTS: Product[] = [
             allergens: [],
             netWeight: '430 g / 15 oz',
             storage:
-                'Brush the burrs clean of old grounds every few weeks and keep the whole thing dry — never wash the burrs in water, which dulls the steel and rusts it. A dry brush is the entire maintenance routine.',
+                'Brush the burrs clean of old grounds every few weeks and keep the whole thing dry, never wash the burrs in water, which dulls the steel and rusts it. A dry brush is the entire maintenance routine.',
             nutrition: [],
         },
         variants: [{ sku: 'LCC-GRIND-01', priceCents: money(59), isDefault: true, inventoryPolicy: 'continue' }],
@@ -902,23 +902,23 @@ const PRODUCTS: Product[] = [
         handle: 'the-origin-gift-set',
         title: 'The Origin Gift Set',
         description:
-            'The whole club, wrapped, in a single box — for the person who deserves a good coffee morning. Three of the month’s single origins, a ceramic dripper, a starter pack of filters and an enamel mug, packed in a reusable tin with a hand-written brew guide. The gift that turns someone into a proper coffee drinker.',
+            'The whole club, wrapped, in a single box, for the person who deserves a good coffee morning. Three of the month’s single origins, a ceramic dripper, a starter pack of filters and an enamel mug, packed in a reusable tin with a hand-written brew guide. The gift that turns someone into a proper coffee drinker.',
         status: 'active',
         productType: 'Gift Set',
         vendor: VENDOR,
         tags: ['gift', 'set', 'starter'],
         categoryHandles: ['gifts'],
         collectionHandles: ['this-months-origins', 'gifts'],
-        seoTitle: 'The Origin Gift Set — coffee and brew-gear gift box',
+        seoTitle: 'The Origin Gift Set: coffee and brew-gear gift box',
         seoDescription: 'A gift box of three single origins, a ceramic dripper, filters and an enamel mug in a reusable tin.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                'Three 250 g bags of this month’s single-origin arabica coffee, a hand-glazed ceramic dripper, a starter pack of paper filters and an enamel mug, packed in a reusable tin with a hand-written brew guide. The coffee is 100% coffee — nothing added.',
+                'Three 250 g bags of this month’s single-origin arabica coffee, a hand-glazed ceramic dripper, a starter pack of paper filters and an enamel mug, packed in a reusable tin with a hand-written brew guide. The coffee is 100% coffee. Nothing added.',
             allergens: [],
             netWeight: '3 × 250 g coffee, plus gear',
             storage:
-                'Keep the coffee bags sealed and cool and brew each within four weeks of its roast date; hand wash the dripper and the mug. Everything but the coffee is made to last for years — the tin included.',
+                'Keep the coffee bags sealed and cool and brew each within four weeks of its roast date; hand wash the dripper and the mug. Everything but the coffee is made to last for years: the tin included.',
             nutrition: [
                 { label: 'Serving', value: '250 ml brewed, black' },
                 { label: 'Calories', value: '2 kcal' },
@@ -933,19 +933,19 @@ const PRODUCTS: Product[] = [
         handle: 'the-origin-club',
         title: 'The Origin Club',
         description:
-            'The subscription at the heart of Latitude. A new single-origin harvest at your door each month — roasted to order, ground the way you brew, and shipped free with the story of the farm that grew it. Pick a plan below: the longer you stay, the more you save, and the year-long plan arrives with a free enamel mug. Pause or cancel any time, no questions.',
+            'The subscription at the heart of Latitude. A new single-origin harvest at your door each month: roasted to order, ground the way you brew, and shipped free with the story of the farm that grew it. Pick a plan below: the longer you stay, the more you save, and the year-long plan arrives with a free enamel mug. Pause or cancel any time, no questions.',
         status: 'active',
         productType: 'Subscription',
         vendor: VENDOR,
         tags: ['subscription', 'coffee-club', 'single-origin'],
         categoryHandles: [],
         collectionHandles: ['this-months-origins', 'gifts'],
-        seoTitle: 'The Origin Club — monthly single-origin coffee subscription',
+        seoTitle: 'The Origin Club: monthly single-origin coffee subscription',
         seoDescription: 'A monthly single-origin coffee subscription, roasted to order and shipped free. Pause or cancel any time.',
         productTypeKey: 'food_beverage',
         attributes: {
             ingredients:
-                'A fresh single-origin arabica coffee each month — 100% coffee, roasted to order and ground the way you brew. A different farm and harvest every box, and never a flavouring or a filler.',
+                'A fresh single-origin arabica coffee each month: 100% coffee, roasted to order and ground the way you brew. A different farm and harvest every box, and never a flavouring or a filler.',
             allergens: [],
             netWeight: '250 g coffee per month',
             storage:
@@ -1044,16 +1044,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The farmers behind this month’s origins',
-            excerpt: 'A coffee is a place and the people who grow it. Meet the growers whose harvests are in this month’s boxes — and why buying direct changes what ends up in your cup.',
+            excerpt: 'A coffee is a place and the people who grow it. Meet the growers whose harvests are in this month’s boxes, and why buying direct changes what ends up in your cup.',
             featuredImage: { $asset: 'post-farmers' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Every bag we send has a name on it that is not ours. A washed Ethiopian from a smallholder co-op in Guji. A Huila lot from a family farm that has grown coffee on the same slope for three generations. When we say single origin, we mean it down to the farm — because the farm is where the flavour actually comes from.'),
+                    para('Every bag we send has a name on it that is not ours. A washed Ethiopian from a smallholder co-op in Guji. A Huila lot from a family farm that has grown coffee on the same slope for three generations. When we say single origin, we mean it down to the farm, because the farm is where the flavour actually comes from.'),
                     h2('We buy the harvest, not the leftovers'),
-                    para('Most coffee is bought as a commodity, graded and blended until the origin disappears. We do it the slow way instead: we follow the harvest, taste the new lots, and buy the pick of the crop direct from the growers — paying above the fair-trade floor for the coffee we actually want. That premium is not charity. It is what a genuinely good harvest costs, and it is why ours tastes the way it does.'),
+                    para('Most coffee is bought as a commodity, graded and blended until the origin disappears. We do it the slow way instead: we follow the harvest, taste the new lots, and buy the pick of the crop direct from the growers, paying above the fair-trade floor for the coffee we actually want. That premium is not charity. It is what a genuinely good harvest costs, and it is why ours tastes the way it does.'),
                     h2('Knowing who grew it changes the cup'),
-                    para('It sounds sentimental until you taste it side by side. Coffee bought well, from people who are paid to care about the pick and the process, is simply cleaner, sweeter and more alive in the cup than coffee bought cheap. The story on the card in your box is not marketing — it is the reason the coffee is good.'),
+                    para('It sounds sentimental until you taste it side by side. Coffee bought well, from people who are paid to care about the pick and the process, is simply cleaner, sweeter and more alive in the cup than coffee bought cheap. The story on the card in your box is not marketing. It is the reason the coffee is good.'),
                     para('So this month, before you grind, read the card. Then taste it knowing whose year of work is in the cup. It will not be the same coffee.'),
                 ],
             },
@@ -1065,18 +1065,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to brew a better cup at home',
-            excerpt: 'Great beans are only half of it. The four small changes that will do more for your morning coffee than any new machine — and none of them cost much.',
+            excerpt: 'Great beans are only half of it. The four small changes that will do more for your morning coffee than any new machine, and none of them cost much.',
             featuredImage: { $asset: 'post-brewing' },
             body: {
                 type: 'doc',
                 content: [
-                    para('People spend a fortune on machines and then wonder why the café down the road is still better. The truth is that the biggest gains at home are almost free — they are about freshness, grind and a little patience, not equipment. Get these four things right and a good bag becomes a great cup.'),
+                    para('People spend a fortune on machines and then wonder why the café down the road is still better. The truth is that the biggest gains at home are almost free. They are about freshness, grind and a little patience, not equipment. Get these four things right and a good bag becomes a great cup.'),
                     h2('Grind fresh, right before you brew'),
-                    para('Coffee goes stale fast once it is ground — the surface area that makes it taste of anything is also what lets it fade. Grinding the moment before you brew is the single biggest upgrade you can make, which is why every box is ground to order and why a hand grinder is the piece of gear we push hardest.'),
+                    para('Coffee goes stale fast once it is ground: the surface area that makes it taste of anything is also what lets it fade. Grinding the moment before you brew is the single biggest upgrade you can make, which is why every box is ground to order and why a hand grinder is the piece of gear we push hardest.'),
                     h2('Weigh it, and use more than you think'),
-                    para('A kitchen scale takes the guesswork out. Start at sixty grams of coffee per litre of water — roughly one heaped tablespoon per mug — and adjust from there. Most weak coffee at home is simply under-dosed; a little more coffee fixes more cups than any other single change.'),
+                    para('A kitchen scale takes the guesswork out. Start at sixty grams of coffee per litre of water (roughly one heaped tablespoon per mug) and adjust from there. Most weak coffee at home is simply under-dosed; a little more coffee fixes more cups than any other single change.'),
                     h2('Pour slow, and let it bloom'),
-                    para('Wet the grounds with a little water first and wait thirty seconds — that is the bloom, and it lets the coffee degas so the rest of the pour extracts evenly. Then pour slow and steady in circles. Rushing the pour is how you get a thin, sour cup from perfectly good beans.'),
+                    para('Wet the grounds with a little water first and wait thirty seconds. That is the bloom, and it lets the coffee degas so the rest of the pour extracts evenly. Then pour slow and steady in circles. Rushing the pour is how you get a thin, sour cup from perfectly good beans.'),
                     para('None of this is fussy once it is habit. Two minutes, a scale and a slow hand, and the coffee you make at home stops being a compromise.'),
                 ],
             },
@@ -1093,12 +1093,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('There is a date on a bag of coffee that matters far more than the one most people look for, and it is the roast date. Coffee is at its best in the weeks just after it is roasted, not the months. Roasting to order simply means we do not roast until we know your box is going out — so what lands on your shelf is days old, not a season old.'),
+                    para('There is a date on a bag of coffee that matters far more than the one most people look for, and it is the roast date. Coffee is at its best in the weeks just after it is roasted, not the months. Roasting to order simply means we do not roast until we know your box is going out, so what lands on your shelf is days old, not a season old.'),
                     h2('Coffee has a peak, and it is short'),
-                    para('For the first day or two after roasting, coffee is actually degassing and tastes a little wild. Then it settles into a window — roughly two to six weeks — where it is at its sweetest and most complex. After that it slowly flattens: still drinkable, but the brightness and the aromatics fade. Supermarket coffee is often well past that window before it is even bought.'),
+                    para('For the first day or two after roasting, coffee is actually degassing and tastes a little wild. Then it settles into a window (roughly two to six weeks) where it is at its sweetest and most complex. After that it slowly flattens: still drinkable, but the brightness and the aromatics fade. Supermarket coffee is often well past that window before it is even bought.'),
                     h2('How to tell if yours is fresh'),
                     para('Fresh coffee blooms. Pour a little hot water on the grounds and watch: if it swells and foams, it is releasing gas and it is fresh; if it just sits there flat, it is old. Once you have seen a lively bloom, you will never quite trust a stale bag again.'),
-                    para('That window is the whole reason the club works the way it does. We roast small, roast late, and ship fast — so the best weeks of a coffee’s life are spent in your kitchen, not a warehouse.'),
+                    para('That window is the whole reason the club works the way it does. We roast small, roast late, and ship fast, so the best weeks of a coffee’s life are spent in your kitchen, not a warehouse.'),
                 ],
             },
         },
@@ -1164,7 +1164,7 @@ function pdpBuyRegion(): Node {
                             el('div', 'rounded-box bg-primary p-4 text-primary-content', {
                                 children: [
                                     el('p', 'text-base font-medium text-primary-content', {
-                                        text: 'Roasted to order, ground the way you brew, and shipped free — every bag and every plan.',
+                                        text: 'Roasted to order, ground the way you brew, and shipped free: every bag and every plan.',
                                     }),
                                 ],
                             }),
@@ -1216,7 +1216,7 @@ const SHOP: Node[] = [
                         { text: 'The whole coffee shelf' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Every coffee Latitude currently roasts — this month’s single origins, the everyday blends, decaf, brew gear and gifts — filtered and sorted however you like. Roasted to order, shipped free, never older than it should be.',
+                        text: 'Every coffee Latitude currently roasts (this month’s single origins, the everyday blends, decaf, brew gear and gifts) filtered and sorted however you like. Roasted to order, shipped free, never older than it should be.',
                     }),
                 ],
             }),
@@ -1252,14 +1252,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Coffee, grouped the way you drink it',
-        'This month’s single origins, the everyday blends, decaf, the brew gear that finishes the cup and gifts to pass it on — gathered into shelves so you can start wherever your morning does.'
+        'This month’s single origins, the everyday blends, decaf, the brew gear that finishes the cup and gifts to pass it on: gathered into shelves so you can start wherever your morning does.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Find your coffee',
-        'After a particular origin, a roast level, or a piece of gear you saw in a box? Search the whole shelf and the Journal below — by country, by tasting note, by name.'
+        'After a particular origin, a roast level, or a piece of gear you saw in a box? Search the whole shelf and the Journal below: by country, by tasting note, by name.'
     ),
 ];
 
@@ -1274,7 +1274,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Latitude Journal' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Origin stories from the bean belt and notes from the roastery — who grew this month’s coffee, how we roast it, and the small things that turn a good bag into the best cup you make all week.',
+                        text: 'Origin stories from the bean belt and notes from the roastery, who grew this month’s coffee, how we roast it, and the small things that turn a good bag into the best cup you make all week.',
                     }),
                 ],
             }),
@@ -1296,7 +1296,7 @@ const CART: Node[] = [
                         { text: 'Your cart' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Nothing here is roasted until you order it — every bag is roasted to order and shipped free within 48 hours, no threshold to clear. Choose a club plan and it simply renews each month at the price you picked; pause or cancel any time, no questions.',
+                        text: 'Nothing here is roasted until you order it: every bag is roasted to order and shipped free within 48 hours, no threshold to clear. Choose a club plan and it simply renews each month at the price you picked; pause or cancel any time, no questions.',
                     }),
                 ],
             }),
@@ -1311,7 +1311,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-warm-subscription',
     name: 'Warm Subscription',
     summary:
-        'A warm, editorial storefront for a subscription food & drink brand — a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
+        'A warm, editorial storefront for a subscription food & drink brand: a full-bleed cream-and-terracotta hero over a "how the club works" trio, provenance editorial bands, shoppable carousels, a static subscription plan-selector and an inclusion list, in a bespoke warm `roastery` theme with an espresso footer island. Modelled on the warm-subscription / food-editorial archetype; shipped as Latitude Coffee Club, a single-origin coffee subscription and roastery.',
     tagline: 'A warm, story-rich template for subscription and specialty food & drink brands.',
     vertical: 'retail',
     industry: 'Coffee subscription & roastery',
@@ -1328,7 +1328,7 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Latitude Coffee Club — single-origin coffee, roasted to order',
+            title: 'Latitude Coffee Club: single-origin coffee, roasted to order',
             description:
                 'Latitude Coffee Club sends a fresh single-origin harvest to your door each month, roasted to order, with the story of the farm that grew it.',
         },

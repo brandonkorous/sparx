@@ -111,7 +111,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       h('Information we collect'),
       p('Depending on how you interact with us, we may collect:'),
       ul([
-        'Contact details you provide — name, email, phone, and shipping or billing address.',
+        'Contact details you provide. Name, email, phone, and shipping or billing address.',
         'Order and account information when you make a purchase or create an account.',
         'Usage and device information collected automatically, including via cookies.',
         'Messages you send us through forms, email, or support.',
@@ -126,7 +126,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       ]),
       h('Sharing'),
       p(
-        'We share personal information with service providers who help us run the business — such as payment processors, shipping carriers, and email providers — and where required by law. We do not sell your personal information.'
+        'We share personal information with service providers who help us run the business (such as payment processors, shipping carriers, and email providers) and where required by law. We do not sell your personal information.'
       ),
       h('Your rights'),
       p(
@@ -196,10 +196,10 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       ),
       h('Categories we use'),
       ul([
-        'Strictly necessary — required for core functionality such as signing in and keeping your cart. These cannot be switched off.',
-        'Preferences — remember choices such as light or dark mode.',
-        'Analytics — help us understand how the site is used so we can improve it.',
-        'Marketing — used to deliver and measure relevant offers.',
+        'Strictly necessary: required for core functionality such as signing in and keeping your cart. These cannot be switched off.',
+        'Preferences: remember choices such as light or dark mode.',
+        'Analytics: help us understand how the site is used so we can improve it.',
+        'Marketing: used to deliver and measure relevant offers.',
       ]),
       h('Managing your choices'),
       p(
@@ -229,7 +229,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       ]),
       h('Non-returnable items'),
       p(
-        'Some items may not be eligible for return — for example, perishable goods, personalized items, or final-sale products. We will note any exceptions at checkout.'
+        'Some items may not be eligible for return, for example, perishable goods, personalized items, or final-sale products. We will note any exceptions at checkout.'
       ),
       h('Refunds'),
       p('Once we receive and inspect your return, refunds are issued per our Refund Policy.')
@@ -268,7 +268,7 @@ export const LEGAL_TEMPLATES: readonly LegalTemplate[] = [
       p('When your order ships, we will send a confirmation with tracking where available.'),
       h('Delays, lost, or damaged shipments'),
       p(
-        'We are not responsible for carrier delays, but we will help you resolve issues with lost or damaged shipments — contact us with your order number.'
+        'We are not responsible for carrier delays, but we will help you resolve issues with lost or damaged shipments: contact us with your order number.'
       )
     ),
     assumes: [

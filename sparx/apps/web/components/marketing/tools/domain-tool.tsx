@@ -98,7 +98,7 @@ export function DomainTool() {
     <Workbench>
       <ControlsPane>
         <Panel title="Find a domain">
-          <Field label="Name" htmlFor="dom-name" hint="Just the name — we add the extensions.">
+          <Field label="Name" htmlFor="dom-name" hint="Just the name. We add the extensions.">
             <Input
               id="dom-name"
               placeholder="yourbrand"
@@ -183,7 +183,7 @@ export function DomainTool() {
           )}
           <Alert color="info" size="sm">
             Availability comes from live registry (RDAP) data. Register the name you want at any
-            registrar — premium names may carry special pricing.
+            registrar: premium names may carry special pricing.
           </Alert>
         </Panel>
       </OutputPane>

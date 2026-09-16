@@ -50,7 +50,7 @@ export function TheEmail({ draft, set }: ComposeBodyProps) {
             <Input
               color="module"
               value={draft.subject}
-              placeholder="Spring is here — 20% off everything"
+              placeholder="Spring is here: 20% off everything"
               onChange={(event) => {
                 set('subject', event.target.value);
               }}
@@ -108,7 +108,7 @@ export function WhoItGoesTo({
         </Alert>
       ) : audiences.isSuccess && audiences.items.length === 0 ? (
         <Text className="text-sm">
-          You don’t have any saved audiences yet. Audiences are built from your customer list —
+          You don’t have any saved audiences yet. Audiences are built from your customer list:
           create one, then come back to send to it.
         </Text>
       ) : (
@@ -159,7 +159,7 @@ export function WhatYoureSending({
   return (
     <FormSection
       title="What you’re sending"
-      description="Pick one of the emails you’ve written. It has to be published — a draft design has nothing to send yet."
+      description="Pick one of the emails you’ve written. It has to be published: a draft design has nothing to send yet."
       action={
         <Button
           size="sm"
@@ -184,8 +184,8 @@ export function WhatYoureSending({
       ) : designed.isSuccess && options.length === 0 ? (
         <Text className="text-sm">
           You haven’t written an email to send yet. Use “Design emails” above to write one, publish
-          it, then choose it here. The ready-made ones Piggles sends for you — order confirmations,
-          reminders — aren’t offered, because each is written about one customer’s order.
+          it, then choose it here. The ready-made ones Piggles sends for you (order confirmations,
+          reminders) aren’t offered, because each is written about one customer’s order.
         </Text>
       ) : (
         <Field>
@@ -202,7 +202,7 @@ export function WhatYoureSending({
             {options.map((email) => (
               <option key={email.id} value={email.id}>
                 {email.name}
-                {email.published ? '' : ' (draft — not published)'}
+                {email.published ? '' : ' (draft, not published)'}
               </option>
             ))}
           </NativeSelect>

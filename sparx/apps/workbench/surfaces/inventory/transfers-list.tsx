@@ -61,7 +61,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 const STATUS_OPTIONS: { value: TransferStatus; label: string }[] = [
-  { value: 'draft', label: 'Draft — not sent yet' },
+  { value: 'draft', label: 'Draft, not sent yet' },
   { value: 'in_transit', label: 'In transit' },
   { value: 'received', label: 'Received' },
   { value: 'cancelled', label: 'Cancelled' },
@@ -128,7 +128,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<ArrowLeftRight className="size-6" aria-hidden />}
           title="Could not load your transfers"
-          description="This is a problem reaching the server. Your transfers are unaffected — they just could not be read just now."
+          description="This is a problem reaching the server. Your transfers are unaffected. They just could not be read just now."
         />
       );
     }

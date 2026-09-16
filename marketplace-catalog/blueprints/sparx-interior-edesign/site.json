@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Room & Co. — online interior e-design",
+      "seoTitle": "Room & Co. online interior e-design",
       "seoDescription": "Room & Co. is friendly, flat-fee interior design done online. Share your room, get a shoppable design board, and book a consult with your designer.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Flat-fee interior design for real homes — share your space, get a shoppable design board, and shop the look on your own time."
+                      "Flat-fee interior design for real homes. Share your space, get a shoppable design board, and shop the look on your own time."
                     ],
                     "id": "b8b4ede3-6b3a-4fda-a67c-9420ee558645",
                     "ord": "a1"
@@ -691,7 +691,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Send us photos, your measurements and a few things you love. A quick call gets us on the same page — no jargon, no homework."
+                              "Send us photos, your measurements and a few things you love. A quick call gets us on the same page: no jargon, no homework."
                             ],
                             "id": "6a7bd523-984c-418f-a4ec-928f0c9cba47",
                             "ord": "a1"
@@ -794,7 +794,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Simple, upfront pricing — pick what your room needs. Full details and live availability are on the booking page."
+                          "Simple, upfront pricing. Pick what your room needs. Full details and live availability are on the booking page."
                         ],
                         "id": "8b73f9d6-0766-493e-b487-59cb56dadf31",
                         "ord": "a1"
@@ -1163,7 +1163,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "E-design is interior design done online — which means no site visits, no hourly billing and no five-figure quote. You get the same trained eye for a clear, flat fee."
+                          "E-design is interior design done online, which means no site visits, no hourly billing and no five-figure quote. You get the same trained eye for a clear, flat fee."
                         ],
                         "id": "b5b63c6e-5115-41e1-9b06-b63f57057d6a",
                         "ord": "a1"
@@ -1238,7 +1238,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with the same designer from first call to final board."
+                          "Book by name: you’ll work with the same designer from first call to final board."
                         ],
                         "id": "b3a50c90-4949-4f89-8422-707175fe965e",
                         "ord": "a1"
@@ -1351,7 +1351,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "A layout obsessive — small spaces and awkward rooms are his favourite puzzle."
+                                  "A layout obsessive: small spaces and awkward rooms are his favourite puzzle."
                                 ],
                                 "id": "c6015d01-8c03-4266-a9d3-c3d1cc519c5a",
                                 "ord": "a2"
@@ -1447,7 +1447,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I sent a few photos of my sad living room and got back a plan I could actually afford. It looks like a magazine now — and I bought it piece by piece.”"
+                      "“I sent a few photos of my sad living room and got back a plan I could actually afford. It looks like a magazine now, and I bought it piece by piece.”"
                     ],
                     "id": "594b7f2f-2dcb-4e61-9c90-5c0da772677a",
                     "ord": "a0"
@@ -1491,7 +1491,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a free consult — pick a designer, choose a time, and see live availability. It takes about a minute."
+                      "Start with a free consult. Pick a designer, choose a time, and see live availability. It takes about a minute."
                     ],
                     "id": "b4e94202-c9f2-4d87-9e46-cda5337f6e6d",
                     "ord": "a1"
@@ -1522,7 +1522,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Room & Co.",
+      "seoTitle": "Book: Room & Co.",
       "seoDescription": "See what Room & Co. offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1646,7 +1646,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "6b3a6b20-2cb1-4f17-bff4-ab8d3594388b",
                         "ord": "a1"
@@ -1716,7 +1716,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Room & Co.",
+      "seoTitle": "About: Room & Co.",
       "seoDescription": "Who Room & Co. is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1775,7 +1775,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we do it online, for a flat fee — a real designer, a shoppable plan, and honest advice about what’s worth spending on and what isn’t. Friendly, fresh, and made for everyday homes."
+                          "So we do it online, for a flat fee: a real designer, a shoppable plan, and honest advice about what’s worth spending on and what isn’t. Friendly, fresh, and made for everyday homes."
                         ],
                         "id": "05d84c09-bc8c-4dd3-baad-52c8f0e98400",
                         "ord": "a2"
@@ -1935,7 +1935,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Room & Co.",
+      "seoTitle": "Visit: Room & Co.",
       "seoDescription": "Where to find Room & Co., our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1972,7 +1972,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Room & Co. will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Room & Co. will get back to you, usually the same day."
                         ],
                         "id": "d7d874ea-b6fb-4bcc-8122-8646de59321b",
                         "ord": "a1"
@@ -2397,7 +2397,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a free consult online and see live availability — no phone tag, no waiting."
+                      "Book a free consult online and see live availability: no phone tag, no waiting."
                     ],
                     "id": "c44050d9-1671-4b04-9b97-b5ca6ddb6071",
                     "ord": "a1"

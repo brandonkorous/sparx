@@ -46,7 +46,7 @@ export function ExportPanel({
       <CardBody>
         <h3 className="text-2xl font-extrabold">Take it with you</h3>
         <p className="text-base">
-          The link carries the whole palette, locks included — it is what to send your designer, and
+          The link carries the whole palette, locks included. It is what to send your designer, and
           what to keep in a note for yourself.
         </p>
 
@@ -79,7 +79,7 @@ export function ExportPanel({
             <CodeOut
               code={silicaTheme(palette, roles, ink)}
               language="css"
-              hint="A whole theme. Paste it into your stylesheet and every button, badge, input and tab picks these up at once — there is nothing else to change. The readable ink on each color is worked out for you, so only the inks you changed yourself appear here."
+              hint="A whole theme. Paste it into your stylesheet and every button, badge, input and tab picks these up at once. There is nothing else to change. The readable ink on each color is worked out for you, so only the inks you changed yourself appear here."
             />
           </TabsPanel>
           <TabsPanel value="css">

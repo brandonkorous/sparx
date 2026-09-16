@@ -340,7 +340,7 @@ const SAMPLE_SOCIAL = [
 // Representative rows shown when a `line_item_table` isn't bound (the binding still
 // drives the actual send). Mirrors the FAQ / FeatureGrid placeholder approach.
 const SAMPLE_LINE_ITEMS: Record<string, unknown>[] = [
-  { name: 'Single-origin beans — Lot 7', quantity: '2', lineTotal: '$36.00' },
+  { name: 'Single-origin beans: Lot 7', quantity: '2', lineTotal: '$36.00' },
   { name: 'Pour-over filters (100 ct)', quantity: '1', lineTotal: '$12.00' },
 ];
 
@@ -401,7 +401,7 @@ function warnUnknownType(type: string): void {
   if (warnedUnknownTypes.has(type)) return;
   warnedUnknownTypes.add(type);
   console.warn(
-    `[builder-render] No renderer for node type "${type}" — the node rendered as empty. ` +
+    `[builder-render] No renderer for node type "${type}": the node rendered as empty. ` +
       `Either the tree predates a registry change, or it was imported from a newer builder.`
   );
 }
@@ -574,7 +574,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
         return <article className={cls} dangerouslySetInnerHTML={{ __html: html }} />;
       }
       if (!edit) return null;
-      const empty = 'Rich body content renders here — paragraphs, headings, lists, quotes, links.';
+      const empty = 'Rich body content renders here: paragraphs, headings, lists, quotes, links.';
       if (email)
         return (
           <EmailTextLeaf variant="body" style={emailStyle}>

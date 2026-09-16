@@ -55,7 +55,7 @@ function CategoryLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             error={error}
             noun="category"
             title="Could not load this category"
-            description="This is a problem reaching the server. The category itself is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. The category itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void refetch();
             }}

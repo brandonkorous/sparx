@@ -143,7 +143,7 @@ export function DocumentTool({ config }: { config: DocConfig }) {
       });
       downloadBlob(blob, `${data.invoiceNumber || config.filenameBase}.pdf`);
     } catch {
-      toast.error('Could not generate the PDF — please try again.');
+      toast.error('Could not generate the PDF: please try again.');
     } finally {
       setBusy(false);
     }

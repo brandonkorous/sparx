@@ -98,7 +98,7 @@ function dimensionProblem(draft: VariantDraft): string | null {
 export function draftProblem(draft: VariantDraft): string | null {
   if (draft.sku.trim() === '') return 'Give this version a code.';
   if (!/^[A-Za-z0-9._\-/]+$/.test(draft.sku.trim())) {
-    return 'A code can use letters, digits, dots, dashes, underscores and slashes — no spaces.';
+    return 'A code can use letters, digits, dots, dashes, underscores and slashes: no spaces.';
   }
   if (draft.barcode.trim() !== '' && !/^[0-9]{8,14}$/.test(draft.barcode.trim())) {
     return 'A barcode is 8 to 14 digits, with nothing else in it.';

@@ -26,9 +26,9 @@ export const revalidate = 300;
 type SearchParams = Record<string, string | string[] | undefined>;
 
 export const metadata: Metadata = {
-  title: 'Find a sparx partner — partner directory',
+  title: 'Find a sparx partner: partner directory',
   description:
-    'Browse sparx partners by the work you need doing, by tier, and by location. Consultants, agencies and developers who set businesses up on sparx and keep them running — contact them directly, with no introduction fee.',
+    'Browse sparx partners by the work you need doing, by tier, and by location. Consultants, agencies and developers who set businesses up on sparx and keep them running: contact them directly, with no introduction fee.',
   alternates: { canonical: '/partners/directory' },
   openGraph: {
     title: 'Find someone to build it with you',
@@ -153,7 +153,7 @@ function EmptyState({ filtered }: { filtered: boolean }) {
       </Heading>
       <Text variant="lead" className="max-w-2xl">
         {filtered
-          ? 'Try dropping a filter — the directory is young, so a narrow search often comes back empty where a wider one would not.'
+          ? 'Try dropping a filter: the directory is young, so a narrow search often comes back empty where a wider one would not.'
           : 'The program is opening now. If you build sites for other businesses, this is a good moment to be the first name on the page.'}
       </Text>
       <div className="flex flex-wrap gap-3">

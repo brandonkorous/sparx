@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Apex Test Prep — SAT, ACT & college-admissions coaching",
+      "seoTitle": "Apex Test Prep: SAT, ACT & college-admissions coaching",
       "seoDescription": "Apex Test Prep is one-on-one SAT, ACT, AP and admissions coaching built around your target score. Book a free diagnostic and strategy session online.",
       "root": {
         "kind": "element",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "One-on-one SAT, ACT, AP and admissions coaching built around your target — a clear plan, real practice tests, and coaches who’ve moved thousands of points. Start with a free diagnostic."
+                      "One-on-one SAT, ACT, AP and admissions coaching built around your target: a clear plan, real practice tests, and coaches who’ve moved thousands of points. Start with a free diagnostic."
                     ],
                     "id": "eaf1f62f-d927-4d4d-889d-ce3c2ff21764",
                     "ord": "a1"
@@ -664,7 +664,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Our students average a 140-point SAT jump and a 4-point ACT lift. We coach to the score, not to a syllabus — and we track every point."
+                              "Our students average a 140-point SAT jump and a 4-point ACT lift. We coach to the score, not to a syllabus, and we track every point."
                             ],
                             "id": "92ec2336-49d6-4409-98e8-5694b60cdfd3",
                             "ord": "a1"
@@ -745,7 +745,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Full-length, timed, official-format exams under real conditions — then a question-by-question review so test day feels like a rerun."
+                              "Full-length, timed, official-format exams under real conditions, then a question-by-question review so test day feels like a rerun."
                             ],
                             "id": "63f85df5-326c-4d7e-b7a6-bcfa62c296ed",
                             "ord": "a1"
@@ -1096,7 +1096,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every point on the SAT and ACT is predictable — which is why we start with a diagnostic that maps exactly where yours are being lost. No guessing, no generic worksheets."
+                          "Every point on the SAT and ACT is predictable, which is why we start with a diagnostic that maps exactly where yours are being lost. No guessing, no generic worksheets."
                         ],
                         "id": "1826488f-d55d-4d0e-864c-32105ddb7553",
                         "ord": "a1"
@@ -1171,7 +1171,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with the same coach every session, someone who knows your test cold."
+                          "Book by name: you’ll work with the same coach every session, someone who knows your test cold."
                         ],
                         "id": "1baa6e54-11c8-4625-9815-0ff62c994a46",
                         "ord": "a1"
@@ -1455,7 +1455,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Apex Test Prep",
+      "seoTitle": "Book: Apex Test Prep",
       "seoDescription": "See what Apex Test Prep offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1560,7 +1560,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "34207e89-c3ac-4d16-86e2-a0580f4ed17f",
                         "ord": "a1"
@@ -1630,7 +1630,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Apex Test Prep",
+      "seoTitle": "About: Apex Test Prep",
       "seoDescription": "Who Apex Test Prep is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1679,7 +1679,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Apex because test prep had become a box of tricks sold by the hour, disconnected from the one thing that matters: the score on the page. We do the opposite — every session is aimed at points, and every point is tracked."
+                          "We started Apex because test prep had become a box of tricks sold by the hour, disconnected from the one thing that matters: the score on the page. We do the opposite, every session is aimed at points, and every point is tracked."
                         ],
                         "id": "eae0861a-9903-40f7-8247-1af713d3a3a4",
                         "ord": "a1"
@@ -1821,7 +1821,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We track every practice-test score, so progress is a number you watch climb — not a feeling or a promise."
+                              "We track every practice-test score, so progress is a number you watch climb, not a feeling or a promise."
                             ],
                             "id": "6f793c59-b6c3-41e3-a9f5-ddc00fae68aa",
                             "ord": "a1"
@@ -1849,7 +1849,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Apex Test Prep",
+      "seoTitle": "Visit: Apex Test Prep",
       "seoDescription": "Where to find Apex Test Prep, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1886,7 +1886,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Apex Test Prep will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Apex Test Prep will get back to you, usually the same day."
                         ],
                         "id": "0d861f84-cfed-454f-8299-b57cbc8bc505",
                         "ord": "a1"
@@ -2338,7 +2338,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your free diagnostic online — no phone tag."
+                      "See live availability and reserve your free diagnostic online: no phone tag."
                     ],
                     "id": "c6ee3c8f-19d1-4428-b42a-2d5b0cc823d4",
                     "ord": "a1"

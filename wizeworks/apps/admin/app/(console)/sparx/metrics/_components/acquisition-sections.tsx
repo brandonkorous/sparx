@@ -224,7 +224,7 @@ export function AcquisitionBySource({ summary }: { summary: OperatorAcquisitionS
   return (
     <BreakdownCard
       title="By source"
-      description="The specific property a signup came from — a search engine, a directory, a partner."
+      description="The specific property a signup came from: a search engine, a directory, a partner."
       rows={summary.bySource}
       keyHeading="Source"
       showChannel

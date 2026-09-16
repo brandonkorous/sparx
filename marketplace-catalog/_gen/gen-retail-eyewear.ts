@@ -127,7 +127,7 @@ const ASSETS: Asset[] = [
     { id: 'prod-focus', url: src('prod-focus'), alt: 'The Focus blue-light glasses' },
     { id: 'prod-ridley', url: src('prod-ridley'), alt: 'The Ridley reading glasses' },
     { id: 'prod-tryon', url: src('prod-tryon'), alt: 'The home try-on kit box open with five frames' },
-    { id: 'prod-care', url: src('prod-care'), alt: 'The care kit — cloth, spray and hard case' },
+    { id: 'prod-care', url: src('prod-care'), alt: 'The care kit: cloth, spray and hard case' },
     { id: 'post-choose', url: src('post-choose'), alt: 'Several frames laid out to compare on a table' },
     { id: 'post-lenses', url: src('post-lenses'), alt: 'A lens catalogue and a pair of frames on a bench' },
     { id: 'post-faces', url: src('post-faces'), alt: 'A portrait fitting different frame shapes' },
@@ -160,7 +160,7 @@ function hero(): Node {
                                     text: 'Frames worth looking twice at.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Frame & Lens designs eyewear in-house and sells it direct, so you get frames that would cost three times as much on the high street. Every pair ships with prescription, blue-light or sun lenses — and you can try five at home, free, before you spend a penny.',
+                                    text: 'Frame & Lens designs eyewear in-house and sells it direct, so you get frames that would cost three times as much on the high street. Every pair ships with prescription, blue-light or sun lenses, and you can try five at home, free, before you spend a penny.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -253,7 +253,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New this season' }),
     editorialBand({
         heading: 'Try five at home, free',
-        lead: 'Pick any five frames and we’ll send them to you to try for five days — no charge, no deposit, return shipping included. Live with them, take photos, ask the group chat. Keep the one you love and send the rest back; only then do you pay.',
+        lead: 'Pick any five frames and we’ll send them to you to try for five days: no charge, no deposit, return shipping included. Live with them, take photos, ask the group chat. Keep the one you love and send the rest back; only then do you pay.',
         assetId: 'eyewear-band-tryon',
         cta: 'How home try-on works',
         href: '/shop/home-try-on',
@@ -262,7 +262,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.optical', layout: 'carousel', heading: 'Optical frames' }),
     editorialBand({
         heading: 'Lenses done properly',
-        lead: 'Every pair is glazed to order in our own lab with anti-glare, scratch-resistant lenses as standard — single vision, progressive, blue-light or polarised sun. Send us your prescription at checkout, or add it later. No upsells, no surprise fees.',
+        lead: 'Every pair is glazed to order in our own lab with anti-glare, scratch-resistant lenses as standard: single vision, progressive, blue-light or polarised sun. Send us your prescription at checkout, or add it later. No upsells, no surprise fees.',
         assetId: 'eyewear-band-lenses',
         cta: 'How our lenses work',
         href: '/blog/lens-options-explained',
@@ -307,7 +307,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Glazed to your prescription' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Choose your lens type at checkout and add your prescription now or later — we’ll email a reminder. Anti-glare and scratch-resistant coatings come as standard, cut and fitted in our own lab, and every pair ships in a protective case with a cloth.',
+                                        text: 'Choose your lens type at checkout and add your prescription now or later: we’ll email a reminder. Anti-glare and scratch-resistant coatings come as standard, cut and fitted in our own lab, and every pair ships in a protective case with a cloth.',
                                     }),
                                 ],
                             }),
@@ -346,11 +346,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop eyewear',
-        'Every frame we make — optical, sunglasses, blue-light and reading — each in its own colorways with the lens choice built in. Filter by shape or category, or sort however you like; all of it comes with our free home try-on.'
+        'Every frame we make (optical, sunglasses, blue-light and reading) each in its own colorways with the lens choice built in. Filter by shape or category, or sort however you like; all of it comes with our free home try-on.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The frames grouped the way people actually shop — new arrivals, the best sellers, the optical line, sunglasses, blue-light, and the free home try-on kit to start with.'),
+    pageMasthead('Collections', 'The frames grouped the way people actually shop: new arrivals, the best sellers, the optical line, sunglasses, blue-light, and the free home try-on kit to start with.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Frame & Lens', 'Looking for a shape, a color, or a lens guide? Search the whole shop and the journal below.'),
@@ -362,7 +362,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping and free returns, always — and 30 days to change your mind on any pair. Not sure of your prescription? Add it after checkout; we’ll hold your order and email you a reminder.',
+                        text: 'Free shipping and free returns, always, and 30 days to change your mind on any pair. Not sure of your prescription? Add it after checkout; we’ll hold your order and email you a reminder.',
                     }),
                 ],
             }),
@@ -376,7 +376,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Frame & Lens journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Plain, useful guides to buying glasses online — how to choose a frame, what the lens options actually mean, and which shapes suit which faces. No jargon, no pressure.',
+                        text: 'Plain, useful guides to buying glasses online: how to choose a frame, what the lens options actually mean, and which shapes suit which faces. No jargon, no pressure.',
                     }),
                 ],
             }),
@@ -393,13 +393,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Frame & Lens' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Frame & Lens started with a simple frustration: a pair of glasses that cost forty pounds to make was selling for three hundred, and nobody could tell you why. So we cut out the middle. We design our frames in-house, make them from Italian acetate and Japanese titanium, and sell them direct — which is how a genuinely good pair lands at a genuinely fair price.',
+                        text: 'Frame & Lens started with a simple frustration: a pair of glasses that cost forty pounds to make was selling for three hundred, and nobody could tell you why. So we cut out the middle. We design our frames in-house, make them from Italian acetate and Japanese titanium, and sell them direct, which is how a genuinely good pair lands at a genuinely fair price.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'Buying glasses online sounds like a leap, so we built it to feel like the opposite. Order the home try-on kit and five frames arrive to live with for five days, free. Keep the one that fits your face and your life, send the rest back, and we’ll glaze it to your prescription in our own lab.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No pushy add-ons, no lens jargon, no “anti-reflective upgrade” at the till — the coatings that matter come as standard. Just well-made eyewear, an honest price, and a way to be sure before you buy.',
+                        text: 'No pushy add-ons, no lens jargon, no “anti-reflective upgrade” at the till: the coatings that matter come as standard. Just well-made eyewear, an honest price, and a way to be sure before you buy.',
                     }),
                 ],
             }),
@@ -414,7 +414,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'Not sure which frame suits you, need help reading your prescription, or want to check on an order? Tell us what you’re after and a real person on our team — not a bot — will get back to you.',
+        intro: 'Not sure which frame suits you, need help reading your prescription, or want to check on an order? Tell us what you’re after and a real person on our team (not a bot) will get back to you.',
         submitLabel: 'Email the team',
     }),
 ];
@@ -512,7 +512,7 @@ const PRODUCTS: Product[] = [
         handle: 'ashby',
         title: 'Ashby',
         description:
-            'A slim round frame in lightweight metal — the quiet all-rounder that suits almost everyone. Sculpted nose pads and spring hinges keep it comfortable all day, and the keyhole bridge gives it a bit of vintage character without shouting about it.',
+            'A slim round frame in lightweight metal: the quiet all-rounder that suits almost everyone. Sculpted nose pads and spring hinges keep it comfortable all day, and the keyhole bridge gives it a bit of vintage character without shouting about it.',
         price: 145,
         sku: 'FL-ASHBY',
         categories: ['optical'],
@@ -520,7 +520,7 @@ const PRODUCTS: Product[] = [
         tags: ['optical', 'round', 'metal', 'unisex'],
         asset: 'prod-ashby',
         colors: ['Gold', 'Black', 'Silver'],
-        seoTitle: 'Ashby — round metal optical frames | Frame & Lens',
+        seoTitle: 'Ashby: round metal optical frames | Frame & Lens',
         seoDescription: 'A slim, lightweight round metal frame with spring hinges and a keyhole bridge. Prescription or blue-light.',
     }),
     frame({
@@ -534,28 +534,28 @@ const PRODUCTS: Product[] = [
         collections: ['new-arrivals', 'optical-frames'],
         tags: ['optical', 'rectangle', 'acetate', 'bold'],
         asset: 'prod-marlowe',
-        seoTitle: 'Marlowe — bold acetate optical frames | Frame & Lens',
+        seoTitle: 'Marlowe: bold acetate optical frames | Frame & Lens',
         seoDescription: 'A bold rectangular Italian-acetate frame in hand-finished tortoise, matte black or crystal. Prescription or blue-light.',
     }),
     frame({
         handle: 'juno',
         title: 'Juno',
         description:
-            'A modern cat-eye with a soft upsweep — flattering, feminine and never fussy. Lifted outer corners open up the face and the low-set hinges keep the silhouette clean. A little bit of an occasion, in a frame you can wear every day.',
+            'A modern cat-eye with a soft upsweep: flattering, feminine and never fussy. Lifted outer corners open up the face and the low-set hinges keep the silhouette clean. A little bit of an occasion, in a frame you can wear every day.',
         price: 150,
         sku: 'FL-JUNO',
         categories: ['optical'],
         collections: ['optical-frames', 'best-sellers'],
         tags: ['optical', 'cat-eye', 'acetate'],
         asset: 'prod-juno',
-        seoTitle: 'Juno — cat-eye optical frames | Frame & Lens',
+        seoTitle: 'Juno: cat-eye optical frames | Frame & Lens',
         seoDescription: 'A soft, modern cat-eye in Italian acetate with a flattering upsweep. Prescription or blue-light.',
     }),
     frame({
         handle: 'quill',
         title: 'Quill',
         description:
-            'A barely-there frame in Japanese titanium — you forget you’re wearing it. Half the weight of acetate, flexible enough to survive real life, and hypoallergenic for anyone who reacts to cheaper metals. The choice when you want your glasses to disappear.',
+            'A barely-there frame in Japanese titanium. You forget you’re wearing it. Half the weight of acetate, flexible enough to survive real life, and hypoallergenic for anyone who reacts to cheaper metals. The choice when you want your glasses to disappear.',
         price: 175,
         sku: 'FL-QUILL',
         categories: ['optical'],
@@ -563,14 +563,14 @@ const PRODUCTS: Product[] = [
         tags: ['optical', 'titanium', 'rimless', 'lightweight'],
         asset: 'prod-quill',
         colors: ['Gunmetal', 'Rose gold', 'Black'],
-        seoTitle: 'Quill — titanium optical frames | Frame & Lens',
-        seoDescription: 'A featherlight, flexible Japanese-titanium frame — hypoallergenic and barely there. Prescription or blue-light.',
+        seoTitle: 'Quill: titanium optical frames | Frame & Lens',
+        seoDescription: 'A featherlight, flexible Japanese-titanium frame: hypoallergenic and barely there. Prescription or blue-light.',
     }),
     frame({
         handle: 'ridley',
         title: 'Ridley Readers',
         description:
-            'A proper pair of reading glasses, not a chemist’s afterthought. The same acetate and hinges as our optical line, glazed with magnified reading lenses in the strength you choose — so the pair on your bedside table looks as good as the one on your face.',
+            'A proper pair of reading glasses, not a chemist’s afterthought. The same acetate and hinges as our optical line, glazed with magnified reading lenses in the strength you choose, so the pair on your bedside table looks as good as the one on your face.',
         price: 95,
         sku: 'FL-RIDLEY',
         categories: ['optical'],
@@ -578,14 +578,14 @@ const PRODUCTS: Product[] = [
         tags: ['reading', 'acetate', 'optical'],
         asset: 'prod-ridley',
         lenses: ['+1.00', '+1.50', '+2.00', '+2.50'],
-        seoTitle: 'Ridley Readers — designer reading glasses | Frame & Lens',
+        seoTitle: 'Ridley Readers: designer reading glasses | Frame & Lens',
         seoDescription: 'Well-made reading glasses in Italian acetate, glazed to the reading strength you choose. Tortoise, black or crystal.',
     }),
     frame({
         handle: 'coast',
         title: 'Coast',
         description:
-            'A slim keyhole sunglass with a retro edge and full UV400 protection — bright, clear and light on the face. Add polarised lenses to cut glare off water and roads, or take them prescription so you finally stop squinting through borrowed shades.',
+            'A slim keyhole sunglass with a retro edge and full UV400 protection: bright, clear and light on the face. Add polarised lenses to cut glare off water and roads, or take them prescription so you finally stop squinting through borrowed shades.',
         price: 135,
         sku: 'FL-COAST',
         categories: ['sunglasses'],
@@ -593,14 +593,14 @@ const PRODUCTS: Product[] = [
         tags: ['sunglasses', 'uv400', 'acetate'],
         asset: 'prod-coast',
         lenses: ['Classic tint', 'Polarised', 'Prescription sun'],
-        seoTitle: 'Coast — keyhole sunglasses | Frame & Lens',
-        seoDescription: 'A slim keyhole sunglass with UV400 protection — classic tint, polarised or prescription. Tortoise, black or crystal.',
+        seoTitle: 'Coast: keyhole sunglasses | Frame & Lens',
+        seoDescription: 'A slim keyhole sunglass with UV400 protection: classic tint, polarised or prescription. Tortoise, black or crystal.',
     }),
     frame({
         handle: 'dune',
         title: 'Dune',
         description:
-            'An oversized sunglass that means it — generous coverage, a strong brow line and lenses dark enough for real sun. Substantial without being heavy, thanks to a hollow-core acetate. The pair you reach for on the brightest days and the longest drives.',
+            'An oversized sunglass that means it: generous coverage, a strong brow line and lenses dark enough for real sun. Substantial without being heavy, thanks to a hollow-core acetate. The pair you reach for on the brightest days and the longest drives.',
         price: 140,
         sku: 'FL-DUNE',
         categories: ['sunglasses'],
@@ -609,8 +609,8 @@ const PRODUCTS: Product[] = [
         asset: 'prod-dune',
         colors: ['Tortoise', 'Black', 'Honey'],
         lenses: ['Classic tint', 'Polarised', 'Prescription sun'],
-        seoTitle: 'Dune — oversized sunglasses | Frame & Lens',
-        seoDescription: 'An oversized sunglass with generous coverage and UV400 lenses — classic, polarised or prescription. Tortoise, black or honey.',
+        seoTitle: 'Dune: oversized sunglasses | Frame & Lens',
+        seoDescription: 'An oversized sunglass with generous coverage and UV400 lenses: classic, polarised or prescription. Tortoise, black or honey.',
     }),
     frame({
         handle: 'focus',
@@ -624,21 +624,21 @@ const PRODUCTS: Product[] = [
         tags: ['blue-light', 'screen', 'acetate'],
         asset: 'prod-focus',
         lenses: ['Non-prescription', 'Prescription'],
-        seoTitle: 'Focus — blue-light glasses | Frame & Lens',
-        seoDescription: 'Blue-light filtering screen glasses that cut glare and eye strain — plano or prescription. Tortoise, black or crystal.',
+        seoTitle: 'Focus: blue-light glasses | Frame & Lens',
+        seoDescription: 'Blue-light filtering screen glasses that cut glare and eye strain: plano or prescription. Tortoise, black or crystal.',
     }),
     {
         handle: 'home-try-on',
         title: 'Home Try-On Kit',
         description:
-            'Choose any five frames and we’ll send them to you to try for five days — free, with return shipping included and no deposit taken. Wear them, photograph them, ask everyone you know. Keep the one you love and send the rest back; you only pay when you order the real pair, glazed to your prescription.',
+            'Choose any five frames and we’ll send them to you to try for five days: free, with return shipping included and no deposit taken. Wear them, photograph them, ask everyone you know. Keep the one you love and send the rest back; you only pay when you order the real pair, glazed to your prescription.',
         status: 'active',
         productType: 'Service',
         vendor: 'Frame & Lens',
         tags: ['home-try-on', 'free', 'service'],
         categoryHandles: ['accessories'],
         collectionHandles: ['home-try-on', 'new-arrivals'],
-        seoTitle: 'Home Try-On Kit — five frames, five days, free | Frame & Lens',
+        seoTitle: 'Home Try-On Kit: five frames, five days, free | Frame & Lens',
         seoDescription: 'Try any five Frame & Lens frames at home for five days, free, with return shipping included. No deposit.',
         variants: [{ sku: 'FL-TRYON', priceCents: money(0), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-tryon', isPrimary: true, alt: 'A home try-on kit box with five frames' }],
@@ -647,17 +647,17 @@ const PRODUCTS: Product[] = [
         handle: 'care-kit',
         title: 'Care Kit',
         description:
-            'Everything to keep a pair looking new — a microfibre cloth, an alcohol-free lens spray that won’t strip your coatings, and a slim hard case that actually fits in a bag. The small kit that makes good glasses last for years.',
+            'Everything to keep a pair looking new: a microfibre cloth, an alcohol-free lens spray that won’t strip your coatings, and a slim hard case that actually fits in a bag. The small kit that makes good glasses last for years.',
         status: 'active',
         productType: 'Accessory',
         vendor: 'Frame & Lens',
         tags: ['accessories', 'care', 'case'],
         categoryHandles: ['accessories'],
         collectionHandles: ['home-try-on'],
-        seoTitle: 'Care Kit — lens cloth, spray & case | Frame & Lens',
+        seoTitle: 'Care Kit: lens cloth, spray & case | Frame & Lens',
         seoDescription: 'A microfibre cloth, alcohol-free lens spray and a slim hard case to keep your glasses looking new.',
         variants: [{ sku: 'FL-CARE', priceCents: money(15), isDefault: true, inventoryPolicy: 'continue' }],
-        images: [{ assetId: 'prod-care', isPrimary: true, alt: 'A care kit — cloth, spray and hard case' }],
+        images: [{ assetId: 'prod-care', isPrimary: true, alt: 'A care kit: cloth, spray and hard case' }],
     },
 ];
 
@@ -712,7 +712,7 @@ const COMMERCE = {
         {
             handle: 'home-try-on',
             name: 'Start here',
-            description: 'Try five at home, free — and keep them cared for.',
+            description: 'Try five at home, free, and keep them cared for.',
             type: 'manual',
             featured: true,
             productHandles: ['home-try-on', 'care-kit'],
@@ -738,11 +738,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The thing that stops most people buying glasses online is simple: you can’t try them on. But a frame either fits your face or it doesn’t, and fit comes down to a few measurements you can actually check — plus a free home try-on for everything a number can’t tell you.'),
+                    para('The thing that stops most people buying glasses online is simple: you can’t try them on. But a frame either fits your face or it doesn’t, and fit comes down to a few measurements you can actually check, plus a free home try-on for everything a number can’t tell you.'),
                     h2('The three numbers that matter'),
                     para('Look at the inside of a pair you already own and you’ll find three numbers printed on the arm, like 52–18–145. The first is the lens width, the second the bridge (the gap over your nose), and the third the arm length. Match those roughly and a new frame will sit about where your current one does. Our size guide lists all three for every frame, so you can shop by fit, not guesswork.'),
                     h2('Then let the try-on do the rest'),
-                    para('Numbers get you close; your face does the deciding. Order the free home try-on kit, pick five frames, and live with them for a few days — see them in daylight, in a work call, in a photo. That’s how you catch the ones that looked great flat on a screen but wrong on you, and it costs nothing to find out.'),
+                    para('Numbers get you close; your face does the deciding. Order the free home try-on kit, pick five frames, and live with them for a few days: see them in daylight, in a work call, in a photo. That’s how you catch the ones that looked great flat on a screen but wrong on you, and it costs nothing to find out.'),
                 ],
             },
         },
@@ -753,16 +753,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Lens options, explained in plain English',
-            excerpt: 'Single vision, progressive, blue-light, polarised — the lens menu is where glasses get confusing and overpriced. Here’s what each one actually is, and what you really need.',
+            excerpt: 'Single vision, progressive, blue-light, polarised: the lens menu is where glasses get confusing and overpriced. Here’s what each one actually is, and what you really need.',
             featuredImage: { $asset: 'post-lenses' },
             body: {
                 type: 'doc',
                 content: [
                     para('The frame is the easy part. The lens menu is where buying glasses turns into a foreign language and the price quietly doubles. Here’s the whole thing in plain terms, and what most people actually need.'),
                     h2('Single vision vs progressive'),
-                    para('Single vision lenses correct one distance — reading, or seeing far away — and cover the whole lens with that one prescription. Progressives blend several corrections into one lens, so you can read up close and see across the room without swapping glasses; they cost more and take a week or so to get used to. If your prescription has an “ADD” value, you’re a candidate for progressives; if not, single vision is all you need.'),
+                    para('Single vision lenses correct one distance (reading, or seeing far away) and cover the whole lens with that one prescription. Progressives blend several corrections into one lens, so you can read up close and see across the room without swapping glasses; they cost more and take a week or so to get used to. If your prescription has an “ADD” value, you’re a candidate for progressives; if not, single vision is all you need.'),
                     h2('Coatings and the extras'),
-                    para('Anti-glare and scratch-resistant coatings genuinely help, and we include both as standard — you’ll never see them as a checkout upsell here. Blue-light filtering reduces glare from screens and is worth it if you’re at a laptop all day. Polarised sun lenses cut reflected glare off water and roads, which is why they’re the pick for driving and the beach. Everything else on a typical lens menu is optional; ignore it with a clear conscience.'),
+                    para('Anti-glare and scratch-resistant coatings genuinely help, and we include both as standard: you’ll never see them as a checkout upsell here. Blue-light filtering reduces glare from screens and is worth it if you’re at a laptop all day. Polarised sun lenses cut reflected glare off water and roads, which is why they’re the pick for driving and the beach. Everything else on a typical lens menu is optional; ignore it with a clear conscience.'),
                 ],
             },
         },
@@ -773,16 +773,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Which frames suit your face shape',
-            excerpt: 'The old rule is “balance and contrast” — round softens angles, angular sharpens curves. Here’s how that plays out for the four common face shapes, with the frames to start from.',
+            excerpt: 'The old rule is “balance and contrast” round softens angles, angular sharpens curves. Here’s how that plays out for the four common face shapes, with the frames to start from.',
             featuredImage: { $asset: 'post-faces' },
             body: {
                 type: 'doc',
                 content: [
-                    para('There’s one idea behind every face-shape guide: balance and contrast. A frame that contrasts with your face shape tends to flatter it — soft frames on angular faces, angular frames on soft ones — while a frame that echoes your shape can amplify it. Here’s the short version for the four common shapes.'),
+                    para('There’s one idea behind every face-shape guide: balance and contrast. A frame that contrasts with your face shape tends to flatter it (soft frames on angular faces, angular frames on soft ones) while a frame that echoes your shape can amplify it. Here’s the short version for the four common shapes.'),
                     h2('Round and square faces'),
-                    para('If your face is round, with soft curves and similar width and length, a more angular frame adds definition — a rectangle like the Marlowe, or a cat-eye like the Juno, gives you edges to contrast against. If your face is square, with a strong jaw and broad forehead, do the opposite: soften it with a round frame like the Ashby or the barely-there Quill.'),
+                    para('If your face is round, with soft curves and similar width and length, a more angular frame adds definition: a rectangle like the Marlowe, or a cat-eye like the Juno, gives you edges to contrast against. If your face is square, with a strong jaw and broad forehead, do the opposite: soften it with a round frame like the Ashby or the barely-there Quill.'),
                     h2('Oval and heart faces'),
-                    para('Oval faces are the lucky ones — balanced proportions mean almost anything works, so shop by the look you want rather than the rule. Heart-shaped faces are widest at the forehead and narrow to the chin; a frame that’s wider at the bottom, or a light round like the Ashby, evens things out. When in doubt, try five at home and trust the photos over the theory.'),
+                    para('Oval faces are the lucky ones: balanced proportions mean almost anything works, so shop by the look you want rather than the rule. Heart-shaped faces are widest at the forehead and narrow to the chin; a frame that’s wider at the bottom, or a light round like the Ashby, evens things out. When in doubt, try five at home and trust the photos over the theory.'),
                 ],
             },
         },
@@ -797,7 +797,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Eyewear (Modern)',
     theme: THEME,
     summary:
-        'A complete, working shop for a direct-to-consumer eyewear brand: a real catalogue of optical frames (each in its own colorways with a lens choice), sunglasses, a blue-light pair, reading glasses, a free home try-on kit and a care accessory, with categories, collections, a bespoke eyewear PDP and a fully merchandised home page. Modern fashion-optical theme — crisp warm-neutral paper, a deep-teal primary, a warm tortoise accent. Shipped as Frame & Lens.',
+        'A complete, working shop for a direct-to-consumer eyewear brand: a real catalogue of optical frames (each in its own colorways with a lens choice), sunglasses, a blue-light pair, reading glasses, a free home try-on kit and a care accessory, with categories, collections, a bespoke eyewear PDP and a fully merchandised home page. Modern fashion-optical theme, crisp warm-neutral paper, a deep-teal primary, a warm tortoise accent. Shipped as Frame & Lens.',
     tagline: 'A modern, working storefront for a direct-to-consumer eyewear brand.',
     vertical: 'retail',
     industry: 'Eyewear & optical',
@@ -810,14 +810,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Frame & Lens — designer eyewear at an honest price',
+            title: 'Frame & Lens: designer eyewear at an honest price',
             description:
-                'Frame & Lens designs eyewear in-house and sells it direct — optical, sunglasses, blue-light and reading frames with prescription lenses, and a free home try-on. Great frames, honest prices.',
+                'Frame & Lens designs eyewear in-house and sells it direct: optical, sunglasses, blue-light and reading frames with prescription lenses, and a free home try-on. Great frames, honest prices.',
         },
         about: {
             title: 'About Frame & Lens',
             description:
-                'Why Frame & Lens designs its own frames and sells them direct — Italian acetate, Japanese titanium, honest prices, and a free home try-on so you’re sure before you buy.',
+                'Why Frame & Lens designs its own frames and sells them direct: Italian acetate, Japanese titanium, honest prices, and a free home try-on so you’re sure before you buy.',
         },
     },
     home: HOME,

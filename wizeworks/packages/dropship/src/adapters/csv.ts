@@ -248,7 +248,7 @@ export class CsvAdapter implements SupplierAdapter {
     const mapping = toColumnMapping(this.creds);
     if (!mapping.supplierProductId || !mapping.title || !mapping.sku || !mapping.costPrice) {
       throw new Error(
-        'CSV column mapping is incomplete — Product ID, Title, SKU, and Cost price columns are all required.'
+        'CSV column mapping is incomplete: Product ID, Title, SKU, and Cost price columns are all required.'
       );
     }
     const res = await fetch(csvUrl, { signal: AbortSignal.timeout(60_000) });

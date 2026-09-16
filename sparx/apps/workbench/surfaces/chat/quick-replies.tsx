@@ -244,7 +244,7 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                What you will recognise it by in the list — the visitor never sees this.
+                What you will recognize it by in the list: the visitor never sees this.
               </FieldDescription>
             </Field>
 
@@ -332,7 +332,7 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
             {isError ? (
               <div className="p-4">
                 <Text className="text-sm">
-                  Could not load your saved replies. This is a problem reaching the server — try
+                  Could not load your saved replies. This is a problem reaching the server. Try
                   refreshing.
                 </Text>
               </div>
@@ -344,7 +344,7 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
               <EmptyState
                 icon={<MessageSquareText className="size-6" aria-hidden />}
                 title="No quick replies yet"
-                description="Add your first one above — the answers you send most often are the ones worth saving."
+                description="Add your first one above: the answers you send most often are the ones worth saving."
               />
             ) : (
               <ul>

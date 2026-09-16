@@ -102,8 +102,8 @@
   "products": [
     {
       "handle": "cast-sign-vinyl-roll",
-      "title": "Cast Sign Vinyl — 30 in Roll",
-      "description": "Premium 2-mil cast vinyl for vehicle wraps, decals and long-term outdoor signage — conformable, 7-year outdoor durability, with an air-release adhesive that lays down bubble-free. 30\" x 50 yd roll. MOQ 1 roll. Pick gloss for pop or matte for a wrapped-satin finish.",
+      "title": "Cast Sign Vinyl: 30 in Roll",
+      "description": "Premium 2-mil cast vinyl for vehicle wraps, decals and long-term outdoor signage: conformable, 7-year outdoor durability, with an air-release adhesive that lays down bubble-free. 30\" x 50 yd roll. MOQ 1 roll. Pick gloss for pop or matte for a wrapped-satin finish.",
       "status": "active",
       "productType": "Vinyl",
       "vendor": "Inkyard Trade Supply",
@@ -155,8 +155,8 @@
     },
     {
       "handle": "heat-transfer-vinyl-roll",
-      "title": "Heat-Transfer Vinyl — 20 in Roll",
-      "description": "PU heat-transfer vinyl for garment decoration — thin, matte, and stretchable, with a hot-peel carrier that weeds clean and layers without bulk. 20\" x 5 yd roll. MOQ 3 rolls — buy the colors your jobs run and keep the press fed. Pick your color.",
+      "title": "Heat-Transfer Vinyl: 20 in Roll",
+      "description": "PU heat-transfer vinyl for garment decoration: thin, matte, and stretchable, with a hot-peel carrier that weeds clean and layers without bulk. 20\" x 5 yd roll. MOQ 3 rolls, buy the colors your jobs run and keep the press fed. Pick your color.",
       "status": "active",
       "productType": "HTV",
       "vendor": "Inkyard Trade Supply",
@@ -219,8 +219,8 @@
     },
     {
       "handle": "application-tape-roll",
-      "title": "Application Transfer Tape — 24 in Roll",
-      "description": "Medium-tack paper application tape for transferring cut vinyl to the surface clean and straight — lays flat, releases without lifting the graphic, and takes a squeegee without tearing. 24\" x 100 yd roll. MOQ 2 rolls. The consumable every sign job burns through.",
+      "title": "Application Transfer Tape: 24 in Roll",
+      "description": "Medium-tack paper application tape for transferring cut vinyl to the surface clean and straight: lays flat, releases without lifting the graphic, and takes a squeegee without tearing. 24\" x 100 yd roll. MOQ 2 rolls. The consumable every sign job burns through.",
       "status": "active",
       "productType": "Application tape",
       "vendor": "Inkyard Trade Supply",
@@ -241,14 +241,14 @@
         {
           "assetId": "prod-app-tape",
           "isPrimary": true,
-          "alt": "Application Transfer Tape — 24 in Roll"
+          "alt": "Application Transfer Tape: 24 in Roll"
         }
       ]
     },
     {
       "handle": "scrim-banner-media-roll",
-      "title": "Scrim Banner Media — 54 in Roll",
-      "description": "Matte scrim vinyl banner media for wide-format eco-solvent and latex printers — a tough polyester-reinforced base that takes ink sharp and grommets without cracking. 54\" x 164 ft roll. MOQ 1 roll. Pick the weight your job needs — 13oz for indoor and short runs, 15oz for outdoor and wind.",
+      "title": "Scrim Banner Media: 54 in Roll",
+      "description": "Matte scrim vinyl banner media for wide-format eco-solvent and latex printers: a tough polyester-reinforced base that takes ink sharp and grommets without cracking. 54\" x 164 ft roll. MOQ 1 roll. Pick the weight your job needs, 13oz for indoor and short runs, 15oz for outdoor and wind.",
       "status": "active",
       "productType": "Banner media",
       "vendor": "Inkyard Trade Supply",
@@ -300,8 +300,8 @@
     },
     {
       "handle": "overlaminate-film-roll",
-      "title": "Overlaminate Film — 30 in Roll",
-      "description": "Cast overlaminate to protect printed wraps and decals from UV, abrasion and wash — optically clear, conformable to match the print vinyl, with an air-release adhesive for a clean lamination. 30\" x 50 yd roll. MOQ 1 roll. Match gloss to gloss or matte for a low-glare finish.",
+      "title": "Overlaminate Film: 30 in Roll",
+      "description": "Cast overlaminate to protect printed wraps and decals from UV, abrasion and wash: optically clear, conformable to match the print vinyl, with an air-release adhesive for a clean lamination. 30\" x 50 yd roll. MOQ 1 roll. Match gloss to gloss or matte for a low-glare finish.",
       "status": "active",
       "productType": "Laminate",
       "vendor": "Inkyard Trade Supply",
@@ -353,8 +353,8 @@
     },
     {
       "handle": "foam-board-pack",
-      "title": "Foam Board, 32 x 40 in — Pack of 25",
-      "description": "White-faced 3/16\" foam board for mounted prints, presentation signage and short-run point-of-sale — rigid, lightweight, and cuts clean on a plotter or a straightedge. Pack of 25 sheets, 32\" x 40\". MOQ 1 pack. The mount-and-display board a sign shop keeps on hand.",
+      "title": "Foam Board, 32 x 40 in: Pack of 25",
+      "description": "White-faced 3/16\" foam board for mounted prints, presentation signage and short-run point-of-sale: rigid, lightweight, and cuts clean on a plotter or a straightedge. Pack of 25 sheets, 32\" x 40\". MOQ 1 pack. The mount-and-display board a sign shop keeps on hand.",
       "status": "active",
       "productType": "Board",
       "vendor": "Inkyard Trade Supply",
@@ -375,14 +375,14 @@
         {
           "assetId": "prod-foam-board",
           "isPrimary": true,
-          "alt": "Foam Board, 32 x 40 in — Pack of 25"
+          "alt": "Foam Board, 32 x 40 in: Pack of 25"
         }
       ]
     },
     {
       "handle": "eco-solvent-ink-set",
-      "title": "Eco-Solvent Ink — CMYK Set",
-      "description": "A four-color CMYK set of eco-solvent ink for wide-format printers — bright, weatherproof, and profiled for banner, vinyl and film, in 440 mL cartridges that run clean without clogging heads. Set of 4 (C, M, Y, K). MOQ 1 set. Keep a spare set on the shelf so a color-out never stops a job.",
+      "title": "Eco-Solvent Ink: CMYK Set",
+      "description": "A four-color CMYK set of eco-solvent ink for wide-format printers: bright, weatherproof, and profiled for banner, vinyl and film, in 440 mL cartridges that run clean without clogging heads. Set of 4 (C, M, Y, K). MOQ 1 set. Keep a spare set on the shelf so a color-out never stops a job.",
       "status": "active",
       "productType": "Ink",
       "vendor": "Inkyard Trade Supply",
@@ -403,14 +403,14 @@
         {
           "assetId": "prod-eco-ink",
           "isPrimary": true,
-          "alt": "Eco-Solvent Ink — CMYK Set"
+          "alt": "Eco-Solvent Ink: CMYK Set"
         }
       ]
     },
     {
       "handle": "dye-sublimation-ink-set",
-      "title": "Dye-Sublimation Ink — CMYK Set",
-      "description": "A four-color CMYK set of dye-sublimation ink for transfer printing onto polyester and coated blanks — high color yield, sharp gradients, and a stable formula that sublimates evenly at press temperature. Set of 4 x 1 L bottles. MOQ 1 set. The ink behind every mug, tumbler and poly tee.",
+      "title": "Dye-Sublimation Ink: CMYK Set",
+      "description": "A four-color CMYK set of dye-sublimation ink for transfer printing onto polyester and coated blanks: high color yield, sharp gradients, and a stable formula that sublimates evenly at press temperature. Set of 4 x 1 L bottles. MOQ 1 set. The ink behind every mug, tumbler and poly tee.",
       "status": "active",
       "productType": "Ink",
       "vendor": "Inkyard Trade Supply",
@@ -431,14 +431,14 @@
         {
           "assetId": "prod-subli-ink",
           "isPrimary": true,
-          "alt": "Dye-Sublimation Ink — CMYK Set"
+          "alt": "Dye-Sublimation Ink: CMYK Set"
         }
       ]
     },
     {
       "handle": "sublimation-blank-mugs-case",
-      "title": "Sublimation Blank Mugs — Case of 36",
-      "description": "White polymer-coated ceramic blanks for dye-sublimation, a case of 36 — an even coating that takes a full-wrap transfer edge to edge with bright, wash-durable color. MOQ 1 case. Pick the size your line presses — the everyday 11oz or the roomier 15oz.",
+      "title": "Sublimation Blank Mugs: Case of 36",
+      "description": "White polymer-coated ceramic blanks for dye-sublimation, a case of 36: an even coating that takes a full-wrap transfer edge to edge with bright, wash-durable color. MOQ 1 case. Pick the size your line presses, the everyday 11oz or the roomier 15oz.",
       "status": "active",
       "productType": "Blank",
       "vendor": "Inkyard Trade Supply",
@@ -491,7 +491,7 @@
     {
       "handle": "shop-starter-media-kit",
       "title": "Shop Starter Media Kit",
-      "description": "A curated kit of the media a new sign or print shop runs out of first — a roll of cast vinyl, a roll of application tape, a roll of banner, and a set of HTV colors, packed together and priced below the sum of the rolls. MOQ 1 kit. The fastest way to stock a floor from empty.",
+      "description": "A curated kit of the media a new sign or print shop runs out of first: a roll of cast vinyl, a roll of application tape, a roll of banner, and a set of HTV colors, packed together and priced below the sum of the rolls. MOQ 1 kit. The fastest way to stock a floor from empty.",
       "status": "active",
       "productType": "Kit",
       "vendor": "Inkyard Trade Supply",
@@ -499,7 +499,7 @@
       "categoryHandles": ["media-board"],
       "collectionHandles": ["new-in", "print-shop-essentials"],
       "seoTitle": "Shop Starter Media Kit | Inkyard Trade Supply",
-      "seoDescription": "A curated starter kit of essential print-shop media — cast vinyl, application tape, banner and HTV, priced below the sum.",
+      "seoDescription": "A curated starter kit of essential print-shop media: cast vinyl, application tape, banner and HTV, priced below the sum.",
       "variants": [
         {
           "sku": "IYD-KIT-STARTER",

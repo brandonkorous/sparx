@@ -92,7 +92,7 @@ export function AddSuppressionModal({ open, onClose }: { open: boolean; onClose:
             title: 'Could not add that address',
             description: suppressionErrorMessage(
               err,
-              'Something went wrong reaching the server. Nothing was changed — try again in a moment.'
+              'Something went wrong reaching the server. Nothing was changed. Try again in a moment.'
             ),
             type: 'error',
           });
@@ -166,7 +166,7 @@ export function AddSuppressionModal({ open, onClose }: { open: boolean; onClose:
             </Field>
 
             <Text className="text-sm">
-              sparx will stop sending this address every kind of email — newsletters, offers and
+              sparx will stop sending this address every kind of email: newsletters, offers and
               account messages alike. You can take them off this list at any time.
             </Text>
           </form>

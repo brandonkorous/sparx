@@ -181,7 +181,7 @@ const SCHEDULING = {
       handle: 'energy-assessment',
       name: 'Home energy assessment',
       description:
-        'A room-by-room look at where your home loses heating and cooling — insulation, drafts, ductwork and your current system — with a plain-language report and the changes that would cut your bills the most. The $49 fee comes off any work you book.',
+        'A room-by-room look at where your home loses heating and cooling (insulation, drafts, ductwork and your current system) with a plain-language report and the changes that would cut your bills the most. The $49 fee comes off any work you book.',
       durationMinutes: 90,
       priceCents: 4900,
       bufferAfterMin: 15,
@@ -195,7 +195,7 @@ const SCHEDULING = {
       handle: 'free-install-estimate',
       name: 'Free install estimate',
       description:
-        'Thinking about a new furnace, AC or heat pump? We measure your home, size the system properly and give you a written, no-pressure quote — including any rebates and financing you qualify for. Always free.',
+        'Thinking about a new furnace, AC or heat pump? We measure your home, size the system properly and give you a written, no-pressure quote, including any rebates and financing you qualify for. Always free.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -208,7 +208,7 @@ const SCHEDULING = {
       handle: 'heat-pump-consult',
       name: 'Heat-pump consultation',
       description:
-        'A focused sit-down on whether a heat pump fits your home — how it heats and cools with one efficient system, what it would cost to run, and the rebates that bring it down. Free, and no obligation to buy.',
+        'A focused sit-down on whether a heat pump fits your home: how it heats and cools with one efficient system, what it would cost to run, and the rebates that bring it down. Free, and no obligation to buy.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -221,7 +221,7 @@ const SCHEDULING = {
       handle: 'efficiency-tune-up',
       name: 'Efficiency tune-up',
       description:
-        'A full clean-and-check that keeps your system running at its rated efficiency — cleaner air, quieter operation and lower bills. Cleared coils, fresh filter, calibrated controls and a safety check.',
+        'A full clean-and-check that keeps your system running at its rated efficiency: cleaner air, quieter operation and lower bills. Cleared coils, fresh filter, calibrated controls and a safety check.',
       durationMinutes: 75,
       priceCents: 12900,
       assignmentStrategy: 'any_available',
@@ -234,7 +234,7 @@ const SCHEDULING = {
       handle: 'smart-thermostat-install',
       name: 'Smart thermostat install',
       description:
-        'We supply and fit a smart thermostat, wire it to your system and set up the schedule that saves you the most — so your home eases back when you’re out and is comfortable the moment you’re home.',
+        'We supply and fit a smart thermostat, wire it to your system and set up the schedule that saves you the most, so your home eases back when you’re out and is comfortable the moment you’re home.',
       durationMinutes: 90,
       priceCents: 18900,
       assignmentStrategy: 'any_available',
@@ -256,7 +256,7 @@ const SCHEDULING = {
       handle: 'maintenance-visit',
       name: 'Seasonal maintenance visit',
       description:
-        'The twice-a-year visit that keeps a system efficient and heads off breakdowns — a spring cooling check and a fall heating check, each a full tune, safety inspection and efficiency report.',
+        'The twice-a-year visit that keeps a system efficient and heads off breakdowns: a spring cooling check and a fall heating check, each a full tune, safety inspection and efficiency report.',
       durationMinutes: 120,
       priceCents: 16900,
       assignmentStrategy: 'any_available',
@@ -273,7 +273,7 @@ const HOME = [
   typeHero({
     surface: 'primary',
     title: 'Lower bills. Cleaner comfort. A home that runs on less.',
-    sub: 'Northline Climate designs, installs and tunes high-efficiency heating and cooling — heat pumps, smart controls and the small fixes that quietly cut your energy use. Start with an energy assessment and see the savings before you spend.',
+    sub: 'Northline Climate designs, installs and tunes high-efficiency heating and cooling: heat pumps, smart controls and the small fixes that quietly cut your energy use. Start with an energy assessment and see the savings before you spend.',
     primary: { label: 'Book an energy assessment', href: '/book' },
     secondary: { label: 'See visit types', href: '/book' },
   }),
@@ -281,7 +281,7 @@ const HOME = [
     items: [
       {
         title: 'Heat-pump specialists',
-        body: 'One efficient system that heats and cools your whole home — sized and installed by the people who do it every day, not as an afterthought.',
+        body: 'One efficient system that heats and cools your whole home: sized and installed by the people who do it every day, not as an afterthought.',
       },
       {
         title: 'Rebate & financing help',
@@ -289,7 +289,7 @@ const HOME = [
       },
       {
         title: 'High-efficiency systems',
-        body: 'We fit equipment rated to use markedly less energy for the same comfort — the difference shows up on every bill, not just the first one.',
+        body: 'We fit equipment rated to use markedly less energy for the same comfort: the difference shows up on every bill, not just the first one.',
       },
       {
         title: 'Lower monthly bills',
@@ -307,7 +307,7 @@ const HOME = [
         name: 'Home energy assessment',
         priceCents: 4900,
         durationMin: 90,
-        desc: 'Find where your home loses energy — fee comes off any work.',
+        desc: 'Find where your home loses energy: fee comes off any work.',
       },
       {
         name: 'Free install estimate',
@@ -335,8 +335,8 @@ const HOME = [
     alt: 'A smart thermostat on a wall showing a comfortable, lower target temperature',
     heading: 'Small changes, real savings',
     body: [
-      'Efficiency isn’t one big purchase — it’s a stack of smaller wins: a properly sized system, sealed ducts, a smart schedule and equipment that does more with less power. Together they take a real bite out of what you pay each month.',
-      'We start by measuring where your money is actually going, then show you the changes that pay back fastest — with any rebates and financing spelled out up front, in dollars, before you decide anything.',
+      'Efficiency isn’t one big purchase: it’s a stack of smaller wins: a properly sized system, sealed ducts, a smart schedule and equipment that does more with less power. Together they take a real bite out of what you pay each month.',
+      'We start by measuring where your money is actually going, then show you the changes that pay back fastest, with any rebates and financing spelled out up front, in dollars, before you decide anything.',
     ],
     cta: { label: 'Book an energy assessment', href: '/book' },
   }),
@@ -346,13 +346,13 @@ const HOME = [
     heading: 'How the energy assessment works',
     reverse: true,
     body: [
-      'A technician walks your home room by room — checking insulation, hunting for drafts, inspecting the ductwork and testing how your current system actually performs against what it’s rated to do.',
-      'You get a plain-language report: what’s costing you, what it would take to fix, and the handful of changes that would cut your bills the most. No jargon, no upsell — just a clear picture and a price. The $49 fee comes off any work you book.',
+      'A technician walks your home room by room: checking insulation, hunting for drafts, inspecting the ductwork and testing how your current system actually performs against what it’s rated to do.',
+      'You get a plain-language report: what’s costing you, what it would take to fix, and the handful of changes that would cut your bills the most. No jargon, no upsell. Just a clear picture and a price. The $49 fee comes off any work you book.',
     ],
   }),
   teamRow({
     heading: 'The technicians you’ll meet',
-    intro: 'Real people, background-checked and factory-trained — you’ll know who’s coming and what they specialize in before they arrive.',
+    intro: 'Real people, background-checked and factory-trained: you’ll know who’s coming and what they specialize in before they arrive.',
     members: [
       {
         name: 'Marco Ellis',
@@ -366,7 +366,7 @@ const HOME = [
         role: 'Service technician',
         image: url(IMG.dana),
         alt: 'Dana Whitfield, service technician',
-        bio: 'Tune-ups, diagnostics and smart-thermostat setups — the visits that keep bills low year-round.',
+        bio: 'Tune-ups, diagnostics and smart-thermostat setups: the visits that keep bills low year-round.',
       },
       {
         name: 'Theo Park',
@@ -379,12 +379,12 @@ const HOME = [
   }),
   testimonial({
     quote:
-      'They swapped our old furnace and AC for one heat pump, sealed the ducts and set up the thermostat. Our winter gas bill dropped by about a third — and the house is finally warm in every room.',
+      'They swapped our old furnace and AC for one heat pump, sealed the ducts and set up the thermostat. Our winter gas bill dropped by about a third, and the house is finally warm in every room.',
     attribution: 'The Okafor family, customers since 2024',
   }),
   bookingCta({
     title: 'See your savings before you spend',
-    sub: 'Book an energy assessment or a free install estimate and get a clear, honest picture of what a more efficient home would cost — and save.',
+    sub: 'Book an energy assessment or a free install estimate and get a clear, honest picture of what a more efficient home would cost, and save.',
     cta: { label: 'Book online', href: '/book' },
   }),
 ];
@@ -394,7 +394,7 @@ const BOOK_INTRO = [
     image: url(IMG.system),
     alt: 'A high-efficiency heat-pump unit installed neatly beside a home',
     title: 'Book your visit',
-    sub: 'Choose a visit to see what it covers, how long it takes and live availability — then pick your technician and time.',
+    sub: 'Choose a visit to see what it covers, how long it takes and live availability, then pick your technician and time.',
     primary: { label: 'See visit types below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -407,7 +407,7 @@ const ABOUT = [
     alt: 'A high-efficiency heat-pump unit installed neatly beside a home',
     heading: 'About Northline Climate',
     body: [
-      'We started Northline Climate because too many homes are heated and cooled by oversized, worn-out systems that cost a fortune to run. There’s a better way, and it isn’t complicated — the right equipment, installed properly, tuned to your home.',
+      'We started Northline Climate because too many homes are heated and cooled by oversized, worn-out systems that cost a fortune to run. There’s a better way, and it isn’t complicated: the right equipment, installed properly, tuned to your home.',
       'We’re a small, factory-trained crew who’d rather right-size a system than oversell one. Every job starts by measuring what your home actually needs, so you pay for comfort, not wasted energy.',
     ],
     cta: { label: 'Book an energy assessment', href: '/book' },
@@ -418,7 +418,7 @@ const ABOUT = [
     items: [
       {
         title: 'Measure first',
-        body: 'Every recommendation starts with a real look at your home and system — never a guess or a template quote.',
+        body: 'Every recommendation starts with a real look at your home and system, never a guess or a template quote.',
       },
       {
         title: 'Honest numbers',
@@ -446,7 +446,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a technician online — pick a service, a day and a time in about a minute.',
+    sub: 'See live availability and reserve a technician online. Pick a service, a day and a time in about a minute.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -457,8 +457,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-hvac-efficiency',
   name: 'HVAC (Efficiency)',
   summary:
-    'A data-forward HVAC site for energy-efficiency pros — a cool evergreen-and-slate palette with a bright teal signal accent, built around online booking. Homeowners book an energy assessment, a free install estimate or a tune-up in about a minute; three technicians carry their own skills and hours. Leads with lower bills, heat-pump expertise and rebate help. Ships as "Northline Climate", a high-efficiency heating-and-cooling company.',
-  tagline: 'A cool, technical template for efficiency-focused HVAC — book visits from day one.',
+    'A data-forward HVAC site for energy-efficiency pros: a cool evergreen-and-slate palette with a bright teal signal accent, built around online booking. Homeowners book an energy assessment, a free install estimate or a tune-up in about a minute; three technicians carry their own skills and hours. Leads with lower bills, heat-pump expertise and rebate help. Ships as "Northline Climate", a high-efficiency heating-and-cooling company.',
+  tagline: 'A cool, technical template for efficiency-focused HVAC. Book visits from day one.',
   industry: 'HVAC',
   sortWeight: 75,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -467,9 +467,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Northline Climate — high-efficiency heating & cooling',
+      title: 'Northline Climate: high-efficiency heating & cooling',
       description:
-        'Northline Climate installs and tunes high-efficiency HVAC — heat pumps, smart thermostats and the fixes that cut your bills. Book an energy assessment online.',
+        'Northline Climate installs and tunes high-efficiency HVAC: heat pumps, smart thermostats and the fixes that cut your bills. Book an energy assessment online.',
     },
   },
   home: HOME,

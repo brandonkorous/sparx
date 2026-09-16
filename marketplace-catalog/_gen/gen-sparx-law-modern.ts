@@ -213,7 +213,7 @@ const SCHEDULING = {
       handle: 'contract-review-consult',
       name: 'Contract review consultation',
       description:
-        'A working session on a specific agreement — where the risk sits, what to push back on and what to sign.',
+        'A working session on a specific agreement: where the risk sits, what to push back on and what to sign.',
       durationMinutes: 45,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -226,7 +226,7 @@ const SCHEDULING = {
       handle: 'litigation-consult',
       name: 'Commercial litigation consultation',
       description:
-        'A candid read on a dispute or threatened claim — exposure, leverage, the realistic paths and what each one costs.',
+        'A candid read on a dispute or threatened claim: exposure, leverage, the realistic paths and what each one costs.',
       durationMinutes: 60,
       priceCents: 35000,
       assignmentStrategy: 'customer_choice',
@@ -252,7 +252,7 @@ const SCHEDULING = {
       handle: 'ip-consult',
       name: 'Intellectual property consultation',
       description:
-        'Trademarks, trade secrets, licensing and IP assignment — protecting what your business is actually built on.',
+        'Trademarks, trade secrets, licensing and IP assignment: protecting what your business is actually built on.',
       durationMinutes: 45,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -263,7 +263,7 @@ const SCHEDULING = {
       handle: 'ma-advisory-consult',
       name: 'M&A advisory consultation',
       description:
-        'A strategy session for a purchase, sale or investment — deal structure, diligence and the terms worth holding the line on.',
+        'A strategy session for a purchase, sale or investment: deal structure, diligence and the terms worth holding the line on.',
       durationMinutes: 60,
       priceCents: 35000,
       assignmentStrategy: 'customer_choice',
@@ -278,7 +278,7 @@ const HOME = [
   typeHero({
     surface: 'primary',
     title: 'Sharp counsel for the moments that decide the business',
-    sub: 'Meridian Law Group handles the corporate deals, commercial disputes and employment questions that carry real consequences — with senior attorneys, plain answers and a plan you can act on.',
+    sub: 'Meridian Law Group handles the corporate deals, commercial disputes and employment questions that carry real consequences, with senior attorneys, plain answers and a plan you can act on.',
     primary: { label: 'Schedule a consultation', href: '/book' },
     secondary: { label: 'See how we work', href: '/book' },
   }),
@@ -286,7 +286,7 @@ const HOME = [
     items: [
       {
         title: 'Senior attorneys on every matter',
-        body: 'A partner runs your work — not a rotating cast of juniors learning on your bill. You get judgment, not just hours.',
+        body: 'A partner runs your work, not a rotating cast of juniors learning on your bill. You get judgment, not just hours.',
       },
       {
         title: 'Scoped and priced up front',
@@ -294,7 +294,7 @@ const HOME = [
       },
       {
         title: 'Responsive when it counts',
-        body: 'Deals and disputes move fast. We answer fast — same-day on live matters, because a delayed answer is often the wrong one.',
+        body: 'Deals and disputes move fast. We answer fast: same-day on live matters, because a delayed answer is often the wrong one.',
       },
     ],
   }),
@@ -336,14 +336,14 @@ const HOME = [
     alt: 'A modern downtown law office with floor-to-ceiling windows at dusk',
     heading: 'A boutique with a big firm’s reach',
     body: [
-      'We built Meridian to give growing companies the caliber of counsel usually reserved for the largest players — without the layers, the handoffs and the padded invoices that come with them.',
+      'We built Meridian to give growing companies the caliber of counsel usually reserved for the largest players, without the layers, the handoffs and the padded invoices that come with them.',
       'Across formations, financings, contracts, disputes and exits, our partners have closed the deals and won the fights that decide where a company goes next. That track record is what you sit across from.',
     ],
     cta: { label: 'Schedule a consultation', href: '/book' },
   }),
   teamRow({
     heading: 'The partners you’ll work with',
-    intro: 'Book directly with the attorney whose practice fits your matter — you deal with them, start to finish.',
+    intro: 'Book directly with the attorney whose practice fits your matter. You deal with them, start to finish.',
     members: [
       {
         name: 'Marcus Reid',
@@ -357,7 +357,7 @@ const HOME = [
         role: 'Partner · Litigation & Employment',
         image: url(IMG.elena),
         alt: 'Elena Vasquez, partner, commercial litigation & employment',
-        bio: 'Commercial disputes and employment matters — measured out of court, decisive in it.',
+        bio: 'Commercial disputes and employment matters: measured out of court, decisive in it.',
       },
       {
         name: 'David Chen',
@@ -385,7 +385,7 @@ const BOOK_INTRO = [
     image: url(IMG.boardroom),
     alt: 'A sharp glass-walled boardroom set for a strategy session',
     title: 'Schedule a consultation',
-    sub: 'Choose the consultation that fits your matter to see the fee, the length and live availability — then pick your attorney and time.',
+    sub: 'Choose the consultation that fits your matter to see the fee, the length and live availability, then pick your attorney and time.',
     primary: { label: 'See consultations below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -398,7 +398,7 @@ const ABOUT = [
     alt: 'A sharp glass-walled boardroom set for a strategy session',
     heading: 'About Meridian Law Group',
     body: [
-      'Meridian was founded on a simple frustration: capable companies were paying big-firm rates for counsel run by the least experienced people in the building. We do it the other way around — partners on the work, lean teams, and fees you agree to before we begin.',
+      'Meridian was founded on a simple frustration: capable companies were paying big-firm rates for counsel run by the least experienced people in the building. We do it the other way around, partners on the work, lean teams, and fees you agree to before we begin.',
       'We advise founders, operators and boards across corporate transactions, commercial litigation, employment and intellectual property. The common thread is judgment under pressure, when the outcome matters and the timeline is short.',
     ],
     cta: { label: 'Schedule a consultation', href: '/book' },
@@ -409,7 +409,7 @@ const ABOUT = [
     items: [
       {
         title: 'Clarity before cost',
-        body: 'Every matter starts with a scoped plan — what we’ll do, what it costs and the outcomes we’re aiming at. You decide with the numbers in front of you.',
+        body: 'Every matter starts with a scoped plan: what we’ll do, what it costs and the outcomes we’re aiming at. You decide with the numbers in front of you.',
       },
       {
         title: 'Positioned to win, ready to settle',
@@ -436,7 +436,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a consultation with the right attorney online — no phone tag.',
+    sub: 'See live availability and reserve a consultation with the right attorney online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Schedule a consultation', href: '/book' },
   }),
@@ -447,8 +447,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-law-modern',
   name: 'Law Firm (Modern)',
   summary:
-    'A sharp, modern business & litigation law-firm site — a midnight-slate palette, a confident blue accent and a precise modern sans. Installs a working consultation-booking flow: real consult types (litigation, formation, M&A, IP, employment), three partner attorneys booked by name with their own hours, and a credited-deposit policy. Ships as "Meridian Law Group", a boutique with big-firm reach.',
-  tagline: 'A sharp, modern template for business & litigation firms — book consultations from day one.',
+    'A sharp, modern business & litigation law-firm site: a midnight-slate palette, a confident blue accent and a precise modern sans. Installs a working consultation-booking flow: real consult types (litigation, formation, M&A, IP, employment), three partner attorneys booked by name with their own hours, and a credited-deposit policy. Ships as "Meridian Law Group", a boutique with big-firm reach.',
+  tagline: 'A sharp, modern template for business & litigation firms. Book consultations from day one.',
   industry: 'Law firm',
   sortWeight: 65,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -457,7 +457,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Meridian Law Group — business & litigation attorneys',
+      title: 'Meridian Law Group: business & litigation attorneys',
       description:
         'Meridian Law Group is a boutique business and litigation firm handling corporate deals, commercial disputes, employment and IP. Schedule a consultation online.',
     },

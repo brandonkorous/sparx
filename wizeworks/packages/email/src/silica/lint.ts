@@ -144,7 +144,7 @@ function checkSubject(subject: string): EmailCheck {
       id: 'subject',
       level: 'error',
       title: 'Subject line',
-      detail: 'This email has no subject line — most inboxes show a blank or "(no subject)".',
+      detail: 'This email has no subject line. Most inboxes show a blank or "(no subject)".',
     };
   }
   if (approxRenderedLength(subject) > SUBJECT_LONG) {
@@ -152,7 +152,7 @@ function checkSubject(subject: string): EmailCheck {
       id: 'subject',
       level: 'warning',
       title: 'Subject line',
-      detail: `"${trimmed}" is long — most inboxes cut the subject off after roughly 60–90 characters, so the end may never show. A shorter subject reads in full.`,
+      detail: `"${trimmed}" is long. Most inboxes cut the subject off after roughly 60–90 characters, so the end may never show. A shorter subject reads in full.`,
     };
   }
   return { id: 'subject', level: 'pass', title: 'Subject line', detail: `"${trimmed}"` };
@@ -166,7 +166,7 @@ function checkPreheader(preheader: string | null | undefined): EmailCheck {
     title: 'Preview text',
     detail: ok
       ? 'The line shown after the subject in the inbox is set.'
-      : 'No preview text. This is the grey line after the subject in the inbox — adding one lifts open rates.',
+      : 'No preview text. This is the gray line after the subject in the inbox: adding one lifts open rates.',
   };
 }
 
@@ -229,7 +229,7 @@ function checkImages(nodes: AnyNode[]): EmailCheck {
       id: 'images',
       level: 'warning',
       title: 'Image descriptions',
-      detail: `${plural(missing, 'image has', 'images have')} no description. Many people (and every inbox that blocks images by default) see the description instead — add alt text.`,
+      detail: `${plural(missing, 'image has', 'images have')} no description. Many people (and every inbox that blocks images by default) see the description instead. Add alt text.`,
     };
   }
   return {
@@ -296,7 +296,7 @@ function checkLinkText(nodes: AnyNode[]): EmailCheck {
       id: 'link-text',
       level: 'warning',
       title: 'Link wording',
-      detail: `${plural(vague.length, 'link says', 'links say')} something that doesn't describe where it goes: ${list(vague)}. Name a link after its destination ("View your order") so it makes sense on its own — screen readers read links out of context.`,
+      detail: `${plural(vague.length, 'link says', 'links say')} something that doesn't describe where it goes: ${list(vague)}. Name a link after its destination ("View your order") so it makes sense on its own: screen readers read links out of context.`,
     };
   }
   return {
@@ -351,7 +351,7 @@ function checkImageText(nodes: AnyNode[]): EmailCheck {
     level: 'warning',
     title: 'Text and images',
     detail:
-      'This email is almost all image with very little text. Many inboxes block images by default and spam filters distrust image-only mail, so it can arrive blank — add real text (a heading and a line or two) alongside the pictures.',
+      'This email is almost all image with very little text. Many inboxes block images by default and spam filters distrust image-only mail, so it can arrive blank. Add real text (a heading and a line or two) alongside the pictures.',
   };
 }
 
@@ -440,7 +440,7 @@ function checkLinkTracking(
     id: 'link-tracking',
     level: 'pass',
     title: 'Click tracking',
-    detail: `${plural(onSite, 'link is', 'links are')} tracked — clicks show in your reports under "${tracking.campaign}".${offNote}`,
+    detail: `${plural(onSite, 'link is', 'links are')} tracked: clicks show in your reports under "${tracking.campaign}".${offNote}`,
   };
 }
 
@@ -494,7 +494,7 @@ function checkSize(html: string): EmailCheck {
       id: 'size',
       level: 'error',
       title: 'Email size',
-      detail: `At ${kb} KB this is over Gmail's 102 KB limit — Gmail will hide the bottom (including the unsubscribe footer) behind a "view entire message" link. Trim content or shorten the copy.`,
+      detail: `At ${kb} KB this is over Gmail's 102 KB limit: Gmail will hide the bottom (including the unsubscribe footer) behind a "view entire message" link. Trim content or shorten the copy.`,
     };
   }
   if (bytes >= GMAIL_WARN_BYTES) {
@@ -509,7 +509,7 @@ function checkSize(html: string): EmailCheck {
     id: 'size',
     level: 'pass',
     title: 'Email size',
-    detail: `${kb} KB — well under Gmail's 102 KB clipping limit.`,
+    detail: `${kb} KB: well under Gmail's 102 KB clipping limit.`,
   };
 }
 

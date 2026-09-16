@@ -38,7 +38,7 @@ export function PasswordResetEmail({
       <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
       {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
       <EmailParagraph>
-        Use the button below to set a password for your {platform} account — whether you&apos;re
+        Use the button below to set a password for your {platform} account: whether you&apos;re
         choosing one for the first time or replacing an old one. The link expires in{' '}
         {expiresInMinutes} minutes.
       </EmailParagraph>
@@ -46,7 +46,7 @@ export function PasswordResetEmail({
       {outro ? <EmailParagraph>{outro}</EmailParagraph> : null}
       <EmailFallbackLink url={resetUrl} />
       <EmailFinePrint>
-        If you didn&apos;t request this, you can safely ignore this email — no changes will be made.
+        If you didn&apos;t request this, you can safely ignore this email: no changes will be made.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );

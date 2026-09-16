@@ -82,7 +82,7 @@ export function SubmissionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             error={error}
             noun="submission"
             title="Could not load this submission"
-            description="This is a problem reaching the server. The submission itself is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. The submission itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void refetch();
             }}
@@ -187,7 +187,7 @@ function SubmissionBody({
     const ok = await confirm({
       title: `Delete this submission from ${submitterLabel(submission)}?`,
       description:
-        'This removes it for good, along with anything they attached. This cannot be undone — if you only want it out of your inbox, mark it as handled instead.',
+        'This removes it for good, along with anything they attached. This cannot be undone: if you only want it out of your inbox, mark it as handled instead.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',

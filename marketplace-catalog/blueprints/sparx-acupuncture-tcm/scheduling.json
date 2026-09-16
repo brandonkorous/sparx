@@ -194,7 +194,7 @@
     {
       "handle": "initial-consult-treatment",
       "name": "Initial consultation & treatment",
-      "description": "A full intake — your health history, pulse and tongue diagnosis — followed by your first acupuncture treatment.",
+      "description": "A full intake (your health history, pulse and tongue diagnosis) followed by your first acupuncture treatment.",
       "durationMinutes": 90,
       "priceCents": 13000,
       "assignmentStrategy": "customer_choice",
@@ -241,7 +241,7 @@
     {
       "handle": "cupping-session",
       "name": "Cupping session",
-      "description": "Traditional cupping to ease tension and improve circulation — on its own or added to acupuncture.",
+      "description": "Traditional cupping to ease tension and improve circulation: on its own or added to acupuncture.",
       "durationMinutes": 45,
       "priceCents": 7500,
       "assignmentStrategy": "any_available",
@@ -311,7 +311,7 @@
     {
       "handle": "stress-relief-session",
       "name": "Stress & sleep session",
-      "description": "A calming, restorative treatment for stress, anxiety and sleep — a quiet hour to reset the nervous system.",
+      "description": "A calming, restorative treatment for stress, anxiety and sleep: a quiet hour to reset the nervous system.",
       "durationMinutes": 60,
       "priceCents": 9500,
       "assignmentStrategy": "customer_choice",

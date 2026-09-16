@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Align Chiropractic — gentle, everyday care",
+      "seoTitle": "Align Chiropractic: gentle, everyday care",
       "seoDescription": "Align Chiropractic is a calm wellness clinic for gentle adjustments, posture, everyday pain relief and massage. Book your chiropractor online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Gentle, everyday chiropractic care — for the stiff neck, the aching back and the wellness routine that keeps them from coming back."
+                      "Gentle, everyday chiropractic care, for the stiff neck, the aching back and the wellness routine that keeps them from coming back."
                     ],
                     "id": "28e30975-caa8-4bf5-ac70-83b814c13ac1",
                     "ord": "a1"
@@ -1115,7 +1115,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Pain rarely comes from one place. We look at how you sit, sleep, move and work — then treat the cause, not just the ache, so relief actually lasts."
+                          "Pain rarely comes from one place. We look at how you sit, sleep, move and work, then treat the cause, not just the ache, so relief actually lasts."
                         ],
                         "id": "a840dab3-5bb8-4bc0-98a6-ebc2ce7b6a18",
                         "ord": "a1"
@@ -1190,7 +1190,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A small, friendly team — book by name and see the same person each visit."
+                          "A small, friendly team. Book by name and see the same person each visit."
                         ],
                         "id": "8cfb5aeb-c604-498c-ba0f-537ea3af1f44",
                         "ord": "a1"
@@ -1359,7 +1359,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Calming therapeutic massage — lovely alone or before an adjustment."
+                                  "Calming therapeutic massage: lovely alone or before an adjustment."
                                 ],
                                 "id": "d58982e1-5cb0-438f-bc79-e2a936c03452",
                                 "ord": "a2"
@@ -1474,7 +1474,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Align Chiropractic",
+      "seoTitle": "Book: Align Chiropractic",
       "seoDescription": "See what Align Chiropractic offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1598,7 +1598,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "4a53ae96-e22c-4035-a588-8da6c76297e2",
                         "ord": "a1"
@@ -1630,7 +1630,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to someone else who needs relief. We’ll send a friendly reminder the day before and two hours ahead."
+                              "Please give us at least 24 hours’ notice if you need to change or cancel. It lets us offer the time to someone else who needs relief. We’ll send a friendly reminder the day before and two hours ahead."
                             ],
                             "id": "daa1639c-6af4-400b-820f-62ab54ea4619",
                             "ord": "a1"
@@ -1667,7 +1667,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Longer visits reserve a treatment room and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without notice. Reschedule in time and the hold simply releases."
+                              "Longer visits reserve a treatment room and a provider just for you, so we hold a card on file. Nothing is charged unless the appointment is missed without notice. Reschedule in time and the hold simply releases."
                             ],
                             "id": "6a797a4d-3e6b-4404-8779-fa5bfd1537fc",
                             "ord": "a1"
@@ -1703,7 +1703,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Align Chiropractic",
+      "seoTitle": "About: Align Chiropractic",
       "seoDescription": "Who Align Chiropractic is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1752,7 +1752,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Align Chiropractic to make everyday care feel calm and approachable — no jargon, no pressure, and no one-size-fits-all cracking. Just gentle adjustments and honest advice from people who listen."
+                          "We opened Align Chiropractic to make everyday care feel calm and approachable: no jargon, no pressure, and no one-size-fits-all cracking. Just gentle adjustments and honest advice from people who listen."
                         ],
                         "id": "b18f95a5-2fdd-412f-a4d8-90de687ba804",
                         "ord": "a1"
@@ -1762,7 +1762,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Whether you’re here for a stubborn ache, better posture, or a wellness routine that keeps you moving well, we build the plan around you — and we’d rather see you less often and feeling great than book you in forever."
+                          "Whether you’re here for a stubborn ache, better posture, or a wellness routine that keeps you moving well, we build the plan around you, and we’d rather see you less often and feeling great than book you in forever."
                         ],
                         "id": "eea57123-2c2d-464e-b720-22b5028139ed",
                         "ord": "a2"
@@ -1894,7 +1894,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll leave with simple things to do at home — so the relief holds up between visits, not just in the chair."
+                              "You’ll leave with simple things to do at home, so the relief holds up between visits, not just in the chair."
                             ],
                             "id": "0cd548a8-0270-4446-86a9-51ac4e2c24d1",
                             "ord": "a1"
@@ -1922,7 +1922,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Align Chiropractic",
+      "seoTitle": "Visit: Align Chiropractic",
       "seoDescription": "Where to find Align Chiropractic, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1959,7 +1959,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Align Chiropractic will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Align Chiropractic will get back to you, usually the same day."
                         ],
                         "id": "c14b035c-0fef-4918-8fb7-76adb9e6be9a",
                         "ord": "a1"
@@ -2386,7 +2386,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your time online — no phone tag."
+                      "See live availability and reserve your time online: no phone tag."
                     ],
                     "id": "eea2ec7b-4339-466f-89a2-44036b6c2717",
                     "ord": "a1"

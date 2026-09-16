@@ -41,7 +41,7 @@ export function VerticalBlueprint({ vertical }: { vertical: Vertical }) {
           <Text variant="lead" className="max-w-2xl text-xl">
             {`The ${blueprint.name} blueprint is a finished site for ${blueprint.tuned}, and installing ` +
               `it takes one click. Then you change the words to yours, put your own photographs in, ` +
-              `and press publish — which is a very different afternoon from staring at an empty page.`}
+              `and press publish, which is a very different afternoon from staring at an empty page.`}
           </Text>
           <div className="flex flex-wrap items-center gap-3">
             <a
@@ -63,11 +63,11 @@ export function VerticalBlueprint({ vertical }: { vertical: Vertical }) {
 
         <ul className="flex flex-col gap-4">
           {[
-            'Pages that already exist — a shop, a journal, a booking page and a wholesale page, laid out and linked up.',
+            'Pages that already exist: a shop, a journal, a booking page and a wholesale page, laid out and linked up.',
             'A starter catalog with real categories and photographs, so nothing looks like a demo while you fill it in.',
             'A few articles already written, to show what the journal is for and how a post should read.',
             'A welcome email sequence, ready to send from your own address the day someone signs up.',
-            'A matching look — color, type and shape — that you can change in one place afterwards.',
+            'A matching look (color, type and shape) that you can change in one place afterwards.',
           ].map((line) => (
             <li key={line} className="flex items-start gap-3">
               <span aria-hidden className="bg-primary mt-2.5 h-2 w-2 shrink-0 rounded-full" />

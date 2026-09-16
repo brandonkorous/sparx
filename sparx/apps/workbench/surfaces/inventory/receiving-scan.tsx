@@ -98,7 +98,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Book ${plural(scannedTotal, 'unit', 'units')} into stock?`,
       description: complete
-        ? 'This adds the stock, records what it cost, and closes the order. It cannot be undone from here — a mistake after this is a stock correction.'
+        ? 'This adds the stock, records what it cost, and closes the order. It cannot be undone from here: a mistake after this is a stock correction.'
         : `Only ${accountedFor} of ${orderedTotal} ordered are accounted for. The order stays open for the rest. This adds the stock and records what it cost, and cannot be undone from here.`,
       confirmLabel: 'Book it in',
       color: 'module-inventory',
@@ -290,7 +290,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
                         // a line: you cannot scan this one, so do not stand there
                         // trying.
                         <Badge color="warning" variant="soft" size="sm">
-                          No barcode — key it in
+                          No barcode: key it in
                         </Badge>
                       )}
                     </span>
@@ -342,7 +342,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
                   {data.unresolved.slice(0, 5).map((u) => (
                     <span key={`${u.value}-${u.scannedAt}`} className="font-mono text-sm">
                       {u.value}
-                      {u.message ? ` — ${u.message}` : ''}
+                      {u.message ? ` (${u.message})` : ''}
                     </span>
                   ))}
                 </span>
@@ -374,7 +374,7 @@ export function ReceivingScanSurface({ ctx }: { ctx: SurfaceContext }) {
                         </Badge>
                         <Timestamp value={event.scannedAt} format="relative" />
                         {event.replayLagSeconds > 60 ? (
-                          <Tooltip content="This scan waited on the device before it reached us — the time above is when the trigger was pulled.">
+                          <Tooltip content="This scan waited on the device before it reached us: the time above is when the trigger was pulled.">
                             <Badge color="info" variant="soft" size="sm">
                               Synced late
                             </Badge>

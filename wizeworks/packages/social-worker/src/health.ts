@@ -102,7 +102,7 @@ export async function markConnectionExpired(
 
   if (!flipped) return false;
 
-  logger.warn({ connectionId, code, message }, 'social connection expired — reconnect needed');
+  logger.warn({ connectionId, code, message }, 'social connection expired: reconnect needed');
   const publisher = createPublisher({ logger });
   await publishEvent(
     publisher,
@@ -133,7 +133,7 @@ export async function checkConnection(
   registerBuiltinSocialAdapters();
 
   if (!isSocialTokenCryptoConfigured()) {
-    logger.warn({ connectionId }, 'SOCIAL_TOKEN_KEY unset — acking connection check');
+    logger.warn({ connectionId }, 'SOCIAL_TOKEN_KEY unset: acking connection check');
     return { connectionId, result: 'skipped' };
   }
 
@@ -176,7 +176,7 @@ export async function checkConnection(
     await touchChecked(tenantId, connectionId);
     logger.error(
       { connectionId, platform: connection.platform },
-      'platform OAuth app credentials missing on the worker — cannot health-check; connection left active'
+      'platform OAuth app credentials missing on the worker: cannot health-check; connection left active'
     );
     return { connectionId, result: 'skipped' };
   }
@@ -225,7 +225,7 @@ export async function checkConnection(
         await touchChecked(tenantId, connectionId);
         logger.warn(
           { connectionId, err: e },
-          'social connection refresh deferred — will re-check next sweep'
+          'social connection refresh deferred: will re-check next sweep'
         );
         return { connectionId, result: 'deferred' };
       }
@@ -265,7 +265,7 @@ export async function checkConnection(
     await touchChecked(tenantId, connectionId);
     logger.warn(
       { connectionId, err: e },
-      'social connection probe deferred — platform unreachable, will re-check'
+      'social connection probe deferred: platform unreachable, will re-check'
     );
     return { connectionId, result: 'deferred' };
   }

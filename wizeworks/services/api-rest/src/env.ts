@@ -412,7 +412,7 @@ const EnvSchema = z
         code: z.ZodIssueCode.custom,
         path: [data.AZURE_STORAGE_ACCOUNT ? 'AZURE_STORAGE_KEY' : 'AZURE_STORAGE_ACCOUNT'],
         message:
-          'AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY must be set together — one alone falls back to local disk.',
+          'AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY must be set together. One alone falls back to local disk.',
       });
     }
 

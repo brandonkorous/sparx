@@ -307,7 +307,7 @@ function SegmentEditor({
     create.isError || update.isError
       ? segmentErrorMessage(
           create.error ?? update.error,
-          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
+          'The server did not answer. Nothing was changed and your work is still on screen. Try again in a moment.'
         )
       : null;
 
@@ -446,7 +446,7 @@ function SegmentEditor({
                       onError: () => {
                         toast.add({
                           title: 'Could not update the membership',
-                          description: 'Nothing was changed — try again in a moment.',
+                          description: 'Nothing was changed. Try again in a moment.',
                           type: 'error',
                         });
                       },
@@ -475,7 +475,7 @@ function SegmentEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A segment is a saved group of customers built from conditions — big spenders, or
+              A segment is a saved group of customers built from conditions: big spenders, or
               everyone who has not bought in a year. As you add conditions, the count in the bar
               shows how many customers match right now.
             </Text>
@@ -534,7 +534,7 @@ function SegmentEditor({
                 <FieldStatus status="error">{slugError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  A short, lowercase id used behind the scenes — for example when a marketing email
+                  A short, lowercase id used behind the scenes, for example when a marketing email
                   targets this group. Filled in from the name; change it if you like.
                 </FieldDescription>
               )}

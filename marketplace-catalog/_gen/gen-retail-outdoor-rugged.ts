@@ -129,7 +129,7 @@ const ASSETS: Asset[] = [
     { id: 'prod-bottle', url: src('prod-bottle'), alt: 'The Vault insulated stainless bottle, lid off' },
     { id: 'prod-headlamp', url: src('prod-headlamp'), alt: 'The Beacon 400 headlamp, beam on' },
     { id: 'prod-poles', url: src('prod-poles'), alt: 'The Ascent carbon trekking poles, collapsed and extended' },
-    { id: 'post-layering', url: src('post-layering'), alt: 'Three layers stacked flat — base, mid and shell' },
+    { id: 'post-layering', url: src('post-layering'), alt: 'Three layers stacked flat: base, mid and shell' },
     { id: 'post-trail', url: src('post-trail'), alt: 'A switchback climbing toward a saddle above the treeline' },
     { id: 'post-packing', url: src('post-packing'), alt: 'A pack laid out with its contents organised before a trip' },
 ];
@@ -255,7 +255,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'This season’s gear' }),
     editorialBand({
         heading: 'Field-tested, then torn apart',
-        lead: 'Nothing goes in the line until it has done a season on real trips — soaked, dropped, overloaded and left out in the weather. What survives ships; what fails goes back to the bench. If we wouldn’t carry it, we won’t sell it.',
+        lead: 'Nothing goes in the line until it has done a season on real trips: soaked, dropped, overloaded and left out in the weather. What survives ships; what fails goes back to the bench. If we wouldn’t carry it, we won’t sell it.',
         assetId: 'band-field',
         cta: 'How we test our gear',
         href: '/blog/how-we-test',
@@ -264,7 +264,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.apparel', layout: 'carousel', heading: 'The layering system' }),
     editorialBand({
         heading: 'Repair first, replace last',
-        lead: 'Good gear should outlast the trend cycle. Every Ridgeline piece is built to be fixed, not binned — send it back and we’ll patch a shell, restitch a strap or re-loft a bag before you ever pay for a new one. That’s the whole point of buying well once.',
+        lead: 'Good gear should outlast the trend cycle. Every Ridgeline piece is built to be fixed, not binned. Send it back and we’ll patch a shell, restitch a strap or re-loft a bag before you ever pay for a new one. That’s the whole point of buying well once.',
         assetId: 'band-guarantee',
         cta: 'Our repair guarantee',
         href: '/blog/repair-guarantee',
@@ -309,7 +309,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Built to last, backed to repair' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Every piece ships field-ready and covered by our repair-first guarantee — send it back for a patch, a restitch or a re-loft before you ever pay for a replacement. Free shipping over $75, easy 30-day returns, and real people at the shop if you need a hand choosing a size.',
+                                        text: 'Every piece ships field-ready and covered by our repair-first guarantee. Send it back for a patch, a restitch or a re-loft before you ever pay for a replacement. Free shipping over $75, easy 30-day returns, and real people at the shop if you need a hand choosing a size.',
                                     }),
                                 ],
                             }),
@@ -348,11 +348,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop the kit',
-        'Everything Ridgeline makes, in one place — apparel, packs, footwear and gear for the trail, the crag and the campsite. Filter by category or sort however you like; every piece is field-tested and covered by the repair guarantee.'
+        'Everything Ridgeline makes, in one place: apparel, packs, footwear and gear for the trail, the crag and the campsite. Filter by category or sort however you like; every piece is field-tested and covered by the repair guarantee.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The gear grouped the way you actually pack it — this season’s arrivals, the pieces people reorder, a full layering system, and the small essentials no trip should leave without.'),
+    pageMasthead('Collections', 'The gear grouped the way you actually pack it. This season’s arrivals, the pieces people reorder, a full layering system, and the small essentials no trip should leave without.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Ridgeline', 'Hunting for a shell, a pack size, a base layer or a trail guide? Search the whole shop and the field journal below.'),
@@ -364,7 +364,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your kit bag' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping on orders over $75, and everything is covered by our repair-first guarantee. Not sure a size or a piece is right? Tell us before you head out and we’ll make it work — gear you can trust starts with getting it right.',
+                        text: 'Free shipping on orders over $75, and everything is covered by our repair-first guarantee. Not sure a size or a piece is right? Tell us before you head out and we’ll make it work: gear you can trust starts with getting it right.',
                     }),
                 ],
             }),
@@ -378,7 +378,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The field journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the trail and the workbench — how we test our gear, how to layer for the weather, and how to pack so nothing gets left behind. Plain, useful, no gatekeeping.',
+                        text: 'Notes from the trail and the workbench: how we test our gear, how to layer for the weather, and how to pack so nothing gets left behind. Plain, useful, no gatekeeping.',
                     }),
                 ],
             }),
@@ -395,13 +395,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl', { text: 'About Ridgeline' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Ridgeline Supply started with a torn pack on a week-long traverse and a simple frustration: too much outdoor gear is built for the shelf, not the trail. So we set out to make a short, honest line of kit — apparel, packs and hard goods you can actually rely on when the weather turns and you’re a long way from the car.',
+                        text: 'Ridgeline Supply started with a torn pack on a week-long traverse and a simple frustration: too much outdoor gear is built for the shelf, not the trail. So we set out to make a short, honest line of kit, apparel, packs and hard goods you can actually rely on when the weather turns and you’re a long way from the car.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We keep the range small on purpose. Every piece is designed by people who use it, tested across a full season of real trips, and made from materials chosen to survive being soaked, dropped and overloaded. If something can’t take a beating, it never makes the catalogue.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'And we build everything to be fixed, not thrown away. Our repair-first guarantee means a worn strap or a torn shell comes back to the bench before it ever costs you a replacement — because the most sustainable gear is the piece you already own, kept in the field for years.',
+                        text: 'And we build everything to be fixed, not thrown away. Our repair-first guarantee means a worn strap or a torn shell comes back to the bench before it ever costs you a replacement, because the most sustainable gear is the piece you already own, kept in the field for years.',
                     }),
                 ],
             }),
@@ -661,14 +661,14 @@ const PRODUCTS: Product[] = [
         tags: ['apparel', 'shell', 'waterproof', 'hardshell'],
         colors: ['Slate', 'Ember', 'Moss'],
         asset: 'prod-shell-jacket',
-        seoTitle: 'Alpine Hardshell Jacket — 3-layer waterproof shell | Ridgeline Supply',
+        seoTitle: 'Alpine Hardshell Jacket: 3-layer waterproof shell | Ridgeline Supply',
         seoDescription: 'A seam-taped 3-layer waterproof hardshell with pit zips and a helmet-compatible hood. Packs into its own pocket.',
     }),
     garment({
         handle: 'summit-down-hoody',
         title: 'Summit Down Hoody',
         description:
-            'A featherweight 800-fill down hoody that packs to the size of a water bottle and lofts back to full warmth in seconds. Responsibly-sourced down, a windproof ripstop face, and a hood that fits under a shell — the insulation layer you throw on the moment you stop moving.',
+            'A featherweight 800-fill down hoody that packs to the size of a water bottle and lofts back to full warmth in seconds. Responsibly-sourced down, a windproof ripstop face, and a hood that fits under a shell: the insulation layer you throw on the moment you stop moving.',
         price: 229,
         sku: 'RDG-DOWN',
         category: 'apparel',
@@ -676,7 +676,7 @@ const PRODUCTS: Product[] = [
         tags: ['apparel', 'insulation', 'down', 'midlayer'],
         colors: ['Storm', 'Ember', 'Bone'],
         asset: 'prod-down-hoody',
-        seoTitle: 'Summit Down Hoody — 800-fill packable down | Ridgeline Supply',
+        seoTitle: 'Summit Down Hoody: 800-fill packable down | Ridgeline Supply',
         seoDescription: 'A featherweight 800-fill down hoody with a windproof face and a shell-compatible hood. Packs to bottle size.',
     }),
     garment({
@@ -691,7 +691,7 @@ const PRODUCTS: Product[] = [
         tags: ['apparel', 'base-layer', 'merino'],
         colors: ['Charcoal', 'Moss', 'Rust'],
         asset: 'prod-base-layer',
-        seoTitle: 'Ridgeline Merino Crew — 100% merino base layer | Ridgeline Supply',
+        seoTitle: 'Ridgeline Merino Crew: 100% merino base layer | Ridgeline Supply',
         seoDescription: 'A soft, odour-resistant 100% merino base layer with flatlock seams that wicks and dries fast.',
     }),
     colorGood({
@@ -707,7 +707,7 @@ const PRODUCTS: Product[] = [
         tags: ['packs', 'backpack', 'daypack'],
         colors: ['Slate', 'Moss', 'Ember'],
         asset: 'prod-backpack',
-        seoTitle: 'Trailhead 38 Backpack — 38L pack | Ridgeline Supply',
+        seoTitle: 'Trailhead 38 Backpack: 38L pack | Ridgeline Supply',
         seoDescription: 'A ventilated 38L pack with a roll-top lid and hipbelt pockets, built from recycled ripstop. Fast overnights to long days.',
     }),
     sizedGood({
@@ -727,14 +727,14 @@ const PRODUCTS: Product[] = [
         collections: ['packs-and-carry', 'trail-essentials'],
         tags: ['packs', 'dry-bag', 'waterproof'],
         asset: 'prod-dry-bag',
-        seoTitle: 'Fathom Roll-Top Dry Bag — welded waterproof stuff sack | Ridgeline Supply',
+        seoTitle: 'Fathom Roll-Top Dry Bag: welded waterproof stuff sack | Ridgeline Supply',
         seoDescription: 'A fully welded TPU roll-top dry bag in 10, 20 and 30L. Keeps kit bone-dry through crossings and downpours.',
     }),
     colorGood({
         handle: 'switchback-trail-socks',
         title: 'Switchback Trail Socks',
         description:
-            'A merino-blend hiking sock with cushioning exactly where boots rub and none where they don’t — a proper toe box, a supportive arch band, and a seamless toe so nothing raises a blister at mile fifteen. They wick, they don’t stink, and they keep their shape wash after wash. Buy three pairs; you’ll want them.',
+            'A merino-blend hiking sock with cushioning exactly where boots rub and none where they don’t: a proper toe box, a supportive arch band, and a seamless toe so nothing raises a blister at mile fifteen. They wick, they don’t stink, and they keep their shape wash after wash. Buy three pairs; you’ll want them.',
         price: 24,
         sku: 'RDG-SOCK',
         productType: 'Socks',
@@ -743,7 +743,7 @@ const PRODUCTS: Product[] = [
         tags: ['accessories', 'socks', 'footwear', 'merino'],
         colors: ['Charcoal', 'Moss', 'Rust'],
         asset: 'prod-socks',
-        seoTitle: 'Switchback Trail Socks — cushioned merino hiking socks | Ridgeline Supply',
+        seoTitle: 'Switchback Trail Socks: cushioned merino hiking socks | Ridgeline Supply',
         seoDescription: 'A merino-blend hiking sock with targeted cushioning, an arch band and a seamless toe. Wicks and stays put.',
     }),
     sizedGood({
@@ -762,7 +762,7 @@ const PRODUCTS: Product[] = [
         collections: ['best-sellers', 'trail-essentials'],
         tags: ['gear', 'bottle', 'hydration'],
         asset: 'prod-bottle',
-        seoTitle: 'Vault Insulated Bottle — double-walled stainless | Ridgeline Supply',
+        seoTitle: 'Vault Insulated Bottle: double-walled stainless | Ridgeline Supply',
         seoDescription: 'A powder-coated double-walled stainless bottle in 18 and 32oz with a leak-proof one-handed lid.',
     }),
     hardGood({
@@ -777,7 +777,7 @@ const PRODUCTS: Product[] = [
         collections: ['new-arrivals', 'trail-essentials'],
         tags: ['gear', 'headlamp', 'lighting'],
         asset: 'prod-headlamp',
-        seoTitle: 'Beacon 400 Headlamp — 400-lumen rechargeable | Ridgeline Supply',
+        seoTitle: 'Beacon 400 Headlamp: 400-lumen rechargeable | Ridgeline Supply',
         seoDescription: 'A 400-lumen USB-C rechargeable headlamp with a red night mode, lock-out and an IPX7 rain-proof housing.',
     }),
     hardGood({
@@ -792,7 +792,7 @@ const PRODUCTS: Product[] = [
         collections: ['new-arrivals', 'packs-and-carry'],
         tags: ['gear', 'trekking-poles', 'hiking'],
         asset: 'prod-poles',
-        seoTitle: 'Ascent Carbon Trekking Poles — collapsible pair | Ridgeline Supply',
+        seoTitle: 'Ascent Carbon Trekking Poles: collapsible pair | Ridgeline Supply',
         seoDescription: 'A pair of collapsible carbon trekking poles with quick-flip locks, cork grips and swappable tips.',
     }),
 ];
@@ -824,7 +824,7 @@ const COMMERCE = {
         {
             handle: 'layering-system',
             name: 'The layering system',
-            description: 'Base, mid and shell — dialled to work together.',
+            description: 'Base, mid and shell: dialled to work together.',
             type: 'manual',
             featured: false,
             productHandles: ['ridgeline-merino-crew', 'summit-down-hoody', 'alpine-hardshell-jacket'],
@@ -861,16 +861,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How we test our gear, and why nothing ships until it fails',
-            excerpt: 'A spec sheet is a promise. We only make the ones we’ve watched a piece keep — soaked, overloaded and left out in the weather for a season.',
+            excerpt: 'A spec sheet is a promise. We only make the ones we’ve watched a piece keep: soaked, overloaded and left out in the weather for a season.',
             featuredImage: { $asset: 'post-trail' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Outdoor gear is easy to design on paper and hard to trust in the field. A jacket can hit every waterproofing number in a lab and still wet out at the shoulders in an hour of real rain, because the seams weren’t taped where a pack strap flexes them. So before anything gets a page on this site, it does a season of actual trips — carried by people who will happily tell us it failed.'),
+                    para('Outdoor gear is easy to design on paper and hard to trust in the field. A jacket can hit every waterproofing number in a lab and still wet out at the shoulders in an hour of real rain, because the seams weren’t taped where a pack strap flexes them. So before anything gets a page on this site, it does a season of actual trips: carried by people who will happily tell us it failed.'),
                     h2('We break it on purpose'),
-                    para('Every sample goes out overloaded, dropped, dunked and left staked out overnight in whatever weather we can find. We overstuff the packs past their rating, run the shells through wind-driven rain, and freeze the bottles solid to see what cracks. The goal isn’t to prove the gear works — it’s to find the exact point where it stops, then decide whether that point is far enough past what you’ll ever ask of it.'),
+                    para('Every sample goes out overloaded, dropped, dunked and left staked out overnight in whatever weather we can find. We overstuff the packs past their rating, run the shells through wind-driven rain, and freeze the bottles solid to see what cracks. The goal isn’t to prove the gear works: it’s to find the exact point where it stops, then decide whether that point is far enough past what you’ll ever ask of it.'),
                     h2('What survives, ships'),
-                    para('If a piece comes back with a failure we can’t fix at the design stage, it doesn’t make the catalogue — full stop. That’s why the range is short: plenty of good ideas didn’t survive the season. What’s left is gear we’ve personally watched take a beating and keep going, which is the only recommendation we think is worth anything.'),
+                    para('If a piece comes back with a failure we can’t fix at the design stage, it doesn’t make the catalogue: full stop. That’s why the range is short: plenty of good ideas didn’t survive the season. What’s left is gear we’ve personally watched take a beating and keep going, which is the only recommendation we think is worth anything.'),
                 ],
             },
         },
@@ -881,16 +881,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to layer for the mountains without overthinking it',
-            excerpt: 'Base, mid, shell. Three layers, one job each — here’s the system we actually use, and how to read the weather instead of the forecast.',
+            excerpt: 'Base, mid, shell. Three layers, one job each: here’s the system we actually use, and how to read the weather instead of the forecast.',
             featuredImage: { $asset: 'post-layering' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Staying comfortable outside isn’t about one magic jacket — it’s about a system you can add to and shed as the day changes. Get the three layers right and you carry less, sweat less, and never end up either soaked from the inside or shivering at the summit. Here’s the whole thing, minus the jargon.'),
+                    para('Staying comfortable outside isn’t about one magic jacket: it’s about a system you can add to and shed as the day changes. Get the three layers right and you carry less, sweat less, and never end up either soaked from the inside or shivering at the summit. Here’s the whole thing, minus the jargon.'),
                     h2('Base, mid, shell'),
-                    para('The base layer touches your skin and has one job: move sweat away so you don’t chill when you stop. Merino wins here because it wicks and doesn’t stink. The mid layer traps warmth — a light down or fleece you throw on the moment you stop moving. The shell goes over everything and blocks wind and rain; it isn’t there to keep you warm, it’s there to keep the weather out. Each layer does one thing well, and together they cover almost anything.'),
+                    para('The base layer touches your skin and has one job: move sweat away so you don’t chill when you stop. Merino wins here because it wicks and doesn’t stink. The mid layer traps warmth, a light down or fleece you throw on the moment you stop moving. The shell goes over everything and blocks wind and rain; it isn’t there to keep you warm, it’s there to keep the weather out. Each layer does one thing well, and together they cover almost anything.'),
                     h2('Dress for the walk, not the car park'),
-                    para('The classic mistake is bundling up warm at the trailhead and boiling within ten minutes. Start slightly cold — you’ll warm up fast once you’re moving — and adjust before you’re drenched, not after. Vent the shell on the climb, add the mid layer at the top, and keep the base layer dry at all costs. Read your own body, not just the forecast, and the system does the rest.'),
+                    para('The classic mistake is bundling up warm at the trailhead and boiling within ten minutes. Start slightly cold (you’ll warm up fast once you’re moving) and adjust before you’re drenched, not after. Vent the shell on the climb, add the mid layer at the top, and keep the base layer dry at all costs. Read your own body, not just the forecast, and the system does the rest.'),
                 ],
             },
         },
@@ -906,11 +906,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('People assume you need a 60-litre expedition pack to spend a night out. You don’t. For a fast, light overnight in three-season weather, a well-loaded 38-litre bag carries everything you actually use and nothing you don’t — and it walks a lot nicer on the climb. Here’s exactly what went in for a recent one-night ridge traverse.'),
+                    para('People assume you need a 60-litre expedition pack to spend a night out. You don’t. For a fast, light overnight in three-season weather, a well-loaded 38-litre bag carries everything you actually use and nothing you don’t, and it walks a lot nicer on the climb. Here’s exactly what went in for a recent one-night ridge traverse.'),
                     h2('Heavy in the middle, close to the back'),
-                    para('The order matters more than the volume. Sleeping bag and spare clothes go in a dry bag at the bottom. The heavy stuff — water, stove, food — sits in the middle and tight against your spine, so the load pulls down through your hips instead of hauling you backwards. The shell, headlamp, map and snacks live in the lid and hipbelt pockets, where you can reach them without stopping. Done right, a full pack feels like part of you, not a sack hanging off your shoulders.'),
+                    para('The order matters more than the volume. Sleeping bag and spare clothes go in a dry bag at the bottom. The heavy stuff (water, stove, food) sits in the middle and tight against your spine, so the load pulls down through your hips instead of hauling you backwards. The shell, headlamp, map and snacks live in the lid and hipbelt pockets, where you can reach them without stopping. Done right, a full pack feels like part of you, not a sack hanging off your shoulders.'),
                     h2('The overnight checklist'),
-                    para('Shelter and sleep: tent or tarp, sleeping bag in a dry bag, pad. Layers: the base-mid-shell system, plus a warm hat and gloves even in summer. Kit: stove, fuel, a pot, a lighter, a full bottle and a way to treat more water. Safety: headlamp, first-aid basics, map and compass, a charged phone. Food for the effort plus one extra meal. That’s a comfortable night out in a 38-litre bag with room to spare — and if it doesn’t fit, that’s usually a sign you’re carrying a want, not a need.'),
+                    para('Shelter and sleep: tent or tarp, sleeping bag in a dry bag, pad. Layers: the base-mid-shell system, plus a warm hat and gloves even in summer. Kit: stove, fuel, a pot, a lighter, a full bottle and a way to treat more water. Safety: headlamp, first-aid basics, map and compass, a charged phone. Food for the effort plus one extra meal. That’s a comfortable night out in a 38-litre bag with room to spare, and if it doesn’t fit, that’s usually a sign you’re carrying a want, not a need.'),
                 ],
             },
         },
@@ -925,7 +925,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Outdoor Gear (Rugged)',
     theme: THEME,
     summary:
-        'A complete, working shop for an outdoor & adventure gear outfitter: a real catalogue of hardshells, down insulation, merino base layers, packs, a roll-top dry bag, trail socks, an insulated bottle, a headlamp and trekking poles — with categories, collections, a spec-forward PDP and a fully merchandised home page. Rugged field theme — muted stone-khaki ground, deep forest-green, a blaze-orange accent. Shipped as Ridgeline Supply.',
+        'A complete, working shop for an outdoor & adventure gear outfitter: a real catalogue of hardshells, down insulation, merino base layers, packs, a roll-top dry bag, trail socks, an insulated bottle, a headlamp and trekking poles, with categories, collections, a spec-forward PDP and a fully merchandised home page. Rugged field theme, muted stone-khaki ground, deep forest-green, a blaze-orange accent. Shipped as Ridgeline Supply.',
     tagline: 'A rugged, working storefront for an outdoor gear outfitter.',
     vertical: 'retail',
     industry: 'Outdoor & adventure gear',
@@ -938,14 +938,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Ridgeline Supply — outdoor & adventure gear built to be used',
+            title: 'Ridgeline Supply: outdoor & adventure gear built to be used',
             description:
-                'Ridgeline Supply outfits people who actually go outside — hard-wearing apparel, packs and gear, field-tested every season and backed by a repair-first guarantee. Fewer things, made to last.',
+                'Ridgeline Supply outfits people who actually go outside: hard-wearing apparel, packs and gear, field-tested every season and backed by a repair-first guarantee. Fewer things, made to last.',
         },
         about: {
             title: 'About Ridgeline Supply',
             description:
-                'Why Ridgeline keeps the range small — gear designed by people who use it, tested across a full season, and built to be repaired instead of replaced.',
+                'Why Ridgeline keeps the range small: gear designed by people who use it, tested across a full season, and built to be repaired instead of replaced.',
         },
     },
     home: HOME,

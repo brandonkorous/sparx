@@ -114,7 +114,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
               title="Could not load orders"
-              description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+              description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
               actions={
                 <Button
                   size="sm"

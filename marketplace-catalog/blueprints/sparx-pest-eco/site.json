@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "GreenShield Pest Solutions — eco, botanical pest control",
-      "seoDescription": "GreenShield is an eco pest-control company using botanical, low-toxicity treatments and integrated pest management — safe for kids and pets. Book a free inspection online.",
+      "seoTitle": "GreenShield Pest Solutions: eco, botanical pest control",
+      "seoDescription": "GreenShield is an eco pest-control company using botanical, low-toxicity treatments and integrated pest management: safe for kids and pets. Book a free inspection online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Botanical, low-toxicity treatments and prevention-first care — safe for kids, pets and the garden, and tough on the pests you actually want gone."
+                      "Botanical, low-toxicity treatments and prevention-first care: safe for kids, pets and the garden, and tough on the pests you actually want gone."
                     ],
                     "id": "8e8765ff-0968-4086-b188-9d71ad15d41a",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We treat with plant-derived, low-toxicity products — no chemical haze, no clearing the house for hours after we leave."
+                              "We treat with plant-derived, low-toxicity products: no chemical haze, no clearing the house for hours after we leave."
                             ],
                             "id": "6c65176a-0d98-4cfd-ac3c-77a8bbd625a1",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Integrated pest management finds why pests are here and shuts it down — so the problem stops coming back, not just today’s bugs."
+                              "Integrated pest management finds why pests are here and shuts it down, so the problem stops coming back, not just today’s bugs."
                             ],
                             "id": "ec0ec000-0d7a-416c-8b63-fdc2e6708365",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "If pests return between visits, so do we — at no extra charge. We’re not done until your home is genuinely settled."
+                              "If pests return between visits, so do we: at no extra charge. We’re not done until your home is genuinely settled."
                             ],
                             "id": "cdcd63cf-d4dd-4c49-b9eb-f14abfc43c1f",
                             "ord": "a1"
@@ -978,7 +978,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Humane, exclusion-first — seal them out, keep them out."],
+                            "children": ["Humane, exclusion-first: seal them out, keep them out."],
                             "id": "7abb7061-64a4-434d-8bdf-1ab724cedd71",
                             "ord": "a2"
                           }
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Spraying kills what’s in front of you today. It doesn’t answer why the pests came — the gap under the door, the standing water, the food left out overnight — so a week later they’re back and the can comes out again."
+                          "Spraying kills what’s in front of you today. It doesn’t answer why the pests came (the gap under the door, the standing water, the food left out overnight) so a week later they’re back and the can comes out again."
                         ],
                         "id": "672983f5-80dc-48fd-b408-37d100baf991",
                         "ord": "a1"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same technician each visit, and they’ll get to know your home and yard."
+                          "Book by name: you’ll see the same technician each visit, and they’ll get to know your home and yard."
                         ],
                         "id": "a033cf04-3466-4545-bf10-b2980595aa16",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Exclusion, rodent work and the deeper IPM assessments — the find-the-cause, seal-it-out visits."
+                                  "Exclusion, rodent work and the deeper IPM assessments: the find-the-cause, seal-it-out visits."
                                 ],
                                 "id": "78c94d4c-e7e2-4c3b-b640-03f79f276654",
                                 "ord": "a2"
@@ -1439,7 +1439,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "We’ll find the problem, show you the plan and quote it — no obligation. Booking takes about a minute."
+                      "We’ll find the problem, show you the plan and quote it: no obligation. Booking takes about a minute."
                     ],
                     "id": "2ff3603d-4100-4007-8453-1a288a1e99f8",
                     "ord": "a1"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — GreenShield Pest Solutions",
+      "seoTitle": "Book: GreenShield Pest Solutions",
       "seoDescription": "See what GreenShield Pest Solutions offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "aed3a44d-8be5-4dec-a03c-c558e76ca693",
                         "ord": "a1"
@@ -1663,7 +1663,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Plan visits repeat on the schedule you choose — monthly, bi-monthly or quarterly — with the same technician each time. Skip or reschedule any single visit with 24 hours’ notice; nothing is locked in."
+                              "Plan visits repeat on the schedule you choose (monthly, bi-monthly or quarterly) with the same technician each time. Skip or reschedule any single visit with 24 hours’ notice; nothing is locked in."
                             ],
                             "id": "5f375151-53c4-4dad-8464-8049203d2b06",
                             "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — GreenShield Pest Solutions",
+      "seoTitle": "About: GreenShield Pest Solutions",
       "seoDescription": "Who GreenShield Pest Solutions is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "GreenShield started from a simple conviction: getting rid of pests shouldn’t mean filling your home with chemicals — especially with kids, pets and a garden you actually want to use."
+                          "GreenShield started from a simple conviction: getting rid of pests shouldn’t mean filling your home with chemicals, especially with kids, pets and a garden you actually want to use."
                         ],
                         "id": "b4019409-e87d-4b06-9635-424ebea9c6fe",
                         "ord": "a1"
@@ -1760,7 +1760,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we built a pest-control company around botanical, low-toxicity treatments and integrated pest management — the kind of results you can trust, delivered by the same technician who learns your home."
+                          "So we built a pest-control company around botanical, low-toxicity treatments and integrated pest management: the kind of results you can trust, delivered by the same technician who learns your home."
                         ],
                         "id": "c0ead158-8293-4dc4-994f-11a0483e5cc2",
                         "ord": "a2"
@@ -1838,7 +1838,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every visit starts by finding why pests are here — entry points, moisture, food — not just treating what’s crawling today."
+                              "Every visit starts by finding why pests are here (entry points, moisture, food) not just treating what’s crawling today."
                             ],
                             "id": "897956cf-f174-4edd-87ac-2eab74d22dda",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — GreenShield Pest Solutions",
+      "seoTitle": "Visit: GreenShield Pest Solutions",
       "seoDescription": "Where to find GreenShield Pest Solutions, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and GreenShield Pest Solutions will get back to you — usually the same day."
+                          "Questions before you book? Send a note and GreenShield Pest Solutions will get back to you, usually the same day."
                         ],
                         "id": "8581857b-942f-4c0f-85fa-10871afd44cd",
                         "ord": "a1"
@@ -2384,7 +2384,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your free inspection online — no phone tag, no quote forms to chase."
+                      "See live availability and reserve your free inspection online: no phone tag, no quote forms to chase."
                     ],
                     "id": "fc6b5d89-946b-49a9-9d35-32aec4885f98",
                     "ord": "a1"

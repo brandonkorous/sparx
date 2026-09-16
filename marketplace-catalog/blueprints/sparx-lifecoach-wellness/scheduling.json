@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Life happens — just give us at least 24 hours’ notice to reschedule and we’ll find another time that fits. We send a friendly reminder the day before and two hours ahead."
+      "policyText": "Life happens. Just give us at least 24 hours’ notice to reschedule and we’ll find another time that fits. We send a friendly reminder the day before and two hours ahead."
     },
     {
       "handle": "no-show",
@@ -124,7 +124,7 @@
     {
       "handle": "life-coaching-session",
       "name": "Life coaching session",
-      "description": "A focused one-on-one session to work through a change, a decision or a season of life — at your pace, with real support.",
+      "description": "A focused one-on-one session to work through a change, a decision or a season of life: at your pace, with real support.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -158,7 +158,7 @@
     {
       "handle": "confidence-session",
       "name": "Confidence & self-worth session",
-      "description": "Practical, warm work on speaking up, setting boundaries and trusting yourself — so you show up as you, without apology.",
+      "description": "Practical, warm work on speaking up, setting boundaries and trusting yourself, so you show up as you, without apology.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -175,7 +175,7 @@
     {
       "handle": "work-life-balance-session",
       "name": "Work–life balance session",
-      "description": "Untangle the overwhelm and rebuild a week that has room for the things that matter — rest, people and you.",
+      "description": "Untangle the overwhelm and rebuild a week that has room for the things that matter: rest, people and you.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",

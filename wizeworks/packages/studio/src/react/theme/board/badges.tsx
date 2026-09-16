@@ -12,7 +12,7 @@ export function BadgesTile() {
   return (
     <BoardTile
       title="Labels and status"
-      hint="What a thing is, at a glance — on orders, stock, invoices and bookings."
+      hint="What a thing is, at a glance: on orders, stock, invoices and bookings."
     >
       <Specimen label="Softened, which is how a list mostly wears them">
         <Badge color="success" variant="soft">

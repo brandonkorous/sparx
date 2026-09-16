@@ -112,7 +112,7 @@ export function checkChrome(
       detail:
         'Your header and footer have no link into the account area, so someone who has bought ' +
         'from you cannot sign in, look up what they ordered, start a return, or change the ' +
-        'address you ship to — even though all of that is waiting for them. Open your header ' +
+        'address you ship to: even though all of that is waiting for them. Open your header ' +
         'and footer and put the account link in the top bar: it says "Sign in" to a visitor and ' +
         'shows a customer their own name once they are signed in.',
     },

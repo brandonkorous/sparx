@@ -485,7 +485,7 @@ export function VendorsListSurface() {
                     icon: <Icon glyph={faBuilding} className="size-6" aria-hidden />,
                     title: 'Nobody recorded yet',
                     description:
-                      'Add the businesses and people you pay — a parts wholesaler, a landlord, a subcontractor — and every cost can name one. Then this list tells you where the money actually goes.',
+                      'Add the businesses and people you pay (a parts wholesaler, a landlord, a subcontractor) and every cost can name one. Then this list tells you where the money actually goes.',
                     actions: (
                       <Button
                         size="sm"

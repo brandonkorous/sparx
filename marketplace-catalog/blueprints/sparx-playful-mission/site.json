@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Rally — pet supplies that give back, one for one",
-      "seoDescription": "Rally makes the good stuff for dogs and cats — beds, collars, toys and treats — and for every item you buy, one is given to a shelter animal still waiting for a home.",
+      "seoTitle": "Rally: pet supplies that give back, one for one",
+      "seoDescription": "Rally makes the good stuff for dogs and cats (beds, collars, toys and treats) and for every item you buy, one is given to a shelter animal still waiting for a home.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Rally makes the good stuff for dogs and cats — beds, collars, toys and treats built to last. And for every item you buy, we give one to an animal still waiting for a home. Shop for your pet, and a shelter pet gets looked after too."
+                          "Rally makes the good stuff for dogs and cats: beds, collars, toys and treats built to last. And for every item you buy, we give one to an animal still waiting for a home. Shop for your pet, and a shelter pet gets looked after too."
                         ],
                         "id": "c1cbfb66-9275-4e5e-8ffe-5836bd349044",
                         "ord": "a1"
@@ -1271,7 +1271,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed",
                     "children": [
-                      "It is the simplest promise we could make. Every bed, collar, toy and bag of treats you buy is matched with one we give to a shelter — a warm bed, a full bowl, a toy for a dog or cat still waiting to be someone’s. You shop; they get looked after. No fine print."
+                      "It is the simplest promise we could make. Every bed, collar, toy and bag of treats you buy is matched with one we give to a shelter: a warm bed, a full bowl, a toy for a dog or cat still waiting to be someone’s. You shop; they get looked after. No fine print."
                     ],
                     "id": "543bdad5-7166-408c-abb7-f29c6b5d4a43",
                     "ord": "a1"
@@ -1324,7 +1324,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A good bed is where most of a dog’s day actually happens. Ours use orthopedic foam and bolstered sides for the ones who like to lean, in covers that unzip and go straight in the wash — because real life is muddy."
+                          "A good bed is where most of a dog’s day actually happens. Ours use orthopedic foam and bolstered sides for the ones who like to lean, in covers that unzip and go straight in the wash, because real life is muddy."
                         ],
                         "id": "bd72f88c-23d3-49d0-bfef-103278e38f0c",
                         "ord": "a1"
@@ -1580,7 +1580,7 @@
                     "kind": "element",
                     "tag": "h2",
                     "class": "text-2xl font-bold tracking-tight @3xl:text-3xl",
-                    "children": ["beds, bowls and meals given — and counting"],
+                    "children": ["beds, bowls and meals given, and counting"],
                     "id": "bda0aa37-2642-44e4-9a5b-2feea66f08c6",
                     "ord": "a1"
                   },
@@ -1653,7 +1653,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tough rope tugs, catnip kickers and the toys that survive the third round of fetch. Made to be chased, thrown, wrestled and — eventually — replaced, because a well-loved toy is the whole point."
+                          "Tough rope tugs, catnip kickers and the toys that survive the third round of fetch. Made to be chased, thrown, wrestled and (eventually) replaced, because a well-loved toy is the whole point."
                         ],
                         "id": "62a2912c-e227-41b4-9e8b-72d2f1668dcc",
                         "ord": "a1"
@@ -1915,7 +1915,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed",
                         "children": [
-                          "Mealtime, playtime and the road in between — the small things that turn a house into their home."
+                          "Mealtime, playtime and the road in between: the small things that turn a house into their home."
                         ],
                         "id": "03b8f08a-bd53-4bbc-b07e-13faad085ca5",
                         "ord": "a1"
@@ -2115,7 +2115,7 @@
                             "tag": "p",
                             "class": "text-base text-base-content",
                             "children": [
-                              "A bed, a collar, a toy, a bag of treats — whatever your dog or cat needs. Nothing extra to opt into."
+                              "A bed, a collar, a toy, a bag of treats: whatever your dog or cat needs. Nothing extra to opt into."
                             ],
                             "id": "7615bf71-3f8a-4338-8a66-cd190529a0f2",
                             "ord": "a1"
@@ -2169,7 +2169,7 @@
                             "tag": "p",
                             "class": "text-base text-base-content",
                             "children": [
-                              "A dog or cat still waiting for a home gets a warm bed, a full bowl or a toy of their own — because of your order."
+                              "A dog or cat still waiting for a home gets a warm bed, a full bowl or a toy of their own, because of your order."
                             ],
                             "id": "7e63c438-9a76-4e28-a7c1-6e0f43db7ff9",
                             "ord": "a1"
@@ -2309,7 +2309,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Rally",
+      "seoTitle": "Shop: Rally",
       "seoDescription": "Browse everything Rally makes, with prices and options at a glance. Pet supplies with giveback.",
       "root": {
         "kind": "element",
@@ -2341,7 +2341,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Beds, collars, harnesses, toys, bowls and treats — the good stuff for dogs and cats, filtered and sorted however you like. Made to last, made to be used, and matched one-for-one to a shelter animal with every order."
+                      "Beds, collars, harnesses, toys, bowls and treats: the good stuff for dogs and cats, filtered and sorted however you like. Made to last, made to be used, and matched one-for-one to a shelter animal with every order."
                     ],
                     "id": "8d8ab930-472a-412f-a5ee-e6a48b0000bb",
                     "ord": "a1"
@@ -2364,7 +2364,7 @@
                         "tag": "p",
                         "class": "text-base leading-relaxed",
                         "children": [
-                          "Every single thing on this page sends its match to a shelter — no fine print, no upsell."
+                          "Every single thing on this page sends its match to a shelter: no fine print, no upsell."
                         ],
                         "id": "85f764d4-a5a0-4b0b-964f-83508318e724",
                         "ord": "a1"
@@ -2396,7 +2396,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Rally",
+      "seoTitle": "Collections: Rally",
       "seoDescription": "Explore the collections at Rally, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2428,7 +2428,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every corner of the shop, grouped the way you actually shop for a pet — beds and blankets, collars and leads, toys, and the giveback edit that puts the most into a shelter with every order. Pick a pack and dive in."
+                      "Every corner of the shop, grouped the way you actually shop for a pet: beds and blankets, collars and leads, toys, and the giveback edit that puts the most into a shelter with every order. Pick a pack and dive in."
                     ],
                     "id": "baac73ea-4d60-4349-bbbc-80f7d7719c3d",
                     "ord": "a1"
@@ -2456,7 +2456,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Rally",
+      "seoTitle": "Your cart: Rally",
       "seoDescription": "Review what is in your cart and check out securely at Rally.",
       "root": {
         "kind": "element",
@@ -2488,7 +2488,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free carbon-neutral shipping over $50 and 60 days to change your mind — take your time. Everything here is made to be used hard and washed often, and we would put every piece on our own animals."
+                      "Free carbon-neutral shipping over $50 and 60 days to change your mind: take your time. Everything here is made to be used hard and washed often, and we would put every piece on our own animals."
                     ],
                     "id": "577771e9-15b3-49eb-bf5e-1f62735fdd03",
                     "ord": "a1"
@@ -2511,7 +2511,7 @@
                         "tag": "p",
                         "class": "text-base leading-relaxed",
                         "children": [
-                          "The moment you check out, a matching bed, bowl, collar or toy is on its way to an animal still waiting for a home. No box to tick, no round-up — the good is already done."
+                          "The moment you check out, a matching bed, bowl, collar or toy is on its way to an animal still waiting for a home. No box to tick, no round-up: the good is already done."
                         ],
                         "id": "de182ccb-ee59-47e1-82ba-9612e428aacd",
                         "ord": "a1"
@@ -2543,7 +2543,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Rally",
+      "seoTitle": "Search: Rally",
       "seoDescription": "Search Rally for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2575,7 +2575,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "After a specific size, a color, a treat your dog goes daft for? Search the whole shop and the Journal below — and remember, whatever you turn up, buying it sends a match to a shelter animal too."
+                      "After a specific size, a color, a treat your dog goes daft for? Search the whole shop and the Journal below, and remember, whatever you turn up, buying it sends a match to a shelter animal too."
                     ],
                     "id": "cb6179be-d383-455c-bf17-bf175c1e4e58",
                     "ord": "a1"
@@ -2603,7 +2603,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Rally",
+      "seoTitle": "Journal: Rally",
       "seoDescription": "Stories, guides and notes from Rally.",
       "root": {
         "kind": "element",
@@ -2635,7 +2635,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The Rally Journal — how the giveback actually reaches a shelter, honest advice for living with a dog or a cat, and the rescue partners who turn your orders into warm beds and full bowls."
+                      "The Rally Journal: how the giveback actually reaches a shelter, honest advice for living with a dog or a cat, and the rescue partners who turn your orders into warm beds and full bowls."
                     ],
                     "id": "56301801-31cb-447c-ae0e-c221b962c24c",
                     "ord": "a1"
@@ -2800,7 +2800,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Rally started with a shelter visit and a simple, uncomfortable thought: the aisle of a pet shop is full of good things, and a few miles away a room full of dogs and cats has almost none. So we built a pet brand around closing that gap — make the products people already want to buy, and give one away for every one we sell."
+                      "Rally started with a shelter visit and a simple, uncomfortable thought: the aisle of a pet shop is full of good things, and a few miles away a room full of dogs and cats has almost none. So we built a pet brand around closing that gap. Make the products people already want to buy, and give one away for every one we sell."
                     ],
                     "id": "2db346f4-3622-4cc1-8dbb-06bce368f7d8",
                     "ord": "a1"
@@ -2810,7 +2810,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The giveback is not a marketing add-on we bolt onto a sale. It is the reason the company exists, and it is baked into the price of everything on the site. Buy a bed, and a shelter dog gets a bed. Buy a bag of treats, and a rescue cat eats. There is no round-up box to tick and no upsell — the good is already done by the time your order ships."
+                      "The giveback is not a marketing add-on we bolt onto a sale. It is the reason the company exists, and it is baked into the price of everything on the site. Buy a bed, and a shelter dog gets a bed. Buy a bag of treats, and a rescue cat eats. There is no round-up box to tick and no upsell: the good is already done by the time your order ships."
                     ],
                     "id": "bac3e951-d980-4a24-95ea-da369078686c",
                     "ord": "a2"
@@ -2820,7 +2820,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We are a small team of people who could not walk past. We make gear we would put our own animals on — durable, washable, honestly made — and we partner with shelters and rescues across the country to get the matched half where it is needed most. Every wag, on both ends, does some good."
+                      "We are a small team of people who could not walk past. We make gear we would put our own animals on (durable, washable, honestly made) and we partner with shelters and rescues across the country to get the matched half where it is needed most. Every wag, on both ends, does some good."
                     ],
                     "id": "97855f18-32c4-4aae-ae52-7419b1f8621f",
                     "ord": "a3"
@@ -2840,8 +2840,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Rally",
-      "seoDescription": "Get in touch with Rally — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Rally",
+      "seoDescription": "Get in touch with Rally: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2877,7 +2877,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A sizing question, an order, or a shelter that could use a hand? A real person on the Rally team reads every message and writes back — usually the same day, always like a fellow pet person, never from a script."
+                          "A sizing question, an order, or a shelter that could use a hand? A real person on the Rally team reads every message and writes back, usually the same day, always like a fellow pet person, never from a script."
                         ],
                         "id": "1f519658-1ffe-482a-86ea-250e2111db49",
                         "ord": "a1"
@@ -3148,8 +3148,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Rally",
-      "seoDescription": "Product details at Rally — pet supplies with giveback, with options and pricing.",
+      "seoTitle": "Product: Rally",
+      "seoDescription": "Product details at Rally: pet supplies with giveback, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -3512,7 +3512,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed",
                             "children": [
-                              "Add this to your cart and its match is already on its way to a shelter — a warm bed, a full bowl, a toy of their own for an animal still waiting for a home. No box to tick, no round-up at checkout. The good is done the moment you buy."
+                              "Add this to your cart and its match is already on its way to a shelter: a warm bed, a full bowl, a toy of their own for an animal still waiting for a home. No box to tick, no round-up at checkout. The good is done the moment you buy."
                             ],
                             "id": "d48e558c-c836-44da-8b63-7e0c46ddbadd",
                             "ord": "a1"

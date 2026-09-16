@@ -63,7 +63,7 @@ export const surchargePresets = [
     slug: 'surcharge-ach-fee-capped',
     name: 'ACH convenience fee (1%, max $5)',
     description:
-      'A 1% convenience fee on ACH/bank payments, capped at $5 — common for B2B net-terms accounts paying by bank transfer.',
+      'A 1% convenience fee on ACH/bank payments, capped at $5: common for B2B net-terms accounts paying by bank transfer.',
     iconKey: 'landmark',
     tags: ['ach', 'b2b', 'capped'],
     chip: '1% ACH · $5 cap',

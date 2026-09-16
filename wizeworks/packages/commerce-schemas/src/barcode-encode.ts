@@ -484,7 +484,7 @@ export function encodeBarcode(raw: string, declared?: BarcodeSymbology): Encoded
       throw new Error('QR codes are two-dimensional and are drawn by a different renderer.');
     case 'code_39':
       throw new Error(
-        'Code 39 can be stored and scanned but is not printed here — use Code 128, which is denser and carries a check digit.'
+        'Code 39 can be stored and scanned but is not printed here. Use Code 128, which is denser and carries a check digit.'
       );
     default:
       return code128(value);
@@ -493,14 +493,14 @@ export function encodeBarcode(raw: string, declared?: BarcodeSymbology): Encoded
 
 function requireDigits(value: string, length: number, label: string): void {
   if (!DIGITS.test(value) || value.length !== length) {
-    throw new Error(`${label} is ${length} digits — this one is ${JSON.stringify(value)}.`);
+    throw new Error(`${label} is ${length} digits: this one is ${JSON.stringify(value)}.`);
   }
 }
 
 function requireCheckDigit(value: string, label: string): void {
   const want = gs1CheckDigit(value.slice(0, -1));
   if (Number(value.slice(-1)) !== want) {
-    throw new Error(`This ${label} should end in ${want} — it will not scan as printed.`);
+    throw new Error(`This ${label} should end in ${want}: it will not scan as printed.`);
   }
 }
 

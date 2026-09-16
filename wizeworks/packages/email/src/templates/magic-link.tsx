@@ -25,13 +25,13 @@ export function MagicLinkEmail({ magicUrl, expiresInMinutes = 15 }: MagicLinkEma
     >
       <EmailDisplayHeading>Sign in to {platform}</EmailDisplayHeading>
       <EmailParagraph>
-        Use the button below to sign in. No password needed — this link is all it takes. It expires
+        Use the button below to sign in. No password needed. This link is all it takes. It expires
         in {expiresInMinutes} minutes and works once.
       </EmailParagraph>
       <EmailActionButton href={magicUrl}>Sign in to {platform}</EmailActionButton>
       <EmailFallbackLink url={magicUrl} />
       <EmailFinePrint>
-        If you didn&apos;t try to sign in, you can safely ignore this email — no one can sign in
+        If you didn&apos;t try to sign in, you can safely ignore this email: no one can sign in
         without this link.
       </EmailFinePrint>
     </PlatformEmailLayout>

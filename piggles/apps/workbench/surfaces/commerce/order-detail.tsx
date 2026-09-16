@@ -77,7 +77,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             error={error}
             noun="order"
             title="Could not load this order"
-            description="This is a problem reaching the server. The order itself is unaffected — nothing has been changed or lost."
+            description="This is a problem reaching the server. The order itself is unaffected. Nothing has been changed or lost."
             onRetry={() => {
               void refetch();
             }}

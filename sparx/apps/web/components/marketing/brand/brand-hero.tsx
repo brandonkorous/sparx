@@ -48,7 +48,7 @@ export function BrandHero() {
           <Text size={19} className="max-w-[660px]">
             The wordmark, the color system, the Geist type scale, and the voice that keep sparx
             coherent across fourteen modules, a dozen domains, and every surface a tenant touches.
-            This page is the source of truth — for us, and for anyone building with the sparx brand.
+            This page is the source of truth, for us, and for anyone building with the sparx brand.
           </Text>
         </div>
 

@@ -152,7 +152,7 @@
     {
       "handle": "contract-review-consult",
       "name": "Contract review consultation",
-      "description": "A working session on a specific agreement — where the risk sits, what to push back on and what to sign.",
+      "description": "A working session on a specific agreement: where the risk sits, what to push back on and what to sign.",
       "durationMinutes": 45,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -169,7 +169,7 @@
     {
       "handle": "litigation-consult",
       "name": "Commercial litigation consultation",
-      "description": "A candid read on a dispute or threatened claim — exposure, leverage, the realistic paths and what each one costs.",
+      "description": "A candid read on a dispute or threatened claim: exposure, leverage, the realistic paths and what each one costs.",
       "durationMinutes": 60,
       "priceCents": 35000,
       "assignmentStrategy": "customer_choice",
@@ -203,7 +203,7 @@
     {
       "handle": "ip-consult",
       "name": "Intellectual property consultation",
-      "description": "Trademarks, trade secrets, licensing and IP assignment — protecting what your business is actually built on.",
+      "description": "Trademarks, trade secrets, licensing and IP assignment: protecting what your business is actually built on.",
       "durationMinutes": 45,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -220,7 +220,7 @@
     {
       "handle": "ma-advisory-consult",
       "name": "M&A advisory consultation",
-      "description": "A strategy session for a purchase, sale or investment — deal structure, diligence and the terms worth holding the line on.",
+      "description": "A strategy session for a purchase, sale or investment: deal structure, diligence and the terms worth holding the line on.",
       "durationMinutes": 60,
       "priceCents": 35000,
       "assignmentStrategy": "customer_choice",

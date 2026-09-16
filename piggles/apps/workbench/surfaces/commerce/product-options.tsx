@@ -130,7 +130,7 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
           module={MODULE}
           icon={<Icon glyph={faShapes} className="size-6" aria-hidden />}
           title="Could not load this product’s choices"
-          description="This is a problem reaching the server. Nothing about the product has changed — how it is sold just could not be read just now."
+          description="This is a problem reaching the server. Nothing about the product has changed: how it is sold just could not be read just now."
           onRetry={() => {
             void options.refetch();
             void variants.refetch();
@@ -198,7 +198,7 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Text>
               {draft.length >= MAX_OPTIONS
-                ? 'Eight choices is the most a product can have — already far more than a shopper will work through.'
+                ? 'Eight choices is the most a product can have: already far more than a shopper will work through.'
                 : `${countOf(consequence.combinations, 'combination', 'combinations')} in all.`}
             </Text>
             <Button
@@ -232,8 +232,8 @@ function NoChoicesYet({ onAdd, hadChoices }: { onAdd: () => void; hadChoices: bo
         title={hadChoices ? 'You have removed every choice' : 'This product is sold one way'}
         description={
           hadChoices
-            ? 'Nothing has changed yet. The summary above says what happens to your existing versions if you go ahead — or put a choice back.'
-            : 'There is a single version of this product with one price. Add a choice — Size, Color, Length — if shoppers need to pick between versions.'
+            ? 'Nothing has changed yet. The summary above says what happens to your existing versions if you go ahead, or put a choice back.'
+            : 'There is a single version of this product with one price. Add a choice (Size, Color, Length) if shoppers need to pick between versions.'
         }
         actions={
           <Button size="sm" color="module" onClick={onAdd}>

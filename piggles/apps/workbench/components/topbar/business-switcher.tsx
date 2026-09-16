@@ -67,7 +67,7 @@ export function BusinessSwitcher({
       title: `Switch to ${next?.name ?? 'another business'}?`,
       description: controller.hasUnsavedWork()
         ? 'Something here has edits that were never saved. Switching business reloads everything and those edits are gone.'
-        : 'Everything reloads for that business — its own customers, orders and invoices. What you have open here is saved and waiting when you come back.',
+        : 'Everything reloads for that business. Its own customers, orders and invoices. What you have open here is saved and waiting when you come back.',
       confirmLabel: 'Switch business',
       cancelLabel: 'Stay here',
       color: controller.hasUnsavedWork() ? 'danger' : 'primary',
@@ -90,7 +90,7 @@ export function BusinessSwitcher({
 
   return (
     <DropdownMenu>
-      <Tooltip content="Switch business — each one is completely separate">
+      <Tooltip content="Switch business: each one is completely separate">
         <DropdownMenuTrigger>
           {/* COLORLESS: a bare `.btn` resolves to `base-content` and is
               theme-correct without naming `neutral`, which is not mine to

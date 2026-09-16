@@ -230,22 +230,22 @@ export function gatewayState(
     // green, two lines under the pane's own sentence "nothing is charged online".
     // An online-only shop reading the badge would take every order unpaid.
     if (gateway.checkout === 'none') {
-      return { tone: 'info', label: 'Active — no card payments' };
+      return { tone: 'info', label: 'Active: no card payments' };
     }
-    return { tone: 'success', label: 'Active — taking payments' };
+    return { tone: 'success', label: 'Active: taking payments' };
   }
   if (isSelected) {
     // Selected as the active gateway, but not able to charge yet.
     if (gateway.onboarding === 'sparx_hosted') {
-      return { tone: 'info', label: 'Chosen — finish setup to go live' };
+      return { tone: 'info', label: 'Chosen: finish setup to go live' };
     }
     if (gateway.onboarding === 'api_keys') {
-      return { tone: 'info', label: 'Chosen — add your keys to go live' };
+      return { tone: 'info', label: 'Chosen: add your keys to go live' };
     }
     return { tone: 'info', label: 'Chosen' };
   }
   if (credential?.hasSecrets) {
-    return { tone: 'warning', label: 'Keys saved — not your active provider' };
+    return { tone: 'warning', label: 'Keys saved, not your active provider' };
   }
   // Nothing has happened to this one. That is the absence of state, so the
   // badge wears no color rather than the color named "no color".

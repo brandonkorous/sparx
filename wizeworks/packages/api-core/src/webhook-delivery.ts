@@ -241,7 +241,7 @@ export function startWebhookDeliveryLoop(
     try {
       await runWebhookDeliveryTick(logger);
     } catch (err) {
-      logger.error({ err }, 'webhook-delivery: tick threw — will retry next interval');
+      logger.error({ err }, 'webhook-delivery: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

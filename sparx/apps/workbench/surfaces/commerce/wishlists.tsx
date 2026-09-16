@@ -130,7 +130,7 @@ export function WishlistsSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Heart className="size-6" aria-hidden />}
               title="Nobody has saved anything yet"
-              description="When a shopper saves a product for later, it shows up here. Once a few have, this becomes a good list of what to keep in stock or put on offer — the things people want but haven't bought."
+              description="When a shopper saves a product for later, it shows up here. Once a few have, this becomes a good list of what to keep in stock or put on offer: the things people want but haven't bought."
             />
           ) : (
             <>

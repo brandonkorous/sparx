@@ -57,7 +57,7 @@ function checkSymbols(inventory: DocumentInventory): RawFinding[] {
     severity: 'error' as const,
     title: 'A saved piece on this page no longer exists',
     detail:
-      'This spot is set to show one of your saved pieces, but that piece has been deleted — so ' +
+      'This spot is set to show one of your saved pieces, but that piece has been deleted, so ' +
       'nothing appears here at all. Put a different piece in its place, or remove the empty spot.',
     evidence: missing.symbolId,
   }));
@@ -128,7 +128,7 @@ export function checkDuplicateIds(
       title: 'Two blocks share the same internal id',
       detail:
         `The same block id is used ${where}. Blocks are identified by that id, so when two share ` +
-        'one the editor cannot tell them apart — dragging to reorder stops working, with no ' +
+        'one the editor cannot tell them apart: dragging to reorder stops working, with no ' +
         'message to say why. This cannot happen while building normally; it comes from imported ' +
         'or restored content. Delete one of the two blocks and add it again to give it a fresh id.',
       evidence: id,

@@ -137,7 +137,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Evaluations and post-op sessions hold a full slot with a therapist and a room, so we keep a card on file — nothing is charged unless you miss the visit or cancel with less than 24 hours’ notice.',
+        'Evaluations and post-op sessions hold a full slot with a therapist and a room, so we keep a card on file. Nothing is charged unless you miss the visit or cancel with less than 24 hours’ notice.',
     },
   ],
   resources: [
@@ -182,7 +182,7 @@ const SCHEDULING = {
       handle: 'initial-evaluation',
       name: 'Initial evaluation',
       description:
-        'A full one-on-one assessment — we pinpoint what’s driving the pain or limitation, then build the plan to get you back to doing what you love.',
+        'A full one-on-one assessment. We pinpoint what’s driving the pain or limitation, then build the plan to get you back to doing what you love.',
       durationMinutes: 60,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -196,7 +196,7 @@ const SCHEDULING = {
       handle: 'follow-up-session',
       name: 'Follow-up session',
       description:
-        'A hands-on treatment and progression visit — we advance your program as you get stronger and keep you moving forward.',
+        'A hands-on treatment and progression visit. We advance your program as you get stronger and keep you moving forward.',
       durationMinutes: 45,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -210,7 +210,7 @@ const SCHEDULING = {
       handle: 'sports-rehab-session',
       name: 'Sports rehab session',
       description:
-        'Loaded, sport-specific rehab to rebuild strength, power and control — the work that gets you back on the field and keeps you there.',
+        'Loaded, sport-specific rehab to rebuild strength, power and control: the work that gets you back on the field and keeps you there.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -238,7 +238,7 @@ const SCHEDULING = {
       handle: 'dry-needling-session',
       name: 'Dry-needling session',
       description:
-        'Precise needling to release stubborn trigger points and switch tight, guarded muscles back on — often the fastest way to unlock a plateau.',
+        'Precise needling to release stubborn trigger points and switch tight, guarded muscles back on, often the fastest way to unlock a plateau.',
       durationMinutes: 30,
       priceCents: 9000,
       bufferAfterMin: 5,
@@ -253,7 +253,7 @@ const SCHEDULING = {
       handle: 'post-op-rehab',
       name: 'Post-op rehab',
       description:
-        'Guided recovery after surgery — a careful, progressive program that protects the repair and rebuilds your strength and mobility step by step.',
+        'Guided recovery after surgery: a careful, progressive program that protects the repair and rebuilds your strength and mobility step by step.',
       durationMinutes: 60,
       priceCents: 13000,
       assignmentStrategy: 'customer_choice',
@@ -267,7 +267,7 @@ const SCHEDULING = {
       handle: 'movement-screen',
       name: 'Movement screen',
       description:
-        'A free screen of how you actually move under load — we find the weak link and tell you straight whether we’re the right team to fix it. No pressure.',
+        'A free screen of how you actually move under load. We find the weak link and tell you straight whether we’re the right team to fix it. No pressure.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -299,7 +299,7 @@ const HOME = [
       },
       {
         title: 'One-on-one, hands-on care',
-        body: 'A full session with your therapist — not passed off to an aide or a machine. Real hands-on treatment and coaching, every visit.',
+        body: 'A full session with your therapist, not passed off to an aide or a machine. Real hands-on treatment and coaching, every visit.',
       },
       {
         title: 'Most insurance accepted',
@@ -307,17 +307,17 @@ const HOME = [
       },
       {
         title: 'Back to it, faster',
-        body: 'A clear diagnosis, a real plan, and a target to be back to your sport, your job or your routine — not an open-ended schedule of visits.',
+        body: 'A clear diagnosis, a real plan, and a target to be back to your sport, your job or your routine, not an open-ended schedule of visits.',
       },
     ],
   }),
   serviceMenu({
     heading: 'What you can book',
-    intro: 'Straight-talking visits with clear times and prices. Full availability is on the booking page — pick a therapist and a slot that works for you.',
+    intro: 'Straight-talking visits with clear times and prices. Full availability is on the booking page. Pick a therapist and a slot that works for you.',
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Initial evaluation', priceCents: 15000, durationMin: 60, desc: 'The full assessment — find the cause, build the plan.' },
+      { name: 'Initial evaluation', priceCents: 15000, durationMin: 60, desc: 'The full assessment: find the cause, build the plan.' },
       { name: 'Sports rehab session', priceCents: 12000, durationMin: 60, desc: 'Loaded, sport-specific work to get you back on the field.' },
       { name: 'Manual therapy session', priceCents: 8500, durationMin: 30, desc: 'Hands-on work to free up restriction and restore range.' },
       { name: 'Post-op rehab', priceCents: 13000, durationMin: 60, desc: 'Guided recovery that protects the repair and rebuilds strength.' },
@@ -327,24 +327,24 @@ const HOME = [
   splitFeature({
     image: url(IMG.method),
     alt: 'A physical therapist coaching a patient through a strength exercise one-on-one',
-    heading: 'Evaluate, treat, rebuild — the Momentum method',
+    heading: 'Evaluate, treat, rebuild: the Momentum method',
     body: [
-      'Most rehab chases the pain. We chase the cause. Every patient starts with a full evaluation, so we treat the reason the tissue failed — not just the spot that hurts.',
-      'From there it’s hands-on treatment to settle things down, then loaded, progressive rehab to build real capacity back. That last step is what keeps the injury from coming back — and gets you doing more than you did before.',
+      'Most rehab chases the pain. We chase the cause. Every patient starts with a full evaluation, so we treat the reason the tissue failed, not just the spot that hurts.',
+      'From there it’s hands-on treatment to settle things down, then loaded, progressive rehab to build real capacity back. That last step is what keeps the injury from coming back, and gets you doing more than you did before.',
     ],
     cta: { label: 'Book your evaluation', href: '/book' },
   }),
   teamRow({
     heading: 'Your therapists',
-    intro: 'Book by name — you’ll work with a doctor of physical therapy who knows your history and your goals.',
+    intro: 'Book by name: you’ll work with a doctor of physical therapy who knows your history and your goals.',
     members: [
       { name: 'Dr. Jordan Ellis, DPT', role: 'Orthopedic & manual therapy lead', image: url(IMG.jordan), alt: 'Dr. Jordan Ellis, DPT, orthopedic & manual therapy lead', bio: 'Orthopedic rehab and hands-on manual therapy for active people. Jordan leads the clinic.' },
-      { name: 'Dr. Sasha Kim, DPT', role: 'Sports rehab & dry-needling specialist', image: url(IMG.sasha), alt: 'Dr. Sasha Kim, DPT, sports rehab & dry-needling specialist', bio: 'Return-to-sport rehab and dry needling — the work that gets athletes back to full speed.' },
-      { name: 'Dr. Nadia Okonkwo, DPT', role: 'Post-op & manual therapy specialist', image: url(IMG.nadia), alt: 'Dr. Nadia Okonkwo, DPT, post-op & manual therapy specialist', bio: 'Post-surgical recovery and manual therapy — careful, progressive rebuilding that lasts.' },
+      { name: 'Dr. Sasha Kim, DPT', role: 'Sports rehab & dry-needling specialist', image: url(IMG.sasha), alt: 'Dr. Sasha Kim, DPT, sports rehab & dry-needling specialist', bio: 'Return-to-sport rehab and dry needling: the work that gets athletes back to full speed.' },
+      { name: 'Dr. Nadia Okonkwo, DPT', role: 'Post-op & manual therapy specialist', image: url(IMG.nadia), alt: 'Dr. Nadia Okonkwo, DPT, post-op & manual therapy specialist', bio: 'Post-surgical recovery and manual therapy: careful, progressive rebuilding that lasts.' },
     ],
   }),
   testimonial({
-    quote: 'Blew out my knee skiing and the surgeon said six months. Momentum had me hiking again in four — and stronger than before I got hurt. They didn’t just rehab me, they rebuilt me.',
+    quote: 'Blew out my knee skiing and the surgeon said six months. Momentum had me hiking again in four, and stronger than before I got hurt. They didn’t just rehab me, they rebuilt me.',
     attribution: 'Daniel R., recovered ACL patient',
     surface: 'primary',
   }),
@@ -374,7 +374,7 @@ const ABOUT = [
     heading: 'About Momentum Physical Therapy',
     body: [
       'We built Momentum for the people other clinics send home with a sheet of exercises and a shrug. Athletes, weekend warriors, post-op patients, anyone whose life doesn’t stop when something gives out.',
-      'It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity — because getting out of pain and getting back to what you love are two different jobs, and we do both.',
+      'It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity, because getting out of pain and getting back to what you love are two different jobs, and we do both.',
     ],
     cta: { label: 'Book an evaluation', href: '/book' },
   }),
@@ -384,7 +384,7 @@ const ABOUT = [
     items: [
       { title: 'Evaluation first', body: 'Every plan starts with how you move. We find the weak link before we treat the pain, so we fix the cause, not just the symptom.' },
       { title: 'Hands-on, then loaded', body: 'Manual therapy and dry needling to settle things down, then progressive, loaded rehab to build real strength back.' },
-      { title: 'Back to your life', body: 'We work to a target — a return-to-sport date, a lift, a job task — not an open-ended schedule of maintenance visits.' },
+      { title: 'Back to your life', body: 'We work to a target (a return-to-sport date, a lift, a job task) not an open-ended schedule of maintenance visits.' },
     ],
   }),
 ];
@@ -403,7 +403,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your time online — no phone tag, no waiting-room hold music.',
+    sub: 'See live availability and reserve your time online: no phone tag, no waiting-room hold music.',
     surface: 'muted',
     cta: { label: 'Book an evaluation', href: '/book' },
   }),
@@ -414,8 +414,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-pt-ortho',
   name: 'Physical Therapy (Ortho & Sports)',
   summary:
-    'An active, results-driven orthopedic & sports physical therapy site — a confident teal palette with an energetic orange accent on a crisp near-white ground. Installs a working booking flow: evaluations, follow-ups, sports rehab, manual therapy, dry needling and post-op rehab, with three therapists AND treatment rooms as multi-requirement resources. Ships as "Momentum Physical Therapy", an ortho & sports rehab clinic that books evaluations online from day one.',
-  tagline: 'An athletic template for ortho & sports physical therapy — book evaluations online from day one.',
+    'An active, results-driven orthopedic & sports physical therapy site: a confident teal palette with an energetic orange accent on a crisp near-white ground. Installs a working booking flow: evaluations, follow-ups, sports rehab, manual therapy, dry needling and post-op rehab, with three therapists AND treatment rooms as multi-requirement resources. Ships as "Momentum Physical Therapy", an ortho & sports rehab clinic that books evaluations online from day one.',
+  tagline: 'An athletic template for ortho & sports physical therapy. Book evaluations online from day one.',
   industry: 'Physical therapy',
   sortWeight: 48,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -424,7 +424,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Momentum Physical Therapy — ortho & sports rehab',
+      title: 'Momentum Physical Therapy: ortho & sports rehab',
       description:
         'Orthopedic & sports physical therapy for injury recovery, post-op rehab and getting back to full strength. Book an evaluation online.',
     },

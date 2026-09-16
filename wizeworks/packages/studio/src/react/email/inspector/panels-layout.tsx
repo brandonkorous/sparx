@@ -40,7 +40,7 @@ export function BodyPanel({ node }: { node: EmailBody }) {
         <TextRow
           label="Typeface"
           value={node.fontFamily}
-          hint="Name a font people already have — an inbox cannot download one."
+          hint="Name a font people already have: an inbox cannot download one."
           onCommit={(fontFamily) => patch('Change typeface', { fontFamily })}
         />
       </Group>

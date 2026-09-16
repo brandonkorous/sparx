@@ -28,7 +28,7 @@ import {
 function costOf(names: string[] | null): string {
   if (names === null) return 'We couldn’t check which sites are using it.';
   if (names.length === 0) return 'No site is using it, so nothing on screen will change.';
-  return `${names.join(' and ')} ${names.length === 1 ? 'is' : 'are'} using it. Choose a different look for ${names.length === 1 ? 'it' : 'them'} first — this won’t delete while it is in use.`;
+  return `${names.join(' and ')} ${names.length === 1 ? 'is' : 'are'} using it. Choose a different look for ${names.length === 1 ? 'it' : 'them'} first. This won’t delete while it is in use.`;
 }
 
 export function ThemeActions({ row, onOpen }: { row: ThemeRow; onOpen: (id: string) => void }) {

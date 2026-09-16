@@ -474,7 +474,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               <FieldLabel>Handle</FieldLabel>
               <FieldControl render={<Input value={site.slug} readOnly disabled />} />
               <FieldDescription>
-                Fixed when the site was created — web addresses already point at it, so changing it
+                Fixed when the site was created: web addresses already point at it, so changing it
                 would break them.
               </FieldDescription>
             </Field>
@@ -486,7 +486,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           >
             {available.length === 0 ? (
               <Text className="text-sm">
-                Nothing to choose yet — this account has no modules switched on beyond the site
+                Nothing to choose yet. This account has no modules switched on beyond the site
                 builder itself.
               </Text>
             ) : (
@@ -515,7 +515,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
             {site.isPrimary ? (
               <Text className="text-sm">
-                This is your primary site — the one that answers your account&apos;s main web
+                This is your primary site: the one that answers your account&apos;s main web
                 address. Make another site primary to move that role, which is also what has to
                 happen before this one can be deleted.
               </Text>

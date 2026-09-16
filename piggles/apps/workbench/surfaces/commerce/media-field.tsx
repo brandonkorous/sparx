@@ -304,7 +304,7 @@ function MediaPickerDialog({
                 <Text>
                   {search
                     ? `No pictures match “${search.trim()}”.`
-                    : 'No pictures yet — upload one to get started.'}
+                    : 'No pictures yet. Upload one to get started.'}
                 </Text>
               </div>
             ) : (

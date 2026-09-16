@@ -51,7 +51,7 @@ export const SETUP_STEPS: readonly SetupStepDefinition[] = [
   {
     key: 'locations',
     title: 'Where you keep stock',
-    summary: 'Name the places stock physically sits — a shop, a unit, a van, a shelf in the back.',
+    summary: 'Name the places stock physically sits: a shop, a unit, a van, a shelf in the back.',
     why: 'Every quantity in the system belongs to a place. One location is a perfectly good answer, and you can add more later.',
     skippable: false,
     skipCost: null,
@@ -833,7 +833,7 @@ export const MIGRATION_RECIPES: readonly MigrationRecipe[] = [
     name: 'A stock-take sheet coming back from the floor',
     description:
       'The sheet you exported, filled in with what was actually on the shelves. Differences post as a recount.',
-    recognisedBy: 'It was exported from here — the headings already match.',
+    recognisedBy: 'It was exported from here: the headings already match.',
     extraAliases: {},
     options: { reason: 'recount' },
   },

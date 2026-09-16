@@ -231,7 +231,7 @@ export function sendingDomainState(domain: Pick<SendingDomain, 'state'>): {
         label: 'Checking',
         tone: 'info',
         detail:
-          'We asked for the records and they have not appeared yet. Changes at a domain provider can take a few minutes — occasionally a few hours — to spread across the internet. Add them if you have not, then check again.',
+          'We asked for the records and they have not appeared yet. Changes at a domain provider can take a few minutes (occasionally a few hours) to spread across the internet. Add them if you have not, then check again.',
       };
     case 'failed':
       return {

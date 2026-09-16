@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Nourish Nutrition — warm, non-diet nutrition counseling",
-      "seoDescription": "Nourish Nutrition is a whole-health dietitian practice — one-to-one nutrition counseling for weight, gut health, intuitive eating and family nutrition, in person or by video. Book a free discovery call.",
+      "seoTitle": "Nourish Nutrition: warm, non-diet nutrition counseling",
+      "seoDescription": "Nourish Nutrition is a whole-health dietitian practice. One-to-one nutrition counseling for weight, gut health, intuitive eating and family nutrition, in person or by video. Book a free discovery call.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Work one-to-one with a registered dietitian on real, sustainable changes — weight, gut health, energy and your whole relationship with food. In person or by video, whenever suits you."
+                      "Work one-to-one with a registered dietitian on real, sustainable changes: weight, gut health, energy and your whole relationship with food. In person or by video, whenever suits you."
                     ],
                     "id": "abb069c7-aab9-40bc-830f-98dc869f6112",
                     "ord": "a1"
@@ -691,7 +691,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every plan comes from a qualified, registered dietitian — real credentials and real science, translated into food you’ll genuinely eat."
+                              "Every plan comes from a qualified, registered dietitian: real credentials and real science, translated into food you’ll genuinely eat."
                             ],
                             "id": "a9ed1c90-fce6-4836-b2e1-29303988d7e6",
                             "ord": "a1"
@@ -718,7 +718,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "No shame, no crash plans, no forbidden foods. We build steady habits around your life, your budget and your body — not against them."
+                              "No shame, no crash plans, no forbidden foods. We build steady habits around your life, your budget and your body, not against them."
                             ],
                             "id": "e9a87c50-3413-483e-b543-3ed2e063c712",
                             "ord": "a1"
@@ -772,7 +772,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Meet us at the office or by secure video from your own kitchen — evenings and a Saturday morning included, so it fits your week."
+                              "Meet us at the office or by secure video from your own kitchen: evenings and a Saturday morning included, so it fits your week."
                             ],
                             "id": "4d91e80e-9013-4188-a0a8-e65e472e23d6",
                             "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Diets ask you to shrink your life to fit a plan. We do the opposite — build the plan around your real days, your favourite foods and the health goals that matter to you."
+                          "Diets ask you to shrink your life to fit a plan. We do the opposite. Build the plan around your real days, your favourite foods and the health goals that matter to you."
                         ],
                         "id": "f39e48de-8e91-4869-88d9-22564f2a96b2",
                         "ord": "a1"
@@ -1131,7 +1131,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "That means no food is off-limits and no number defines you. Just warm, evidence-based guidance that helps you feel steadier, more energised and more at ease at the table — for good, not for six weeks."
+                          "That means no food is off-limits and no number defines you. Just warm, evidence-based guidance that helps you feel steadier, more energised and more at ease at the table, for good, not for six weeks."
                         ],
                         "id": "b67c3dde-2a6a-4a65-9157-d08dea7dd10d",
                         "ord": "a2"
@@ -1196,7 +1196,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same dietitian each visit, someone who gets to know you, your health and your story."
+                          "Book by name: you’ll see the same dietitian each visit, someone who gets to know you, your health and your story."
                         ],
                         "id": "bc81d08d-d45b-4689-a189-15a7cd66402b",
                         "ord": "a1"
@@ -1309,7 +1309,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Diabetes and heart health — turning a diagnosis into calm, doable everyday choices."
+                                  "Diabetes and heart health: turning a diagnosis into calm, doable everyday choices."
                                 ],
                                 "id": "df0f8ada-d536-4a4f-94e7-6dfec099fe57",
                                 "ord": "a2"
@@ -1365,7 +1365,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Intuitive eating and family nutrition, judgment-free — feeding yourself and your kids without the stress."
+                                  "Intuitive eating and family nutrition, judgment-free: feeding yourself and your kids without the stress."
                                 ],
                                 "id": "b4aa6fec-6066-41e7-9f16-70f80e1f3f3a",
                                 "ord": "a2"
@@ -1405,7 +1405,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I came in expecting another diet and a list of foods to fear. Instead I got a plan that fits my actual life — and the first calm relationship with food I’ve had in years.”"
+                      "“I came in expecting another diet and a list of foods to fear. Instead I got a plan that fits my actual life, and the first calm relationship with food I’ve had in years.”"
                     ],
                     "id": "68ba3f47-e2a5-4e92-8305-5bb51b9c6bba",
                     "ord": "a0"
@@ -1449,7 +1449,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a free 20-minute discovery call — no cost, no commitment, just a conversation about what you’re hoping to change. It takes about a minute."
+                      "Book a free 20-minute discovery call: no cost, no commitment, just a conversation about what you’re hoping to change. It takes about a minute."
                     ],
                     "id": "9bf5bf93-868b-4a2f-a23e-acac8befce99",
                     "ord": "a1"
@@ -1480,7 +1480,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Nourish Nutrition",
+      "seoTitle": "Book: Nourish Nutrition",
       "seoDescription": "See what Nourish Nutrition offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1604,7 +1604,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "a3ac367c-23e1-455a-a775-d19c24a8968c",
                         "ord": "a1"
@@ -1636,7 +1636,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Please give at least 24 hours’ notice to reschedule or cancel — life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+                              "Please give at least 24 hours’ notice to reschedule or cancel: life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
                             ],
                             "id": "53436005-f79a-4e13-9e94-d66e14725718",
                             "ord": "a1"
@@ -1711,7 +1711,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Nourish Nutrition",
+      "seoTitle": "About: Nourish Nutrition",
       "seoDescription": "Who Nourish Nutrition is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1760,7 +1760,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Nourish because so much of what people are told about food is loud, contradictory and unkind. Cutting out whole food groups, chasing the newest diet, feeling guilty for eating — none of it lasts, and none of it feels good."
+                          "We started Nourish because so much of what people are told about food is loud, contradictory and unkind. Cutting out whole food groups, chasing the newest diet, feeling guilty for eating: none of it lasts, and none of it feels good."
                         ],
                         "id": "d744b639-303d-4d4f-b6e9-aa00a8210726",
                         "ord": "a1"
@@ -1902,7 +1902,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You set the direction and the speed. We’re here to guide, adjust and cheer you on — never to hand you a rigid plan and walk away."
+                              "You set the direction and the speed. We’re here to guide, adjust and cheer you on, never to hand you a rigid plan and walk away."
                             ],
                             "id": "6907ab92-3442-4b53-8efd-d759a6a8b884",
                             "ord": "a1"
@@ -1930,7 +1930,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Nourish Nutrition",
+      "seoTitle": "Visit: Nourish Nutrition",
       "seoDescription": "Where to find Nourish Nutrition, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1967,7 +1967,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Nourish Nutrition will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Nourish Nutrition will get back to you, usually the same day."
                         ],
                         "id": "4f804154-a8bb-406f-8d92-da4a9115325d",
                         "ord": "a1"
@@ -2419,7 +2419,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a free discovery call online — no phone tag, no waiting."
+                      "See live availability and reserve a free discovery call online: no phone tag, no waiting."
                     ],
                     "id": "7c5e1f73-da44-4dd9-8111-991389cb9cda",
                     "ord": "a1"

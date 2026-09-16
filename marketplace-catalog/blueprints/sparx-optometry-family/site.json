@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Clearview Eye Care — a friendly family optometrist",
-      "seoDescription": "Clearview Eye Care is a warm, all-ages optometry practice for comprehensive eye exams, kids’ vision, contacts, dry-eye help, medical eye visits and glasses. New patients welcome — book an eye exam online.",
+      "seoTitle": "Clearview Eye Care: a friendly family optometrist",
+      "seoDescription": "Clearview Eye Care is a warm, all-ages optometry practice for comprehensive eye exams, kids’ vision, contacts, dry-eye help, medical eye visits and glasses. New patients welcome. Book an eye exam online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Warm, unhurried eye care for every age — comprehensive exams, kids’ vision, contacts, dry-eye help and a wall of frames to love. New patients always welcome."
+                      "Warm, unhurried eye care for every age: comprehensive exams, kids’ vision, contacts, dry-eye help and a wall of frames to love. New patients always welcome."
                     ],
                     "id": "ad9cef6e-3cdf-4844-9b56-195dc2b854b8",
                     "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "From a toddler’s first check to a teenager’s new contacts, we make eye exams playful and easy — gentle doctors, no scary words, plenty of high-fives."
+                              "From a toddler’s first check to a teenager’s new contacts, we make eye exams playful and easy: gentle doctors, no scary words, plenty of high-fives."
                             ],
                             "id": "d9047866-037e-48eb-ab7c-2e1110769c3e",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A few of the visits we see most. Full prices and live availability are on the booking page — and frame styling is always free."
+                          "A few of the visits we see most. Full prices and live availability are on the booking page, and frame styling is always free."
                         ],
                         "id": "f2355996-b1d2-4a37-949a-81b89dba1957",
                         "ord": "a1"
@@ -1031,7 +1031,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Find out why your eyes bother you — and fix it."],
+                            "children": ["Find out why your eyes bother you, and fix it."],
                             "id": "51ab339c-eba8-47d9-9cf2-217ac5baa219",
                             "ord": "a2"
                           }
@@ -1217,7 +1217,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Clearview is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one trip, where the optician remembers your kids’ names, and where nobody is ever made to feel rushed or upsold."
+                          "Clearview is a neighbourhood practice built for real families: the kind of place where the whole household can be seen in one trip, where the optician remembers your kids’ names, and where nobody is ever made to feel rushed or upsold."
                         ],
                         "id": "236cd064-ba8c-4e16-901c-7397e6259337",
                         "ord": "a1"
@@ -1227,7 +1227,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We keep things simple and honest: clear prices, gentle exams, and only the lenses and care you actually need. Come in for a check-up, a new prescription, or just to browse frames — and leave seeing better and feeling looked after."
+                          "We keep things simple and honest: clear prices, gentle exams, and only the lenses and care you actually need. Come in for a check-up, a new prescription, or just to browse frames, and leave seeing better and feeling looked after."
                         ],
                         "id": "f7b6d7f0-5a71-4b98-903c-617f82edc9a5",
                         "ord": "a2"
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see friendly, familiar faces every visit."
+                          "Book by name: you’ll see friendly, familiar faces every visit."
                         ],
                         "id": "817e8677-bdbb-4adf-a513-1cf07e386c95",
                         "ord": "a1"
@@ -1349,7 +1349,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Comprehensive exams, contacts and medical eye care — with a gentle, patient way about her. Elena founded the practice."
+                                  "Comprehensive exams, contacts and medical eye care, with a gentle, patient way about her. Elena founded the practice."
                                 ],
                                 "id": "6b88a1c9-d84f-4e70-af41-93d524c670f0",
                                 "ord": "a2"
@@ -1405,7 +1405,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "A favourite with little ones and anyone battling dry, tired eyes — Marcus makes first visits fun and fear-free."
+                                  "A favourite with little ones and anyone battling dry, tired eyes: Marcus makes first visits fun and fear-free."
                                 ],
                                 "id": "fd55403f-0805-48e3-9946-e3155cb87cb0",
                                 "ord": "a2"
@@ -1461,7 +1461,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "The eye for frames — Nadia helps you find the pair that fits your face, your lenses and your life."
+                                  "The eye for frames: Nadia helps you find the pair that fits your face, your lenses and your life."
                                 ],
                                 "id": "86eb472b-1a19-4b4f-956b-1ce6f5f99f48",
                                 "ord": "a2"
@@ -1501,7 +1501,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“My kids actually look forward to the eye doctor now — and I finally found frames I love instead of settling. The whole team is warm, patient and never pushy. We’ve moved the whole family here.”"
+                      "“My kids actually look forward to the eye doctor now, and I finally found frames I love instead of settling. The whole team is warm, patient and never pushy. We’ve moved the whole family here.”"
                     ],
                     "id": "4d15bc9e-7d7a-4960-b306-da5039b2ce80",
                     "ord": "a0"
@@ -1545,7 +1545,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Pick a visit, choose your doctor and see live times. It takes about a minute — and we’ll take it from there."
+                      "Pick a visit, choose your doctor and see live times. It takes about a minute, and we’ll take it from there."
                     ],
                     "id": "dbddb443-0c98-4280-9438-020d8f9578c5",
                     "ord": "a1"
@@ -1576,7 +1576,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Clearview Eye Care",
+      "seoTitle": "Book: Clearview Eye Care",
       "seoDescription": "See what Clearview Eye Care offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1700,7 +1700,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "1927169d-c353-48d5-8eff-6ede1953226a",
                         "ord": "a1"
@@ -1732,7 +1732,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
+                              "Please give us at least 24 hours’ notice if you need to change or cancel. It lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
                             ],
                             "id": "14fd6c9f-628b-47dc-b51f-9d94d359f77a",
                             "ord": "a1"
@@ -1769,7 +1769,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Longer visits reserve an exam room and a doctor just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
+                              "Longer visits reserve an exam room and a doctor just for you, so we hold a card on file. Nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
                             ],
                             "id": "aafeba1b-72e5-4a95-99b2-31b49319a68d",
                             "ord": "a1"
@@ -1805,7 +1805,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Clearview Eye Care",
+      "seoTitle": "About: Clearview Eye Care",
       "seoDescription": "Who Clearview Eye Care is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1854,7 +1854,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Clearview to be the kind of eye doctor we’d want for our own families — warm, honest and genuinely unhurried. Somewhere every age feels welcome, from a child’s first exam to a grandparent’s yearly check."
+                          "We opened Clearview to be the kind of eye doctor we’d want for our own families: warm, honest and genuinely unhurried. Somewhere every age feels welcome, from a child’s first exam to a grandparent’s yearly check."
                         ],
                         "id": "210cd5d1-3a1e-4b6a-bdff-73b2dc8389a2",
                         "ord": "a1"
@@ -1942,7 +1942,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every visit starts with a real conversation about your eyes, your day and your budget — so the plan fits your life, not a sales target."
+                              "Every visit starts with a real conversation about your eyes, your day and your budget, so the plan fits your life, not a sales target."
                             ],
                             "id": "d6576b1e-a42e-40b8-ac2e-58d3b2370780",
                             "ord": "a1"
@@ -1996,7 +1996,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Wriggly toddlers, nervous first-timers, busy teens and everyone after — we know how to make each one comfortable and glad they came."
+                              "Wriggly toddlers, nervous first-timers, busy teens and everyone after. We know how to make each one comfortable and glad they came."
                             ],
                             "id": "41eefdcc-1a22-40ab-9c33-1c3e8bc9637f",
                             "ord": "a1"
@@ -2024,7 +2024,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Clearview Eye Care",
+      "seoTitle": "Visit: Clearview Eye Care",
       "seoDescription": "Where to find Clearview Eye Care, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2061,7 +2061,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Clearview Eye Care will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Clearview Eye Care will get back to you, usually the same day."
                         ],
                         "id": "45025c7e-7f8b-4f81-8c24-0763bca6e6be",
                         "ord": "a1"
@@ -2488,7 +2488,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your family’s appointments online — no phone tag, no hold music."
+                      "See live availability and reserve your family’s appointments online: no phone tag, no hold music."
                     ],
                     "id": "6c4d70f1-63a8-47d2-b008-0c2831999199",
                     "ord": "a1"

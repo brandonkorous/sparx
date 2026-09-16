@@ -232,7 +232,7 @@
     {
       "handle": "builder-gel",
       "name": "Builder-gel set",
-      "description": "A sculpted overlay for length and strength on your own nails — subtle, natural, sturdy.",
+      "description": "A sculpted overlay for length and strength on your own nails: subtle, natural, sturdy.",
       "durationMinutes": 75,
       "priceCents": 7500,
       "bufferAfterMin": 10,
@@ -291,7 +291,7 @@
     {
       "handle": "nail-art",
       "name": "Nail art (per nail)",
-      "description": "Hand-painted, per-nail detail — fine lines, negative space or a chrome accent, added to any set.",
+      "description": "Hand-painted, per-nail detail: fine lines, negative space or a chrome accent, added to any set.",
       "durationMinutes": 30,
       "priceCents": 1500,
       "assignmentStrategy": "customer_choice",

@@ -130,7 +130,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Need to move a visit? Just give us 24 hours’ notice and we’ll find you a new day. We text a reminder the day before and two hours ahead, so nobody’s surprised — and you never have to be home for us to service the pool.',
+        'Need to move a visit? Just give us 24 hours’ notice and we’ll find you a new day. We text a reminder the day before and two hours ahead, so nobody’s surprised, and you never have to be home for us to service the pool.',
     },
     {
       handle: 'recurring-plan',
@@ -139,7 +139,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Weekly plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically and we send a quick recap when the pool’s done.',
+        'Weekly plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically and we send a quick recap when the pool’s done.',
     },
   ],
   resources: [
@@ -170,7 +170,7 @@ const SCHEDULING = {
       handle: 'free-quote',
       name: 'Free pool quote',
       description:
-        'We stop by, look at your pool and equipment, and send a clear flat-rate quote for weekly service — no pressure, no obligation. The fastest way to get started.',
+        'We stop by, look at your pool and equipment, and send a clear flat-rate quote for weekly service: no pressure, no obligation. The fastest way to get started.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -179,7 +179,7 @@ const SCHEDULING = {
     },
     {
       handle: 'weekly-service-setup',
-      name: 'Weekly pool service — first visit',
+      name: 'Weekly pool service: first visit',
       description:
         'Sets up your weekly plan: skim, brush and vacuum, empty baskets, test and balance the water, then we keep it sparkling on the same schedule automatically.',
       durationMinutes: 45,
@@ -192,7 +192,7 @@ const SCHEDULING = {
       handle: 'one-time-cleaning',
       name: 'One-time cleaning',
       description:
-        'A full single-visit clean: skim, brush, vacuum, empty the baskets and balance the chemistry — perfect before a party or to see the difference for yourself.',
+        'A full single-visit clean: skim, brush, vacuum, empty the baskets and balance the chemistry, perfect before a party or to see the difference for yourself.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'any_available',
@@ -225,7 +225,7 @@ const SCHEDULING = {
       handle: 'filter-service',
       name: 'Filter clean & service',
       description:
-        'A deep filter clean — cartridges rinsed or the D.E./sand element serviced — so water flows freely and your pump isn’t working overtime. Recommended a few times a season.',
+        'A deep filter clean: cartridges rinsed or the D.E./sand element serviced, so water flows freely and your pump isn’t working overtime. Recommended a few times a season.',
       durationMinutes: 60,
       priceCents: 14000,
       assignmentStrategy: 'any_available',
@@ -236,7 +236,7 @@ const SCHEDULING = {
       handle: 'green-to-clean-treatment',
       name: 'Green-to-clean treatment',
       description:
-        'A green, cloudy pool brought back to blue — heavy skim, brush and vacuum, a shock and balance, and follow-up until it’s crystal clear and safe to swim again.',
+        'A green, cloudy pool brought back to blue: heavy skim, brush and vacuum, a shock and balance, and follow-up until it’s crystal clear and safe to swim again.',
       durationMinutes: 90,
       priceCents: 32000,
       assignmentStrategy: 'any_available',
@@ -252,7 +252,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A sparkling clean backyard swimming pool with crystal-clear blue water',
     title: 'A sparkling pool, handled every week',
-    sub: 'Weekly cleaning, chemical balancing and everything your pool needs — on a schedule you never have to think about. Licensed, insured, and easy to book online.',
+    sub: 'Weekly cleaning, chemical balancing and everything your pool needs: on a schedule you never have to think about. Licensed, insured, and easy to book online.',
     primary: { label: 'Get a free quote', href: '/book' },
     secondary: { label: 'See our plans', href: '/book' },
     overlay: 'dark',
@@ -265,7 +265,7 @@ const HOME = [
       },
       {
         title: 'Licensed & fully insured',
-        body: 'A real, insured local company caring for your pool — not a truck that shows up once and disappears when the water turns green.',
+        body: 'A real, insured local company caring for your pool, not a truck that shows up once and disappears when the water turns green.',
       },
       {
         title: 'One transparent flat price',
@@ -273,7 +273,7 @@ const HOME = [
       },
       {
         title: 'Always-balanced water',
-        body: 'Every visit we test and adjust chlorine, pH and more — so the water stays clear, gentle on skin and eyes, and safe to swim in.',
+        body: 'Every visit we test and adjust chlorine, pH and more, so the water stays clear, gentle on skin and eyes, and safe to swim in.',
       },
     ],
   }),
@@ -283,10 +283,10 @@ const HOME = [
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Free pool quote', priceCents: 0, durationMin: 30, desc: 'We look at your pool and send a flat-rate weekly price — no obligation.' },
-      { name: 'Weekly pool service', priceCents: 6500, durationMin: 45, desc: 'Skim, brush, vacuum, empty baskets and balance — kept on schedule.' },
+      { name: 'Free pool quote', priceCents: 0, durationMin: 30, desc: 'We look at your pool and send a flat-rate weekly price: no obligation.' },
+      { name: 'Weekly pool service', priceCents: 6500, durationMin: 45, desc: 'Skim, brush, vacuum, empty baskets and balance: kept on schedule.' },
       { name: 'One-time cleaning', priceCents: 12000, durationMin: 60, desc: 'A full single-visit clean and balance before a party or as a trial.' },
-      { name: 'Pool opening', priceCents: 28000, durationMin: 120, desc: 'The spring reset — cover off, equipment on, water clear.' },
+      { name: 'Pool opening', priceCents: 28000, durationMin: 120, desc: 'The spring reset: cover off, equipment on, water clear.' },
       { name: 'Filter clean & service', priceCents: 14000, durationMin: 60, desc: 'A deep filter clean so water flows and your pump breathes easy.' },
       { name: 'Green-to-clean treatment', priceCents: 32000, durationMin: 90, desc: 'A green, cloudy pool brought all the way back to blue.' },
     ],
@@ -297,22 +297,22 @@ const HOME = [
     alt: 'A pristine pool skimmed and balanced, ready to swim on a sunny afternoon',
     heading: 'Set it and forget it, and just swim',
     body: [
-      'Sign up once and your pool takes care of itself. We arrive on the same day each week, clean it, balance the water, and text you a quick recap — you never have to call, remember, or chase anyone down.',
-      'No contracts, no lock-in. You’re billed per completed visit and can pause or cancel any time. It’s the easiest your backyard has ever been — clear water waiting every weekend.',
+      'Sign up once and your pool takes care of itself. We arrive on the same day each week, clean it, balance the water, and text you a quick recap. You never have to call, remember, or chase anyone down.',
+      'No contracts, no lock-in. You’re billed per completed visit and can pause or cancel any time. It’s the easiest your backyard has ever been: clear water waiting every weekend.',
     ],
     cta: { label: 'Start weekly service', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your techs',
-    intro: 'The same friendly, trained faces at your pool each week — people who take real pride in clear water.',
+    intro: 'The same friendly, trained faces at your pool each week: people who take real pride in clear water.',
     members: [
       { name: 'Carlos Mendez', role: 'Lead pool technician', image: url(IMG.carlos), alt: 'Carlos Mendez, lead pool technician', bio: 'Twelve years on residential pools. Carlos runs a tidy, reliable weekly route.' },
-      { name: 'Jasmine Park', role: 'Water-care specialist', image: url(IMG.jasmine), alt: 'Jasmine Park, water-care specialist', bio: 'Openings, closings and chemistry — the know-how behind safe, balanced water.' },
+      { name: 'Jasmine Park', role: 'Water-care specialist', image: url(IMG.jasmine), alt: 'Jasmine Park, water-care specialist', bio: 'Openings, closings and chemistry: the know-how behind safe, balanced water.' },
       { name: 'Tyler Brooks', role: 'Service technician', image: url(IMG.tyler), alt: 'Tyler Brooks, service technician', bio: 'Filters, cleanings and green-to-clean rescues, with an eye for the details.' },
     ],
   }),
   testimonial({
-    quote: 'Signed up for the weekly plan and I don’t think about the pool anymore — it’s just clear and ready every Saturday. The techs are friendly and I always get a text when they’re done.',
+    quote: 'Signed up for the weekly plan and I don’t think about the pool anymore: it’s just clear and ready every Saturday. The techs are friendly and I always get a text when they’re done.',
     attribution: 'Denise R., customer since 2024',
   }),
   bookingCta({
@@ -340,8 +340,8 @@ const ABOUT = [
     alt: 'A BlueWave technician skimming and servicing a residential pool',
     heading: 'About BlueWave Pool Care',
     body: [
-      'BlueWave started with a simple idea: owning a pool should be all fun and no chore. No skimming after work, no guessing at chemicals, no green surprise after a week away — just clear water, always ready.',
-      'We’re a local, licensed and insured team that treats every pool like our own — the same trained techs each week, flat-rate plans you can count on, and a standing promise to make it right if a visit isn’t perfect.',
+      'BlueWave started with a simple idea: owning a pool should be all fun and no chore. No skimming after work, no guessing at chemicals, no green surprise after a week away. Just clear water, always ready.',
+      'We’re a local, licensed and insured team that treats every pool like our own: the same trained techs each week, flat-rate plans you can count on, and a standing promise to make it right if a visit isn’t perfect.',
     ],
     cta: { label: 'Get a free quote', href: '/book' },
   }),
@@ -350,7 +350,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'Show up when we say', body: 'A set weekly day you can rely on, with a text when we’re on the way and another with a recap once the pool’s done.' },
-      { title: 'One clear, flat price', body: 'You know what weekly service costs before we start — no surprise fees, no upsells, no haggling.' },
+      { title: 'One clear, flat price', body: 'You know what weekly service costs before we start: no surprise fees, no upsells, no haggling.' },
       { title: 'Balanced, tested, guaranteed', body: 'Every visit we test and balance the water, and if something’s ever off, we come back and fix it. Clear, safe water is the whole job.' },
     ],
   }),
@@ -369,7 +369,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Get a free quote and see the next available days online — no phone tag, no waiting on a callback.',
+    sub: 'Get a free quote and see the next available days online: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Get a free quote', href: '/book' },
   }),
@@ -380,8 +380,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-pool-service',
   name: 'Pool Service',
   summary:
-    'A bright, fresh pool-cleaning & maintenance site — a vivid aqua palette on a crisp near-white ground, built around recurring weekly service and online booking. Installs a working flow: a free-quote booking, weekly cleaning plus openings, closings, filter service and green-to-clean rescue, and three techs you book as dispatchable resources with their own hours. Ships as "BlueWave Pool Care" — a sparkling pool, handled every week.',
-  tagline: 'A friendly pool-care template — book a free quote and start weekly service from day one.',
+    'A bright, fresh pool-cleaning & maintenance site: a vivid aqua palette on a crisp near-white ground, built around recurring weekly service and online booking. Installs a working flow: a free-quote booking, weekly cleaning plus openings, closings, filter service and green-to-clean rescue, and three techs you book as dispatchable resources with their own hours. Ships as "BlueWave Pool Care", a sparkling pool, handled every week.',
+  tagline: 'A friendly pool-care template. Book a free quote and start weekly service from day one.',
   industry: 'Pool service',
   sortWeight: 24,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -390,9 +390,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'BlueWave Pool Care — weekly pool cleaning & maintenance',
+      title: 'BlueWave Pool Care: weekly pool cleaning & maintenance',
       description:
-        'BlueWave Pool Care keeps your pool sparkling with weekly cleaning, chemical balancing, openings, closings and filter care on an automatic schedule. Licensed, insured, and easy to book online — get a free quote.',
+        'BlueWave Pool Care keeps your pool sparkling with weekly cleaning, chemical balancing, openings, closings and filter care on an automatic schedule. Licensed, insured, and easy to book online: get a free quote.',
     },
   },
   home: HOME,

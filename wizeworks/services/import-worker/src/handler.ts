@@ -116,7 +116,7 @@ export async function handle(payload: ImportJobEvent, logger: Logger): Promise<H
     tx.importJob.findFirst({ where: { id: jobId, tenantId } })
   );
   if (!job) {
-    log.warn('job not found — may have been deleted; acking');
+    log.warn('job not found: may have been deleted; acking');
     return { jobId, status: 'unknown_job', imported: 0, updated: 0, errors: 0 };
   }
 
@@ -126,7 +126,7 @@ export async function handle(payload: ImportJobEvent, logger: Logger): Promise<H
 
   const processor = getProcessor(entityType);
   if (processor === undefined) {
-    log.warn({ entityType }, 'no processor for this entity — marking job failed');
+    log.warn({ entityType }, 'no processor for this entity: marking job failed');
     await withTenant({ tenantId: job.tenantId }, (tx) =>
       tx.importJob.update({
         where: { id: jobId },
@@ -244,7 +244,7 @@ export async function handle(payload: ImportJobEvent, logger: Logger): Promise<H
 
     return { jobId, status: 'completed', imported, updated, errors, skipped };
   } catch (err) {
-    log.error({ err }, 'job run failed — marking as failed');
+    log.error({ err }, 'job run failed: marking as failed');
     await withTenant(ctx, (tx) =>
       tx.importJob.update({
         where: { id: jobId },

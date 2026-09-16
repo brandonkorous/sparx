@@ -127,7 +127,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
           module={MODULE}
           icon={<Icon glyph={faBarcode} className="size-6" aria-hidden />}
           title="Could not load your barcodes"
-          description="This is a problem reaching the server. Nothing about your codes has changed — they just could not be read right now."
+          description="This is a problem reaching the server. Nothing about your codes has changed. They just could not be read right now."
           onRetry={() => {
             void refetch();
           }}

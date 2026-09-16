@@ -30,7 +30,7 @@ export const listBroadcasts: McpToolDefinition = {
 export const getUnsubscribedCustomers: McpToolDefinition = {
   name: 'get_unsubscribed_customers',
   description:
-    'List suppressed addresses (unsubscribes, bounces, complaints, manual) — the do-not-send list.',
+    'List suppressed addresses (unsubscribes, bounces, complaints, manual): the do-not-send list.',
   scope: 'read:email',
   confirmation: false,
   input: z.object({
@@ -44,7 +44,7 @@ export const getUnsubscribedCustomers: McpToolDefinition = {
 export const listMergeTags: McpToolDefinition = {
   name: 'list_merge_tags',
   description:
-    'List the merge tags (personalization tokens) usable in Builder emails — e.g. {{site.name}}, {{customer.firstName}}, {{order.total}}. Drop a token into any subject, heading, button, or text block and it resolves to the recipient’s real data when the email sends. Each tag carries a friendly label, a sample value, and a scope (per-recipient vs same-for-all). Tokens support an inline fallback: {{ customer.firstName ?? "there" }}.',
+    'List the merge tags (personalization tokens) usable in Builder emails: e.g. {{site.name}}, {{customer.firstName}}, {{order.total}}. Drop a token into any subject, heading, button, or text block and it resolves to the recipient’s real data when the email sends. Each tag carries a friendly label, a sample value, and a scope (per-recipient vs same-for-all). Tokens support an inline fallback: {{ customer.firstName ?? "there" }}.',
   scope: 'read:email',
   confirmation: false,
   input: z.object({}),

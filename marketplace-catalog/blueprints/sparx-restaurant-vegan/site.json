@@ -587,8 +587,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Sprout & Vine — a modern plant kitchen",
-      "seoDescription": "Sprout & Vine is a plant-based restaurant — seasonal vegetables cooked over fire, cold-pressed juice and natural wine, open Tue–Sun for lunch and dinner. See the menu and book a table.",
+      "seoTitle": "Sprout & Vine: a modern plant kitchen",
+      "seoDescription": "Sprout & Vine is a plant-based restaurant: seasonal vegetables cooked over fire, cold-pressed juice and natural wine, open Tue–Sun for lunch and dinner. See the menu and book a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -636,7 +636,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A plant kitchen that puts vegetables first. Seasonal, colorful, and genuinely delicious — not worthy. Open for lunch and dinner, Tuesday through Sunday."
+                          "A plant kitchen that puts vegetables first. Seasonal, colorful, and genuinely delicious, not worthy. Open for lunch and dinner, Tuesday through Sunday."
                         ],
                         "id": "d6397a94-a426-49df-b16a-f4c2fbe68303",
                         "ord": "a1"
@@ -759,7 +759,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Made for the middle of the table — charred hispi cabbage, whipped butter beans, warm flatbread and dips."
+                              "Made for the middle of the table: charred hispi cabbage, whipped butter beans, warm flatbread and dips."
                             ],
                             "id": "8b63e626-d8eb-47c8-aabf-b5abe19572d4",
                             "ord": "a2"
@@ -801,7 +801,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Big, generous bowls off the grill and the fire — smoky aubergine, heritage grains, bright herb dressings."
+                              "Big, generous bowls off the grill and the fire: smoky aubergine, heritage grains, bright herb dressings."
                             ],
                             "id": "b702b96f-f061-4fb1-a060-4bffd2ca8178",
                             "ord": "a2"
@@ -843,7 +843,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A short pudding list that happens to be plant-based — nobody misses the dairy. Plus house-churned sorbets."
+                              "A short pudding list that happens to be plant-based. Nobody misses the dairy. Plus house-churned sorbets."
                             ],
                             "id": "5dcc9714-8254-484b-9e0a-ed0965fb10b7",
                             "ord": "a2"
@@ -930,7 +930,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We cook plants because they’re exciting, not because we’re making a point. Everything comes from growers we know — picked days, sometimes hours, before it hits your plate — and we cook most of it over fire."
+                          "We cook plants because they’re exciting, not because we’re making a point. Everything comes from growers we know (picked days, sometimes hours, before it hits your plate) and we cook most of it over fire."
                         ],
                         "id": "1964caae-7eb8-4b85-b0cf-259895e3f531",
                         "ord": "a1"
@@ -973,7 +973,7 @@
                     "class": "aspect-video w-full rounded-box border border-base-300 object-cover @3xl:order-2",
                     "attrs": {
                       "src": "https://images.unsplash.com/photo-1761658644899-d1754c05c4d5?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8ZGluaW5nJTIwcm9vbSUyMGludGVyaW9yJTIwaGFuZ2luZyUyMHBsYW50cyUyMHRlcnJhY290dGElMjBwb3RzfGVufDB8MHx8fDE3ODY0MTU0MDN8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                      "alt": "The dining room interior — hanging plants, terracotta pots",
+                      "alt": "The dining room interior: hanging plants, terracotta pots",
                       "loading": "lazy"
                     },
                     "id": "cb8b53d0-da80-43c5-9d2d-b6b0f8160ad4",
@@ -997,7 +997,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book online in under a minute — you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome, and we keep a run of counter seats back for them every service."
+                          "Book online in under a minute: you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome, and we keep a run of counter seats back for them every service."
                         ],
                         "id": "36d29c9f-4f82-4fb2-bd8f-b0ec414f7eb0",
                         "ord": "a1"
@@ -1238,8 +1238,8 @@
       "name": "Menu",
       "kind": "singleton",
       "slug": "menu",
-      "seoTitle": "Menu — Sprout & Vine",
-      "seoDescription": "See the full menu at Sprout & Vine — dishes, drinks and prices — then reserve a table.",
+      "seoTitle": "Menu: Sprout & Vine",
+      "seoDescription": "See the full menu at Sprout & Vine (dishes, drinks and prices) then reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1270,7 +1270,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Entirely plant-based, changing with the season, and cooked with fire and care. This is roughly what’s on this week — the specials board fills in the rest. Tell us about allergies and we’ll steer you right."
+                      "Entirely plant-based, changing with the season, and cooked with fire and care. This is roughly what’s on this week: the specials board fills in the rest. Tell us about allergies and we’ll steer you right."
                     ],
                     "id": "79a48261-5490-48b6-a784-1ef897596ba7",
                     "ord": "a1"
@@ -1305,7 +1305,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
-                    "children": ["Made for the middle of the table — order a few and share."],
+                    "children": ["Made for the middle of the table. Order a few and share."],
                     "id": "cfb9fab8-1263-4380-8b38-f20cb02e5bd3",
                     "ord": "a1"
                   },
@@ -1568,7 +1568,7 @@
                     "kind": "element",
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
-                    "children": ["Cooked over fire. Big and generous — sides are separate."],
+                    "children": ["Cooked over fire. Big and generous: sides are separate."],
                     "id": "b515990b-2e6a-4ebc-a42d-7edfc9011fa5",
                     "ord": "a1"
                   },
@@ -2035,7 +2035,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "A short list that happens to be plant-based — nobody misses the dairy."
+                      "A short list that happens to be plant-based. Nobody misses the dairy."
                     ],
                     "id": "ebd8f518-c406-4032-8df0-f45667c038f3",
                     "ord": "a1"
@@ -2166,7 +2166,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Three scoops, churned in-house — ask what’s spinning today."
+                              "Three scoops, churned in-house. Ask what’s spinning today."
                             ],
                             "id": "24eea387-5c92-4703-84c2-69cef315ab0a",
                             "ord": "a1"
@@ -2255,7 +2255,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Pressed that morning — green, golden, or ruby. Ask what’s on."
+                              "Pressed that morning: green, golden, or ruby. Ask what’s on."
                             ],
                             "id": "a1dbbbf7-f231-465c-bdb6-b7059c45bc71",
                             "ord": "a1"
@@ -2299,7 +2299,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Skin-contact orange, a bright red, a crisp white — all low-intervention."
+                              "Skin-contact orange, a bright red, a crisp white. All low-intervention."
                             ],
                             "id": "70ed0c36-f45b-4d6d-b68d-223e5f920c25",
                             "ord": "a1"
@@ -2411,7 +2411,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Sprout & Vine",
+      "seoTitle": "Book: Sprout & Vine",
       "seoDescription": "See what Sprout & Vine offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -2443,7 +2443,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Pick your party size and a time below — you’ll see live availability for the next few weeks. No deposit, no fuss. For parties of seven or more, or a whole-room enquiry, drop us a line and we’ll look after it."
+                      "Pick your party size and a time below: you’ll see live availability for the next few weeks. No deposit, no fuss. For parties of seven or more, or a whole-room enquiry, drop us a line and we’ll look after it."
                     ],
                     "id": "66a14864-d165-43b6-971c-388284c80a3a",
                     "ord": "a1"
@@ -2496,7 +2496,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "6c033440-f8c3-42c3-b1fb-9aecf229eb73",
                         "ord": "a1"
@@ -2528,7 +2528,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "No deposit, ever — we hold your table for 15 minutes past your time. Plans change; just let us know by the morning of and we’ll pass the table on. We’ll send a friendly reminder the day before and a few hours ahead. Walk-ins are always welcome at the counter."
+                              "No deposit, ever. We hold your table for 15 minutes past your time. Plans change; just let us know by the morning of and we’ll pass the table on. We’ll send a friendly reminder the day before and a few hours ahead. Walk-ins are always welcome at the counter."
                             ],
                             "id": "109b18a4-2701-4b86-a8dc-0e21eae85c23",
                             "ord": "a1"
@@ -2565,7 +2565,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The big table is free to book — no deposit. Because it seats so many, we ask that you let us know a day ahead if plans change, so someone else can enjoy it. For seven or more, drop us a line and we’ll sort it."
+                              "The big table is free to book: no deposit. Because it seats so many, we ask that you let us know a day ahead if plans change, so someone else can enjoy it. For seven or more, drop us a line and we’ll sort it."
                             ],
                             "id": "0648f0a9-a028-43dd-82aa-255adc91012f",
                             "ord": "a1"
@@ -2603,8 +2603,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Sprout & Vine — the plant kitchen",
-      "seoDescription": "A bright, seasonal plant-based restaurant behind the old flower market — vegetables cooked over fire, bread and sorbets made in-house, natural wine poured honestly.",
+      "seoTitle": "About Sprout & Vine: the plant kitchen",
+      "seoDescription": "A bright, seasonal plant-based restaurant behind the old flower market: vegetables cooked over fire, bread and sorbets made in-house, natural wine poured honestly.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2635,7 +2635,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Sprout & Vine is a plant kitchen behind the old flower market. We opened with one idea: cook vegetables so well that nobody asks where the meat is. Not a health-food café, not a lecture — just really good food that happens to be entirely plant-based."
+                      "Sprout & Vine is a plant kitchen behind the old flower market. We opened with one idea: cook vegetables so well that nobody asks where the meat is. Not a health-food café, not a lecture. Just really good food that happens to be entirely plant-based."
                     ],
                     "id": "86d20048-f93d-4243-b2ea-6f051bc8936e",
                     "ord": "a1"
@@ -2655,7 +2655,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The room is bright, full of plants, and easy to be in. Book ahead for dinner, especially at the weekend — but there’s always a counter seat for a walk-in, a glass of something natural and a plate to share."
+                      "The room is bright, full of plants, and easy to be in. Book ahead for dinner, especially at the weekend, but there’s always a counter seat for a walk-in, a glass of something natural and a plate to share."
                     ],
                     "id": "c50ef388-933d-4aa8-9d63-fbea6acb1308",
                     "ord": "a3"
@@ -2675,7 +2675,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Sprout & Vine",
+      "seoTitle": "Visit: Sprout & Vine",
       "seoDescription": "Where to find Sprout & Vine, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2712,7 +2712,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Sprout & Vine will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Sprout & Vine will get back to you, usually the same day."
                         ],
                         "id": "6f6926b3-c8ac-4e40-b1d0-baf257ccf4be",
                         "ord": "a1"

@@ -161,7 +161,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Longer sessions and rehab intakes hold a card on file — nothing is charged unless you no-show or cancel inside 24 hours. It keeps a two-hour room block open for the person who needs it.',
+        'Longer sessions and rehab intakes hold a card on file. Nothing is charged unless you no-show or cancel inside 24 hours. It keeps a two-hour room block open for the person who needs it.',
     },
   ],
   resources: [
@@ -204,9 +204,9 @@ const SCHEDULING = {
   services: [
     {
       handle: 'deep-tissue-60',
-      name: 'Deep tissue — 60 min',
+      name: 'Deep tissue: 60 min',
       description:
-        'Firm, focused work into the layers that hold tension — for the neck, back and shoulders that never quite let go.',
+        'Firm, focused work into the layers that hold tension, for the neck, back and shoulders that never quite let go.',
       durationMinutes: 60,
       priceCents: 11000,
       assignmentStrategy: 'customer_choice',
@@ -218,9 +218,9 @@ const SCHEDULING = {
     },
     {
       handle: 'deep-tissue-90',
-      name: 'Deep tissue — 90 min',
+      name: 'Deep tissue: 90 min',
       description:
-        'The full session — time to work more than one area properly and actually change how it moves, not just soothe it.',
+        'The full session: time to work more than one area properly and actually change how it moves, not just soothe it.',
       durationMinutes: 90,
       priceCents: 15500,
       bufferAfterMin: 10,
@@ -233,7 +233,7 @@ const SCHEDULING = {
     },
     {
       handle: 'sports-recovery-90',
-      name: 'Sports & recovery — 90 min',
+      name: 'Sports & recovery: 90 min',
       description:
         'For training loads and stubborn injuries: assisted stretching, targeted release and a plan to get you back to the thing you do.',
       durationMinutes: 90,
@@ -248,9 +248,9 @@ const SCHEDULING = {
     },
     {
       handle: 'trigger-point-60',
-      name: 'Trigger-point therapy — 60 min',
+      name: 'Trigger-point therapy: 60 min',
       description:
-        'Pinpoint work on the knots that refer pain elsewhere — the headache that starts in your shoulder, the ache that never sits still.',
+        'Pinpoint work on the knots that refer pain elsewhere: the headache that starts in your shoulder, the ache that never sits still.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -262,9 +262,9 @@ const SCHEDULING = {
     },
     {
       handle: 'prenatal-60',
-      name: 'Prenatal massage — 60 min',
+      name: 'Prenatal massage: 60 min',
       description:
-        'Safe, side-lying work for the lower back, hips and legs that carry a pregnancy — from a therapist trained for it.',
+        'Safe, side-lying work for the lower back, hips and legs that carry a pregnancy: from a therapist trained for it.',
       durationMinutes: 60,
       priceCents: 11000,
       assignmentStrategy: 'customer_choice',
@@ -276,7 +276,7 @@ const SCHEDULING = {
     },
     {
       handle: 'cupping-therapy-60',
-      name: 'Cupping & myofascial — 60 min',
+      name: 'Cupping & myofascial: 60 min',
       description:
         'Decompression cupping paired with hands-on myofascial release to free up tight fascia and restore glide to stuck tissue.',
       durationMinutes: 60,
@@ -291,9 +291,9 @@ const SCHEDULING = {
     },
     {
       handle: 'medical-rehab-120',
-      name: 'Medical & rehab intake — 120 min',
+      name: 'Medical & rehab intake: 120 min',
       description:
-        'A full assessment and first treatment for post-injury or post-surgical recovery — we review your history, agree a plan, and provide a superbill for your insurer or HSA. Booked with a short approval so we can prepare.',
+        'A full assessment and first treatment for post-injury or post-surgical recovery. We review your history, agree a plan, and provide a superbill for your insurer or HSA. Booked with a short approval so we can prepare.',
       durationMinutes: 120,
       priceCents: 21000,
       bufferAfterMin: 15,
@@ -314,7 +314,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A therapist working along a client’s back with focused, deliberate pressure',
     title: 'Fix the thing that hurts',
-    sub: 'Meridian Bodywork is a therapeutic massage practice — licensed therapists, a real assessment first, and treatment that targets the pain instead of talking around it.',
+    sub: 'Meridian Bodywork is a therapeutic massage practice: licensed therapists, a real assessment first, and treatment that targets the pain instead of talking around it.',
     primary: { label: 'Book a session', href: '/book' },
     secondary: { label: 'See treatments', href: '/book' },
     overlay: 'darker',
@@ -323,7 +323,7 @@ const HOME = [
     items: [
       {
         title: 'Licensed therapists, every session',
-        body: 'You’re in the hands of a state-licensed massage therapist (LMT) trained in clinical work — not a rotating list of names. You book the person, and you keep seeing them.',
+        body: 'You’re in the hands of a state-licensed massage therapist (LMT) trained in clinical work, not a rotating list of names. You book the person, and you keep seeing them.',
       },
       {
         title: 'We assess before we treat',
@@ -385,14 +385,14 @@ const HOME = [
     alt: 'A therapist assessing a client’s shoulder range of motion before treatment',
     heading: 'Assessment first, guesswork never',
     body: [
-      'Most massage starts the moment you lie down. Ours starts with a conversation — what hurts, when it started, what makes it worse, and how it’s stopping you. Then we check how you actually move.',
-      'That assessment becomes a plan: which tissue to work, how hard, how often, and what to do between visits. You leave knowing what we found and what comes next — not just relaxed for an afternoon.',
+      'Most massage starts the moment you lie down. Ours starts with a conversation: what hurts, when it started, what makes it worse, and how it’s stopping you. Then we check how you actually move.',
+      'That assessment becomes a plan: which tissue to work, how hard, how often, and what to do between visits. You leave knowing what we found and what comes next, not just relaxed for an afternoon.',
     ],
     cta: { label: 'Start with an assessment', href: '/book' },
   }),
   teamRow({
     heading: 'Your therapists',
-    intro: 'Book by name and modality — you’ll see the same licensed therapist each visit.',
+    intro: 'Book by name and modality: you’ll see the same licensed therapist each visit.',
     members: [
       {
         name: 'Dana Okafor, LMT',
@@ -413,13 +413,13 @@ const HOME = [
         role: 'Deep tissue · Medical · Sports',
         image: url(IMG.theo),
         alt: 'Theo Lindqvist, licensed massage therapist',
-        bio: 'Works closely with local physios on post-injury and post-surgical rehab — the therapist you want when there’s a diagnosis attached.',
+        bio: 'Works closely with local physios on post-injury and post-surgical rehab: the therapist you want when there’s a diagnosis attached.',
       },
     ],
   }),
   testimonial({
     quote:
-      'I’d had lower-back pain for two years and had stopped running. Theo actually assessed it, gave me a plan, and six weeks later I ran a 10K. This isn’t a spa — it’s treatment that worked.',
+      'I’d had lower-back pain for two years and had stopped running. Theo actually assessed it, gave me a plan, and six weeks later I ran a 10K. This isn’t a spa: it’s treatment that worked.',
     attribution: 'Marcus, client since 2024',
   }),
   bookingCta({
@@ -447,7 +447,7 @@ const ABOUT = [
     alt: 'A therapist working along a client’s back with focused, deliberate pressure',
     heading: 'About Meridian Bodywork',
     body: [
-      'We opened Meridian Bodywork because good therapeutic massage is hard to find — the kind that treats a problem instead of selling an hour of quiet. Every therapist here is state-licensed and trained in clinical work.',
+      'We opened Meridian Bodywork because good therapeutic massage is hard to find: the kind that treats a problem instead of selling an hour of quiet. Every therapist here is state-licensed and trained in clinical work.',
       'We keep the day unhurried, the rooms private and the plan honest. If we’re not the right care for what you’re dealing with, we’ll tell you and point you to who is. The goal is always the same: less pain, more movement, fewer visits over time.',
     ],
     cta: { label: 'Book a session', href: '/book' },
@@ -485,7 +485,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your therapist and room online — no phone tag.',
+    sub: 'See live availability and reserve your therapist and room online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a session', href: '/book' },
   }),
@@ -496,8 +496,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-massage-therapeutic',
   name: 'Massage (Therapeutic)',
   summary:
-    'A clinical therapeutic-massage site — a cool slate-and-teal palette, a muted-steel secondary and a confident sans display, leading with the outcome, not luxury. Installs a working booking flow: a menu by concern (deep tissue, sports recovery, prenatal, cupping, trigger-point, medical/rehab), three licensed therapists and two treatment rooms as bookable resources, and standard plus card-hold policies. Ships as "Meridian Bodywork".',
-  tagline: 'A results-driven template for therapeutic massage — book online from day one.',
+    'A clinical therapeutic-massage site: a cool slate-and-teal palette, a muted-steel secondary and a confident sans display, leading with the outcome, not luxury. Installs a working booking flow: a menu by concern (deep tissue, sports recovery, prenatal, cupping, trigger-point, medical/rehab), three licensed therapists and two treatment rooms as bookable resources, and standard plus card-hold policies. Ships as "Meridian Bodywork".',
+  tagline: 'A results-driven template for therapeutic massage. Book online from day one.',
   industry: 'Massage therapy',
   sortWeight: 84,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -506,9 +506,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Meridian Bodywork — therapeutic massage',
+      title: 'Meridian Bodywork: therapeutic massage',
       description:
-        'Meridian Bodywork is a clinical massage practice for pain relief and recovery — deep tissue, sports, prenatal, cupping and rehab. Licensed therapists, assessment first. Book online.',
+        'Meridian Bodywork is a clinical massage practice for pain relief and recovery: deep tissue, sports, prenatal, cupping and rehab. Licensed therapists, assessment first. Book online.',
     },
   },
   home: HOME,

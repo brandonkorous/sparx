@@ -53,7 +53,7 @@ export function PersonIdentity({ form, set }: { form: FormState; set: SetField }
               />
             }
           />
-          <FieldDescription>Optional — plenty of people go by one name.</FieldDescription>
+          <FieldDescription>Optional: plenty of people go by one name.</FieldDescription>
         </Field>
         <Field>
           <FieldLabel>What they do</FieldLabel>

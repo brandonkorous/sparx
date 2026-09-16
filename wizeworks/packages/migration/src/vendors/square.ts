@@ -164,7 +164,7 @@ export const square: VendorAdapter = {
       entity: 'inventory_levels',
       label: 'Stock by location',
       file: 'catalog-....csv',
-      where: 'The same item library export — stock is one column per location',
+      where: 'The same item library export: stock is one column per location',
       format: 'csv',
       required: ['Item Name', 'SKU'],
       hints: ['Default Unit Cost', 'Stockable', 'Variation Name'],

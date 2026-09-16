@@ -45,7 +45,7 @@ function siteBase(credentials: Credentials): string {
   const raw = (credentials.siteUrl ?? '').trim();
   if (raw === '') {
     throw new ConnectorError('We need the web address of your site.', {
-      hint: 'The one people visit — https://yourbusiness.com.',
+      hint: 'The one people visit: https://yourbusiness.com.',
     });
   }
   const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
@@ -554,7 +554,7 @@ export const wordpressConnector: Connector = {
   label: 'WordPress & WooCommerce',
   vendors: ['wordpress', 'woocommerce'],
   instructions: [
-    'Your posts, pages and media come across with just the web address of your site — nothing else to set up.',
+    'Your posts, pages and media come across with just the web address of your site. Nothing else to set up.',
     'For drafts as well as published posts: in WordPress go to Users → Profile → Application Passwords, add one called "migration", and copy what it gives you along with your username.',
     'If you sell with WooCommerce: WooCommerce → Settings → Advanced → REST API → Add key, set Permissions to Read, and copy the consumer key and consumer secret.',
     'Both keys are read-only. Nothing here can change anything on your old site.',
@@ -598,7 +598,7 @@ export const wordpressConnector: Connector = {
     {
       key: 'applicationPassword',
       label: 'Application password',
-      help: 'From Users → Profile → Application Passwords. Not your normal login password — paste it exactly as WordPress shows it, spaces and all.',
+      help: 'From Users → Profile → Application Passwords. Not your normal login password. Paste it exactly as WordPress shows it, spaces and all.',
       placeholder: 'xxxx xxxx xxxx xxxx xxxx xxxx',
       secret: true,
       required: false,
@@ -639,7 +639,7 @@ export const wordpressConnector: Connector = {
     const namespaces = asArray(dig(root, 'namespaces')).map(asText);
     if (namespaces.length === 0 && name === '') {
       throw new ConnectorError('That address answered, but it is not a WordPress site.', {
-        hint: 'Check the address — and if WordPress lives in a folder like /blog, include the folder.',
+        hint: 'Check the address, and if WordPress lives in a folder like /blog, include the folder.',
       });
     }
 
@@ -659,7 +659,7 @@ export const wordpressConnector: Connector = {
       account: name === '' ? base.replace(/^https?:\/\//, '') : name,
       detail: shop
         ? hasWooKeys(credentials)
-          ? 'WordPress with WooCommerce — content and shop'
+          ? 'WordPress with WooCommerce: content and shop'
           : 'WooCommerce is here; add the two keys below to bring the shop as well'
         : 'WordPress',
     };

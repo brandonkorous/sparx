@@ -120,7 +120,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Grid3x3 className="size-6" aria-hidden />}
           title="Could not load your shelves"
-          description="This is a problem reaching the server. Your shelves and their stock are unaffected — they just could not be read just now."
+          description="This is a problem reaching the server. Your shelves and their stock are unaffected. They just could not be read just now."
         />
       );
     }

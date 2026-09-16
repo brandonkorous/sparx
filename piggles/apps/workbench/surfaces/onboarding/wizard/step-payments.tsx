@@ -46,8 +46,8 @@ export function StepPayments({
               </span>
               <p className="text-sm">
                 {connected
-                  ? 'Your Stripe account is connected — checkout is ready to take payments.'
-                  : 'Cards, wallets, and bank debits — paid out straight to your bank.'}
+                  ? 'Your Stripe account is connected: checkout is ready to take payments.'
+                  : 'Cards, wallets, and bank debits: paid out straight to your bank.'}
               </p>
             </div>
           </div>
@@ -68,7 +68,7 @@ export function StepPayments({
           <Icon glyph={faCircleInfo} className="mt-0.5 size-4 shrink-0" aria-hidden />
           <p className="text-sm">
             This is the account that{' '}
-            <span className="font-medium">receives money from your customers</span> — separate from
+            <span className="font-medium">receives money from your customers</span>, separate from
             what you pay us each month. You can connect it now or come back to it later; checkout
             simply stays off until you do.
           </p>

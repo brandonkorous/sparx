@@ -366,7 +366,7 @@ export function DropshipProfitabilitySurface({ ctx: _ctx }: { ctx: SurfaceContex
                       </Text>
                     ) : !sla.data || sla.data.bySupplier.length === 0 ? (
                       <Text className="text-sm">
-                        No shipping figures yet — they appear once suppliers start shipping the
+                        No shipping figures yet. They appear once suppliers start shipping the
                         orders routed to them.
                       </Text>
                     ) : (

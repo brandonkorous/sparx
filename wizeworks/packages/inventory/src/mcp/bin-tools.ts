@@ -75,7 +75,7 @@ const shelfContents: McpToolDefinition = {
 const suggestShelf: McpToolDefinition = {
   name: 'suggest_put_away',
   description:
-    "Where a delivery should go. Returns several shelves in order of how strong the evidence is — the item's declared home shelf, then a shelf already holding it, then a pick shelf with room, then the fallback — each with the reason in plain words so the person on the floor can disagree. Advice, not an instruction: a warehouse always has reasons the system does not know.",
+    "Where a delivery should go. Returns several shelves in order of how strong the evidence is: the item's declared home shelf, then a shelf already holding it, then a pick shelf with room, then the fallback, each with the reason in plain words so the person on the floor can disagree. Advice, not an instruction: a warehouse always has reasons the system does not know.",
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -90,7 +90,7 @@ const suggestShelf: McpToolDefinition = {
 const moveShelf: McpToolDefinition = {
   name: 'move_between_bins',
   description:
-    'Move stock from one shelf to another within the same location. Records a pair of shelf-level entries and does NOT change the location total, because nothing entered or left the building. Refuses a move across locations — that is a transfer, which tracks the stock while it is in transit.',
+    'Move stock from one shelf to another within the same location. Records a pair of shelf-level entries and does NOT change the location total, because nothing entered or left the building. Refuses a move across locations. That is a transfer, which tracks the stock while it is in transit.',
   scope: 'write:inventory',
   confirmation: true,
   input: MoveBetweenBinsInput,

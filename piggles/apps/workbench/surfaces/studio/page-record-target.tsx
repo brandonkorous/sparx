@@ -36,7 +36,7 @@ export function RecordTarget({ doc }: { doc: PageDoc }) {
           One {noun} at a time, using this design for every one of them.
         </p>
         <FieldDescription>
-          There is no single address for a template — each {noun} gets its own.
+          There is no single address for a template. Each {noun} gets its own.
         </FieldDescription>
       </Field>
       {doc.recordType === PRODUCT_TYPE ? <ProductTypeTarget doc={doc} /> : null}

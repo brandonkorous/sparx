@@ -35,7 +35,7 @@ export function PolicyPageNotice({ legalKind, reviewed, published }: Props) {
         </AlertTitle>
         <AlertDescription>
           It is a starting point, not legal advice. Read it through and make it fit your business
-          and where you trade before {published ? 'you leave it up' : 'you publish it'} —{' '}
+          and where you trade before {published ? 'you leave it up' : 'you publish it'}.{' '}
           <Link href="/content/legal" className="link">
             Legal pages
           </Link>{' '}

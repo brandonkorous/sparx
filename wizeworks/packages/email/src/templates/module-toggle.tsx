@@ -39,7 +39,7 @@ export function ModuleToggleEmail({
         <>
           <EmailDisplayHeading>{moduleName} is ready</EmailDisplayHeading>
           <EmailParagraph>
-            {hi}the {moduleName} module is now switched on for your account — everything it adds is
+            {hi}the {moduleName} module is now switched on for your account. Everything it adds is
             available in your dashboard right away.
           </EmailParagraph>
           <EmailActionButton href={dashboardUrl}>Open {moduleName}</EmailActionButton>
@@ -59,7 +59,7 @@ export function ModuleToggleEmail({
             Manage modules
           </EmailActionButton>
           <EmailFinePrint>
-            Your data isn&apos;t deleted — turn {moduleName} back on any time to pick up where you
+            Your data isn&apos;t deleted. Turn {moduleName} back on any time to pick up where you
             left off.
           </EmailFinePrint>
         </>

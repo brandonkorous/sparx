@@ -125,7 +125,7 @@ export function startMediaGcLoop(
     try {
       await runMediaGcTick(logger, graceMs);
     } catch (err) {
-      logger.error({ err }, 'media-gc: tick threw — will retry next interval');
+      logger.error({ err }, 'media-gc: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

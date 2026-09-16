@@ -50,7 +50,7 @@ function OnChosenColor({ reading, background }: { reading: BackdropReading; back
           Against {background.toUpperCase()} it measures {sayRatio(ratio)}. {SCALE}
           {ok
             ? ' Every icon in the set will be built on that color.'
-            : ` Every icon in the set will still be built on exactly that color — this is your choice, not ours. If you want more separation, ${reading.suggested} would give you ${sayRatio(reading.onSuggested)}.`}
+            : ` Every icon in the set will still be built on exactly that color. This is your choice, not ours. If you want more separation, ${reading.suggested} would give you ${sayRatio(reading.onSuggested)}.`}
         </AlertDescription>
       </AlertContent>
     </Alert>
@@ -83,7 +83,7 @@ function OnEitherTab({ reading }: { reading: BackdropReading }) {
         <AlertDescription>
           A see-through icon sits straight on the browser&rsquo;s own color, and not everybody uses
           the same one. Yours measures {sayRatio(onLight)} on a white tab and {sayRatio(onDark)} on
-          a dark one. {SCALE} Choosing a solid color above is what fixes it — {reading.suggested}{' '}
+          a dark one. {SCALE} Choosing a solid color above is what fixes it: {reading.suggested}{' '}
           would give it {sayRatio(reading.onSuggested)} on every tab, whatever the reader has
           chosen.
         </AlertDescription>

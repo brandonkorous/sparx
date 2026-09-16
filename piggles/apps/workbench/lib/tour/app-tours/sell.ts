@@ -13,7 +13,7 @@ export const SELL_GUIDE: Guide = {
       app: 'sell',
       anchor: 'nav-commerce.products.list',
       title: 'Start with what you sell',
-      body: 'Everything you offer goes in here — a price, some photos, a description. Nothing appears on your site until you have at least one, so this is usually the first stop.',
+      body: 'Everything you offer goes in here: a price, some photos, a description. Nothing appears on your site until you have at least one, so this is usually the first stop.',
     },
     {
       id: 'sell.orders',
@@ -62,7 +62,7 @@ export const STOCK_GUIDE: Guide = {
       app: 'stock',
       anchor: 'nav-inventory.reorder',
       title: 'What to order before you run out',
-      body: 'We watch how fast things sell and how long your suppliers take, and tell you what is about to run short. You still decide — this just means nobody has to remember.',
+      body: 'We watch how fast things sell and how long your suppliers take, and tell you what is about to run short. You still decide. This just means nobody has to remember.',
     },
   ],
 };
@@ -111,7 +111,7 @@ export const GET_FOUND_GUIDE: Guide = {
       app: 'get_found',
       anchor: 'nav-seo.audits',
       title: 'What is holding you back',
-      body: 'We check your pages for the things search engines quietly mark you down for — a missing description, a slow image, two pages saying the same thing — and list them plainly with what to do.',
+      body: 'We check your pages for the things search engines quietly mark you down for (a missing description, a slow image, two pages saying the same thing) and list them plainly with what to do.',
     },
     {
       id: 'found.social',

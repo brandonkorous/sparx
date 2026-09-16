@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Maeve — full-pigment color cosmetics for every skin tone",
-      "seoDescription": "Maeve makes full-pigment color cosmetics for every skin tone — foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call.",
+      "seoTitle": "Maeve: full-pigment color cosmetics for every skin tone",
+      "seoDescription": "Maeve makes full-pigment color cosmetics for every skin tone: foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Full-pigment color cosmetics made for every skin tone — foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call."
+                          "Full-pigment color cosmetics made for every skin tone: foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call."
                         ],
                         "id": "c61571fd-9af6-4361-a64f-4eb7d64c5f53",
                         "ord": "a1"
@@ -1583,7 +1583,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed",
                         "children": [
-                          "A velvet matte that lasts through lunch, a glass oil that just glosses, a liner that keeps it all in place — sixteen shades, from your-lips-but-better to a full berry."
+                          "A velvet matte that lasts through lunch, a glass oil that just glosses, a liner that keeps it all in place: sixteen shades, from your-lips-but-better to a full berry."
                         ],
                         "id": "c9801844-73c5-4331-a532-0d370e88dc7d",
                         "ord": "a1"
@@ -1857,7 +1857,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed",
                         "children": [
-                          "Nine-pan palettes in warm, cool and rose, a mascara that lengthens without the clump, and a brow pomade that holds — everything you need for a soft eye or a sharp one."
+                          "Nine-pan palettes in warm, cool and rose, a mascara that lengthens without the clump, and a brow pomade that holds. Everything you need for a soft eye or a sharp one."
                         ],
                         "id": "485cf76c-289a-438a-b104-3b42e699934a",
                         "ord": "a1"
@@ -2119,7 +2119,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed",
                         "children": [
-                          "Spend $75 and add our Sunlit Cream Blush to your bag for free — choose your shade at checkout. New wearers, this is the easiest way to meet the line."
+                          "Spend $75 and add our Sunlit Cream Blush to your bag for free. Choose your shade at checkout. New wearers, this is the easiest way to meet the line."
                         ],
                         "id": "79f285d2-7d0e-483f-9521-7296fcc9f9d7",
                         "ord": "a1"
@@ -2183,7 +2183,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "How real wearers are putting the line to work — three faces, three routines, all yours to borrow."
+                          "How real wearers are putting the line to work: three faces, three routines, all yours to borrow."
                         ],
                         "id": "f79cb212-89c6-42de-8421-603c575089ea",
                         "ord": "a1"
@@ -2235,7 +2235,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Foundation, blush and a lip — the whole look, before the kettle boils."
+                                  "Foundation, blush and a lip: the whole look, before the kettle boils."
                                 ],
                                 "id": "50b59d77-82ef-4d61-a162-c956ee855fdd",
                                 "ord": "a1"
@@ -2286,7 +2286,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Liner, lipstick, a press of gloss — a berry lip in three steps that stays put."
+                                  "Liner, lipstick, a press of gloss: a berry lip in three steps that stays put."
                                 ],
                                 "id": "6c40e650-ccfb-4549-b155-409d1debeced",
                                 "ord": "a1"
@@ -2481,7 +2481,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Maeve",
+      "seoTitle": "Shop: Maeve",
       "seoDescription": "Browse everything Maeve makes, with prices and options at a glance. Color cosmetics.",
       "root": {
         "kind": "element",
@@ -2513,7 +2513,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Face, lip, eye and the tools to put it all on — every Maeve shade and formula, filtered and sorted however you like. Full pigment, built for every skin tone, no apology."
+                      "Face, lip, eye and the tools to put it all on: every Maeve shade and formula, filtered and sorted however you like. Full pigment, built for every skin tone, no apology."
                     ],
                     "id": "d900971c-d0d0-45c3-a6f4-6ab9ef76264e",
                     "ord": "a1"
@@ -2541,7 +2541,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Maeve",
+      "seoTitle": "Collections: Maeve",
       "seoDescription": "Explore the collections at Maeve, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2573,7 +2573,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Face, cheek, lip, eye and the tools to put it all on — plus the edits we curate ourselves: the best-sellers that keep selling out, what has just landed, and the full face the team is wearing right now. Start wherever you are getting dressed."
+                      "Face, cheek, lip, eye and the tools to put it all on: plus the edits we curate ourselves: the best-sellers that keep selling out, what has just landed, and the full face the team is wearing right now. Start wherever you are getting dressed."
                     ],
                     "id": "009596f9-84b2-472e-a987-fa4967b23d00",
                     "ord": "a1"
@@ -2601,7 +2601,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Maeve",
+      "seoTitle": "Your cart: Maeve",
       "seoDescription": "Review what is in your cart and check out securely at Maeve.",
       "root": {
         "kind": "element",
@@ -2633,7 +2633,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every order ships with a free sample so you can try before you commit, and returns are easy — send anything back within thirty days, even opened, for a full refund or a swap. Checkout is secure, and your shade is one tap away."
+                      "Every order ships with a free sample so you can try before you commit, and returns are easy. Send anything back within thirty days, even opened, for a full refund or a swap. Checkout is secure, and your shade is one tap away."
                     ],
                     "id": "7c1e50ab-0f94-4cd1-92b6-8d0ef828340c",
                     "ord": "a1"
@@ -2661,7 +2661,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Maeve",
+      "seoTitle": "Search: Maeve",
       "seoDescription": "Search Maeve for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2693,7 +2693,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "After a shade, a formula or a how-to? Search the whole range and The Maeve Edit — try a color, a category or a concern, and we will pull up everything that matches."
+                      "After a shade, a formula or a how-to? Search the whole range and The Maeve Edit. Try a color, a category or a concern, and we will pull up everything that matches."
                     ],
                     "id": "f146cbfb-46fe-46be-959b-236df769bb2f",
                     "ord": "a1"
@@ -2721,7 +2721,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Maeve",
+      "seoTitle": "Journal: Maeve",
       "seoDescription": "Stories, guides and notes from Maeve.",
       "root": {
         "kind": "element",
@@ -2753,7 +2753,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Shade-matching, five-minute faces and step-by-steps for the looks worth learning — how to actually wear the line, written by the people who make it."
+                      "Shade-matching, five-minute faces and step-by-steps for the looks worth learning: how to actually wear the line, written by the people who make it."
                     ],
                     "id": "eb9e052a-0cc1-4d72-9d08-b80310527d94",
                     "ord": "a1"
@@ -2887,7 +2887,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Maeve",
-      "seoDescription": "Who Maeve is, and how we build full-pigment color for every skin tone — the shade range, the formulas and the people behind them.",
+      "seoDescription": "Who Maeve is, and how we build full-pigment color for every skin tone: the shade range, the formulas and the people behind them.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2918,7 +2918,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Maeve is a full-pigment color-cosmetics house, built on one stubborn idea: everyone deserves a shade that actually suits them. We launched our foundation in twenty-four shades on day one — not as a follow-up, not as a promise, but because a base that stops at ten tones was never a base at all."
+                      "Maeve is a full-pigment color-cosmetics house, built on one stubborn idea: everyone deserves a shade that actually suits them. We launched our foundation in twenty-four shades on day one, not as a follow-up, not as a promise, but because a base that stops at ten tones was never a base at all."
                     ],
                     "id": "7b1efa34-959b-47a3-ad83-21cf46b1598a",
                     "ord": "a1"
@@ -2928,7 +2928,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "From there it is face, lip, eye and the tools to apply them — pigments rich enough to mean it, formulas kind enough to wear all day, and shade names you can actually find yourself in. Cruelty-free, vegan wherever the formula allows, and made to be worn, not saved for good. Full pigment. No apology."
+                      "From there it is face, lip, eye and the tools to apply them: pigments rich enough to mean it, formulas kind enough to wear all day, and shade names you can actually find yourself in. Cruelty-free, vegan wherever the formula allows, and made to be worn, not saved for good. Full pigment. No apology."
                     ],
                     "id": "ec23dc71-bb1e-404b-b4be-a738f5e6a7d3",
                     "ord": "a2"
@@ -2948,8 +2948,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Maeve",
-      "seoDescription": "Get in touch with Maeve — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Maeve",
+      "seoDescription": "Get in touch with Maeve: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2985,7 +2985,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Stuck between two shades, chasing an order, or after a recommendation for your undertone? Our team answers fast, usually the same day — tell us what you need and we will help you find it."
+                          "Stuck between two shades, chasing an order, or after a recommendation for your undertone? Our team answers fast, usually the same day. Tell us what you need and we will help you find it."
                         ],
                         "id": "5b837e7a-16a8-4703-9879-75e340ec7866",
                         "ord": "a1"
@@ -3256,8 +3256,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Maeve",
-      "seoDescription": "Product details at Maeve — color cosmetics, with options and pricing.",
+      "seoTitle": "Product: Maeve",
+      "seoDescription": "Product details at Maeve: color cosmetics, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

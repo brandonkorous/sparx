@@ -34,7 +34,7 @@ const Uuid = z.string().uuid();
 const getInventorySetup: McpToolDefinition = {
   name: 'get_inventory_setup',
   description:
-    "Where inventory setup has got to, and how long it has taken. Returns each step (locations, import, column mapping, opening count, alerts) with whether it is done, skipped or outstanding — plus what is actually TRUE in the account, which can disagree with what was ticked. Timing comes back as hands-on minutes and how many sittings it took, and is null rather than zero when nothing has been measured yet. Use it to answer 'what's left to set up' or 'why is my stock report empty'.",
+    "Where inventory setup has got to, and how long it has taken. Returns each step (locations, import, column mapping, opening count, alerts) with whether it is done, skipped or outstanding: plus what is actually TRUE in the account, which can disagree with what was ticked. Timing comes back as hands-on minutes and how many sittings it took, and is null rather than zero when nothing has been measured yet. Use it to answer 'what's left to set up' or 'why is my stock report empty'.",
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({}),
@@ -44,7 +44,7 @@ const getInventorySetup: McpToolDefinition = {
 const previewStockImport: McpToolDefinition = {
   name: 'preview_stock_import',
   description:
-    "Read a stock spreadsheet and say what it WOULD do — writes nothing at all. Returns the file's headings matched against what the importer needs, with a confidence on every guess, the headings nothing wanted, which required fields are still unanswered, three sample rows, and how the file writes its numbers. Use this whenever somebody asks whether their file will import, or to explain which column is missing.",
+    "Read a stock spreadsheet and say what it WOULD do: writes nothing at all. Returns the file's headings matched against what the importer needs, with a confidence on every guess, the headings nothing wanted, which required fields are still unanswered, three sample rows, and how the file writes its numbers. Use this whenever somebody asks whether their file will import, or to explain which column is missing.",
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -54,7 +54,7 @@ const previewStockImport: McpToolDefinition = {
       .string()
       .max(60)
       .optional()
-      .describe('A migration recipe to widen the column vocabulary — see list_import_recipes'),
+      .describe('A migration recipe to widen the column vocabulary: see list_import_recipes'),
     profileId: Uuid.optional().describe('A saved column mapping to apply instead of guessing'),
   }),
   run: (ctx, input) => {
@@ -76,7 +76,7 @@ const previewStockImport: McpToolDefinition = {
 const listImportRecipes: McpToolDefinition = {
   name: 'list_import_recipes',
   description:
-    'The kinds of stock file this software knows how to read — a hand-kept spreadsheet, an item list from accounts software, a marketplace listing report, a till export, or a stock-take sheet this software produced. Each says how to recognise it. Use it to pick the right recipe before previewing an import.',
+    'The kinds of stock file this software knows how to read: a hand-kept spreadsheet, an item list from accounts software, a marketplace listing report, a till export, or a stock-take sheet this software produced. Each says how to recognize it. Use it to pick the right recipe before previewing an import.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({}),
@@ -87,7 +87,7 @@ const listImportRecipes: McpToolDefinition = {
 const getOpeningBalance: McpToolDefinition = {
   name: 'get_opening_balance',
   description:
-    'Whether this business ever counted what it started with. Returns any opening count in progress, the posted ones with their dates, and — the useful part — the locations holding stock that have NO opening count, whose figures therefore rest on an assumption rather than on anybody having looked.',
+    'Whether this business ever counted what it started with. Returns any opening count in progress, the posted ones with their dates, and (the useful part) the locations holding stock that have NO opening count, whose figures therefore rest on an assumption rather than on anybody having looked.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({}),
@@ -97,7 +97,7 @@ const getOpeningBalance: McpToolDefinition = {
 const listCustomFields: McpToolDefinition = {
   name: 'list_inventory_custom_fields',
   description:
-    "The extra columns this business keeps on its items, stock positions, suppliers and purchase orders — the ones no standard schema anticipated. Returns each field's key, label, type and choices. Read this FIRST before setting a custom field value, because the key and the allowed choices are what a write has to use.",
+    "The extra columns this business keeps on its items, stock positions, suppliers and purchase orders: the ones no standard schema anticipated. Returns each field's key, label, type and choices. Read this FIRST before setting a custom field value, because the key and the allowed choices are what a write has to use.",
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -132,7 +132,7 @@ const getCustomFieldValues: McpToolDefinition = {
 const setCustomFieldValues: McpToolDefinition = {
   name: 'set_inventory_custom_field_values',
   description:
-    "Fill in the business's own columns on one record — the aisle in their old numbering, the certification a supplier holds, the project a purchase order belongs to. Send only the fields you are changing; the rest are left alone. Values are checked against the field's type and choices and REFUSED if they do not fit, rather than being stored as text. Call list_inventory_custom_fields first to learn the keys.",
+    "Fill in the business's own columns on one record: the aisle in their old numbering, the certification a supplier holds, the project a purchase order belongs to. Send only the fields you are changing; the rest are left alone. Values are checked against the field's type and choices and REFUSED if they do not fit, rather than being stored as text. Call list_inventory_custom_fields first to learn the keys.",
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({
@@ -162,7 +162,7 @@ const setCustomFieldValues: McpToolDefinition = {
 const startOpeningBalance: McpToolDefinition = {
   name: 'start_opening_balance',
   description:
-    'Open the count that establishes what a business starts with, at one location. Creates a blind counting session covering every item — it does NOT change any quantity; somebody still enters what they find and posts it. Use when a business is setting up and wants day one to rest on a real count rather than on whatever their spreadsheet said.',
+    'Open the count that establishes what a business starts with, at one location. Creates a blind counting session covering every item. It does NOT change any quantity; somebody still enters what they find and posts it. Use when a business is setting up and wants day one to rest on a real count rather than on whatever their spreadsheet said.',
   scope: 'write:inventory',
   confirmation: true,
   input: z.object({

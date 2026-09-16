@@ -181,7 +181,7 @@ const SCHEDULING = {
     {
       handle: 'consultation',
       name: 'Session consultation',
-      description: 'A free, no-pressure call to plan your session — outfits, timing, the look you’re after.',
+      description: 'A free, no-pressure call to plan your session: outfits, timing, the look you’re after.',
       durationMinutes: 20,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -193,7 +193,7 @@ const SCHEDULING = {
     {
       handle: 'mini-session',
       name: 'Mini session',
-      description: 'A quick, bright studio sitting — perfect for a seasonal update or a single great portrait.',
+      description: 'A quick, bright studio sitting: perfect for a seasonal update or a single great portrait.',
       durationMinutes: 20,
       priceCents: 12500,
       assignmentStrategy: 'customer_choice',
@@ -206,7 +206,7 @@ const SCHEDULING = {
     {
       handle: 'family-session',
       name: 'Family session',
-      description: 'A relaxed, playful session on location — the park, the beach or your own home.',
+      description: 'A relaxed, playful session on location: the park, the beach or your own home.',
       durationMinutes: 90,
       priceCents: 32500,
       bufferAfterMin: 15,
@@ -219,7 +219,7 @@ const SCHEDULING = {
     {
       handle: 'newborn-session',
       name: 'Newborn session',
-      description: 'A gentle, unhurried studio session in the first few weeks — soft light, lots of cuddles.',
+      description: 'A gentle, unhurried studio session in the first few weeks: soft light, lots of cuddles.',
       durationMinutes: 90,
       priceCents: 38500,
       bufferAfterMin: 15,
@@ -233,7 +233,7 @@ const SCHEDULING = {
     {
       handle: 'branding-session',
       name: 'Personal branding session',
-      description: 'On-brand portraits for your website, socials and press — planned around your business.',
+      description: 'On-brand portraits for your website, socials and press: planned around your business.',
       durationMinutes: 75,
       priceCents: 45000,
       bufferAfterMin: 10,
@@ -247,7 +247,7 @@ const SCHEDULING = {
     {
       handle: 'headshot-session',
       name: 'Headshot session',
-      description: 'A crisp, confident studio headshot — quick, easy and ready for LinkedIn the same week.',
+      description: 'A crisp, confident studio headshot: quick, easy and ready for LinkedIn the same week.',
       durationMinutes: 30,
       priceCents: 18500,
       assignmentStrategy: 'customer_choice',
@@ -279,7 +279,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A family laughing together in a bright, sunlit studio',
     title: 'Bright, joyful portraits of the people you love',
-    sub: 'A light-filled studio for families, newborns, headshots and personal branding — easy to book, genuinely fun to sit for.',
+    sub: 'A light-filled studio for families, newborns, headshots and personal branding: easy to book, genuinely fun to sit for.',
     primary: { label: 'Book a session', href: '/book' },
     secondary: { label: 'See session types', href: '/book' },
     overlay: 'dark',
@@ -288,7 +288,7 @@ const HOME = [
     items: [
       {
         title: 'Studio & on-location',
-        body: 'Sit in our airy studio or head out to the park, the beach or your own front room — whatever feels most like you.',
+        body: 'Sit in our airy studio or head out to the park, the beach or your own front room: whatever feels most like you.',
       },
       {
         title: 'Quick, easy booking',
@@ -300,7 +300,7 @@ const HOME = [
       },
       {
         title: 'Seasonal mini-sessions',
-        body: 'Short, bright sittings a few times a year — an easy way to keep up with how fast everyone’s growing.',
+        body: 'Short, bright sittings a few times a year: an easy way to keep up with how fast everyone’s growing.',
       },
     ],
   }),
@@ -334,14 +334,14 @@ const HOME = [
     alt: 'A clean, airy portrait studio with big windows',
     heading: 'A studio that feels easy',
     body: [
-      'Frame & Field is a bright, window-lit studio built to feel relaxed — space for kids to be kids, room to move, and no stiff “say cheese” energy.',
+      'Frame & Field is a bright, window-lit studio built to feel relaxed: space for kids to be kids, room to move, and no stiff “say cheese” energy.',
       'We keep the day unhurried and let real moments happen. That’s where the portraits you keep forever actually come from.',
     ],
     cta: { label: 'Book your session', href: '/book' },
   }),
   teamRow({
     heading: 'Meet the photographers',
-    intro: 'Book by name — you’ll work with someone who loves exactly the kind of session you’re after.',
+    intro: 'Book by name: you’ll work with someone who loves exactly the kind of session you’re after.',
     surface: 'muted',
     members: [
       { name: 'Nadia Brooks', role: 'Family & newborn', image: url(IMG.nadia), alt: 'Nadia Brooks, family & newborn photographer', bio: 'Patient, playful and endlessly calm with the tiniest clients. Nadia leads the studio.' },
@@ -378,7 +378,7 @@ const ABOUT = [
     alt: 'A family laughing together in a bright, sunlit studio',
     heading: 'About Frame & Field',
     body: [
-      'We started Frame & Field to make portrait photography feel light — bright rooms, real laughter, and none of the stiff, awkward posing most people dread.',
+      'We started Frame & Field to make portrait photography feel light: bright rooms, real laughter, and none of the stiff, awkward posing most people dread.',
       'From first babies to fast-growing families, fresh headshots to full personal-branding shoots, we’re here for the moments worth keeping. And every one is easy to book online.',
     ],
     cta: { label: 'Book a session', href: '/book' },
@@ -387,7 +387,7 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How a session works',
     items: [
-      { title: 'Plan it together', body: 'Start with a quick consultation — we’ll talk outfits, timing, location and the feeling you want the photos to have.' },
+      { title: 'Plan it together', body: 'Start with a quick consultation: we’ll talk outfits, timing, location and the feeling you want the photos to have.' },
       { title: 'Have fun on the day', body: 'We keep it relaxed and playful, follow the energy in the room, and catch the real, in-between moments.' },
       { title: 'Choose your favourites', body: 'A week or two later you’ll view your gallery and pick the digitals, prints and albums you love.' },
     ],
@@ -407,7 +407,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your session online — no phone tag.',
+    sub: 'See live availability and reserve your session online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a session', href: '/book' },
   }),
@@ -418,17 +418,17 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-photo-portrait',
   name: 'Photography (Portrait)',
   summary:
-    'A bright, modern family & portrait photography site — a fresh coral palette, a crisp near-white ground and a clean modern sans, with a joyful session menu. Installs a working booking flow: real session types (mini, family, newborn, branding, headshots), photographers you book by name with their own hours, a studio space in-studio sessions reserve, and a session-deposit policy. Ships as "Frame & Field", a light-filled portrait studio.',
-  tagline: 'A bright, modern template for portrait photographers — book online from day one.',
+    'A bright, modern family & portrait photography site: a fresh coral palette, a crisp near-white ground and a clean modern sans, with a joyful session menu. Installs a working booking flow: real session types (mini, family, newborn, branding, headshots), photographers you book by name with their own hours, a studio space in-studio sessions reserve, and a session-deposit policy. Ships as "Frame & Field", a light-filled portrait studio.',
+  tagline: 'A bright, modern template for portrait photographers. Book online from day one.',
   industry: 'Photography',
   sortWeight: 59,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
-  brand: { businessName: 'Frame & Field', tagline: 'Bright, joyful portraits — easy to book.' },
+  brand: { businessName: 'Frame & Field', tagline: 'Bright, joyful portraits: easy to book.' },
   theme: framefield,
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Frame & Field — a bright family & portrait studio',
+      title: 'Frame & Field: a bright family & portrait studio',
       description:
         'Frame & Field is a light-filled studio for family, newborn, maternity, headshot and personal-branding photography. Book your photographer online.',
     },

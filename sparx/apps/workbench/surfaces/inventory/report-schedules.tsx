@@ -129,7 +129,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<CalendarClock className="size-6" aria-hidden />}
           title="Could not load your scheduled reports"
-          description="This is a problem reaching the server. Nothing has stopped sending — the list just could not be loaded."
+          description="This is a problem reaching the server. Nothing has stopped sending: the list just could not be loaded."
         />
       );
     }
@@ -145,7 +145,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<CalendarClock className="size-6" aria-hidden />}
           title="Nothing is being sent to anyone"
-          description="Pick a report, say who should get it and how often, and it arrives in their inbox — the spreadsheet attached and the headline numbers in the body. An accountant who wants the month-end valuation does not need a login to receive one."
+          description="Pick a report, say who should get it and how often, and it arrives in their inbox: the spreadsheet attached and the headline numbers in the body. An accountant who wants the month-end valuation does not need a login to receive one."
         >
           <Button
             color="module"

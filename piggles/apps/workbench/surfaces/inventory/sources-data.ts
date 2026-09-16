@@ -290,7 +290,7 @@ export function sourceTypeDescription(type: SourceType): string {
     case 'api':
       return 'We pull stock levels from another system’s connection using its address and a key.';
     case 'agent':
-      return 'A small program you install on your own computers sends stock to us — we never dial out to you.';
+      return 'A small program you install on your own computers sends stock to us. We never dial out to you.';
   }
 }
 

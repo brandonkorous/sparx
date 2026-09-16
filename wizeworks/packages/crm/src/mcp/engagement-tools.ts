@@ -22,7 +22,7 @@ import type { McpToolDefinition } from './registry';
 export const listConversations: McpToolDefinition = {
   name: 'list_crm_conversations',
   description:
-    'Read what has actually been said with a customer — the emails both ways, the calls logged, the notes written — newest conversation first. This is the history a person has with the business, as opposed to what the system did to their orders. Call it before drafting anything so a reply follows what was already discussed rather than starting over.',
+    'Read what has actually been said with a customer (the emails both ways, the calls logged, the notes written) newest conversation first. This is the history a person has with the business, as opposed to what the system did to their orders. Call it before drafting anything so a reply follows what was already discussed rather than starting over.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -41,7 +41,7 @@ export const listConversations: McpToolDefinition = {
 export const listTemplates: McpToolDefinition = {
   name: 'list_crm_email_templates',
   description:
-    'List the reusable emails this business has written, with how often each is sent, opened and replied to. Use it to reuse the wording a business already trusts instead of inventing new copy in their name — and to tell someone which of their templates actually gets answered.',
+    'List the reusable emails this business has written, with how often each is sent, opened and replied to. Use it to reuse the wording a business already trusts instead of inventing new copy in their name, and to tell someone which of their templates actually gets answered.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({ folder: z.string().optional() }),
@@ -63,7 +63,7 @@ export const listMailboxes: McpToolDefinition = {
 export const sendCrmEmail: McpToolDefinition = {
   name: 'send_crm_email',
   description:
-    "Send an email to one customer from their record, and file it on their timeline. The address is taken from the customer record, so it cannot be sent to the wrong person. THIS PUTS WORDS IN FRONT OF A REAL CUSTOMER UNDER THE BUSINESS'S NAME — show the person the exact subject and body and get their agreement before calling it. Refused for anyone who has asked not to be contacted.",
+    "Send an email to one customer from their record, and file it on their timeline. The address is taken from the customer record, so it cannot be sent to the wrong person. THIS PUTS WORDS IN FRONT OF A REAL CUSTOMER UNDER THE BUSINESS'S NAME: show the person the exact subject and body and get their agreement before calling it. Refused for anyone who has asked not to be contacted.",
   scope: 'write:crm',
   confirmation: true,
   input: SendEmailInput,
@@ -73,7 +73,7 @@ export const sendCrmEmail: McpToolDefinition = {
 export const logCrmCall: McpToolDefinition = {
   name: 'log_crm_call',
   description:
-    "Record a phone call on a customer's timeline — which way it went, how it ended, how long it lasted, and what was said. A call nobody answered is worth logging too: it is what tells the next person that three attempts have already been made.",
+    "Record a phone call on a customer's timeline, which way it went, how it ended, how long it lasted, and what was said. A call nobody answered is worth logging too: it is what tells the next person that three attempts have already been made.",
   scope: 'write:crm',
   confirmation: true,
   input: LogCallInput,
@@ -83,7 +83,7 @@ export const logCrmCall: McpToolDefinition = {
 export const logCrmNote: McpToolDefinition = {
   name: 'log_crm_note',
   description:
-    'Write a note on a customer, a deal or a request — something worth remembering that nobody emailed or phoned about. It goes on the same timeline as everything else, so the next person to open the record sees it.',
+    'Write a note on a customer, a deal or a request. Something worth remembering that nobody emailed or phoned about. It goes on the same timeline as everything else, so the next person to open the record sees it.',
   scope: 'write:crm',
   confirmation: true,
   input: LogNoteInput,

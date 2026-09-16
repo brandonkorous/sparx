@@ -104,7 +104,7 @@ export function buildSignature(input: SignatureInput): string {
   const details = `${name}${roleLine}${contactLine}${tagline}`;
 
   if (input.layout === 'minimal') {
-    const head = [input.name, role].filter(Boolean).join(' — ');
+    const head = [input.name, role].filter(Boolean).join(', ');
     return trim(`
 <table cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
   <tr><td style="font-family:${FONT};font-size:14px;font-weight:700;color:${INK};padding:0 0 4px 0;">${escapeHtml(head)}</td></tr>
@@ -161,7 +161,7 @@ export function signatureWarnings(input: SignatureInput): string[] {
 
   if (input.imageUrl && !/^https?:\/\//i.test(input.imageUrl) && !input.imageUrl.includes('.')) {
     warnings.push(
-      'That image address does not look like a web address. An image has to live somewhere on the internet — a file on your computer disappears the moment the email leaves it.'
+      'That image address does not look like a web address. An image has to live somewhere on the internet: a file on your computer disappears the moment the email leaves it.'
     );
   }
   if (/^file:|^[a-z]:\\|^\//i.test(input.imageUrl)) {

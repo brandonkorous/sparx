@@ -70,7 +70,7 @@ export function ProductsListToolbar({
         label: 'Add a product',
         icon: faPlus,
         onClick: onCreate,
-        title: 'Add a product — hold Shift to open alongside, Alt for a new window',
+        title: 'Add a product: hold Shift to open alongside, Alt for a new window',
       }}
       views={{
         target: '/commerce/products',

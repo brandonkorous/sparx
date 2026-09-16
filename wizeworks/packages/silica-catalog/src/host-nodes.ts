@@ -339,7 +339,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // `box` (a package) is the closest registered name. An unregistered name renders
     // empty (the curated-set footgun), so cores pick only from the shipped keys.
     icon: 'box',
-    hint: 'The live cart — line items, quantities, totals, and the checkout button. Pinned: style and surround it, but it can’t be removed.',
+    hint: 'The live cart: line items, quantities, totals, and the checkout button. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-4xl px-6 py-10',
   },
   {
@@ -347,7 +347,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     label: 'Search results',
     category: 'Your shop',
     icon: 'search',
-    hint: 'The live search — query field, filters, sort, and the result grid. Pinned: style and surround it, but it can’t be removed.',
+    hint: 'The live search: query field, filters, sort, and the result grid. Pinned: style and surround it, but it can’t be removed.',
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
   },
   {
@@ -448,7 +448,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
         type: 'text',
         // Says the true thing and asks for the next one. A brand-new shop's product
         // page shows this for weeks, so it is real copy, not a placeholder.
-        default: 'No reviews yet — be the first.',
+        default: 'No reviews yet: be the first.',
       },
       {
         name: 'showForm',
@@ -488,7 +488,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
         type: 'text',
         // Invites the first one rather than reporting a shortage. A new shop shows
         // this line for months, so it is real copy and not a placeholder.
-        default: 'No questions yet — ask us anything.',
+        default: 'No questions yet. Ask us anything.',
       },
       {
         name: 'showForm',
@@ -519,7 +519,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     label: 'Brand (logo + name)',
     category: 'Your site',
     icon: 'image',
-    hint: 'Your logo and site name, linked to your home page. Set them once in Site settings — this always shows what’s there.',
+    hint: 'Your logo and site name, linked to your home page. Set them once in Site settings. This always shows what’s there.',
     // The `wordmark` class is load-bearing, not decoration: silicaui's own
     // `.wordmark & :is(svg,img)` rule sizes the mark, so keeping it makes this a real
     // Wordmark rather than a lookalike lockup.
@@ -554,7 +554,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     label: 'Theme toggle (light / dark)',
     category: 'Your site',
     icon: 'settings',
-    hint: 'A light/dark switch for visitors. Appears only when your site offers both themes (Appearance: toggle) — otherwise it stays hidden. Place it in your header.',
+    hint: 'A light/dark switch for visitors. Appears only when your site offers both themes (Appearance: toggle), otherwise it stays hidden. Place it in your header.',
     defaultClass: 'inline-flex items-center',
     // Not pinned: the tenant owns whether and where a theme switch sits in their chrome.
     pinned: false,
@@ -574,7 +574,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     label: 'Legal links',
     category: 'Your site',
     icon: 'article',
-    hint: 'Links to the legal pages you have published — privacy, terms, cookies, returns. Always current, and hidden entirely until you publish one. Put it in your footer.',
+    hint: 'Links to the legal pages you have published: privacy, terms, cookies, returns. Always current, and hidden entirely until you publish one. Put it in your footer.',
     // A footer link column: the heading + its links stacked, matching the hand-authored
     // columns beside it.
     defaultClass: 'flex flex-col gap-3',
@@ -644,7 +644,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     label: 'Article body',
     category: 'Your writing',
     icon: 'article',
-    hint: 'The written body of the post being shown — headings, lists, quotes, and images exactly as they were typed. Pinned: style and surround it, but it can’t be removed.',
+    hint: 'The written body of the post being shown: headings, lists, quotes, and images exactly as they were typed. Pinned: style and surround it, but it can’t be removed.',
     // Prose measure, not the 6xl page measure the commerce cores use: a line of body
     // text past ~75 characters is measurably harder to read, and this core is nothing
     // but body text.
@@ -674,7 +674,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // the footgun the cart entry above documents). `contact` is the registered one that
     // means this: a map is the contact page's "where we are".
     icon: 'contact',
-    hint: 'A map showing where you are. Type your address — or paste a Google Maps link — and visitors get a map they can zoom and get directions from.',
+    hint: 'A map showing where you are. Type your address (or paste a Google Maps link) and visitors get a map they can zoom and get directions from.',
     defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
     props: [
       {
@@ -719,7 +719,7 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     label: 'Embed on its own',
     category: 'Your media',
     icon: 'code',
-    hint: 'Something from another website — a booking calendar, an order form, a playlist. Paste its link. Some sites don’t allow this; if nothing shows, that site has blocked it.',
+    hint: 'Something from another website: a booking calendar, an order form, a playlist. Paste its link. Some sites don’t allow this; if nothing shows, that site has blocked it.',
     defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
     props: [
       { name: 'url', label: 'Link', type: 'text', default: '' },

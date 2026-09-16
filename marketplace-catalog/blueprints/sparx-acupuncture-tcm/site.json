@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Five Elements Acupuncture — traditional Chinese medicine",
+      "seoTitle": "Five Elements Acupuncture: traditional Chinese medicine",
       "seoDescription": "Five Elements Acupuncture is a calm clinic for acupuncture, cupping and herbal medicine. Book your licensed practitioner online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A calm clinic for acupuncture, cupping and herbal medicine — traditional Chinese medicine, practised with patience and care."
+                      "A calm clinic for acupuncture, cupping and herbal medicine: traditional Chinese medicine, practised with patience and care."
                     ],
                     "id": "461a3003-a19c-49cf-bd57-5036b8f12a34",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every treatment is with a board-certified, state-licensed acupuncturist — trained for years in both needle work and herbal medicine."
+                              "Every treatment is with a board-certified, state-licensed acupuncturist: trained for years in both needle work and herbal medicine."
                             ],
                             "id": "fe3f8edc-ef7c-4455-b55b-64e833e73995",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Where herbs will help, we build a formula for your constitution — nothing off a shelf, everything made to fit you."
+                              "Where herbs will help, we build a formula for your constitution. Nothing off a shelf, everything made to fit you."
                             ],
                             "id": "acb1dcf5-15b3-4f4f-b78b-cbcf16bae1ad",
                             "ord": "a1"
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Traditional Chinese medicine sees the body as one connected system — the five elements in balance. Pain, poor sleep, low energy and stress are rarely separate problems; they’re signs of where that balance has slipped."
+                          "Traditional Chinese medicine sees the body as one connected system: the five elements in balance. Pain, poor sleep, low energy and stress are rarely separate problems; they’re signs of where that balance has slipped."
                         ],
                         "id": "13b62fe3-ab39-4bee-8491-640e1dbfd1f3",
                         "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we don’t chase a single symptom. We read your pulse, look and listen, and treat the pattern underneath — gently, over time, so the results hold."
+                          "So we don’t chase a single symptom. We read your pulse, look and listen, and treat the pattern underneath: gently, over time, so the results hold."
                         ],
                         "id": "9489541f-4e90-4d39-bc45-b30053ff01b3",
                         "ord": "a2"
@@ -1185,7 +1185,7 @@
                         "kind": "element",
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
-                        "children": ["Book by name — you’ll see the same practitioner each visit."],
+                        "children": ["Book by name: you’ll see the same practitioner each visit."],
                         "id": "ed686c21-2443-4548-9123-67fa23bc6481",
                         "ord": "a1"
                       }
@@ -1353,7 +1353,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Pain, sports recovery and cupping — helping bodies move freely again."
+                                  "Pain, sports recovery and cupping: helping bodies move freely again."
                                 ],
                                 "id": "96aff5c9-30a9-4bcf-ac5e-27bbc87f0221",
                                 "ord": "a2"
@@ -1468,7 +1468,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Five Elements Acupuncture",
+      "seoTitle": "Book: Five Elements Acupuncture",
       "seoDescription": "See what Five Elements Acupuncture offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1592,7 +1592,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "fcd8d4f7-5e0c-4e63-b0f2-98caf279dbb4",
                         "ord": "a1"
@@ -1699,7 +1699,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Five Elements Acupuncture",
+      "seoTitle": "About: Five Elements Acupuncture",
       "seoDescription": "Who Five Elements Acupuncture is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1748,7 +1748,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Five Elements to practise Chinese medicine the way it was meant to be practised — unhurried, personal, and rooted in a tradition thousands of years old."
+                          "We opened Five Elements to practise Chinese medicine the way it was meant to be practised: unhurried, personal, and rooted in a tradition thousands of years old."
                         ],
                         "id": "88dcd4bd-213c-4450-b4d9-8ffd631fb3e7",
                         "ord": "a1"
@@ -1758,7 +1758,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "No rushing, no one-size-fits-all. Just careful diagnosis, treatment tailored to you, and a calm space to heal in — for pain, stress, sleep, fertility and everything in between."
+                          "No rushing, no one-size-fits-all. Just careful diagnosis, treatment tailored to you, and a calm space to heal in, for pain, stress, sleep, fertility and everything in between."
                         ],
                         "id": "71b87ec7-d4f3-4ebd-9c43-8589cecb203f",
                         "ord": "a2"
@@ -1836,7 +1836,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every course of care begins with a real intake — your history, your pulse, your tongue — so the treatment fits the person, not the label."
+                              "Every course of care begins with a real intake (your history, your pulse, your tongue) so the treatment fits the person, not the label."
                             ],
                             "id": "91791da3-5720-4a5c-8ef4-35824a545abd",
                             "ord": "a1"
@@ -1863,7 +1863,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Fine, single-use needles and high-grade herbs sourced from suppliers we know — with honest advice on what will and won’t help."
+                              "Fine, single-use needles and high-grade herbs sourced from suppliers we know, with honest advice on what will and won’t help."
                             ],
                             "id": "c5ab07b9-ed93-4951-9bb0-ecdd42019cba",
                             "ord": "a1"
@@ -1918,7 +1918,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Five Elements Acupuncture",
+      "seoTitle": "Visit: Five Elements Acupuncture",
       "seoDescription": "Where to find Five Elements Acupuncture, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1955,7 +1955,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Five Elements Acupuncture will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Five Elements Acupuncture will get back to you, usually the same day."
                         ],
                         "id": "79da1819-9bd6-486f-93a9-9f8f8fc13cfa",
                         "ord": "a1"
@@ -2382,7 +2382,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your treatment online — no phone tag."
+                      "See live availability and reserve your treatment online: no phone tag."
                     ],
                     "id": "93444c5f-2b8a-43f1-b285-f1552b48f053",
                     "ord": "a1"

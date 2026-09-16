@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Form & Field — design-led objects for a considered home",
-      "seoDescription": "Form & Field makes design-led homeware — lighting, textiles and tableware drawn with intent and built to last. Clean lines, honest materials, one bold color at a time.",
+      "seoTitle": "Form & Field: design-led objects for a considered home",
+      "seoDescription": "Form & Field makes design-led homeware: lighting, textiles and tableware drawn with intent and built to last. Clean lines, honest materials, one bold color at a time.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -787,7 +787,7 @@
                         "tag": "p",
                         "class": "max-w-md text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Form & Field makes design-led objects for a considered home — lighting, textiles and tableware drawn with intent and built to be looked at as much as used. Clean lines, honest materials, one confident color at a time."
+                          "Form & Field makes design-led objects for a considered home: lighting, textiles and tableware drawn with intent and built to be looked at as much as used. Clean lines, honest materials, one confident color at a time."
                         ],
                         "id": "95711168-5cf9-41bb-a561-8a2a3dd331c8",
                         "ord": "a1"
@@ -1256,7 +1256,7 @@
                         "tag": "p",
                         "class": "max-w-md text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every piece starts as a drawing and a problem to solve — how a lamp throws light, how a shelf carries weight, how a rug anchors a room. We work with independent designers and small manufacturers, and we only make the object once it earns its place."
+                          "Every piece starts as a drawing and a problem to solve: how a lamp throws light, how a shelf carries weight, how a rug anchors a room. We work with independent designers and small manufacturers, and we only make the object once it earns its place."
                         ],
                         "id": "17b9d994-3a4c-47a0-b089-96a1c48a2b1f",
                         "ord": "a1"
@@ -1518,7 +1518,7 @@
                         "tag": "p",
                         "class": "max-w-md text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A restrained space needs a single confident move — an ochre lamp, a graphic rug, a monolithic vase — to keep it from going flat. Build the room in greys and oak, then let one object carry the color. That is the whole method."
+                          "A restrained space needs a single confident move (an ochre lamp, a graphic rug, a monolithic vase) to keep it from going flat. Build the room in greys and oak, then let one object carry the color. That is the whole method."
                         ],
                         "id": "a4fc8c09-6205-4ba6-ae9b-771eb6db6d3c",
                         "ord": "a1"
@@ -1544,7 +1544,7 @@
                     "class": "aspect-square w-full bg-base-200 object-cover @3xl:h-full",
                     "attrs": {
                       "src": "https://images.unsplash.com/photo-1671022442106-c787685d9fed?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8cmF3JTIwbWF0ZXJpYWxzJTIwbGFpZCUyMG91dCUyMHBvd2Rlci1jb2F0ZWQlMjBzdGVlbCUyMG9ha3xlbnwwfDB8fHwxNzg2NDA3NjcyfDA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                      "alt": "Raw materials — powder-coated steel, oak and wool felt",
+                      "alt": "Raw materials: powder-coated steel, oak and wool felt",
                       "loading": "lazy"
                     },
                     "id": "7c94030d-b636-4227-81f1-58a70032e5ec",
@@ -1565,7 +1565,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Form & Field",
+      "seoTitle": "Shop: Form & Field",
       "seoDescription": "Browse everything Form & Field makes, with prices and options at a glance. Home goods & homeware.",
       "root": {
         "kind": "element",
@@ -1597,7 +1597,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The whole catalogue in one place — lighting, textiles, tableware, storage and decor. Filter by category or sort however you like; every piece is designed with intent, made in small runs, and built to be lived with."
+                      "The whole catalogue in one place: lighting, textiles, tableware, storage and decor. Filter by category or sort however you like; every piece is designed with intent, made in small runs, and built to be lived with."
                     ],
                     "id": "f63cec3c-48be-4731-a014-cad5aa7b869d",
                     "ord": "a1"
@@ -1625,7 +1625,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Form & Field",
+      "seoTitle": "Collections: Form & Field",
       "seoDescription": "Explore the collections at Form & Field, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1657,7 +1657,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalogue grouped the way people actually shop — what’s new this season, the pieces people keep coming back for, the lighting edit, and edits for the table and the living room."
+                      "The catalogue grouped the way people actually shop: what’s new this season, the pieces people keep coming back for, the lighting edit, and edits for the table and the living room."
                     ],
                     "id": "4909a9c6-9882-49ad-a2c2-cbba987b9f69",
                     "ord": "a1"
@@ -1685,7 +1685,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Form & Field",
+      "seoTitle": "Your cart: Form & Field",
       "seoDescription": "Review what is in your cart and check out securely at Form & Field.",
       "root": {
         "kind": "element",
@@ -1717,7 +1717,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $120, carefully packed to arrive in one piece. Not quite right for your space? Send it back within 30 days — we want the object to earn its place, not just fill it."
+                      "Free shipping on orders over $120, carefully packed to arrive in one piece. Not quite right for your space? Send it back within 30 days. We want the object to earn its place, not just fill it."
                     ],
                     "id": "168560f7-9ee1-4c0d-9573-c3814dbbf3cc",
                     "ord": "a1"
@@ -1745,7 +1745,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Form & Field",
+      "seoTitle": "Search: Form & Field",
       "seoDescription": "Search Form & Field for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1805,7 +1805,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Form & Field",
+      "seoTitle": "Journal: Form & Field",
       "seoDescription": "Stories, guides and notes from Form & Field.",
       "root": {
         "kind": "element",
@@ -1837,7 +1837,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the studio — how a piece gets designed, how to build a room around one bold object, and where our materials come from. Considered, useful, no jargon."
+                      "Notes from the studio: how a piece gets designed, how to build a room around one bold object, and where our materials come from. Considered, useful, no jargon."
                     ],
                     "id": "699c1b2d-24de-4c2c-ab1b-780246e96eb0",
                     "ord": "a1"
@@ -1971,7 +1971,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Form & Field",
-      "seoDescription": "Why Form & Field makes a small, sharp catalogue of design-led objects — problem-first design, honest materials on show, and one confident color where it counts.",
+      "seoDescription": "Why Form & Field makes a small, sharp catalogue of design-led objects: problem-first design, honest materials on show, and one confident color where it counts.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2002,7 +2002,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Form & Field began with a conviction: a home doesn’t need more things, it needs better ones. Too much homeware is decoration — shaped to fill a shelf and forgotten by next season. We wanted to make the opposite: a small, sharp catalogue of objects that are drawn with intent and hold up to being looked at every day."
+                      "Form & Field began with a conviction: a home doesn’t need more things, it needs better ones. Too much homeware is decoration, shaped to fill a shelf and forgotten by next season. We wanted to make the opposite: a small, sharp catalogue of objects that are drawn with intent and hold up to being looked at every day."
                     ],
                     "id": "d5c6ff78-4ade-483e-9393-13059a935ca7",
                     "ord": "a1"
@@ -2012,7 +2012,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "So we work with independent designers and small manufacturers, and we design each piece around a real problem — how a lamp throws light, how a shelf carries weight, how a rug anchors a room. Honest materials, clean lines, and one confident color where it counts. If an object doesn’t earn its place, we don’t make it."
+                      "So we work with independent designers and small manufacturers, and we design each piece around a real problem: how a lamp throws light, how a shelf carries weight, how a rug anchors a room. Honest materials, clean lines, and one confident color where it counts. If an object doesn’t earn its place, we don’t make it."
                     ],
                     "id": "b3e16a5a-f09d-4956-9b4c-635767d173b0",
                     "ord": "a2"
@@ -2022,7 +2022,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No trend-chasing, no wall of nearly-the-same, no pieces designed to be replaced. Just design-led objects for a considered home — the kind of things you build a room around and keep for years."
+                      "No trend-chasing, no wall of nearly-the-same, no pieces designed to be replaced. Just design-led objects for a considered home: the kind of things you build a room around and keep for years."
                     ],
                     "id": "2896a548-89e6-4473-a7cc-d402d4a919ed",
                     "ord": "a3"
@@ -2042,8 +2042,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Form & Field",
-      "seoDescription": "Get in touch with Form & Field — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Form & Field",
+      "seoDescription": "Get in touch with Form & Field: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2079,7 +2079,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions about a piece, help planning a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you — usually within a day."
+                          "Questions about a piece, help planning a room, or a trade and interiors enquiry? Tell us what you’re after and a real person here will get back to you, usually within a day."
                         ],
                         "id": "7d92da4d-9cb6-40de-a69f-b51bcb341d63",
                         "ord": "a1"
@@ -2350,8 +2350,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Form & Field",
-      "seoDescription": "Product details at Form & Field — home goods & homeware, with options and pricing.",
+      "seoTitle": "Product: Form & Field",
+      "seoDescription": "Product details at Form & Field: home goods & homeware, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2714,7 +2714,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Made in small runs by independent workshops from honest materials — powder-coated steel, solid oak, real wool and glass. Every piece is drawn with intent and built to earn its place. Free returns within 30 days if it isn’t right for your space."
+                              "Made in small runs by independent workshops from honest materials: powder-coated steel, solid oak, real wool and glass. Every piece is drawn with intent and built to earn its place. Free returns within 30 days if it isn’t right for your space."
                             ],
                             "id": "d0ba76ac-7de8-4a2f-a632-b9de140af410",
                             "ord": "a1"

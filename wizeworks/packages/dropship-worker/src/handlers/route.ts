@@ -37,7 +37,7 @@ export async function handleOrderRoute(
   });
 
   if (!order) {
-    log.warn({ orderId }, 'dropship route: order not found — acking');
+    log.warn({ orderId }, 'dropship route: order not found, acking');
     return;
   }
 
@@ -57,7 +57,7 @@ export async function handleOrderRoute(
   }
 
   if (bySupplier.size === 0) {
-    log.info({ orderId }, 'dropship route: no dropship line items — skipping');
+    log.info({ orderId }, 'dropship route: no dropship line items, skipping');
     return;
   }
 

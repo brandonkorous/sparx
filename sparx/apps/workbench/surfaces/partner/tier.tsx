@@ -59,7 +59,7 @@ export function TierSurface(_props: { ctx: SurfaceContext }) {
     const meta = TIERS[upcoming];
     const ok = await confirm({
       title: `Apply to become a ${meta.label} partner?`,
-      description: `${meta.commission}. Applications are reviewed by sparx, usually within a few business days — nothing changes about your account until it is approved.`,
+      description: `${meta.commission}. Applications are reviewed by sparx, usually within a few business days. Nothing changes about your account until it is approved.`,
       confirmLabel: 'Send my application',
       cancelLabel: 'Not now',
       color: 'module',
@@ -203,7 +203,7 @@ export function TierSurface(_props: { ctx: SurfaceContext }) {
               </Heading>
               <Text className="text-sm">
                 You earn ongoing commission on the accounts you manage and can publish bootcamps
-                publicly. Keep it up — the directory rewards active Certified partners with priority
+                publicly. Keep it up: the directory rewards active Certified partners with priority
                 placement.
               </Text>
             </section>

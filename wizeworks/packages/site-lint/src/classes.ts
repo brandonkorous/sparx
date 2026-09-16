@@ -52,7 +52,7 @@ function wordingFor(reason: VocabularyIssue['reason']): Wording {
       title: "This styling can't be seen in the phone and tablet previews",
       lead:
         'It works on the live site, but the phone and tablet previews resize the block rather ' +
-        'than the whole browser window — so switching between them shows no change and the ' +
+        'than the whole browser window, so switching between them shows no change and the ' +
         'design cannot be checked before publishing.',
     };
   }
@@ -63,8 +63,8 @@ function wordingFor(reason: VocabularyIssue['reason']): Wording {
     lead:
       reason === 'arbitrary-value'
         ? 'A size typed in by hand is not one of the sizes your design carries, so it is ignored ' +
-          'completely — here in the editor and on your live page.'
-        : 'This names a size your design does not include, so it is ignored completely — here in ' +
+          'completely. Here in the editor and on your live page.'
+        : 'This names a size your design does not include, so it is ignored completely. Here in ' +
           'the editor and on your live page.',
   };
 }
@@ -90,7 +90,7 @@ function adviceFor(issue: VocabularyIssue, offered: boolean): string {
   const swap = offered ? ' Fix it will make the change.' : '';
 
   if (issue.reason === 'arbitrary-value') {
-    return 'Pick one of the sizes your design already carries — those are the ones that show up.';
+    return 'Pick one of the sizes your design already carries. Those are the ones that show up.';
   }
 
   if (issue.reason === 'viewport-variant') {
@@ -102,7 +102,7 @@ function adviceFor(issue: VocabularyIssue, offered: boolean): string {
           `browser window.${swap}`
       : `The version that measures this block is \`${issue.replacement}\`, but it only works ` +
           'inside a wrapper marked to be measured (`@container`) and nothing above this one is ' +
-          '— so it is not offered as a one-click change. The sections, menu bar and footer your ' +
+          ', so it is not offered as a one-click change. The sections, menu bar and footer your ' +
           'site came with are already marked.';
   }
 
@@ -181,7 +181,7 @@ export function checkClasses(inventory: DocumentInventory): RawFinding[] {
             'Styling that only applies at a certain width needs a wrapper marked as the thing ' +
             'being measured. Nothing above this is marked, so the rule never matches and the ' +
             'layout stays the same at every size. Add `@container` to a section or wrapper above ' +
-            'it — the seeded sections, the nav and the footer already have one.',
+            'it: the seeded sections, the nav and the footer already have one.',
           evidence: orphaned.join(' '),
         });
       }

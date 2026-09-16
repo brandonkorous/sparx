@@ -40,7 +40,7 @@ function UncostedNotice({ units }: { units: number }) {
           {plural(units, 'unit', 'units')} with no purchase behind{units === 1 ? ' it' : ' them'}
         </AlertTitle>
         <AlertDescription>
-          Those units are counted but not valued, because nothing records what they cost — usually
+          Those units are counted but not valued, because nothing records what they cost, usually
           stock that was here before you started recording deliveries. The value above is everything
           else.
         </AlertDescription>
@@ -109,7 +109,7 @@ export function AsOfCard({ locationId }: { locationId: string }) {
     <ReportCard
       title="What it was worth on a date"
       glyph={faCalendarClock}
-      blurb="The figure an accountant asks for at year end. Worked out from your stock history, so any date works — not only the ones somebody remembered to record."
+      blurb="The figure an accountant asks for at year end. Worked out from your stock history, so any date works, not only the ones somebody remembered to record."
       aside={
         <DateInput
           color="module"

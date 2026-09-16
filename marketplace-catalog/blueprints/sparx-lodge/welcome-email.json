@@ -1,7 +1,7 @@
 {
   "version": "1",
   "subject": "Welcome to {{site.name}}",
-  "preheader": "Thanks for joining — here’s where to start.",
+  "preheader": "Thanks for joining: here’s where to start.",
   "root": {
     "id": "def-s-body-1019",
     "kind": "body",
@@ -40,7 +40,7 @@
           {
             "id": "def-s-text-1013",
             "kind": "text",
-            "html": "Thanks for joining {{site.name}} — we’re glad you’re here.",
+            "html": "Thanks for joining {{site.name}}: we’re glad you’re here.",
             "align": "left",
             "color": "#18181b",
             "colorAuto": true,

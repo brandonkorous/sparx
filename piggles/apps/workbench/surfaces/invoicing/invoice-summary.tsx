@@ -122,7 +122,7 @@ export function InvoiceSummary({
           }
         />
         <FieldDescription>
-          Out of a hundred — type 8.75 for eight and three-quarter percent. Leave it at 0 if you do
+          Out of a hundred. Type 8.75 for eight and three-quarter percent. Leave it at 0 if you do
           not charge tax.
         </FieldDescription>
       </Field>
@@ -154,7 +154,7 @@ export function InvoiceSummary({
 
       {differs ? (
         <Text className="text-warning text-sm">
-          Not saved yet — {formatMoney(saved.total, currency)} is what the customer would see today.
+          Not saved yet: {formatMoney(saved.total, currency)} is what the customer would see today.
         </Text>
       ) : null}
 

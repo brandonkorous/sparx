@@ -101,7 +101,7 @@ export const BASE_RULES_DESCRIPTION: BaseRuleDescription[] = [
   {
     label: 'fixed',
     reason:
-      'Blocks `position: fixed` — stops an element pinning itself over the app chrome (clickjacking).',
+      'Blocks `position: fixed`, stops an element pinning itself over the app chrome (clickjacking).',
   },
   {
     label: 'z-[…] arbitrary z-index',
@@ -110,12 +110,12 @@ export const BASE_RULES_DESCRIPTION: BaseRuleDescription[] = [
   },
   {
     label: 'content-[…]',
-    reason: 'Blocks arbitrary `content-[…]` — a CSS content-injection vector.',
+    reason: 'Blocks arbitrary `content-[…]`: a CSS content-injection vector.',
   },
   {
     label: 'url(…)',
     reason:
-      'Blocks any `url(…)` (e.g. `bg-[url(…)]`) — prevents external loads / data exfiltration. Use the image picker for backgrounds.',
+      'Blocks any `url(…)` (e.g. `bg-[url(…)]`): prevents external loads / data exfiltration. Use the image picker for backgrounds.',
   },
 ];
 

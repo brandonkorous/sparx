@@ -118,7 +118,7 @@ const writeTools: InvoicingMcpTool[] = [
   {
     name: 'add_billing_line',
     description:
-      "Add a charge line to a billing document — a product, a service (rate × hours), a flat fee, or a pass-through cost. Pass a lineTypeKey (one of the tenant's own line-type slugs — list them if unsure) and a unitPrice; an optional explicitCostCents records the cost basis so margin is tracked.",
+      "Add a charge line to a billing document: a product, a service (rate × hours), a flat fee, or a pass-through cost. Pass a lineTypeKey (one of the tenant's own line-type slugs, list them if unsure) and a unitPrice; an optional explicitCostCents records the cost basis so margin is tracked.",
     scope: 'write:invoicing',
     confirmation: false,
     input: AddLineInput,
@@ -130,7 +130,7 @@ const writeTools: InvoicingMcpTool[] = [
   {
     name: 'advance_billing_document',
     description:
-      'Move a billing document to another stage in its workflow (e.g. approve an estimate, or convert it to an invoice). Entering a stage may assign its number, freeze a permanent record, and lock the lines — confirm before advancing.',
+      'Move a billing document to another stage in its workflow (e.g. approve an estimate, or convert it to an invoice). Entering a stage may assign its number, freeze a permanent record, and lock the lines. Confirm before advancing.',
     scope: 'write:invoicing',
     confirmation: true,
     input: AdvanceInput,
@@ -208,7 +208,7 @@ const managementTools: InvoicingMcpTool[] = [
   {
     name: 'create_document_line_type',
     description:
-      'Create a reusable document line type (a preset line — labor, part, fee — with defaults).',
+      'Create a reusable document line type (a preset line: labor, part, fee, with defaults).',
     scope: 'write:invoicing',
     confirmation: true,
     input: CreateDocumentLineTypeInput,
@@ -287,7 +287,7 @@ const managementTools: InvoicingMcpTool[] = [
   {
     name: 'create_document_workflow',
     description:
-      'Create a document workflow — the ordered stages a document moves through (e.g. Draft → Sent → Approved → Invoiced).',
+      'Create a document workflow: the ordered stages a document moves through (e.g. Draft → Sent → Approved → Invoiced).',
     scope: 'write:invoicing',
     confirmation: true,
     input: CreateDocumentWorkflowInput,

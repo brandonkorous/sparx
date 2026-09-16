@@ -92,7 +92,7 @@ export function useDiscountWrites(
     const ok = await confirm({
       title: `Retire ${discount.name}?`,
       description:
-        'This switches the discount off for good — it stops applying immediately and cannot be reopened. Its record of how many times it was used is kept. To pause it temporarily instead, keep it and remove its end date another time.',
+        'This switches the discount off for good. It stops applying immediately and cannot be reopened. Its record of how many times it was used is kept. To pause it temporarily instead, keep it and remove its end date another time.',
       confirmLabel: 'Retire this discount',
       cancelLabel: 'Keep it',
       color: 'danger',

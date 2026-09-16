@@ -155,7 +155,7 @@ export async function furnishTenant({
   if (!response.ok) {
     const detail = await response.text().catch(() => '');
     throw new Error(
-      `Furnish failed: ${response.status} ${response.statusText}${detail ? ` — ${detail.slice(0, 500)}` : ''}`
+      `Furnish failed: ${response.status} ${response.statusText}${detail ? `, ${detail.slice(0, 500)}` : ''}`
     );
   }
 }

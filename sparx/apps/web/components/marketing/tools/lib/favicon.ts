@@ -149,10 +149,10 @@ function buildHtmlSnippet(opts: FaviconOptions): string {
 
 function buildNextManifest(opts: FaviconOptions): string {
   return [
-    '// Next.js App Router — drop the icons into app/ using the file conventions:',
+    '// Next.js App Router: drop the icons into app/ using the file conventions:',
     '//   app/favicon.ico        (Next serves it automatically)',
-    '//   app/icon.png           (32×32 — rename favicon-32x32.png)',
-    '//   app/apple-icon.png     (180×180 — rename apple-touch-icon.png)',
+    '// app/icon.png (32×32, rename favicon-32x32.png)',
+    '// app/apple-icon.png (180×180, rename apple-touch-icon.png)',
     '//   public/icon-192.png, public/icon-512.png, public/maskable-512.png',
     '// Then add app/manifest.ts:',
     '',

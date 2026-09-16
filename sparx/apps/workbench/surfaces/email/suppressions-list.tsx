@@ -89,7 +89,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
       // rows is how the wrong person starts getting email again.
       title: `Start emailing ${row.email} again?`,
       description:
-        'Taking this address off your do-not-email list means sparx may send it emails again — newsletters, offers and account messages. Only do this if you are sure they want to hear from you.',
+        'Taking this address off your do-not-email list means sparx may send it emails again: newsletters, offers and account messages. Only do this if you are sure they want to hear from you.',
       confirmLabel: 'Remove from list',
       cancelLabel: 'Keep it blocked',
       color: 'danger',
@@ -104,7 +104,7 @@ export function SuppressionsListSurface(_props: { ctx: SurfaceContext }) {
             title: `Could not remove ${row.email}`,
             description: suppressionErrorMessage(
               err,
-              'Nothing changed — they are still on your do-not-email list. Try again in a moment.'
+              'Nothing changed. They are still on your do-not-email list. Try again in a moment.'
             ),
             type: 'error',
           });

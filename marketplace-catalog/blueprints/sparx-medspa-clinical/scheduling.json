@@ -237,7 +237,7 @@
     {
       "handle": "hydrafacial",
       "name": "HydraFacial",
-      "description": "A medical-grade cleanse, exfoliation and hydration in one session — visibly fresher skin, zero downtime.",
+      "description": "A medical-grade cleanse, exfoliation and hydration in one session: visibly fresher skin, zero downtime.",
       "durationMinutes": 60,
       "priceCents": 19900,
       "bufferAfterMin": 10,
@@ -260,7 +260,7 @@
     {
       "handle": "chemical-peel",
       "name": "Chemical peel",
-      "description": "A tailored peel to smooth tone and texture, dialed to your skin and your downtime — light to medium depth.",
+      "description": "A tailored peel to smooth tone and texture, dialed to your skin and your downtime: light to medium depth.",
       "durationMinutes": 45,
       "priceCents": 17500,
       "bufferAfterMin": 10,
@@ -283,7 +283,7 @@
     {
       "handle": "microneedling",
       "name": "Microneedling",
-      "description": "Collagen-induction therapy for fine lines, scarring and texture — a series builds firmer, clearer skin over time.",
+      "description": "Collagen-induction therapy for fine lines, scarring and texture: a series builds firmer, clearer skin over time.",
       "durationMinutes": 75,
       "priceCents": 29900,
       "bufferAfterMin": 15,
@@ -306,7 +306,7 @@
     {
       "handle": "laser-hair-removal",
       "name": "Laser hair removal",
-      "description": "Comfortable, effective laser hair reduction for face or body, safe across skin types — priced per area.",
+      "description": "Comfortable, effective laser hair reduction for face or body, safe across skin types: priced per area.",
       "durationMinutes": 30,
       "priceCents": 14900,
       "bufferAfterMin": 10,
@@ -329,7 +329,7 @@
     {
       "handle": "iv-therapy",
       "name": "IV therapy",
-      "description": "A registered nurse–administered vitamin drip for hydration, energy and recovery — chosen to fit how you feel that day.",
+      "description": "A registered nurse–administered vitamin drip for hydration, energy and recovery: chosen to fit how you feel that day.",
       "durationMinutes": 45,
       "priceCents": 12500,
       "assignmentStrategy": "any_available",

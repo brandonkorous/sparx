@@ -17,7 +17,7 @@ export function SecretPreview({ value }: { value: string }) {
     >
       <WebhookSecret value={value} />
       <Text className="text-sm">
-        For security the full secret is only shown once, at the moment it is set up — this is a
+        For security the full secret is only shown once, at the moment it is set up. This is a
         preview of it. If it has been lost, delete this and set up a new one to get a fresh secret.
       </Text>
     </FormSection>

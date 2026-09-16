@@ -89,7 +89,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New sequence — hold Shift to open alongside, Alt for a new window"
+            title="New sequence: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('email.sequences.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -134,7 +134,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Route className="size-6" aria-hidden />}
             title="Could not load your sequences"
-            description="Something went wrong reaching the server. Anyone already in a sequence is unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Anyone already in a sequence is unaffected. Try again in a moment."
             actions={
               <Button
                 size="sm"
@@ -162,7 +162,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No sequences yet',
               description:
-                'A sequence follows up with someone over time — a welcome today, a nudge in two days, an offer in a week — sending each email on its own schedule. Create your first to get started.',
+                'A sequence follows up with someone over time (a welcome today, a nudge in two days, an offer in a week) sending each email on its own schedule. Create your first to get started.',
               actions: (
                 <Button
                   size="sm"

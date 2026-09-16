@@ -584,7 +584,7 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
     // would leave the UI showing a limit that isn't real.
     if (touchesModuleAccess && roleIgnoresModuleAccess(nextRole)) {
       throw badRequest(
-        `Module access can't be limited for ${nextRole}s — they manage the team, so they always reach every module. Change their role first.`
+        `Module access can't be limited for ${nextRole}s. They manage the team, so they always reach every module. Change their role first.`
       );
     }
 
@@ -595,7 +595,7 @@ const teamRoutes: FastifyPluginAsync = async (app) => {
     // restriction, so applying one to them is theatre. Rejected, not ignored.
     if (touchesPropertyAccess && roleIgnoresPropertyAccess(nextRole)) {
       throw badRequest(
-        `Site access can't be limited for ${nextRole}s — they manage the team, so they always reach every site. Change their role first.`
+        `Site access can't be limited for ${nextRole}s. They manage the team, so they always reach every site. Change their role first.`
       );
     }
 

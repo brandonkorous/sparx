@@ -147,7 +147,7 @@ export function Launcher({
               onValueChange={setQuery}
               onKeyDown={onKeyDown}
               aria-label="Search everything"
-              placeholder="Search for anything — orders, customers, products…"
+              placeholder="Search for anything: orders, customers, products…"
             />
           </div>
 

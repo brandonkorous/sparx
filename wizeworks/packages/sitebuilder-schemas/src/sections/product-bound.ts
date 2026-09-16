@@ -58,7 +58,7 @@ export const productFitmentFields: SectionField[] = [
 export const ProductReviewsConfig = z.object({
   heading: z.string().max(80).default('Reviews'),
   showForm: z.boolean().default(true),
-  emptyText: z.string().max(160).default('No reviews yet — be the first.'),
+  emptyText: z.string().max(160).default('No reviews yet: be the first.'),
 });
 export type ProductReviewsConfig = z.infer<typeof ProductReviewsConfig>;
 
@@ -72,7 +72,7 @@ export const productReviewsFields: SectionField[] = [
 export const ProductQuestionsConfig = z.object({
   heading: z.string().max(80).default('Questions & answers'),
   showForm: z.boolean().default(true),
-  emptyText: z.string().max(160).default('No questions yet — ask the first one.'),
+  emptyText: z.string().max(160).default('No questions yet. Ask the first one.'),
 });
 export type ProductQuestionsConfig = z.infer<typeof ProductQuestionsConfig>;
 

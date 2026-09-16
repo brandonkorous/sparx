@@ -120,7 +120,7 @@ describe('per-module seed install', () => {
     // installs on any module pass by design: form handling isn't owned by a
     // feature module.
     expect(installed.map((a) => a.name).sort()).toEqual([
-      'Deal won — create invoice task',
+      'Deal won: create invoice task',
       'Email opens a support request',
       'Handle form submissions',
       'Live chat opens a support request',
@@ -178,7 +178,7 @@ describe('new-lead task — assignee resolution', () => {
     await runAutomationTick(deps, appDb);
 
     const task = await ownerDb.task.findFirst({ where: { tenantId, dealId } });
-    expect(task?.title).toBe('Follow up — Acme retrofit');
+    expect(task?.title).toBe('Follow up: Acme retrofit');
     expect(task?.assignedToUserId).toBe(rep.id);
   });
 

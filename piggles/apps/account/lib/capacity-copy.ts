@@ -61,7 +61,7 @@ export function meterNote(m: MeterReading): string | null {
     case 'approaching':
       return 'Getting close to what your plan includes.';
     case 'unknown':
-      return 'We have not counted this one yet — it is measured overnight.';
+      return 'We have not counted this one yet. It is measured overnight.';
     default:
       return null;
   }

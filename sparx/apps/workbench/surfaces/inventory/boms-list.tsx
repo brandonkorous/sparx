@@ -75,7 +75,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             q || status
               ? 'Try a different search, or clear the filters.'
-              : 'A recipe says what a finished thing is made of — the parts, how many of each, and how much gets wasted making it. Once you have one, you can see how many you could make right now and record it when you do.'
+              : 'A recipe says what a finished thing is made of: the parts, how many of each, and how much gets wasted making it. Once you have one, you can see how many you could make right now and record it when you do.'
           }
           actions={
             q || status ? null : (

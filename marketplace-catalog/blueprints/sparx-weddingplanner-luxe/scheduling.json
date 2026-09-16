@@ -123,7 +123,7 @@
     {
       "handle": "discovery-call",
       "name": "Discovery call",
-      "description": "A relaxed 30-minute call to hear your vision, your date and your budget — and see if we’re the right fit. No cost, no pressure.",
+      "description": "A relaxed 30-minute call to hear your vision, your date and your budget, and see if we’re the right fit. No cost, no pressure.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -140,7 +140,7 @@
     {
       "handle": "full-planning-consult",
       "name": "Full planning consultation",
-      "description": "A deep-dive session for couples who want us start to finish — venue, vendors, design, timeline and the day itself.",
+      "description": "A deep-dive session for couples who want us start to finish: venue, vendors, design, timeline and the day itself.",
       "durationMinutes": 60,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -157,7 +157,7 @@
     {
       "handle": "partial-planning-consult",
       "name": "Partial planning consultation",
-      "description": "You’ve made a start — we come in to shape the vendors, design and logistics, and carry it over the line.",
+      "description": "You’ve made a start. We come in to shape the vendors, design and logistics, and carry it over the line.",
       "durationMinutes": 45,
       "priceCents": 10000,
       "assignmentStrategy": "customer_choice",
@@ -174,7 +174,7 @@
     {
       "handle": "day-of-coordination-consult",
       "name": "Day-of coordination consultation",
-      "description": "You’ve planned it beautifully — we step in for the final weeks to run the timeline, the vendors and the day so you can be present.",
+      "description": "You’ve planned it beautifully. We step in for the final weeks to run the timeline, the vendors and the day so you can be present.",
       "durationMinutes": 45,
       "priceCents": 8000,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "design-styling-consult",
       "name": "Design & styling consultation",
-      "description": "A creative session on the look and feel — palette, florals, tablescapes, lighting and the details that tie your day together.",
+      "description": "A creative session on the look and feel: palette, florals, tablescapes, lighting and the details that tie your day together.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -225,7 +225,7 @@
     {
       "handle": "venue-tour-consult",
       "name": "Venue tour walkthrough",
-      "description": "Meet us at a shortlisted venue and we’ll walk it with you — flow, capacity, backup plans and how your design will sit in the space.",
+      "description": "Meet us at a shortlisted venue and we’ll walk it with you: flow, capacity, backup plans and how your design will sit in the space.",
       "durationMinutes": 60,
       "priceCents": 9000,
       "assignmentStrategy": "customer_choice",

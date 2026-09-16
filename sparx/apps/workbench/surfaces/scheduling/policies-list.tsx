@@ -66,7 +66,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<ShieldCheck className="size-6" aria-hidden />}
           title="Could not load your booking rules"
-          description="This is a problem reaching the server. Your rules are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your rules are unaffected: the list just could not be read just now."
           actions={
             <Button
               size="sm"
@@ -181,7 +181,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="New rule set — hold Shift to open alongside, Alt for a new window"
+            title="New rule set: hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
             <Plus className="size-4" aria-hidden />

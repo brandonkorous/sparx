@@ -29,6 +29,6 @@ export async function handle(event: SparxEvent, log: Logger): Promise<void> {
       await handleSyncStarted(event.payload as SyncStartedPayload, log);
       break;
     default:
-      log.debug({ eventType: event.type }, 'inventory-worker: unhandled event type — acking');
+      log.debug({ eventType: event.type }, 'inventory-worker: unhandled event type, acking');
   }
 }

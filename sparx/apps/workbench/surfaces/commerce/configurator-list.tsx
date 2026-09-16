@@ -141,7 +141,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Set up a build — hold Shift to open alongside, Alt for a new window"
+            title="Set up a build: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open(
                 'commerce.configurator-template.detail',
@@ -190,7 +190,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             title="Could not load your builds"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
@@ -207,7 +207,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No builds yet',
               description:
-                'A build lets a shopper make a product to order — choosing a size, a finish, an engraving, anything that changes what they get or what it costs. Set up your first one to get started.',
+                'A build lets a shopper make a product to order: choosing a size, a finish, an engraving, anything that changes what they get or what it costs. Set up your first one to get started.',
             }}
           />
         ) : (

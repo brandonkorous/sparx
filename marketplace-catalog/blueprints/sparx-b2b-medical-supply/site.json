@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Meridian Medical Supplies — medical, dental & clinical distributor",
-      "seoDescription": "Meridian is a medical, dental and clinical supplies distributor — PPE, consumables, wound care and infection control sold by the case at trade prices, lot-traceable, with net-30 terms and next-day dispatch. Open a trade account.",
+      "seoTitle": "Meridian Medical Supplies: medical, dental & clinical distributor",
+      "seoDescription": "Meridian is a medical, dental and clinical supplies distributor: PPE, consumables, wound care and infection control sold by the case at trade prices, lot-traceable, with net-30 terms and next-day dispatch. Open a trade account.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -770,7 +770,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Meridian is a medical, dental and clinical supplies distributor. We stock the gloves, masks, wound care, infection-control and diagnostics a clinic gets through every day — sold by the case, priced for the trade, traceable by lot, and dispatched next day."
+                          "Meridian is a medical, dental and clinical supplies distributor. We stock the gloves, masks, wound care, infection-control and diagnostics a clinic gets through every day: sold by the case, priced for the trade, traceable by lot, and dispatched next day."
                         ],
                         "id": "02778c66-bb85-4a40-9dd4-5ae9e37b1252",
                         "ord": "a1"
@@ -1215,7 +1215,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Open a trade account and you buy the way a clinic should — by the case, at contract rates, on terms, with the paperwork a regulated practice needs. No consumer markups, no chasing three suppliers."
+                          "Open a trade account and you buy the way a clinic should: by the case, at contract rates, on terms, with the paperwork a regulated practice needs. No consumer markups, no chasing three suppliers."
                         ],
                         "id": "e298dcd3-d780-455e-aa7b-d9d5dffe8d92",
                         "ord": "a1"
@@ -1274,7 +1274,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Approved accounts order now and settle on net-30 — keep the treatment rooms stocked without tying up the card on every reorder."
+                              "Approved accounts order now and settle on net-30. Keep the treatment rooms stocked without tying up the card on every reorder."
                             ],
                             "id": "32b483ab-78fb-4801-a89d-baadac0d6524",
                             "ord": "a1"
@@ -1328,7 +1328,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A direct line to a real person who knows your practice, your standing order and what you go through — not a ticket queue."
+                              "A direct line to a real person who knows your practice, your standing order and what you go through, not a ticket queue."
                             ],
                             "id": "52ea285e-38b3-436f-b9e7-dcbddfdb4025",
                             "ord": "a1"
@@ -1641,7 +1641,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Meridian Medical Supplies",
+      "seoTitle": "Shop: Meridian Medical Supplies",
       "seoDescription": "Browse everything Meridian Medical Supplies makes, with prices and options at a glance. Medical & clinical supply.",
       "root": {
         "kind": "element",
@@ -1673,7 +1673,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every line we stock — PPE, clinical consumables, wound care and infection control, sold by the case. Filter by department or sort by price; trade accounts see their contract pricing and lot traceability at checkout."
+                      "Every line we stock: PPE, clinical consumables, wound care and infection control, sold by the case. Filter by department or sort by price; trade accounts see their contract pricing and lot traceability at checkout."
                     ],
                     "id": "65420fd6-b9c9-4430-8488-9585151bf0b0",
                     "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Meridian Medical Supplies",
+      "seoTitle": "Collections: Meridian Medical Supplies",
       "seoDescription": "Explore the collections at Meridian Medical Supplies, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1733,7 +1733,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalog grouped the way a practice manager actually reorders — the lines ordered most, new lines just in, the everyday essentials, infection-prevention supplies, wound care, and the bulk consumables you put on a standing order."
+                      "The catalog grouped the way a practice manager actually reorders: the lines ordered most, new lines just in, the everyday essentials, infection-prevention supplies, wound care, and the bulk consumables you put on a standing order."
                     ],
                     "id": "998dbc27-cafd-4649-a84c-4b82d7b87224",
                     "ord": "a1"
@@ -1761,7 +1761,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Meridian Medical Supplies",
+      "seoTitle": "Your cart: Meridian Medical Supplies",
       "seoDescription": "Review what is in your cart and check out securely at Meridian Medical Supplies.",
       "root": {
         "kind": "element",
@@ -1821,7 +1821,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Meridian Medical Supplies",
+      "seoTitle": "Search: Meridian Medical Supplies",
       "seoDescription": "Search Meridian Medical Supplies for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1881,7 +1881,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Meridian Medical Supplies",
+      "seoTitle": "Journal: Meridian Medical Supplies",
       "seoDescription": "Stories, guides and notes from Meridian Medical Supplies.",
       "root": {
         "kind": "element",
@@ -1913,7 +1913,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical guidance for the people who run the supply cupboard — how to keep an infection-control stock, spec gloves and PPE a team will actually wear, and never run a treatment room dry. Written for practice managers, not for a catalog."
+                      "Practical guidance for the people who run the supply cupboard: how to keep an infection-control stock, spec gloves and PPE a team will actually wear, and never run a treatment room dry. Written for practice managers, not for a catalog."
                     ],
                     "id": "188e9302-141c-4382-9ee1-1bc4938bcc0e",
                     "ord": "a1"
@@ -2047,7 +2047,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Meridian Medical Supplies",
-      "seoDescription": "How Meridian stocks, prices and ships — one catalog, one account, one invoice, wholesale by the case, lot-numbered and CE marked, with stock that is actually on the shelf when you order it.",
+      "seoDescription": "How Meridian stocks, prices and ships. One catalog, one account, one invoice, wholesale by the case, lot-numbered and CE marked, with stock that is actually on the shelf when you order it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2078,7 +2078,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Meridian Medical Supplies is a medical, dental and clinical supplies distributor. We stock the everyday, essential lines that keep a GP surgery, a dental practice or a care home running — and we sell them to the trade by the case, at wholesale, on terms, with the traceability a regulated practice needs."
+                      "Meridian Medical Supplies is a medical, dental and clinical supplies distributor. We stock the everyday, essential lines that keep a GP surgery, a dental practice or a care home running, and we sell them to the trade by the case, at wholesale, on terms, with the traceability a regulated practice needs."
                     ],
                     "id": "f66ae906-8f48-4999-9ba1-151da19c2653",
                     "ord": "a1"
@@ -2098,7 +2098,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No minimum-order gymnastics, no mystery lead times, no compliance grey areas. Just the supplies your rooms depend on — CE marked, certified, priced fairly and out the door next day. The quiet reliability a practice is built on."
+                      "No minimum-order gymnastics, no mystery lead times, no compliance grey areas. Just the supplies your rooms depend on: CE marked, certified, priced fairly and out the door next day. The quiet reliability a practice is built on."
                     ],
                     "id": "5c369968-cbe7-4525-b42b-fab3b5eb6110",
                     "ord": "a3"
@@ -2118,7 +2118,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Meridian Medical Supplies",
+      "seoTitle": "Open a trade account: Meridian Medical Supplies",
       "seoDescription": "Set up a trade account with Meridian: wholesale per-case pricing, volume breaks, net-30 terms, compliance documentation and a dedicated account manager. Wholesale enquiries and bulk quotes start here.",
       "root": {
         "kind": "element",
@@ -2426,8 +2426,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Meridian Medical Supplies",
-      "seoDescription": "Product details at Meridian Medical Supplies — medical & clinical supply, with options and pricing.",
+      "seoTitle": "Product: Meridian Medical Supplies",
+      "seoDescription": "Product details at Meridian Medical Supplies: medical & clinical supply, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2790,7 +2790,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is the per-case list rate. Trade accounts unlock volume breaks — deeper per-case pricing on a pallet, a bulk drop, or a standing order — set for your account in your dashboard."
+                              "The price shown is the per-case list rate. Trade accounts unlock volume breaks (deeper per-case pricing on a pallet, a bulk drop, or a standing order) set for your account in your dashboard."
                             ],
                             "id": "490ddf45-83ae-4df6-b4d0-9c2478b99e14",
                             "ord": "a1"
@@ -2800,7 +2800,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every case is lot-numbered and CE / regulatory marked, with certificates of conformity on file for audit. Approved accounts buy on net-30 — open a trade account and we will price your regular lines and get you on terms."
+                              "Every case is lot-numbered and CE / regulatory marked, with certificates of conformity on file for audit. Approved accounts buy on net-30. Open a trade account and we will price your regular lines and get you on terms."
                             ],
                             "id": "4019db9e-309d-4c3d-bd7d-cd2d38330935",
                             "ord": "a2"

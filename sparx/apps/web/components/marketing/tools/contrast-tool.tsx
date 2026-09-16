@@ -61,7 +61,7 @@ export function ContrastTool() {
     : rating.normalAA
       ? 'Clears AA for all text sizes'
       : rating.largeAA
-        ? 'Large text only — too low for body copy'
+        ? 'Large text only: too low for body copy'
         : 'Below every WCAG level';
 
   // A contrast check is a pass/fail judgment, so the email carries the verdict as
@@ -110,10 +110,10 @@ export function ContrastTool() {
             style={{ backgroundColor: bg }}
           >
             <span className="text-md" style={{ color: fg }}>
-              Normal text — the quick brown fox jumps over the lazy dog.
+              Normal text: the quick brown fox jumps over the lazy dog.
             </span>
             <span className="text-2xl font-bold" style={{ color: fg }}>
-              Large text — Aa Bb Cc
+              Large text: Aa Bb Cc
             </span>
           </div>
         </Panel>
@@ -130,10 +130,10 @@ export function ContrastTool() {
           </Stats>
 
           <List>
-            <Verdict label="Normal text — AA (4.5:1)" pass={rating.normalAA} />
-            <Verdict label="Normal text — AAA (7:1)" pass={rating.normalAAA} />
-            <Verdict label="Large text — AA (3:1)" pass={rating.largeAA} />
-            <Verdict label="Large text — AAA (4.5:1)" pass={rating.largeAAA} />
+            <Verdict label="Normal text: AA (4.5:1)" pass={rating.normalAA} />
+            <Verdict label="Normal text: AAA (7:1)" pass={rating.normalAAA} />
+            <Verdict label="Large text: AA (3:1)" pass={rating.largeAA} />
+            <Verdict label="Large text: AAA (4.5:1)" pass={rating.largeAAA} />
           </List>
 
           <p className="text-md m-0">

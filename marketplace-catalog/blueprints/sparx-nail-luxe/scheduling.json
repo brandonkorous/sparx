@@ -211,7 +211,7 @@
     {
       "handle": "gel-manicure",
       "name": "Gel manicure",
-      "description": "A long-wearing gel finish — high-gloss, chip-free and set to last a fortnight.",
+      "description": "A long-wearing gel finish: high-gloss, chip-free and set to last a fortnight.",
       "durationMinutes": 60,
       "priceCents": 7000,
       "assignmentStrategy": "customer_choice",
@@ -252,7 +252,7 @@
     {
       "handle": "deluxe-spa-pedicure",
       "name": "Deluxe spa pedicure",
-      "description": "The spa pedicure, unhurried — with an extended lower-leg and foot massage to finish.",
+      "description": "The spa pedicure, unhurried, with an extended lower-leg and foot massage to finish.",
       "durationMinutes": 90,
       "priceCents": 11000,
       "bufferAfterMin": 15,
@@ -294,7 +294,7 @@
     {
       "handle": "nail-art",
       "name": "Nail art",
-      "description": "Bespoke, hand-painted detail — a quiet accent or a full set, designed with you.",
+      "description": "Bespoke, hand-painted detail: a quiet accent or a full set, designed with you.",
       "durationMinutes": 45,
       "priceCents": 4000,
       "assignmentStrategy": "customer_choice",

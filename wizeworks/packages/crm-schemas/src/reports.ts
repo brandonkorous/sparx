@@ -39,7 +39,7 @@ export const Measure = z
       ctx.addIssue({
         code: 'custom',
         path: ['field'],
-        message: `“${measure.fn}” needs to know which value to work out — pick a field.`,
+        message: `“${measure.fn}” needs to know which value to work out. Pick a field.`,
       });
     }
   });
@@ -135,8 +135,8 @@ function checkVisualization(
       code: 'custom',
       path: ['visualization'],
       message: value.groupBy
-        ? `A ${value.visualization} chart cannot show ${String(value.measures.length)} things at once — use a table or a bar chart.`
-        : `A ${value.visualization} chart needs a breakdown — choose what to break the results down by first.`,
+        ? `A ${value.visualization} chart cannot show ${String(value.measures.length)} things at once. Use a table or a bar chart.`
+        : `A ${value.visualization} chart needs a breakdown. Choose what to break the results down by first.`,
     });
   }
 }

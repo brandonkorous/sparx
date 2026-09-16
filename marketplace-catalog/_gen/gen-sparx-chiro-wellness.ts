@@ -129,7 +129,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to someone else who needs relief. We’ll send a friendly reminder the day before and two hours ahead.',
+        'Please give us at least 24 hours’ notice if you need to change or cancel. It lets us offer the time to someone else who needs relief. We’ll send a friendly reminder the day before and two hours ahead.',
     },
     {
       handle: 'align-no-show',
@@ -138,7 +138,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Longer visits reserve a treatment room and a provider just for you, so we hold a card on file — nothing is charged unless the appointment is missed without notice. Reschedule in time and the hold simply releases.',
+        'Longer visits reserve a treatment room and a provider just for you, so we hold a card on file. Nothing is charged unless the appointment is missed without notice. Reschedule in time and the hold simply releases.',
     },
   ],
   resources: [
@@ -212,7 +212,7 @@ const SCHEDULING = {
       handle: 'wellness-visit',
       name: 'Wellness visit',
       description:
-        'A relaxed maintenance visit for anyone on a plan — a check-in, an adjustment and small tweaks to keep you feeling good.',
+        'A relaxed maintenance visit for anyone on a plan: a check-in, an adjustment and small tweaks to keep you feeling good.',
       durationMinutes: 30,
       priceCents: 7500,
       assignmentStrategy: 'customer_choice',
@@ -226,7 +226,7 @@ const SCHEDULING = {
       handle: 'posture-assessment',
       name: 'Posture assessment',
       description:
-        'A focused look at how you sit, stand and work — with simple, doable changes to take the strain off your neck and back.',
+        'A focused look at how you sit, stand and work, with simple, doable changes to take the strain off your neck and back.',
       durationMinutes: 40,
       priceCents: 8500,
       bufferAfterMin: 10,
@@ -241,7 +241,7 @@ const SCHEDULING = {
       handle: 'massage-add-on',
       name: 'Therapeutic massage',
       description:
-        'A calming, tension-releasing massage — lovely on its own or added before an adjustment to help everything settle.',
+        'A calming, tension-releasing massage: lovely on its own or added before an adjustment to help everything settle.',
       durationMinutes: 60,
       priceCents: 9000,
       bufferAfterMin: 10,
@@ -270,7 +270,7 @@ const SCHEDULING = {
       handle: 'wellness-plan-consult',
       name: 'Wellness plan consult',
       description:
-        'A free, no-pressure chat about a longer-term wellness plan — what it covers, what it costs, and whether it’s right for you.',
+        'A free, no-pressure chat about a longer-term wellness plan: what it covers, what it costs, and whether it’s right for you.',
       durationMinutes: 20,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -289,7 +289,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, bright chiropractic clinic with soft natural light',
     title: 'Feel better, move easier',
-    sub: 'Gentle, everyday chiropractic care — for the stiff neck, the aching back and the wellness routine that keeps them from coming back.',
+    sub: 'Gentle, everyday chiropractic care, for the stiff neck, the aching back and the wellness routine that keeps them from coming back.',
     primary: { label: 'Book an appointment', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
     overlay: 'dark',
@@ -352,14 +352,14 @@ const HOME = [
     alt: 'A quiet treatment room with an adjustment table',
     heading: 'Care for your whole self, not just the sore spot',
     body: [
-      'Pain rarely comes from one place. We look at how you sit, sleep, move and work — then treat the cause, not just the ache, so relief actually lasts.',
+      'Pain rarely comes from one place. We look at how you sit, sleep, move and work, then treat the cause, not just the ache, so relief actually lasts.',
       'It’s a calm, unhurried approach: gentle adjustments, honest advice, and a wellness plan you can keep up with. You leave knowing what to do at home, not just what happened in the room.',
     ],
     cta: { label: 'Book an appointment', href: '/book' },
   }),
   teamRow({
     heading: 'Who you’ll see',
-    intro: 'A small, friendly team — book by name and see the same person each visit.',
+    intro: 'A small, friendly team. Book by name and see the same person each visit.',
     members: [
       {
         name: 'Dr. Ren Ishikawa',
@@ -380,7 +380,7 @@ const HOME = [
         role: 'Massage therapist',
         image: url(IMG.mira),
         alt: 'Mira Novak, massage therapist',
-        bio: 'Calming therapeutic massage — lovely alone or before an adjustment.',
+        bio: 'Calming therapeutic massage: lovely alone or before an adjustment.',
       },
     ],
   }),
@@ -414,8 +414,8 @@ const ABOUT = [
     alt: 'A calm, bright chiropractic clinic with soft natural light',
     heading: 'About Align Chiropractic',
     body: [
-      'We opened Align Chiropractic to make everyday care feel calm and approachable — no jargon, no pressure, and no one-size-fits-all cracking. Just gentle adjustments and honest advice from people who listen.',
-      'Whether you’re here for a stubborn ache, better posture, or a wellness routine that keeps you moving well, we build the plan around you — and we’d rather see you less often and feeling great than book you in forever.',
+      'We opened Align Chiropractic to make everyday care feel calm and approachable: no jargon, no pressure, and no one-size-fits-all cracking. Just gentle adjustments and honest advice from people who listen.',
+      'Whether you’re here for a stubborn ache, better posture, or a wellness routine that keeps you moving well, we build the plan around you, and we’d rather see you less often and feeling great than book you in forever.',
     ],
     cta: { label: 'Book an appointment', href: '/book' },
   }),
@@ -433,7 +433,7 @@ const ABOUT = [
       },
       {
         title: 'Yours to keep',
-        body: 'You’ll leave with simple things to do at home — so the relief holds up between visits, not just in the chair.',
+        body: 'You’ll leave with simple things to do at home, so the relief holds up between visits, not just in the chair.',
       },
     ],
   }),
@@ -452,7 +452,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your time online — no phone tag.',
+    sub: 'See live availability and reserve your time online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book an appointment', href: '/book' },
   }),
@@ -463,8 +463,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-chiro-wellness',
   name: 'Chiropractic (Wellness)',
   summary:
-    'A calm, clean chiropractic-clinic site — a soft-teal palette, a warm-coral accent and a bright near-white ground, built around gentle everyday care. Installs a working booking flow for adjustments, exams, posture and massage: two chiropractors and a massage therapist you book by name, two treatment rooms, and appointments that reserve a provider AND a room. Ships as "Align Chiropractic", a modern wellness clinic.',
-  tagline: 'A calm, wellness-first template for chiropractors — book online from day one.',
+    'A calm, clean chiropractic-clinic site: a soft-teal palette, a warm-coral accent and a bright near-white ground, built around gentle everyday care. Installs a working booking flow for adjustments, exams, posture and massage: two chiropractors and a massage therapist you book by name, two treatment rooms, and appointments that reserve a provider AND a room. Ships as "Align Chiropractic", a modern wellness clinic.',
+  tagline: 'A calm, wellness-first template for chiropractors. Book online from day one.',
   industry: 'Chiropractic',
   sortWeight: 56,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -473,7 +473,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Align Chiropractic — gentle, everyday care',
+      title: 'Align Chiropractic: gentle, everyday care',
       description:
         'Align Chiropractic is a calm wellness clinic for gentle adjustments, posture, everyday pain relief and massage. Book your chiropractor online.',
     },

@@ -47,7 +47,7 @@ const CompleteBody = z
     makeDefault: z.boolean().optional(),
   })
   .refine((v) => v.setupRef !== undefined || v.token !== undefined, {
-    message: 'Nothing to save — the card form did not return a result.',
+    message: 'Nothing to save: the card form did not return a result.',
     path: ['setupRef'],
   });
 

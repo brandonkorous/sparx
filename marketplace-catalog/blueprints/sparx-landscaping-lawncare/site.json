@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "GreenBlade Lawn Care — mowing & lawn maintenance",
-      "seoDescription": "GreenBlade Lawn Care keeps your yard looking great with flat-rate mowing, fertilization and weed control on an automatic schedule. Licensed, insured, and easy to book online — get a free quote.",
+      "seoTitle": "GreenBlade Lawn Care: mowing & lawn maintenance",
+      "seoDescription": "GreenBlade Lawn Care keeps your yard looking great with flat-rate mowing, fertilization and weed control on an automatic schedule. Licensed, insured, and easy to book online: get a free quote.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One clear price per visit — no surprise add-ons, no haggling. You always know exactly what your lawn costs."
+                              "One clear price per visit: no surprise add-ons, no haggling. You always know exactly what your lawn costs."
                             ],
                             "id": "73313de3-51c2-4b4b-a0cd-b246aa00b431",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A real, insured local company on your property — not a truck that shows up once and disappears."
+                              "A real, insured local company on your property, not a truck that shows up once and disappears."
                             ],
                             "id": "656b5303-811e-460f-b983-27dda5fdd942",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Book a free quote or start service in about a minute — pick a day, and we handle the rest."
+                              "Book a free quote or start service in about a minute. Pick a day, and we handle the rest."
                             ],
                             "id": "9f5d4b9d-5c06-4535-bc40-bcd29f8abaaa",
                             "ord": "a1"
@@ -873,7 +873,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We walk your yard and send a flat-rate price — no obligation."
+                              "We walk your yard and send a flat-rate price: no obligation."
                             ],
                             "id": "23fd5912-4db9-447c-91cf-4133059e1c24",
                             "ord": "a2"
@@ -1219,7 +1219,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Sign up once and your lawn runs itself. We show up on the same schedule, mow and maintain it, and text you when we’re done — you never have to call, remember, or chase anyone."
+                          "Sign up once and your lawn runs itself. We show up on the same schedule, mow and maintain it, and text you when we’re done. You never have to call, remember, or chase anyone."
                         ],
                         "id": "f2e59b8e-9c85-417a-b3c9-bbfbc32dec22",
                         "ord": "a1"
@@ -1294,7 +1294,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The same friendly faces on your lawn each visit — people who take real pride in the work."
+                          "The same friendly faces on your lawn each visit: people who take real pride in the work."
                         ],
                         "id": "1339e9f9-e042-464d-afd6-70c9fc45322d",
                         "ord": "a1"
@@ -1407,7 +1407,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Fertilization, weed control and aeration — the science behind a thick lawn."
+                                  "Fertilization, weed control and aeration: the science behind a thick lawn."
                                 ],
                                 "id": "0a2df2ef-015c-4e5c-a9f0-2efab77f3463",
                                 "ord": "a2"
@@ -1578,7 +1578,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — GreenBlade Lawn Care",
+      "seoTitle": "Book: GreenBlade Lawn Care",
       "seoDescription": "See what GreenBlade Lawn Care offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1702,7 +1702,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "29b2e3b5-012d-4649-986d-9e91ba4f7628",
                         "ord": "a1"
@@ -1771,7 +1771,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Recurring plans bill per completed visit — no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically."
+                              "Recurring plans bill per completed visit: no long-term contract, cancel any time with 24 hours’ notice. For your first service we confirm the day before, then every visit after runs on the same schedule automatically."
                             ],
                             "id": "93ac0ed9-01fd-486e-b274-af47711eb64a",
                             "ord": "a1"
@@ -1809,7 +1809,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — GreenBlade Lawn Care",
+      "seoTitle": "About: GreenBlade Lawn Care",
       "seoDescription": "Who GreenBlade Lawn Care is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1868,7 +1868,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a local, licensed and insured crew that treats every yard like our own — the same faces each week, flat-rate plans you can count on, and a standing promise to make it right if it isn’t."
+                          "We’re a local, licensed and insured crew that treats every yard like our own: the same faces each week, flat-rate plans you can count on, and a standing promise to make it right if it isn’t."
                         ],
                         "id": "5ba9f452-cb52-4eba-962b-040724eed32e",
                         "ord": "a2"
@@ -1973,7 +1973,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You know what each visit costs before we start — no surprise fees, no upsells, no haggling."
+                              "You know what each visit costs before we start: no surprise fees, no upsells, no haggling."
                             ],
                             "id": "57882e89-ad4c-46f3-a8c9-eaef0184f3f2",
                             "ord": "a1"
@@ -2028,7 +2028,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — GreenBlade Lawn Care",
+      "seoTitle": "Visit: GreenBlade Lawn Care",
       "seoDescription": "Where to find GreenBlade Lawn Care, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2065,7 +2065,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and GreenBlade Lawn Care will get back to you — usually the same day."
+                          "Questions before you book? Send a note and GreenBlade Lawn Care will get back to you, usually the same day."
                         ],
                         "id": "e3324d55-3622-489c-8a79-1f9016978f05",
                         "ord": "a1"
@@ -2492,7 +2492,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Get a free quote and see the next available days online — no phone tag, no waiting on a callback."
+                      "Get a free quote and see the next available days online: no phone tag, no waiting on a callback."
                     ],
                     "id": "4b24cedc-1b4c-4f75-adaa-4dc94d6b3c69",
                     "ord": "a1"

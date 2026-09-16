@@ -172,7 +172,7 @@ const SCHEDULING = {
       handle: 'free-quote',
       name: 'Free quote',
       description:
-        'We swing by, look at your pile and give you a flat, upfront price on the spot — no charge, no obligation, no pressure.',
+        'We swing by, look at your pile and give you a flat, upfront price on the spot: no charge, no obligation, no pressure.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -185,7 +185,7 @@ const SCHEDULING = {
       handle: 'single-item-pickup',
       name: 'Single-item pickup',
       description:
-        'One bulky item gone — a mattress, a couch, a treadmill or that fridge in the garage. We carry it out, you point.',
+        'One bulky item gone: a mattress, a couch, a treadmill or that fridge in the garage. We carry it out, you point.',
       durationMinutes: 30,
       priceCents: 7900,
       assignmentStrategy: 'any_available',
@@ -198,7 +198,7 @@ const SCHEDULING = {
       handle: 'furniture-appliance-removal',
       name: 'Furniture & appliance removal',
       description:
-        'Old sofas, dressers, washers, dryers and fridges hauled out of any room — up or down stairs, no scratched walls.',
+        'Old sofas, dressers, washers, dryers and fridges hauled out of any room: up or down stairs, no scratched walls.',
       durationMinutes: 60,
       priceCents: 12900,
       bufferAfterMin: 15,
@@ -212,7 +212,7 @@ const SCHEDULING = {
       handle: 'garage-cleanout',
       name: 'Garage cleanout',
       description:
-        'A whole garage cleared in one visit — boxes, bikes, broken tools and the pile you’ve been stepping around for years.',
+        'A whole garage cleared in one visit: boxes, bikes, broken tools and the pile you’ve been stepping around for years.',
       durationMinutes: 120,
       priceCents: 29900,
       bufferAfterMin: 15,
@@ -226,7 +226,7 @@ const SCHEDULING = {
       handle: 'estate-cleanout-consult',
       name: 'Estate cleanout consult',
       description:
-        'A full-property cleanout, handled with care. We come out, walk it with you and put together a plan and a flat price — free.',
+        'A full-property cleanout, handled with care. We come out, walk it with you and put together a plan and a flat price: free.',
       durationMinutes: 45,
       priceCents: 0,
       requiresApproval: true,
@@ -240,7 +240,7 @@ const SCHEDULING = {
       handle: 'construction-debris-removal',
       name: 'Construction debris removal',
       description:
-        'Post-project cleanup — drywall, lumber, flooring, tile and remodel debris loaded up and hauled off so you can hand over a clean site.',
+        'Post-project cleanup: drywall, lumber, flooring, tile and remodel debris loaded up and hauled off so you can hand over a clean site.',
       durationMinutes: 120,
       priceCents: 34900,
       bufferAfterMin: 15,
@@ -254,7 +254,7 @@ const SCHEDULING = {
       handle: 'same-day-pickup',
       name: 'Same-day pickup',
       description:
-        'Need it gone today? We dispatch the first available crew and text your arrival window — usually within a few hours.',
+        'Need it gone today? We dispatch the first available crew and text your arrival window, usually within a few hours.',
       durationMinutes: 60,
       priceCents: 14900,
       assignmentStrategy: 'any_available',
@@ -272,7 +272,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A friendly two-person crew loading an old couch into a junk-removal truck',
     title: 'Junk gone. We do the heavy lifting.',
-    sub: 'Furniture, appliances, garage and estate cleanouts, construction debris — hauled away fast and friendly. Book a free quote online and we’ll give you a flat price before we lift a thing.',
+    sub: 'Furniture, appliances, garage and estate cleanouts, construction debris: hauled away fast and friendly. Book a free quote online and we’ll give you a flat price before we lift a thing.',
     primary: { label: 'Book a free quote', href: '/book' },
     secondary: { label: 'See what we haul', href: '/book' },
     overlay: 'dark',
@@ -281,7 +281,7 @@ const HOME = [
     items: [
       {
         title: 'Upfront, volume-based pricing',
-        body: 'You pay for the space your stuff takes in the truck — quoted flat and in writing before we start. No hourly meter, no surprises at the curb.',
+        body: 'You pay for the space your stuff takes in the truck: quoted flat and in writing before we start. No hourly meter, no surprises at the curb.',
       },
       {
         title: 'Same-day & next-day',
@@ -289,7 +289,7 @@ const HOME = [
       },
       {
         title: 'We lift & haul it all',
-        body: 'You point, we carry. Up the stairs, out of the basement, off the back deck — our crew does every bit of the heavy lifting.',
+        body: 'You point, we carry. Up the stairs, out of the basement, off the back deck. Our crew does every bit of the heavy lifting.',
       },
       {
         title: 'We sweep up after',
@@ -313,7 +313,7 @@ const HOME = [
         name: 'Single-item pickup',
         priceCents: 7900,
         durationMin: 30,
-        desc: 'One bulky item — mattress, couch or old fridge.',
+        desc: 'One bulky item: mattress, couch or old fridge.',
       },
       {
         name: 'Furniture & appliance removal',
@@ -335,14 +335,14 @@ const HOME = [
     alt: 'A cleared-out garage swept clean after a junk pickup',
     heading: 'Getting rid of it is this easy',
     body: [
-      'One — book a free quote online in about a minute. Two — we show up in the window we promised, size up your pile and hand you a flat price on the spot.',
-      'Three — say the word and it’s gone. We load it, sweep up and haul it off, all in the same visit. You point at the pile; we do the rest.',
+      'One. Book a free quote online in about a minute. Two. We show up in the window we promised, size up your pile and hand you a flat price on the spot.',
+      'Three: say the word and it’s gone. We load it, sweep up and haul it off, all in the same visit. You point at the pile; we do the rest.',
     ],
     cta: { label: 'Book your free quote', href: '/book' },
   }),
   teamRow({
     heading: 'The crew showing up at your door',
-    intro: 'Friendly, background-checked and in uniform — the same folks who’ll carry it out and sweep up after.',
+    intro: 'Friendly, background-checked and in uniform: the same folks who’ll carry it out and sweep up after.',
     members: [
       {
         name: 'Jesse Park',
@@ -356,7 +356,7 @@ const HOME = [
         role: 'Furniture & appliance crew',
         image: url(IMG.marta),
         alt: 'Marta Nunez, furniture & appliance crew',
-        bio: 'Heavy sofas, fridges and washers down tight stairwells without a mark on the wall — that’s Marta’s specialty.',
+        bio: 'Heavy sofas, fridges and washers down tight stairwells without a mark on the wall: that’s Marta’s specialty.',
       },
       {
         name: 'Tyrell Woods',
@@ -383,7 +383,7 @@ const BOOK_INTRO = [
     image: url(IMG.story),
     alt: 'A cleared-out garage swept clean after a junk pickup',
     title: 'Book a free quote or pickup',
-    sub: 'Choose what you need gone to see the flat price, how long it takes and the next open time — then pick your crew and day.',
+    sub: 'Choose what you need gone to see the flat price, how long it takes and the next open time, then pick your crew and day.',
     primary: { label: 'See services below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -397,7 +397,7 @@ const ABOUT = [
     heading: 'About Haul Away',
     body: [
       'We started Haul Away to make getting rid of stuff the easy part of your day. Show up on time, quote an honest flat price, do all the lifting, and leave the space cleaner than we found it.',
-      'We’re a friendly, local crew that hauls furniture, appliances, garage and estate cleanouts and construction debris — for homeowners, landlords, contractors and anyone with a pile that needs to disappear. No hourly meter, no upsells, no runaround.',
+      'We’re a friendly, local crew that hauls furniture, appliances, garage and estate cleanouts and construction debris, for homeowners, landlords, contractors and anyone with a pile that needs to disappear. No hourly meter, no upsells, no runaround.',
     ],
     cta: { label: 'Book a free quote', href: '/book' },
   }),
@@ -411,7 +411,7 @@ const ABOUT = [
       },
       {
         title: 'All the heavy lifting',
-        body: 'You never have to drag anything to the curb. We carry it out from wherever it sits — stairs, basements, back yards and all.',
+        body: 'You never have to drag anything to the curb. We carry it out from wherever it sits: stairs, basements, back yards and all.',
       },
       {
         title: 'Clean when we leave',
@@ -435,7 +435,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See the next open times and reserve your pickup online — no phone tag, no waiting on hold.',
+    sub: 'See the next open times and reserve your pickup online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book a free quote', href: '/book' },
   }),
@@ -446,8 +446,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-junk-removal',
   name: 'Junk Removal',
   summary:
-    'A bold, friendly junk & debris removal site — a confident green palette with a warm orange accent, off-white ground and a sturdy sans display. Installs a working online booking flow: homeowners book a free quote or a pickup and get a real time slot. Ships a full menu (free quote, single-item, furniture & appliance, garage & estate cleanouts, construction debris, same-day), three crews as dispatchable resources, and standard + same-day policies. Ships as "Haul Away Junk Removal".',
-  tagline: 'A bold, friendly template for junk removal — book quotes & pickups online from day one.',
+    'A bold, friendly junk & debris removal site: a confident green palette with a warm orange accent, off-white ground and a sturdy sans display. Installs a working online booking flow: homeowners book a free quote or a pickup and get a real time slot. Ships a full menu (free quote, single-item, furniture & appliance, garage & estate cleanouts, construction debris, same-day), three crews as dispatchable resources, and standard + same-day policies. Ships as "Haul Away Junk Removal".',
+  tagline: 'A bold, friendly template for junk removal. Book quotes & pickups online from day one.',
   industry: 'Junk removal',
   sortWeight: 10,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -459,9 +459,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Haul Away Junk Removal — fast, friendly junk & debris pickup',
+      title: 'Haul Away Junk Removal: fast, friendly junk & debris pickup',
       description:
-        'Haul Away is a friendly local junk removal crew — furniture, appliances, garage and estate cleanouts and construction debris, hauled fast with upfront flat pricing. Book a free quote or a pickup online.',
+        'Haul Away is a friendly local junk removal crew: furniture, appliances, garage and estate cleanouts and construction debris, hauled fast with upfront flat pricing. Book a free quote or a pickup online.',
     },
   },
   home: HOME,

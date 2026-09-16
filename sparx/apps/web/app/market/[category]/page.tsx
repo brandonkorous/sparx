@@ -33,7 +33,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params;
   const cat = getCategory(category);
-  if (!cat) return { title: 'Marketplace — sparx' };
+  if (!cat) return { title: 'Marketplace: sparx' };
 
   // A filtered view is a slice of the same catalog, not its own page: it points
   // its canonical at the unfiltered category and asks not to be indexed. Only the
@@ -41,7 +41,7 @@ export async function generateMetadata({
   // combination space out of the index entirely.
   const filtered = Object.keys(normalize(await searchParams)).length > 0;
   return {
-    title: `${cat.label} — sparx Marketplace`,
+    title: `${cat.label} · sparx Marketplace`,
     description: cat.tagline,
     alternates: { canonical: `/market/${cat.id}` },
     ...(filtered ? { robots: { index: false, follow: true } } : {}),
@@ -197,7 +197,7 @@ function EmptyState({ cat, filtered }: { cat: MarketplaceCategory; filtered: boo
       <p className="text-md m-0">
         {filtered
           ? `No ${cat.label.toLowerCase()} match these filters yet.`
-          : `No ${cat.label.toLowerCase()} published yet — check back soon.`}
+          : `No ${cat.label.toLowerCase()} published yet. Check back soon.`}
       </p>
       {filtered ? (
         <a href={`/market/${cat.id}`}>
@@ -222,7 +222,7 @@ function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
           <Spark color={cat.accent} />
         </Display>
         <p className="m-0 max-w-[560px] text-lg">
-          {cat.tagline} This category is landing next — start with a blueprint today and add{' '}
+          {cat.tagline} This category is landing next. Start with a blueprint today and add{' '}
           {cat.label.toLowerCase()} when they go live.
         </p>
         <div className="flex flex-wrap items-center gap-3">

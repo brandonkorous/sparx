@@ -74,7 +74,7 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
     abandoned:
       'No abandoned carts at the moment. When a shopper fills a cart and leaves without paying, it lands here so you can follow it up.',
     recovered:
-      'No recovered carts yet — these are the abandoned ones a shopper came back to finish.',
+      'No recovered carts yet. These are the abandoned ones a shopper came back to finish.',
   };
 
   return (
@@ -112,7 +112,7 @@ export function CartsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faCartShopping} className="size-6" aria-hidden />}
             title="Could not load your carts"
-            description="This is a problem reaching the server. Your carts are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your carts are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading carts…" />

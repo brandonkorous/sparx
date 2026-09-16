@@ -7,7 +7,7 @@ export const AUTOMATIONS: AppMarketing = {
   does: [
     {
       title: 'When this, then that',
-      body: 'Built from things that already happen in your business — an order paid, a booking made, stock below a level, a quote gone quiet.',
+      body: 'Built from things that already happen in your business: an order paid, a booking made, stock below a level, a quote gone quiet.',
     },
     {
       title: 'Wait, then check again',

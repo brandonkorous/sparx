@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Anchor Counseling — warm, private therapy",
-      "seoDescription": "Anchor Counseling is a warm private practice for individual, couples and teen therapy — in person or over secure video. Book a free consultation online.",
+      "seoTitle": "Anchor Counseling: warm, private therapy",
+      "seoDescription": "Anchor Counseling is a warm private practice for individual, couples and teen therapy: in person or over secure video. Book a free consultation online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Warm, down-to-earth counseling for individuals, couples and teens — in a real room or over secure video. Start with a free consultation, no pressure to continue."
+                      "Warm, down-to-earth counseling for individuals, couples and teens: in a real room or over secure video. Start with a free consultation, no pressure to continue."
                     ],
                     "id": "f266b0fa-0510-4083-acd5-83a374da2605",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every one of our clinicians is fully licensed and experienced — and, just as importantly, warm, patient and easy to talk to."
+                              "Every one of our clinicians is fully licensed and experienced, and, just as importantly, warm, patient and easy to talk to."
                             ],
                             "id": "254a5efe-e0c1-483f-a293-10c3b2694722",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Come sit in one of our quiet offices, or meet from home over secure telehealth. Same care either way — you choose what feels right."
+                              "Come sit in one of our quiet offices, or meet from home over secure telehealth. Same care either way. You choose what feels right."
                             ],
                             "id": "5892eae0-3608-4871-88cf-f9fbfb70c1e1",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Whatever brought you here, you’ll be met with respect and zero judgment. This is your hour — you set the pace."
+                              "Whatever brought you here, you’ll be met with respect and zero judgment. This is your hour. You set the pace."
                             ],
                             "id": "c1a2269b-2356-42fb-a092-d352ba3b12df",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A place to start, not a diagnosis. Full details and real availability are on the booking page — and the first call is always free."
+                          "A place to start, not a diagnosis. Full details and real availability are on the booking page, and the first call is always free."
                         ],
                         "id": "12b46fa1-2997-4bb8-a604-f4a9b583d8e1",
                         "ord": "a1"
@@ -1227,7 +1227,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "You won’t be handed a worksheet and rushed out. We take the time to understand your story, and we work at a pace that feels safe — because that’s where change actually happens."
+                          "You won’t be handed a worksheet and rushed out. We take the time to understand your story, and we work at a pace that feels safe, because that’s where change actually happens."
                         ],
                         "id": "6cb15d86-f64b-4718-9c63-b5b7998f5f04",
                         "ord": "a2"
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same therapist each visit, someone who gets to know you and your story."
+                          "Book by name: you’ll see the same therapist each visit, someone who gets to know you and your story."
                         ],
                         "id": "793f13f9-b8be-4b2e-85b2-4ffffcaee37e",
                         "ord": "a1"
@@ -1501,7 +1501,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I put off calling for two years. I wish I’d done it sooner. My therapist made me feel like a person, not a problem — and for the first time in a long while, things feel lighter.”"
+                      "“I put off calling for two years. I wish I’d done it sooner. My therapist made me feel like a person, not a problem, and for the first time in a long while, things feel lighter.”"
                     ],
                     "id": "a3eee67e-1e47-47f8-94f2-4229e84e410f",
                     "ord": "a0"
@@ -1545,7 +1545,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a free 20-minute consultation. We’ll listen, answer your questions, and help you find the right person — whether that’s here or somewhere else."
+                      "Book a free 20-minute consultation. We’ll listen, answer your questions, and help you find the right person: whether that’s here or somewhere else."
                     ],
                     "id": "988be7d6-3b5b-4077-9df7-0dd6c77d940e",
                     "ord": "a1"
@@ -1576,7 +1576,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Anchor Counseling",
+      "seoTitle": "Book: Anchor Counseling",
       "seoDescription": "See what Anchor Counseling offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1627,7 +1627,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Start with a free consultation, or book a session directly. Choose what you need below to see real availability, then pick your therapist and time — in person or over video."
+                      "Start with a free consultation, or book a session directly. Choose what you need below to see real availability, then pick your therapist and time: in person or over video."
                     ],
                     "id": "c59dd1ab-e570-4b64-b5b2-51831c3ed738",
                     "ord": "a1"
@@ -1700,7 +1700,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "694d3b79-99b2-4c9e-8ea1-e41e12ea6f33",
                         "ord": "a1"
@@ -1732,7 +1732,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Life happens — just give us at least 24 hours’ notice to reschedule or cancel, and there’s no charge. We’ll send you a reminder two days before, the day before, and two hours ahead."
+                              "Life happens. Just give us at least 24 hours’ notice to reschedule or cancel, and there’s no charge. We’ll send you a reminder two days before, the day before, and two hours ahead."
                             ],
                             "id": "5f42e59d-abd6-45bc-b170-4a6592a9dbc5",
                             "ord": "a1"
@@ -1805,7 +1805,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Anchor Counseling",
+      "seoTitle": "About: Anchor Counseling",
       "seoDescription": "Who Anchor Counseling is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1854,7 +1854,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a small, established counseling practice — the kind of place where the therapist remembers your name and your story, and where the waiting room feels more like a living room than a clinic."
+                          "We’re a small, established counseling practice: the kind of place where the therapist remembers your name and your story, and where the waiting room feels more like a living room than a clinic."
                         ],
                         "id": "71fdcea4-fe46-4305-96f5-05bbc0919e4e",
                         "ord": "a1"
@@ -1942,7 +1942,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Your first session is about your story — what brought you in, what you’re hoping for, and how you like to work. No script, no rush."
+                              "Your first session is about your story: what brought you in, what you’re hoping for, and how you like to work. No script, no rush."
                             ],
                             "id": "2bc5ae6d-1dc8-4dea-83df-5b379ba3ad4f",
                             "ord": "a1"
@@ -1996,7 +1996,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "What you share stays between you and your therapist. This is a private, protected space — that’s the foundation everything else stands on."
+                              "What you share stays between you and your therapist. This is a private, protected space: that’s the foundation everything else stands on."
                             ],
                             "id": "482af637-0f07-40cc-94c8-c19b6935cc9e",
                             "ord": "a1"
@@ -2024,7 +2024,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Anchor Counseling",
+      "seoTitle": "Visit: Anchor Counseling",
       "seoDescription": "Where to find Anchor Counseling, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2061,7 +2061,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Anchor Counseling will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Anchor Counseling will get back to you, usually the same day."
                         ],
                         "id": "32bc57ff-999d-49d9-9065-1af766af3ecf",
                         "ord": "a1"
@@ -2513,7 +2513,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a free consultation online and we’ll take it from there — or reach out with any question first. There’s no wrong way to begin."
+                      "Book a free consultation online and we’ll take it from there, or reach out with any question first. There’s no wrong way to begin."
                     ],
                     "id": "845f8cde-23a4-48fa-a89f-a22f38ab7452",
                     "ord": "a1"

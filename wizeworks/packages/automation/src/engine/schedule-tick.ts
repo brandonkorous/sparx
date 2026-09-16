@@ -79,7 +79,7 @@ export async function runScheduleTick(
     try {
       trigger = triggerFromColumns(a.triggerType, a.triggerConfig);
     } catch {
-      deps.logger.warn({ automationId: a.id }, 'schedule-tick: invalid trigger config — skipping');
+      deps.logger.warn({ automationId: a.id }, 'schedule-tick: invalid trigger config, skipping');
       continue;
     }
     if (trigger.kind !== 'schedule') continue;
@@ -97,7 +97,7 @@ export async function runScheduleTick(
         if (!scanner) {
           deps.logger.warn(
             { automationId: a.id, entity: trigger.predicate.entity },
-            'schedule-tick: no scanner registered for entity — skipping'
+            'schedule-tick: no scanner registered for entity, skipping'
           );
           return;
         }

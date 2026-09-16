@@ -91,7 +91,7 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             error={error}
             noun="delivery region"
             title="Could not load this delivery region"
-            description="This is a problem reaching the server. The region itself is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. The region itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void refetch();
             }}
@@ -217,7 +217,7 @@ function ZoneEditor({
       title: `Delete ${zone.name}?`,
       description:
         zone.rateCount > 0
-          ? `This region and its ${String(zone.rateCount)} delivery option${zone.rateCount === 1 ? '' : 's'} are removed. Shoppers in this region will fall back to another region that covers them — or, if you have no regions left, to collecting from you. This cannot be undone.`
+          ? `This region and its ${String(zone.rateCount)} delivery option${zone.rateCount === 1 ? '' : 's'} are removed. Shoppers in this region will fall back to another region that covers them, or, if you have no regions left, to collecting from you. This cannot be undone.`
           : 'This region is removed. This cannot be undone.',
       confirmLabel: 'Delete this region',
       cancelLabel: 'Keep it',
@@ -287,8 +287,8 @@ function ZoneEditor({
         <div className={COLUMN}>
           {isNew ? (
             <Text>
-              A region is a set of places you deliver to. Name it, choose where it covers, then —
-              once it exists — add the delivery options shoppers there can pick from.
+              A region is a set of places you deliver to. Name it, choose where it covers, then
+              (once it exists) add the delivery options shoppers there can pick from.
             </Text>
           ) : (
             <Text className="text-sm">{coverageSummary(draft.countries)}</Text>
@@ -387,7 +387,7 @@ function ZoneEditor({
 
           <FormSection
             title="Delivery options"
-            description="Each option is one choice a shopper here can pick at checkout, with the price you set. Add as many as you like — a fixed price, free over a certain order value, and so on."
+            description="Each option is one choice a shopper here can pick at checkout, with the price you set. Add as many as you like: a fixed price, free over a certain order value, and so on."
           >
             {isNew ? (
               <Text className="text-sm">

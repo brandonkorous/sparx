@@ -3,9 +3,9 @@ import './docs.css';
 import { DocsSidebar, DocsMobileNav } from '@/components/docs/sidebar';
 
 export const metadata: Metadata = {
-  title: { default: 'Documentation', template: '%s — sparx Docs' },
+  title: { default: 'Documentation', template: '%s: sparx Docs' },
   description:
-    'Developer documentation for sparx — guides, REST & GraphQL API reference, SDKs, and the MCP server. Build on the modular content and commerce OS.',
+    'Developer documentation for sparx: guides, REST & GraphQL API reference, SDKs, and the MCP server. Build on the modular content and commerce OS.',
 };
 
 /**

@@ -41,10 +41,10 @@ export function PaletteSection() {
         <SectionHeader
           accent="var(--color-success)"
           headline="Semantic & neutral palette"
-          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are a single base ramp — near-white and near-black, never the real thing — where each token resolves to its own value in light and dark. Every tile below is painted from the live token, so what you see is exactly what ships."
+          lede="Three semantic colors mean the same thing on every surface and are never used as decoration. The neutrals are a single base ramp (near-white and near-black, never the real thing) where each token resolves to its own value in light and dark. Every tile below is painted from the live token, so what you see is exactly what ships."
         />
 
-        <Group title="Semantic — reserved, never decorative">
+        <Group title="Semantic: reserved, never decorative">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {SEMANTIC.map((s) => (
               <Swatch key={s.name} {...s} />
@@ -52,7 +52,7 @@ export function PaletteSection() {
           </div>
         </Group>
 
-        <Group title="Neutrals — light mode">
+        <Group title="Neutrals: light mode">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {NEUTRALS.map((s) => (
               <Swatch key={s.name} value={`var(${s.token})`} {...s} height={72} />
@@ -60,14 +60,14 @@ export function PaletteSection() {
           </div>
         </Group>
 
-        <Group title="Neutrals — dark mode">
+        <Group title="Neutrals: dark mode">
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {NEUTRALS.map((s) => (
               <Swatch key={s.name} value={`var(${s.token})`} theme="dark" {...s} height={72} />
             ))}
           </div>
           <Text size={14} className="max-w-[640px]">
-            Neither pure white nor pure black — near-white and near-black backgrounds feel
+            Neither pure white nor pure black: near-white and near-black backgrounds feel
             intentional in both modes, never like an inverted screenshot.
           </Text>
         </Group>

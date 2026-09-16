@@ -33,7 +33,7 @@ const interWordmark = Inter({
 });
 
 const DESCRIPTION =
-  'Shop thousands of independent sellers in one place. Real shops, real makers, shipped direct — discover products you won’t find on the big marketplaces.';
+  'Shop thousands of independent sellers in one place. Real shops, real makers, shipped direct: discover products you won’t find on the big marketplaces.';
 
 // Site-wide structured data so search + answer engines attribute the brand and
 // can surface a sitelinks search box pointing at the marketplace catalog.
@@ -80,7 +80,7 @@ const SITE_SCHEMA = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_ORIGIN),
   title: {
-    default: 'sparx.market — Shop independent sellers',
+    default: 'sparx.market: Shop independent sellers',
     template: '%s · sparx.market',
   },
   description: DESCRIPTION,
@@ -89,14 +89,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'sparx.market',
-    title: 'sparx.market — Shop independent sellers',
+    title: 'sparx.market: Shop independent sellers',
     description: DESCRIPTION,
     url: SITE_ORIGIN,
     locale: 'en_US',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'sparx.market — Shop independent sellers',
+    title: 'sparx.market: Shop independent sellers',
     description: 'One destination for thousands of independent sellers.',
   },
   robots: {

@@ -20,7 +20,8 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 
 /** Money that did not arrive. The clearest "needs a human" event we have. */
 export const NOTIFY_PAYMENT_FAILED: SystemAutomationSpec = {
-  name: 'Notify — payment failed',
+  name: 'Notify: payment failed',
+  previousNames: ['Notify — payment failed'],
   description: 'Shows a notification to owners when a customer’s payment fails.',
   trigger: { kind: 'event', eventType: 'order.payment_failed' },
   conditions: { logic: 'AND', conditions: [] },
@@ -49,7 +50,8 @@ export const NOTIFY_PAYMENT_FAILED: SystemAutomationSpec = {
 /** Zero on hand — actively losing sales until someone acts. Distinct from the
  *  existing low-stock EMAIL alert, which fires earlier and to a different place. */
 export const NOTIFY_STOCK_DEPLETED: SystemAutomationSpec = {
-  name: 'Notify — out of stock',
+  name: 'Notify: out of stock',
+  previousNames: ['Notify — out of stock'],
   description: 'Shows a notification to owners when a product runs out of stock.',
   trigger: { kind: 'event', eventType: 'inventory.depleted' },
   conditions: { logic: 'AND', conditions: [] },
@@ -78,7 +80,8 @@ export const NOTIFY_STOCK_DEPLETED: SystemAutomationSpec = {
 /** Recurring revenue quietly breaking. Easy to miss precisely because the
  *  original sale succeeded months ago. */
 export const NOTIFY_SUBSCRIPTION_PAYMENT_FAILED: SystemAutomationSpec = {
-  name: 'Notify — subscription payment failed',
+  name: 'Notify: subscription payment failed',
+  previousNames: ['Notify — subscription payment failed'],
   description: 'Shows a notification to owners when a subscription renewal payment fails.',
   trigger: { kind: 'event', eventType: 'subscription.payment_failed' },
   conditions: { logic: 'AND', conditions: [] },

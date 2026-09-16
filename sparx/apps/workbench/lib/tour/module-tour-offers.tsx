@@ -199,7 +199,7 @@ function OfferCard({
       >
         <p className="pr-5 font-medium">New to {label}?</p>
         <p className="mt-0.5 text-sm">
-          Take a quick tour — about a minute, and you can stop any time.
+          Take a quick tour, about a minute, and you can stop any time.
         </p>
         <div className="mt-2.5 flex gap-2">
           <Button color="module" size="sm" onClick={onAccept}>

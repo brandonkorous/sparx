@@ -97,7 +97,7 @@ export async function drainPost(
   registerBuiltinSocialAdapters();
 
   if (!isSocialTokenCryptoConfigured()) {
-    logger.warn({ postId }, 'SOCIAL_TOKEN_KEY unset — acking social.post.due without publishing');
+    logger.warn({ postId }, 'SOCIAL_TOKEN_KEY unset: acking social.post.due without publishing');
     return { postId, status: 'skipped', published: 0, failed: 0, deferred: 0, skipped: 0 };
   }
 
@@ -176,7 +176,7 @@ export async function drainPost(
       deferred += 1;
       logger.warn(
         { postId, targetId, platform, attempt: next, error },
-        'social publish target deferred — will retry'
+        'social publish target deferred: will retry'
       );
     }
   }
@@ -223,14 +223,14 @@ export async function drainPost(
     if (adapter.isConfigured() !== true) {
       logger.error(
         { targetId: t.id, platform: t.platform },
-        'platform OAuth app credentials missing on the worker — cannot publish'
+        'platform OAuth app credentials missing on the worker: cannot publish'
       );
       await recordFailure(
         t.id,
         t.platform,
         t.attemptCount,
         'failed',
-        `Posting to ${adapter.name} isn't switched on yet. Nothing is wrong with your account — we're finishing the setup on our side.`
+        `Posting to ${adapter.name} isn't switched on yet. Nothing is wrong with your account: we're finishing the setup on our side.`
       );
       continue;
     }
@@ -266,7 +266,7 @@ export async function drainPost(
         t.platform,
         t.attemptCount,
         'failed',
-        'Account disconnected — reconnect to publish.'
+        'Account disconnected: reconnect to publish.'
       );
       continue;
     }
@@ -318,7 +318,7 @@ export async function drainPost(
           t.platform,
           t.attemptCount,
           'pending',
-          `${t.platform} asked us to slow down — this will go out shortly.`
+          `${t.platform} asked us to slow down. This will go out shortly.`
         );
         continue;
       }
@@ -363,7 +363,7 @@ export async function drainPost(
         socialRateLimiter.backOff(target.connection.id, e.retryAfterSeconds ?? 60);
         logger.warn(
           { postId, targetId: t.id, retryAfter: e.retryAfterSeconds },
-          'platform rate-limited this connection — backing off'
+          'platform rate-limited this connection: backing off'
         );
       }
       // Retry a TRANSIENT failure (5xx / 429 / network) for a re-drain, capped by
@@ -375,7 +375,7 @@ export async function drainPost(
         t.attemptCount,
         isRetryableError(e) ? 'pending' : 'failed',
         isAuthRejection(e)
-          ? `${t.platform} needs reconnecting — the sign-in was rejected.`
+          ? `${t.platform} needs reconnecting: the sign-in was rejected.`
           : errMsg(e)
       );
     }

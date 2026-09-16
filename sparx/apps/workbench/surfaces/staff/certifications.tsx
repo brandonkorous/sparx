@@ -133,7 +133,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<ShieldCheck className="size-6" aria-hidden />}
               title="Nothing recorded yet"
-              description="If the people who work for you need licences, tickets or certificates, record them on each person and sparx will warn you before any of them run out — with as much notice as you ask for."
+              description="If the people who work for you need licences, tickets or certificates, record them on each person and sparx will warn you before any of them run out, with as much notice as you ask for."
               actions={
                 <Button
                   size="sm"
@@ -174,7 +174,7 @@ export function CertificationsSurface({ ctx }: { ctx: SurfaceContext }) {
                     : `${String(expiring)} renewals are coming up`}
                 </Heading>
                 <Text className="mt-1 text-sm">
-                  Still valid — but inside the notice window you set for each one.
+                  Still valid, but inside the notice window you set for each one.
                 </Text>
               </Card>
             ) : (

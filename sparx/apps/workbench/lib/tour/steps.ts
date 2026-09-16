@@ -29,7 +29,7 @@ const CORE_STEPS: TourStep[] = [
     id: 'welcome',
     // Centered, no target — the opening card. Sparky greets beside the text.
     title: 'Welcome to your workbench',
-    body: "This is where you run your business — your site, your customers, your sales, all in one place. Here's a one-minute tour of how to get around. You can leave any time and pick it back up later.",
+    body: "This is where you run your business. Your site, your customers, your sales, all in one place. Here's a one-minute tour of how to get around. You can leave any time and pick it back up later.",
     art: 'mascot',
     phase: 1,
   },
@@ -50,7 +50,7 @@ const CORE_STEPS: TourStep[] = [
     // The single most important mental model: a site IS the business a customer
     // deals with, and switching one swaps the whole identity.
     title: 'Run more than one business?',
-    body: 'Each business you run gets its own site — its own name, look, and customers. Switch between them here, and everything on screen follows. Your work stays saved separately for each one, so they never mix.',
+    body: 'Each business you run gets its own site. Its own name, look, and customers. Switch between them here, and everything on screen follows. Your work stays saved separately for each one, so they never mix.',
     phase: 1,
   },
   {
@@ -59,7 +59,7 @@ const CORE_STEPS: TourStep[] = [
     side: 'bottom',
     align: 'center',
     title: 'Find anything, fast',
-    body: "Looking for a product, a customer, an order, or any screen? Click here — or press Ctrl-K (⌘K on a Mac) — and start typing. It's the quickest way around.",
+    body: "Looking for a product, a customer, an order, or any screen? Click here, or press Ctrl-K (⌘K on a Mac), and start typing. It's the quickest way around.",
     phase: 1,
   },
   {
@@ -68,7 +68,7 @@ const CORE_STEPS: TourStep[] = [
     side: 'right',
     align: 'start',
     title: 'Your tools live on this rail',
-    body: "Everything sparx can do — your website, sales, customers, email — is a tool on this rail. You'll only see the ones you've turned on. Click any to open it.",
+    body: "Everything sparx can do (your website, sales, customers, email) is a tool on this rail. You'll only see the ones you've turned on. Click any to open it.",
     phase: 1,
   },
   {
@@ -77,7 +77,7 @@ const CORE_STEPS: TourStep[] = [
     side: 'left',
     align: 'center',
     title: 'Your work opens here',
-    body: "Screens open in this space and stack side by side, so you can keep an eye on more than one thing. They stay exactly as you left them for each business — and if you have unsaved changes, we'll always ask before anything is lost.",
+    body: "Screens open in this space and stack side by side, so you can keep an eye on more than one thing. They stay exactly as you left them for each business, and if you have unsaved changes, we'll always ask before anything is lost.",
     phase: 1,
   },
   {
@@ -101,7 +101,7 @@ const CLOSING_STEPS: TourStep[] = [
     side: 'bottom',
     align: 'end',
     title: 'Tell us anything',
-    body: "Have an idea, a question, or something that isn't working? Send it here — a real person reads every message, and it goes straight to the team building sparx.",
+    body: "Have an idea, a question, or something that isn't working? Send it here: a real person reads every message, and it goes straight to the team building sparx.",
     phase: 1,
   },
   {
@@ -110,7 +110,7 @@ const CLOSING_STEPS: TourStep[] = [
     side: 'bottom',
     align: 'end',
     title: "We're right here",
-    body: "This is your account — your details, sign out, and a shortcut to replay this tour any time. That's the whole tour. Enjoy your workbench!",
+    body: "This is your account. Your details, sign out, and a shortcut to replay this tour any time. That's the whole tour. Enjoy your workbench!",
     phase: 1,
   },
 ];
@@ -133,7 +133,7 @@ const MODULE_STEP_DEFS: ModuleStepDef[] = [
   {
     slug: 'builder',
     title: 'Build your website',
-    body: "Design your pages and publish your site — drag, drop, done, no code. This is where you'll shape how your business looks online.",
+    body: "Design your pages and publish your site. Drag, drop, done, no code. This is where you'll shape how your business looks online.",
   },
   {
     slug: 'commerce',
@@ -148,7 +148,7 @@ const MODULE_STEP_DEFS: ModuleStepDef[] = [
   {
     slug: 'cms',
     title: 'Publish your content',
-    body: 'Write posts, pages, and articles — anything you want the world to read. Your first move: write your first post.',
+    body: 'Write posts, pages, and articles. Anything you want the world to read. Your first move: write your first post.',
   },
   {
     slug: 'email',

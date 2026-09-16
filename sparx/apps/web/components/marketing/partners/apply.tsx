@@ -20,7 +20,7 @@ const ANSWERS: { t: string; d: string }[] = [
   },
   {
     t: 'Every application is read by a person',
-    d: 'Including Informal. It is a quick look at who you are and how you work, not an interview — and you hear back within three business days.',
+    d: 'Including Informal. It is a quick look at who you are and how you work, not an interview, and you hear back within three business days.',
   },
   {
     t: 'You are not locked into the tier you pick',

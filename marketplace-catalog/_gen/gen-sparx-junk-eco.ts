@@ -185,7 +185,7 @@ const SCHEDULING = {
       handle: 'free-quote',
       name: 'Free pickup quote',
       description:
-        'A free, no-pressure look — in person or by photo — at what you need gone. We’ll tell you what can be donated, what we can recycle, and give you a flat, upfront price before anything moves.',
+        'A free, no-pressure look (in person or by photo) at what you need gone. We’ll tell you what can be donated, what we can recycle, and give you a flat, upfront price before anything moves.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -196,7 +196,7 @@ const SCHEDULING = {
       handle: 'donation-pickup',
       name: 'Donation pickup',
       description:
-        'Gently-used furniture, clothing, housewares and more, collected and driven straight to local charities and shelters. Still good? It gets a second home, not a dumpster — and you get the donation receipt.',
+        'Gently-used furniture, clothing, housewares and more, collected and driven straight to local charities and shelters. Still good? It gets a second home, not a dumpster, and you get the donation receipt.',
       durationMinutes: 60,
       priceCents: 6000,
       assignmentStrategy: 'any_available',
@@ -207,7 +207,7 @@ const SCHEDULING = {
       handle: 'recycling-haul',
       name: 'Recycling haul',
       description:
-        'Metal, cardboard, wood, appliances and mixed materials sorted and taken to the right recycler — not the landfill. We break it down, separate it, and divert as much as the facilities near you will take.',
+        'Metal, cardboard, wood, appliances and mixed materials sorted and taken to the right recycler, not the landfill. We break it down, separate it, and divert as much as the facilities near you will take.',
       durationMinutes: 90,
       priceCents: 8500,
       assignmentStrategy: 'any_available',
@@ -218,7 +218,7 @@ const SCHEDULING = {
       handle: 'ewaste-removal',
       name: 'E-waste removal',
       description:
-        'Old computers, TVs, monitors, cables and batteries handled by our certified e-waste crew and taken to a responsible processor — data-bearing drives noted, nothing dumped or shipped offshore.',
+        'Old computers, TVs, monitors, cables and batteries handled by our certified e-waste crew and taken to a responsible processor: data-bearing drives noted, nothing dumped or shipped offshore.',
       durationMinutes: 60,
       priceCents: 7500,
       assignmentStrategy: 'any_available',
@@ -229,7 +229,7 @@ const SCHEDULING = {
       handle: 'furniture-removal',
       name: 'Furniture removal',
       description:
-        'Couches, mattresses, desks and the heavy things you can’t lift alone — carried out for you, then donated if they’re usable and recycled if they’re not. No stairs, no problem.',
+        'Couches, mattresses, desks and the heavy things you can’t lift alone: carried out for you, then donated if they’re usable and recycled if they’re not. No stairs, no problem.',
       durationMinutes: 90,
       priceCents: 9500,
       assignmentStrategy: 'any_available',
@@ -251,7 +251,7 @@ const SCHEDULING = {
       handle: 'same-day-pickup',
       name: 'Same-day pickup',
       description:
-        'Need it gone today? When a crew has an open window, we’ll come the same day — same donation-first, minimal-landfill promise, just faster. Book it and we’ll confirm your slot by text.',
+        'Need it gone today? When a crew has an open window, we’ll come the same day: same donation-first, minimal-landfill promise, just faster. Book it and we’ll confirm your slot by text.',
       durationMinutes: 120,
       priceCents: 14000,
       assignmentStrategy: 'any_available',
@@ -267,7 +267,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A cleared, sunlit room with neatly stacked donation boxes ready for pickup',
     title: 'Haul it away. Keep it out of the landfill.',
-    sub: 'Donation-first junk removal for homes and small businesses — we sort, donate, recycle and responsibly dispose, so most of what leaves your place never sees a dump.',
+    sub: 'Donation-first junk removal for homes and small businesses. We sort, donate, recycle and responsibly dispose, so most of what leaves your place never sees a dump.',
     primary: { label: 'Book a pickup', href: '/book' },
     secondary: { label: 'Get a free quote', href: '/book' },
     overlay: 'dark',
@@ -276,7 +276,7 @@ const HOME = [
     items: [
       {
         title: 'Donation-first, always',
-        body: 'Anything still usable goes to local charities and shelters before it’s ever called trash — and you get the donation receipt for it.',
+        body: 'Anything still usable goes to local charities and shelters before it’s ever called trash, and you get the donation receipt for it.',
       },
       {
         title: 'We recycle & divert',
@@ -284,11 +284,11 @@ const HOME = [
       },
       {
         title: 'Responsible e-waste',
-        body: 'Old electronics and batteries go to certified processors — never dumped, never shipped offshore, data-bearing drives noted first.',
+        body: 'Old electronics and batteries go to certified processors, never dumped, never shipped offshore, data-bearing drives noted first.',
       },
       {
         title: 'Transparent pricing',
-        body: 'A flat, upfront price after a free quote — by the load, not by the surprise. You know the number before anything moves.',
+        body: 'A flat, upfront price after a free quote: by the load, not by the surprise. You know the number before anything moves.',
       },
     ],
   }),
@@ -328,16 +328,16 @@ const HOME = [
   splitFeature({
     image: url(IMG.divert),
     alt: 'Sorted piles of furniture, electronics and recycling separated for reuse',
-    heading: 'Donate, recycle, divert — dump last',
+    heading: 'Donate, recycle, divert: dump last',
     body: [
-      'Most hauling ends the same way: one truck, one trip, straight to the landfill. We work the other direction. Every load gets sorted first — what’s still good is donated, what can be recycled is separated out, and only what’s truly finished is disposed of.',
-      'It takes a little longer at the curb, and it’s the whole point. On a typical job the great majority of what we take never becomes trash — it becomes someone else’s couch, or a bale of clean metal, instead of another cubic yard buried.',
+      'Most hauling ends the same way: one truck, one trip, straight to the landfill. We work the other direction. Every load gets sorted first, what’s still good is donated, what can be recycled is separated out, and only what’s truly finished is disposed of.',
+      'It takes a little longer at the curb, and it’s the whole point. On a typical job the great majority of what we take never becomes trash. It becomes someone else’s couch, or a bale of clean metal, instead of another cubic yard buried.',
     ],
     cta: { label: 'Book a pickup', href: '/book' },
   }),
   teamRow({
     heading: 'The crew that shows up',
-    intro: 'Real people who’ll treat your place with care — and sort every load like it matters, because it does.',
+    intro: 'Real people who’ll treat your place with care, and sort every load like it matters, because it does.',
     members: [
       {
         name: 'Rowan Ellis',
@@ -351,20 +351,20 @@ const HOME = [
         role: 'Recycling & e-waste lead',
         image: url(IMG.sena),
         alt: 'Sena Adeyemi, recycling & e-waste lead',
-        bio: 'Sena handles the sorting and the certified processors — the reason so little of a load ends up buried.',
+        bio: 'Sena handles the sorting and the certified processors: the reason so little of a load ends up buried.',
       },
       {
         name: 'Malik Torres',
         role: 'Cleanout specialist',
         image: url(IMG.malik),
         alt: 'Malik Torres, cleanout specialist',
-        bio: 'Malik takes on the big garage, estate and office clearouts — calm, careful, and quick on the heavy stuff.',
+        bio: 'Malik takes on the big garage, estate and office clearouts: calm, careful, and quick on the heavy stuff.',
       },
     ],
   }),
   testimonial({
     quote:
-      'We cleared out my mom’s house after she moved, and I dreaded it. Green Haul turned it into something I felt good about — three carloads went to a women’s shelter, the old electronics were handled properly, and barely anything went to the dump. They made a hard week easier.',
+      'We cleared out my mom’s house after she moved, and I dreaded it. Green Haul turned it into something I felt good about: three carloads went to a women’s shelter, the old electronics were handled properly, and barely anything went to the dump. They made a hard week easier.',
     attribution: 'Priya, Green Haul customer',
     surface: 'muted',
   }),
@@ -394,7 +394,7 @@ const ABOUT = [
     heading: 'About Green Haul',
     body: [
       'Green Haul started with a simple gripe: clearing out a home or a business almost always meant sending a full truck straight to the landfill, usable furniture and all. It felt wasteful because it was.',
-      'So we built a hauling company around a different order of operations — donate what’s still good, recycle what can be recycled, and only dump what’s genuinely finished. Same easy pickup, far less buried. It’s better for your town, and it’s the kind of work we’re proud to load onto the truck.',
+      'So we built a hauling company around a different order of operations: donate what’s still good, recycle what can be recycled, and only dump what’s genuinely finished. Same easy pickup, far less buried. It’s better for your town, and it’s the kind of work we’re proud to load onto the truck.',
     ],
     cta: { label: 'Book a pickup', href: '/book' },
   }),
@@ -404,7 +404,7 @@ const ABOUT = [
     items: [
       {
         title: 'Sort before we dump',
-        body: 'Every load gets separated on site — donations, recycling, e-waste and disposal — so the landfill is the last resort, never the default.',
+        body: 'Every load gets separated on site (donations, recycling, e-waste and disposal) so the landfill is the last resort, never the default.',
       },
       {
         title: 'Local charities first',
@@ -412,7 +412,7 @@ const ABOUT = [
       },
       {
         title: 'Honest, flat pricing',
-        body: 'A free quote, then one clear price by the load. No hourly meter running, no add-ons at the curb — you know the number before we lift a thing.',
+        body: 'A free quote, then one clear price by the load. No hourly meter running, no add-ons at the curb. You know the number before we lift a thing.',
       },
     ],
   }),
@@ -431,7 +431,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your pickup online — no phone tag, no quote forms to chase.',
+    sub: 'See live availability and reserve your pickup online: no phone tag, no quote forms to chase.',
     surface: 'muted',
     cta: { label: 'Book a pickup', href: '/book' },
   }),
@@ -442,8 +442,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-junk-eco',
   name: 'Junk Removal (Eco)',
   summary:
-    'A natural palette and online booking for an eco, donation-first junk removal and hauling service — free quotes and pickups booked online, three crews as dispatchable resources with their own hours, and a donate-recycle-divert promise that keeps most of every load out of the landfill. Ships as "Green Haul", a conscientious, community-minded hauler.',
-  tagline: 'A natural, donation-first template for eco junk removal — book pickups online from day one.',
+    'A natural palette and online booking for an eco, donation-first junk removal and hauling service: free quotes and pickups booked online, three crews as dispatchable resources with their own hours, and a donate-recycle-divert promise that keeps most of every load out of the landfill. Ships as "Green Haul", a conscientious, community-minded hauler.',
+  tagline: 'A natural, donation-first template for eco junk removal. Book pickups online from day one.',
   industry: 'Junk removal',
   sortWeight: 9,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -452,9 +452,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Green Haul — eco, donation-first junk removal',
+      title: 'Green Haul: eco, donation-first junk removal',
       description:
-        'Green Haul is a donation-first junk removal and hauling service — we donate, recycle and responsibly dispose so most of every load stays out of the landfill. Book a pickup or a free quote online.',
+        'Green Haul is a donation-first junk removal and hauling service. We donate, recycle and responsibly dispose so most of every load stays out of the landfill. Book a pickup or a free quote online.',
     },
   },
   home: HOME,

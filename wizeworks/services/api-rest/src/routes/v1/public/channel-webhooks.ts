@@ -66,7 +66,7 @@ const channelWebhookRoutes: FastifyPluginAsync = async (app) => {
 
     const resolved = await resolveWebhookConnection(slug, shopId);
     if (!resolved) {
-      request.log.warn({ slug, shopId }, 'channel webhook: shop not connected here — acking');
+      request.log.warn({ slug, shopId }, 'channel webhook: shop not connected here, acking');
       return reply.code(200).send({ received: true });
     }
 
@@ -74,7 +74,7 @@ const channelWebhookRoutes: FastifyPluginAsync = async (app) => {
     if (!auth) {
       request.log.warn(
         { slug, shopId, tenantId: resolved.tenantId },
-        'channel webhook: connection has no usable token — acking'
+        'channel webhook: connection has no usable token, acking'
       );
       return reply.code(200).send({ received: true });
     }
@@ -116,7 +116,7 @@ const channelWebhookRoutes: FastifyPluginAsync = async (app) => {
     } catch (err) {
       request.log.error(
         { slug, shopId, err: err instanceof Error ? err.message : String(err) },
-        'channel webhook: ingest failed — will retry'
+        'channel webhook: ingest failed, will retry'
       );
       // 500 → the channel retries; ingest is idempotent so the retry is safe.
       return reply.code(500).send({ error: 'ingest failed' });

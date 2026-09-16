@@ -290,7 +290,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -718,8 +718,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Nue Skincare — a short range of skincare essentials",
-      "seoDescription": "Nue Skincare is a short, considered range of skincare essentials — a cleanser, a serum, a cream, an SPF — made for every skin, and nothing it does not need.",
+      "seoTitle": "Nue Skincare: a short range of skincare essentials",
+      "seoDescription": "Nue Skincare is a short, considered range of skincare essentials (a cleanser, a serum, a cream, an SPF) made for every skin, and nothing it does not need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -772,7 +772,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A short range of skincare essentials — a cleanser, a serum, a cream, an SPF — made for every skin, and nothing it does not need."
+                          "A short range of skincare essentials (a cleanser, a serum, a cream, an SPF) made for every skin, and nothing it does not need."
                         ],
                         "id": "402ec875-e1e7-4e8c-8747-580003de02ea",
                         "ord": "a1"
@@ -1201,7 +1201,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Four steps, five minutes: cleanse, treat, moisturize, protect. The order is the whole method — each step earns its place, and there is nothing to add."
+                          "Four steps, five minutes: cleanse, treat, moisturize, protect. The order is the whole method. Each step earns its place, and there is nothing to add."
                         ],
                         "id": "6d3f7480-460a-4d19-bda7-4056a74bca86",
                         "ord": "a1"
@@ -1475,7 +1475,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "No line for oily, no line for dry, no ten-step maze. One considered range that works across skin types, ages and seasons — because most skin wants less, done well."
+                          "No line for oily, no line for dry, no ten-step maze. One considered range that works across skin types, ages and seasons, because most skin wants less, done well."
                         ],
                         "id": "15889845-2019-4fac-8e8e-b0643484e9fa",
                         "ord": "a1"
@@ -1518,7 +1518,7 @@
                     "tag": "p",
                     "class": "text-3xl font-bold uppercase leading-tight tracking-tight @3xl:text-5xl",
                     "children": [
-                      "Nue is a skincare studio building a calmer, simpler routine — a short range of essentials, made for every skin, and nothing you do not need."
+                      "Nue is a skincare studio building a calmer, simpler routine: a short range of essentials, made for every skin, and nothing you do not need."
                     ],
                     "id": "5684a73e-e351-43a2-80c7-d5bfb9c6979a",
                     "ord": "a0"
@@ -1538,7 +1538,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Nue Skincare",
+      "seoTitle": "Shop: Nue Skincare",
       "seoDescription": "Browse everything Nue Skincare makes, with prices and options at a glance. Premium skincare.",
       "root": {
         "kind": "element",
@@ -1570,7 +1570,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The whole of Nue in one place — cleanse, treat, moisturize, protect, and the few considered extras around them. Filter by step or sort however you like; every product here is made for every skin, and nothing it does not need."
+                      "The whole of Nue in one place: cleanse, treat, moisturize, protect, and the few considered extras around them. Filter by step or sort however you like; every product here is made for every skin, and nothing it does not need."
                     ],
                     "id": "e49c7c5f-3bbc-405a-9d0c-06959051cace",
                     "ord": "a1"
@@ -1598,7 +1598,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Nue Skincare",
+      "seoTitle": "Collections: Nue Skincare",
       "seoDescription": "Explore the collections at Nue Skincare, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1630,7 +1630,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Cleanse, treat, moisturize, protect — and the few considered extras around them, grouped the way a routine is actually built. Start where your skin needs the most help; every product here is made for every skin, and nothing it does not need."
+                      "Cleanse, treat, moisturize, protect, and the few considered extras around them, grouped the way a routine is actually built. Start where your skin needs the most help; every product here is made for every skin, and nothing it does not need."
                     ],
                     "id": "86e827c1-e7e8-400c-a81e-8e81180da048",
                     "ord": "a1"
@@ -1658,7 +1658,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Nue Skincare",
+      "seoTitle": "Your cart: Nue Skincare",
       "seoDescription": "Review what is in your cart and check out securely at Nue Skincare.",
       "root": {
         "kind": "element",
@@ -1690,7 +1690,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Complimentary carbon-neutral shipping on every order, a few samples tucked in to try something new, and 30 days to return anything — opened or not — for a full refund. Skincare is personal; take your time deciding."
+                      "Complimentary carbon-neutral shipping on every order, a few samples tucked in to try something new, and 30 days to return anything (opened or not) for a full refund. Skincare is personal; take your time deciding."
                     ],
                     "id": "862aa23d-fed0-44dd-974f-aa403da2e6f3",
                     "ord": "a1"
@@ -1718,7 +1718,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Nue Skincare",
+      "seoTitle": "Search: Nue Skincare",
       "seoDescription": "Search Nue Skincare for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Looking for a step, an ingredient, or something you read once? Search the whole range and the Journal below — a barrier serum, an SPF that leaves no cast, or just where to start."
+                      "Looking for a step, an ingredient, or something you read once? Search the whole range and the Journal below: a barrier serum, an SPF that leaves no cast, or just where to start."
                     ],
                     "id": "4371c1c9-4545-4f30-8dd6-7558db7708ab",
                     "ord": "a1"
@@ -1778,7 +1778,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Nue Skincare",
+      "seoTitle": "Journal: Nue Skincare",
       "seoDescription": "Stories, guides and notes from Nue Skincare.",
       "root": {
         "kind": "element",
@@ -1810,7 +1810,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Plain notes on skin — what a routine actually needs, what each step is for, and why less, done well, beats a shelf of things you will not keep up. No trends, no jargon, just what works."
+                      "Plain notes on skin: what a routine actually needs, what each step is for, and why less, done well, beats a shelf of things you will not keep up. No trends, no jargon, just what works."
                     ],
                     "id": "e8c5f9af-6594-4b3b-b60d-325b68b361a3",
                     "ord": "a1"
@@ -1944,7 +1944,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Nue Skincare",
-      "seoDescription": "Why Nue Skincare keeps its range short — the thinking, the formulas and the skin-first approach behind every essential.",
+      "seoDescription": "Why Nue Skincare keeps its range short: the thinking, the formulas and the skin-first approach behind every essential.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1975,7 +1975,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Nue is a skincare studio with a short memory for trends and a long one for what actually works. We make a small range of essentials — a cleanser, a serum, a moisturizer, an SPF, and a handful of things around them — formulated to be gentle enough for daily use and honest about what each one does."
+                      "Nue is a skincare studio with a short memory for trends and a long one for what actually works. We make a small range of essentials (a cleanser, a serum, a moisturizer, an SPF, and a handful of things around them) formulated to be gentle enough for daily use and honest about what each one does."
                     ],
                     "id": "11fd25d6-614b-4e39-8ac6-02467e0ac5fb",
                     "ord": "a1"
@@ -1985,7 +1985,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "There is no line for oily skin and no line for dry, no ten-step maze, and nothing you do not need. Just a considered routine that works across skin types, ages and seasons — packaged plainly, priced fairly, and made for every skin. That is the whole idea: solutions for every skin."
+                      "There is no line for oily skin and no line for dry, no ten-step maze, and nothing you do not need. Just a considered routine that works across skin types, ages and seasons: packaged plainly, priced fairly, and made for every skin. That is the whole idea: solutions for every skin."
                     ],
                     "id": "6ba7bef8-91be-4757-af63-a1256dbf8b9c",
                     "ord": "a2"
@@ -2005,8 +2005,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Nue Skincare",
-      "seoDescription": "Get in touch with Nue Skincare — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Nue Skincare",
+      "seoDescription": "Get in touch with Nue Skincare: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2042,7 +2042,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Not sure where to start, or which of two to choose? Tell us about your skin and what you are hoping to change, and a real person — not a script — will point you to the shortest routine that will do it."
+                          "Not sure where to start, or which of two to choose? Tell us about your skin and what you are hoping to change, and a real person (not a script) will point you to the shortest routine that will do it."
                         ],
                         "id": "5a8d5f85-262c-477f-87df-d8fa9f7067cc",
                         "ord": "a1"
@@ -2313,8 +2313,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Nue Skincare",
-      "seoDescription": "Product details at Nue Skincare — premium skincare, with options and pricing.",
+      "seoTitle": "Product: Nue Skincare",
+      "seoDescription": "Product details at Nue Skincare: premium skincare, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

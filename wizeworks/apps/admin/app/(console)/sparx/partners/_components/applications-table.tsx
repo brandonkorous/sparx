@@ -54,7 +54,7 @@ export function ApplicationsTable({
                 a.email || 'this applicant'
               } up as a partner at the ${tierLabel(
                 a.requestedTier
-              )} tier — creating their account (or adding a partner workspace if they already have one) and emailing them how to sign in. They can then manage referrals, commissions, and payouts.`
+              )} tier: creating their account (or adding a partner workspace if they already have one) and emailing them how to sign in. They can then manage referrals, commissions, and payouts.`
             : `Activates their partner account at the ${tierLabel(
                 a.requestedTier
               )} tier and mints a referral code. They can host bootcamps and earn referral commissions.`;

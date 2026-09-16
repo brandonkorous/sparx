@@ -44,7 +44,7 @@
               {
                 "id": "def-s-text-2",
                 "kind": "text",
-                "html": "Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing — no noise, and never often.",
+                "html": "Thanks for subscribing to {{site.name}}. I’ll send the occasional note when there’s new work worth sharing: no noise, and never often.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,

@@ -192,7 +192,7 @@ function PageStatus({
     return <span>Saved. Visitors still see the standard design until you publish.</span>;
   }
   if (unpublished && publishedAt === null) {
-    return <span>Saved, but never published — your visitors can’t see this page yet.</span>;
+    return <span>Saved, but never published. Your visitors can’t see this page yet.</span>;
   }
   if (unpublished) return <span>Saved. Visitors still see the last published version.</span>;
   // "Saved and live" the instant the API returned was a claim about the visitor

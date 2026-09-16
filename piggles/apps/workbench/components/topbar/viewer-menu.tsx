@@ -83,7 +83,7 @@ export function ViewerMenu({
                 vanity: this console can act as several BUSINESSES and the role
                 differs per business, so "who am I being right now" is a real
                 question. Hidden below `md`, where the bar has no room. */}
-            <Button variant="ghost" className="gap-2 pr-2 pl-1" aria-label={`You — ${userName}`}>
+            <Button variant="ghost" className="gap-2 pr-2 pl-1" aria-label={`You (${userName})`}>
               <Avatar size="md" alt={userName}>
                 {initials(userName)}
               </Avatar>

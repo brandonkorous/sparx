@@ -126,7 +126,7 @@ function Cell({
   const verdict = ratio >= 4.5 ? 'any size' : ratio >= 3 ? 'headings only' : 'not readable';
 
   return (
-    <Tooltip content={`${fg} on ${bg} — ${ratio.toFixed(1)}:1, ${verdict}`}>
+    <Tooltip content={`${fg} on ${bg}: ${ratio.toFixed(1)}:1, ${verdict}`}>
       <div
         className="rounded-field flex h-14 w-14 shrink-0 flex-col items-center justify-center gap-1"
         style={{ backgroundColor: seenAs(bg, vision), color: seenAs(fg, vision) }}

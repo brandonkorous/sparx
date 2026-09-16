@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "FixList — book a vetted handyman online",
-      "seoDescription": "FixList is on-demand handyman service — mounting, assembly, smart-home installs and repairs at flat rates. Book a vetted, insured pro online in minutes.",
+      "seoTitle": "FixList. Book a vetted handyman online",
+      "seoDescription": "FixList is on-demand handyman service: mounting, assembly, smart-home installs and repairs at flat rates. Book a vetted, insured pro online in minutes.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "On-demand handymen for busy homeowners and renters. Pick the task, choose a time, and a vetted pro shows up ready to work — at a flat hourly rate you see before you book."
+                      "On-demand handymen for busy homeowners and renters. Pick the task, choose a time, and a vetted pro shows up ready to work: at a flat hourly rate you see before you book."
                     ],
                     "id": "661962fc-f23a-4b85-91e1-ffc3619257a4",
                     "ord": "a1"
@@ -672,7 +672,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Tell us what needs doing — a mount, an assembly, a quick-fix hour of odd jobs. Every task shows the price and how long it takes up front."
+                              "Tell us what needs doing: a mount, an assembly, a quick-fix hour of odd jobs. Every task shows the price and how long it takes up front."
                             ],
                             "id": "4a095371-47e5-493b-abcb-6f8b0f837458",
                             "ord": "a1"
@@ -699,7 +699,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "See real, live availability — often same day, evenings and weekends included — and grab the slot that fits your day."
+                              "See real, live availability (often same day, evenings and weekends included) and grab the slot that fits your day."
                             ],
                             "id": "31b0f80e-cefb-4bd1-bd5e-0205ca60d3e7",
                             "ord": "a1"
@@ -775,7 +775,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "No call-outs for a quote, no mystery add-ons. Here’s what the common jobs cost — full prices and live times are on the booking page."
+                          "No call-outs for a quote, no mystery add-ons. Here’s what the common jobs cost: full prices and live times are on the booking page."
                         ],
                         "id": "15ef65df-1d3e-4127-8524-fb41651c4e57",
                         "ord": "a1"
@@ -1148,7 +1148,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name or let us dispatch the first available — either way you get someone vetted and reviewed."
+                          "Book by name or let us dispatch the first available. Either way you get someone vetted and reviewed."
                         ],
                         "id": "2ba81d7c-990b-42aa-971c-e4808f63bd35",
                         "ord": "a1"
@@ -1205,7 +1205,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Fifteen years of fixing what’s broken — plumbing, doors, hardware and the fiddly stuff nobody else wants."
+                                  "Fifteen years of fixing what’s broken: plumbing, doors, hardware and the fiddly stuff nobody else wants."
                                 ],
                                 "id": "825f5705-a528-4e75-9aac-d7f96baf9e06",
                                 "ord": "a2"
@@ -1432,7 +1432,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — FixList",
+      "seoTitle": "Book: FixList",
       "seoDescription": "See what FixList offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1537,7 +1537,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "bdb735d4-6527-4c2a-9854-8068a221cade",
                         "ord": "a1"
@@ -1644,7 +1644,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — FixList",
+      "seoTitle": "About: FixList",
       "seoDescription": "Who FixList is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1703,7 +1703,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Now you book online in minutes, see the flat rate before you commit, and get a vetted, insured pro at your door — often the same day. No quotes to chase, no cash to dig up, no wondering who’s showing up."
+                          "Now you book online in minutes, see the flat rate before you commit, and get a vetted, insured pro at your door, often the same day. No quotes to chase, no cash to dig up, no wondering who’s showing up."
                         ],
                         "id": "66fd73f5-86f3-4078-bede-d15c76aac526",
                         "ord": "a2"
@@ -1835,7 +1835,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Live availability with evening and weekend slots, and free rescheduling — so a fix fits around your life, not the other way round."
+                              "Live availability with evening and weekend slots, and free rescheduling, so a fix fits around your life, not the other way round."
                             ],
                             "id": "c3ef4a02-60f4-4094-b9ab-219fd41d3a8e",
                             "ord": "a1"
@@ -1863,7 +1863,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — FixList",
+      "seoTitle": "Visit: FixList",
       "seoDescription": "Where to find FixList, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1900,7 +1900,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and FixList will get back to you — usually the same day."
+                          "Questions before you book? Send a note and FixList will get back to you, usually the same day."
                         ],
                         "id": "c2e78eef-254d-4b15-8748-35e77695fe75",
                         "ord": "a1"
@@ -2352,7 +2352,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Skip the phone tag — see live availability and lock in a vetted pro online."
+                      "Skip the phone tag: see live availability and lock in a vetted pro online."
                     ],
                     "id": "3d96552e-1dc6-4c70-ac78-4bf856b00847",
                     "ord": "a1"

@@ -185,7 +185,7 @@ function useActivityToasts(items: ActivityItem[], ready: boolean) {
           title: 'Things are happening',
           description:
             sales > 0
-              ? `${String(fresh.length)} new events — ${String(sales)} sales among them.`
+              ? `${String(fresh.length)} new events, ${String(sales)} sales among them.`
               : `${String(fresh.length)} new events across your business.`,
           type: 'success',
         });
@@ -265,7 +265,7 @@ export function StatusBar() {
       {!online ? (
         <span className="text-danger flex items-center gap-1.5">
           <CircleAlert className="size-3.5" aria-hidden />
-          Offline — changes can’t save right now
+          Offline: changes can’t save right now
         </span>
       ) : mutating > 0 ? (
         <span className="flex items-center gap-1.5" role="status">
@@ -333,7 +333,7 @@ export function StatusBar() {
               return <Icon className={`size-3.5 ${toneForActivity(latest.action)}`} aria-hidden />;
             })()}
             <span className="max-w-72 truncate">
-              {latest.subject ? `${latest.title} — ${latest.subject}` : latest.title}
+              {latest.subject ? `${latest.title}: ${latest.subject}` : latest.title}
             </span>
             <span>{describeAgo(latest.at)}</span>
           </Button>

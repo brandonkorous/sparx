@@ -42,7 +42,7 @@ export function CategoryExtras({
 
       <FormSection
         title="Pictures"
-        description="Optional images your theme can use — a small icon in the menu, and a banner across the top of the category's page."
+        description="Optional images your theme can use: a small icon in the menu, and a banner across the top of the category's page."
       >
         <MediaField
           label="Menu icon"

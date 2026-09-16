@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Pencil Club — bright notebooks, pens, stickers & gifts",
-      "seoDescription": "Pencil Club is a bright little shop of colorful notebooks, gel pens, stickers, pins and gifts — the fun, useful desk stuff that makes writing a list feel like a treat. Wrapped with a smile, posted fast.",
+      "seoTitle": "Pencil Club: bright notebooks, pens, stickers & gifts",
+      "seoDescription": "Pencil Club is a bright little shop of colorful notebooks, gel pens, stickers, pins and gifts: the fun, useful desk stuff that makes writing a list feel like a treat. Wrapped with a smile, posted fast.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -796,7 +796,7 @@
                         "tag": "p",
                         "class": "text-lg font-semibold leading-relaxed text-primary-content @3xl:text-xl",
                         "children": [
-                          "Pencil Club is a bright little shop of notebooks, pens, stickers and gifts — the colorful stuff that makes writing a list feel like a good time. Loud on purpose, useful on purpose."
+                          "Pencil Club is a bright little shop of notebooks, pens, stickers and gifts: the colorful stuff that makes writing a list feel like a good time. Loud on purpose, useful on purpose."
                         ],
                         "id": "60c9bb99-a418-4221-98d3-86ece1d6e500",
                         "ord": "a1"
@@ -1087,7 +1087,7 @@
                             "tag": "p",
                             "class": "text-base font-semibold leading-relaxed text-secondary-content",
                             "children": [
-                              "Fun to look at, real to use — paper that takes a gel pen, pens that don’t skip, stickers that stick."
+                              "Fun to look at, real to use: paper that takes a gel pen, pens that don’t skip, stickers that stick."
                             ],
                             "id": "86117f88-50db-4887-b8ae-8c32d71fb330",
                             "ord": "a1"
@@ -1364,7 +1364,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg font-semibold leading-relaxed text-accent-content @3xl:text-xl",
                     "children": [
-                      "A good notebook and a pen you like turn “ugh, admin” into ten happy minutes. We keep the desk cheerful so the boring stuff gets done — and the fun stuff gets started."
+                      "A good notebook and a pen you like turn “ugh, admin” into ten happy minutes. We keep the desk cheerful so the boring stuff gets done, and the fun stuff gets started."
                     ],
                     "id": "4a0b52af-afa7-455c-ac7a-7f9afb8fa9ce",
                     "ord": "a1"
@@ -1648,7 +1648,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Pencil Club",
+      "seoTitle": "Shop: Pencil Club",
       "seoDescription": "Browse everything Pencil Club makes, with prices and options at a glance. Stationery & gifts.",
       "root": {
         "kind": "element",
@@ -1680,7 +1680,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg font-semibold leading-relaxed text-base-content",
                     "children": [
-                      "Every bright thing we make — notebooks in four colors, gel-pen sets, sticker packs and pins, a desk calendar, cards, washi and gift bundles. Filter by category or sort however you like; everything ships within two days, wrapped with a smile."
+                      "Every bright thing we make: notebooks in four colors, gel-pen sets, sticker packs and pins, a desk calendar, cards, washi and gift bundles. Filter by category or sort however you like; everything ships within two days, wrapped with a smile."
                     ],
                     "id": "20719105-77b7-438a-98fc-37f8569364f5",
                     "ord": "a1"
@@ -1708,7 +1708,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Pencil Club",
+      "seoTitle": "Collections: Pencil Club",
       "seoDescription": "Explore the collections at Pencil Club, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1740,7 +1740,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg font-semibold leading-relaxed text-base-content",
                     "children": [
-                      "The shop grouped the way people actually shop — the fresh drops, the desk basics, the color crew, and the gifts that always land. Find your thing, or find one for a friend."
+                      "The shop grouped the way people actually shop: the fresh drops, the desk basics, the color crew, and the gifts that always land. Find your thing, or find one for a friend."
                     ],
                     "id": "44acc049-12bd-47a5-9e3b-9103e537e405",
                     "ord": "a1"
@@ -1768,7 +1768,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Pencil Club",
+      "seoTitle": "Your cart: Pencil Club",
       "seoDescription": "Review what is in your cart and check out securely at Pencil Club.",
       "root": {
         "kind": "element",
@@ -1800,7 +1800,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg font-semibold leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping over $35, gift wrap on request, and a handwritten note if you ask. Changed your mind when it lands? Send it back within 30 days — no fuss, no frowns."
+                      "Free shipping over $35, gift wrap on request, and a handwritten note if you ask. Changed your mind when it lands? Send it back within 30 days: no fuss, no frowns."
                     ],
                     "id": "31643782-1e64-49d9-a601-0a01f65023bc",
                     "ord": "a1"
@@ -1828,7 +1828,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Pencil Club",
+      "seoTitle": "Search: Pencil Club",
       "seoDescription": "Search Pencil Club for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1888,7 +1888,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Pencil Club",
+      "seoTitle": "Journal: Pencil Club",
       "seoDescription": "Stories, guides and notes from Pencil Club.",
       "root": {
         "kind": "element",
@@ -1920,7 +1920,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg font-semibold leading-relaxed text-secondary-content",
                     "children": [
-                      "Notes from the shop — how to set up a desk you actually want to sit at, gift ideas that never miss, and little ways to keep a creative habit going. Cheerful, practical, zero snobbery."
+                      "Notes from the shop: how to set up a desk you actually want to sit at, gift ideas that never miss, and little ways to keep a creative habit going. Cheerful, practical, zero snobbery."
                     ],
                     "id": "f74bad1e-c674-4de7-94b1-6c6dfe223bb7",
                     "ord": "a1"
@@ -2054,7 +2054,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Pencil Club",
-      "seoDescription": "How Pencil Club chooses its stationery — bright, well-made desk things that pass two tests: they have to make us grin, and they have to actually work.",
+      "seoDescription": "How Pencil Club chooses its stationery: bright, well-made desk things that pass two tests: they have to make us grin, and they have to actually work.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2085,7 +2085,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Pencil Club started with a shoebox of gel pens and a simple hunch: the boring jobs get done faster when the desk is a place you like being. So we made a little shop of the cheerful stuff — colorful notebooks, pens that write like butter, stickers for no reason at all — the things that turn “I have to” into “ooh, I get to”."
+                      "Pencil Club started with a shoebox of gel pens and a simple hunch: the boring jobs get done faster when the desk is a place you like being. So we made a little shop of the cheerful stuff (colorful notebooks, pens that write like butter, stickers for no reason at all) the things that turn “I have to” into “ooh, I get to”."
                     ],
                     "id": "764a34cf-236a-4292-bf3b-1eb3c717c64f",
                     "ord": "a1"
@@ -2095,7 +2095,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything here has to pass two tests: it has to make us grin, and it has to actually work. Paper that takes a wet pen without bleeding. Colors that don’t look sad in real life. Stickers that stay stuck. Fun and useful aren’t opposites — the best stationery is both at once, and that’s the only kind we stock."
+                      "Everything here has to pass two tests: it has to make us grin, and it has to actually work. Paper that takes a wet pen without bleeding. Colors that don’t look sad in real life. Stickers that stay stuck. Fun and useful aren’t opposites, the best stationery is both at once, and that’s the only kind we stock."
                     ],
                     "id": "1d8a24a6-ae4b-4096-a4e8-6a45870e395f",
                     "ord": "a2"
@@ -2105,7 +2105,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We’re a small team who pack every order by hand, tuck in a sticker when we can, and post it fast. No mystery “luxury” markups, no throwaway rubbish — just bright, well-made desk things for people who never really stopped loving a fresh notebook."
+                      "We’re a small team who pack every order by hand, tuck in a sticker when we can, and post it fast. No mystery “luxury” markups, no throwaway rubbish. Just bright, well-made desk things for people who never really stopped loving a fresh notebook."
                     ],
                     "id": "68473c8f-3e15-4e88-9a99-ddb2c006d70f",
                     "ord": "a3"
@@ -2125,8 +2125,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Pencil Club",
-      "seoDescription": "Get in touch with Pencil Club — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Pencil Club",
+      "seoDescription": "Get in touch with Pencil Club: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2162,7 +2162,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A question about a color, a big gift order for the office, or a stockist enquiry? Tell us what you’re after and a real, cheerful human at the shop will write straight back — usually the same day."
+                          "A question about a color, a big gift order for the office, or a stockist enquiry? Tell us what you’re after and a real, cheerful human at the shop will write straight back, usually the same day."
                         ],
                         "id": "22723717-619e-48f3-a439-ca25ce5d746c",
                         "ord": "a1"
@@ -2433,8 +2433,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Pencil Club",
-      "seoDescription": "Product details at Pencil Club — stationery & gifts, with options and pricing.",
+      "seoTitle": "Product: Pencil Club",
+      "seoDescription": "Product details at Pencil Club: stationery & gifts, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

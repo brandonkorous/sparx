@@ -220,7 +220,7 @@ function CountHeader({
       {editable && count.lineCount > 0 && uncounted > 0 ? (
         <Text className="text-sm">
           {String(count.lineCount - uncounted)} of {plural(count.lineCount, 'item', 'items')}{' '}
-          counted — enter the rest before you can finish.
+          counted. Enter the rest before you can finish.
         </Text>
       ) : null}
     </section>

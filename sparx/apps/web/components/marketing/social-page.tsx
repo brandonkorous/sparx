@@ -41,7 +41,7 @@ export function SocialPage() {
             <Spark color={S.color} />
           </>
         }
-        lede="What connects, what it costs, and how one post reaches every network — answered straight. Still deciding? Start the 14-day trial; Social is free either way."
+        lede="What connects, what it costs, and how one post reaches every network: answered straight. Still deciding? Start the 14-day trial; Social is free either way."
       />
       <SocialCta />
     </>
@@ -112,7 +112,7 @@ function SocialHero() {
               {n.name}
             </span>
           ))}
-          <span className="font-mono text-sm">— more on the way</span>
+          <span className="font-mono text-sm">and more on the way</span>
         </div>
       </div>
     </Section>
@@ -129,7 +129,7 @@ function SocialFanOut() {
           lede={
             <>
               Write the caption a single time and upload one photo. sparx derives the feed, story,
-              and pin crops each network wants — attention-aware, with a focal point you can drag —
+              and pin crops each network wants (attention-aware, with a focal point you can drag)
               and sends the post to every account you picked. One upload, correct everywhere.
             </>
           }
@@ -147,7 +147,7 @@ function SocialFanOut() {
           </div>
           <div className="bg-base-200 border-base-300 rounded-xl border p-4">
             <Text className="text-md">
-              New arrivals just dropped — the whole spring set is live now. Which one’s yours?
+              New arrivals just dropped: the whole spring set is live now. Which one’s yours?
             </Text>
           </div>
           {/* the single uploaded photo */}
@@ -203,11 +203,11 @@ function SocialCapabilities() {
   const items: { title: string; body: string }[] = [
     {
       title: 'Compose once, post everywhere',
-      body: 'Write the caption a single time and pick which accounts it goes to. sparx fans it out to your Facebook Page, Instagram, and Pinterest boards — no re-typing, no logging into three apps.',
+      body: 'Write the caption a single time and pick which accounts it goes to. sparx fans it out to your Facebook Page, Instagram, and Pinterest boards: no re-typing, no logging into three apps.',
     },
     {
       title: 'The right shape, automatically',
-      body: 'Upload one photo and sparx derives the feed, story, and landscape crops each network wants — attention-aware, with a draggable focal point so the subject is never cut off.',
+      body: 'Upload one photo and sparx derives the feed, story, and landscape crops each network wants: attention-aware, with a draggable focal point so the subject is never cut off.',
     },
     {
       title: 'Schedule or post now',
@@ -219,11 +219,11 @@ function SocialCapabilities() {
     },
     {
       title: 'Straight from your catalog',
-      body: 'Post the product you’re already selling or a picture from your media library — the same records the rest of sparx uses. No export, no re-uploading the same photo into another tool.',
+      body: 'Post the product you’re already selling or a picture from your media library: the same records the rest of sparx uses. No export, no re-uploading the same photo into another tool.',
     },
     {
       title: 'Free, and it’s yours',
-      body: 'Organic posting is free with every sparx plan. Connect your own accounts in a click and disconnect them just as easily — your reach and your audience stay yours.',
+      body: 'Organic posting is free with every sparx plan. Connect your own accounts in a click and disconnect them just as easily. Your reach and your audience stay yours.',
     },
   ];
 
@@ -253,13 +253,13 @@ function SocialProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
       n: <>1{<Spark color={S.color} />}</>,
-      l: 'upload → every network’s crop, derived for you — no resizing by hand',
+      l: 'upload → every network’s crop, derived for you: no resizing by hand',
     },
-    { n: '3', l: 'networks today — Facebook, Instagram, Pinterest — from one composer' },
+    { n: '3', l: 'networks today (Facebook, Instagram, Pinterest) from one composer' },
     { n: '$0', l: 'organic posting is free with every plan, no per-post or per-account fee' },
     {
       n: '100%',
-      l: 'held for approval by default — nothing goes live unreviewed unless you allow it',
+      l: 'held for approval by default. Nothing goes live unreviewed unless you allow it',
     },
   ];
   return (
@@ -272,7 +272,7 @@ function SocialProof() {
         <Text variant="lead" className="mt-6 max-w-[640px]">
           Social runs on the same media library and catalog as the rest of sparx, so the photo you
           just cropped and the product you’re selling are already here. Connect your own accounts,
-          keep your own reach, and post to every network from one place — free.
+          keep your own reach, and post to every network from one place: free.
         </Text>
       </div>
       <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
@@ -304,7 +304,7 @@ function SocialPricing() {
             </Text>
           </div>
           <Text className="m-0 max-w-[640px] text-sm">
-            Organic posting to Facebook, Instagram, and Pinterest is free for every tenant — no
+            Organic posting to Facebook, Instagram, and Pinterest is free for every tenant: no
             per-post fee, no per-account fee, no add-on charge. Switch it on alongside whatever
             modules you run and it lands on the same one bill. Paid social ads are a separate module
             down the road; the posting you do every day stays free.
@@ -338,7 +338,7 @@ function SocialCta() {
         </Display>
         <Text variant="lead" className="m-0 max-w-[640px]">
           Turn Social on, connect your accounts, and your next post goes to Facebook, Instagram, and
-          Pinterest at once — each in the right shape, on the schedule you set. It’s free, it reads
+          Pinterest at once. Each in the right shape, on the schedule you set. It’s free, it reads
           from the catalog and media you already have, and your accounts stay yours.
         </Text>
         <div className="flex flex-wrap items-center gap-3">
@@ -366,19 +366,19 @@ const SOCIAL_FAQ: FaqItem[] = [
     id: 'social-networks',
     question: 'Which social networks can I post to?',
     answer:
-      'Facebook Pages, Instagram, and Pinterest today, from one composer — write the caption once, pick the accounts, and sparx publishes to each. More networks are on the way. You connect your own accounts, so posts go out as your brand, not a shared handle.',
+      'Facebook Pages, Instagram, and Pinterest today, from one composer. Write the caption once, pick the accounts, and sparx publishes to each. More networks are on the way. You connect your own accounts, so posts go out as your brand, not a shared handle.',
   },
   {
     id: 'social-cost',
     question: 'How much does Social cost?',
     answer:
-      'Organic posting is free with every sparx plan — no per-post fee, no per-account fee, and no add-on charge. It switches on like any other module and adds nothing to your bill. Paid social advertising, with campaign budgets and spend, is a separate module planned for later; the day-to-day posting stays free.',
+      'Organic posting is free with every sparx plan: no per-post fee, no per-account fee, and no add-on charge. It switches on like any other module and adds nothing to your bill. Paid social advertising, with campaign budgets and spend, is a separate module planned for later; the day-to-day posting stays free.',
   },
   {
     id: 'social-images',
     question: 'Do I have to resize my images for each network?',
     answer:
-      'No. Upload one photo and sparx derives the feed, story, and pin crops each network wants — an attention-aware crop with a focal point you can drag, so the subject is never cut off. One upload becomes the correct rendition everywhere, and a per-post override is there if you want to fine-tune a single network.',
+      'No. Upload one photo and sparx derives the feed, story, and pin crops each network wants: an attention-aware crop with a focal point you can drag, so the subject is never cut off. One upload becomes the correct rendition everywhere, and a per-post override is there if you want to fine-tune a single network.',
   },
   {
     id: 'social-approval',
@@ -390,12 +390,12 @@ const SOCIAL_FAQ: FaqItem[] = [
     id: 'social-schedule',
     question: 'Can I schedule posts ahead of time?',
     answer:
-      'Yes. Post right now or line it up for later. Scheduled posts sit in one queue you can see and reorder, and they publish on time on their own — no need to be at the keyboard when they go out.',
+      'Yes. Post right now or line it up for later. Scheduled posts sit in one queue you can see and reorder, and they publish on time on their own: no need to be at the keyboard when they go out.',
   },
   {
     id: 'social-content',
     question: 'Where do the posts pull their content from?',
     answer:
-      'From the same records the rest of sparx uses. Post a product you’re already selling or an image from your media library — no export and no re-uploading the same photo into another tool. Because it’s one platform, the post is part of the business, not a silo.',
+      'From the same records the rest of sparx uses. Post a product you’re already selling or an image from your media library: no export and no re-uploading the same photo into another tool. Because it’s one platform, the post is part of the business, not a silo.',
   },
 ];

@@ -43,7 +43,7 @@ export function StockListBody(props: BodyProps) {
       <EmptyState
         icon={<Icon glyph={faBoxes} className="size-6" aria-hidden />}
         title="Could not load your stock"
-        description="This is a problem reaching the server. Your stock is unaffected — the numbers just could not be read just now."
+        description="This is a problem reaching the server. Your stock is unaffected: the numbers just could not be read just now."
       />
     );
   }

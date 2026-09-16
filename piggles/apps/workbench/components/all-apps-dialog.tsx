@@ -56,7 +56,7 @@ export function AllAppsDialog({
             "these are just the ones you have not switched on yet" while listing
             all fifteen, on and off alike. */}
         <DialogDescription>
-          Everything Piggles does. Every one of them is included and working — this only decides
+          Everything Piggles does. Every one of them is included and working. This only decides
           which are on your rail, and it never changes what you pay.
         </DialogDescription>
 
@@ -99,7 +99,7 @@ function AppCard({ entry, baseline }: { entry: ConsoleApp; baseline: string[] })
         toast.add({
           title: next ? `${entry.label} is on your rail` : `${entry.label} is put away`,
           description: next
-            ? 'It was always here — now it is where you can see it.'
+            ? 'It was always here. Now it is where you can see it.'
             : 'Nothing was switched off or deleted. Add it back whenever you like.',
           type: 'success',
         });
@@ -171,7 +171,7 @@ function AppAction({
   // who would then get an empty panel is worse than saying why not.
   if (!entry.available) {
     return (
-      <p className="text-base">This one is not open to you — ask whoever owns this business.</p>
+      <p className="text-base">This one is not open to you. Ask whoever owns this business.</p>
     );
   }
 

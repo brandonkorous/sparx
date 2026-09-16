@@ -45,7 +45,7 @@ const M = getModuleColor('scheduling');
 
 export function SchedulingHero() {
   const lede =
-    'Appointments, classes, reservations, and rentals run on one booking engine — with deposits, reminders, waitlists, and policies built in. Because it lives on sparx, every booking writes to the customer you already have: the deposit, the reminder, the no-show, the re-book all land in one system, not five disconnected tools.';
+    'Appointments, classes, reservations, and rentals run on one booking engine, with deposits, reminders, waitlists, and policies built in. Because it lives on sparx, every booking writes to the customer you already have: the deposit, the reminder, the no-show, the re-book all land in one system, not five disconnected tools.';
   const chips = ['appointments', 'classes', 'reservations', 'rentals'];
   return (
     <section className={`${M.bg} bg-soft px-page pt-20 pb-28`}>

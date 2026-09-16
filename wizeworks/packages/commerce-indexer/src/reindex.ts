@@ -132,7 +132,7 @@ export async function runReindex(
       result.collections[collection] = { indexed: 0, errors: -1 };
       logger.error(
         { tenantId, collection, runId, err: reason },
-        'reindex: collection FAILED — continuing with the rest'
+        'reindex: collection FAILED, continuing with the rest'
       );
     }
   }
@@ -140,7 +140,7 @@ export async function runReindex(
   if (failures.length > 0) {
     throw new Error(
       `reindex incomplete for tenant ${tenantId}: ` +
-        `${String(failures.length)} of ${String(requested.length)} collection(s) failed — ` +
+        `${String(failures.length)} of ${String(requested.length)} collection(s) failed: ` +
         failures.join('; ')
     );
   }

@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "RoadReady Driving School — patient teen driving lessons",
+      "seoTitle": "RoadReady Driving School: patient teen driving lessons",
       "seoDescription": "RoadReady is a friendly, safety-first driving school for teens and new drivers. Certified instructors, dual-brake cars, driver’s ed and road-test prep. Book a lesson online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A friendly, safety-first driving school for teens and brand-new drivers. Patient instructors, dual-brake cars, and a plan that goes at your pace — not the other way around."
+                      "A friendly, safety-first driving school for teens and brand-new drivers. Patient instructors, dual-brake cars, and a plan that goes at your pace, not the other way around."
                     ],
                     "id": "1b1439e4-f479-431c-ba78-87297cfd4a04",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every instructor is state-certified, background-checked, and genuinely kind about it. Nervous drivers are our specialty — we never rush and never yell."
+                              "Every instructor is state-certified, background-checked, and genuinely kind about it. Nervous drivers are our specialty. We never rush and never yell."
                             ],
                             "id": "3cdc4bb2-97ad-4689-b4b9-abd943c751cf",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Most of our students pass the DMV road test on the first try — because we practice on the real routes until it feels routine."
+                              "Most of our students pass the DMV road test on the first try, because we practice on the real routes until it feels routine."
                             ],
                             "id": "7f71b847-06d7-4bf0-8022-97bba43603e8",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Start wherever you are — a first drive, the classroom hours, or a final tune-up before the test. Full prices and live availability are on the booking page."
+                          "Start wherever you are: a first drive, the classroom hours, or a final tune-up before the test. Full prices and live availability are on the booking page."
                         ],
                         "id": "6a78cd50-38a7-4e04-a3dc-ac4d1630ca37",
                         "ord": "a1"
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Learning to drive is nerve-wracking — for teens and parents both. So we start slow, explain the why behind every rule, and celebrate the small wins until the big stuff feels easy."
+                          "Learning to drive is nerve-wracking, for teens and parents both. So we start slow, explain the why behind every rule, and celebrate the small wins until the big stuff feels easy."
                         ],
                         "id": "7e42c6a3-c4d1-4b97-8686-1c2ac3023ceb",
                         "ord": "a1"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll build a rhythm with the same person every lesson."
+                          "Book by name: you’ll build a rhythm with the same person every lesson."
                         ],
                         "id": "d6ae56fe-e8a0-482a-84d7-f282fd29e685",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Makes the classroom hours and permit rules genuinely make sense — no boring lectures."
+                                  "Makes the classroom hours and permit rules genuinely make sense: no boring lectures."
                                 ],
                                 "id": "5e777ffe-cf88-4f0e-aa45-4bf442abca5a",
                                 "ord": "a2"
@@ -1395,7 +1395,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“My daughter was terrified to even sit in the driver’s seat. Six lessons later she passed her road test on the first try — and actually likes driving now. I can’t thank RoadReady enough.”"
+                      "“My daughter was terrified to even sit in the driver’s seat. Six lessons later she passed her road test on the first try, and actually likes driving now. I can’t thank RoadReady enough.”"
                     ],
                     "id": "4f619d7b-5cff-4ec0-a011-36f5c7604cf7",
                     "ord": "a0"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — RoadReady Driving School",
+      "seoTitle": "Book: RoadReady Driving School",
       "seoDescription": "See what RoadReady Driving School offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "4390ffdb-f304-4b09-a490-113fca602d63",
                         "ord": "a1"
@@ -1626,7 +1626,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Life happens — just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets."
+                              "Life happens. Just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets."
                             ],
                             "id": "80427e07-2a6e-4206-876a-6c168160730c",
                             "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — RoadReady Driving School",
+      "seoTitle": "About: RoadReady Driving School",
       "seoDescription": "Who RoadReady Driving School is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1760,7 +1760,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So that’s what we built: certified instructors, dual-brake safety cars, and a plan that meets each teen exactly where they are — from a white-knuckle first drive to a confident, licensed driver."
+                          "So that’s what we built: certified instructors, dual-brake safety cars, and a plan that meets each teen exactly where they are, from a white-knuckle first drive to a confident, licensed driver."
                         ],
                         "id": "1ceace91-f29f-4e24-a810-2c5572196306",
                         "ord": "a2"
@@ -1838,7 +1838,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Dual-brake cars, quiet practice routes to start, and instructors trained to keep a lesson calm — because a relaxed driver is a safe driver."
+                              "Dual-brake cars, quiet practice routes to start, and instructors trained to keep a lesson calm, because a relaxed driver is a safe driver."
                             ],
                             "id": "60112f3b-b156-46b7-9a51-74ef92868536",
                             "ord": "a1"
@@ -1892,7 +1892,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We’ll tell you honestly how it’s going and what to practice together between lessons — no surprises, no upselling."
+                              "We’ll tell you honestly how it’s going and what to practice together between lessons: no surprises, no upselling."
                             ],
                             "id": "262e95ea-10bd-4c41-a992-67ab0cf8f27b",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — RoadReady Driving School",
+      "seoTitle": "Visit: RoadReady Driving School",
       "seoDescription": "Where to find RoadReady Driving School, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and RoadReady Driving School will get back to you — usually the same day."
+                          "Questions before you book? Send a note and RoadReady Driving School will get back to you, usually the same day."
                         ],
                         "id": "9023f45b-19b1-45c0-9f67-e5ede551eb4c",
                         "ord": "a1"
@@ -2409,7 +2409,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability for every instructor and car, and reserve your lesson online — no phone tag."
+                      "See live availability for every instructor and car, and reserve your lesson online: no phone tag."
                     ],
                     "id": "22bc3af6-60c6-4c0b-9a7a-d25fefb60f4a",
                     "ord": "a1"

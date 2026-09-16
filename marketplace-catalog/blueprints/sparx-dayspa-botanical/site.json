@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Verdure — a botanical day spa & wellness sanctuary",
+      "seoTitle": "Verdure: a botanical day spa & wellness sanctuary",
       "seoDescription": "Verdure is a calm day spa for restorative massage, botanical facials and quiet time in the sauna. Book your therapist and treatment online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A warm, unhurried sanctuary for restorative massage, botanical facials and quiet time in the sauna — the everyday, softened."
+                      "A warm, unhurried sanctuary for restorative massage, botanical facials and quiet time in the sauna: the everyday, softened."
                     ],
                     "id": "65433911-d7f5-4100-b65f-772257d93957",
                     "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Plant-based oils, warm stones and salt — simple, honest ingredients chosen to soothe skin and settle the mind, never overwhelm it."
+                              "Plant-based oils, warm stones and salt: simple, honest ingredients chosen to soothe skin and settle the mind, never overwhelm it."
                             ],
                             "id": "6d3105d6-819a-458d-87fb-f6b79821e896",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Book your therapist by name and see the same person each time — someone who learns your body and works to how it feels that day."
+                              "Book your therapist by name and see the same person each time. Someone who learns your body and works to how it feels that day."
                             ],
                             "id": "16e9f229-3452-4711-a5bc-ecb26bbb56f7",
                             "ord": "a1"
@@ -1190,7 +1190,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Verdure is a small studio built to feel like a long exhale — warm timber, soft linen, greenery in every corner and daylight that moves through the day. No harsh lights, no clinical hush, no clock you can hear."
+                          "Verdure is a small studio built to feel like a long exhale: warm timber, soft linen, greenery in every corner and daylight that moves through the day. No harsh lights, no clinical hush, no clock you can hear."
                         ],
                         "id": "cd6b1bc7-ae2d-4b79-a98f-4bac56dedec3",
                         "ord": "a1"
@@ -1264,7 +1264,7 @@
                         "kind": "element",
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
-                        "children": ["Book by name — you’ll see the same person each time."],
+                        "children": ["Book by name: you’ll see the same person each time."],
                         "id": "0b36be9b-4c70-4758-a4be-af29ed79670a",
                         "ord": "a1"
                       }
@@ -1541,7 +1541,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I left feeling like I’d been away for a week. The calmest hour of my month, every month — I don’t know how they do it.”"
+                      "“I left feeling like I’d been away for a week. The calmest hour of my month, every month: I don’t know how they do it.”"
                     ],
                     "id": "d19f1603-9b05-45ba-a8a3-24a295625d5a",
                     "ord": "a0"
@@ -1616,7 +1616,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Verdure",
+      "seoTitle": "Book: Verdure",
       "seoDescription": "See what Verdure offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1740,7 +1740,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "e7c87701-5c3c-45e5-bb45-6f820a1808c0",
                         "ord": "a1"
@@ -1772,7 +1772,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Please give us at least 24 hours’ notice to change or cancel — it lets us offer the time to someone else. We’ll send a gentle reminder the day before and two hours ahead."
+                              "Please give us at least 24 hours’ notice to change or cancel. It lets us offer the time to someone else. We’ll send a gentle reminder the day before and two hours ahead."
                             ],
                             "id": "fd006f0b-0540-4779-bf8a-410cf96da0fd",
                             "ord": "a1"
@@ -1809,7 +1809,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Longer and couples treatments hold a $40 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over — inside 48 hours the deposit covers the room we set aside for you."
+                              "Longer and couples treatments hold a $40 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over: inside 48 hours the deposit covers the room we set aside for you."
                             ],
                             "id": "a1c2cd01-7af8-47aa-b7f1-02e1e325ef10",
                             "ord": "a1"
@@ -1847,7 +1847,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Verdure",
+      "seoTitle": "About: Verdure",
       "seoDescription": "Who Verdure is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1896,7 +1896,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Verdure to make a place that feels the way a good treatment should — warm, quiet and completely unhurried. Somewhere you can put the day down at the door and pick it back up softer."
+                          "We opened Verdure to make a place that feels the way a good treatment should: warm, quiet and completely unhurried. Somewhere you can put the day down at the door and pick it back up softer."
                         ],
                         "id": "ce0a8a76-f69e-4fcf-a6bb-11530cf1433a",
                         "ord": "a1"
@@ -2011,7 +2011,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Plant-based oils, warm stones and mineral salts — gentle, natural care, and honest advice on the short list of things worth taking home."
+                              "Plant-based oils, warm stones and mineral salts: gentle, natural care, and honest advice on the short list of things worth taking home."
                             ],
                             "id": "493e8121-bf21-42cc-90d8-e6adba4ea2f1",
                             "ord": "a1"
@@ -2038,7 +2038,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We finish slowly and send you off with a little space, not a sales pitch — so the calm lasts past the front door."
+                              "We finish slowly and send you off with a little space, not a sales pitch, so the calm lasts past the front door."
                             ],
                             "id": "6acdcf79-63b2-433f-9617-8fb8498484a4",
                             "ord": "a1"
@@ -2066,7 +2066,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Verdure",
+      "seoTitle": "Visit: Verdure",
       "seoDescription": "Where to find Verdure, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2103,7 +2103,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Verdure will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Verdure will get back to you, usually the same day."
                         ],
                         "id": "7291ba63-debc-47ab-b356-4c8f9e74b894",
                         "ord": "a1"
@@ -2528,7 +2528,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your time online — no phone tag."
+                      "See live availability and reserve your time online: no phone tag."
                     ],
                     "id": "e5ac8964-40d3-46cf-875a-7aefac9acd70",
                     "ord": "a1"

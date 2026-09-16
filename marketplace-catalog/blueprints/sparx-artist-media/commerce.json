@@ -3,7 +3,7 @@
     {
       "handle": "music",
       "name": "Music",
-      "description": "The records — vinyl and download.",
+      "description": "The records: vinyl and download.",
       "featured": true
     },
     {
@@ -26,7 +26,7 @@
   "products": [
     {
       "handle": "small-hours-vinyl",
-      "title": "Small Hours — Vinyl LP",
+      "title": "Small Hours: Vinyl LP",
       "description": "The new album on heavyweight 180g black vinyl, cut loud from the tape masters, in a gatefold sleeve with the lyrics and a photo insert from the sessions. Includes a download of the full record.",
       "status": "active",
       "productType": "Vinyl",
@@ -34,7 +34,7 @@
       "tags": ["music", "vinyl", "album"],
       "categoryHandles": ["music"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Small Hours — Vinyl LP | Vela",
+      "seoTitle": "Small Hours: Vinyl LP | Vela",
       "seoDescription": "The new Vela album on heavyweight 180g vinyl, gatefold sleeve, with a download.",
       "variants": [
         {
@@ -54,15 +54,15 @@
     },
     {
       "handle": "small-hours-digital",
-      "title": "Small Hours — Digital Album",
-      "description": "The full record as a lossless download the moment you buy it — ten tracks, plus two b-sides that did not fit the vinyl. Yours to keep, no subscription, no expiry.",
+      "title": "Small Hours: Digital Album",
+      "description": "The full record as a lossless download the moment you buy it: ten tracks, plus two b-sides that did not fit the vinyl. Yours to keep, no subscription, no expiry.",
       "status": "active",
       "productType": "Digital",
       "vendor": "Vela",
       "tags": ["music", "download", "album"],
       "categoryHandles": ["music"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Small Hours — Digital Album | Vela",
+      "seoTitle": "Small Hours: Digital Album | Vela",
       "seoDescription": "The new Vela album as a lossless download, ten tracks plus two b-sides.",
       "variants": [
         {
@@ -83,7 +83,7 @@
     {
       "handle": "nightshift-tour-tee",
       "title": "Nightshift Tour Tee",
-      "description": "The Small Hours tour shirt — heavyweight black cotton with the routing printed small on the back and the band mark on the chest. Screen-printed in small runs; when a size is gone, it is gone.",
+      "description": "The Small Hours tour shirt: heavyweight black cotton with the routing printed small on the back and the band mark on the chest. Screen-printed in small runs; when a size is gone, it is gone.",
       "status": "active",
       "productType": "Apparel",
       "vendor": "Vela",
@@ -91,7 +91,7 @@
       "categoryHandles": ["apparel"],
       "collectionHandles": ["featured"],
       "seoTitle": "Nightshift Tour Tee | Vela",
-      "seoDescription": "The Small Hours tour tee — heavyweight black cotton, routing on the back.",
+      "seoDescription": "The Small Hours tour tee: heavyweight black cotton, routing on the back.",
       "variants": [
         {
           "sku": "VELA-TEE-NIGHTSHIFT",
@@ -111,7 +111,7 @@
     {
       "handle": "vela-logo-hoodie",
       "title": "Vela Logo Hoodie",
-      "description": "A heavy brushed-back hoodie in charcoal with the Vela mark embroidered on the chest — the one you steal back off whoever you lend it to. Built to survive a winter of load-ins.",
+      "description": "A heavy brushed-back hoodie in charcoal with the Vela mark embroidered on the chest: the one you steal back off whoever you lend it to. Built to survive a winter of load-ins.",
       "status": "active",
       "productType": "Apparel",
       "vendor": "Vela",

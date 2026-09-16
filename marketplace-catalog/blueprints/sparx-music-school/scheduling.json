@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens — just let your teacher know as early as you can and we’ll do our best to find another time."
+      "policyText": "Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens. Just let your teacher know as early as you can and we’ll do our best to find another time."
     }
   ],
   "resources": [
@@ -203,7 +203,7 @@
     {
       "handle": "trial-lesson",
       "name": "Trial lesson",
-      "description": "A free, no-pressure first lesson — meet a teacher, try your instrument and see if we’re the right fit. All ages, all levels welcome.",
+      "description": "A free, no-pressure first lesson: meet a teacher, try your instrument and see if we’re the right fit. All ages, all levels welcome.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -226,7 +226,7 @@
     {
       "handle": "piano-lesson",
       "name": "Piano lesson",
-      "description": "One-to-one piano for beginners through advanced — from first notes and reading music to pieces you’ve always wanted to play.",
+      "description": "One-to-one piano for beginners through advanced: from first notes and reading music to pieces you’ve always wanted to play.",
       "durationMinutes": 45,
       "priceCents": 6000,
       "assignmentStrategy": "customer_choice",
@@ -249,7 +249,7 @@
     {
       "handle": "guitar-lesson",
       "name": "Guitar lesson",
-      "description": "Acoustic or electric, chords to solos — a private guitar lesson built around the music you love to play.",
+      "description": "Acoustic or electric, chords to solos: a private guitar lesson built around the music you love to play.",
       "durationMinutes": 45,
       "priceCents": 5500,
       "assignmentStrategy": "customer_choice",
@@ -272,7 +272,7 @@
     {
       "handle": "voice-lesson",
       "name": "Voice lesson",
-      "description": "Find your voice with gentle, healthy technique — breathing, range and songs, at whatever pace feels right for you.",
+      "description": "Find your voice with gentle, healthy technique: breathing, range and songs, at whatever pace feels right for you.",
       "durationMinutes": 45,
       "priceCents": 6000,
       "assignmentStrategy": "customer_choice",
@@ -295,7 +295,7 @@
     {
       "handle": "violin-lesson",
       "name": "Violin lesson",
-      "description": "Private violin from the very first day — posture, tone and technique, with a warm, patient teacher beside you.",
+      "description": "Private violin from the very first day: posture, tone and technique, with a warm, patient teacher beside you.",
       "durationMinutes": 45,
       "priceCents": 6000,
       "assignmentStrategy": "customer_choice",
@@ -318,7 +318,7 @@
     {
       "handle": "group-musicianship-class",
       "name": "Group musicianship class",
-      "description": "A joyful small-group class — rhythm, ear-training and playing together. The fun, social side of learning music.",
+      "description": "A joyful small-group class: rhythm, ear-training and playing together. The fun, social side of learning music.",
       "durationMinutes": 60,
       "priceCents": 3000,
       "bookingType": "class",

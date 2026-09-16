@@ -83,7 +83,7 @@ export function ResetPasswordForm() {
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Set a new password</h2>
             <Text className="text-sm">
-              Choose something strong — at least {MIN_PASSWORD} characters.
+              Choose something strong: at least {MIN_PASSWORD} characters.
             </Text>
           </div>
 

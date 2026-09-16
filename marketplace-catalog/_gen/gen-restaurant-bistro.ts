@@ -101,7 +101,7 @@ const ASSETS: Asset[] = [
   { id: 'larkspur-dish-1', url: src('larkspur-dish-1'), alt: 'A plated seasonal main dish on a ceramic plate' },
   { id: 'larkspur-dish-2', url: src('larkspur-dish-2'), alt: 'A fresh starter salad plated simply' },
   { id: 'larkspur-dish-3', url: src('larkspur-dish-3'), alt: 'A dessert plate with a spoon and a dusting of sugar' },
-  { id: 'larkspur-room', url: src('larkspur-room'), alt: 'The bistro interior — wooden tables, warm light, an open kitchen' },
+  { id: 'larkspur-room', url: src('larkspur-room'), alt: 'The bistro interior: wooden tables, warm light, an open kitchen' },
   { id: 'larkspur-kitchen', url: src('larkspur-kitchen'), alt: 'Chefs plating dishes on a busy pass in an open kitchen' },
   { id: 'larkspur-bar', url: src('larkspur-bar'), alt: 'A small bar with a row of wine glasses and warm lighting' },
 ];
@@ -182,8 +182,8 @@ function tonightBand(): Node {
           }),
           el('div', 'grid grid-cols-1 gap-6 @3xl:grid-cols-3', {
             children: [
-              card('larkspur-dish-2', 'To start', 'Little plates to share — this week, burrata with grilled peaches and a plate of house focaccia.', 'A fresh starter salad plated simply'),
-              card('larkspur-dish-1', 'Mains', 'Seasonal mains from the wood grill — ask about tonight’s fish and the dry-aged steak for two.', 'A plated seasonal main dish'),
+              card('larkspur-dish-2', 'To start', 'Little plates to share. This week, burrata with grilled peaches and a plate of house focaccia.', 'A fresh starter salad plated simply'),
+              card('larkspur-dish-1', 'Mains', 'Seasonal mains from the wood grill. Ask about tonight’s fish and the dry-aged steak for two.', 'A plated seasonal main dish'),
               card('larkspur-dish-3', 'To finish', 'A short, changing dessert list, and a proper cheese board with everything from a nearby dairy.', 'A dessert plate with a spoon'),
             ],
           }),
@@ -204,7 +204,7 @@ function reserveBand(): Node {
       el('div', 'mx-auto grid w-full max-w-5xl gap-8 @3xl:grid-cols-2 @3xl:items-center', {
         children: [
           el('img', 'aspect-video w-full rounded-box border border-base-300 object-cover', {
-            attrs: { src: assetUrl('larkspur-room'), alt: 'The bistro interior — wooden tables, warm light', loading: 'lazy' },
+            attrs: { src: assetUrl('larkspur-room'), alt: 'The bistro interior: wooden tables, warm light', loading: 'lazy' },
           }),
           el('div', 'flex flex-col gap-5', {
             children: [
@@ -212,7 +212,7 @@ function reserveBand(): Node {
                 text: 'A table’s waiting',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Book online in under a minute — you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome at the bar, and we keep a few tables back for them every night.',
+                text: 'Book online in under a minute: you’ll see the real availability and pick a time that suits you. Walk-ins are always welcome at the bar, and we keep a few tables back for them every night.',
               }),
               el('div', 'flex flex-wrap gap-3', {
                 children: [
@@ -316,7 +316,7 @@ const MENU: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The menu' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Seasonal, changing, and cooked simply. This is roughly what you’ll find this week — the specials board fills in the rest. Let us know about allergies and we’ll steer you right.',
+            text: 'Seasonal, changing, and cooked simply. This is roughly what you’ll find this week: the specials board fills in the rest. Let us know about allergies and we’ll steer you right.',
           }),
         ],
       }),
@@ -326,9 +326,9 @@ const MENU: Node[] = [
     { name: 'House focaccia, whipped butter', desc: 'Baked through the afternoon, salt-crusted, with cultured butter.', price: '6' },
     { name: 'Burrata, grilled peaches, basil', desc: 'Whole burrata, market peaches off the grill, aged balsamic.', price: '13' },
     { name: 'Chicory & walnut salad', desc: 'Bitter leaves, toasted walnuts, a sharp mustard dressing, shaved hard cheese.', price: '10' },
-    { name: 'Soup of the day', desc: 'Whatever’s best that morning — ask your server. Served with bread.', price: '8' },
+    { name: 'Soup of the day', desc: 'Whatever’s best that morning. Ask your server. Served with bread.', price: '8' },
   ]),
-  menuSection('From the grill', 'Cooked over wood. Mains come as they are — sides are separate.', [
+  menuSection('From the grill', 'Cooked over wood. Mains come as they are: sides are separate.', [
     { name: 'Dry-aged sirloin, for two', desc: '35-day aged, carved at the table, with bone marrow butter and watercress.', price: '68' },
     { name: 'Whole market fish', desc: 'Today’s catch, grilled on the bone, lemon, capers, brown butter.', price: '28' },
     { name: 'Half chicken, under a brick', desc: 'Free-range, pressed crisp, with roast garlic and pan juices.', price: '24' },
@@ -339,13 +339,13 @@ const MENU: Node[] = [
     { name: 'Charred greens, chilli, lemon', desc: '', price: '7' },
     { name: 'Roast potatoes, garlic & thyme', desc: '', price: '6' },
   ]),
-  menuSection('To finish', 'A short list — plus a cheese board from the dairy up the road.', [
+  menuSection('To finish', 'A short list: plus a cheese board from the dairy up the road.', [
     { name: 'Dark chocolate & sea salt tart', desc: 'Bitter chocolate, flaky pastry, crème fraîche.', price: '9' },
     { name: 'Seasonal fruit crumble', desc: 'Whatever’s ripe, oat crumble, proper custard.', price: '8' },
     { name: 'Cheese board', desc: 'Three cheeses, quince, oatcakes, honeycomb.', price: '14' },
   ]),
   menuSection('To drink', 'A short, low-intervention wine list, plus beer from the brewery two streets over.', [
-    { name: 'House red / white / orange', desc: 'By the glass or carafe — ask what’s open.', price: '7' },
+    { name: 'House red / white / orange', desc: 'By the glass or carafe. Ask what’s open.', price: '7' },
     { name: 'Local pale ale', desc: 'On tap, from two streets over.', price: '6' },
     { name: 'Non-alcoholic aperitif', desc: 'House-made, bitter and bright.', price: '6' },
   ]),
@@ -360,7 +360,7 @@ const BOOK_INTRO: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Reserve a table' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Pick your party size and a time below — you’ll see live availability for the next few weeks. For parties of seven or more, or a private-room enquiry, drop us a line and we’ll look after it.',
+            text: 'Pick your party size and a time below: you’ll see live availability for the next few weeks. For parties of seven or more, or a private-room enquiry, drop us a line and we’ll look after it.',
           }),
         ],
       }),
@@ -377,13 +377,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Larkspur' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Larkspur is a neighbourhood bistro in an old print works off the market square. We opened with one idea: cook seasonal food simply, pour honest wine, and run the kind of room you’d want on your own street — the sort you can book for a birthday or fall into on a wet Tuesday.',
+            text: 'Larkspur is a neighbourhood bistro in an old print works off the market square. We opened with one idea: cook seasonal food simply, pour honest wine, and run the kind of room you’d want on your own street, the sort you can book for a birthday or fall into on a wet Tuesday.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'The menu changes with the season and with what the market has that morning, so it’s never quite the same twice. We buy from growers and producers we know by name, cook most of it over wood, and make the bread, the pasta and the puddings in-house.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The room is small on purpose. Book ahead for dinner, especially at the weekend — but there’s always a stool at the bar for a walk-in, a glass and a plate.',
+            text: 'The room is small on purpose. Book ahead for dinner, especially at the weekend, but there’s always a stool at the bar for a walk-in, a glass and a plate.',
           }),
         ],
       }),
@@ -444,7 +444,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 180],
       policyText:
-        'Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead.',
+        'Tables are held for 15 minutes past your time. Plans change. Just let us know by the day before and we’ll free your table for someone else. We’ll remind you the day before and a few hours ahead.',
     },
     {
       handle: 'large-party',
@@ -453,7 +453,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 1440, 180],
       policyText:
-        'Parties of six place a card hold to secure the table — nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone.',
+        'Parties of six place a card hold to secure the table. Nothing is charged unless you cancel inside 48 hours or don’t show. It keeps the big tables fair for everyone.',
     },
   ],
   resources: [
@@ -469,7 +469,7 @@ const SCHEDULING = {
       handle: 'table-for-two',
       name: 'Table for two',
       description:
-        'A table for two, for lunch or dinner. Ninety minutes at the weekend, longer midweek — we won’t rush you.',
+        'A table for two, for lunch or dinner. Ninety minutes at the weekend, longer midweek. We won’t rush you.',
       bookingType: 'reservation',
       durationMinutes: 90,
       assignmentStrategy: 'any_available',
@@ -506,7 +506,7 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-bistro',
   name: 'Bistro',
   summary:
-    'A complete, working site for a neighbourhood restaurant: a real seasonal menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm bistro theme — candle-cream, deep olive-green, a warm amber accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Larkspur.',
+    'A complete, working site for a neighbourhood restaurant: a real seasonal menu, and a live table-reservations flow (tables as bookable resources, party-size reservation services, opening hours, a cancellation policy) on the /reserve page. Warm bistro theme, candle-cream, deep olive-green, a warm amber accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Larkspur.',
   tagline: 'A warm, working template for a restaurant that takes reservations.',
   industry: 'Restaurant & bistro',
   sortWeight: 86,
@@ -532,14 +532,14 @@ const SPEC: ServiceSiteSpec = {
   },
   seo: {
     home: {
-      title: 'Larkspur — a neighbourhood bistro',
+      title: 'Larkspur: a neighbourhood bistro',
       description:
-        'Larkspur is a neighbourhood bistro — seasonal plates cooked over wood, an honest wine list, open Wed–Sun for lunch and dinner. See the menu and reserve a table.',
+        'Larkspur is a neighbourhood bistro: seasonal plates cooked over wood, an honest wine list, open Wed–Sun for lunch and dinner. See the menu and reserve a table.',
     },
     about: {
-      title: 'About Larkspur — the bistro',
+      title: 'About Larkspur: the bistro',
       description:
-        'A small, seasonal neighbourhood bistro in an old print works — cooked over wood, bread and pasta made in-house, wine poured honestly.',
+        'A small, seasonal neighbourhood bistro in an old print works: cooked over wood, bread and pasta made in-house, wine poured honestly.',
     },
   },
   home: HOME,

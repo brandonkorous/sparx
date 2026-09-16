@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Worksmith Supply Co. — office & workplace supplies distributor",
-      "seoDescription": "Worksmith is a workplace-supplies distributor — paper, ink, pens, notebooks, furniture and breakroom supplies sold by the box and case at trade prices, with net-30 terms and next-day delivery. Open a trade account.",
+      "seoTitle": "Worksmith Supply Co. office & workplace supplies distributor",
+      "seoDescription": "Worksmith is a workplace-supplies distributor: paper, ink, pens, notebooks, furniture and breakroom supplies sold by the box and case at trade prices, with net-30 terms and next-day delivery. Open a trade account.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Worksmith is a workplace-supplies distributor. We stock the paper, ink, pens, furniture and breakroom lines every office burns through — sold by the box and the case, priced for the trade, and dispatched next day."
+                          "Worksmith is a workplace-supplies distributor. We stock the paper, ink, pens, furniture and breakroom lines every office burns through: sold by the box and the case, priced for the trade, and dispatched next day."
                         ],
                         "id": "8ced4d1d-a0bb-4dd9-89c2-13105be1201a",
                         "ord": "a1"
@@ -1213,7 +1213,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Open a trade account and you order the way a business should — by the box and the case, at wholesale rates, on terms. One catalog for the whole office, no consumer markups, no runaround."
+                          "Open a trade account and you order the way a business should: by the box and the case, at wholesale rates, on terms. One catalog for the whole office, no consumer markups, no runaround."
                         ],
                         "id": "14ffff22-8fa6-4651-b642-d6e0ce979d9d",
                         "ord": "a1"
@@ -1245,7 +1245,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Per-box wholesale rates with volume breaks that deepen as the order grows. Kit out one desk or forty — the more you buy, the less each box costs."
+                              "Per-box wholesale rates with volume breaks that deepen as the order grows. Kit out one desk or forty: the more you buy, the less each box costs."
                             ],
                             "id": "7ff66531-9e70-4f89-9671-2821317a6e9e",
                             "ord": "a1"
@@ -1299,7 +1299,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "In-stock lines ship the same or next business day and land on the desk, not a loading dock — so nobody is rationing the last ream by Thursday."
+                              "In-stock lines ship the same or next business day and land on the desk, not a loading dock, so nobody is rationing the last ream by Thursday."
                             ],
                             "id": "e865bcb9-0252-46f8-b5f9-224ff3f231fd",
                             "ord": "a1"
@@ -1326,7 +1326,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A direct line to a real person who knows your office, your standing order and what you go through — not a ticket queue and a hold tone."
+                              "A direct line to a real person who knows your office, your standing order and what you go through, not a ticket queue and a hold tone."
                             ],
                             "id": "d87bb6db-f402-4037-8e3c-d072ebb1c44d",
                             "ord": "a1"
@@ -1639,7 +1639,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Worksmith Supply Co.",
+      "seoTitle": "Shop: Worksmith Supply Co.",
       "seoDescription": "Browse everything Worksmith Supply Co. makes, with prices and options at a glance. Office & workplace supplies.",
       "root": {
         "kind": "element",
@@ -1671,7 +1671,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every line we stock — paper & ink, writing, furniture, and breakroom supplies, sold by the box and the case. Filter by department or sort by price; trade accounts see their contract pricing at checkout."
+                      "Every line we stock: paper & ink, writing, furniture, and breakroom supplies, sold by the box and the case. Filter by department or sort by price; trade accounts see their contract pricing at checkout."
                     ],
                     "id": "ff5fca30-24d5-42c7-b309-ee243e44ee23",
                     "ord": "a1"
@@ -1699,7 +1699,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Worksmith Supply Co.",
+      "seoTitle": "Collections: Worksmith Supply Co.",
       "seoDescription": "Explore the collections at Worksmith Supply Co., grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1731,7 +1731,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalog grouped the way an office manager actually buys — best sellers, new lines just in, the everyday workspace essentials, a furniture fit-out, the breakroom restock, and a kit to set up a new desk from empty."
+                      "The catalog grouped the way an office manager actually buys: best sellers, new lines just in, the everyday workspace essentials, a furniture fit-out, the breakroom restock, and a kit to set up a new desk from empty."
                     ],
                     "id": "058f030a-42f7-4f1f-8f73-409fa0d64458",
                     "ord": "a1"
@@ -1759,7 +1759,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Worksmith Supply Co.",
+      "seoTitle": "Your cart: Worksmith Supply Co.",
       "seoDescription": "Review what is in your cart and check out securely at Worksmith Supply Co..",
       "root": {
         "kind": "element",
@@ -1819,7 +1819,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Worksmith Supply Co.",
+      "seoTitle": "Search: Worksmith Supply Co.",
       "seoDescription": "Search Worksmith Supply Co. for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1879,7 +1879,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Worksmith Supply Co.",
+      "seoTitle": "Journal: Worksmith Supply Co.",
       "seoDescription": "Stories, guides and notes from Worksmith Supply Co..",
       "root": {
         "kind": "element",
@@ -1911,7 +1911,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical guidance for whoever keeps the office running — how to stock a supply closet, set up a desk that does not wreck a back, and keep the breakroom from running dry. Written for the person doing the ordering."
+                      "Practical guidance for whoever keeps the office running: how to stock a supply closet, set up a desk that does not wreck a back, and keep the breakroom from running dry. Written for the person doing the ordering."
                     ],
                     "id": "b0f8b990-6db7-4720-8864-6122a4167011",
                     "ord": "a1"
@@ -2045,7 +2045,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Worksmith Supply Co.",
-      "seoDescription": "How Worksmith stocks, prices and ships — one catalog, one account, one invoice, wholesale by the box, and stock that is actually on the shelf when you order it.",
+      "seoDescription": "How Worksmith stocks, prices and ships. One catalog, one account, one invoice, wholesale by the box, and stock that is actually on the shelf when you order it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2076,7 +2076,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Worksmith Supply Co. is a workplace-supplies distributor. We stock the everyday, essential lines that keep an office, a clinic or a job site running — paper and ink, pens and pads, furniture and breakroom supplies — and we sell them to the trade by the box and the case, at wholesale, on terms."
+                      "Worksmith Supply Co. is a workplace-supplies distributor. We stock the everyday, essential lines that keep an office, a clinic or a job site running (paper and ink, pens and pads, furniture and breakroom supplies) and we sell them to the trade by the box and the case, at wholesale, on terms."
                     ],
                     "id": "5d1e45b8-87bd-4437-a5aa-c59f0f03465b",
                     "ord": "a1"
@@ -2096,7 +2096,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No membership hoops, no mystery lead times, no pricing that changes because you asked. Just the supplies, priced fairly and on the desk next day — the quiet reliability an office is built on."
+                      "No membership hoops, no mystery lead times, no pricing that changes because you asked. Just the supplies, priced fairly and on the desk next day: the quiet reliability an office is built on."
                     ],
                     "id": "818b1d64-849c-4d4e-b457-8bc4f502a96e",
                     "ord": "a3"
@@ -2116,7 +2116,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Worksmith Supply Co.",
+      "seoTitle": "Open a trade account: Worksmith Supply Co.",
       "seoDescription": "Set up a trade account with Worksmith: wholesale per-box pricing, volume breaks, net-30 terms and a dedicated account manager. Wholesale enquiries and bulk quotes start here.",
       "root": {
         "kind": "element",
@@ -2424,8 +2424,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Worksmith Supply Co.",
-      "seoDescription": "Product details at Worksmith Supply Co. — office & workplace supplies, with options and pricing.",
+      "seoTitle": "Product: Worksmith Supply Co.",
+      "seoDescription": "Product details at Worksmith Supply Co. office & workplace supplies, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2788,7 +2788,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is the per-box list rate. Trade accounts unlock volume breaks — deeper per-box pricing by the case, the pallet, or a standing order — set for your account in your dashboard."
+                              "The price shown is the per-box list rate. Trade accounts unlock volume breaks (deeper per-box pricing by the case, the pallet, or a standing order) set for your account in your dashboard."
                             ],
                             "id": "7d9d7beb-e389-45e9-9f76-65ed7555e276",
                             "ord": "a1"

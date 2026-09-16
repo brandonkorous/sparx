@@ -83,7 +83,7 @@ export function buildPrivacyPolicy(d: LegalData): string {
       ? [
           `## Sharing with third parties`,
           ``,
-          `We share information with service providers who help us operate our business — for example, hosting, analytics, and payment processing. These providers may only use your information to perform services on our behalf. We do not sell your personal information.`,
+          `We share information with service providers who help us operate our business, for example, hosting, analytics, and payment processing. These providers may only use your information to perform services on our behalf. We do not sell your personal information.`,
           ``,
         ]
       : [

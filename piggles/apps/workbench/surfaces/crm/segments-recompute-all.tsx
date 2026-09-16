@@ -41,7 +41,7 @@ export function RecomputeAllButton() {
             onError: () => {
               toast.add({
                 title: 'Could not update the groups',
-                description: 'Nothing was changed — try again in a moment.',
+                description: 'Nothing was changed. Try again in a moment.',
                 type: 'error',
               });
             },

@@ -127,7 +127,7 @@
     {
       "handle": "free-inspection",
       "name": "Free inspection",
-      "description": "A friendly, no-pressure home visit to check inside and out, find where pests are getting in, and give you a plain-language plan and quote — completely free.",
+      "description": "A friendly, no-pressure home visit to check inside and out, find where pests are getting in, and give you a plain-language plan and quote: completely free.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -144,7 +144,7 @@
     {
       "handle": "general-pest-treatment",
       "name": "General pest treatment",
-      "description": "A thorough interior-and-exterior treatment for the everyday intruders — spiders, silverfish, earwigs and the rest — with a barrier that keeps working for weeks.",
+      "description": "A thorough interior-and-exterior treatment for the everyday intruders (spiders, silverfish, earwigs and the rest) with a barrier that keeps working for weeks.",
       "durationMinutes": 60,
       "priceCents": 12900,
       "assignmentStrategy": "any_available",
@@ -161,7 +161,7 @@
     {
       "handle": "ant-roach-treatment",
       "name": "Ant & roach treatment",
-      "description": "A targeted knock-down of an active ant or cockroach problem — baiting the trails and colonies at the source, not just the ones you can see on the counter.",
+      "description": "A targeted knock-down of an active ant or cockroach problem: baiting the trails and colonies at the source, not just the ones you can see on the counter.",
       "durationMinutes": 60,
       "priceCents": 14900,
       "assignmentStrategy": "any_available",
@@ -178,7 +178,7 @@
     {
       "handle": "rodent-control-visit",
       "name": "Rodent control visit",
-      "description": "Mice or rats? A tech seals up entry points, sets a discreet control program, and comes back to check it — so the problem ends instead of moving room to room.",
+      "description": "Mice or rats? A tech seals up entry points, sets a discreet control program, and comes back to check it, so the problem ends instead of moving room to room.",
       "durationMinutes": 75,
       "priceCents": 18900,
       "bufferAfterMin": 15,
@@ -196,7 +196,7 @@
     {
       "handle": "termite-inspection",
       "name": "Termite inspection",
-      "description": "A detailed, WDO-style inspection for termites and wood-destroying pests — with photos, an honest assessment of any risk, and a treatment plan only if you actually need one.",
+      "description": "A detailed, WDO-style inspection for termites and wood-destroying pests, with photos, an honest assessment of any risk, and a treatment plan only if you actually need one.",
       "durationMinutes": 90,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -213,7 +213,7 @@
     {
       "handle": "mosquito-treatment",
       "name": "Mosquito treatment",
-      "description": "A yard treatment that knocks down biting mosquitoes and treats the shady, standing-water spots they breed in — so the backyard is usable again all season.",
+      "description": "A yard treatment that knocks down biting mosquitoes and treats the shady, standing-water spots they breed in, so the backyard is usable again all season.",
       "durationMinutes": 45,
       "priceCents": 9900,
       "assignmentStrategy": "any_available",
@@ -230,7 +230,7 @@
     {
       "handle": "recurring-plan-setup",
       "name": "Protection plan setup",
-      "description": "Set up your year-round Shield Plan — a first full treatment plus scheduled seasonal visits, priority service between them, and our re-treat-free guarantee.",
+      "description": "Set up your year-round Shield Plan: a first full treatment plus scheduled seasonal visits, priority service between them, and our re-treat-free guarantee.",
       "durationMinutes": 60,
       "priceCents": 8900,
       "assignmentStrategy": "any_available",

@@ -14,7 +14,7 @@
       "depositType": "card_hold",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Longer sessions and rehab intakes hold a card on file — nothing is charged unless you no-show or cancel inside 24 hours. It keeps a two-hour room block open for the person who needs it."
+      "policyText": "Longer sessions and rehab intakes hold a card on file. Nothing is charged unless you no-show or cancel inside 24 hours. It keeps a two-hour room block open for the person who needs it."
     }
   ],
   "resources": [
@@ -197,8 +197,8 @@
   "services": [
     {
       "handle": "deep-tissue-60",
-      "name": "Deep tissue — 60 min",
-      "description": "Firm, focused work into the layers that hold tension — for the neck, back and shoulders that never quite let go.",
+      "name": "Deep tissue: 60 min",
+      "description": "Firm, focused work into the layers that hold tension, for the neck, back and shoulders that never quite let go.",
       "durationMinutes": 60,
       "priceCents": 11000,
       "assignmentStrategy": "customer_choice",
@@ -220,8 +220,8 @@
     },
     {
       "handle": "deep-tissue-90",
-      "name": "Deep tissue — 90 min",
-      "description": "The full session — time to work more than one area properly and actually change how it moves, not just soothe it.",
+      "name": "Deep tissue: 90 min",
+      "description": "The full session: time to work more than one area properly and actually change how it moves, not just soothe it.",
       "durationMinutes": 90,
       "priceCents": 15500,
       "bufferAfterMin": 10,
@@ -244,7 +244,7 @@
     },
     {
       "handle": "sports-recovery-90",
-      "name": "Sports & recovery — 90 min",
+      "name": "Sports & recovery: 90 min",
       "description": "For training loads and stubborn injuries: assisted stretching, targeted release and a plan to get you back to the thing you do.",
       "durationMinutes": 90,
       "priceCents": 16500,
@@ -268,8 +268,8 @@
     },
     {
       "handle": "trigger-point-60",
-      "name": "Trigger-point therapy — 60 min",
-      "description": "Pinpoint work on the knots that refer pain elsewhere — the headache that starts in your shoulder, the ache that never sits still.",
+      "name": "Trigger-point therapy: 60 min",
+      "description": "Pinpoint work on the knots that refer pain elsewhere: the headache that starts in your shoulder, the ache that never sits still.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -291,8 +291,8 @@
     },
     {
       "handle": "prenatal-60",
-      "name": "Prenatal massage — 60 min",
-      "description": "Safe, side-lying work for the lower back, hips and legs that carry a pregnancy — from a therapist trained for it.",
+      "name": "Prenatal massage: 60 min",
+      "description": "Safe, side-lying work for the lower back, hips and legs that carry a pregnancy: from a therapist trained for it.",
       "durationMinutes": 60,
       "priceCents": 11000,
       "assignmentStrategy": "customer_choice",
@@ -314,7 +314,7 @@
     },
     {
       "handle": "cupping-therapy-60",
-      "name": "Cupping & myofascial — 60 min",
+      "name": "Cupping & myofascial: 60 min",
       "description": "Decompression cupping paired with hands-on myofascial release to free up tight fascia and restore glide to stuck tissue.",
       "durationMinutes": 60,
       "priceCents": 12500,
@@ -338,8 +338,8 @@
     },
     {
       "handle": "medical-rehab-120",
-      "name": "Medical & rehab intake — 120 min",
-      "description": "A full assessment and first treatment for post-injury or post-surgical recovery — we review your history, agree a plan, and provide a superbill for your insurer or HSA. Booked with a short approval so we can prepare.",
+      "name": "Medical & rehab intake: 120 min",
+      "description": "A full assessment and first treatment for post-injury or post-surgical recovery. We review your history, agree a plan, and provide a superbill for your insurer or HSA. Booked with a short approval so we can prepare.",
       "durationMinutes": 120,
       "priceCents": 21000,
       "bufferAfterMin": 15,

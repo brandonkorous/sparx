@@ -174,13 +174,13 @@ function hero(): Node {
                         el('div', 'flex max-w-2xl flex-col gap-5 rounded-box bg-primary p-8 @3xl:p-10', {
                             children: [
                                 el('p', 'text-sm font-bold uppercase tracking-widest text-primary-content', {
-                                    text: 'Drop 07 — live now',
+                                    text: 'Drop 07: live now',
                                 }),
                                 el('h1', 'text-6xl font-bold uppercase leading-none tracking-tight text-primary-content @3xl:text-8xl', {
                                     text: 'Wear it loud.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-primary-content', {
-                                    text: 'Cardinal Supply is heavyweight graphics for people who do not do quiet. Small runs, bold prints, built to take a beating — designed in the studio, printed by hand, gone when they are gone.',
+                                    text: 'Cardinal Supply is heavyweight graphics for people who do not do quiet. Small runs, bold prints, built to take a beating: designed in the studio, printed by hand, gone when they are gone.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -248,7 +248,7 @@ function manifestoBand(): Node {
                         text: 'New heat every Friday.',
                     }),
                     el('p', 'text-lg leading-relaxed text-neutral-content', {
-                        text: 'We drop in small batches, weekly. No restocks, no reruns — when a print sells through, it is retired for good. Get on the list and you will know the second the next one lands.',
+                        text: 'We drop in small batches, weekly. No restocks, no reruns, when a print sells through, it is retired for good. Get on the list and you will know the second the next one lands.',
                     }),
                     el('a', 'btn btn-primary btn-lg', { attrs: { href: '/collections' }, text: 'Get on the list' }),
                 ],
@@ -297,7 +297,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.fleece', layout: 'carousel', heading: 'Fleece season' }),
     editorialBand({
         heading: 'Built heavy, on purpose',
-        lead: 'Everything runs a proper weight — 240gsm tees, 400gsm fleece — cut boxy and printed with plastisol inks that crack the way you want them to, not the way that falls off in the wash. This is stuff made to get worn hard and worn often.',
+        lead: 'Everything runs a proper weight (240gsm tees, 400gsm fleece) cut boxy and printed with plastisol inks that crack the way you want them to, not the way that falls off in the wash. This is stuff made to get worn hard and worn often.',
         assetId: 'cardinal-band-made',
         cta: 'How it is made',
         href: '/blog/how-a-drop-comes-together',
@@ -305,7 +305,7 @@ const HOME: Node[] = [
     }),
     editorialBand({
         heading: 'Blink and it is gone',
-        lead: 'Drops are small and they do not come back. If a piece is in stock, it is because it is still in stock — that is the whole game. Follow the list, move fast, and never explain the fit to anyone.',
+        lead: 'Drops are small and they do not come back. If a piece is in stock, it is because it is still in stock. That is the whole game. Follow the list, move fast, and never explain the fit to anyone.',
         assetId: 'cardinal-band-drop',
         cta: 'Read the journal',
         href: '/blog/drop-culture-explained',
@@ -351,7 +351,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-bold uppercase tracking-widest text-secondary', { text: 'Fit & fabric' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Cut boxy for a relaxed, modern fit — if you like it closer, size down; if you like it draped, stay true. Heavyweight cotton that softens with every wash and holds its shape. Model is 6ft in a size L.',
+                                        text: 'Cut boxy for a relaxed, modern fit: if you like it closer, size down; if you like it draped, stay true. Heavyweight cotton that softens with every wash and holds its shape. Model is 6ft in a size L.',
                                     }),
                                 ],
                             }),
@@ -390,13 +390,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop all',
-        'Every piece we are running right now — graphic tees, heavyweight fleece, cargo bottoms, outerwear and accessories. Filter by category or size, sort however you like. When it sells through, it is gone, so do not sit on it.'
+        'Every piece we are running right now: graphic tees, heavyweight fleece, cargo bottoms, outerwear and accessories. Filter by category or size, sort however you like. When it sells through, it is gone, so do not sit on it.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'The gear grouped the way you actually shop it — the latest drop, the pieces everyone is copping, the graphics, the fleece and the bottoms. Start wherever your fit needs work.'
+        'The gear grouped the way you actually shop it: the latest drop, the pieces everyone is copping, the graphics, the fleece and the bottoms. Start wherever your fit needs work.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -409,7 +409,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-7xl', { text: 'Your bag' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping over $75, and every order ships within two days. Sizing not sure? Free 30-day returns on unworn gear — grab two sizes and send back the one that misses.',
+                        text: 'Free shipping over $75, and every order ships within two days. Sizing not sure? Free 30-day returns on unworn gear: grab two sizes and send back the one that misses.',
                     }),
                 ],
             }),
@@ -423,7 +423,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-7xl', { text: 'The feed' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Behind the drops — how a print goes from sketch to rack, how our stuff fits, and how to keep heavyweight gear looking new. No filler, no gatekeeping.',
+                        text: 'Behind the drops: how a print goes from sketch to rack, how our stuff fits, and how to keep heavyweight gear looking new. No filler, no gatekeeping.',
                     }),
                 ],
             }),
@@ -440,10 +440,10 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl', { text: 'About Cardinal' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Cardinal Supply started with one screen, one squeegee and a garage full of blank tees. We were sick of graphic gear that looked hard online and fell apart in a month — thin blanks, prints that peeled, the same recycled design on everything. So we made the opposite.',
+                        text: 'Cardinal Supply started with one screen, one squeegee and a garage full of blank tees. We were sick of graphic gear that looked hard online and fell apart in a month: thin blanks, prints that peeled, the same recycled design on everything. So we made the opposite.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Every drop is designed in-house and printed by hand in small runs on heavyweight blanks we choose ourselves. We would rather sell out of a hundred good pieces than warehouse a thousand mediocre ones — which is why nothing here gets restocked, and why the fit is worth moving fast for.',
+                        text: 'Every drop is designed in-house and printed by hand in small runs on heavyweight blanks we choose ourselves. We would rather sell out of a hundred good pieces than warehouse a thousand mediocre ones, which is why nothing here gets restocked, and why the fit is worth moving fast for.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'No licensing deals, no trend-chasing, no logo tax. Just loud, heavy, built-to-last gear from a small crew that actually wears it. If you know, you know.',
@@ -461,7 +461,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Get at us',
-        intro: 'Question on a size, a fix on an order, or a wholesale/stockist enquiry? Hit us up and a real person from the crew will get back to you fast — usually same day.',
+        intro: 'Question on a size, a fix on an order, or a wholesale/stockist enquiry? Hit us up and a real person from the crew will get back to you fast, usually same day.',
         submitLabel: 'Email the crew',
     }),
 ];
@@ -625,7 +625,7 @@ const PRODUCTS: Product[] = [
         handle: 'logo-tee',
         title: 'Cardinal Logo Tee',
         description:
-            'The one that started it — a heavyweight 240gsm cotton tee with our bird mark screen-printed big across the chest in plastisol that will not peel. Boxy body, ribbed collar, dropped shoulder. Wears in, never wears out.',
+            'The one that started it: a heavyweight 240gsm cotton tee with our bird mark screen-printed big across the chest in plastisol that will not peel. Boxy body, ribbed collar, dropped shoulder. Wears in, never wears out.',
         price: 44,
         sku: 'CARD-TEE-LOGO',
         productType: 'Apparel',
@@ -634,14 +634,14 @@ const PRODUCTS: Product[] = [
         tags: ['tee', 'graphic', 'heavyweight'],
         colors: ['Black', 'Bone', 'Cardinal'],
         asset: 'cardinal-prod-logo-tee',
-        seoTitle: 'Cardinal Logo Tee — heavyweight graphic tee | Cardinal Supply',
+        seoTitle: 'Cardinal Logo Tee: heavyweight graphic tee | Cardinal Supply',
         seoDescription: 'A boxy 240gsm cotton tee with a big screen-printed chest logo. In black, bone and cardinal red.',
     }),
     garment({
         handle: 'static-tee',
         title: 'Static Print Tee',
         description:
-            'A glitched, blown-out static graphic printed edge to edge on the same heavyweight blank. Loud front, hit on the back, built to be the reason someone stops you on the street. Small run — when it is gone, it is gone.',
+            'A glitched, blown-out static graphic printed edge to edge on the same heavyweight blank. Loud front, hit on the back, built to be the reason someone stops you on the street. Small run, when it is gone, it is gone.',
         price: 46,
         sku: 'CARD-TEE-STATIC',
         productType: 'Apparel',
@@ -650,7 +650,7 @@ const PRODUCTS: Product[] = [
         tags: ['tee', 'graphic', 'print'],
         colors: ['Black', 'White', 'Acid'],
         asset: 'cardinal-prod-static-tee',
-        seoTitle: 'Static Print Tee — all-over graphic tee | Cardinal Supply',
+        seoTitle: 'Static Print Tee. All-over graphic tee | Cardinal Supply',
         seoDescription: 'A blown-out static graphic on a heavyweight cotton blank, front and back. In black, white and acid.',
     }),
     garment({
@@ -666,14 +666,14 @@ const PRODUCTS: Product[] = [
         tags: ['hoodie', 'fleece', 'heavyweight'],
         colors: ['Black', 'Ash', 'Cardinal'],
         asset: 'cardinal-prod-hoodie',
-        seoTitle: 'Heavyweight Hoodie — 400gsm brushed fleece | Cardinal Supply',
+        seoTitle: 'Heavyweight Hoodie: 400gsm brushed fleece | Cardinal Supply',
         seoDescription: 'A 400gsm brushed-back fleece pullover with a double-lined hood and boxy fit. In black, ash and cardinal.',
     }),
     garment({
         handle: 'boxy-crewneck',
         title: 'Boxy Crewneck',
         description:
-            'The hoodie’s quieter cousin — same 400gsm fleece, cropped a touch boxier, ribbed at the cuffs and hem so it sits right. Layer it, wear it solo, throw it under the coaches jacket. The workhorse of the fleece rack.',
+            'The hoodie’s quieter cousin: same 400gsm fleece, cropped a touch boxier, ribbed at the cuffs and hem so it sits right. Layer it, wear it solo, throw it under the coaches jacket. The workhorse of the fleece rack.',
         price: 88,
         sku: 'CARD-CREW',
         productType: 'Fleece',
@@ -682,14 +682,14 @@ const PRODUCTS: Product[] = [
         tags: ['crewneck', 'fleece', 'heavyweight'],
         colors: ['Black', 'Bone', 'Forest'],
         asset: 'cardinal-prod-crew',
-        seoTitle: 'Boxy Crewneck — 400gsm heavyweight fleece | Cardinal Supply',
+        seoTitle: 'Boxy Crewneck: 400gsm heavyweight fleece | Cardinal Supply',
         seoDescription: 'A boxy 400gsm fleece crewneck, ribbed at cuff and hem. In black, bone and forest.',
     }),
     garment({
         handle: 'coaches-jacket',
         title: 'Sherpa Coaches Jacket',
         description:
-            'A classic snap-front coaches jacket lined with heavy sherpa — wind-blocking nylon shell, deep hand pockets, our mark embroidered at the chest and printed big across the back. The outer layer the whole fit is built around.',
+            'A classic snap-front coaches jacket lined with heavy sherpa: wind-blocking nylon shell, deep hand pockets, our mark embroidered at the chest and printed big across the back. The outer layer the whole fit is built around.',
         price: 148,
         sku: 'CARD-JKT',
         productType: 'Fleece',
@@ -698,14 +698,14 @@ const PRODUCTS: Product[] = [
         tags: ['jacket', 'outerwear', 'sherpa'],
         colors: ['Black', 'Concrete'],
         asset: 'cardinal-prod-jacket',
-        seoTitle: 'Sherpa Coaches Jacket — snap-front, sherpa-lined | Cardinal Supply',
+        seoTitle: 'Sherpa Coaches Jacket: snap-front, sherpa-lined | Cardinal Supply',
         seoDescription: 'A snap-front nylon coaches jacket with a heavy sherpa lining and back print. In black and concrete.',
     }),
     garment({
         handle: 'utility-cargo',
         title: 'Utility Cargo Pant',
         description:
-            'A relaxed, tapered cargo in tough cotton twill — six real pockets, reinforced knees, an adjustable hem so you can stack them or crop them clean over a boot. Made to haul gear and take a season of abuse without blinking.',
+            'A relaxed, tapered cargo in tough cotton twill: six real pockets, reinforced knees, an adjustable hem so you can stack them or crop them clean over a boot. Made to haul gear and take a season of abuse without blinking.',
         price: 118,
         sku: 'CARD-CARGO',
         productType: 'Bottoms',
@@ -714,14 +714,14 @@ const PRODUCTS: Product[] = [
         tags: ['cargo', 'pants', 'utility'],
         colors: ['Black', 'Olive', 'Concrete'],
         asset: 'cardinal-prod-cargo',
-        seoTitle: 'Utility Cargo Pant — tapered cotton twill | Cardinal Supply',
+        seoTitle: 'Utility Cargo Pant: tapered cotton twill | Cardinal Supply',
         seoDescription: 'A tapered six-pocket cargo pant in tough cotton twill with an adjustable hem. In black, olive and concrete.',
     }),
     garment({
         handle: 'heavyweight-sweatpant',
         title: 'Heavyweight Sweatpant',
         description:
-            'The bottom half of the fleece set — 400gsm brushed-back, tapered leg, ribbed cuff, deep zip pockets. Matches the hoodie and the crew color for color so you can run the full tracksuit or break it up.',
+            'The bottom half of the fleece set: 400gsm brushed-back, tapered leg, ribbed cuff, deep zip pockets. Matches the hoodie and the crew color for color so you can run the full tracksuit or break it up.',
         price: 82,
         sku: 'CARD-SWEAT',
         productType: 'Bottoms',
@@ -730,7 +730,7 @@ const PRODUCTS: Product[] = [
         tags: ['sweatpant', 'fleece', 'heavyweight'],
         colors: ['Black', 'Ash', 'Cardinal'],
         asset: 'cardinal-prod-sweatpant',
-        seoTitle: 'Heavyweight Sweatpant — 400gsm brushed fleece | Cardinal Supply',
+        seoTitle: 'Heavyweight Sweatpant: 400gsm brushed fleece | Cardinal Supply',
         seoDescription: 'A tapered 400gsm fleece sweatpant with a ribbed cuff and zip pockets. In black, ash and cardinal.',
     }),
     accessory({
@@ -744,7 +744,7 @@ const PRODUCTS: Product[] = [
         tags: ['cap', 'hat', 'accessory'],
         colors: ['Black', 'Concrete', 'Cardinal'],
         asset: 'cardinal-prod-cap',
-        seoTitle: 'Six-Panel Cap — structured cotton twill | Cardinal Supply',
+        seoTitle: 'Six-Panel Cap: structured cotton twill | Cardinal Supply',
         seoDescription: 'A structured six-panel cap with an embroidered mark and buckle strap. In black, concrete and cardinal.',
     }),
     accessory({
@@ -758,21 +758,21 @@ const PRODUCTS: Product[] = [
         tags: ['tote', 'bag', 'accessory'],
         colors: ['Natural', 'Black'],
         asset: 'cardinal-prod-tote',
-        seoTitle: 'Heavy Canvas Tote — 16oz printed cotton canvas | Cardinal Supply',
+        seoTitle: 'Heavy Canvas Tote: 16oz printed cotton canvas | Cardinal Supply',
         seoDescription: 'A 16oz cotton-canvas tote with a big printed logo and webbing straps. In natural and black.',
     }),
     accessory({
         handle: 'cuffed-beanie',
         title: 'Cuffed Beanie',
         description:
-            'A tight-knit ribbed beanie with a folded cuff and a woven bird tab — warm, low-profile, and the fastest way to finish a fit when it is cold. Runs true, stretches to fit, holds its shape wash after wash.',
+            'A tight-knit ribbed beanie with a folded cuff and a woven bird tab: warm, low-profile, and the fastest way to finish a fit when it is cold. Runs true, stretches to fit, holds its shape wash after wash.',
         price: 30,
         sku: 'CARD-BEAN',
         collections: ['accessories-shop', 'new-drop'],
         tags: ['beanie', 'hat', 'accessory'],
         colors: ['Black', 'Ash', 'Cardinal', 'Forest'],
         asset: 'cardinal-prod-beanie',
-        seoTitle: 'Cuffed Beanie — ribbed knit | Cardinal Supply',
+        seoTitle: 'Cuffed Beanie: ribbed knit | Cardinal Supply',
         seoDescription: 'A tight ribbed cuffed beanie with a woven tab. In black, ash, cardinal and forest.',
     }),
 ];
@@ -788,7 +788,7 @@ const COMMERCE = {
         {
             handle: 'new-drop',
             name: 'The latest drop',
-            description: 'Everything that just landed — move fast.',
+            description: 'Everything that just landed. Move fast.',
             type: 'manual',
             featured: true,
             productHandles: ['logo-tee', 'static-tee', 'heavyweight-hoodie', 'coaches-jacket', 'utility-cargo', 'six-panel-cap', 'cuffed-beanie'],
@@ -849,18 +849,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How a drop comes together',
-            excerpt: 'From a sketch on the studio wall to a rack of finished gear — the whole run, start to finish, in plain terms.',
+            excerpt: 'From a sketch on the studio wall to a rack of finished gear: the whole run, start to finish, in plain terms.',
             featuredImage: { $asset: 'cardinal-post-drop' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A drop looks like it appears out of nowhere on a Friday. It does not. Every run is weeks of work compressed into a few hundred pieces — and because we print small and never restock, there is no room to get it wrong. Here is what actually happens between the idea and the rack.'),
+                    para('A drop looks like it appears out of nowhere on a Friday. It does not. Every run is weeks of work compressed into a few hundred pieces, and because we print small and never restock, there is no room to get it wrong. Here is what actually happens between the idea and the rack.'),
                     h2('Design, then subtract'),
-                    para('Everything starts on the studio wall — rough marker sketches, screenshots, half a dozen bad ideas pinned up until one earns its place. We design loud on purpose, then pull it back: a graphic has to read from across the street and still look right up close. Most concepts die here, and that is the point. The ones that survive get separated into colors for the screens.'),
+                    para('Everything starts on the studio wall: rough marker sketches, screenshots, half a dozen bad ideas pinned up until one earns its place. We design loud on purpose, then pull it back: a graphic has to read from across the street and still look right up close. Most concepts die here, and that is the point. The ones that survive get separated into colors for the screens.'),
                     h2('Printed by hand, on good blanks'),
-                    para('We choose the blanks ourselves — 240gsm for tees, 400gsm for fleece, nothing thinner — because the best print in the world falls apart on a cheap shirt. Then every piece is screen-printed by hand with plastisol inks, cured hot so the graphic bonds to the cotton instead of sitting on top of it. It is slower than a factory and that is exactly why the prints last.'),
+                    para('We choose the blanks ourselves (240gsm for tees, 400gsm for fleece, nothing thinner) because the best print in the world falls apart on a cheap shirt. Then every piece is screen-printed by hand with plastisol inks, cured hot so the graphic bonds to the cotton instead of sitting on top of it. It is slower than a factory and that is exactly why the prints last.'),
                     h2('Small runs, gone for good'),
-                    para('We print what we print, and when it sells through, that design is retired — no reruns, no “back in stock.” It keeps the gear rare and it keeps us honest: if a run does not sell, we felt it, and we make a better one next week. That is the whole engine behind the Friday drop.'),
+                    para('We print what we print, and when it sells through, that design is retired: no reruns, no “back in stock.” It keeps the gear rare and it keeps us honest: if a run does not sell, we felt it, and we make a better one next week. That is the whole engine behind the Friday drop.'),
                 ],
             },
         },
@@ -871,16 +871,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How our stuff fits',
-            excerpt: 'Boxy, dropped-shoulder, true to size — a plain-language guide to nailing your size the first time.',
+            excerpt: 'Boxy, dropped-shoulder, true to size: a plain-language guide to nailing your size the first time.',
             featuredImage: { $asset: 'cardinal-post-fit' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Streetwear fit is half the look, and it trips people up more than anything else — mostly because “oversized” means something different on every brand. Here is exactly how ours is cut, so you can order once and get it right.'),
+                    para('Streetwear fit is half the look, and it trips people up more than anything else: mostly because “oversized” means something different on every brand. Here is exactly how ours is cut, so you can order once and get it right.'),
                     h2('Cut boxy, worn relaxed'),
-                    para('Everything is cut boxy: a wider body, a dropped shoulder that sits below your actual shoulder, and a shorter, squarer length. On a true-to-size pick it wears relaxed, not baggy. If you want that clean, structured look, take your normal size. If you want it properly oversized and draped, size up one — a lot of people run their tees a size up on purpose.'),
+                    para('Everything is cut boxy: a wider body, a dropped shoulder that sits below your actual shoulder, and a shorter, squarer length. On a true-to-size pick it wears relaxed, not baggy. If you want that clean, structured look, take your normal size. If you want it properly oversized and draped, size up one, a lot of people run their tees a size up on purpose.'),
                     h2('When to size down'),
-                    para('The only time to size down is if you like your fits close and tailored, or if you are between two sizes and want a cleaner line. Fleece is cut roomy to layer, so if you are wearing a hoodie on its own and want it fitted, the smaller size is the move. Bottoms run true with a tapered leg — take your waist and adjust the hem to stack or crop.'),
+                    para('The only time to size down is if you like your fits close and tailored, or if you are between two sizes and want a cleaner line. Fleece is cut roomy to layer, so if you are wearing a hoodie on its own and want it fitted, the smaller size is the move. Bottoms run true with a tapered leg: take your waist and adjust the hem to stack or crop.'),
                     h2('Still not sure? Grab two'),
                     para('Sizing is personal and a chart only gets you so far. Returns are free within 30 days on anything unworn with tags, so if you are stuck between two sizes, order both, try them back to back, and send back the one that misses. It is the fastest way to learn how our stuff sits on you.'),
                 ],
@@ -893,18 +893,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Drop culture, explained',
-            excerpt: 'Why we release in small weekly batches and never restock — and how to actually cop the pieces you want.',
+            excerpt: 'Why we release in small weekly batches and never restock, and how to actually cop the pieces you want.',
             featuredImage: { $asset: 'cardinal-post-care' },
             body: {
                 type: 'doc',
                 content: [
-                    para('If you are new to how streetwear releases work, the “drop” model can feel deliberately frustrating — limited pieces, no restocks, gone in an hour. It is not a marketing trick bolted on afterward. It is the honest consequence of how we make things, and once you get it, shopping this way is easy.'),
+                    para('If you are new to how streetwear releases work, the “drop” model can feel deliberately frustrating: limited pieces, no restocks, gone in an hour. It is not a marketing trick bolted on afterward. It is the honest consequence of how we make things, and once you get it, shopping this way is easy.'),
                     h2('Why small and why weekly'),
-                    para('We print by hand in small runs, so there is a hard ceiling on how many of anything exists. Dropping weekly lets us keep the designs fresh, react to what sold and what did not, and never sit on a warehouse of dead stock. The scarcity is real — it is just how many we could actually make — not a fake counter ticking down.'),
+                    para('We print by hand in small runs, so there is a hard ceiling on how many of anything exists. Dropping weekly lets us keep the designs fresh, react to what sold and what did not, and never sit on a warehouse of dead stock. The scarcity is real (it is just how many we could actually make) not a fake counter ticking down.'),
                     h2('How to actually cop'),
-                    para('Get on the drop list. It is the only place the exact drop time goes out, and popular pieces — the logo tee, the red hoodie — routinely sell through their best sizes within the first day. Save your details before Friday so checkout is one tap, decide your size ahead of time using the fit guide, and do not overthink it in the cart. Hesitation is how a size sells out while it sits in your bag.'),
+                    para('Get on the drop list. It is the only place the exact drop time goes out, and popular pieces (the logo tee, the red hoodie) routinely sell through their best sizes within the first day. Save your details before Friday so checkout is one tap, decide your size ahead of time using the fit guide, and do not overthink it in the cart. Hesitation is how a size sells out while it sits in your bag.'),
                     h2('Missed it? It happens'),
-                    para('No restocks means sometimes you miss, and that is part of the game — but a piece occasionally returns in a new colorway on a later drop, and the list always hears first. The best fix is simply to be ready for the next one. There is always a next one, seven days out.'),
+                    para('No restocks means sometimes you miss, and that is part of the game, but a piece occasionally returns in a new colorway on a later drop, and the list always hears first. The best fix is simply to be ready for the next one. There is always a next one, seven days out.'),
                 ],
             },
         },
@@ -919,7 +919,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Streetwear Label (Bold)',
     theme: THEME,
     summary:
-        'A complete, working shop for a bold graphic-streetwear label: heavyweight graphic tees, 400gsm fleece hoodies and crews, a sherpa coaches jacket, utility cargos and sweats, plus caps, a tote and a beanie — each sized XS–XXL in a loud palette, with categories, collections, a bespoke drop-forward PDP and a merchandised home page. Cool concrete ground, near-black ink, one electric cardinal red carrying the brand — heavy grotesk, big caps, drop culture. Shipped as Cardinal Supply.',
+        'A complete, working shop for a bold graphic-streetwear label: heavyweight graphic tees, 400gsm fleece hoodies and crews, a sherpa coaches jacket, utility cargos and sweats, plus caps, a tote and a beanie. Each sized XS–XXL in a loud palette, with categories, collections, a bespoke drop-forward PDP and a merchandised home page. Cool concrete ground, near-black ink, one electric cardinal red carrying the brand, heavy grotesk, big caps, drop culture. Shipped as Cardinal Supply.',
     tagline: 'A loud, drop-driven storefront for a graphic-streetwear label.',
     vertical: 'retail',
     industry: 'Streetwear label',
@@ -932,12 +932,12 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Cardinal Supply — heavyweight graphic streetwear, dropped weekly',
+            title: 'Cardinal Supply: heavyweight graphic streetwear, dropped weekly',
             description:
-                'Cardinal Supply makes loud, heavyweight graphic streetwear — hand-printed tees, 400gsm fleece and utility bottoms in small weekly drops that never restock. Wear it loud.',
+                'Cardinal Supply makes loud, heavyweight graphic streetwear: hand-printed tees, 400gsm fleece and utility bottoms in small weekly drops that never restock. Wear it loud.',
         },
         about: {
-            title: 'About Cardinal Supply — loud, heavy, hand-printed',
+            title: 'About Cardinal Supply: loud, heavy, hand-printed',
             description:
                 'How Cardinal Supply works: designed in-house, screen-printed by hand on heavyweight blanks, released in small weekly drops that never come back. No logo tax, no filler.',
         },

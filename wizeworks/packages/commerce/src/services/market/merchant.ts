@@ -260,7 +260,7 @@ export async function getDecryptedPayoutAccount(
     };
   } catch {
     throw new CommerceValidationError(
-      'Payout account could not be decrypted — re-enter the bank details (the encryption key may have rotated).'
+      'Payout account could not be decrypted: re-enter the bank details (the encryption key may have rotated).'
     );
   }
 }

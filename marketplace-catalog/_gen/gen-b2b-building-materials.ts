@@ -167,7 +167,7 @@ function hero(): Node {
                                     text: 'Everything for the job, priced for the trade.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Yardstock is a builders’ merchant. We stock the timber, boards, cement, insulation, fixings and safety kit a site runs on — sold by the pack and the pallet, at trade prices, ready to collect from the yard or on a lorry to your job.',
+                                    text: 'Yardstock is a builders’ merchant. We stock the timber, boards, cement, insulation, fixings and safety kit a site runs on: sold by the pack and the pallet, at trade prices, ready to collect from the yard or on a lorry to your job.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -244,16 +244,16 @@ function tradeTermsBand(): Node {
                                 text: 'Built for the way a site buys',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Open a trade account and you buy the way a builder should — by the pack and the pallet, at yard rates, on credit. No retail markups, no queue, no runaround.',
+                                text: 'Open a trade account and you buy the way a builder should: by the pack and the pallet, at yard rates, on credit. No retail markups, no queue, no runaround.',
                             }),
                         ],
                     }),
                     el('div', 'grid grid-cols-2 gap-4 @3xl:grid-cols-4 @3xl:gap-6', {
                         children: [
                             card('Trade prices', 'Pack and pallet rates with volume breaks that deepen as the load grows. Take a pallet instead of a pack and every unit costs less.'),
-                            card('Account credit', 'Approved accounts run on net-30 — order what the job needs now and settle on one monthly statement, not a card swipe per run.'),
+                            card('Account credit', 'Approved accounts run on net-30. Order what the job needs now and settle on one monthly statement, not a card swipe per run.'),
                             card('Collect or delivered', 'Click & collect from the yard in minutes, or put it on our lorry to site. Timed drops and crane-offload on the bigger orders.'),
-                            card('Your account manager', 'A direct line to a real person who knows your jobs, your standing lines and your pricing — not a ticket queue or a call centre.'),
+                            card('Your account manager', 'A direct line to a real person who knows your jobs, your standing lines and your pricing, not a ticket queue or a call centre.'),
                         ],
                     }),
                     el('a', 'btn btn-primary btn-lg w-fit', { attrs: { href: '/contact' }, text: 'Open a trade account' }),
@@ -349,10 +349,10 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Trade pricing & delivery' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'The price shown is the per-pack list rate. Trade accounts unlock volume breaks — a deeper per-unit price by the pallet, the full load, or a standing order — set for your account in your dashboard.',
+                                        text: 'The price shown is the per-pack list rate. Trade accounts unlock volume breaks (a deeper per-unit price by the pallet, the full load, or a standing order) set for your account in your dashboard.',
                                     }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Collect from the yard the same day, or put it on our lorry to site with a timed drop. Approved accounts buy on net-30 — not set up yet? Open a trade account and we’ll price your regular lines and get you on terms.',
+                                        text: 'Collect from the yard the same day, or put it on our lorry to site with a timed drop. Approved accounts buy on net-30, not set up yet? Open a trade account and we’ll price your regular lines and get you on terms.',
                                     }),
                                     el('a', 'text-base font-semibold text-accent underline underline-offset-4', {
                                         attrs: { href: '/contact' },
@@ -395,11 +395,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The yard',
-        'Every line we hold — timber and sheet, plasterboard and cement, insulation, fixings and sealant, aggregates and safety kit, sold by the pack and the pallet. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout.'
+        'Every line we hold: timber and sheet, plasterboard and cement, insulation, fixings and sealant, aggregates and safety kit, sold by the pack and the pallet. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The yard grouped the way a builder actually buys — trade favourites, new lines just in, the site-run essentials, groundworks materials, first-fix, and safety & workwear.'),
+    pageMasthead('Collections', 'The yard grouped the way a builder actually buys: trade favourites, new lines just in, the site-run essentials, groundworks materials, first-fix, and safety & workwear.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search the yard', 'Know the size, the spec or the SKU you’re after? Search the whole catalogue and the site notes below.'),
@@ -425,7 +425,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Site notes' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Practical guidance from the yard and the site — how to take off a first-fix, spec insulation to hit a U-value, and order groundworks by the bag. Written for the people doing the buying, not for a brochure.',
+                        text: 'Practical guidance from the yard and the site: how to take off a first-fix, spec insulation to hit a U-value, and order groundworks by the bag. Written for the people doing the buying, not for a brochure.',
                     }),
                 ],
             }),
@@ -442,13 +442,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl', { text: 'About Yardstock' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Yardstock Trade Supplies is a builders’ merchant. We hold the everyday building materials a site runs on — structural timber and sheet, plasterboard and cement, insulation, fixings, sealant, aggregates and safety kit — and we sell them to the trade by the pack and the pallet, at yard prices, on account.',
+                        text: 'Yardstock Trade Supplies is a builders’ merchant. We hold the everyday building materials a site runs on: structural timber and sheet, plasterboard and cement, insulation, fixings, sealant, aggregates and safety kit, and we sell them to the trade by the pack and the pallet, at yard prices, on account.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We built the yard around one idea: a working builder shouldn’t have to split a job across three suppliers, eat retail markups, or wait a week for a pallet of board. One yard, one account, one delivery, and stock that’s actually there when you turn up for it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the materials, priced fairly and loaded onto your van or our lorry — the boring reliability a build is made of.',
+                        text: 'No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the materials, priced fairly and loaded onto your van or our lorry: the boring reliability a build is made of.',
                     }),
                 ],
             }),
@@ -536,9 +536,9 @@ const packItem = (opts: {
 const PRODUCTS: Product[] = [
     {
         handle: 'cls-studwork-timber',
-        title: 'C16 CLS Studwork Timber, 63×38mm — Pack of 20',
+        title: 'C16 CLS Studwork Timber, 63×38mm: Pack of 20',
         description:
-            'Kiln-dried, planed C16 CLS studwork with eased edges — the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around $2.90 a length; take it by the pack and the pallet drops it further.',
+            'Kiln-dried, planed C16 CLS studwork with eased edges: the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around $2.90 a length; take it by the pack and the pallet drops it further.',
         status: 'active',
         productType: 'Timber',
         vendor: VENDOR,
@@ -556,9 +556,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'osb3-sheathing-board',
-        title: 'OSB3 Sheathing Board, 2400×1200 — Pack of 10',
+        title: 'OSB3 Sheathing Board, 2400×1200: Pack of 10',
         description:
-            'Load-bearing OSB3 for use in humid conditions — sheathing, flooring, hoarding and site boards. Full 2400×1200 sheets in a banded pack of 10. MOQ 1 pack. Pick 11mm for hoarding and lining or 18mm where it carries a load.',
+            'Load-bearing OSB3 for use in humid conditions: sheathing, flooring, hoarding and site boards. Full 2400×1200 sheets in a banded pack of 10. MOQ 1 pack. Pick 11mm for hoarding and lining or 18mm where it carries a load.',
         status: 'active',
         productType: 'Sheet material',
         vendor: VENDOR,
@@ -576,9 +576,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'plasterboard-pallet',
-        title: 'Standard Plasterboard, 2400×1200 — Pallet of 50',
+        title: 'Standard Plasterboard, 2400×1200: Pallet of 50',
         description:
-            'Tapered-edge standard wallboard for dry-lining walls and ceilings, 2400×1200 sheets on a shrink-wrapped pallet of 50. MOQ 1 pallet — the way a board job is bought. Choose 9.5mm for ceilings or 12.5mm for walls and better acoustics.',
+            'Tapered-edge standard wallboard for dry-lining walls and ceilings, 2400×1200 sheets on a shrink-wrapped pallet of 50. MOQ 1 pallet: the way a board job is bought. Choose 9.5mm for ceilings or 12.5mm for walls and better acoustics.',
         status: 'active',
         productType: 'Plasterboard',
         vendor: VENDOR,
@@ -596,9 +596,9 @@ const PRODUCTS: Product[] = [
     },
     packItem({
         handle: 'general-purpose-cement',
-        title: 'General-Purpose Cement, 25kg — Pallet of 56',
+        title: 'General-Purpose Cement, 25kg: Pallet of 56',
         description:
-            'CEM II general-purpose cement in 25kg bags for concrete, mortar and render — a shrink-wrapped, weather-hooded pallet of 56 bags. MOQ 1 pallet. Buy it by the pallet and keep the mixer fed for the whole pour without a second run to the yard.',
+            'CEM II general-purpose cement in 25kg bags for concrete, mortar and render: a shrink-wrapped, weather-hooded pallet of 56 bags. MOQ 1 pallet. Buy it by the pallet and keep the mixer fed for the whole pour without a second run to the yard.',
         price: 245,
         sku: 'YRD-CEM-GP-25',
         productType: 'Cement',
@@ -611,9 +611,9 @@ const PRODUCTS: Product[] = [
     }),
     {
         handle: 'pir-insulation-board',
-        title: 'PIR Insulation Board, 2400×1200 — Pack of 8',
+        title: 'PIR Insulation Board, 2400×1200: Pack of 8',
         description:
-            'Foil-faced PIR rigid insulation for floors, walls and roofs — high performance for its thickness, easy to cut and fit. Full 2400×1200 boards in a pack of 8. MOQ 1 pack. Spec the thickness your U-value calls for; thicker boards ship in smaller packs.',
+            'Foil-faced PIR rigid insulation for floors, walls and roofs: high performance for its thickness, easy to cut and fit. Full 2400×1200 boards in a pack of 8. MOQ 1 pack. Spec the thickness your U-value calls for; thicker boards ship in smaller packs.',
         status: 'active',
         productType: 'Insulation',
         vendor: VENDOR,
@@ -635,9 +635,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'multipurpose-wood-screws',
-        title: 'Multi-Purpose Wood Screws — Tub of 200',
+        title: 'Multi-Purpose Wood Screws: Tub of 200',
         description:
-            'Yellow-zinc pozi countersunk wood screws with a cutting thread that drives fast and rarely splits — the tub that lives in every van. 200 to a resealable tub. MOQ 5 tubs (a box). Pick the gauge and length your first-fix runs on.',
+            'Yellow-zinc pozi countersunk wood screws with a cutting thread that drives fast and rarely splits: the tub that lives in every van. 200 to a resealable tub. MOQ 5 tubs (a box). Pick the gauge and length your first-fix runs on.',
         status: 'active',
         productType: 'Fixings',
         vendor: VENDOR,
@@ -658,9 +658,9 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'trade-silicone-sealant',
-        title: 'Trade Silicone Sealant, 300ml — Case of 24',
+        title: 'Trade Silicone Sealant, 300ml: Case of 24',
         description:
-            'Low-modulus neutral-cure silicone for sanitary, glazing and general sealing — mould-resistant, over-paintable on the neutral grades, and it tools clean. A case of 24 standard cartridges. MOQ 1 case. Choose the color the job needs.',
+            'Low-modulus neutral-cure silicone for sanitary, glazing and general sealing: mould-resistant, over-paintable on the neutral grades, and it tools clean. A case of 24 standard cartridges. MOQ 1 case. Choose the color the job needs.',
         status: 'active',
         productType: 'Sealant',
         vendor: VENDOR,
@@ -682,9 +682,9 @@ const PRODUCTS: Product[] = [
     },
     packItem({
         handle: 'mot-type-1-bulk-bag',
-        title: 'MOT Type 1 Sub-Base — Bulk Bag (850kg)',
+        title: 'MOT Type 1 Sub-Base: Bulk Bag (850kg)',
         description:
-            'Crushed limestone MOT Type 1 to the DfT specification — the go-to compactable sub-base under drives, paths, slabs and foundations. A handled bulk bag of roughly 850kg. MOQ 1 bag. Order by the bag and we’ll crane it off where you need it.',
+            'Crushed limestone MOT Type 1 to the DfT specification: the go-to compactable sub-base under drives, paths, slabs and foundations. A handled bulk bag of roughly 850kg. MOQ 1 bag. Order by the bag and we’ll crane it off where you need it.',
         price: 68,
         sku: 'YRD-AGG-MOT1-BB',
         productType: 'Aggregates',
@@ -697,9 +697,9 @@ const PRODUCTS: Product[] = [
     }),
     {
         handle: 'hi-vis-vest-box',
-        title: 'Hi-Vis Safety Vest — Box of 10',
+        title: 'Hi-Vis Safety Vest: Box of 10',
         description:
-            'EN ISO 20471 Class 2 hi-vis waistcoats with a full-length hook-and-loop front and reflective banding — the site vest a visitor, a labourer and a subbie all need on day one. A box of 10. MOQ 2 boxes. Keep a size run on the rack by the gate.',
+            'EN ISO 20471 Class 2 hi-vis waistcoats with a full-length hook-and-loop front and reflective banding: the site vest a visitor, a labourer and a subbie all need on day one. A box of 10. MOQ 2 boxes. Keep a size run on the rack by the gate.',
         status: 'active',
         productType: 'Safety',
         vendor: VENDOR,
@@ -722,7 +722,7 @@ const PRODUCTS: Product[] = [
         handle: 'first-fix-bundle',
         title: 'First-Fix Timber & Fixings Bundle',
         description:
-            'A curated bundle for starting a stud job from empty — a pack of CLS studwork, a tub of wood screws, a case of grab-and-fix sealant and a box of collated nails, packed together and priced below the sum of the packs. MOQ 1 bundle. The fastest way to load the van for a first-fix.',
+            'A curated bundle for starting a stud job from empty: a pack of CLS studwork, a tub of wood screws, a case of grab-and-fix sealant and a box of collated nails, packed together and priced below the sum of the packs. MOQ 1 bundle. The fastest way to load the van for a first-fix.',
         price: 165,
         sku: 'YRD-KIT-FIRSTFIX',
         productType: 'Bundle',
@@ -731,7 +731,7 @@ const PRODUCTS: Product[] = [
         tags: ['bundle', 'first-fix', 'timber', 'fixings', 'kit'],
         asset: 'prod-firstfix',
         seoTitle: 'First-Fix Timber & Fixings Bundle | Yardstock',
-        seoDescription: 'A curated first-fix bundle — CLS studwork, wood screws, sealant and collated nails, priced below the sum.',
+        seoDescription: 'A curated first-fix bundle: CLS studwork, wood screws, sealant and collated nails, priced below the sum.',
     }),
 ];
 
@@ -812,13 +812,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The quiet killer on a first-fix isn’t the work — it’s the second trip. You set out, you start banging in studs, and halfway through the wall you’re a pack short or the screws have run out. Now someone’s in the van heading back to the yard while the job stands still. A proper take-off, done before you order, means the whole fix lands on one delivery and the crew never stops.'),
+                    para('The quiet killer on a first-fix isn’t the work: it’s the second trip. You set out, you start banging in studs, and halfway through the wall you’re a pack short or the screws have run out. Now someone’s in the van heading back to the yard while the job stands still. A proper take-off, done before you order, means the whole fix lands on one delivery and the crew never stops.'),
                     h2('Count the walls, not the guesses'),
-                    para('Work off the drawing, not memory. Measure the run of every stud wall, divide by your stud spacing — 400 or 600 centres — and add the heads, sills and noggins. That gives you a real length of CLS, which turns straight into a number of packs. Do the same for the board: floor area of walls and ceilings, divided by the coverage of a 2400×1200 sheet, plus ten per cent for cuts and waste. Now you’re ordering to the job, not rounding in your head at the counter.'),
+                    para('Work off the drawing, not memory. Measure the run of every stud wall, divide by your stud spacing (400 or 600 centres) and add the heads, sills and noggins. That gives you a real length of CLS, which turns straight into a number of packs. Do the same for the board: floor area of walls and ceilings, divided by the coverage of a 2400×1200 sheet, plus ten per cent for cuts and waste. Now you’re ordering to the job, not rounding in your head at the counter.'),
                     h2('Don’t forget the consumables'),
-                    para('The materials people forget are the small ones that stop the job all the same — screws, collated nails, grab adhesive, sealant, scrim tape. Keep a standing first-fix list and tick it against every take-off, or buy the fixings as a bundle so the tub and the case come in the same box as the timber. It’s the cheap stuff that sends you back to the yard.'),
+                    para('The materials people forget are the small ones that stop the job all the same: screws, collated nails, grab adhesive, sealant, scrim tape. Keep a standing first-fix list and tick it against every take-off, or buy the fixings as a bundle so the tub and the case come in the same box as the timber. It’s the cheap stuff that sends you back to the yard.'),
                     h2('Order it as one delivery'),
-                    para('Once you’ve got the packs, the pallets and the fixings on one list, put it on the account as a single order and book a timed drop. One delivery to site, one signature, one invoice at the end of the month — and a first-fix that runs start to finish without a single trip back to the counter.'),
+                    para('Once you’ve got the packs, the pallets and the fixings on one list, put it on the account as a single order and book a timed drop. One delivery to site, one signature, one invoice at the end of the month, and a first-fix that runs start to finish without a single trip back to the counter.'),
                 ],
             },
         },
@@ -834,13 +834,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Insulation is one of the few materials where guessing costs you twice — once if you under-spec and fail Building Control, and once if you over-spec and pay for board you didn’t need. PIR is the workhorse because it does more per millimetre than mineral wool, so you hit the target U-value in a thinner build-up. But you still have to pick the thickness on purpose.'),
+                    para('Insulation is one of the few materials where guessing costs you twice: once if you under-spec and fail Building Control, and once if you over-spec and pay for board you didn’t need. PIR is the workhorse because it does more per millimetre than mineral wool, so you hit the target U-value in a thinner build-up. But you still have to pick the thickness on purpose.'),
                     h2('Start from the target U-value'),
-                    para('Every element — floor, wall, roof — has a target U-value set by the current Building Regulations, and lower is better-insulated. PIR’s low thermal conductivity means a given thickness gets you further down toward that target than most alternatives. Your designer or a Building Control officer will give you the number to hit; the thickness follows from it and from what the rest of the build-up already contributes.'),
+                    para('Every element (floor, wall, roof) has a target U-value set by the current Building Regulations, and lower is better-insulated. PIR’s low thermal conductivity means a given thickness gets you further down toward that target than most alternatives. Your designer or a Building Control officer will give you the number to hit; the thickness follows from it and from what the rest of the build-up already contributes.'),
                     h2('Thicker board, smaller pack'),
-                    para('PIR ships by the pack, and the thicker the board, the fewer sheets on a pack — a pack of 25mm holds far more boards than a pack of 100mm. That matters for ordering: work out the board area you need to cover, then check how many packs each thickness takes, so the delivery and the price are no surprise. Order the thickness the U-value calls for, not the one that looks cheapest per pack.'),
+                    para('PIR ships by the pack, and the thicker the board, the fewer sheets on a pack: a pack of 25mm holds far more boards than a pack of 100mm. That matters for ordering: work out the board area you need to cover, then check how many packs each thickness takes, so the delivery and the price are no surprise. Order the thickness the U-value calls for, not the one that looks cheapest per pack.'),
                     h2('Cut clean, fit tight'),
-                    para('PIR only performs if it’s fitted without gaps — air paths around a sloppy cut let the heat straight past the board. Cut it a shade oversize with a fine blade, friction-fit it tight between studs or rafters, and tape or foam the joints. Spec the right thickness and fit it properly, and the wall passes first time.'),
+                    para('PIR only performs if it’s fitted without gaps: air paths around a sloppy cut let the heat straight past the board. Cut it a shade oversize with a fine blade, friction-fit it tight between studs or rafters, and tape or foam the joints. Spec the right thickness and fit it properly, and the wall passes first time.'),
                 ],
             },
         },
@@ -856,13 +856,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Groundworks is where a job is won or lost before anything visible goes up. Get the sub-base right and everything on top of it sits true for decades; skimp on it and the drive cracks, the slab moves and the snagging never ends. The material itself is cheap — it’s the getting-it-wrong that costs — so the order is worth a few minutes of arithmetic.'),
+                    para('Groundworks is where a job is won or lost before anything visible goes up. Get the sub-base right and everything on top of it sits true for decades; skimp on it and the drive cracks, the slab moves and the snagging never ends. The material itself is cheap (it’s the getting-it-wrong that costs) so the order is worth a few minutes of arithmetic.'),
                     h2('Work out the volume, then the bags'),
-                    para('A sub-base is a volume: area to be covered, times the compacted depth. A drive or a shed base usually wants around 100 to 150mm of MOT Type 1, well compacted; a slab under load can want more — check the design. Multiply the area by the depth to get cubic metres, then convert to weight (MOT Type 1 runs roughly two tonnes to the cubic metre) and divide by the bag weight. A handled bulk bag around 850kg makes the sums easy and the delivery tidy.'),
+                    para('A sub-base is a volume: area to be covered, times the compacted depth. A drive or a shed base usually wants around 100 to 150mm of MOT Type 1, well compacted; a slab under load can want more. Check the design. Multiply the area by the depth to get cubic metres, then convert to weight (MOT Type 1 runs roughly two tonnes to the cubic metre) and divide by the bag weight. A handled bulk bag around 850kg makes the sums easy and the delivery tidy.'),
                     h2('Compact in layers'),
                     para('Don’t tip the whole lot and whack it once. Lay the sub-base in layers of no more than 100mm or so and compact each one with a plate or a roller before the next goes on. Layered and compacted, MOT Type 1 locks up into a hard, free-draining base; dumped in one go, the bottom never consolidates and the whole thing settles later.'),
                     h2('Order a bag spare'),
-                    para('The one certainty in groundworks is that the hole is bigger than it looked. Bulk bags are cheap and a part-used bag keeps under a sheet, so order one more than the sums say — running a bag short mid-pour, waiting a day for another delivery while the base half-sets, costs far more than the spare aggregate ever will.'),
+                    para('The one certainty in groundworks is that the hole is bigger than it looked. Bulk bags are cheap and a part-used bag keeps under a sheet, so order one more than the sums say: running a bag short mid-pour, waiting a day for another delivery while the base half-sets, costs far more than the spare aggregate ever will.'),
                 ],
             },
         },
@@ -877,7 +877,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Building Materials (B2B / Wholesale)',
     theme: THEME,
     summary:
-        'A complete, working wholesale yard for a builders’ merchant: a real trade catalogue sold by the pack, pallet and bulk bag — timber & sheet, plasterboard, cement, insulation, fixings, sealant, aggregates and safety — with categories, collections, a bespoke trade PDP (per-pack pricing, volume breaks, net-30, collect or deliver) and a full merchandised home page. Rugged yard theme — warm concrete, timber-bark, safety-ochre accent. Shipped as Yardstock Trade Supplies.',
+        'A complete, working wholesale yard for a builders’ merchant: a real trade catalogue sold by the pack, pallet and bulk bag, timber & sheet, plasterboard, cement, insulation, fixings, sealant, aggregates and safety, with categories, collections, a bespoke trade PDP (per-pack pricing, volume breaks, net-30, collect or deliver) and a full merchandised home page. Rugged yard theme, warm concrete, timber-bark, safety-ochre accent. Shipped as Yardstock Trade Supplies.',
     tagline: 'A wholesale yard built for the trade.',
     vertical: 'b2b',
     industry: 'Builders’ merchant & building materials',
@@ -890,17 +890,17 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Yardstock Trade Supplies — builders’ merchant & building materials',
+            title: 'Yardstock Trade Supplies: builders’ merchant & building materials',
             description:
-                'Yardstock is a builders’ merchant — timber, sheet, plasterboard, cement, insulation, fixings, aggregates and safety sold by the pack and the pallet at trade prices, with net-30 credit, click & collect and site delivery. Open a trade account.',
+                'Yardstock is a builders’ merchant: timber, sheet, plasterboard, cement, insulation, fixings, aggregates and safety sold by the pack and the pallet at trade prices, with net-30 credit, click & collect and site delivery. Open a trade account.',
         },
         about: {
             title: 'About Yardstock Trade Supplies',
             description:
-                'How Yardstock stocks, prices and delivers — one yard, one account, one delivery, wholesale by the pack and the pallet, and stock that’s actually there when you turn up for it.',
+                'How Yardstock stocks, prices and delivers. One yard, one account, one delivery, wholesale by the pack and the pallet, and stock that’s actually there when you turn up for it.',
         },
         contact: {
-            title: 'Open a trade account — Yardstock Trade Supplies',
+            title: 'Open a trade account: Yardstock Trade Supplies',
             description:
                 'Set up a trade account with Yardstock: wholesale pack and pallet pricing, volume breaks, net-30 credit, yard collection or site delivery, and a dedicated account manager. Trade enquiries and whole-job quotes start here.',
         },

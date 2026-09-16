@@ -335,7 +335,7 @@ function ManagePiece({
               </AlertTitle>
               <AlertDescription>
                 {usage.isError
-                  ? 'We could not check where this piece is used just now. Everything else here still works — try Refresh.'
+                  ? 'We could not check where this piece is used just now. Everything else here still works. Try Refresh.'
                   : usage.isPending
                     ? 'Looking at every page and layout to see where this piece appears.'
                     : state.detail}
@@ -350,7 +350,7 @@ function ManagePiece({
                 <AlertDescription>
                   It was built in an earlier version of the site editor, and its design is saved in
                   a form the current one can&apos;t read. Its name and notes are still yours to edit
-                  here, and anywhere it&apos;s already placed keeps working — but to change how it
+                  here, and anywhere it&apos;s already placed keeps working, but to change how it
                   looks you&apos;ll need to build it again as a new piece.
                 </AlertDescription>
               </AlertContent>
@@ -359,7 +359,7 @@ function ManagePiece({
 
           <FormSection
             title="Details"
-            description="The name and note are how you recognize this piece — in this list and in the editor's Add panel."
+            description="The name and note are how you recognize this piece: in this list and in the editor's Add panel."
           >
             <Field>
               <FieldLabel>Name</FieldLabel>
@@ -421,7 +421,7 @@ function ManagePiece({
                 {blocked
                   ? `You can't delete this while it's on ${
                       blockedTotal === 1 ? '1 page' : `${String(blockedTotal)} places`
-                    } built the old way. Remove it from those in the editor first — otherwise they'd be left with a hole.`
+                    } built the old way. Remove it from those in the editor first, otherwise they'd be left with a hole.`
                   : !usageKnown
                     ? 'Checking where this is used before this can be deleted.'
                     : inUse

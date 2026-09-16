@@ -102,7 +102,7 @@ export function useNotifications(): {
   const explainFailure = () => {
     toast.add({
       title: "Couldn't mark that read just now.",
-      description: 'It is still in your list — try again in a moment.',
+      description: 'It is still in your list. Try again in a moment.',
       type: 'error',
     });
     invalidate();

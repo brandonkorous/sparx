@@ -338,7 +338,7 @@ function CustomerEditor({
     create.isError || update.isError
       ? customerErrorMessage(
           create.error ?? update.error,
-          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
+          'The server did not answer. Nothing was changed and your work is still on screen. Try again in a moment.'
         )
       : null;
 
@@ -516,7 +516,7 @@ function CustomerEditor({
 
       <FormSection
         title="Where they stand"
-        description="Three independent signals — where they are with you, what's happening right now, and how they buy."
+        description="Three independent signals: where they are with you, what's happening right now, and how they buy."
       >
         <Field>
           <FieldLabel>Lifecycle stage</FieldLabel>
@@ -575,7 +575,7 @@ function CustomerEditor({
 
       <FormSection
         title="How to reach them"
-        description="However you have it — none of this is required."
+        description="However you have it: none of this is required."
       >
         <div className="grid gap-3 @md:grid-cols-2">
           <Field>
@@ -678,7 +678,7 @@ function CustomerEditor({
               }}
             />
             <FieldDescription>
-              The business this person buys on behalf of — they get its agreed prices and terms.
+              The business this person buys on behalf of. They get its agreed prices and terms.
             </FieldDescription>
           </Field>
         ) : null}
@@ -699,7 +699,7 @@ function CustomerEditor({
             }
           />
           <FieldDescription>
-            Your own words for grouping people — “vip”, “trade-show”, “needs-follow-up”. Letters,
+            Your own words for grouping people: “vip”, “trade-show”, “needs-follow-up”. Letters,
             numbers, - and _ only.
           </FieldDescription>
         </Field>
@@ -845,7 +845,7 @@ function CustomerEditor({
                   Add a customer
                 </Heading>
                 <Text>
-                  Everyone you work with or keep in touch with lives here. Fill in what you know — a
+                  Everyone you work with or keep in touch with lives here. Fill in what you know: a
                   name or an email is enough to start.
                 </Text>
               </div>

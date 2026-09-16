@@ -143,7 +143,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over — it only keeps a no-show from taking a groomer’s whole afternoon.',
+        'Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over. It only keeps a no-show from taking a groomer’s whole afternoon.',
     },
   ],
   resources: [
@@ -193,7 +193,7 @@ const SCHEDULING = {
   services: [
     {
       handle: 'bath-brush-small',
-      name: 'Bath & brush — small dog',
+      name: 'Bath & brush: small dog',
       description:
         'A warm bath, a gentle towel-and-cage-free blow dry, a brush-out, ears and a spritz. For dogs up to about 25 lb.',
       durationMinutes: 45,
@@ -207,9 +207,9 @@ const SCHEDULING = {
     },
     {
       handle: 'bath-brush-large',
-      name: 'Bath & brush — large dog',
+      name: 'Bath & brush: large dog',
       description:
-        'The same gentle bath, brush-out and cage-free dry, sized for the big kids — dogs over about 50 lb.',
+        'The same gentle bath, brush-out and cage-free dry, sized for the big kids: dogs over about 50 lb.',
       durationMinutes: 75,
       priceCents: 6500,
       assignmentStrategy: 'any_available',
@@ -221,7 +221,7 @@ const SCHEDULING = {
     },
     {
       handle: 'full-groom-small',
-      name: 'Full groom — small dog',
+      name: 'Full groom: small dog',
       description:
         'Bath, full haircut to the style you like, nails, ears, paw tidy and a bandana. For dogs up to about 25 lb.',
       durationMinutes: 90,
@@ -236,9 +236,9 @@ const SCHEDULING = {
     },
     {
       handle: 'full-groom-large',
-      name: 'Full groom — large dog',
+      name: 'Full groom: large dog',
       description:
-        'The whole works — bath, breed or freestyle cut, nails, ears and paws — for the big dogs over about 50 lb. Never rushed.',
+        'The whole works (bath, breed or freestyle cut, nails, ears and paws) for the big dogs over about 50 lb. Never rushed.',
       durationMinutes: 120,
       priceCents: 11500,
       bufferAfterMin: 15,
@@ -268,7 +268,7 @@ const SCHEDULING = {
       handle: 'deshed-treatment',
       name: 'De-shed treatment',
       description:
-        'A deep bath, a shed-loosening conditioner and a thorough undercoat brush-out — the fix for tumbleweeds of fur at home.',
+        'A deep bath, a shed-loosening conditioner and a thorough undercoat brush-out: the fix for tumbleweeds of fur at home.',
       durationMinutes: 90,
       priceCents: 8000,
       bufferAfterMin: 10,
@@ -283,7 +283,7 @@ const SCHEDULING = {
       handle: 'nail-trim',
       name: 'Nail trim & tidy',
       description:
-        'A quick, calm nail trim with a file-smooth finish — add a teeth-brushing on the day if you like. No appointment marathon.',
+        'A quick, calm nail trim with a file-smooth finish. Add a teeth-brushing on the day if you like. No appointment marathon.',
       durationMinutes: 45,
       priceCents: 2000,
       assignmentStrategy: 'any_available',
@@ -302,7 +302,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A happy, freshly-bathed dog with a big grin',
     title: 'Gentle hands, happy tails',
-    sub: 'A bright, fear-free neighborhood dog grooming shop — baths, full grooms and nail trims for every breed and size, done calmly and never rushed.',
+    sub: 'A bright, fear-free neighborhood dog grooming shop: baths, full grooms and nail trims for every breed and size, done calmly and never rushed.',
     primary: { label: 'Book online', href: '/book' },
     secondary: { label: 'See the menu', href: '/book' },
     overlay: 'dark',
@@ -315,11 +315,11 @@ const HOME = [
       },
       {
         title: 'By appointment, so it stays calm',
-        body: 'One dog at a time per groomer — no packed kennels, no barking chaos. Your dog gets our full attention.',
+        body: 'One dog at a time per groomer: no packed kennels, no barking chaos. Your dog gets our full attention.',
       },
       {
         title: 'All breeds & sizes',
-        body: 'Chihuahua to Great Dane, doodle to double-coat — every dog is welcome and priced fairly by size.',
+        body: 'Chihuahua to Great Dane, doodle to double-coat: every dog is welcome and priced fairly by size.',
       },
       {
         title: 'Cage-free drying',
@@ -333,9 +333,9 @@ const HOME = [
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Bath & brush — small', priceCents: 4000, durationMin: 45, desc: 'Warm bath, brush-out and cage-free dry.' },
-      { name: 'Full groom — small', priceCents: 7500, durationMin: 90, desc: 'Bath, haircut, nails, ears and a bandana.' },
-      { name: 'Full groom — large', priceCents: 11500, durationMin: 120, desc: 'The whole works for the big kids.' },
+      { name: 'Bath & brush: small', priceCents: 4000, durationMin: 45, desc: 'Warm bath, brush-out and cage-free dry.' },
+      { name: 'Full groom: small', priceCents: 7500, durationMin: 90, desc: 'Bath, haircut, nails, ears and a bandana.' },
+      { name: 'Full groom: large', priceCents: 11500, durationMin: 120, desc: 'The whole works for the big kids.' },
       { name: 'De-shed treatment', priceCents: 8000, durationMin: 90, desc: 'Deep bath and undercoat blow-out.' },
       { name: 'Puppy’s first groom', priceCents: 3500, durationMin: 45, desc: 'A gentle, all-treats introduction.' },
       { name: 'Nail trim & tidy', priceCents: 2000, durationMin: 45, desc: 'Quick, calm nails with a smooth finish.' },
@@ -354,10 +354,10 @@ const HOME = [
   }),
   teamRow({
     heading: 'Meet the groomers',
-    intro: 'Book by name — your dog gets to know the same friendly face each visit.',
+    intro: 'Book by name. Your dog gets to know the same friendly face each visit.',
     members: [
       { name: 'Rosa Delgado', role: 'Lead groomer', image: url(IMG.rosa), alt: 'Rosa Delgado, lead groomer', bio: 'Full grooms and hand-stripping for wire coats. Rosa runs the shop and loves a good doodle.' },
-      { name: 'Theo Park', role: 'Groomer · de-shed specialist', image: url(IMG.theo), alt: 'Theo Park, groomer and de-shed specialist', bio: 'The double-coat whisperer — huskies, shepherds and shedders of all kinds.' },
+      { name: 'Theo Park', role: 'Groomer · de-shed specialist', image: url(IMG.theo), alt: 'Theo Park, groomer and de-shed specialist', bio: 'The double-coat whisperer: huskies, shepherds and shedders of all kinds.' },
       { name: 'Bea Nguyen', role: 'Puppy & bath groomer', image: url(IMG.bea), alt: 'Bea Nguyen, puppy and bath groomer', bio: 'Endless patience for first-timers and nervous pups. Baths, nails and puppy introductions.' },
     ],
   }),
@@ -401,7 +401,7 @@ const ABOUT = [
     heading: 'About Scrub & Wag',
     body: [
       'We started Scrub & Wag because grooming shouldn’t be a scary day. Too many places pack dogs into crates, rush them through, and hand back a stressed pup. We wanted the opposite.',
-      'So we keep it small, gentle and unhurried — fear-free handling, cage-free drying, and one dog at a time per groomer. Just clean, happy dogs and owners who trust us with them.',
+      'So we keep it small, gentle and unhurried: fear-free handling, cage-free drying, and one dog at a time per groomer. Just clean, happy dogs and owners who trust us with them.',
     ],
     cta: { label: 'Book a groom', href: '/book' },
   }),
@@ -429,7 +429,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live openings and grab your dog’s spot online — no phone tag, no hold music.',
+    sub: 'See live openings and grab your dog’s spot online: no phone tag, no hold music.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -440,8 +440,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-petgroom-playful',
   name: 'Pet Grooming (Playful)',
   summary:
-    'A bright, friendly dog-grooming site — a sky-teal primary, a sunny-yellow accent and a warm off-white ground on rounded, cheerful faces. Installs a working booking flow: a real menu priced by dog size (bath & brush, full groom, puppy intro, de-shed, nail trim), three groomers you book by name plus three grooming stations as bookable resources, and a $15 full-groom deposit policy. Ships as "Scrub & Wag".',
-  tagline: 'A bright, playful template for dog groomers — book online from day one.',
+    'A bright, friendly dog-grooming site: a sky-teal primary, a sunny-yellow accent and a warm off-white ground on rounded, cheerful faces. Installs a working booking flow: a real menu priced by dog size (bath & brush, full groom, puppy intro, de-shed, nail trim), three groomers you book by name plus three grooming stations as bookable resources, and a $15 full-groom deposit policy. Ships as "Scrub & Wag".',
+  tagline: 'A bright, playful template for dog groomers. Book online from day one.',
   industry: 'Pet grooming',
   sortWeight: 80,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -450,7 +450,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Scrub & Wag — friendly dog grooming',
+      title: 'Scrub & Wag: friendly dog grooming',
       description:
         'Scrub & Wag is a bright, fear-free dog grooming shop. Baths, full grooms, de-shed treatments and nail trims priced by size. Book your groomer online.',
     },

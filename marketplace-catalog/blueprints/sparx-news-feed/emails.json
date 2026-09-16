@@ -5,7 +5,7 @@
     "doc": {
       "version": "1",
       "subject": "Welcome to {{site.name}}",
-      "preheader": "Thanks for subscribing — here’s where to begin.",
+      "preheader": "Thanks for subscribing: here’s where to begin.",
       "root": {
         "id": "def-s-body-15",
         "kind": "body",
@@ -44,7 +44,7 @@
               {
                 "id": "def-s-text-2",
                 "kind": "text",
-                "html": "Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish — the stories, the reporting, and the ideas we think are worth your time.",
+                "html": "Thanks for subscribing to {{site.name}}. You’ll be first to read what we publish: the stories, the reporting, and the ideas we think are worth your time.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
@@ -81,7 +81,7 @@
               {
                 "id": "def-s-text-7",
                 "kind": "text",
-                "html": "New pieces land here first — no noise, just the work we think is worth your time.",
+                "html": "New pieces land here first: no noise, just the work we think is worth your time.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,
@@ -113,7 +113,7 @@
               {
                 "id": "def-s-text-11",
                 "kind": "text",
-                "html": "Catch up on what we’ve been working on — our newest stories are waiting in the journal.",
+                "html": "Catch up on what we’ve been working on. Our newest stories are waiting in the journal.",
                 "align": "left",
                 "color": "#18181b",
                 "colorAuto": true,

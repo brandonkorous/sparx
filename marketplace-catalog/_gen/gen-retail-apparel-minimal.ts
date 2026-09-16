@@ -168,7 +168,7 @@ function hero(): Node {
                                     text: 'Fewer, better clothes.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Kestrel makes a small wardrobe of essentials in good cloth — the tee, the knit, the trouser, the coat — cut to last and to wear together. No logos, no seasons to chase. Buy less, wear it longer.',
+                                    text: 'Kestrel makes a small wardrobe of essentials in good cloth (the tee, the knit, the trouser, the coat) cut to last and to wear together. No logos, no seasons to chase. Buy less, wear it longer.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-6', {
                                     children: [
@@ -264,7 +264,7 @@ const HOME: Node[] = [
     editorialBand({
         eyebrow: 'How it’s made',
         heading: 'Made to be kept',
-        lead: 'We work with a handful of family mills and a small factory we visit ourselves — long-staple cottons, full-weight wools, seams finished to survive a decade of washes. A Kestrel piece is meant to be the last one you buy of its kind.',
+        lead: 'We work with a handful of family mills and a small factory we visit ourselves: long-staple cottons, full-weight wools, seams finished to survive a decade of washes. A Kestrel piece is meant to be the last one you buy of its kind.',
         assetId: 'kestrel-band-craft',
         cta: 'Our making',
         href: '/blog/how-to-read-a-fabric',
@@ -274,7 +274,7 @@ const HOME: Node[] = [
     editorialBand({
         eyebrow: 'Wear it well',
         heading: 'A wardrobe, not a haul',
-        lead: 'Everything here is cut to work with everything else — one palette of bone, stone, charcoal and camel, so any two pieces already go together. Start with a few, add slowly, and get dressed in ten seconds flat.',
+        lead: 'Everything here is cut to work with everything else. One palette of bone, stone, charcoal and camel, so any two pieces already go together. Start with a few, add slowly, and get dressed in ten seconds flat.',
         assetId: 'kestrel-band-care',
         cta: 'The capsule idea',
         href: '/blog/the-case-for-fewer-clothes',
@@ -320,7 +320,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-xs font-semibold uppercase tracking-widest text-secondary', { text: 'Considered construction' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Cut in full-weight cloth and finished with reinforced seams, so it holds its shape wash after wash. Fits true — take your usual size; between two, size down for a cleaner line. Free returns within 30 days if it isn’t right.',
+                                        text: 'Cut in full-weight cloth and finished with reinforced seams, so it holds its shape wash after wash. Fits true: take your usual size; between two, size down for a cleaner line. Free returns within 30 days if it isn’t right.',
                                     }),
                                 ],
                             }),
@@ -361,14 +361,14 @@ const SHOP: Node[] = [
     pageMasthead(
         'Everything, in stock',
         'The collection',
-        'The whole wardrobe in one place — tees and shirts, knitwear, trousers, outerwear and a few good accessories. One palette, cut to layer. Filter by category or sort however you like.'
+        'The whole wardrobe in one place: tees and shirts, knitwear, trousers, outerwear and a few good accessories. One palette, cut to layer. Filter by category or sort however you like.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Grouped to shop',
         'Collections',
-        'The pieces gathered the way people actually get dressed — the everyday essentials, this season’s new cuts, the knitwear edit and the tailoring. Start anywhere.'
+        'The pieces gathered the way people actually get dressed: the everyday essentials, this season’s new cuts, the knitwear edit and the tailoring. Start anywhere.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -382,7 +382,7 @@ const CART: Node[] = [
                     el('p', 'text-xs font-semibold uppercase tracking-widest text-secondary', { text: 'Nearly there' }),
                     el('h1', 'text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl', { text: 'Your bag' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping over $150 and free returns within 30 days — try it on at home, send back what isn’t right, no questions. Everything is packed in recycled, plastic-free wrap.',
+                        text: 'Free shipping over $150 and free returns within 30 days. Try it on at home, send back what isn’t right, no questions. Everything is packed in recycled, plastic-free wrap.',
                     }),
                 ],
             }),
@@ -397,7 +397,7 @@ const JOURNAL: Node[] = [
                     el('p', 'text-xs font-semibold uppercase tracking-widest text-secondary', { text: 'Notes & guides' }),
                     el('h1', 'text-5xl font-normal leading-none tracking-tight text-base-content @3xl:text-7xl', { text: 'The Kestrel journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'On building a wardrobe you actually wear — how to read a fabric, why fewer is better, and how to make good clothes last. Plainly written, no trend-chasing.',
+                        text: 'On building a wardrobe you actually wear: how to read a fabric, why fewer is better, and how to make good clothes last. Plainly written, no trend-chasing.',
                     }),
                 ],
             }),
@@ -415,13 +415,13 @@ const ABOUT: Node[] = [
                     el('p', 'text-xs font-semibold uppercase tracking-widest text-secondary', { text: 'About Kestrel' }),
                     el('h1', 'text-5xl font-normal tracking-tight text-base-content @2xl:text-6xl', { text: 'Clothes that stay' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Kestrel began with a simple frustration: too much of what we owned fell apart, went out of style, or never quite went with anything else. So we set out to make the opposite — a short list of essentials, in honest cloth, cut to wear together for years.',
+                        text: 'Kestrel began with a simple frustration: too much of what we owned fell apart, went out of style, or never quite went with anything else. So we set out to make the opposite, a short list of essentials, in honest cloth, cut to wear together for years.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'We keep the range small on purpose. Every piece has to earn its place: it has to be worth making well, worth keeping, and worth wearing beside everything else we make. If it doesn’t, it doesn’t get made.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We work directly with the mills and the factory that make our clothes, pay fairly for good work, and price honestly — no seasonal markdowns to disguise, no logo tax. Just good clothes, made to be kept.',
+                        text: 'We work directly with the mills and the factory that make our clothes, pay fairly for good work, and price honestly: no seasonal markdowns to disguise, no logo tax. Just good clothes, made to be kept.',
                     }),
                 ],
             }),
@@ -603,7 +603,7 @@ const PRODUCTS: Product[] = [
         handle: 'everyday-tee',
         title: 'The Everyday Tee',
         description:
-            'A heavyweight organic-cotton crew that holds its shape — a proper tee, not an undershirt. Boxy-but-clean through the body, ribbed at the neck so it never gapes, and dense enough to wear on its own. The one you’ll reach for first, in every color.',
+            'A heavyweight organic-cotton crew that holds its shape: a proper tee, not an undershirt. Boxy-but-clean through the body, ribbed at the neck so it never gapes, and dense enough to wear on its own. The one you’ll reach for first, in every color.',
         price: 45,
         sku: 'KES-TEE',
         productType: 'Apparel',
@@ -612,14 +612,14 @@ const PRODUCTS: Product[] = [
         tags: ['tee', 'cotton', 'everyday'],
         colors: ['Bone', 'Charcoal', 'Slate'],
         asset: 'kestrel-prod-tee',
-        seoTitle: 'The Everyday Tee — heavyweight organic cotton | Kestrel',
+        seoTitle: 'The Everyday Tee: heavyweight organic cotton | Kestrel',
         seoDescription: 'A dense, boxy heavyweight organic-cotton crew tee that holds its shape. In bone, charcoal and slate.',
     }),
     garment({
         handle: 'oxford-shirt',
         title: 'The Oxford Shirt',
         description:
-            'A relaxed button-down in a soft, textured oxford cotton — crisp enough to wear open over a tee, easy enough to sleep in. Cut a little longer with a curved hem, mother-of-pearl buttons, and a collar that stands whether it’s buttoned or not.',
+            'A relaxed button-down in a soft, textured oxford cotton: crisp enough to wear open over a tee, easy enough to sleep in. Cut a little longer with a curved hem, mother-of-pearl buttons, and a collar that stands whether it’s buttoned or not.',
         price: 95,
         sku: 'KES-OXF',
         productType: 'Apparel',
@@ -628,14 +628,14 @@ const PRODUCTS: Product[] = [
         tags: ['shirt', 'oxford', 'cotton'],
         colors: ['Ecru', 'Chambray', 'Charcoal'],
         asset: 'kestrel-prod-oxford',
-        seoTitle: 'The Oxford Shirt — soft-washed oxford cotton | Kestrel',
+        seoTitle: 'The Oxford Shirt: soft-washed oxford cotton | Kestrel',
         seoDescription: 'A relaxed, longer-cut oxford button-down in soft textured cotton. In ecru, chambray and charcoal.',
     }),
     garment({
         handle: 'fisherman-knit',
         title: 'The Fisherman Knit',
         description:
-            'A heavyweight cable-knit in undyed British wool, knitted to an old gansey pattern by a mill that still does it properly. Thick, warm, and built to soften with wear — the sweater you keep for twenty winters and hand on after that.',
+            'A heavyweight cable-knit in undyed British wool, knitted to an old gansey pattern by a mill that still does it properly. Thick, warm, and built to soften with wear: the sweater you keep for twenty winters and hand on after that.',
         price: 185,
         sku: 'KES-FISH',
         productType: 'Knitwear',
@@ -644,7 +644,7 @@ const PRODUCTS: Product[] = [
         tags: ['knit', 'wool', 'heavyweight'],
         colors: ['Oatmeal', 'Ecru', 'Charcoal'],
         asset: 'kestrel-prod-fisherman',
-        seoTitle: 'The Fisherman Knit — heavyweight British wool cable | Kestrel',
+        seoTitle: 'The Fisherman Knit: heavyweight British wool cable | Kestrel',
         seoDescription: 'A thick undyed British-wool cable-knit sweater in a traditional gansey pattern. In oatmeal, ecru and charcoal.',
     }),
     garment({
@@ -660,14 +660,14 @@ const PRODUCTS: Product[] = [
         tags: ['knit', 'merino', 'layer'],
         colors: ['Camel', 'Navy', 'Charcoal'],
         asset: 'kestrel-prod-merino',
-        seoTitle: 'The Merino Crew — extra-fine merino sweater | Kestrel',
+        seoTitle: 'The Merino Crew: extra-fine merino sweater | Kestrel',
         seoDescription: 'A fine-gauge extra-fine merino crew that layers without bulk. In camel, navy and charcoal.',
     }),
     garment({
         handle: 'wide-trouser',
         title: 'The Wide-Leg Trouser',
         description:
-            'A high, clean-fronted trouser in a substantial wool-blend that drapes rather than clings — full through the leg, breaking just so over a shoe. Side adjusters instead of a belt, deep real pockets, and a press that holds all day.',
+            'A high, clean-fronted trouser in a substantial wool-blend that drapes rather than clings: full through the leg, breaking just so over a shoe. Side adjusters instead of a belt, deep real pockets, and a press that holds all day.',
         price: 145,
         sku: 'KES-WIDE',
         productType: 'Trousers',
@@ -676,14 +676,14 @@ const PRODUCTS: Product[] = [
         tags: ['trouser', 'wool', 'wide-leg'],
         colors: ['Stone', 'Charcoal', 'Navy'],
         asset: 'kestrel-prod-wide-trouser',
-        seoTitle: 'The Wide-Leg Trouser — draped wool blend | Kestrel',
+        seoTitle: 'The Wide-Leg Trouser: draped wool blend | Kestrel',
         seoDescription: 'A high, clean-fronted wide-leg trouser in a draping wool blend with side adjusters. In stone, charcoal and navy.',
     }),
     garment({
         handle: 'pleated-trouser',
         title: 'The Pleated Trouser',
         description:
-            'A single-pleat tailored trouser that reads sharp without trying — tapered gently to the ankle, cut to sit at the natural waist. Dress it up with the oxford or down with the tee; it’s the trouser that quietly does both.',
+            'A single-pleat tailored trouser that reads sharp without trying: tapered gently to the ankle, cut to sit at the natural waist. Dress it up with the oxford or down with the tee; it’s the trouser that quietly does both.',
         price: 135,
         sku: 'KES-PLT',
         productType: 'Trousers',
@@ -692,14 +692,14 @@ const PRODUCTS: Product[] = [
         tags: ['trouser', 'pleated', 'tailored'],
         colors: ['Charcoal', 'Taupe', 'Black'],
         asset: 'kestrel-prod-pleated-trouser',
-        seoTitle: 'The Pleated Trouser — single-pleat tailored | Kestrel',
+        seoTitle: 'The Pleated Trouser: single-pleat tailored | Kestrel',
         seoDescription: 'A single-pleat tailored trouser, gently tapered, cut to the natural waist. In charcoal, taupe and black.',
     }),
     garment({
         handle: 'overcoat',
         title: 'The Overcoat',
         description:
-            'A double-faced wool overcoat with no lining and no bulk — just two layers of cloth stitched together and bound by hand at every edge. Roomy enough for a knit underneath, long enough to mean it. The one coat, done once, done right.',
+            'A double-faced wool overcoat with no lining and no bulk. Just two layers of cloth stitched together and bound by hand at every edge. Roomy enough for a knit underneath, long enough to mean it. The one coat, done once, done right.',
         price: 450,
         sku: 'KES-COAT',
         productType: 'Outerwear',
@@ -708,7 +708,7 @@ const PRODUCTS: Product[] = [
         tags: ['coat', 'wool', 'outerwear'],
         colors: ['Camel', 'Charcoal', 'Black'],
         asset: 'kestrel-prod-overcoat',
-        seoTitle: 'The Overcoat — double-faced wool | Kestrel',
+        seoTitle: 'The Overcoat: double-faced wool | Kestrel',
         seoDescription: 'An unlined double-faced wool overcoat, hand-bound at every edge. In camel, charcoal and black.',
     }),
     accessory({
@@ -722,21 +722,21 @@ const PRODUCTS: Product[] = [
         tags: ['scarf', 'lambswool', 'accessory'],
         colors: ['Oatmeal', 'Charcoal', 'Camel'],
         asset: 'kestrel-prod-scarf',
-        seoTitle: 'The Lambswool Scarf — brushed soft, long | Kestrel',
+        seoTitle: 'The Lambswool Scarf: brushed soft, long | Kestrel',
         seoDescription: 'A generously long brushed-lambswool scarf with a hand-knotted fringe. In oatmeal, charcoal and camel.',
     }),
     accessory({
         handle: 'leather-tote',
         title: 'The Leather Tote',
         description:
-            'A roomy vegetable-tanned leather tote, cut from a single hide and stitched to last — no hardware to fail, no lining to tear. It carries a laptop and a lunch, and it earns a patina the way good leather should. Buy it once.',
+            'A roomy vegetable-tanned leather tote, cut from a single hide and stitched to last: no hardware to fail, no lining to tear. It carries a laptop and a lunch, and it earns a patina the way good leather should. Buy it once.',
         price: 245,
         sku: 'KES-TOTE',
         collections: ['the-essentials'],
         tags: ['bag', 'leather', 'accessory'],
         colors: ['Tan', 'Black', 'Chocolate'],
         asset: 'kestrel-prod-tote',
-        seoTitle: 'The Leather Tote — vegetable-tanned, unlined | Kestrel',
+        seoTitle: 'The Leather Tote: vegetable-tanned, unlined | Kestrel',
         seoDescription: 'A roomy vegetable-tanned leather tote, cut from a single hide, made to patina. In tan, black and chocolate.',
     }),
 ];
@@ -753,7 +753,7 @@ const COMMERCE = {
         {
             handle: 'the-essentials',
             name: 'The essentials',
-            description: 'The core of the wardrobe — start here.',
+            description: 'The core of the wardrobe. Start here.',
             type: 'manual',
             featured: true,
             productHandles: ['everyday-tee', 'oxford-shirt', 'merino-crew', 'wool-scarf', 'leather-tote'],
@@ -806,16 +806,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The case for fewer clothes',
-            excerpt: 'A small wardrobe isn’t a sacrifice — it’s the thing that makes getting dressed easy. Here’s how to build one.',
+            excerpt: 'A small wardrobe isn’t a sacrifice: it’s the thing that makes getting dressed easy. Here’s how to build one.',
             featuredImage: { $asset: 'kestrel-post-fewer' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Most of us own far more than we wear. The wardrobe fills up, and somehow the choices shrink — you reach for the same handful of things and step around the rest. A capsule wardrobe just makes that honest: keep the few pieces you actually wear, in colors that all go together, and let everything else go.'),
+                    para('Most of us own far more than we wear. The wardrobe fills up, and somehow the choices shrink. You reach for the same handful of things and step around the rest. A capsule wardrobe just makes that honest: keep the few pieces you actually wear, in colors that all go together, and let everything else go.'),
                     h2('One palette does the work'),
-                    para('The trick isn’t owning less for its own sake — it’s owning things that combine. Pick a narrow palette (we build ours from bone, stone, charcoal and camel) and suddenly any top goes with any trouser. You stop assembling outfits and start just getting dressed. Ten seconds, no misses, every morning.'),
+                    para('The trick isn’t owning less for its own sake: it’s owning things that combine. Pick a narrow palette (we build ours from bone, stone, charcoal and camel) and suddenly any top goes with any trouser. You stop assembling outfits and start just getting dressed. Ten seconds, no misses, every morning.'),
                     h2('Buy slowly, buy once'),
-                    para('A smaller wardrobe is only better if the pieces are good enough to lean on, so spend where it counts: dense cloth, real seams, a cut that flatters more than one body. Add one considered piece at a time rather than a haul you half-regret. Done right, you buy less often and wear each thing far longer — which is easier on both the wardrobe and the planet.'),
+                    para('A smaller wardrobe is only better if the pieces are good enough to lean on, so spend where it counts: dense cloth, real seams, a cut that flatters more than one body. Add one considered piece at a time rather than a haul you half-regret. Done right, you buy less often and wear each thing far longer, which is easier on both the wardrobe and the planet.'),
                 ],
             },
         },
@@ -831,11 +831,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('You can tell a lot about a garment before you ever try it on — if you know what to feel for. Fibre, weight and weave decide how a piece drapes, how warm it is, and whether it’ll still look right in five years. None of it is complicated once someone points it out.'),
+                    para('You can tell a lot about a garment before you ever try it on, if you know what to feel for. Fibre, weight and weave decide how a piece drapes, how warm it is, and whether it’ll still look right in five years. None of it is complicated once someone points it out.'),
                     h2('Weight is the tell'),
-                    para('Pick a tee up and let it hang. A thin one folds to nothing and shows every line underneath; a heavyweight one has body, hangs cleanly, and lasts. Weight is measured in grams per square metre — higher means denser cloth. It’s the single best predictor of whether a basic will feel cheap or considered, and it costs more because there’s simply more of it.'),
+                    para('Pick a tee up and let it hang. A thin one folds to nothing and shows every line underneath; a heavyweight one has body, hangs cleanly, and lasts. Weight is measured in grams per square metre: higher means denser cloth. It’s the single best predictor of whether a basic will feel cheap or considered, and it costs more because there’s simply more of it.'),
                     h2('Fibre decides the life'),
-                    para('Long-staple cottons pill less and soften rather than wear thin. Full wool breathes, resists odour, and springs back into shape — which is why a good knit outlasts a synthetic one many times over. Blends have their place for stretch and drape, but read the percentages: a trouser that’s mostly natural fibre with a little give behaves quite differently from one that’s mostly plastic.'),
+                    para('Long-staple cottons pill less and soften rather than wear thin. Full wool breathes, resists odour, and springs back into shape, which is why a good knit outlasts a synthetic one many times over. Blends have their place for stretch and drape, but read the percentages: a trouser that’s mostly natural fibre with a little give behaves quite differently from one that’s mostly plastic.'),
                 ],
             },
         },
@@ -851,11 +851,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The fastest way to wear out a sweater is to treat it like a t-shirt. Wool is naturally self-cleaning and odour-resistant, so it asks for far less than you’d think — and giving it less is exactly what keeps it looking new. A little care up front saves the piece for years.'),
+                    para('The fastest way to wear out a sweater is to treat it like a t-shirt. Wool is naturally self-cleaning and odour-resistant, so it asks for far less than you’d think, and giving it less is exactly what keeps it looking new. A little care up front saves the piece for years.'),
                     h2('Air more, wash less'),
-                    para('Most knits don’t need washing after every wear — an overnight air by an open window resets them. When it genuinely needs it, hand-wash in cool water with a wool-safe soap, or use a proper wool cycle. Never wring it: press the water out gently, then dry it flat on a towel, reshaped by hand. Hanging a wet knit stretches it out of shape for good.'),
+                    para('Most knits don’t need washing after every wear: an overnight air by an open window resets them. When it genuinely needs it, hand-wash in cool water with a wool-safe soap, or use a proper wool cycle. Never wring it: press the water out gently, then dry it flat on a towel, reshaped by hand. Hanging a wet knit stretches it out of shape for good.'),
                     h2('Pills aren’t damage'),
-                    para('A little pilling where a sweater rubs — under the arms, at the cuffs — is normal, and it’s not a fault in the wool. A cheap fabric comb or a sweater stone takes it off in minutes and the knit looks new again. Store it folded, not hung, and give it a rest between wears so the fibres recover. Do that, and a good knit outlives most of what you own.'),
+                    para('A little pilling where a sweater rubs (under the arms, at the cuffs) is normal, and it’s not a fault in the wool. A cheap fabric comb or a sweater stone takes it off in minutes and the knit looks new again. Store it folded, not hung, and give it a rest between wears so the fibres recover. Do that, and a good knit outlives most of what you own.'),
                 ],
             },
         },
@@ -870,7 +870,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Fashion Boutique (Minimal)',
     theme: THEME,
     summary:
-        'A complete, working shop for a quiet-luxury clothing boutique: a real wardrobe of essentials — tees, an oxford shirt, heavyweight and fine knitwear, tailored and wide-leg trousers, an overcoat, a scarf and a leather tote — each sized XS–XL in a tight color palette, with categories, collections, a bespoke editorial PDP and a merchandised home page. Warm bone paper, near-black mono type, no accent — the clothes are the color. Shipped as Kestrel.',
+        'A complete, working shop for a quiet-luxury clothing boutique: a real wardrobe of essentials, tees, an oxford shirt, heavyweight and fine knitwear, tailored and wide-leg trousers, an overcoat, a scarf and a leather tote. Each sized XS–XL in a tight color palette, with categories, collections, a bespoke editorial PDP and a merchandised home page. Warm bone paper, near-black mono type, no accent, the clothes are the color. Shipped as Kestrel.',
     tagline: 'An editorial storefront for a fashion boutique of essentials.',
     vertical: 'retail',
     industry: 'Clothing boutique',
@@ -883,12 +883,12 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Kestrel — well-made essentials, built to be kept',
+            title: 'Kestrel: well-made essentials, built to be kept',
             description:
-                'Kestrel makes a small wardrobe of essentials in honest cloth — the tee, the knit, the trouser, the coat — cut to last and to wear together. Buy less, wear it longer.',
+                'Kestrel makes a small wardrobe of essentials in honest cloth (the tee, the knit, the trouser, the coat) cut to last and to wear together. Buy less, wear it longer.',
         },
         about: {
-            title: 'About Kestrel — clothes that stay',
+            title: 'About Kestrel: clothes that stay',
             description:
                 'Why Kestrel keeps the range small: essentials in honest cloth, made directly with the mills and factory, priced honestly, cut to be kept for years.',
         },

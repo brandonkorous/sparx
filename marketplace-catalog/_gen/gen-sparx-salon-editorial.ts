@@ -182,7 +182,7 @@ const SCHEDULING = {
         {
             handle: 'blow-dry',
             name: 'Blow-dry & style',
-            description: 'A wash and a styled finish — smooth, soft or full-bodied, however you like it.',
+            description: 'A wash and a styled finish: smooth, soft or full-bodied, however you like it.',
             durationMinutes: 45,
             priceCents: 5000,
             assignmentStrategy: 'any_available',
@@ -214,7 +214,7 @@ const SCHEDULING = {
         {
             handle: 'balayage',
             name: 'Balayage',
-            description: 'Hand-painted, lived-in lightness — soft grow-out, low upkeep.',
+            description: 'Hand-painted, lived-in lightness: soft grow-out, low upkeep.',
             durationMinutes: 180,
             priceCents: 24000,
             bufferAfterMin: 15,
@@ -237,7 +237,7 @@ const SCHEDULING = {
         {
             handle: 'bridal-styling',
             name: 'Bridal styling',
-            description: 'A trial and day-of styling for the wedding — booked with a consultation first.',
+            description: 'A trial and day-of styling for the wedding: booked with a consultation first.',
             durationMinutes: 90,
             priceCents: 15000,
             requiresApproval: true,
@@ -263,11 +263,11 @@ const HOME = [
         items: [
             {
                 title: 'Stylists, not a conveyor belt',
-                body: 'You’ll see the same person each visit — someone who learns your hair and plans it with you, never rushes it.',
+                body: 'You’ll see the same person each visit. Someone who learns your hair and plans it with you, never rushes it.',
             },
             {
                 title: 'Color that grows out kindly',
-                body: 'Soft, hand-placed color designed for low upkeep — so you leave less often and love it longer.',
+                body: 'Soft, hand-placed color designed for low upkeep, so you leave less often and love it longer.',
             },
             {
                 title: 'A calm hour that’s yours',
@@ -300,7 +300,7 @@ const HOME = [
     }),
     teamRow({
         heading: 'Who you’ll sit with',
-        intro: 'Book by name — you’ll see the same stylist each time.',
+        intro: 'Book by name: you’ll see the same stylist each time.',
         members: [
             { name: 'Ava Bennett', role: 'Senior stylist', image: url(IMG.ava), alt: 'Ava Bennett, senior stylist', bio: 'Precision cuts and quiet-luxury color. Ava leads the studio.' },
             { name: 'Maya Cole', role: 'Stylist', image: url(IMG.maya), alt: 'Maya Cole, stylist', bio: 'Texture, curtain bangs and the easy, undone finish.' },
@@ -346,7 +346,7 @@ const ABOUT = [
         alt: 'A bright, calm salon interior in warm neutrals',
         heading: 'About Maison Élan',
         body: [
-            'We opened Maison Élan to do hair the way we always wished it were done — slowly, thoughtfully, and with the same person who knows your hair.',
+            'We opened Maison Élan to do hair the way we always wished it were done: slowly, thoughtfully, and with the same person who knows your hair.',
             'No upselling, no rushing, no leaving with a look you can’t recreate. Just considered cuts, soft color and a calm hour that’s genuinely yours.',
         ],
         cta: { label: 'Book a chair', href: '/book' },
@@ -356,7 +356,7 @@ const ABOUT = [
         heading: 'How we work',
         items: [
             { title: 'Consultation first', body: 'Every appointment starts with a real conversation about your hair, your routine and what you actually want.' },
-            { title: 'Products we believe in', body: 'Gentle, salon-grade color and care — and honest advice on the short list of things worth taking home.' },
+            { title: 'Products we believe in', body: 'Gentle, salon-grade color and care, and honest advice on the short list of things worth taking home.' },
             { title: 'Yours to keep', body: 'We finish by showing you how to get the look again at home, so it works on a Tuesday, not just in the chair.' },
         ],
     }),
@@ -376,7 +376,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and reserve your time online — no phone tag.',
+        sub: 'See live availability and reserve your time online: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -387,8 +387,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-salon-editorial',
     name: 'Salon (Editorial)',
     summary:
-        'An upscale, editorial hair-salon site — a warm-ivory palette, a brass primary and a high-contrast serif display, with soft-lit photography carrying the page. Installs a working booking flow: a real service menu (cuts, color, balayage), three stylists you book by name with their own hours, and a color-deposit policy. Ships as "Maison Élan", a calm three-chair studio.',
-    tagline: 'A warm, editorial template for hair salons — book online from day one.',
+        'An upscale, editorial hair-salon site: a warm-ivory palette, a brass primary and a high-contrast serif display, with soft-lit photography carrying the page. Installs a working booking flow: a real service menu (cuts, color, balayage), three stylists you book by name with their own hours, and a color-deposit policy. Ships as "Maison Élan", a calm three-chair studio.',
+    tagline: 'A warm, editorial template for hair salons. Book online from day one.',
     industry: 'Hair salon',
     sortWeight: 90,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -397,7 +397,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Maison Élan — an upscale hair salon',
+            title: 'Maison Élan: an upscale hair salon',
             description:
                 'Maison Élan is a calm three-chair salon for considered cuts, soft lived-in color and balayage. Book your stylist online.',
         },

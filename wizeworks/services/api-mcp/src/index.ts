@@ -31,7 +31,7 @@ async function main(): Promise<void> {
   // NODE_ENV=production when EVENT_BROKER is missing or non-durable, so a pod
   // that cannot deliver events fails its rollout instead of dropping them
   // silently the way the old `gcpProjectId`-unset stub did.
-  console.info('events: transport resolved —', resolveTransport().kind);
+  console.info('events: transport resolved to', resolveTransport().kind);
   // Bridge CRM customer writes made via MCP tools to real Pub/Sub so they
   // reach the search index. MUST run before installCrmWebhookFanout() (it
   // wraps the active publisher). No-op when GCP_PROJECT_ID is unset.

@@ -58,7 +58,7 @@ function PreviewForDocument({
   const doc: StudioDoc | undefined = session.store(ref_)?.current;
 
   useEffect(() => {
-    ctx.setTitle(doc ? `Preview — ${doc.name}` : 'Preview');
+    ctx.setTitle(doc ? `Preview: ${doc.name}` : 'Preview');
   }, [ctx, doc]);
 
   // The document has to be OPEN: a preview is about a document, and giving this pane

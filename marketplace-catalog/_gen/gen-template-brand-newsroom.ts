@@ -256,7 +256,7 @@ function spotlightBand(): Node {
                                 text: 'Spotlight',
                             }),
                             el('h2', 'text-3xl font-bold leading-tight tracking-tight text-base-content @3xl:text-4xl', {
-                                text: 'Meet the Field Kit — the studio, in a bag',
+                                text: 'Meet the Field Kit: the studio, in a bag',
                             }),
                             el('p', 'max-w-xl text-lg leading-relaxed text-base-content', {
                                 text: 'Everything a maker on the move needs: the Deck, the Dock, and a set of tools tuned to work together out of the box. Built by the people who use it every day.',
@@ -421,7 +421,7 @@ const JOURNAL: Node[] = [
                         text: 'The Launch Notes journal',
                     }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Every drop, straight from the makers — announcements, dev diaries, and the story behind what we ship.',
+                        text: 'Every drop, straight from the makers: announcements, dev diaries, and the story behind what we ship.',
                     }),
                 ],
             }),
@@ -440,10 +440,10 @@ const ABOUT: Node[] = [
                         text: 'About Launch Notes',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Launch Notes is a small product studio that builds tools for people who make things — software, hardware, and the guides that tie them together. This is our newsroom: the front door to everything we ship and everyone who ships it.',
+                        text: 'Launch Notes is a small product studio that builds tools for people who make things: software, hardware, and the guides that tie them together. This is our newsroom: the front door to everything we ship and everyone who ships it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We build in the open. Every release gets a post, every post has a name on it, and the community that uses our work helps decide what comes next. No press releases, no launch theatre — just the makers telling you what changed and why.',
+                        text: 'We build in the open. Every release gets a post, every post has a name on it, and the community that uses our work helps decide what comes next. No press releases, no launch theatre. Just the makers telling you what changed and why.',
                     }),
                 ],
             }),
@@ -501,7 +501,7 @@ const PRODUCTS: Product[] = [
         tags: ['Deck', 'Field Kit'],
         categoryHandles: ['gear'],
         collectionHandles: ['featured'],
-        seoTitle: 'The Field Kit Dock — Launch Notes',
+        seoTitle: 'The Field Kit Dock: Launch Notes',
         seoDescription: 'A machined aluminium dock that turns the Deck into a full workstation.',
         variants: [
             { sku: 'LN-DOCK-01', priceCents: money(89), isDefault: true, inventoryPolicy: 'continue' },
@@ -519,7 +519,7 @@ const PRODUCTS: Product[] = [
         tags: ['Apparel'],
         categoryHandles: ['apparel'],
         collectionHandles: ['featured'],
-        seoTitle: 'Studio Tee — Launch Notes',
+        seoTitle: 'Studio Tee: Launch Notes',
         seoDescription: 'A heavyweight cotton tee with the Launch Notes mark.',
         variants: [
             { sku: 'LN-TEE-01', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' },
@@ -537,7 +537,7 @@ const PRODUCTS: Product[] = [
         tags: ['Apparel'],
         categoryHandles: ['gear'],
         collectionHandles: ['featured'],
-        seoTitle: 'Sticker Pack — Launch Notes',
+        seoTitle: 'Sticker Pack: Launch Notes',
         seoDescription: 'Twelve weatherproof die-cut vinyl stickers from the studio.',
         variants: [
             { sku: 'LN-STICK-01', priceCents: money(9), isDefault: true, inventoryPolicy: 'continue' },
@@ -557,7 +557,7 @@ const PRODUCTS: Product[] = [
         tags: ['Apparel'],
         categoryHandles: ['apparel'],
         collectionHandles: [],
-        seoTitle: 'Studio Hoodie — Launch Notes',
+        seoTitle: 'Studio Hoodie: Launch Notes',
         seoDescription: 'A midweight brushed-fleece hoodie with an embroidered studio mark.',
         variants: [
             { sku: 'LN-HOOD-01', priceCents: money(62), isDefault: true, inventoryPolicy: 'continue' },
@@ -605,7 +605,7 @@ const AUTHORS = [
     {
         slug: 'sofia-lindqvist',
         displayName: 'Sofia Lindqvist',
-        bio: 'Sofia Lindqvist runs hardware at Launch Notes — the Deck, the Dock, and everything with a battery in it. She writes the firmware notes and the unboxing posts.',
+        bio: 'Sofia Lindqvist runs hardware at Launch Notes: the Deck, the Dock, and everything with a battery in it. She writes the firmware notes and the unboxing posts.',
         avatarAssetId: 'author-lindqvist',
     },
 ];
@@ -631,13 +631,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('We started rebuilding Launch Notes eleven months ago, and today it is yours. 3.0 is not a coat of paint — it is a new foundation, and almost everything you touch is faster because of it.'),
+                    para('We started rebuilding Launch Notes eleven months ago, and today it is yours. 3.0 is not a coat of paint. It is a new foundation, and almost everything you touch is faster because of it.'),
                     h2('A workspace that gets out of the way'),
                     para('The old app made you manage windows; the new one manages them for you. Your projects, your notes and your active session live in one place, and the thing you were doing five minutes ago is one keystroke away. We cut the number of clicks to start work by more than half, and you will feel it on the first morning.'),
                     h2('Sync that is finally instant'),
                     para('The single most requested thing, for years, was sync you could trust. The old engine is retired. The new one propagates a change to every device you own before you have finished typing the next word, and it does the right thing when two devices edit at once instead of asking you to pick a winner.'),
                     h2('What is next'),
-                    para('3.0 clears the runway for the things we have been holding back — a few of which you will see before the end of the quarter. As always, every one of them will get a post here first. Thank you for building with us; go make something.'),
+                    para('3.0 clears the runway for the things we have been holding back: a few of which you will see before the end of the quarter. As always, every one of them will get a post here first. Thank you for building with us; go make something.'),
                 ],
             },
         },
@@ -650,7 +650,7 @@ const CONTENT = [
         categories: ['Products'],
         tags: ['Nimbus'],
         body: {
-            title: 'Introducing Nimbus — our focus timer, out now',
+            title: 'Introducing Nimbus. Our focus timer, out now',
             excerpt:
                 'A focus timer built the way we actually work: no gimmicks, no streaks to guilt you, just a quiet way to protect an hour and see where it went.',
             featuredImage: { $asset: 'cover-nimbus' },
@@ -661,7 +661,7 @@ const CONTENT = [
                     h2('Start a session, forget it exists'),
                     para('You pick a length, name what you are doing, and Nimbus fades into the corner. No ticking, no countdown looming over the screen. When the time is up it nudges you once, gently, and asks if you want to keep going. That is the whole interaction, and that is the point.'),
                     h2('The part that surprised us'),
-                    para('The feature people love most is the one we almost cut: a plain weekly view of where your focused hours actually went. Not a score, not a leaderboard — just the honest shape of your week. It turns out that seeing the truth is far more motivating than any badge we could have designed.'),
+                    para('The feature people love most is the one we almost cut: a plain weekly view of where your focused hours actually went. Not a score, not a leaderboard. Just the honest shape of your week. It turns out that seeing the truth is far more motivating than any badge we could have designed.'),
                     para('Nimbus is free for everyone with a Launch Notes account, and it is built into the desktop app as of this week. Give it a session and tell us what you think.'),
                 ],
             },
@@ -675,19 +675,19 @@ const CONTENT = [
         categories: ['Hardware'],
         tags: ['Deck', 'Field Kit'],
         body: {
-            title: 'The Launch Notes Deck — a first look',
+            title: 'The Launch Notes Deck: a first look',
             excerpt:
                 'Our first piece of hardware. Two years, more prototypes than we will admit to, and a device built around one idea: your studio should fit in a bag.',
             featuredImage: { $asset: 'cover-deck' },
             body: {
                 type: 'doc',
                 content: [
-                    para('For two years we have been quietly making hardware. Today we can finally show you the Deck — a portable workstation built around a simple frustration: the best tools were always tied to a desk, and the desk was never where the work happened.'),
+                    para('For two years we have been quietly making hardware. Today we can finally show you the Deck: a portable workstation built around a simple frustration: the best tools were always tied to a desk, and the desk was never where the work happened.'),
                     h2('Built by the people who use it'),
                     para('Every decision on the Deck came from watching the team actually work. The ports are where your hand expects them. It wakes the instant you open it. The battery lasts a real working day, not a benchmark day. None of that is exciting on a spec sheet, and all of it is the difference between a tool you carry and one you leave at home.'),
                     h2('Where it fits'),
-                    para('The Deck is the heart of the Field Kit — it docks at your desk, packs into your bag, and runs the same Launch Notes workspace you already know. Nothing to migrate, nothing to relearn. Your work is simply there, wherever you are.'),
-                    para('This is a first look, not a launch — we will open pre-orders once firmware 2.4 has had another few weeks in the field. Watch this space, and thank you for two years of patience.'),
+                    para('The Deck is the heart of the Field Kit. It docks at your desk, packs into your bag, and runs the same Launch Notes workspace you already know. Nothing to migrate, nothing to relearn. Your work is simply there, wherever you are.'),
+                    para('This is a first look, not a launch. We will open pre-orders once firmware 2.4 has had another few weeks in the field. Watch this space, and thank you for two years of patience.'),
                 ],
             },
         },
@@ -702,7 +702,7 @@ const CONTENT = [
         body: {
             title: 'Five workflows our team lives in',
             excerpt:
-                'The small habits and shortcuts the studio actually uses every day — the ones that never make it into the docs because we forget they are not obvious.',
+                'The small habits and shortcuts the studio actually uses every day: the ones that never make it into the docs because we forget they are not obvious.',
             featuredImage: { $asset: 'cover-guides' },
             body: {
                 type: 'doc',
@@ -713,7 +713,7 @@ const CONTENT = [
                     h2('Keep a shared library in Aurora'),
                     para('We stopped copying components between files months ago. One shared Aurora library holds every mark, color and pattern, and every file pulls from it live. Change it once and the whole studio updates. If you work with anyone else, this is the first thing to set up.'),
                     h2('Name your work as you start it'),
-                    para('Sync only helps if you can find things later, and a folder full of Untitled-3 helps no one. We name a session the moment we start it, in plain language, as if a teammate will read it — because in our workspace, one will.'),
+                    para('Sync only helps if you can find things later, and a folder full of Untitled-3 helps no one. We name a session the moment we start it, in plain language, as if a teammate will read it, because in our workspace, one will.'),
                     para('None of these are features you have to buy. They are just habits, and the tools are built to reward them. Steal the ones that fit.'),
                 ],
             },
@@ -734,12 +734,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Aurora has been in beta for a year, and in that time you have used it to ship real products — which is exactly why we took so long to call it 1.0. A design tool earns that number by being boring in all the right places, and Aurora finally is.'),
+                    para('Aurora has been in beta for a year, and in that time you have used it to ship real products, which is exactly why we took so long to call it 1.0. A design tool earns that number by being boring in all the right places, and Aurora finally is.'),
                     h2('A file format that will not change under you'),
                     para('The single biggest promise of 1.0 is stability. The Aurora file you save today will open, unchanged, in every version from here on. No silent migrations, no corrupted files after an update. Your work is safe, and it stays safe.'),
                     h2('History you can trust'),
                     para('Every change is now captured in a version history you can scrub through, name, and restore from with one click. The moment before you made that questionable decision at 2am is always there, waiting, exactly as you left it.'),
-                    para('Aurora 1.0 is available today for everyone with a studio membership. If you have been waiting for it to leave beta before trusting it with real work — it has, and you can.'),
+                    para('Aurora 1.0 is available today for everyone with a studio membership. If you have been waiting for it to leave beta before trusting it with real work. It has, and you can.'),
                 ],
             },
         },
@@ -753,7 +753,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-brand-newsroom',
     name: 'Brand Newsroom',
     summary:
-        'A first-party brand newsroom for a product studio — a big latest-release feature over a live launch feed, a release-notes changelog, a spotlight drop, and a bound store carousel, on a true-dark ground with one electric-violet accent. Modelled on the brand-community-newsroom archetype; shipped as Launch Notes. Ships a light studio store (merch) to demonstrate content + commerce together.',
+        'A first-party brand newsroom for a product studio: a big latest-release feature over a live launch feed, a release-notes changelog, a spotlight drop, and a bound store carousel, on a true-dark ground with one electric-violet accent. Modelled on the brand-community-newsroom archetype; shipped as Launch Notes. Ships a light studio store (merch) to demonstrate content + commerce together.',
     tagline: 'A dark, cover-art brand-newsroom template for a studio that ships and sells.',
     vertical: 'content',
     industry: 'Product studio newsroom',
@@ -768,14 +768,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Launch Notes — every drop, straight from the makers',
+            title: 'Launch Notes: every drop, straight from the makers',
             description:
-                'Launch Notes is a product studio and its newsroom: release announcements, dev diaries, and the story behind everything we ship — with the studio store one click away.',
+                'Launch Notes is a product studio and its newsroom: release announcements, dev diaries, and the story behind everything we ship, with the studio store one click away.',
         },
         about: {
-            title: 'About Launch Notes — a product studio that builds in the open',
+            title: 'About Launch Notes: a product studio that builds in the open',
             description:
-                'Who Launch Notes is and how we work — a small studio that ships software, hardware and guides, and posts every release here first.',
+                'Who Launch Notes is and how we work: a small studio that ships software, hardware and guides, and posts every release here first.',
         },
     },
     home: HOME,

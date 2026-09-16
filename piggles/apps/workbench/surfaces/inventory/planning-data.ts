@@ -117,6 +117,11 @@ export interface ClassificationRow {
   valueSharePct: number;
   cumulativeSharePct: number;
   demandCv: number | null;
+  /** Whether a cost was found for this line at all. The ranking key is units x
+      cost and an absent cost enters that product as a zero, so a line nobody has
+      priced ranks bottom whatever it really is. False means the rank is the
+      absence of a finding, not a finding. */
+  costKnown: boolean;
   advice: string;
   overrideReason: string | null;
   overrideAt: string | null;
@@ -333,6 +338,8 @@ export const planningKeys = {
     [...planningKeys.all, 'classifications', query] as const,
   schedules: (warehouseId: string) => [...planningKeys.all, 'schedules', warehouseId] as const,
   schedule: (id: string) => [...planningKeys.all, 'schedule', id] as const,
+  scheduleCoverage: (warehouseId: string, abcClass: string, zoneName: string) =>
+    [...planningKeys.all, 'schedule-coverage', warehouseId, abcClass, zoneName] as const,
 };
 
 export interface ClassificationQuery {
@@ -440,6 +447,31 @@ export function useCountSchedule(id: string) {
     queryKey: planningKeys.schedule(id),
     queryFn: () => api.get<CountSchedule>(`/v1/inventory/count-schedules/${id}`),
     enabled: Boolean(id) && id !== 'new',
+  });
+}
+
+/**
+ * How many stock lines a setup WOULD cover, before it is saved.
+ *
+ * The saved schedule already reports this, which is the whole problem: the
+ * number that tells you whether the thing will do anything only appeared after
+ * you had committed to it. The pre-filled location is simply the first one in
+ * an alphabetical list and the pre-filled class is "top value", so a small
+ * catalogue is routinely offered a place holding nothing crossed with a class
+ * nothing is in — and a schedule covering nought looks exactly like one
+ * covering everything until the counts never arrive (issue 499).
+ */
+export function useCountScheduleCoverage(warehouseId: string, abcClass: string, zoneName: string) {
+  const zone = zoneName.trim();
+  return useQuery({
+    queryKey: planningKeys.scheduleCoverage(warehouseId, abcClass, zone),
+    queryFn: () =>
+      api.get<{ coveredLevels: number }>('/v1/inventory/count-schedules/coverage', {
+        warehouse_id: warehouseId,
+        ...(abcClass ? { abc_class: abcClass } : {}),
+        ...(zone ? { zone_name: zone } : {}),
+      }),
+    enabled: Boolean(warehouseId),
   });
 }
 
@@ -663,7 +695,7 @@ export function leadTimeSourceLabel(source: string | null): string {
     case 'level':
       return 'Set on this stock line';
     case 'default':
-      return 'Assumed — nothing is known';
+      return 'Assumed: nothing is known';
     default:
       return 'Unknown';
   }

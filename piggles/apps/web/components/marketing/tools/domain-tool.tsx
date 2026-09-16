@@ -83,7 +83,7 @@ export function DomainTool() {
                     ? 'Free to register'
                     : r.status === 'taken'
                       ? 'Somebody has it'
-                      : `We could not find out — ${r.note ?? 'this ending has no lookup we can reach'}`,
+                      : `We could not find out: ${r.note ?? 'this ending has no lookup we can reach'}`,
               },
             ];
           }),
@@ -97,7 +97,7 @@ export function DomainTool() {
       outputWidth="wide"
       form={
         <>
-          <Panel title="The name" description="Just the name — leave off the .com.">
+          <Panel title="The name" description="Just the name. Leave off the .com.">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -124,7 +124,7 @@ export function DomainTool() {
             <Aside>
               <strong>Available is not the same as free to use.</strong> This asks the registry
               whether the name is registered. It cannot tell you whether somebody holds a trademark
-              on it in your trade — and that search is free, takes ten minutes on your national
+              on it in your trade, and that search is free, takes ten minutes on your national
               trademark register, and is the one people wish they had done.
             </Aside>
           </Panel>
@@ -137,7 +137,7 @@ export function DomainTool() {
             </p>
             <p className="text-base">
               <strong>The ending matters less than it used to.</strong> .com still gets typed from
-              habit, but a local ending or a trade one — .shop, .studio, .cafe — reads perfectly
+              habit, but a local ending or a trade one (.shop, .studio, .cafe) reads perfectly
               naturally now and is far more likely to be free.
             </p>
             <p className="text-base">
@@ -213,7 +213,7 @@ export function DomainTool() {
 
               {done && available > 0 ? (
                 <p className="mt-5 text-base">
-                  Buy it wherever you like — this page does not sell domains and is not paid by
+                  Buy it wherever you like. This page does not sell domains and is not paid by
                   anybody who does.
                 </p>
               ) : null}
@@ -229,7 +229,7 @@ export function DomainTool() {
                 Tuesday afternoon and very expensive to change once it is on a van.
               </p>
               <p className="mt-3 text-base">
-                Type a name on the left and this asks each registry directly — twelve endings, live,
+                Type a name on the left and this asks each registry directly: twelve endings, live,
                 no cached list.
               </p>
             </CardBody>

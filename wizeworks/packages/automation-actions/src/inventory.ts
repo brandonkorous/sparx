@@ -30,7 +30,7 @@ export function installInventoryActions(): void {
     module: 'inventory',
     gates: [],
     manifestNote:
-      'Internal PO draft from a low-stock signal — no external/customer effect; the module-active gate (module: inventory) suffices. The draft is reviewed before submit.',
+      'Internal PO draft from a low-stock signal: no external/customer effect; the module-active gate (module: inventory) suffices. The draft is reviewed before submit.',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const variantId = requireEntityId(effect.fields, 'variant.id', 'inventory.draft_reorder_po');
       const warehouseId = requireEntityId(

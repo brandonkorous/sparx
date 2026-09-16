@@ -401,7 +401,7 @@ const publicFormsRoutes: FastifyPluginAsync = (app) => {
       if (form.config.delivery && email && !deliveryBase) {
         request.log.error(
           { formNodeId: body.formNodeId },
-          'gated delivery: MEDIA_PUBLIC_URL is unset, so the download link would be relative and unusable in an email — not sending'
+          'gated delivery: MEDIA_PUBLIC_URL is unset, so the download link would be relative and unusable in an email, not sending'
         );
       }
       if (form.config.delivery && email && deliveryBase) {

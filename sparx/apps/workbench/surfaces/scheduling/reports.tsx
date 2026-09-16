@@ -489,7 +489,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
         <EmptyState
           icon={<BarChart3 className="size-6" aria-hidden />}
           title="Could not load your reports"
-          description="This is a problem reaching the server. Your bookings are unaffected — the figures just could not be worked out just now."
+          description="This is a problem reaching the server. Your bookings are unaffected: the figures just could not be worked out just now."
           actions={
             <Button
               size="sm"
@@ -533,7 +533,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
         <EmptyState
           icon={<CalendarClock className="size-6" aria-hidden />}
           title="Nothing booked yet"
-          description="These figures build from your bookings. As soon as appointments start coming in — from your site, over the phone, or added here — this fills in with how full the diary runs, what people book most, and how often they turn up."
+          description="These figures build from your bookings. As soon as appointments start coming in (from your site, over the phone, or added here), this fills in with how full the diary runs, what people book most, and how often they turn up."
         />
       );
     }
@@ -574,7 +574,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
         <div className="grid gap-4 @3xl:grid-cols-2">
           <Panel
             title="How full your diary ran"
-            description="The share of your open time that bookings took up over the window — how busy the diary actually was."
+            description="The share of your open time that bookings took up over the window: how busy the diary actually was."
           >
             {utilisation === null ? (
               <div className="flex flex-col gap-1">
@@ -583,7 +583,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
                 </Text>
                 <Text className="text-sm">
                   Once you tell us when you&rsquo;re open for bookings, this shows how much of that
-                  time gets taken up — there&rsquo;s nothing to measure against until then.
+                  time gets taken up. There&rsquo;s nothing to measure against until then.
                 </Text>
               </div>
             ) : (
@@ -593,7 +593,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
 
           <Panel
             title="How bookings turned out"
-            description="Every booking in the window, split by where it ended up — done, still to come, cancelled, or a no-show."
+            description="Every booking in the window, split by where it ended up: done, still to come, canceled, or a no-show."
           >
             {totals.all === 0 ? (
               <Text className="text-sm">No bookings in this period to break down.</Text>
@@ -606,7 +606,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
         <div className="grid gap-4 @3xl:grid-cols-2">
           <Panel
             title="Your busiest days"
-            description="Which days of the week fill up most — where your bookings land across the week."
+            description="Which days of the week fill up most: where your bookings land across the week."
           >
             {hasBusiest ? (
               <BusiestWeekdayChart buckets={byWeekday} />
@@ -617,7 +617,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
 
           <Panel
             title="Your busiest times"
-            description="Which times of day fill up most — hover a bar for the exact hour."
+            description="Which times of day fill up most: hover a bar for the exact hour."
           >
             {hasBusiest ? (
               <BusiestHourChart buckets={byHour} />
@@ -629,7 +629,7 @@ export function SchedulingReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext })
 
         <Panel
           title="What people book you for most"
-          description="The services with the most bookings in the window — what your time is going on."
+          description="The services with the most bookings in the window: what your time is going on."
         >
           {topServices.length === 0 ? (
             <Text className="text-sm">No bookings in this period to rank.</Text>

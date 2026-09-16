@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 2,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "No deposit, ever — just book and turn up. We hold your table for 15 minutes past your time; if your plans change, a quick heads-up by a couple of hours before frees it for someone else. Walk-ins are always welcome, so don’t worry if you didn’t book."
+      "policyText": "No deposit, ever. Just book and turn up. We hold your table for 15 minutes past your time; if your plans change, a quick heads-up by a couple of hours before frees it for someone else. Walk-ins are always welcome, so don’t worry if you didn’t book."
     },
     {
       "handle": "group-table",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 12,
       "reminderOffsetsMin": [1440, 180],
-      "policyText": "Groups of five or six get the big communal table by the window — still no deposit. If you need to cancel, letting us know the evening before means we can offer it to another party. Bigger than six? Email us and we’ll happily sort it."
+      "policyText": "Groups of five or six get the big communal table by the window: still no deposit. If you need to cancel, letting us know the evening before means we can offer it to another party. Bigger than six? Email us and we’ll happily sort it."
     }
   ],
   "resources": [
@@ -281,7 +281,7 @@
     {
       "handle": "table-for-two",
       "name": "Table for two",
-      "description": "A table for two, any time we’re open. Perfect for a slow brunch or a catch-up over coffee — an hour and a quarter is yours, and we won’t rush you off.",
+      "description": "A table for two, any time we’re open. Perfect for a slow brunch or a catch-up over coffee: an hour and a quarter is yours, and we won’t rush you off.",
       "bookingType": "reservation",
       "durationMinutes": 75,
       "assignmentStrategy": "any_available",
@@ -298,7 +298,7 @@
     {
       "handle": "table-for-four",
       "name": "Table for four",
-      "description": "A table for three or four — bring the family, the friends, or the whole brunch crew. Ninety unhurried minutes, high chairs on request.",
+      "description": "A table for three or four. Bring the family, the friends, or the whole brunch crew. Ninety unhurried minutes, high chairs on request.",
       "bookingType": "reservation",
       "durationMinutes": 90,
       "assignmentStrategy": "any_available",

@@ -49,7 +49,7 @@ export function createPlaceholderSurface({ icon, title, body }: PlaceholderOptio
             module={module}
             icon={<Icon glyph={icon} className="size-8" aria-hidden />}
             title={title}
-            description={`${body} This screen is still being built — it will open here when it is ready.`}
+            description={`${body} This screen is still being built. It will open here when it is ready.`}
           />
         </Card>
       </div>

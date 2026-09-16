@@ -109,7 +109,7 @@ export async function sendOwnerBookingNotification(
   try {
     const target = await resolveBookingHostTarget(tenantId, bookingId);
     if (!target) {
-      logger.warn({ tenantId, bookingId }, 'owner-booking-notify: no recipient resolved — skipped');
+      logger.warn({ tenantId, bookingId }, 'owner-booking-notify: no recipient resolved, skipped');
       return;
     }
     const customerId = opts.customerId !== undefined ? opts.customerId : target.customerId;

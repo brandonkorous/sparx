@@ -54,7 +54,7 @@ export function SocialConnectionExpiredEmail({
       </EmailAlert>
 
       <EmailParagraph>
-        Reconnecting takes a few seconds — you sign in to {platformName} again and everything picks
+        Reconnecting takes a few seconds. You sign in to {platformName} again and everything picks
         up where it left off.
       </EmailParagraph>
 
@@ -70,7 +70,7 @@ export function SocialConnectionExpiredEmail({
       <EmailActionButton href={reconnectUrl}>Reconnect {platformName}</EmailActionButton>
 
       <EmailFinePrint>
-        Nothing you&apos;ve already posted is affected — it stays live on {platformName}. Your other
+        Nothing you&apos;ve already posted is affected. It stays live on {platformName}. Your other
         connected accounts keep working normally.
       </EmailFinePrint>
     </PlatformEmailLayout>

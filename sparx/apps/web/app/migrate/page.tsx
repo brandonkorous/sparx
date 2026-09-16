@@ -11,7 +11,7 @@ import { MigrateHub } from '@/components/marketing/migrate/migrate-hub';
  * so the claim and the capability cannot come apart again.
  */
 export const metadata: Metadata = {
-  title: 'Switch to sparx — bring your business over in an afternoon',
+  title: 'Switch to sparx: bring your business over in an afternoon',
   description:
     'Move your products, customers, stock, orders and writing from Shopify, Squarespace, Wix, Webflow, WordPress, HubSpot and a dozen more. Read what will happen before anything is saved.',
   keywords: [
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   ],
   alternates: { canonical: '/migrate' },
   openGraph: {
-    title: 'Switch to sparx — bring your business over in an afternoon',
+    title: 'Switch to sparx: bring your business over in an afternoon',
     description:
       'Products, customers, stock, orders and everything you have written, from the export file your current platform already makes.',
     url: 'https://sparx.works/migrate',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Switch to sparx — bring your business over in an afternoon',
+    title: 'Switch to sparx: bring your business over in an afternoon',
     description:
       'Products, customers, stock, orders and everything you have written, from the export file your current platform already makes.',
   },

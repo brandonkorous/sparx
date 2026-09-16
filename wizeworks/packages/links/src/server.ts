@@ -90,7 +90,7 @@ function readEnv(name: string): string | null {
 export function appOrigin(brand: string = DEFAULT_BRAND): string {
   const key = brand.trim().toLowerCase() || DEFAULT_BRAND;
   if (typeof process === 'undefined') {
-    throw new Error(`appOrigin(${key}) called with no process environment — server only.`);
+    throw new Error(`appOrigin(${key}) called with no process environment: server only.`);
   }
 
   const scoped = readEnv(scopedVarName(key));
@@ -136,7 +136,7 @@ export function accountInternalOrigin(brand: string = DEFAULT_BRAND): string {
   const key = brand.trim().toLowerCase() || DEFAULT_BRAND;
   if (typeof process === 'undefined') {
     throw new Error(
-      `accountInternalOrigin(${key}) called with no process environment — server only.`
+      `accountInternalOrigin(${key}) called with no process environment: server only.`
     );
   }
   const scoped = readEnv(`${key.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}_ACCOUNT_INTERNAL_URL`);
@@ -163,7 +163,7 @@ export function accountInternalOrigin(brand: string = DEFAULT_BRAND): string {
 export function accountOrigin(brand: string = DEFAULT_BRAND): string {
   const key = brand.trim().toLowerCase() || DEFAULT_BRAND;
   if (typeof process === 'undefined') {
-    throw new Error(`accountOrigin(${key}) called with no process environment — server only.`);
+    throw new Error(`accountOrigin(${key}) called with no process environment: server only.`);
   }
   const scoped = readEnv(`${key.toUpperCase().replace(/[^A-Z0-9]+/g, '_')}_ACCOUNT_URL`);
   if (scoped) return scoped;
@@ -231,7 +231,7 @@ function mcpVarName(brand: string): string {
 export function mcpResourceUrl(brand: string = DEFAULT_BRAND): string {
   const key = brand.trim().toLowerCase() || DEFAULT_BRAND;
   if (typeof process === 'undefined') {
-    throw new Error(`mcpResourceUrl(${key}) called with no process environment — server only.`);
+    throw new Error(`mcpResourceUrl(${key}) called with no process environment: server only.`);
   }
 
   const scoped = readEnv(mcpVarName(key));

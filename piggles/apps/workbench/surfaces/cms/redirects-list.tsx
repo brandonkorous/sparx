@@ -124,7 +124,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
             label: 'Bulk import',
             icon: faUpload,
             onClick: openImport,
-            title: 'Import a list of redirects — hold Alt to open in a new window',
+            title: 'Import a list of redirects: hold Alt to open in a new window',
           },
         ]}
         views={{
@@ -150,7 +150,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>Showing the first {rows.length} redirects</AlertTitle>
             <AlertDescription>
-              This site has {total} in total — more than this pane loads at once. Search and filter
+              This site has {total} in total: more than this pane loads at once. Search and filter
               cover the ones shown here.
             </AlertDescription>
           </AlertContent>
@@ -184,7 +184,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faUpRight} className="size-6" aria-hidden />}
             title="Could not load your redirects"
-            description="This is a problem reaching the server. None of your redirects have been lost — they are still sending visitors on as before."
+            description="This is a problem reaching the server. None of your redirects have been lost. They are still sending visitors on as before."
             onRetry={() => {
               void refetch();
             }}

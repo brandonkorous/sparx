@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Wildroot — a modern hair salon for curls & texture",
-      "seoDescription": "Wildroot is a warm, plant-filled salon in Asheville specialising in curly and textured hair — cuts, color and balayage at a human pace. Book your stylist online.",
+      "seoTitle": "Wildroot: a modern hair salon for curls & texture",
+      "seoDescription": "Wildroot is a warm, plant-filled salon in Asheville specialising in curly and textured hair: cuts, color and balayage at a human pace. Book your stylist online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A warm, plant-filled little salon for real hair and real people — cuts, color and curls done at a human pace, never a rushed one."
+                      "A warm, plant-filled little salon for real hair and real people: cuts, color and curls done at a human pace, never a rushed one."
                     ],
                     "id": "af66286d-14e2-4280-b11b-7f35aa650a92",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Coils, curls, waves and everything in between — cut dry, curl by curl, by people who actually specialise in it. No more leaving hoping it dries right."
+                              "Coils, curls, waves and everything in between: cut dry, curl by curl, by people who actually specialise in it. No more leaving hoping it dries right."
                             ],
                             "id": "23495042-b4cc-4da0-864f-b303fc75c322",
                             "ord": "a1"
@@ -798,7 +798,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Wildroot is a small studio we built to feel like a warm living room — reclaimed wood, natural light, and honestly more plants than we can keep count of."
+                          "Wildroot is a small studio we built to feel like a warm living room: reclaimed wood, natural light, and honestly more plants than we can keep count of."
                         ],
                         "id": "c639880e-32d4-4a64-8c89-57ebaa16206c",
                         "ord": "a1"
@@ -1181,7 +1181,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’ll teach you the routine too — the products, the technique, the shortcuts — so your hair works on an ordinary Wednesday, not just the day you leave."
+                          "We’ll teach you the routine too (the products, the technique, the shortcuts) so your hair works on an ordinary Wednesday, not just the day you leave."
                         ],
                         "id": "30b2d6e6-be42-44bf-af3e-6df29fe84490",
                         "ord": "a2"
@@ -1246,7 +1246,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same person each time, someone who gets to know your hair."
+                          "Book by name: you’ll see the same person each time, someone who gets to know your hair."
                         ],
                         "id": "4eff8c13-7ae4-4fe7-a9b6-e170d9388b6c",
                         "ord": "a1"
@@ -1415,7 +1415,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Easy, wearable cuts and color — and endlessly patient with the little ones."
+                                  "Easy, wearable cuts and color, and endlessly patient with the little ones."
                                 ],
                                 "id": "a62c6ae2-af6a-4478-a46c-5647c23d9c15",
                                 "ord": "a2"
@@ -1601,7 +1601,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Wildroot",
+      "seoTitle": "Book: Wildroot",
       "seoDescription": "See what Wildroot offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1725,7 +1725,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "cbaa0cb6-4171-43be-8f35-f61bfcf7659d",
                         "ord": "a1"
@@ -1757,7 +1757,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Life happens — just give us 24 hours if you need to move or cancel. We’ll text you a reminder the day before and again two hours ahead."
+                              "Life happens. Just give us 24 hours if you need to move or cancel. We’ll text you a reminder the day before and again two hours ahead."
                             ],
                             "id": "fb8ce650-7309-4b0c-bd7f-06ab4d6b9ecf",
                             "ord": "a1"
@@ -1832,7 +1832,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Wildroot",
+      "seoTitle": "About: Wildroot",
       "seoDescription": "Who Wildroot is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1881,7 +1881,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Wildroot because we wanted a salon that felt like a real place, not a production line — somewhere warm and unhurried, where curly and textured hair is the specialty rather than the afterthought."
+                          "We started Wildroot because we wanted a salon that felt like a real place, not a production line: somewhere warm and unhurried, where curly and textured hair is the specialty rather than the afterthought."
                         ],
                         "id": "2d5d1ec3-02e7-4e91-af85-7d5b9fbaccc6",
                         "ord": "a1"
@@ -1996,7 +1996,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Salon-grade, kinder-on-your-hair color and care — and honest advice on the short list of things worth taking home."
+                              "Salon-grade, kinder-on-your-hair color and care, and honest advice on the short list of things worth taking home."
                             ],
                             "id": "cea5ba30-483f-4f1e-8197-c0c2eebed606",
                             "ord": "a1"
@@ -2051,7 +2051,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Wildroot",
+      "seoTitle": "Visit: Wildroot",
       "seoDescription": "Where to find Wildroot, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2088,7 +2088,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Wildroot will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Wildroot will get back to you, usually the same day."
                         ],
                         "id": "680ad97a-6f03-42d1-9c21-e08ad839b921",
                         "ord": "a1"
@@ -2513,7 +2513,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and grab your time online — no phone tag, no waiting on hold."
+                      "See live availability and grab your time online: no phone tag, no waiting on hold."
                     ],
                     "id": "8238c873-b5c6-459d-ad08-8d27246f80fb",
                     "ord": "a1"

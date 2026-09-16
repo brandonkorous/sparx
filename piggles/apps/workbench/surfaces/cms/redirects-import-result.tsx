@@ -87,7 +87,7 @@ function SkippedList({ outcome, sent }: { outcome: BulkImportResult; sent: SentR
           const source = sent[item.row];
           return (
             <li key={item.row} className="text-sm">
-              <span className="font-mono">{source?.from ?? `Row ${String(item.row + 1)}`}</span> —{' '}
+              <span className="font-mono">{source?.from ?? `Row ${String(item.row + 1)}`}</span>:{' '}
               {item.reason}
             </li>
           );

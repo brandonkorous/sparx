@@ -422,7 +422,7 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
           title: 'This product is sold differently now',
           description:
             consequence.blank > 0
-              ? `${countOf(consequence.blank, 'combination', 'combinations')} still ${consequence.blank === 1 ? 'needs a price' : 'need a price'} — set them on the Variants tab.`
+              ? `${countOf(consequence.blank, 'combination', 'combinations')} still ${consequence.blank === 1 ? 'needs a price' : 'need a price'}. Set them on the Variants tab.`
               : 'Every combination has a price.',
           type: 'success',
         });
@@ -458,7 +458,7 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s choices</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing about the product has changed — how it is
+            This is a problem reaching the server. Nothing about the product has changed: how it is
             sold just could not be read just now.
           </AlertDescription>
         </AlertContent>
@@ -550,7 +550,7 @@ export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: P
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Text>
               {draft.length >= 8
-                ? 'Eight choices is the most a product can have — already far more than a shopper will work through.'
+                ? 'Eight choices is the most a product can have: already far more than a shopper will work through.'
                 : `${countOf(consequence.combinations, 'combination', 'combinations')} in all.`}
             </Text>
             <Button
@@ -595,8 +595,8 @@ function NoChoicesYet({ onAdd, hadChoices }: { onAdd: () => void; hadChoices: bo
         title={hadChoices ? 'You have removed every choice' : 'This product is sold one way'}
         description={
           hadChoices
-            ? 'Nothing has changed yet. The summary above says what happens to your existing versions if you go ahead — or put a choice back.'
-            : 'There is a single version of this product with one price. Add a choice — Size, Color, Length — if shoppers need to pick between versions.'
+            ? 'Nothing has changed yet. The summary above says what happens to your existing versions if you go ahead, or put a choice back.'
+            : 'There is a single version of this product with one price. Add a choice (Size, Color, Length) if shoppers need to pick between versions.'
         }
         actions={
           <Button size="sm" color="module" onClick={onAdd}>
@@ -929,7 +929,7 @@ function consequenceLines(consequence: Consequence): string[] {
 
   if (consequence.loose.length > 0) {
     const count = consequence.loose.length;
-    lines.push('Shoppers stop choosing anything — this goes back to being sold one way.');
+    lines.push('Shoppers stop choosing anything. This goes back to being sold one way.');
     lines.push(
       `${countOf(count, 'version', 'versions')} stay${count === 1 ? 's' : ''} on sale with no choice attached (${skus(consequence.loose)}). Retire the ones you do not want on the Variants tab.`
     );
@@ -961,7 +961,7 @@ function consequenceLines(consequence: Consequence): string[] {
   if (consequence.retire.length > 0) {
     const count = consequence.retire.length;
     lines.push(
-      `${countOf(count, 'version', 'versions')} lose${count === 1 ? 's' : ''} its place and stops being sold — ${skus(consequence.retire)}. Past orders keep their record, and you can bring ${count === 1 ? 'it' : 'them'} back.`
+      `${countOf(count, 'version', 'versions')} lose${count === 1 ? 's' : ''} its place and stops being sold: ${skus(consequence.retire)}. Past orders keep their record, and you can bring ${count === 1 ? 'it' : 'them'} back.`
     );
   }
   if (consequence.combinations > 100) {

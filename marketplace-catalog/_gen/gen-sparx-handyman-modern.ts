@@ -183,7 +183,7 @@ const SCHEDULING = {
       handle: 'quick-fix-hour',
       name: 'Quick-fix hour',
       description:
-        'One hour, one pro, your short list of small stuff — a wobbly handle, a running toilet, a door that won’t latch.',
+        'One hour, one pro, your short list of small stuff: a wobbly handle, a running toilet, a door that won’t latch.',
       durationMinutes: 60,
       priceCents: 9900,
       assignmentStrategy: 'any_available',
@@ -205,7 +205,7 @@ const SCHEDULING = {
       handle: 'furniture-assembly',
       name: 'Furniture assembly',
       description:
-        'Flat-pack beds, shelves, desks and dressers built right the first time — packaging hauled out when we’re done.',
+        'Flat-pack beds, shelves, desks and dressers built right the first time: packaging hauled out when we’re done.',
       durationMinutes: 120,
       priceCents: 12900,
       assignmentStrategy: 'any_available',
@@ -238,7 +238,7 @@ const SCHEDULING = {
       handle: 'half-day-project',
       name: 'Half-day project',
       description:
-        'Four hours of a dedicated pro for the bigger list — a gallery wall, a closet system, a room’s worth of small repairs.',
+        'Four hours of a dedicated pro for the bigger list: a gallery wall, a closet system, a room’s worth of small repairs.',
       durationMinutes: 240,
       priceCents: 34900,
       assignmentStrategy: 'any_available',
@@ -252,7 +252,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Home fixed. Booked from your phone in two minutes.',
-    sub: 'On-demand handymen for busy homeowners and renters. Pick the task, choose a time, and a vetted pro shows up ready to work — at a flat hourly rate you see before you book.',
+    sub: 'On-demand handymen for busy homeowners and renters. Pick the task, choose a time, and a vetted pro shows up ready to work: at a flat hourly rate you see before you book.',
     primary: { label: 'Book online', href: '/book' },
     secondary: { label: 'See tasks & prices', href: '/book' },
     surface: 'base',
@@ -262,11 +262,11 @@ const HOME = [
     items: [
       {
         title: '1 · Pick your task',
-        body: 'Tell us what needs doing — a mount, an assembly, a quick-fix hour of odd jobs. Every task shows the price and how long it takes up front.',
+        body: 'Tell us what needs doing: a mount, an assembly, a quick-fix hour of odd jobs. Every task shows the price and how long it takes up front.',
       },
       {
         title: '2 · Choose a time',
-        body: 'See real, live availability — often same day, evenings and weekends included — and grab the slot that fits your day.',
+        body: 'See real, live availability (often same day, evenings and weekends included) and grab the slot that fits your day.',
       },
       {
         title: '3 · A vetted pro arrives',
@@ -276,7 +276,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Tasks & flat prices',
-    intro: 'No call-outs for a quote, no mystery add-ons. Here’s what the common jobs cost — full prices and live times are on the booking page.',
+    intro: 'No call-outs for a quote, no mystery add-ons. Here’s what the common jobs cost: full prices and live times are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -319,14 +319,14 @@ const HOME = [
   }),
   teamRow({
     heading: 'Meet a few of your pros',
-    intro: 'Book by name or let us dispatch the first available — either way you get someone vetted and reviewed.',
+    intro: 'Book by name or let us dispatch the first available. Either way you get someone vetted and reviewed.',
     members: [
       {
         name: 'Marcus Reed',
         role: 'Repair & install',
         image: url(IMG.marcus),
         alt: 'Marcus Reed, repair and install pro',
-        bio: 'Fifteen years of fixing what’s broken — plumbing, doors, hardware and the fiddly stuff nobody else wants.',
+        bio: 'Fifteen years of fixing what’s broken: plumbing, doors, hardware and the fiddly stuff nobody else wants.',
       },
       {
         name: 'Diego Alvarez',
@@ -372,7 +372,7 @@ const ABOUT = [
     heading: 'The handyman, minus the hassle',
     body: [
       'FixList started with a simple frustration: getting small home jobs done meant phone tag, no-shows and a price you only heard after the work was over. So we built the opposite.',
-      'Now you book online in minutes, see the flat rate before you commit, and get a vetted, insured pro at your door — often the same day. No quotes to chase, no cash to dig up, no wondering who’s showing up.',
+      'Now you book online in minutes, see the flat rate before you commit, and get a vetted, insured pro at your door, often the same day. No quotes to chase, no cash to dig up, no wondering who’s showing up.',
     ],
     cta: { label: 'Book a pro', href: '/book' },
   }),
@@ -390,7 +390,7 @@ const ABOUT = [
       },
       {
         title: 'On your schedule',
-        body: 'Live availability with evening and weekend slots, and free rescheduling — so a fix fits around your life, not the other way round.',
+        body: 'Live availability with evening and weekend slots, and free rescheduling, so a fix fits around your life, not the other way round.',
       },
     ],
   }),
@@ -410,7 +410,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Skip the phone tag — see live availability and lock in a vetted pro online.',
+    sub: 'Skip the phone tag: see live availability and lock in a vetted pro online.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -421,8 +421,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-handyman-modern',
   name: 'Handyman (Modern)',
   summary:
-    'A bright, techy handyman site for on-demand home repairs — book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as "FixList", a modern on-demand handyman service.',
-  tagline: 'A modern, on-demand template for handymen — booked online from day one.',
+    'A bright, techy handyman site for on-demand home repairs. Book a vetted pro online in minutes at a flat hourly rate. Installs a working booking flow: a real task menu (mounting, assembly, smart-home, half-day projects), three vetted pros dispatched as bookable resources with long weekday and weekend hours, and same-day scheduling. Ships as "FixList", a modern on-demand handyman service.',
+  tagline: 'A modern, on-demand template for handymen: booked online from day one.',
   industry: 'Handyman',
   sortWeight: 41,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -431,9 +431,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'FixList — book a vetted handyman online',
+      title: 'FixList. Book a vetted handyman online',
       description:
-        'FixList is on-demand handyman service — mounting, assembly, smart-home installs and repairs at flat rates. Book a vetted, insured pro online in minutes.',
+        'FixList is on-demand handyman service: mounting, assembly, smart-home installs and repairs at flat rates. Book a vetted, insured pro online in minutes.',
     },
   },
   home: HOME,

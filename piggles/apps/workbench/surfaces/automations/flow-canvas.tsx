@@ -624,7 +624,7 @@ function AddStepRow({ onClick, hasActions }: { onClick: () => void; hasActions: 
           aria-hidden
         />
         {hasActions ? (
-          <span className="text-sm font-medium">Add a step — an action or a wait</span>
+          <span className="text-sm font-medium">Add a step: an action or a wait</span>
         ) : (
           <span className="flex flex-col gap-0.5">
             <span className="text-sm font-medium">Add the first thing to do</span>

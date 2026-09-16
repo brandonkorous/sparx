@@ -51,10 +51,10 @@ export async function verifyAiProviderKey(
 function describeProviderError(err: unknown): string {
   const message = err instanceof Error ? err.message : String(err);
   if (/401|invalid.?api.?key|unauthorized|authentication/i.test(message)) {
-    return "That key was rejected — double-check you copied it correctly and that it's active.";
+    return "That key was rejected: double-check you copied it correctly and that it's active.";
   }
   if (/429|rate.?limit/i.test(message)) {
-    return 'That key works, but the provider is rate-limiting it right now — try saving again in a moment.';
+    return 'That key works, but the provider is rate-limiting it right now. Try saving again in a moment.';
   }
   return "We couldn't connect using that key. Check that it's correct and has available credits.";
 }

@@ -135,7 +135,7 @@ export function MarketSettlementReportEmail({
       )}
 
       <EmailFinePrint>
-        sparx commission is deducted at settlement — it&apos;s never charged separately.
+        sparx commission is deducted at settlement. It&apos;s never charged separately.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );

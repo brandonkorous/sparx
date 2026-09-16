@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Iris Optical — a boutique optical & eyewear studio",
+      "seoTitle": "Iris Optical: a boutique optical & eyewear studio",
       "seoDescription": "Iris Optical is a design-forward optical studio for designer and independent frames, precision eye exams and personal styling. Book an exam or a styling session online.",
       "root": {
         "kind": "element",
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A tightly edited wall of labels you won’t find in a chain — acetate, titanium and hand-finished pieces, chosen for design, not shelf space."
+                              "A tightly edited wall of labels you won’t find in a chain: acetate, titanium and hand-finished pieces, chosen for design, not shelf space."
                             ],
                             "id": "fee82178-f97f-4785-ab08-0c1c24e70db8",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A full eye-health exam with retinal imaging, read by an optometrist who takes the time — never a five-minute conveyor belt."
+                              "A full eye-health exam with retinal imaging, read by an optometrist who takes the time, never a five-minute conveyor belt."
                             ],
                             "id": "c159a719-aeac-4934-964a-c45ca06e606d",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Thinner high-index, anti-glare and progressive lenses fitted and measured properly — the part that decides how a pair really feels."
+                              "Thinner high-index, anti-glare and progressive lenses fitted and measured properly: the part that decides how a pair really feels."
                             ],
                             "id": "cacbb49c-d6bd-48cb-8404-558c98c41b7e",
                             "ord": "a1"
@@ -978,7 +978,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["A stylist pulls frames for you — no pressure to buy."],
+                            "children": ["A stylist pulls frames for you: no pressure to buy."],
                             "id": "a9ce49eb-0253-4171-a0c5-9623d9f46908",
                             "ord": "a2"
                           }
@@ -1182,7 +1182,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Iris Optical is a single considered room — a curated wall of frames, two exam rooms and a styling counter where the whole visit slows down."
+                          "Iris Optical is a single considered room: a curated wall of frames, two exam rooms and a styling counter where the whole visit slows down."
                         ],
                         "id": "152173b8-8d85-44db-8440-e4407ea4b98d",
                         "ord": "a1"
@@ -1424,7 +1424,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Frame styling and lens fitting — the eye that finds your pair fast."
+                                  "Frame styling and lens fitting: the eye that finds your pair fast."
                                 ],
                                 "id": "79fd71e9-a746-44ac-a760-bb4833a0d140",
                                 "ord": "a2"
@@ -1545,7 +1545,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most people settle for the first frame that isn’t wrong. A styling session is the opposite — we pull for your face, your coloring and your day, then narrow it down together."
+                          "Most people settle for the first frame that isn’t wrong. A styling session is the opposite. We pull for your face, your coloring and your day, then narrow it down together."
                         ],
                         "id": "eecd09fe-c84a-4792-8060-eabe30329d3e",
                         "ord": "a1"
@@ -1682,7 +1682,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Iris Optical",
+      "seoTitle": "Book: Iris Optical",
       "seoDescription": "See what Iris Optical offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1806,7 +1806,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "6f1cd2c7-b49a-48d7-9a73-7e161b603c3f",
                         "ord": "a1"
@@ -1913,7 +1913,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Iris Optical",
+      "seoTitle": "About: Iris Optical",
       "seoDescription": "Who Iris Optical is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1962,7 +1962,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Iris Optical to do eyewear the way we always wanted it done — a real exam that isn’t rushed, a curated wall of frames worth the wait, and a stylist who treats choosing them as the good part."
+                          "We opened Iris Optical to do eyewear the way we always wanted it done: a real exam that isn’t rushed, a curated wall of frames worth the wait, and a stylist who treats choosing them as the good part."
                         ],
                         "id": "324e5f23-773c-4642-97e3-35ef81cab523",
                         "ord": "a1"
@@ -2077,7 +2077,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A small, deliberate collection of independent and designer labels — quality and design over a wall of sameness."
+                              "A small, deliberate collection of independent and designer labels: quality and design over a wall of sameness."
                             ],
                             "id": "9f7a8daf-5883-4a61-a671-9b5b99dfada5",
                             "ord": "a1"
@@ -2104,7 +2104,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Measured, fitted and matched to how you live — the invisible part that decides how a pair actually feels."
+                              "Measured, fitted and matched to how you live: the invisible part that decides how a pair actually feels."
                             ],
                             "id": "cc7c62a3-7080-45e1-af6d-3f5377878ff3",
                             "ord": "a1"
@@ -2132,7 +2132,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Iris Optical",
+      "seoTitle": "Visit: Iris Optical",
       "seoDescription": "Where to find Iris Optical, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2169,7 +2169,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Iris Optical will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Iris Optical will get back to you, usually the same day."
                         ],
                         "id": "a42c78a1-25fe-4054-95f1-0bf682dc77b4",
                         "ord": "a1"
@@ -2621,7 +2621,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability for exams and styling and reserve your time online — no phone tag."
+                      "See live availability for exams and styling and reserve your time online: no phone tag."
                     ],
                     "id": "ccdd535e-2eba-456c-aad1-2d813e1e399b",
                     "ord": "a1"

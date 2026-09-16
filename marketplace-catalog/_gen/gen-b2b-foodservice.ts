@@ -162,7 +162,7 @@ function hero(): Node {
                   text: 'The pantry behind your kitchen.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'The Larder Supply Co. keeps cafes, restaurants and canteens stocked — bulk pantry, oils and staples, packaging and disposables, all by the case at trade prices. One supplier, one delivery, one invoice a month.',
+                  text: 'The Larder Supply Co. keeps cafes, restaurants and canteens stocked: bulk pantry, oils and staples, packaging and disposables, all by the case at trade prices. One supplier, one delivery, one invoice a month.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -238,7 +238,7 @@ function howItWorks(): Node {
                 text: 'How wholesale ordering works',
               }),
               el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                text: 'Buying by the case should be simple. Open an account, order what you need, and let us handle the rest — here is exactly what to expect.',
+                text: 'Buying by the case should be simple. Open an account, order what you need, and let us handle the rest. Here is exactly what to expect.',
               }),
             ],
           }),
@@ -246,15 +246,15 @@ function howItWorks(): Node {
             children: [
               step({
                 title: 'Trade pricing',
-                body: 'Every price on the site is the trade price per case, sack or carton — no consumer markup. Volume breaks kick in automatically once you order in quantity, and contract pricing is available on lines you buy every week.',
+                body: 'Every price on the site is the trade price per case, sack or carton: no consumer markup. Volume breaks kick in automatically once you order in quantity, and contract pricing is available on lines you buy every week.',
               }),
               step({
                 title: 'Minimum order',
-                body: 'Orders start at a $250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low — build a standing order and you will clear it without thinking.',
+                body: 'Orders start at a $250 minimum for delivery, and most lines carry a small minimum order quantity shown on the product. It keeps the truck full and the price low. Build a standing order and you will clear it without thinking.',
               }),
               step({
                 title: 'Delivery schedule',
-                body: 'We run set delivery days by area — order by 2pm the day before and it is on the next scheduled run. Chilled and ambient come on the same truck, so one drop covers the whole order.',
+                body: 'We run set delivery days by area. Order by 2pm the day before and it is on the next scheduled run. Chilled and ambient come on the same truck, so one drop covers the whole order.',
               }),
               step({
                 title: 'Net-30 terms',
@@ -262,7 +262,7 @@ function howItWorks(): Node {
               }),
               step({
                 title: 'Your account manager',
-                body: 'You get a named account manager who knows your kitchen — someone to call about a substitution, a rush, or a new line, who will actually pick up. Not a call centre.',
+                body: 'You get a named account manager who knows your kitchen. Someone to call about a substitution, a rush, or a new line, who will actually pick up. Not a call centre.',
               }),
               step({
                 title: 'One monthly invoice',
@@ -324,7 +324,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.category.pantry', layout: 'carousel', heading: 'Pantry, by the sack' }),
   editorialBand({
     heading: 'A supplier that picks up the phone',
-    lead: 'Every account gets a named manager who knows your kitchen — for a substitution, a rush order or a new line. Open a trade account and get trade pricing, net-30 terms and someone who answers.',
+    lead: 'Every account gets a named manager who knows your kitchen, for a substitution, a rush order or a new line. Open a trade account and get trade pricing, net-30 terms and someone who answers.',
     assetId: 'larder-band-account',
     cta: 'Open a trade account',
     href: '/contact',
@@ -414,13 +414,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The trade catalogue',
-    'Everything we carry, by the case, sack and carton — pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order $250 for delivery.'
+    'Everything we carry, by the case, sack and carton: pantry, oils and staples, packaging and disposables. Every price is the trade price; filter by department or search for a line, and build your order. Minimum order $250 for delivery.'
   ),
 ];
 const COLLECTIONS: Node[] = [
   pageMasthead(
     'Order guides',
-    'The catalogue grouped the way a kitchen actually orders — trade favourites, the essentials a new account starts with, the dry-store staples, and the back-of-house packaging and disposables run.'
+    'The catalogue grouped the way a kitchen actually orders: trade favourites, the essentials a new account starts with, the dry-store staples, and the back-of-house packaging and disposables run.'
   ),
 ];
 const SEARCH: Node[] = [
@@ -433,7 +433,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your order' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Delivery starts at a $250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms — one statement at month end, not a charge per order.',
+            text: 'Delivery starts at a $250 minimum and lands on your area’s set day when you order by 2pm the day before. Approved accounts check out on net-30 terms. One statement at month end, not a charge per order.',
           }),
         ],
       }),
@@ -447,7 +447,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Larder journal' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Practical notes for the people who run the kitchen — how we source, how to set a standing order that runs itself, and how to keep a dry store that never runs short. Plain and useful, no fluff.',
+            text: 'Practical notes for the people who run the kitchen: how we source, how to set a standing order that runs itself, and how to keep a dry store that never runs short. Plain and useful, no fluff.',
           }),
         ],
       }),
@@ -464,10 +464,10 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About The Larder' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The Larder Supply Co. started on a single van, supplying a handful of cafes that were tired of chasing six different suppliers for one week’s order. It grew the way good trade relationships do — one kitchen, one standing order, one reliable delivery at a time — and it still runs on the same promise: carry the whole order, price it fairly, and turn up when we said we would.',
+            text: 'The Larder Supply Co. started on a single van, supplying a handful of cafes that were tired of chasing six different suppliers for one week’s order. It grew the way good trade relationships do (one kitchen, one standing order, one reliable delivery at a time) and it still runs on the same promise: carry the whole order, price it fairly, and turn up when we said we would.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'We buy in volume and pass the price on — pantry by the sack, oils and staples by the case, packaging and disposables by the carton. Because we carry the breadth, a cafe, a bistro and a staff canteen can all clear their order with one supplier and one invoice, instead of a drawer full of dockets.',
+            text: 'We buy in volume and pass the price on: pantry by the sack, oils and staples by the case, packaging and disposables by the carton. Because we carry the breadth, a cafe, a bistro and a staff canteen can all clear their order with one supplier and one invoice, instead of a drawer full of dockets.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'No consumer markup, no order too small once you are set up, and a named account manager who knows your kitchen. Trade pricing, net-30 terms, and a delivery you can build a prep list around.',
@@ -485,7 +485,7 @@ const CONTACT: Node[] = [
   // `mailto:` to a placeholder domain, which was the only way to reach the business.
   contactSection({
     heading: 'Open a trade account',
-    intro: 'Tell us about your kitchen — what you run, roughly what you order, and where you are. We will set up your account, run a quick credit check for net-30 terms, and get a named manager on your first delivery.',
+    intro: 'Tell us about your kitchen: what you run, roughly what you order, and where you are. We will set up your account, run a quick credit check for net-30 terms, and get a named manager on your first delivery.',
     submitLabel: 'Email the trade desk',
   }),
 ];
@@ -559,9 +559,9 @@ const caseItem = (opts: {
 const PRODUCTS: Product[] = [
   caseItem({
     handle: 'bakers-flour-16kg',
-    title: 'Baker’s Flour — 16kg Sack',
+    title: 'Baker’s Flour: 16kg Sack',
     description:
-      'A strong, consistent baker’s flour milled for volume kitchens — reliable protein for bread, pizza and pastry that behaves the same batch to batch. Sold as a 16kg sack. Minimum order 2 sacks. Trade price per sack; volume breaks from 10 sacks.',
+      'A strong, consistent baker’s flour milled for volume kitchens: reliable protein for bread, pizza and pastry that behaves the same batch to batch. Sold as a 16kg sack. Minimum order 2 sacks. Trade price per sack; volume breaks from 10 sacks.',
     price: 26,
     sku: 'LARD-FLOUR-16',
     productType: 'Dry goods',
@@ -570,12 +570,12 @@ const PRODUCTS: Product[] = [
     tags: ['pantry', 'baking', 'bulk', 'dry-goods'],
     asset: 'prod-flour',
     alt: 'A 16kg sack of baker’s flour',
-    seoTitle: 'Baker’s Flour, 16kg sack — wholesale | The Larder Supply Co.',
+    seoTitle: 'Baker’s Flour, 16kg sack: wholesale | The Larder Supply Co.',
     seoDescription: 'Strong, consistent baker’s flour by the 16kg sack at trade prices. MOQ 2 sacks, volume breaks from 10.',
   }),
   caseItem({
     handle: 'caster-sugar-25kg',
-    title: 'Fine Caster Sugar — 25kg Sack',
+    title: 'Fine Caster Sugar: 25kg Sack',
     description:
       'A fine, fast-dissolving caster sugar for bakery, pastry and front-of-house alike. Free-flowing and screened for consistency, sold as a 25kg sack. Minimum order 1 sack. Trade price per sack; volume breaks from 8 sacks.',
     price: 29,
@@ -586,14 +586,14 @@ const PRODUCTS: Product[] = [
     tags: ['pantry', 'baking', 'bulk', 'dry-goods'],
     asset: 'prod-sugar',
     alt: 'A 25kg sack of fine caster sugar',
-    seoTitle: 'Fine Caster Sugar, 25kg sack — wholesale | The Larder Supply Co.',
+    seoTitle: 'Fine Caster Sugar, 25kg sack: wholesale | The Larder Supply Co.',
     seoDescription: 'Fine, fast-dissolving caster sugar by the 25kg sack at trade prices. MOQ 1 sack, volume breaks from 8.',
   }),
   caseItem({
     handle: 'chopped-tomatoes-case',
-    title: 'Italian Chopped Tomatoes — Case of 12',
+    title: 'Italian Chopped Tomatoes: Case of 12',
     description:
-      'Ripe Italian chopped tomatoes in a rich natural juice — the backbone of every sauce, braise and soup on the menu. Case of 12 × 2.5kg tins. Minimum order 2 cases. Trade price per case; volume breaks from 10 cases.',
+      'Ripe Italian chopped tomatoes in a rich natural juice: the backbone of every sauce, braise and soup on the menu. Case of 12 × 2.5kg tins. Minimum order 2 cases. Trade price per case; volume breaks from 10 cases.',
     price: 32,
     sku: 'LARD-TOM-2500',
     productType: 'Tinned goods',
@@ -602,14 +602,14 @@ const PRODUCTS: Product[] = [
     tags: ['pantry', 'tinned', 'bulk', 'sauce'],
     asset: 'prod-tomatoes',
     alt: 'A catering case of chopped Italian tomatoes',
-    seoTitle: 'Italian Chopped Tomatoes, case of 12 — wholesale | The Larder Supply Co.',
+    seoTitle: 'Italian Chopped Tomatoes, case of 12: wholesale | The Larder Supply Co.',
     seoDescription: 'Ripe Italian chopped tomatoes, case of 12 × 2.5kg tins at trade prices. MOQ 2 cases, volume breaks from 10.',
   }),
   caseItem({
     handle: 'extra-virgin-olive-oil-case',
-    title: 'Extra Virgin Olive Oil — Case of 4 × 5L',
+    title: 'Extra Virgin Olive Oil: Case of 4 × 5L',
     description:
-      'A smooth, everyday extra virgin olive oil for dressing, roasting and finishing — big enough flavour to matter, priced to pour freely. Case of 4 × 5-litre tins. Minimum order 1 case. Trade price per case; volume breaks from 6 cases.',
+      'A smooth, everyday extra virgin olive oil for dressing, roasting and finishing: big enough flavour to matter, priced to pour freely. Case of 4 × 5-litre tins. Minimum order 1 case. Trade price per case; volume breaks from 6 cases.',
     price: 92,
     sku: 'LARD-EVOO-5L',
     productType: 'Oils',
@@ -618,14 +618,14 @@ const PRODUCTS: Product[] = [
     tags: ['oils', 'staples', 'bulk', 'catering'],
     asset: 'prod-oil',
     alt: 'A case of four 5-litre tins of extra virgin olive oil',
-    seoTitle: 'Extra Virgin Olive Oil, case of 4 × 5L — wholesale | The Larder Supply Co.',
+    seoTitle: 'Extra Virgin Olive Oil, case of 4 × 5L: wholesale | The Larder Supply Co.',
     seoDescription: 'Smooth everyday extra virgin olive oil, case of 4 × 5L tins at trade prices. MOQ 1 case, volume breaks from 6.',
   }),
   caseItem({
     handle: 'espresso-beans-5kg',
-    title: 'Espresso Roast Beans — 5kg Wholesale Bag',
+    title: 'Espresso Roast Beans: 5kg Wholesale Bag',
     description:
-      'A chocolatey, forgiving espresso blend roasted for volume service — pulls a sweet, consistent shot and stands up to milk all day. Sold as a 5kg wholesale bag, whole bean. Minimum order 2 bags. Trade price per bag; volume breaks from 8 bags.',
+      'A chocolatey, forgiving espresso blend roasted for volume service: pulls a sweet, consistent shot and stands up to milk all day. Sold as a 5kg wholesale bag, whole bean. Minimum order 2 bags. Trade price per bag; volume breaks from 8 bags.',
     price: 74,
     sku: 'LARD-COFFEE-5K',
     productType: 'Coffee',
@@ -634,12 +634,12 @@ const PRODUCTS: Product[] = [
     tags: ['coffee', 'staples', 'bulk', 'cafe'],
     asset: 'prod-coffee',
     alt: 'A 5kg wholesale bag of espresso roast coffee beans',
-    seoTitle: 'Espresso Roast Beans, 5kg wholesale bag — wholesale | The Larder Supply Co.',
+    seoTitle: 'Espresso Roast Beans, 5kg wholesale bag: wholesale | The Larder Supply Co.',
     seoDescription: 'A chocolatey, forgiving espresso blend by the 5kg bag at trade prices. MOQ 2 bags, volume breaks from 8.',
   }),
   {
     handle: 'takeaway-cups-1000',
-    title: 'Single-Wall Takeaway Cups — Case of 1000',
+    title: 'Single-Wall Takeaway Cups: Case of 1000',
     description:
       'Sturdy single-wall paper hot cups with a rolled rim that seats a lid cleanly and holds heat without collapsing. Case of 1000, lids sold separately. Minimum order 1 case. Choose your size below. Trade price per case; volume breaks from 10 cases.',
     status: 'active',
@@ -648,7 +648,7 @@ const PRODUCTS: Product[] = [
     tags: ['packaging', 'takeaway', 'bulk', 'cafe'],
     categoryHandles: ['packaging'],
     collectionHandles: ['packaging-disposables', 'new-account-essentials'],
-    seoTitle: 'Single-Wall Takeaway Cups, case of 1000 — wholesale | The Larder Supply Co.',
+    seoTitle: 'Single-Wall Takeaway Cups, case of 1000: wholesale | The Larder Supply Co.',
     seoDescription: 'Sturdy single-wall paper hot cups, case of 1000, in 8/12/16oz at trade prices. MOQ 1 case.',
     options: [
       { name: 'Cup size', displayType: 'dropdown', values: [{ value: '8oz' }, { value: '12oz' }, { value: '16oz' }] },
@@ -662,16 +662,16 @@ const PRODUCTS: Product[] = [
   },
   {
     handle: 'kraft-food-boxes-500',
-    title: 'Kraft Food Boxes — Carton of 500',
+    title: 'Kraft Food Boxes: Carton of 500',
     description:
-      'Grease-resistant kraft boxes for burgers, bowls and takeaway service — flat-packed, fold in seconds and stack tidy on the pass. Carton of 500. Minimum order 1 carton. Choose your size below. Trade price per carton; volume breaks from 8 cartons.',
+      'Grease-resistant kraft boxes for burgers, bowls and takeaway service: flat-packed, fold in seconds and stack tidy on the pass. Carton of 500. Minimum order 1 carton. Choose your size below. Trade price per carton; volume breaks from 8 cartons.',
     status: 'active',
     productType: 'Packaging',
     vendor: VENDOR,
     tags: ['packaging', 'takeaway', 'bulk', 'kraft'],
     categoryHandles: ['packaging'],
     collectionHandles: ['packaging-disposables', 'back-of-house'],
-    seoTitle: 'Kraft Food Boxes, carton of 500 — wholesale | The Larder Supply Co.',
+    seoTitle: 'Kraft Food Boxes, carton of 500: wholesale | The Larder Supply Co.',
     seoDescription: 'Grease-resistant kraft takeaway boxes, carton of 500, regular or large, at trade prices. MOQ 1 carton.',
     options: [
       { name: 'Box size', displayType: 'dropdown', values: [{ value: 'Regular' }, { value: 'Large' }] },
@@ -684,7 +684,7 @@ const PRODUCTS: Product[] = [
   },
   caseItem({
     handle: 'dinner-napkins-carton',
-    title: 'Dinner Napkins — Carton of 4000',
+    title: 'Dinner Napkins: Carton of 4000',
     description:
       'Soft two-ply dinner napkins in a clean natural white, quarter-folded and ready for the dispenser. Bulk carton of 4000. Minimum order 1 carton. Trade price per carton; volume breaks from 6 cartons.',
     price: 41,
@@ -695,21 +695,21 @@ const PRODUCTS: Product[] = [
     tags: ['disposables', 'front-of-house', 'bulk', 'paper'],
     asset: 'prod-napkins',
     alt: 'A bulk carton of dinner napkins',
-    seoTitle: 'Dinner Napkins, carton of 4000 — wholesale | The Larder Supply Co.',
+    seoTitle: 'Dinner Napkins, carton of 4000: wholesale | The Larder Supply Co.',
     seoDescription: 'Soft two-ply dinner napkins, bulk carton of 4000 at trade prices. MOQ 1 carton, volume breaks from 6.',
   }),
   {
     handle: 'nitrile-gloves-case',
-    title: 'Nitrile Gloves — Case of 1000',
+    title: 'Nitrile Gloves: Case of 1000',
     description:
-      'Powder-free nitrile catering gloves — tough, tactile and food-safe, the ones that don’t tear when you’re boning a tray of chicken. Case of 1000 (10 boxes of 100). Minimum order 1 case. Choose your size below. Trade price per case; volume breaks from 6 cases.',
+      'Powder-free nitrile catering gloves: tough, tactile and food-safe, the ones that don’t tear when you’re boning a tray of chicken. Case of 1000 (10 boxes of 100). Minimum order 1 case. Choose your size below. Trade price per case; volume breaks from 6 cases.',
     status: 'active',
     productType: 'Disposables',
     vendor: VENDOR,
     tags: ['disposables', 'back-of-house', 'bulk', 'ppe'],
     categoryHandles: ['disposables'],
     collectionHandles: ['packaging-disposables', 'back-of-house', 'new-account-essentials'],
-    seoTitle: 'Nitrile Gloves, case of 1000 — wholesale | The Larder Supply Co.',
+    seoTitle: 'Nitrile Gloves, case of 1000: wholesale | The Larder Supply Co.',
     seoDescription: 'Powder-free food-safe nitrile gloves, case of 1000, in S/M/L at trade prices. MOQ 1 case.',
     options: [
       { name: 'Glove size', displayType: 'dropdown', values: [{ value: 'Small' }, { value: 'Medium' }, { value: 'Large' }] },
@@ -725,15 +725,15 @@ const PRODUCTS: Product[] = [
     handle: 'cafe-starter-pack',
     title: 'Cafe Starter Pack',
     description:
-      'Everything a new cafe needs on day one, priced as a kit — a 5kg bag of espresso beans, a case of 1000 12oz cups with lids, a carton of napkins and 500 kraft boxes. One SKU to open the doors. Minimum order 1 pack; reorder the lines individually after.',
+      'Everything a new cafe needs on day one, priced as a kit: a 5kg bag of espresso beans, a case of 1000 12oz cups with lids, a carton of napkins and 500 kraft boxes. One SKU to open the doors. Minimum order 1 pack; reorder the lines individually after.',
     status: 'active',
     productType: 'Bundle',
     vendor: VENDOR,
     tags: ['bundle', 'starter', 'cafe', 'new-account'],
     categoryHandles: ['oils-staples'],
     collectionHandles: ['trade-favourites', 'new-account-essentials'],
-    seoTitle: 'Cafe Starter Pack — wholesale opening kit | The Larder Supply Co.',
-    seoDescription: 'A day-one opening kit for a new cafe — espresso beans, cups, napkins and kraft boxes in one trade SKU.',
+    seoTitle: 'Cafe Starter Pack: wholesale opening kit | The Larder Supply Co.',
+    seoDescription: 'A day-one opening kit for a new cafe: espresso beans, cups, napkins and kraft boxes in one trade SKU.',
     variants: [{ sku: 'LARD-STARTER', priceCents: money(219), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-starter', isPrimary: true, alt: 'A cafe starter pack of coffee, cups, napkins and boxes' }],
   },
@@ -758,7 +758,7 @@ const COMMERCE = {
     {
       handle: 'new-account-essentials',
       name: 'New-account essentials',
-      description: 'Opening a kitchen? Start here — the first order, sorted.',
+      description: 'Opening a kitchen? Start here: the first order, sorted.',
       type: 'manual',
       featured: true,
       productHandles: ['cafe-starter-pack', 'bakers-flour-16kg', 'espresso-beans-5kg', 'takeaway-cups-1000', 'nitrile-gloves-case'],
@@ -766,7 +766,7 @@ const COMMERCE = {
     {
       handle: 'pantry-staples',
       name: 'Pantry staples',
-      description: 'The dry store — flour, sugar and tinned goods by the sack.',
+      description: 'The dry store: flour, sugar and tinned goods by the sack.',
       type: 'manual',
       featured: false,
       productHandles: ['bakers-flour-16kg', 'caster-sugar-25kg', 'chopped-tomatoes-case'],
@@ -782,7 +782,7 @@ const COMMERCE = {
     {
       handle: 'packaging-disposables',
       name: 'Packaging & disposables',
-      description: 'The front-of-house run — cups, boxes, napkins and gloves.',
+      description: 'The front-of-house run: cups, boxes, napkins and gloves.',
       type: 'manual',
       featured: false,
       productHandles: ['takeaway-cups-1000', 'kraft-food-boxes-500', 'dinner-napkins-carton', 'nitrile-gloves-case'],
@@ -790,7 +790,7 @@ const COMMERCE = {
     {
       handle: 'back-of-house',
       name: 'Back of house',
-      description: 'The consumables the kitchen burns through — gloves, napkins, boxes.',
+      description: 'The consumables the kitchen burns through: gloves, napkins, boxes.',
       type: 'manual',
       featured: false,
       productHandles: ['nitrile-gloves-case', 'dinner-napkins-carton', 'kraft-food-boxes-500'],
@@ -816,11 +816,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('The kitchens that never scramble for stock have one thing in common: they don’t place an order every week, they place it once and let it repeat. A standing order takes your predictable lines — the flour, the oil, the cups, the gloves — and sends them on a fixed cadence, so the truck arrives on your day whether or not anyone remembered to click a button.'),
+          para('The kitchens that never scramble for stock have one thing in common: they don’t place an order every week, they place it once and let it repeat. A standing order takes your predictable lines (the flour, the oil, the cups, the gloves) and sends them on a fixed cadence, so the truck arrives on your day whether or not anyone remembered to click a button.'),
           h2('Build it around what you burn'),
-          para('Start with the lines you get through no matter what the specials are. Count a normal week honestly — not a quiet Monday, a real week — and set the standing quantities to cover it with a little headroom. Those lines alone will usually clear the delivery minimum, which means the variable extras ride along at no extra delivery cost.'),
+          para('Start with the lines you get through no matter what the specials are. Count a normal week honestly (not a quiet Monday, a real week) and set the standing quantities to cover it with a little headroom. Those lines alone will usually clear the delivery minimum, which means the variable extras ride along at no extra delivery cost.'),
           h2('Leave room to flex'),
-          para('A standing order isn’t a straitjacket. Add one-off lines on top whenever the menu shifts, skip a delivery when you’re closed, and adjust the standing quantities once a season as your covers change. Your account manager can tune it with you in five minutes — the point is that the boring 80% of the order handles itself, so you only spend attention on the 20% that actually changes.'),
+          para('A standing order isn’t a straitjacket. Add one-off lines on top whenever the menu shifts, skip a delivery when you’re closed, and adjust the standing quantities once a season as your covers change. Your account manager can tune it with you in five minutes: the point is that the boring 80% of the order handles itself, so you only spend attention on the 20% that actually changes.'),
         ],
       },
     },
@@ -831,16 +831,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'How we buy in volume, and why your price is lower for it',
-      excerpt: 'Trade pricing isn’t a discount we hand out — it’s the result of buying deep and moving fast. Here’s what actually sits behind the number on the shelf.',
+      excerpt: 'Trade pricing isn’t a discount we hand out: it’s the result of buying deep and moving fast. Here’s what actually sits behind the number on the shelf.',
       featuredImage: { $asset: 'post-sourcing' },
       body: {
         type: 'doc',
         content: [
-          para('A trade price looks like a discount, but it isn’t one — nobody is giving anything away. It’s what a case costs when it’s bought by the pallet, moved before it ages, and sold without a consumer markup stacked on top. Understanding that is the difference between chasing the cheapest line this week and building a supply that stays cheap every week.'),
+          para('A trade price looks like a discount, but it isn’t one. Nobody is giving anything away. It’s what a case costs when it’s bought by the pallet, moved before it ages, and sold without a consumer markup stacked on top. Understanding that is the difference between chasing the cheapest line this week and building a supply that stays cheap every week.'),
           h2('Buy deep, move fast'),
           para('We commit to volume with growers, mills and manufacturers, which earns a price a single restaurant could never get on its own. Then we turn that stock over quickly, so we’re never sitting on ageing inventory we have to price up to justify. Deep buying plus fast turnover is the whole trick, and it’s why the per-case price holds instead of drifting.'),
           h2('Volume breaks and contract lines'),
-          para('The price drops further the more you take, automatically — order in quantity and the volume break applies at checkout, no haggling. For the lines you buy every week, a contract price locks a number in for the season so you can cost a menu against it. Ask your account manager to set contract pricing on your standing-order lines; it’s the single biggest lever most kitchens leave unpulled.'),
+          para('The price drops further the more you take, automatically. Order in quantity and the volume break applies at checkout, no haggling. For the lines you buy every week, a contract price locks a number in for the season so you can cost a menu against it. Ask your account manager to set contract pricing on your standing-order lines; it’s the single biggest lever most kitchens leave unpulled.'),
         ],
       },
     },
@@ -857,10 +857,10 @@ const CONTENT = [
         type: 'doc',
         content: [
           para('You can place a perfect order and still run short if the dry store is chaos. Stock control isn’t a spreadsheet problem so much as a shelving problem: when everything has a place and the place tells you when it’s low, ordering the right amount becomes obvious instead of a guess.'),
-          h2('First in, first out — physically'),
+          h2('First in, first out: physically'),
           para('Rotate every delivery to the back so the oldest stock sits at the front, and nobody has to check a date to grab the right tin. It takes an extra minute at put-away and saves you from the slow bleed of expired stock at the back of a shelf. Label the shelf edge, not just the product, so the system survives a new starter on their first shift.'),
           h2('Set a par, mark the line'),
-          para('Give each staple a par level — the minimum you want on the shelf — and mark it physically with a strip of tape or a line on the wall. When stock drops to the line, it goes on the next order, full stop. A par you can see beats a par in a notebook every time, and it turns “did we order flour?” into a glance instead of a debate.'),
+          para('Give each staple a par level (the minimum you want on the shelf) and mark it physically with a strip of tape or a line on the wall. When stock drops to the line, it goes on the next order, full stop. A par you can see beats a par in a notebook every time, and it turns “did we order flour?” into a glance instead of a debate.'),
         ],
       },
     },
@@ -875,7 +875,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Foodservice Wholesale',
   theme: THEME,
   summary:
-    'A complete, working WHOLESALE shop for a foodservice supplier: a real trade catalogue sold by the case, sack and carton — bulk pantry, oils and staples, packaging and disposables — with pack qty + MOQ on every line, per-case trade prices, categories, collections and a bespoke trade PDP. Warm larder theme — cream ground, deep provisions-green, a copper accent. Shipped as The Larder Supply Co.',
+    'A complete, working WHOLESALE shop for a foodservice supplier: a real trade catalogue sold by the case, sack and carton, bulk pantry, oils and staples, packaging and disposables, with pack qty + MOQ on every line, per-case trade prices, categories, collections and a bespoke trade PDP. Warm larder theme, cream ground, deep provisions-green, a copper accent. Shipped as The Larder Supply Co.',
   tagline: 'A working trade counter for a foodservice wholesaler.',
   vertical: 'b2b',
   industry: 'Foodservice wholesale',
@@ -888,19 +888,19 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'The Larder Supply Co. — foodservice wholesale by the case',
+      title: 'The Larder Supply Co. foodservice wholesale by the case',
       description:
-        'The Larder Supply Co. supplies cafes, restaurants and canteens — bulk pantry, oils and staples, packaging and disposables, by the case at trade prices. One delivery, one invoice, net-30 terms.',
+        'The Larder Supply Co. supplies cafes, restaurants and canteens: bulk pantry, oils and staples, packaging and disposables, by the case at trade prices. One delivery, one invoice, net-30 terms.',
     },
     about: {
       title: 'About The Larder Supply Co.',
       description:
-        'How The Larder buys in volume, carries the whole order and delivers on your day — trade pricing, net-30 terms and a named account manager for every kitchen.',
+        'How The Larder buys in volume, carries the whole order and delivers on your day: trade pricing, net-30 terms and a named account manager for every kitchen.',
     },
     contact: {
-      title: 'Open a trade account — The Larder Supply Co.',
+      title: 'Open a trade account: The Larder Supply Co.',
       description:
-        'Open a wholesale trade account with The Larder Supply Co. — trade pricing, net-30 terms, set delivery days and a named account manager for your kitchen.',
+        'Open a wholesale trade account with The Larder Supply Co. trade pricing, net-30 terms, set delivery days and a named account manager for your kitchen.',
     },
   },
   home: HOME,

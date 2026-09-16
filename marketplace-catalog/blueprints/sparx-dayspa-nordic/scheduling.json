@@ -235,7 +235,7 @@
     {
       "handle": "thermal-soak",
       "name": "Thermal soak session",
-      "description": "An unhurried hour in the mineral-warm soaking pool. Come as you are — no treatment, no schedule, just warm water and quiet.",
+      "description": "An unhurried hour in the mineral-warm soaking pool. Come as you are: no treatment, no schedule, just warm water and quiet.",
       "bookingType": "reservation",
       "durationMinutes": 90,
       "priceCents": 4500,
@@ -253,7 +253,7 @@
     {
       "handle": "sauna-plunge-circuit",
       "name": "Sauna & cold-plunge circuit",
-      "description": "The full hot-and-cold ritual — dry sauna, cold plunge, rest, repeat. A guided first round if it’s new to you.",
+      "description": "The full hot-and-cold ritual: dry sauna, cold plunge, rest, repeat. A guided first round if it’s new to you.",
       "bookingType": "reservation",
       "durationMinutes": 75,
       "priceCents": 4000,
@@ -270,7 +270,7 @@
     },
     {
       "handle": "massage-60",
-      "name": "Massage — 60 minutes",
+      "name": "Massage: 60 minutes",
       "description": "A calm, pressure-to-taste massage in a still room. Book a therapist by name.",
       "durationMinutes": 60,
       "priceCents": 12000,
@@ -294,8 +294,8 @@
     },
     {
       "handle": "massage-90",
-      "name": "Massage — 90 minutes",
-      "description": "The longer session — full-body, unrushed, with time to actually let go.",
+      "name": "Massage: 90 minutes",
+      "description": "The longer session: full-body, unrushed, with time to actually let go.",
       "durationMinutes": 90,
       "priceCents": 16500,
       "bufferAfterMin": 15,
@@ -319,7 +319,7 @@
     {
       "handle": "mineral-facial",
       "name": "Mineral facial",
-      "description": "A clean, mineral-rich facial — cleanse, a warm-and-cool contrast, and a light finish. Nothing fussy.",
+      "description": "A clean, mineral-rich facial: cleanse, a warm-and-cool contrast, and a light finish. Nothing fussy.",
       "durationMinutes": 60,
       "priceCents": 13500,
       "bufferAfterMin": 10,
@@ -367,7 +367,7 @@
     {
       "handle": "private-bathhouse",
       "name": "Private bathhouse hour",
-      "description": "The whole bathhouse to yourselves — pool, sauna and plunge, for up to eight. An hour that belongs to no one else.",
+      "description": "The whole bathhouse to yourselves: pool, sauna and plunge, for up to eight. An hour that belongs to no one else.",
       "bookingType": "reservation",
       "durationMinutes": 60,
       "priceCents": 22000,

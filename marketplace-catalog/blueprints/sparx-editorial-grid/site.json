@@ -299,7 +299,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -727,8 +727,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Atelier Nord — furniture & objects made to keep",
-      "seoDescription": "Atelier Nord makes furniture and objects for the considered home — oak, walnut, stone, wool and clay, made in small runs and built to outlast the season they arrive in.",
+      "seoTitle": "Atelier Nord: furniture & objects made to keep",
+      "seoDescription": "Atelier Nord makes furniture and objects for the considered home: oak, walnut, stone, wool and clay, made in small runs and built to outlast the season they arrive in.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -791,7 +791,7 @@
                                     "tag": "p",
                                     "class": "text-lg leading-relaxed text-base-content",
                                     "children": [
-                                      "Furniture and objects for the considered home — made in small runs from oak, stone, wool and clay, and built to outlast the season they arrive in."
+                                      "Furniture and objects for the considered home: made in small runs from oak, stone, wool and clay, and built to outlast the season they arrive in."
                                     ],
                                     "id": "b4310c77-66e4-40a8-81a9-37c864154be4",
                                     "ord": "a1"
@@ -889,7 +889,7 @@
                                     "tag": "p",
                                     "class": "text-lg leading-relaxed text-base-content",
                                     "children": [
-                                      "Chairs and stools built around the way a body actually rests — solid oak and turned walnut, joined to last a generation."
+                                      "Chairs and stools built around the way a body actually rests: solid oak and turned walnut, joined to last a generation."
                                     ],
                                     "id": "ae9fac5d-7e95-4222-898d-4366a35ac652",
                                     "ord": "a1"
@@ -976,7 +976,7 @@
                                     "tag": "p",
                                     "class": "text-lg leading-relaxed text-base-content",
                                     "children": [
-                                      "Linen and paper shades that turn a hard bulb into something worth sitting beside — warm, quiet, and made to be lived with."
+                                      "Linen and paper shades that turn a hard bulb into something worth sitting beside: warm, quiet, and made to be lived with."
                                     ],
                                     "id": "3c7b5a60-0dc1-4910-896f-dac4c41e55a4",
                                     "ord": "a1"
@@ -1063,7 +1063,7 @@
                                     "tag": "p",
                                     "class": "text-lg leading-relaxed text-base-content",
                                     "children": [
-                                      "Stoneware, ceramic and brass for the objects a table earns over years — thrown, glazed and finished by hand."
+                                      "Stoneware, ceramic and brass for the objects a table earns over years: thrown, glazed and finished by hand."
                                     ],
                                     "id": "bcc620ca-32ef-400c-b5ac-5e450e089ac4",
                                     "ord": "a1"
@@ -1402,7 +1402,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Chairs and stools built around the way a body actually rests — solid oak and turned walnut, joined to last a generation."
+                          "Chairs and stools built around the way a body actually rests: solid oak and turned walnut, joined to last a generation."
                         ],
                         "id": "f134d0d9-9218-4b27-95b9-515b79ba86e1",
                         "ord": "a1"
@@ -1950,7 +1950,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Stoneware, ceramic and brass for the objects a table earns over years — thrown, glazed and finished by hand."
+                          "Stoneware, ceramic and brass for the objects a table earns over years: thrown, glazed and finished by hand."
                         ],
                         "id": "b531a341-a862-45d8-89dc-5817cc26ac5b",
                         "ord": "a1"
@@ -2361,7 +2361,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Atelier Nord",
+      "seoTitle": "Shop: Atelier Nord",
       "seoDescription": "Browse everything Atelier Nord makes, with prices and options at a glance. Design furniture & objects.",
       "root": {
         "kind": "element",
@@ -2393,7 +2393,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every piece Atelier Nord currently makes — seating, lighting, tabletop and textiles, filtered and sorted however you like. Small runs, made to keep."
+                      "Every piece Atelier Nord currently makes: seating, lighting, tabletop and textiles, filtered and sorted however you like. Small runs, made to keep."
                     ],
                     "id": "c9004349-1ba2-49f8-874e-c0f1829ec65b",
                     "ord": "a1"
@@ -2421,7 +2421,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Atelier Nord",
+      "seoTitle": "Collections: Atelier Nord",
       "seoDescription": "Explore the collections at Atelier Nord, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2453,7 +2453,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Seating, lighting, tabletop, textiles and the small objects a room is made of — grouped the way we think about a home, so you can start where you are furnishing."
+                      "Seating, lighting, tabletop, textiles and the small objects a room is made of: grouped the way we think about a home, so you can start where you are furnishing."
                     ],
                     "id": "cd2508f6-f010-4a9a-b185-9ce70329e0e5",
                     "ord": "a1"
@@ -2481,7 +2481,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Atelier Nord",
+      "seoTitle": "Your cart: Atelier Nord",
       "seoDescription": "Review what is in your cart and check out securely at Atelier Nord.",
       "root": {
         "kind": "element",
@@ -2513,7 +2513,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything here is made to order in our own workshop, crated by hand and shipped insured. Thirty days to return anything unused — take your time deciding."
+                      "Everything here is made to order in our own workshop, crated by hand and shipped insured. Thirty days to return anything unused: take your time deciding."
                     ],
                     "id": "62af488c-139b-4bc1-b785-9ff1cc581ebd",
                     "ord": "a1"
@@ -2541,7 +2541,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Atelier Nord",
+      "seoTitle": "Search: Atelier Nord",
       "seoDescription": "Search Atelier Nord for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2573,7 +2573,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Looking for something specific — a material, a room, a piece you saw once? Search the whole catalogue and the Journal below."
+                      "Looking for something specific: a material, a room, a piece you saw once? Search the whole catalogue and the Journal below."
                     ],
                     "id": "ddc32818-9a97-4711-a074-4b3c140b49ba",
                     "ord": "a1"
@@ -2601,7 +2601,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Atelier Nord",
+      "seoTitle": "Journal: Atelier Nord",
       "seoDescription": "Stories, guides and notes from Atelier Nord.",
       "root": {
         "kind": "element",
@@ -2633,7 +2633,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the workshop — how a piece is made, how to live with the materials, and the thinking behind objects made to keep."
+                      "Notes from the workshop: how a piece is made, how to live with the materials, and the thinking behind objects made to keep."
                     ],
                     "id": "f8dfd069-a768-4948-8f29-dc7c954bf329",
                     "ord": "a1"
@@ -2766,8 +2766,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Atelier Nord — a small design studio",
-      "seoDescription": "The people, materials and workshop behind Atelier Nord — why we make in small runs, by hand, from materials that age into something better than they began.",
+      "seoTitle": "About Atelier Nord: a small design studio",
+      "seoDescription": "The people, materials and workshop behind Atelier Nord: why we make in small runs, by hand, from materials that age into something better than they began.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2798,7 +2798,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Atelier Nord is a small design studio making furniture and objects for the considered home. We work in oak, walnut, stone, wool and clay — materials that age into something better than they began — and we make in small runs, in our own workshop, by the people whose names are on the work."
+                      "Atelier Nord is a small design studio making furniture and objects for the considered home. We work in oak, walnut, stone, wool and clay (materials that age into something better than they began) and we make in small runs, in our own workshop, by the people whose names are on the work."
                     ],
                     "id": "4e26ce7d-a4cd-4b86-aef8-cfc0486a5f1a",
                     "ord": "a1"
@@ -2828,8 +2828,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Atelier Nord",
-      "seoDescription": "Get in touch with Atelier Nord — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Atelier Nord",
+      "seoDescription": "Get in touch with Atelier Nord: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2865,7 +2865,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Our workshop and showroom are open by appointment. Tell us what you are looking for — a single piece, a whole room, or something made to your measurements — and we will find a time."
+                          "Our workshop and showroom are open by appointment. Tell us what you are looking for (a single piece, a whole room, or something made to your measurements) and we will find a time."
                         ],
                         "id": "5389550b-aba9-4389-a2ec-3ba2fe97b184",
                         "ord": "a1"
@@ -3136,8 +3136,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Atelier Nord",
-      "seoDescription": "Product details at Atelier Nord — design furniture & objects, with options and pricing.",
+      "seoTitle": "Product: Atelier Nord",
+      "seoDescription": "Product details at Atelier Nord: design furniture & objects, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

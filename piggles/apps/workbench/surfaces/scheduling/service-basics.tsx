@@ -123,7 +123,7 @@ export function ServiceBasics({
               }
             />
             <FieldDescription>
-              The most people who can join one session — the class fills up at this number.
+              The most people who can join one session: the class fills up at this number.
             </FieldDescription>
           </Field>
         ) : null}
@@ -170,7 +170,7 @@ export function ServiceBasics({
               }
             />
             <FieldDescription>
-              How far apart the bookable slots sit — every 15 minutes, on the hour, and so on.
+              How far apart the bookable slots sit: every 15 minutes, on the hour, and so on.
             </FieldDescription>
           </Field>
 

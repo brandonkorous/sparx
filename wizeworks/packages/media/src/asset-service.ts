@@ -436,7 +436,7 @@ export async function deleteMediaAsset(
     const usage = await countOneAssetUsage(tx, assetId);
     if (usage.total > 0) {
       throw new MediaValidationError(
-        `Asset is still used by ${describeUsage(usage)} — detach it first.`
+        `Asset is still used by ${describeUsage(usage)}: detach it first.`
       );
     }
     await tx.mediaAsset.update({ where: { id: assetId }, data: { deletedAt: new Date() } });

@@ -158,7 +158,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'A missed lesson with no notice, or a cancellation inside 24 hours, is charged in full — the car and instructor were held for you. Life happens, so tell us as early as you can and we’ll always try to move you instead.',
+        'A missed lesson with no notice, or a cancellation inside 24 hours, is charged in full: the car and instructor were held for you. Life happens, so tell us as early as you can and we’ll always try to move you instead.',
     },
   ],
   resources: [
@@ -185,14 +185,14 @@ const SCHEDULING = {
     },
     {
       handle: 'car-1',
-      name: 'Training car 1 — dual-control sedan',
+      name: 'Training car 1: dual-control sedan',
       kind: 'asset',
       skillTags: ['training-car'],
       windows: hours([1, 2, 3, 4, 5, 6], 480, 1140), // Mon–Sat 8–7
     },
     {
       handle: 'car-2',
-      name: 'Training car 2 — dual-control hatchback',
+      name: 'Training car 2: dual-control hatchback',
       kind: 'asset',
       skillTags: ['training-car'],
       windows: hours([2, 3, 4, 5, 6, 0], 540, 1140), // Tue–Sun 9–7
@@ -216,7 +216,7 @@ const SCHEDULING = {
       handle: 'adult-lesson',
       name: 'Adult driving lesson',
       description:
-        'A focused hour behind the wheel for adult learners — building real road confidence at your pace, in a calm dual-control car.',
+        'A focused hour behind the wheel for adult learners: building real road confidence at your pace, in a calm dual-control car.',
       durationMinutes: 60,
       priceCents: 8500,
       assignmentStrategy: 'customer_choice',
@@ -227,7 +227,7 @@ const SCHEDULING = {
       handle: 'defensive-driving-course',
       name: 'Defensive driving session',
       description:
-        'Hazard awareness, space management and crash-avoidance technique — the skills that keep you safe long after the test. Great for a ticket dismissal or an insurance discount.',
+        'Hazard awareness, space management and crash-avoidance technique: the skills that keep you safe long after the test. Great for a ticket dismissal or an insurance discount.',
       durationMinutes: 90,
       priceCents: 13500,
       bufferAfterMin: 10,
@@ -261,7 +261,7 @@ const SCHEDULING = {
       handle: 'advanced-highway-lesson',
       name: 'Advanced & highway lesson',
       description:
-        'Merging, lane discipline, high-speed judgement and complex interchanges — the confidence to take on freeways and long trips.',
+        'Merging, lane discipline, high-speed judgement and complex interchanges: the confidence to take on freeways and long trips.',
       durationMinutes: 120,
       priceCents: 16500,
       bufferAfterMin: 15,
@@ -288,7 +288,7 @@ const SCHEDULING = {
 const HOME = [
   typeHero({
     title: 'Drive like you own the road',
-    sub: 'Professional lessons for adult and advanced drivers — defensive skills, nervous-driver coaching, senior refreshers and highway confidence. Book with a real instructor and see live times in about a minute.',
+    sub: 'Professional lessons for adult and advanced drivers: defensive skills, nervous-driver coaching, senior refreshers and highway confidence. Book with a real instructor and see live times in about a minute.',
     primary: { label: 'Book a lesson', href: '/book' },
     secondary: { label: 'See lessons', href: '/book' },
     surface: 'primary',
@@ -297,7 +297,7 @@ const HOME = [
     items: [
       {
         title: 'Instructors who coach adults',
-        body: 'Calm, experienced professionals who teach grown-ups — no teen-driver-ed vibe, just clear feedback and steady progress.',
+        body: 'Calm, experienced professionals who teach grown-ups: no teen-driver-ed vibe, just clear feedback and steady progress.',
       },
       {
         title: 'Defensive & advanced skills',
@@ -309,7 +309,7 @@ const HOME = [
       },
       {
         title: 'Book on your schedule',
-        body: 'Live availability across our instructors and dual-control cars — pick a time that fits your week, not ours.',
+        body: 'Live availability across our instructors and dual-control cars. Pick a time that fits your week, not ours.',
       },
     ],
   }),
@@ -361,16 +361,16 @@ const HOME = [
   splitFeature({
     image: url(IMG.method),
     alt: 'An instructor coaching an adult learner from the passenger seat on a city street',
-    heading: 'Confidence is a skill — we teach it on purpose',
+    heading: 'Confidence is a skill. We teach it on purpose',
     body: [
       'Most people don’t lack ability. They lack a calm plan and the reps to trust it. So every lesson starts with a clear goal, breaks the drive into moves you can actually feel yourself nailing, and ends knowing exactly what’s next.',
-      'Dual-control cars, unflappable instructors and honest feedback — that’s how a first-timer, a returning driver and a nervous one all leave steadier than they arrived.',
+      'Dual-control cars, unflappable instructors and honest feedback: that’s how a first-timer, a returning driver and a nervous one all leave steadier than they arrived.',
     ],
     cta: { label: 'Start with an assessment', href: '/book' },
   }),
   teamRow({
     heading: 'Your instructors',
-    intro: 'Book by name — you’ll work with someone who teaches your kind of driving.',
+    intro: 'Book by name: you’ll work with someone who teaches your kind of driving.',
     members: [
       {
         name: 'Ricardo Vega',
@@ -397,7 +397,7 @@ const HOME = [
   }),
   testimonial({
     quote:
-      'I avoided the freeway for eleven years. Three lessons with Dana and I drove myself two hours to see my sister — first time ever. I still can’t quite believe it.',
+      'I avoided the freeway for eleven years. Three lessons with Dana and I drove myself two hours to see my sister: first time ever. I still can’t quite believe it.',
     attribution: 'Marisol T., nervous-driver program',
   }),
   bookingCta({
@@ -422,7 +422,7 @@ const ABOUT = [
     alt: 'A dual-control training car on a quiet residential road at golden hour',
     heading: 'About Apex Driving Academy',
     body: [
-      'We built Apex for the drivers other schools overlook — adults starting late, people getting their nerve back, newcomers transferring a license, and good drivers who want to be great. Not a teen driver-ed mill.',
+      'We built Apex for the drivers other schools overlook: adults starting late, people getting their nerve back, newcomers transferring a license, and good drivers who want to be great. Not a teen driver-ed mill.',
       'Every instructor here is a professional who coaches grown-ups: clear, respectful, and genuinely invested in you leaving the car safer and more confident than you got in.',
     ],
     cta: { label: 'Book a lesson', href: '/book' },
@@ -437,7 +437,7 @@ const ABOUT = [
       },
       {
         title: 'A real plan',
-        body: 'You get a clear path — the specific skills to build and the order to build them in, not an open-ended meter running.',
+        body: 'You get a clear path: the specific skills to build and the order to build them in, not an open-ended meter running.',
       },
       {
         title: 'Skills that last',
@@ -460,7 +460,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability across our instructors and cars, and lock in your time online — no phone tag.',
+    sub: 'See live availability across our instructors and cars, and lock in your time online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a lesson', href: '/book' },
   }),
@@ -471,8 +471,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-driving-pro',
   name: 'Driving Academy (Pro)',
   summary:
-    'A sharp, confident driving-academy site — a deep-navy primary, an electric-amber accent and a crisp near-white ground with modern-sans display. Installs online booking for lessons and assessments: adult, defensive, nervous-driver, senior-refresher, advanced/highway and license-transfer lessons, with three instructors booked by name and two dual-control training cars as bookable resources. Ships as "Apex Driving Academy" for adult and advanced drivers.',
-  tagline: 'A confident, modern template for adult & advanced driving schools — book online from day one.',
+    'A sharp, confident driving-academy site: a deep-navy primary, an electric-amber accent and a crisp near-white ground with modern-sans display. Installs online booking for lessons and assessments: adult, defensive, nervous-driver, senior-refresher, advanced/highway and license-transfer lessons, with three instructors booked by name and two dual-control training cars as bookable resources. Ships as "Apex Driving Academy" for adult and advanced drivers.',
+  tagline: 'A confident, modern template for adult & advanced driving schools. Book online from day one.',
   industry: 'Driving school',
   sortWeight: 21,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -481,9 +481,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Apex Driving Academy — adult & advanced driving lessons',
+      title: 'Apex Driving Academy: adult & advanced driving lessons',
       description:
-        'Apex Driving Academy teaches adult and advanced drivers — defensive driving, nervous-driver coaching, senior refreshers, highway skills and license transfers. Book online.',
+        'Apex Driving Academy teaches adult and advanced drivers: defensive driving, nervous-driver coaching, senior refreshers, highway skills and license transfers. Book online.',
     },
   },
   home: HOME,

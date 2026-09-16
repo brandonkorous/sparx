@@ -123,7 +123,7 @@ export function ServiceOptions({
       <OptionRow
         checked={draft.bookableOnline}
         label="Customers can book this themselves online"
-        hint="Off, only your team can add this booking — it never appears on your public booking page."
+        hint="Off, only your team can add this booking. It never appears on your public booking page."
         onChange={(next) => {
           onSet('bookableOnline', next);
         }}
@@ -139,7 +139,7 @@ export function ServiceOptions({
       <OptionRow
         checked={draft.requiresAsset}
         label="The customer names a specific item when booking"
-        hint="For work done on a customer’s own thing — their vehicle, their bike, their instrument. They tell you which one when they book."
+        hint="For work done on a customer’s own thing. Their vehicle, their bike, their instrument. They tell you which one when they book."
         onChange={(next) => {
           onSet('requiresAsset', next);
         }}
@@ -147,7 +147,7 @@ export function ServiceOptions({
       <OptionRow
         checked={draft.isActive}
         label="This service is switched on"
-        hint="Switch it off to stop taking bookings for it without removing it — turn it back on any time."
+        hint="Switch it off to stop taking bookings for it without removing it. Turn it back on any time."
         onChange={(next) => {
           onSet('isActive', next);
         }}

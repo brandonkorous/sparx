@@ -157,7 +157,7 @@ export function StatusBar() {
       {!online ? (
         <span className="text-danger flex items-center gap-1.5">
           <Icon glyph={faCircleExclamation} className="size-3.5" aria-hidden />
-          Offline — changes can’t save right now
+          Offline: changes can’t save right now
         </span>
       ) : mutating > 0 ? (
         <span className="flex items-center gap-1.5" role="status">
@@ -232,7 +232,7 @@ export function StatusBar() {
               );
             })()}
             <span className="max-w-72 truncate">
-              {latest.subject ? `${latest.title} — ${latest.subject}` : latest.title}
+              {latest.subject ? `${latest.title}: ${latest.subject}` : latest.title}
             </span>
             <span>{describeAgo(latest.at)}</span>
           </Button>

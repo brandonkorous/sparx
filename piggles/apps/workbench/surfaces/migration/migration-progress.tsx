@@ -87,7 +87,7 @@ export function RunProgress({ runId }: { runId: string }) {
                 `Moving from: ${run.vendor ?? 'not recorded'}`,
                 `Started: ${run.startedAt ?? 'unknown'}`,
                 `Reference: ${runId}`,
-                run.dryRun ? 'This was a practice run — nothing was being saved.' : '',
+                run.dryRun ? 'This was a practice run. Nothing was being saved.' : '',
                 '',
                 'What happened per kind of record:',
                 ...run.entities.map(
@@ -103,7 +103,7 @@ export function RunProgress({ runId }: { runId: string }) {
                         .slice(0, 5)
                         .map(
                           (problem) =>
-                            `  ${problem.naturalKey ?? `row ${problem.rowIndex + 2}`} — ${problem.message ?? 'no reason given'}`
+                            `  ${problem.naturalKey ?? `row ${problem.rowIndex + 2}`} (${problem.message ?? 'no reason given'})`
                         ),
                     ]),
               ]
@@ -153,7 +153,7 @@ export function RunProgress({ runId }: { runId: string }) {
                 </Badge>
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <Text className="text-sm">
-                    {problem.naturalKey !== null ? `${problem.naturalKey} — ` : ''}
+                    {problem.naturalKey !== null ? `${problem.naturalKey}: ` : ''}
                     {problem.message}
                   </Text>
                   <Text className="text-sm">

@@ -66,7 +66,7 @@ const TIERS: Tier[] = [
     name: 'Certified',
     rate: '30% + 5%',
     rateNote: 'first payment, then every month after',
-    entry: 'Certification — a self-paced course on the platform you are selling.',
+    entry: 'Certification: a self-paced course on the platform you are selling.',
     unlocks: [
       'The only tier that keeps paying after month one',
       'A named partner manager, not a queue',
@@ -89,7 +89,7 @@ export function PartnersTiers() {
           </Heading>
           <Text variant="lead" className="max-w-3xl">
             Every tier earns on referrals and lists in the directory from day one. What separates
-            them is how much you put in up front — and whether the money stops after the first
+            them is how much you put in up front, and whether the money stops after the first
             invoice or keeps arriving.
           </Text>
         </div>

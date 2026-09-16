@@ -531,8 +531,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Nadia Rehman — architect & spatial designer",
-      "seoDescription": "Nadia Rehman is an architect and spatial designer in Lisbon working across homes, civic buildings, cultural spaces and workplaces — selected work, project sheets, and how to start a project.",
+      "seoTitle": "Nadia Rehman: architect & spatial designer",
+      "seoDescription": "Nadia Rehman is an architect and spatial designer in Lisbon working across homes, civic buildings, cultural spaces and workplaces: selected work, project sheets, and how to start a project.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -568,7 +568,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
                         "children": [
-                          "I’m Nadia Rehman — an architect and spatial designer working across homes, civic buildings, cultural spaces and workplaces. Every project starts with the question of what the place is for, and holds that answer from the first sketch to the last detail."
+                          "I’m Nadia Rehman: an architect and spatial designer working across homes, civic buildings, cultural spaces and workplaces. Every project starts with the question of what the place is for, and holds that answer from the first sketch to the last detail."
                         ],
                         "id": "2f347707-d1b2-48d1-8c08-726ad9b7314f",
                         "ord": "a1"
@@ -749,7 +749,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Four recent buildings, one from each field the practice works in. Each opens to the full sheet — the site, the idea, and how it was made."
+                          "Four recent buildings, one from each field the practice works in. Each opens to the full sheet: the site, the idea, and how it was made."
                         ],
                         "id": "f41f3202-a51f-4e37-bf89-33a8a7c37d10",
                         "ord": "a1"
@@ -1080,7 +1080,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "New buildings and thoughtful additions — houses, halls and cultural spaces designed from their structure and light out, not their surface in."
+                              "New buildings and thoughtful additions: houses, halls and cultural spaces designed from their structure and light out, not their surface in."
                             ],
                             "id": "7bbd9a4f-c3a4-4bc8-bdb3-feaf8ca27df8",
                             "ord": "a1"
@@ -1134,7 +1134,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "How a site holds more than one building — routes, thresholds and public space that make a place legible before a visitor has read a single sign."
+                              "How a site holds more than one building: routes, thresholds and public space that make a place legible before a visitor has read a single sign."
                             ],
                             "id": "6885c19b-0446-4261-8c59-3b464f63fec3",
                             "ord": "a1"
@@ -1161,7 +1161,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Temporary and civic installations where the brief is a story, not a programme — pavilions and displays that teach a space how to be read."
+                              "Temporary and civic installations where the brief is a story, not a programme: pavilions and displays that teach a space how to be read."
                             ],
                             "id": "ff95a990-ebad-4959-99c2-d32b27199e03",
                             "ord": "a1"
@@ -1236,8 +1236,8 @@
       "name": "Work",
       "kind": "singleton",
       "slug": "work",
-      "seoTitle": "Work — Nadia Rehman",
-      "seoDescription": "Selected projects and case studies by Nadia Rehman — the work, the thinking, and the outcome.",
+      "seoTitle": "Work: Nadia Rehman",
+      "seoDescription": "Selected projects and case studies by Nadia Rehman: the work, the thinking, and the outcome.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1451,8 +1451,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Nadia Rehman — architect & spatial designer",
-      "seoDescription": "A small Lisbon practice working from the masterplan to the door handle across residential, civic, cultural and workplace projects — the person, the approach, and the studio at a glance.",
+      "seoTitle": "About Nadia Rehman: architect & spatial designer",
+      "seoDescription": "A small Lisbon practice working from the masterplan to the door handle across residential, civic, cultural and workplace projects: the person, the approach, and the studio at a glance.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1488,7 +1488,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I’m an architect and spatial designer, and I run a small practice out of Lisbon. For over a decade I’ve worked across scales — a single house, a civic hall, the reuse of an old foundry, a workplace fit-out — and the thread through all of it is a stubborn interest in why a place exists before what it looks like."
+                          "I’m an architect and spatial designer, and I run a small practice out of Lisbon. For over a decade I’ve worked across scales (a single house, a civic hall, the reuse of an old foundry, a workplace fit-out) and the thread through all of it is a stubborn interest in why a place exists before what it looks like."
                         ],
                         "id": "5911b2d0-5360-44f8-af8e-c4964152ad99",
                         "ord": "a1"
@@ -1498,7 +1498,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I keep the studio deliberately small so I can stay on the drawing and on site. That means the person you brief is the person who resolves the junction detail, and it means every project is designed from its structure, light and use outward — not decorated after the fact."
+                          "I keep the studio deliberately small so I can stay on the drawing and on site. That means the person you brief is the person who resolves the junction detail, and it means every project is designed from its structure, light and use outward, not decorated after the fact."
                         ],
                         "id": "c62adba6-2b31-4d2b-9bd1-2fd825965e36",
                         "ord": "a2"
@@ -1508,7 +1508,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Before founding the studio I worked at two international practices on cultural and civic buildings, and I still teach a design studio one term a year. I take on a handful of projects at a time, and I care most about the parts a photograph never shows — the threshold, the section, the way a room meets the light at four in the afternoon."
+                          "Before founding the studio I worked at two international practices on cultural and civic buildings, and I still teach a design studio one term a year. I take on a handful of projects at a time, and I care most about the parts a photograph never shows: the threshold, the section, the way a room meets the light at four in the afternoon."
                         ],
                         "id": "96bb8051-a04b-4731-9e30-4f4d55cee79e",
                         "ord": "a3"
@@ -1730,8 +1730,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Nadia Rehman",
-      "seoDescription": "Start a project with Nadia Rehman — availability, what a good brief looks like, and where to reach them.",
+      "seoTitle": "Contact: Nadia Rehman",
+      "seoDescription": "Start a project with Nadia Rehman: availability, what a good brief looks like, and where to reach them.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1767,7 +1767,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I’m taking on a small number of new projects. A good first enquiry tells me the site or building, who it’s for, roughly what you hope to do, and when you’d like to start — but if you only have a plot and an idea, that’s a fine place to begin too."
+                          "I’m taking on a small number of new projects. A good first enquiry tells me the site or building, who it’s for, roughly what you hope to do, and when you’d like to start, but if you only have a plot and an idea, that’s a fine place to begin too."
                         ],
                         "id": "caae461f-73a4-4d37-80c9-ce8d65ad5a08",
                         "ord": "a1"
@@ -2059,8 +2059,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Project — Nadia Rehman",
-      "seoDescription": "A project by Nadia Rehman — the brief, the process, and the result, in one case study.",
+      "seoTitle": "Project: Nadia Rehman",
+      "seoDescription": "A project by Nadia Rehman: the brief, the process, and the result, in one case study.",
       "root": {
         "kind": "element",
         "tag": "div",

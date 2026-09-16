@@ -296,14 +296,14 @@ export function installState(status: string): { label: string; tone: Tone; detai
       return {
         label: 'Live',
         tone: 'success',
-        detail: 'This design has been published — visitors see it on your site now.',
+        detail: 'This design has been published: visitors see it on your site now.',
       };
     case 'installed':
       return {
         label: 'Added as drafts',
         tone: 'info',
         detail:
-          'Everything this design adds is on your site as drafts — only you can see it. Review it, then publish it when you are ready.',
+          'Everything this design adds is on your site as drafts. Only you can see it. Review it, then publish it when you are ready.',
       };
     case 'running':
       return {

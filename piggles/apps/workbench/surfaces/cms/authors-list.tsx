@@ -124,7 +124,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
           label: 'New author',
           icon: faPlus,
           onClick: create,
-          title: 'Add an author — hold Shift to open alongside, Alt for a new window',
+          title: 'Add an author: hold Shift to open alongside, Alt for a new window',
         }}
         views={{
           target: '/cms/authors',
@@ -173,7 +173,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No authors yet',
               description:
-                'Authors are the names that appear on what you publish — a photo and a short biography each. Add your first one and you can pick it on any post.',
+                'Authors are the names that appear on what you publish: a photo and a short biography each. Add your first one and you can pick it on any post.',
               actions: (
                 <Button
                   size="sm"

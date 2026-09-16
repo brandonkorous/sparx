@@ -243,7 +243,7 @@ export function checkLinks(inventory: DocumentInventory, targets: ResolvedTarget
         severity: 'warning',
         title: `This ${noun(link)} doesn't go anywhere`,
         detail:
-          `Someone who clicks this ${noun(link)} stays exactly where they are — nothing has been ` +
+          `Someone who clicks this ${noun(link)} stays exactly where they are: nothing has been ` +
           `set as its destination. Open it and choose the page, product or web address it should ` +
           `open, or remove it so the page doesn't offer something that isn't there.`,
         ...(link.href ? { evidence: link.href } : {}),
@@ -260,7 +260,7 @@ export function checkLinks(inventory: DocumentInventory, targets: ResolvedTarget
         title: `This ${noun(link)} jumps to a part of the page that isn't there`,
         detail:
           `It's set to scroll down to "${classified.value}", but no section on this page is named ` +
-          `that — so clicking it does nothing. This usually means the section was renamed or ` +
+          `that, so clicking it does nothing. This usually means the section was renamed or ` +
           `deleted after the ${noun(link)} was made.`,
         evidence: `#${classified.value}`,
       });
@@ -306,9 +306,9 @@ export function checkLinks(inventory: DocumentInventory, targets: ResolvedTarget
       detail:
         broken.noun === 'page'
           ? `Anyone who clicks it lands on a "page not found" screen. Nothing on your site is at ` +
-            `${broken.path} — check the address for a typo, or point the link at one of your pages.`
+            `${broken.path}: check the address for a typo, or point the link at one of your pages.`
           : `Anyone who clicks it lands on a "page not found" screen. There's no ${broken.noun} at ` +
-            `${broken.path} any more — it was probably deleted or its web address was changed after ` +
+            `${broken.path} any more. It was probably deleted or its web address was changed after ` +
             `this link was made.`,
       evidence: link.href,
     });

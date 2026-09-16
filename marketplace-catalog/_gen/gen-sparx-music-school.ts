@@ -141,7 +141,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens — just let your teacher know as early as you can and we’ll do our best to find another time.',
+        'Lessons cancelled with less than 24 hours’ notice, or missed without warning, are counted as used. Life happens. Just let your teacher know as early as you can and we’ll do our best to find another time.',
     },
   ],
   resources: [
@@ -186,7 +186,7 @@ const SCHEDULING = {
       handle: 'trial-lesson',
       name: 'Trial lesson',
       description:
-        'A free, no-pressure first lesson — meet a teacher, try your instrument and see if we’re the right fit. All ages, all levels welcome.',
+        'A free, no-pressure first lesson: meet a teacher, try your instrument and see if we’re the right fit. All ages, all levels welcome.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -200,7 +200,7 @@ const SCHEDULING = {
       handle: 'piano-lesson',
       name: 'Piano lesson',
       description:
-        'One-to-one piano for beginners through advanced — from first notes and reading music to pieces you’ve always wanted to play.',
+        'One-to-one piano for beginners through advanced: from first notes and reading music to pieces you’ve always wanted to play.',
       durationMinutes: 45,
       priceCents: 6000,
       assignmentStrategy: 'customer_choice',
@@ -214,7 +214,7 @@ const SCHEDULING = {
       handle: 'guitar-lesson',
       name: 'Guitar lesson',
       description:
-        'Acoustic or electric, chords to solos — a private guitar lesson built around the music you love to play.',
+        'Acoustic or electric, chords to solos: a private guitar lesson built around the music you love to play.',
       durationMinutes: 45,
       priceCents: 5500,
       assignmentStrategy: 'customer_choice',
@@ -228,7 +228,7 @@ const SCHEDULING = {
       handle: 'voice-lesson',
       name: 'Voice lesson',
       description:
-        'Find your voice with gentle, healthy technique — breathing, range and songs, at whatever pace feels right for you.',
+        'Find your voice with gentle, healthy technique: breathing, range and songs, at whatever pace feels right for you.',
       durationMinutes: 45,
       priceCents: 6000,
       assignmentStrategy: 'customer_choice',
@@ -242,7 +242,7 @@ const SCHEDULING = {
       handle: 'violin-lesson',
       name: 'Violin lesson',
       description:
-        'Private violin from the very first day — posture, tone and technique, with a warm, patient teacher beside you.',
+        'Private violin from the very first day: posture, tone and technique, with a warm, patient teacher beside you.',
       durationMinutes: 45,
       priceCents: 6000,
       assignmentStrategy: 'customer_choice',
@@ -256,7 +256,7 @@ const SCHEDULING = {
       handle: 'group-musicianship-class',
       name: 'Group musicianship class',
       description:
-        'A joyful small-group class — rhythm, ear-training and playing together. The fun, social side of learning music.',
+        'A joyful small-group class: rhythm, ear-training and playing together. The fun, social side of learning music.',
       durationMinutes: 60,
       priceCents: 3000,
       bookingType: 'class',
@@ -291,7 +291,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A young student smiling at the piano during a lesson',
     title: 'Learn to love making music',
-    sub: 'Warm, encouraging private lessons and group classes in piano, guitar, voice, violin and more — for every age and every level. Start with a free trial lesson.',
+    sub: 'Warm, encouraging private lessons and group classes in piano, guitar, voice, violin and more, for every age and every level. Start with a free trial lesson.',
     primary: { label: 'Book a trial lesson', href: '/book' },
     secondary: { label: 'See lessons & classes', href: '/book' },
     overlay: 'dark',
@@ -300,11 +300,11 @@ const HOME = [
     items: [
       {
         title: 'Caring, certified teachers',
-        body: 'Real musicians who love to teach — patient, encouraging, and trained to meet you exactly where you are.',
+        body: 'Real musicians who love to teach: patient, encouraging, and trained to meet you exactly where you are.',
       },
       {
         title: 'All ages, all instruments',
-        body: 'From four-year-olds at their first keyboard to grandparents picking up guitar — beginners are genuinely welcome here.',
+        body: 'From four-year-olds at their first keyboard to grandparents picking up guitar: beginners are genuinely welcome here.',
       },
       {
         title: 'Recitals & performances',
@@ -318,7 +318,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Lessons & classes',
-    intro: 'A few of the ways to make music with us. See full prices and live times on the booking page — and remember, your first lesson is free.',
+    intro: 'A few of the ways to make music with us. See full prices and live times on the booking page, and remember, your first lesson is free.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -326,7 +326,7 @@ const HOME = [
         name: 'Trial lesson',
         priceCents: 0,
         durationMin: 30,
-        desc: 'A free first lesson — meet a teacher and try it out.',
+        desc: 'A free first lesson: meet a teacher and try it out.',
       },
       {
         name: 'Piano lesson',
@@ -354,14 +354,14 @@ const HOME = [
     alt: 'A warm, light-filled lesson room with an upright piano and music stands',
     heading: 'Music should feel joyful, not stressful',
     body: [
-      'We believe every person is musical, and that the fastest way to grow is to enjoy the journey. So we teach with encouragement first — celebrating small wins, choosing songs students actually want to play, and never making anyone feel behind.',
+      'We believe every person is musical, and that the fastest way to grow is to enjoy the journey. So we teach with encouragement first: celebrating small wins, choosing songs students actually want to play, and never making anyone feel behind.',
       'Progress is personal here. Whether you dream of playing in a recital or just want a happy half-hour each week, your teacher builds the lessons around you.',
     ],
     cta: { label: 'Book a trial lesson', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your teachers',
-    intro: 'Book by name — you’ll learn with the same teacher each week, someone who gets to know you and how you like to learn.',
+    intro: 'Book by name: you’ll learn with the same teacher each week, someone who gets to know you and how you like to learn.',
     members: [
       {
         name: 'Mara Ellison',
@@ -375,7 +375,7 @@ const HOME = [
         role: 'Guitar',
         image: url(IMG.theo),
         alt: 'Theo Nakamura, guitar teacher',
-        bio: 'From first chords to full songs, Theo meets every student where they are — teens and grown-up beginners especially love his classes.',
+        bio: 'From first chords to full songs, Theo meets every student where they are: teens and grown-up beginners especially love his classes.',
       },
       {
         name: 'Lena Petrov',
@@ -392,7 +392,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Ready to make some music?',
-    sub: 'Pick an instrument, choose your teacher and see live times. Your first lesson is free — it takes about a minute to book.',
+    sub: 'Pick an instrument, choose your teacher and see live times. Your first lesson is free. It takes about a minute to book.',
     cta: { label: 'Book a trial lesson', href: '/book' },
   }),
 ];
@@ -416,7 +416,7 @@ const ABOUT = [
     heading: 'About Crescendo Music School',
     body: [
       'Crescendo began with a simple belief: that everyone deserves the joy of making music, and that the right teacher can change a life. We opened our doors as a neighbourhood school where children and adults, absolute beginners and returning players, all feel equally welcome.',
-      'Today we’re a small, close-knit school of teachers who genuinely love what they do — and a community of students, families and friends who cheer each other on at every recital.',
+      'Today we’re a small, close-knit school of teachers who genuinely love what they do, and a community of students, families and friends who cheer each other on at every recital.',
     ],
     cta: { label: 'Book a trial lesson', href: '/book' },
   }),
@@ -426,7 +426,7 @@ const ABOUT = [
     items: [
       {
         title: 'Everyone is musical',
-        body: 'There’s no such thing as “not musical” — only music not yet discovered. We teach with that faith in every student.',
+        body: 'There’s no such thing as “not musical” only music not yet discovered. We teach with that faith in every student.',
       },
       {
         title: 'Encouragement first',
@@ -454,7 +454,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your free trial lesson online — no phone tag.',
+    sub: 'See live availability and reserve your free trial lesson online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a trial lesson', href: '/book' },
   }),
@@ -465,8 +465,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-music-school',
   name: 'Music School',
   summary:
-    'A warm, all-ages music-school site — a cream palette, a burgundy primary and a friendly serif display — with online booking for free trial lessons from day one. Installs a working booking flow: a real menu of private lessons (piano, guitar, voice, violin) and a group class, three teachers you book by name matched with a lesson room, and a no-show policy. Ships as "Crescendo Music School", an encouraging community school for every age and level.',
-  tagline: 'A warm, joyful template for music schools — book trial lessons online from day one.',
+    'A warm, all-ages music-school site (a cream palette, a burgundy primary and a friendly serif display) with online booking for free trial lessons from day one. Installs a working booking flow: a real menu of private lessons (piano, guitar, voice, violin) and a group class, three teachers you book by name matched with a lesson room, and a no-show policy. Ships as "Crescendo Music School", an encouraging community school for every age and level.',
+  tagline: 'A warm, joyful template for music schools. Book trial lessons online from day one.',
   industry: 'Music lessons',
   sortWeight: 50,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -475,7 +475,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Crescendo Music School — lessons for every age',
+      title: 'Crescendo Music School: lessons for every age',
       description:
         'Crescendo Music School offers warm, encouraging lessons in piano, guitar, voice and violin for all ages and levels. Book a free trial lesson online.',
     },

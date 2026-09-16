@@ -30,7 +30,7 @@ import { Band } from '../band';
  * takes a month. Both are no.
  */
 const FACTS = [
-  { v: '30%', s: 'of what a client first pays you brings in — 20% before you apply.' },
+  { v: '30%', s: 'of what a client first pays you brings in: 20% before you apply.' },
   { v: '5%', s: 'every month after, for as long as a managed client stays.' },
   { v: '$0', s: 'to join. No reseller contract, no minimum, no quota.' },
   { v: '3 days', s: 'is the longest an application sits before you hear back.' },
@@ -50,7 +50,7 @@ export function PartnersHero() {
             <span className="text-primary">.</span>
           </Heading>
           <Text variant="lead" className="text-base-content max-w-2xl text-xl">
-            Your clients run their whole business on one platform instead of five subscriptions — so
+            Your clients run their whole business on one platform instead of five subscriptions, so
             the pitch gets easier, your fee stays yours, and you earn on every client that goes live
             and keeps paying.
           </Text>

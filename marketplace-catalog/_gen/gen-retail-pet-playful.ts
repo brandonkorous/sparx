@@ -165,7 +165,7 @@ function hero(): Node {
                                     text: 'Spoil them. They’ve earned it.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Fetch Club makes the fun stuff — pop-color collars, squeaky toys they’ll actually love, treats worth sitting for, and beds made for the world’s best nap. Bright, bouncy, built to survive the zoomies. Because a good dog deserves a good time.',
+                                    text: 'Fetch Club makes the fun stuff: pop-color collars, squeaky toys they’ll actually love, treats worth sitting for, and beds made for the world’s best nap. Bright, bouncy, built to survive the zoomies. Because a good dog deserves a good time.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -263,7 +263,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Just dropped' }),
     editorialBand({
         heading: 'Bright, bouncy, and built for the zoomies',
-        lead: 'We test every toy against the world’s toughest reviewers — actual dogs, going full send. If it can’t survive a proper game of tug, a park sprint and a hopeful attempt at eating it, it doesn’t make the shelf. Color that pops, stitching that holds, squeaks that keep on squeaking.',
+        lead: 'We test every toy against the world’s toughest reviewers: actual dogs, going full send. If it can’t survive a proper game of tug, a park sprint and a hopeful attempt at eating it, it doesn’t make the shelf. Color that pops, stitching that holds, squeaks that keep on squeaking.',
         assetId: 'fetch-band-made',
         cta: 'Why dogs love us',
         href: '/blog/toys-that-survive-the-zoomies',
@@ -272,7 +272,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.play', layout: 'carousel', heading: 'Let’s play' }),
     editorialBand({
         heading: 'The box your dog will lose their mind over',
-        lead: 'Join Fetch Club and a box of fresh toys, treats and everyday goodies turns up on your schedule — matched to your dog and packed to be torn into. Skip, swap or cancel any time, no lock-in, and every box works out cheaper than buying it all one at a time.',
+        lead: 'Join Fetch Club and a box of fresh toys, treats and everyday goodies turns up on your schedule: matched to your dog and packed to be torn into. Skip, swap or cancel any time, no lock-in, and every box works out cheaper than buying it all one at a time.',
         assetId: 'fetch-band-sub',
         cta: 'Join the club',
         href: '/shop/membership',
@@ -317,7 +317,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'The Fetch Club promise' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Dog-tested, tail-approved. Free shipping over $39, and a happy-dog guarantee — if your pup isn’t obsessed, send it back within 30 days for a full refund. No fuss, no sad faces.',
+                                        text: 'Dog-tested, tail-approved. Free shipping over $39, and a happy-dog guarantee: if your pup isn’t obsessed, send it back within 30 days for a full refund. No fuss, no sad faces.',
                                     }),
                                 ],
                             }),
@@ -356,11 +356,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop the fun',
-        'The whole happy range in one place — pop-color collars and leads, bandanas, squeaky toys, comfy beds, travel gear and treats worth sitting for. Filter by what your dog’s into or sort however you like; everything here is dog-tested, tail-approved and ready to party.'
+        'The whole happy range in one place: pop-color collars and leads, bandanas, squeaky toys, comfy beds, travel gear and treats worth sitting for. Filter by what your dog’s into or sort however you like; everything here is dog-tested, tail-approved and ready to party.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The good stuff, grouped the fun way — what just dropped, the crowd pleasers every dog goes wild for, the full walkies kit, playtime picks, and boxes that make an easy gift.'),
+    pageMasthead('Collections', 'The good stuff, grouped the fun way: what just dropped, the crowd pleasers every dog goes wild for, the full walkies kit, playtime picks, and boxes that make an easy gift.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Fetch Club', 'After a size, a color, or a bit of doggy advice? Search the whole shop and the journal below.'),
@@ -372,7 +372,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping over $39, packed with a treat on top and sent within a day. Not quite a hit with your pup? Send it back within 30 days for a full refund — our happy-dog guarantee puts the risk on us, not you.',
+                        text: 'Free shipping over $39, packed with a treat on top and sent within a day. Not quite a hit with your pup? Send it back within 30 days for a full refund. Our happy-dog guarantee puts the risk on us, not you.',
                     }),
                 ],
             }),
@@ -386,7 +386,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Fetch Club journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Fun, useful bits from people who are, frankly, a bit obsessed with dogs — toys that actually last, treats you can feel good about, and helping a new pup feel at home. No jargon, no snobbery, just good dog stuff.',
+                        text: 'Fun, useful bits from people who are, frankly, a bit obsessed with dogs: toys that actually last, treats you can feel good about, and helping a new pup feel at home. No jargon, no snobbery, just good dog stuff.',
                     }),
                 ],
             }),
@@ -403,13 +403,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Fetch Club' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Fetch Club started at a muddy dog park with a chewed-up ball and a simple thought: why is so much dog stuff so boring? Beige beds, grey collars, toys that gave up after one good tug. Our dogs have more personality than that — and we figured their gear should too.',
+                        text: 'Fetch Club started at a muddy dog park with a chewed-up ball and a simple thought: why is so much dog stuff so boring? Beige beds, grey collars, toys that gave up after one good tug. Our dogs have more personality than that, and we figured their gear should too.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'So we make the fun stuff, properly. Pop colors that are easy to spot across a field, stitching and hardware that survive a serious game of tug, squeaks engineered to keep on squeaking, and treats with a label you can actually pronounce. Every single thing is tested by real dogs going full send — and only makes the shelf if they’re obsessed.',
+                        text: 'So we make the fun stuff, properly. Pop colors that are easy to spot across a field, stitching and hardware that survive a serious game of tug, squeaks engineered to keep on squeaking, and treats with a label you can actually pronounce. Every single thing is tested by real dogs going full send, and only makes the shelf if they’re obsessed.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'No boring beige, no throwaway junk, no marketing dressed up as care. Just bright, bouncy, well-made things for the goofball who’s thrilled to see you every single day — and a share of every order goes to the shelters helping more dogs find their people.',
+                        text: 'No boring beige, no throwaway junk, no marketing dressed up as care. Just bright, bouncy, well-made things for the goofball who’s thrilled to see you every single day, and a share of every order goes to the shelters helping more dogs find their people.',
                     }),
                 ],
             }),
@@ -424,7 +424,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say woof',
-        intro: 'Not sure which collar size fits, need help picking a toy your chewer can’t destroy, or want to stock Fetch Club in your shop? Tell us about your dog and a real human here — usually with a dog on their lap — will get back to you within a day.',
+        intro: 'Not sure which collar size fits, need help picking a toy your chewer can’t destroy, or want to stock Fetch Club in your shop? Tell us about your dog and a real human here (usually with a dog on their lap) will get back to you within a day.',
         submitLabel: 'Email the pack',
     }),
 ];
@@ -584,7 +584,7 @@ const PRODUCTS: Product[] = [
         handle: 'pop-webbing-collar',
         title: 'Pop Webbing Collar',
         description:
-            'The collar you can spot across a whole field — chunky recycled webbing in colors that actually pop, a bombproof metal buckle that clicks and stays clicked, and a welded D-ring that won’t bend when your dog decides a squirrel is worth the sprint. Soft-edged so it never rubs, wipes clean after the muddiest adventure, and honestly makes every dog look about 30% more fun. Measure the neck and pick a size below.',
+            'The collar you can spot across a whole field: chunky recycled webbing in colors that actually pop, a bombproof metal buckle that clicks and stays clicked, and a welded D-ring that won’t bend when your dog decides a squirrel is worth the sprint. Soft-edged so it never rubs, wipes clean after the muddiest adventure, and honestly makes every dog look about 30% more fun. Measure the neck and pick a size below.',
         price: 22,
         sku: 'FETCH-COL-POP',
         productType: 'Collar',
@@ -594,14 +594,14 @@ const PRODUCTS: Product[] = [
         sizes: ['Small', 'Medium', 'Large'],
         colors: ['Sunbeam Yellow', 'Splash Blue', 'Bubblegum Pink'],
         asset: 'prod-collar',
-        seoTitle: 'Pop Webbing Dog Collar — bright, bombproof buckle | Fetch Club',
+        seoTitle: 'Pop Webbing Dog Collar: bright, bombproof buckle | Fetch Club',
         seoDescription: 'A chunky recycled-webbing dog collar in pop colors with a bombproof metal buckle, in three sizes and three colors. Easy to spot, built for zoomies.',
     }),
     colored({
         handle: 'matching-pop-lead',
         title: 'Matching Pop Lead',
         description:
-            'The lead built to match the collar — the same bright recycled webbing and a chunky trigger clip that’s easy to snap on even with cold hands and a wiggly dog. A comfy five-foot length with a padded handle that stays soft on the palm through the whole walk, and a handy O-ring for clipping on a poop-bag holder. Loud, tough, and impossible to lose in a messy hallway.',
+            'The lead built to match the collar: the same bright recycled webbing and a chunky trigger clip that’s easy to snap on even with cold hands and a wiggly dog. A comfy five-foot length with a padded handle that stays soft on the palm through the whole walk, and a handy O-ring for clipping on a poop-bag holder. Loud, tough, and impossible to lose in a messy hallway.',
         price: 24,
         sku: 'FETCH-LEAD-POP',
         productType: 'Lead',
@@ -610,14 +610,14 @@ const PRODUCTS: Product[] = [
         tags: ['lead', 'leash', 'walk', 'colorful'],
         colors: ['Sunbeam Yellow', 'Splash Blue', 'Bubblegum Pink'],
         asset: 'prod-lead',
-        seoTitle: 'Matching Pop Dog Lead — padded handle, 5ft | Fetch Club',
+        seoTitle: 'Matching Pop Dog Lead: padded handle, 5ft | Fetch Club',
         seoDescription: 'A five-foot bright recycled-webbing lead with a chunky trigger clip and padded handle, made to match the Pop collar. Loud, tough and easy to grab.',
     }),
     sizeColor({
         handle: 'reversible-bandana',
         title: 'Reversible Party Bandana',
         description:
-            'Two looks in one — a soft cotton bandana that’s a different fun print on each side, so your dog can be spots today and stripes tomorrow. Slips onto the collar (no tying, no fuss), sits flat so it never bunches, and washes again and again without fading. The fastest way to make an ordinary Tuesday walk feel like a proper day out. Pick a size and a print pair below.',
+            'Two looks in one: a soft cotton bandana that’s a different fun print on each side, so your dog can be spots today and stripes tomorrow. Slips onto the collar (no tying, no fuss), sits flat so it never bunches, and washes again and again without fading. The fastest way to make an ordinary Tuesday walk feel like a proper day out. Pick a size and a print pair below.',
         price: 16,
         sku: 'FETCH-BAND-REV',
         productType: 'Bandana',
@@ -628,14 +628,14 @@ const PRODUCTS: Product[] = [
         colors: ['Confetti & Spots', 'Stripes & Bones', 'Rainbow & Paws'],
         colorOption: 'Print',
         asset: 'prod-bandana',
-        seoTitle: 'Reversible Party Dog Bandana — two prints, no-tie | Fetch Club',
+        seoTitle: 'Reversible Party Dog Bandana: two prints, no-tie | Fetch Club',
         seoDescription: 'A soft cotton reversible dog bandana with a different fun print on each side, in three sizes and three print pairs. Slips on the collar, washes and lasts.',
     }),
     single({
         handle: 'mega-toy-bundle',
         title: 'Mega Toy Bundle',
         description:
-            'One big box, five kinds of fun — a rope tug, a crinkle plush, a treat-hiding puzzle, a bouncy fetch ball and a squeaky sidekick, all in one bundle that costs less than buying them apart. Something for a wet afternoon indoors and something for a proper park session, covering chewers, thinkers, tuggers and full-tilt fetchers. The easiest way to find out exactly what your dog is into.',
+            'One big box, five kinds of fun: a rope tug, a crinkle plush, a treat-hiding puzzle, a bouncy fetch ball and a squeaky sidekick, all in one bundle that costs less than buying them apart. Something for a wet afternoon indoors and something for a proper park session, covering chewers, thinkers, tuggers and full-tilt fetchers. The easiest way to find out exactly what your dog is into.',
         price: 44,
         sku: 'FETCH-TOY-MEGA',
         productType: 'Toy',
@@ -643,14 +643,14 @@ const PRODUCTS: Product[] = [
         collections: ['just-dropped', 'playtime-party', 'gift-ready', 'crowd-pleasers'],
         tags: ['toy', 'bundle', 'play'],
         asset: 'prod-toybundle',
-        seoTitle: 'Mega Dog Toy Bundle — five toys, one box | Fetch Club',
-        seoDescription: 'A five-toy bundle — rope tug, crinkle plush, treat puzzle, fetch ball and a squeaky sidekick — for less than buying them apart. Fun for every kind of dog.',
+        seoTitle: 'Mega Dog Toy Bundle: five toys, one box | Fetch Club',
+        seoDescription: 'A five-toy bundle (rope tug, crinkle plush, treat puzzle, fetch ball and a squeaky sidekick) for less than buying them apart. Fun for every kind of dog.',
     }),
     choices({
         handle: 'cloud-nap-bed',
         title: 'Cloud Nap Bed',
         description:
-            'A big squishy cloud of a bed for the world’s most important naps — a deep fibre fill your dog can burrow and circle into, a raised bolster edge perfect for chin-resting, and a bright, characterful cover that unzips and machine-washes in one go (because muddy paws are a fact of life). Non-slip base so it stays put during the 3am relocation, and comfy enough that you’ll catch them ignoring the sofa. Pick the size for your dog below.',
+            'A big squishy cloud of a bed for the world’s most important naps: a deep fibre fill your dog can burrow and circle into, a raised bolster edge perfect for chin-resting, and a bright, characterful cover that unzips and machine-washes in one go (because muddy paws are a fact of life). Non-slip base so it stays put during the 3am relocation, and comfy enough that you’ll catch them ignoring the sofa. Pick the size for your dog below.',
         sku: 'FETCH-BED-CLOUD',
         productType: 'Bed',
         categories: ['rest'],
@@ -663,14 +663,14 @@ const PRODUCTS: Product[] = [
             { value: 'Large', price: 109 },
         ],
         asset: 'prod-bed',
-        seoTitle: 'Cloud Nap Dog Bed — squishy, washable cover | Fetch Club',
+        seoTitle: 'Cloud Nap Dog Bed: squishy, washable cover | Fetch Club',
         seoDescription: 'A deep, squishy cloud dog bed with a bolster edge and a fully machine-washable cover, in three sizes. Bright, comfy and built for serious napping.',
     }),
     choices({
         handle: 'squeaky-squad-pack',
         title: 'Squeaky Squad Toy Pack',
         description:
-            'A whole squad of squeaky plush pals with a personality each — bright, huggable, and stuffed with squeakers engineered to keep on squeaking well past the point most toys give up. Soft enough to carry everywhere, tough enough for a good shake-and-toss, and just the right size to become The Favourite that goes everywhere. Grab a three-pack to start, or the six-pack when you already know how this ends.',
+            'A whole squad of squeaky plush pals with a personality each: bright, huggable, and stuffed with squeakers engineered to keep on squeaking well past the point most toys give up. Soft enough to carry everywhere, tough enough for a good shake-and-toss, and just the right size to become The Favourite that goes everywhere. Grab a three-pack to start, or the six-pack when you already know how this ends.',
         sku: 'FETCH-TOY-SQUAD',
         productType: 'Toy',
         categories: ['play'],
@@ -682,14 +682,14 @@ const PRODUCTS: Product[] = [
             { value: 'Six-Pack', price: 46 },
         ],
         asset: 'prod-squeaky',
-        seoTitle: 'Squeaky Squad Plush Dog Toy Pack — 3 or 6 | Fetch Club',
+        seoTitle: 'Squeaky Squad Plush Dog Toy Pack: 3 or 6 | Fetch Club',
         seoDescription: 'A pack of bright, huggable squeaky plush dog toys engineered to keep on squeaking, in a three-pack or six-pack. Soft to carry, tough enough to toss.',
     }),
     colored({
         handle: 'roll-up-travel-bowl',
         title: 'Roll-Up Travel Bowl',
         description:
-            'The end of cupped-hands-at-the-water-fountain — a food-grade silicone bowl that rolls down flat to pocket size and pops open for a drink or a snack anywhere the day takes you. Holds a proper amount, wipes clean in a second, and clips onto a bag or a belt loop so it’s always there when your dog gives you the thirsty look. Bright enough that you won’t leave it behind on the picnic blanket.',
+            'The end of cupped-hands-at-the-water-fountain: a food-grade silicone bowl that rolls down flat to pocket size and pops open for a drink or a snack anywhere the day takes you. Holds a proper amount, wipes clean in a second, and clips onto a bag or a belt loop so it’s always there when your dog gives you the thirsty look. Bright enough that you won’t leave it behind on the picnic blanket.',
         price: 14,
         sku: 'FETCH-BOWL-ROLL',
         productType: 'Travel',
@@ -698,14 +698,14 @@ const PRODUCTS: Product[] = [
         tags: ['travel', 'bowl', 'walk', 'colorful'],
         colors: ['Splash Blue', 'Sunbeam Yellow', 'Zoom Green'],
         asset: 'prod-bowl',
-        seoTitle: 'Roll-Up Silicone Travel Dog Bowl — pocket size | Fetch Club',
+        seoTitle: 'Roll-Up Silicone Travel Dog Bowl: pocket size | Fetch Club',
         seoDescription: 'A food-grade silicone travel dog bowl that rolls flat to pocket size and clips onto a bag, in three bright colors. Water and snacks, wherever you go.',
     }),
     choices({
         handle: 'treat-of-the-month-box',
         title: 'Treat-of-the-Month Box',
         description:
-            'A box of the good treats, delivered — a rotating mix of single-ingredient chews, training-sized nibbles and one surprise star, matched to your dog’s size and picked so every bite is worth a proper sit. Real named proteins, labels you can actually read, and nothing your vet would frown at. Pick the box that fits your dog’s appetite; it turns up each month until you say otherwise, and you can skip or cancel any time.',
+            'A box of the good treats, delivered: a rotating mix of single-ingredient chews, training-sized nibbles and one surprise star, matched to your dog’s size and picked so every bite is worth a proper sit. Real named proteins, labels you can actually read, and nothing your vet would frown at. Pick the box that fits your dog’s appetite; it turns up each month until you say otherwise, and you can skip or cancel any time.',
         sku: 'FETCH-TREAT-MONTH',
         productType: 'Treats',
         categories: ['treats'],
@@ -718,14 +718,14 @@ const PRODUCTS: Product[] = [
             { value: 'Feast', price: 39 },
         ],
         asset: 'prod-treatbox',
-        seoTitle: 'Treat-of-the-Month Dog Box — single-ingredient chews | Fetch Club',
+        seoTitle: 'Treat-of-the-Month Dog Box: single-ingredient chews | Fetch Club',
         seoDescription: 'A monthly box of rotating single-ingredient chews and training treats matched to your dog, in three sizes. Real proteins, honest labels; skip any time.',
     }),
     choices({
         handle: 'membership',
         title: 'Fetch Club Membership',
         description:
-            'The whole club in a box — a fresh haul of toys, treats and everyday goodies your dog will genuinely lose their mind over, packed to your dog’s size and posted on your schedule. Every box is a party your pup didn’t know was coming, works out cheaper than buying it all one at a time, and comes with member perks: early dibs on new drops and free shipping on everything else. Skip, swap or cancel any time — no lock-in, ever.',
+            'The whole club in a box: a fresh haul of toys, treats and everyday goodies your dog will genuinely lose their mind over, packed to your dog’s size and posted on your schedule. Every box is a party your pup didn’t know was coming, works out cheaper than buying it all one at a time, and comes with member perks: early dibs on new drops and free shipping on everything else. Skip, swap or cancel any time, no lock-in, ever.',
         sku: 'FETCH-CLUB',
         productType: 'Subscription',
         categories: ['treats'],
@@ -737,7 +737,7 @@ const PRODUCTS: Product[] = [
             { value: 'Big dog', price: 42 },
         ],
         asset: 'prod-subscription',
-        seoTitle: 'Fetch Club Membership — a monthly box of toys & treats | Fetch Club',
+        seoTitle: 'Fetch Club Membership: a monthly box of toys & treats | Fetch Club',
         seoDescription: 'A flexible monthly box of toys, treats and everyday goodies matched to your dog, with member perks and early drops. Skip, swap or cancel any time.',
     }),
 ];
@@ -769,7 +769,7 @@ const COMMERCE = {
         {
             handle: 'walkies-kit',
             name: 'The walkies kit',
-            description: 'Everything for getting out the door — collars, leads, bandanas and water.',
+            description: 'Everything for getting out the door: collars, leads, bandanas and water.',
             type: 'manual',
             featured: false,
             productHandles: ['pop-webbing-collar', 'matching-pop-lead', 'reversible-bandana', 'roll-up-travel-bowl'],
@@ -806,16 +806,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to buy a dog toy that actually survives the zoomies',
-            excerpt: 'A shelf of half-dead toys is a rite of passage — but it doesn’t have to be. Here’s how to pick toys that last, and match them to how your dog actually plays.',
+            excerpt: 'A shelf of half-dead toys is a rite of passage, but it doesn’t have to be. Here’s how to pick toys that last, and match them to how your dog actually plays.',
             featuredImage: { $asset: 'post-play' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Every dog owner has the drawer: the deflated ball, the plush with the stuffing pulled out, the rope frayed down to a nub. Toys don’t have to be disposable, though. The trick is buying for the way your dog actually plays, not the way the packaging looks — because a great toy for a gentle cuddler is a ten-minute snack for a power chewer.'),
+                    para('Every dog owner has the drawer: the deflated ball, the plush with the stuffing pulled out, the rope frayed down to a nub. Toys don’t have to be disposable, though. The trick is buying for the way your dog actually plays, not the way the packaging looks, because a great toy for a gentle cuddler is a ten-minute snack for a power chewer.'),
                     h2('Know your dog’s play style'),
-                    para('Watch what your dog does with a toy in the first five minutes and you’ll know their type. Chewers work at a toy with their back teeth and want something dense and tough. Tuggers want a rope or a handle and a good game with you. Shredders love the satisfying rip, so a crinkle plush or a puzzle scratches the itch. And fetchers just want to run — give them a bright, bouncy ball they can spot in long grass. Buy against the type, not against the price tag, and toys last far longer.'),
+                    para('Watch what your dog does with a toy in the first five minutes and you’ll know their type. Chewers work at a toy with their back teeth and want something dense and tough. Tuggers want a rope or a handle and a good game with you. Shredders love the satisfying rip, so a crinkle plush or a puzzle scratches the itch. And fetchers just want to run. Give them a bright, bouncy ball they can spot in long grass. Buy against the type, not against the price tag, and toys last far longer.'),
                     h2('Rotate, don’t pile on'),
-                    para('Here’s the cheat code: dogs get bored of what’s always there. Instead of tipping the whole toy box out at once, keep a handful in rotation and swap them every few days. A toy that vanishes for a week comes back feeling brand new, your dog stays interested, and everything lasts longer because nothing gets hammered non-stop. It’s the same reason our Mega Bundle covers a few different play styles — so you can find the winner, then keep it exciting.'),
+                    para('Here’s the cheat code: dogs get bored of what’s always there. Instead of tipping the whole toy box out at once, keep a handful in rotation and swap them every few days. A toy that vanishes for a week comes back feeling brand new, your dog stays interested, and everything lasts longer because nothing gets hammered non-stop. It’s the same reason our Mega Bundle covers a few different play styles, so you can find the winner, then keep it exciting.'),
                 ],
             },
         },
@@ -831,11 +831,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Treats are the currency of a happy dog — the “good sit”, the coming-when-called, the just-because. But because you hand them over so often, a bad treat does a lot of quiet damage: too much sugar, mystery fillers, a label that reads like a chemistry set. The good news is that spotting the good ones takes about ten seconds once you know what you’re looking at.'),
+                    para('Treats are the currency of a happy dog: the “good sit”, the coming-when-called, the just-because. But because you hand them over so often, a bad treat does a lot of quiet damage: too much sugar, mystery fillers, a label that reads like a chemistry set. The good news is that spotting the good ones takes about ten seconds once you know what you’re looking at.'),
                     h2('Read the first ingredient'),
-                    para('Ingredients are listed by weight, so the first one is most of what your dog is actually eating. You want a named protein right at the top — “chicken”, “salmon”, “beef” — not a vague “meat meal”, “animal derivatives”, or a grain doing the heavy lifting. If sugar, glycerine or a color you can’t pronounce shows up early in the list, put it back. Real food doesn’t need dressing up.'),
+                    para('Ingredients are listed by weight, so the first one is most of what your dog is actually eating. You want a named protein right at the top (“chicken”, “salmon”, “beef”) not a vague “meat meal”, “animal derivatives”, or a grain doing the heavy lifting. If sugar, glycerine or a color you can’t pronounce shows up early in the list, put it back. Real food doesn’t need dressing up.'),
                     h2('Match the size to the job'),
-                    para('For training, smaller is better — you’re rewarding often, so a treat the size of a pea keeps your dog keen without filling them up or wrecking their dinner. Save the big chews for downtime, when a longer-lasting treat gives busy paws and jaws something calm to do. It’s exactly why our monthly box mixes training-sized nibbles with a couple of proper chews: the right treat for the moment, all with labels you can actually read.'),
+                    para('For training, smaller is better: you’re rewarding often, so a treat the size of a pea keeps your dog keen without filling them up or wrecking their dinner. Save the big chews for downtime, when a longer-lasting treat gives busy paws and jaws something calm to do. It’s exactly why our monthly box mixes training-sized nibbles with a couple of proper chews: the right treat for the moment, all with labels you can actually read.'),
                 ],
             },
         },
@@ -846,16 +846,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The first week with a new pup (keep it fun, keep it calm)',
-            excerpt: 'A new puppy is pure joy and total chaos. Here’s how we help a new arrival settle — more about safety and play than serious training on day one.',
+            excerpt: 'A new puppy is pure joy and total chaos. Here’s how we help a new arrival settle: more about safety and play than serious training on day one.',
             featuredImage: { $asset: 'post-newpup' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The day a puppy comes home, everything is enormous and new — the floor, the smells, the giant loud humans who keep wanting to cuddle. Whether it’s an eight-week bundle or a slightly older rescue, the most useful thing you can do in week one isn’t drilling commands. It’s making them feel safe, and letting the fun come in small, happy doses. A relaxed dog learns fast; an overwhelmed one just copes.'),
+                    para('The day a puppy comes home, everything is enormous and new: the floor, the smells, the giant loud humans who keep wanting to cuddle. Whether it’s an eight-week bundle or a slightly older rescue, the most useful thing you can do in week one isn’t drilling commands. It’s making them feel safe, and letting the fun come in small, happy doses. A relaxed dog learns fast; an overwhelmed one just copes.'),
                     h2('Give them a spot that’s theirs'),
-                    para('Before anything else, set up one cosy place that belongs to the pup and nobody else — a soft bed in a quiet corner, away from the front door and the busiest foot traffic. When they take themselves off to it, leave them completely alone, even when the kids are desperate for one more cuddle. A dog that learns it can retreat and won’t be followed settles far faster, because it always has somewhere to switch off.'),
+                    para('Before anything else, set up one cosy place that belongs to the pup and nobody else: a soft bed in a quiet corner, away from the front door and the busiest foot traffic. When they take themselves off to it, leave them completely alone, even when the kids are desperate for one more cuddle. A dog that learns it can retreat and won’t be followed settles far faster, because it always has somewhere to switch off.'),
                     h2('Play little, play often'),
-                    para('Puppies have a short attention span and a shorter fuse, so keep play sessions brief, silly and frequent rather than long and intense. A minute of gentle tug, a rolled treat to chase, a squeaky toy squeaked just out of reach — then a rest before it tips into overtired zoomies and tears. Little-and-often builds a dog who thinks the world (and you) is brilliant, and that happy foundation makes every bit of real training later go far, far easier.'),
+                    para('Puppies have a short attention span and a shorter fuse, so keep play sessions brief, silly and frequent rather than long and intense. A minute of gentle tug, a rolled treat to chase, a squeaky toy squeaked just out of reach, then a rest before it tips into overtired zoomies and tears. Little-and-often builds a dog who thinks the world (and you) is brilliant, and that happy foundation makes every bit of real training later go far, far easier.'),
                 ],
             },
         },
@@ -870,7 +870,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Pet Supplies (Playful)',
     theme: THEME,
     summary:
-        'A complete, working shop for a bright, playful pet brand: a real catalogue of a pop-color webbing collar and matching lead, a reversible bandana, a mega toy bundle, a cloud nap bed, a squeaky-toy pack, a roll-up travel bowl, a treat-of-the-month box and a flexible membership, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Loud, joyful theme — a bright ground, a punchy blue primary and a pop-coral accent. Shipped as Fetch Club.',
+        'A complete, working shop for a bright, playful pet brand: a real catalogue of a pop-color webbing collar and matching lead, a reversible bandana, a mega toy bundle, a cloud nap bed, a squeaky-toy pack, a roll-up travel bowl, a treat-of-the-month box and a flexible membership, with categories, collections, a bespoke pet-shop PDP and a full merchandised home page. Loud, joyful theme, a bright ground, a punchy blue primary and a pop-coral accent. Shipped as Fetch Club.',
     tagline: 'A bright, bouncy storefront for a fun-first pet brand.',
     vertical: 'retail',
     industry: 'Pet supplies & accessories',
@@ -883,14 +883,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Fetch Club — bright, bouncy pet gear dogs go wild for',
+            title: 'Fetch Club: bright, bouncy pet gear dogs go wild for',
             description:
-                'Fetch Club makes the fun stuff — pop-color collars, squeaky toys, honest treats and comfy beds — dog-tested, tail-approved and built to survive the zoomies.',
+                'Fetch Club makes the fun stuff (pop-color collars, squeaky toys, honest treats and comfy beds) dog-tested, tail-approved and built to survive the zoomies.',
         },
         about: {
             title: 'About Fetch Club',
             description:
-                'Why Fetch Club makes pet gear the fun way — bright colors, tough builds, honest treats, tested by real dogs, with a share of every order going to shelters.',
+                'Why Fetch Club makes pet gear the fun way: bright colors, tough builds, honest treats, tested by real dogs, with a share of every order going to shelters.',
         },
     },
     home: HOME,

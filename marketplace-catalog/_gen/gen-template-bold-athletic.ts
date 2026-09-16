@@ -150,7 +150,7 @@ function hero(): Node {
                                     { text: 'Kit built for the long road' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Threshold makes endurance cycling kit for the riders who are still out when everyone else has turned for home — bibs, jerseys and shells tested over real distance, in real weather, and made to hold up ride after ride.',
+                                    text: 'Threshold makes endurance cycling kit for the riders who are still out when everyone else has turned for home: bibs, jerseys and shells tested over real distance, in real weather, and made to hold up ride after ride.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-3', {
                                     children: [
@@ -238,7 +238,7 @@ function powerTiles(): Node {
                 children: [
                     sectionHead(
                         'Shop by discipline',
-                        'Whatever the ride asks of you — a long climb, a fast bunch, a cold dawn — start with the kit built for it.'
+                        'Whatever the ride asks of you (a long climb, a fast bunch, a cold dawn) start with the kit built for it.'
                     ),
                     el('div', 'grid grid-cols-2 gap-6 @2xl:grid-cols-4', {
                         children: [
@@ -293,7 +293,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New this season' }),
     editorialBand({
         heading: 'It starts with the bib',
-        lead: 'A century is decided from the waist down. Our bibs run a seamless multi-panel chamois and a bracing straps-and-mesh upper, so hour six feels like hour one — the single piece of kit worth getting right first.',
+        lead: 'A century is decided from the waist down. Our bibs run a seamless multi-panel chamois and a bracing straps-and-mesh upper, so hour six feels like hour one: the single piece of kit worth getting right first.',
         assetId: 'band-bib',
         alt: 'A close crop of a rider seated in the drops',
         cta: 'Shop bib shorts',
@@ -303,7 +303,7 @@ const HOME: Node[] = [
     powerTiles(),
     editorialBand({
         heading: 'When the weather turns',
-        lead: 'The season does not stop because it got cold and wet. Thermal jerseys, a packable wind gilet and a proper storm shell — the layers that keep you riding through the months most riders sit out.',
+        lead: 'The season does not stop because it got cold and wet. Thermal jerseys, a packable wind gilet and a proper storm shell: the layers that keep you riding through the months most riders sit out.',
         assetId: 'band-cold',
         alt: 'A cyclist riding through cold, grey weather',
         cta: 'Shop cold weather',
@@ -327,13 +327,13 @@ const ABOUT: Node[] = [
                         text: 'About Threshold',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Threshold started with a simple complaint: too much cycling kit is designed for the photo and not the ride. It looks fast in the shop and falls apart at the point where a ride actually gets hard — the seam that chafes at hour four, the shell that wets out in the first real downpour, the chamois that gives up before you do.',
+                        text: 'Threshold started with a simple complaint: too much cycling kit is designed for the photo and not the ride. It looks fast in the shop and falls apart at the point where a ride actually gets hard, the seam that chafes at hour four, the shell that wets out in the first real downpour, the chamois that gives up before you do.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'So we build the other way round. Every piece is ridden long and hard before it ships — over passes, through winters, deep into the kind of distance where cheap kit shows its true colors. If it does not hold up out there, it does not get made. That is the whole standard, and it is not negotiable.',
+                        text: 'So we build the other way round. Every piece is ridden long and hard before it ships: over passes, through winters, deep into the kind of distance where cheap kit shows its true colors. If it does not hold up out there, it does not get made. That is the whole standard, and it is not negotiable.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We are a small team of riders making kit for other riders. No sponsored pros, no seasonal churn for its own sake — just gear built to earn its place in your kit bag and stay there for years.',
+                        text: 'We are a small team of riders making kit for other riders. No sponsored pros, no seasonal churn for its own sake. Just gear built to earn its place in your kit bag and stay there for years.',
                     }),
                 ],
             }),
@@ -348,7 +348,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Talk to us',
-        intro: 'Sizing question, a fault, or you just want to know how a piece holds up over a long winter? A real rider on the team reads every message and answers straight — no script, no runaround.',
+        intro: 'Sizing question, a fault, or you just want to know how a piece holds up over a long winter? A real rider on the team reads every message and answers straight: no script, no runaround.',
         submitLabel: 'Email the team',
     }),
 ];
@@ -397,10 +397,10 @@ interface Product {
 // Care copy shared across the whole range — genuinely the same for every technical
 // cycling garment here, so it lives once (per-product fabric/fit/origin still differ).
 const TECH_CARE =
-    'Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener — it clogs the wicking — and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.';
+    'Machine wash cold on a gentle cycle, inside out, with like colors; hang to dry. No fabric softener (it clogs the wicking) and no tumble dryer, which cooks the elastane and the chamois. Looked after, this rides hard for years.';
 // A windproof/waterproof shell wants different care — heat and softeners kill the DWR.
 const SHELL_CARE =
-    'Machine wash warm on a gentle cycle, zipped up, with like colors; hang to dry. No fabric softener or tumble dryer — both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.';
+    'Machine wash warm on a gentle cycle, zipped up, with like colors; hang to dry. No fabric softener or tumble dryer. Both strip the water-repellent finish. Reproof occasionally to keep water beading off rather than soaking in.';
 
 const money = (dollars: number): number => Math.round(dollars * 100);
 
@@ -437,12 +437,12 @@ const PRODUCTS: Product[] = [
         tags: ['bib-shorts', 'endurance-fit', 'chamois', 'road'],
         categoryHandles: ['bib-shorts'],
         collectionHandles: ['new-in', 'bib-shorts'],
-        seoTitle: 'Endurance Bib Short — all-day cycling bib shorts',
+        seoTitle: 'Endurance Bib Short. All-day cycling bib shorts',
         seoDescription: 'A multi-density seamless chamois and compressive Italian fabric, built for all-day endurance rides.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'A compressive Italian-milled Lycra body over a seamless, multi-density chamois — denser under the sit bones, softer at the edges — carried on a bracing mesh upper so the pad never shifts. Flatlock seams throughout, placed off every contact point.',
+                'A compressive Italian-milled Lycra body over a seamless, multi-density chamois (denser under the sit bones, softer at the edges) carried on a bracing mesh upper so the pad never shifts. Flatlock seams throughout, placed off every contact point.',
             fit: 'Endurance fit: supportive without race compression, with a higher back and a wide, flat leg gripper for time in the saddle. True to size; between sizes, size up for all-day comfort.',
             care: TECH_CARE,
             materials: [
@@ -459,14 +459,14 @@ const PRODUCTS: Product[] = [
         handle: 'race-bib-short',
         title: 'Race Bib Short',
         description:
-            'When the ride turns into a race. A thinner, faster chamois and a second-skin compressive fit put everything into the pedals — cut close, held tight, and finished with a wide power band that stays put through a full-gas sprint. For the days you are riding to win the sign, not just to finish.',
+            'When the ride turns into a race. A thinner, faster chamois and a second-skin compressive fit put everything into the pedals: cut close, held tight, and finished with a wide power band that stays put through a full-gas sprint. For the days you are riding to win the sign, not just to finish.',
         status: 'active',
         productType: 'Bib Shorts',
         vendor: 'Threshold',
         tags: ['bib-shorts', 'race-fit', 'compressive', 'road'],
         categoryHandles: ['bib-shorts'],
         collectionHandles: ['bib-shorts'],
-        seoTitle: 'Race Bib Short — compressive race-fit cycling bibs',
+        seoTitle: 'Race Bib Short: compressive race-fit cycling bibs',
         seoDescription: 'A fast, thin chamois in a second-skin compressive cut for race-day riding.',
         productTypeKey: 'apparel',
         attributes: {
@@ -495,7 +495,7 @@ const PRODUCTS: Product[] = [
         tags: ['jersey', 'lightweight', 'climbing', 'summer'],
         categoryHandles: ['jerseys'],
         collectionHandles: ['jerseys'],
-        seoTitle: "Climber's Jersey — ultralight summer cycling jersey",
+        seoTitle: "Climber's Jersey: ultralight summer cycling jersey",
         seoDescription: 'An ultralight open-knit cycling jersey with three deep pockets, built for long summer climbs.',
         productTypeKey: 'apparel',
         attributes: {
@@ -524,7 +524,7 @@ const PRODUCTS: Product[] = [
         tags: ['jersey', 'aero', 'race-fit', 'road'],
         categoryHandles: ['jerseys'],
         collectionHandles: ['new-in', 'jerseys'],
-        seoTitle: 'Aero Jersey — race-fit aerodynamic cycling jersey',
+        seoTitle: 'Aero Jersey: race-fit aerodynamic cycling jersey',
         seoDescription: 'A race-close aero cycling jersey with bonded seams and textured sleeve panels.',
         productTypeKey: 'apparel',
         attributes: {
@@ -553,7 +553,7 @@ const PRODUCTS: Product[] = [
         tags: ['jersey', 'thermal', 'winter', 'cold-weather'],
         categoryHandles: ['jerseys', 'cold-weather'],
         collectionHandles: ['jerseys', 'cold-weather'],
-        seoTitle: 'Thermal Roubaix Jersey — brushed thermal winter cycling jersey',
+        seoTitle: 'Thermal Roubaix Jersey: brushed thermal winter cycling jersey',
         seoDescription: 'A brushed-back thermal cycling jersey with a tall zip guard, built for cold, dry winter rides.',
         productTypeKey: 'apparel',
         attributes: {
@@ -575,20 +575,20 @@ const PRODUCTS: Product[] = [
         handle: 'mesh-base-layer',
         title: 'Mesh Base Layer',
         description:
-            'The layer that does the quiet work. A featherweight open mesh sits between you and your jersey and moves sweat off your skin before it can chill you — barely there in summer, essential the moment the pace drops on a descent. Wear it under everything, feel it on nothing.',
+            'The layer that does the quiet work. A featherweight open mesh sits between you and your jersey and moves sweat off your skin before it can chill you: barely there in summer, essential the moment the pace drops on a descent. Wear it under everything, feel it on nothing.',
         status: 'active',
         productType: 'Base Layers',
         vendor: 'Threshold',
         tags: ['base-layer', 'mesh', 'summer', 'wicking'],
         categoryHandles: ['base-layers'],
         collectionHandles: [],
-        seoTitle: 'Mesh Base Layer — lightweight wicking cycling base layer',
+        seoTitle: 'Mesh Base Layer: lightweight wicking cycling base layer',
         seoDescription: 'A featherweight open-mesh cycling base layer that moves sweat off the skin fast.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A featherweight open-mesh knit that lifts sweat off the skin and hands it to your jersey, with flatlock seams so nothing rubs under a race fit.',
-            fit: 'Second-skin fit — it should sit snug against the skin to wick properly. True to size.',
+            fit: 'Second-skin fit. It should sit snug against the skin to wick properly. True to size.',
             care: TECH_CARE,
             materials: [{ name: 'Polypropylene', percent: '100%' }],
             origin: 'Made in Italy',
@@ -608,14 +608,14 @@ const PRODUCTS: Product[] = [
         tags: ['base-layer', 'merino', 'winter', 'cold-weather'],
         categoryHandles: ['base-layers', 'cold-weather'],
         collectionHandles: ['new-in', 'cold-weather'],
-        seoTitle: 'Merino Long-Sleeve Base — winter merino cycling base layer',
+        seoTitle: 'Merino Long-Sleeve Base: winter merino cycling base layer',
         seoDescription: 'A fine merino long-sleeve cycling base layer that regulates heat and resists odour.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A fine merino-blend long-sleeve knit that holds heat when you soft-pedal and sheds it when you go hard, resists odour over back-to-back days and stays warm even when it is damp.',
             fit: 'Close winter base fit, long in the sleeve and body so it stays tucked. True to size.',
-            care: 'Machine wash cold on the wool cycle, inside out; reshape and dry flat. No fabric softener, no tumble dryer — heat felts merino. Air between rides and it needs washing far less than you think.',
+            care: 'Machine wash cold on the wool cycle, inside out; reshape and dry flat. No fabric softener, no tumble dryer: heat felts merino. Air between rides and it needs washing far less than you think.',
             materials: [
                 { name: 'Merino wool', percent: '62%' },
                 { name: 'Polyester', percent: '33%' },
@@ -638,12 +638,12 @@ const PRODUCTS: Product[] = [
         tags: ['gilet', 'windproof', 'packable', 'cold-weather'],
         categoryHandles: ['cold-weather'],
         collectionHandles: ['new-in', 'cold-weather'],
-        seoTitle: 'Featherweight Wind Gilet — packable windproof cycling gilet',
+        seoTitle: 'Featherweight Wind Gilet: packable windproof cycling gilet',
         seoDescription: 'A whisper-thin packable windproof cycling gilet with a breathable mesh back.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'A whisper-thin windproof ripstop front with a breathable mesh back, a full zip with a chin guard, and a rear pocket it packs down into — smaller than a gel.',
+                'A whisper-thin windproof ripstop front with a breathable mesh back, a full zip with a chin guard, and a rear pocket it packs down into: smaller than a gel.',
             fit: 'Close over a jersey, cut to layer without flapping at speed. True to size.',
             care: SHELL_CARE,
             materials: [{ name: 'Ripstop nylon', percent: '100%' }],
@@ -657,14 +657,14 @@ const PRODUCTS: Product[] = [
         handle: 'stormshell-rain-jacket',
         title: 'Stormshell Rain Jacket',
         description:
-            'Built for the ride you would rather not do. A genuinely waterproof, genuinely breathable three-layer shell with taped seams, a storm flap over the zip and a dropped tail keeps the weather out for hours, not minutes — then packs away small when the sky clears. The jacket that decides you are going, whatever it is doing outside.',
+            'Built for the ride you would rather not do. A genuinely waterproof, genuinely breathable three-layer shell with taped seams, a storm flap over the zip and a dropped tail keeps the weather out for hours, not minutes, then packs away small when the sky clears. The jacket that decides you are going, whatever it is doing outside.',
         status: 'active',
         productType: 'Jackets',
         vendor: 'Threshold',
         tags: ['jacket', 'waterproof', 'rain', 'cold-weather'],
         categoryHandles: ['cold-weather'],
         collectionHandles: ['cold-weather'],
-        seoTitle: 'Stormshell Rain Jacket — waterproof breathable cycling shell',
+        seoTitle: 'Stormshell Rain Jacket: waterproof breathable cycling shell',
         seoDescription: 'A taped-seam three-layer waterproof, breathable cycling rain jacket that packs away small.',
         productTypeKey: 'apparel',
         attributes: {
@@ -683,14 +683,14 @@ const PRODUCTS: Product[] = [
         handle: 'thermal-gloves',
         title: 'Long-Finger Thermal Gloves',
         description:
-            'Warm hands, working fingers. A wind-blocking back and a brushed lining keep the cold out down to freezing, while a thin, tacky palm keeps you in full control of the bars and the levers — no fumbling for the shifter, no numb fingers on a long descent. A soft thumb panel for the one job every rider needs it for.',
+            'Warm hands, working fingers. A wind-blocking back and a brushed lining keep the cold out down to freezing, while a thin, tacky palm keeps you in full control of the bars and the levers: no fumbling for the shifter, no numb fingers on a long descent. A soft thumb panel for the one job every rider needs it for.',
         status: 'active',
         productType: 'Gloves',
         vendor: 'Threshold',
         tags: ['gloves', 'thermal', 'winter', 'cold-weather'],
         categoryHandles: ['accessories', 'cold-weather'],
         collectionHandles: ['cold-weather', 'accessories'],
-        seoTitle: 'Long-Finger Thermal Gloves — winter cycling gloves',
+        seoTitle: 'Long-Finger Thermal Gloves: winter cycling gloves',
         seoDescription: 'Wind-blocking brushed-lined long-finger cycling gloves with a tacky, dexterous palm.',
         options: [sizeOption(['S', 'M', 'L', 'XL'])],
         variants: sizeVariants('THR-GLV-THM', 60, ['S', 'M', 'L', 'XL']),
@@ -707,7 +707,7 @@ const PRODUCTS: Product[] = [
         tags: ['socks', 'aero', 'race', 'accessories'],
         categoryHandles: ['accessories'],
         collectionHandles: ['new-in', 'accessories'],
-        seoTitle: 'Aero Race Socks — tall aero cycling socks',
+        seoTitle: 'Aero Race Socks: tall aero cycling socks',
         seoDescription: 'Tall, compressive aero cycling socks with a cushioned sole and breathable mesh instep.',
         options: [
             { name: 'Color', displayType: 'swatch', values: [{ value: 'Black' }, { value: 'White' }, { value: 'Hi-Vis' }] },
@@ -730,7 +730,7 @@ const PRODUCTS: Product[] = [
         tags: ['cap', 'cotton', 'classic', 'accessories'],
         categoryHandles: ['accessories'],
         collectionHandles: ['accessories'],
-        seoTitle: 'Cotton Cycling Cap — classic under-helmet cycling cap',
+        seoTitle: 'Cotton Cycling Cap: classic under-helmet cycling cap',
         seoDescription: 'A classic cotton cycling cap for under the helmet, the cafe stop and the road.',
         options: [
             { name: 'Color', displayType: 'swatch', values: [{ value: 'Black' }, { value: 'White' }, { value: 'Hi-Vis' }] },
@@ -814,12 +814,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Endurance is not a talent you either have or you do not. It is a base you build, one unglamorous ride at a time — and the riders who go furthest are almost never the ones training hardest. They are the ones training most consistently.'),
+                    para('Endurance is not a talent you either have or you do not. It is a base you build, one unglamorous ride at a time, and the riders who go furthest are almost never the ones training hardest. They are the ones training most consistently.'),
                     h2('Most of your riding should feel easy'),
-                    para('The single biggest mistake is riding every ride at the same medium-hard pace — too easy to be a real workout, too hard to actually recover. Slow most of your rides right down until you can hold a conversation, and save the genuinely hard efforts for one or two days a week. It feels wrong. It works.'),
+                    para('The single biggest mistake is riding every ride at the same medium-hard pace: too easy to be a real workout, too hard to actually recover. Slow most of your rides right down until you can hold a conversation, and save the genuinely hard efforts for one or two days a week. It feels wrong. It works.'),
                     h2('Add distance slowly, then hold it'),
                     para('Stretch your longest ride of the week by no more than ten to fifteen percent at a time, then sit at that distance for a couple of weeks before you reach again. The body adapts to a load it sees repeatedly, not to a single heroic effort that leaves you wrecked for a week.'),
-                    para('Do that patiently through a winter and the century that feels impossible in March is a good day out by June. No shortcut, just the long way — which, on a bike, is the only way there is.'),
+                    para('Do that patiently through a winter and the century that feels impossible in March is a good day out by June. No shortcut, just the long way, which, on a bike, is the only way there is.'),
                 ],
             },
         },
@@ -858,9 +858,9 @@ const CONTENT = [
                 content: [
                     para('The alarm goes at four and everything in you argues against it. The bed is warm, the road is cold, and the century you planned last week is a much better idea in the abstract than it is at four in the morning. You go anyway. You always half-regret it, and you never regret it once you are rolling.'),
                     h2('The first hour is a tax'),
-                    para('The first hour of a big ride is always the worst — cold hands, stiff legs, a body asking what exactly it did to deserve this. Pay it. Ride steady, eat before you are hungry, drink before you are thirsty, and let the sun come up. Somewhere in the second hour the ride quietly hands you the day.'),
+                    para('The first hour of a big ride is always the worst: cold hands, stiff legs, a body asking what exactly it did to deserve this. Pay it. Ride steady, eat before you are hungry, drink before you are thirsty, and let the sun come up. Somewhere in the second hour the ride quietly hands you the day.'),
                     h2('The middle is the reward'),
-                    para('There is a stretch of every long ride, usually far from anywhere, where it all comes good — the legs are open, the road is empty, and the noise in your head finally goes quiet. That is the bit you came for. That is the bit that gets you out of bed the next time the alarm goes at four.'),
+                    para('There is a stretch of every long ride, usually far from anywhere, where it all comes good: the legs are open, the road is empty, and the noise in your head finally goes quiet. That is the bit you came for. That is the bit that gets you out of bed the next time the alarm goes at four.'),
                     para('You will not remember the ride you skipped. You will remember this one for years.'),
                 ],
             },
@@ -901,7 +901,7 @@ function pdpBuyRegion(): Node {
                                     // Category/brand label above the title — the Gymshark tag/fit slot. A plain
                                     // <p>, so the product title stays the page's one <h1>.
                                     el('p', 'text-sm font-bold uppercase tracking-widest text-base-content', {
-                                        text: 'Threshold — race-tested kit',
+                                        text: 'Threshold: race-tested kit',
                                     }),
                                     pdpTitle(
                                         'h1',
@@ -972,7 +972,7 @@ const SHOP: Node[] = [
                         { text: 'Shop the range' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-neutral-content', {
-                        text: 'Every piece Threshold makes — bibs, jerseys, base layers, shells and the small kit that finishes the ride — filtered and sorted however you like. All of it tested over real distance, in real weather, and built to hold up ride after ride.',
+                        text: 'Every piece Threshold makes (bibs, jerseys, base layers, shells and the small kit that finishes the ride) filtered and sorted however you like. All of it tested over real distance, in real weather, and built to hold up ride after ride.',
                     }),
                 ],
             }),
@@ -1011,21 +1011,21 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Kit by discipline',
-        'Bibs, jerseys, base layers, cold-weather kit and the small stuff that finishes the ride — grouped by the job it does, so you can kit up for the ride in front of you and not the one in the catalogue.'
+        'Bibs, jerseys, base layers, cold-weather kit and the small stuff that finishes the ride: grouped by the job it does, so you can kit up for the ride in front of you and not the one in the catalogue.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Find your kit',
-        'Chasing something specific — a size, a fabric, the gilet that lives in your jersey pocket? Search the whole range and the Journal below and get straight to it.'
+        'Chasing something specific: a size, a fabric, the gilet that lives in your jersey pocket? Search the whole range and the Journal below and get straight to it.'
     ),
 ];
 
 const JOURNAL: Node[] = [
     pageMasthead(
         'The Threshold Journal',
-        'Training that actually moves the needle, kit that earns its place in the bag, and notes from the long rides that shape every season — written by riders, for riders.'
+        'Training that actually moves the needle, kit that earns its place in the bag, and notes from the long rides that shape every season: written by riders, for riders.'
     ),
 ];
 
@@ -1036,7 +1036,7 @@ const JOURNAL: Node[] = [
 const CART: Node[] = [
     pageMasthead(
         'Your cart',
-        'Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund — and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name.'
+        'Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund, and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name.'
     ),
 ];
 
@@ -1047,7 +1047,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-bold-athletic',
     name: 'Bold Athletic',
     summary:
-        'A bold-athletic DTC storefront for a performance apparel label — a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.',
+        'A bold-athletic DTC storefront for a performance apparel label: a confident full-bleed hero over a drop-culture rhythm of shoppable carousels, a signature power-tiles grid and a ride-shot strip, in a dark mono `velodrome` theme with one hi-vis accent. Modelled on the bold-athletic DTC archetype; shipped as Threshold, an endurance cycling-apparel label.',
     tagline: 'A bold, high-energy template for performance and athletic apparel brands.',
     vertical: 'retail',
     industry: 'Endurance cycling apparel',
@@ -1063,9 +1063,9 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Threshold — endurance cycling kit for the long road',
+            title: 'Threshold: endurance cycling kit for the long road',
             description:
-                'Threshold makes endurance cycling kit — bibs, jerseys and shells tested over real distance, in real weather, and built to hold up ride after ride.',
+                'Threshold makes endurance cycling kit: bibs, jerseys and shells tested over real distance, in real weather, and built to hold up ride after ride.',
         },
         about: {
             title: 'About Threshold',

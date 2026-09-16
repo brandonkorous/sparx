@@ -34,7 +34,7 @@ const propertyIdArg = z
   .optional()
   .describe(
     'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
-      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'MULTIPLE sites. Call list_sites first to get each site’s id, then pass it here to target ' +
       'that specific site.'
   );
 
@@ -56,7 +56,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'select_theme',
     description:
-      'Switch a site to a different theme (draft change — publish to go live). Targets the tenant’s primary site unless `propertyId` is given.',
+      'Switch a site to a different theme (draft change, publish to go live). Targets the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
     input: SelectThemeInput.extend({ propertyId: propertyIdArg }),
     confirmation: false,
@@ -72,7 +72,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'update_site_settings',
     description:
       'Update the draft theme settings (colors per light/dark, fonts, layout, custom CSS), the appearance policy, ' +
-      'and/or the site identity imagery — logoLightMediaId / logoDarkMediaId / faviconMediaId (a MediaAsset id from ' +
+      'and/or the site identity imagery: logoLightMediaId / logoDarkMediaId / faviconMediaId (a MediaAsset id from ' +
       'upload_image or set_image_from_url; pass null to clear). The header logo + favicon render from these. Targets ' +
       'the tenant’s primary site unless `propertyId` is given.',
     scope: 'write:builder',
@@ -128,7 +128,7 @@ export const writeTools: AnyMcpTool[] = [
     name: 'upsert_layout',
     description:
       'Configure a header / footer / announcement slot (optionally linking a navigation menu). The header & footer MUST be ' +
-      'responsive — keep the header link set short so it collapses cleanly on phones (avoid fixed-width CTAs), and lay footer ' +
+      'responsive. Keep the header link set short so it collapses cleanly on phones (avoid fixed-width CTAs), and lay footer ' +
       'links out in columns that stack on narrow screens. A header/footer that overflows a phone is a defect.',
     scope: 'write:builder',
     input: UpsertLayoutInput,
@@ -190,7 +190,7 @@ export const writeTools: AnyMcpTool[] = [
   {
     name: 'update_custom_section',
     description:
-      'Replace a custom section definition (by `slug`) — its label, binding, field spec, and template. Bumps the version; the next publish re-pins it.',
+      'Replace a custom section definition (by `slug`). Its label, binding, field spec, and template. Bumps the version; the next publish re-pins it.',
     scope: 'write:builder',
     input: UpdateDefinitionTool,
     confirmation: false,

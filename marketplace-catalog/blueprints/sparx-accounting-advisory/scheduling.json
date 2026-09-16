@@ -113,7 +113,7 @@
     {
       "handle": "strategy-consultation",
       "name": "Strategy consultation",
-      "description": "A complimentary 45-minute call to understand your situation and map where we can add the most value — no obligation.",
+      "description": "A complimentary 45-minute call to understand your situation and map where we can add the most value: no obligation.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -130,7 +130,7 @@
     {
       "handle": "tax-strategy-review",
       "name": "Tax strategy review",
-      "description": "A working session on proactive, forward-looking tax planning — entity elections, timing, deductions and multi-year strategy.",
+      "description": "A working session on proactive, forward-looking tax planning: entity elections, timing, deductions and multi-year strategy.",
       "durationMinutes": 60,
       "priceCents": 45000,
       "assignmentStrategy": "customer_choice",
@@ -164,7 +164,7 @@
     {
       "handle": "business-valuation-consult",
       "name": "Business valuation consult",
-      "description": "A defensible valuation conversation for a sale, buy-in, succession or estate — what the business is worth and why.",
+      "description": "A defensible valuation conversation for a sale, buy-in, succession or estate: what the business is worth and why.",
       "durationMinutes": 60,
       "priceCents": 75000,
       "assignmentStrategy": "customer_choice",
@@ -181,7 +181,7 @@
     {
       "handle": "wealth-planning-consult",
       "name": "Wealth planning consult",
-      "description": "A personal-wealth session — investment structure, tax-efficient drawdown and a plan that ties your business and personal finances together.",
+      "description": "A personal-wealth session: investment structure, tax-efficient drawdown and a plan that ties your business and personal finances together.",
       "durationMinutes": 60,
       "priceCents": 50000,
       "assignmentStrategy": "customer_choice",
@@ -198,7 +198,7 @@
     {
       "handle": "retirement-planning-consult",
       "name": "Retirement planning consult",
-      "description": "Retirement and succession modeling — contribution strategy, exit timing and the income you’ll actually live on.",
+      "description": "Retirement and succession modeling: contribution strategy, exit timing and the income you’ll actually live on.",
       "durationMinutes": 60,
       "priceCents": 45000,
       "assignmentStrategy": "customer_choice",
@@ -215,7 +215,7 @@
     {
       "handle": "entity-structuring-consult",
       "name": "Entity structuring consult",
-      "description": "The right structure for what’s next — S-corp vs. C-corp, holding companies and multi-entity design done for the long game.",
+      "description": "The right structure for what’s next: S-corp vs. C-corp, holding companies and multi-entity design done for the long game.",
       "durationMinutes": 45,
       "priceCents": 45000,
       "assignmentStrategy": "customer_choice",

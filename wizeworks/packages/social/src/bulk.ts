@@ -235,7 +235,7 @@ export async function createSocialPostsBulk(
     if (row.scheduledAt && !future) {
       problems.push({
         line: row.line,
-        message: 'That time has already passed — imported as a draft instead.',
+        message: 'That time has already passed: imported as a draft instead.',
       });
     }
 

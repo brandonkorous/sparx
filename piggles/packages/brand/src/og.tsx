@@ -185,7 +185,7 @@ function mascotDataUri(pose: OgPose): string {
   if (!bytes) {
     throw new Error(
       `OG mascot missing: ${pose.og} (looked in ${tried.join(', ')}). ` +
-        `Run the ingest — pnpm --filter @piggles/mascot ingest — which generates ` +
+        `Run the ingest (pnpm --filter @piggles/mascot ingest) which generates ` +
         `public/mascot/og/ alongside the WebP the browser gets.`
     );
   }

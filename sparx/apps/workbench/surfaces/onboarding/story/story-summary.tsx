@@ -105,7 +105,7 @@ export function StoryExtras({
             <Text className="text-sm">{blueprint.summary}</Text>
           </div>
         ) : (
-          <Text className="text-sm">A blank Builder site — yours to design from scratch.</Text>
+          <Text className="text-sm">A blank Builder site: yours to design from scratch.</Text>
         )}
       </Section>
 
@@ -138,7 +138,7 @@ export function StoryExtras({
       {selling ? (
         <Section label="Getting paid">
           <Text className="text-sm">
-            Connect <span className="font-medium">Stripe</span> to take payments — the next beat
+            Connect <span className="font-medium">Stripe</span> to take payments: the next beat
             after you build.
           </Text>
         </Section>

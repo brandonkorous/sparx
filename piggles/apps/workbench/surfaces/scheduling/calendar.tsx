@@ -123,7 +123,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
           module={MODULE}
           icon={<Icon glyph={faCalendarXmark} className="size-6" aria-hidden />}
           title="Could not load your diary"
-          description="This is a problem reaching the server. Nothing in your diary has changed — the bookings just could not be read just now."
+          description="This is a problem reaching the server. Nothing in your diary has changed: the bookings just could not be read just now."
           onRetry={() => {
             void refetch();
           }}

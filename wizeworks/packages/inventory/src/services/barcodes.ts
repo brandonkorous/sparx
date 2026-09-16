@@ -402,7 +402,7 @@ async function conflictFor(
   const holder = rows[0];
   return new InventoryConflictError(
     holder
-      ? `Barcode ${value} is already on ${holder.title} (${holder.sku}). A barcode can only belong to one item — remove it there first, or scan a different code.`
+      ? `Barcode ${value} is already on ${holder.title} (${holder.sku}). A barcode can only belong to one item. Remove it there first, or scan a different code.`
       : `Barcode ${value} is already in use.`
   );
 }
@@ -830,7 +830,7 @@ export async function generateBarcodes(
 
     if (remaining.length > 0) {
       throw new InventoryConflictError(
-        `Could not mint a free barcode for ${remaining.length} item(s) after three attempts. This should not happen — check for imported codes in the 2xxxxxxxxxxx range.`
+        `Could not mint a free barcode for ${remaining.length} item(s) after three attempts. This should not happen. Check for imported codes in the 2xxxxxxxxxxx range.`
       );
     }
 

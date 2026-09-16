@@ -47,7 +47,7 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
   });
 
   if (source.status === 'paused' || source.deletedAt) {
-    log.info({ sourceId }, 'inventory-worker: source is paused/deleted — skipping');
+    log.info({ sourceId }, 'inventory-worker: source is paused/deleted, skipping');
     return;
   }
 
@@ -75,7 +75,7 @@ export async function handleSyncStarted(payload: SyncStartedPayload, log: Logger
       };
       log.info({ sourceId, ...result }, 'inventory-worker: feed ingested');
     } else {
-      log.warn({ type: source.type }, 'inventory-worker: unsupported source type — skipping');
+      log.warn({ type: source.type }, 'inventory-worker: unsupported source type, skipping');
     }
 
     await publishEvent(

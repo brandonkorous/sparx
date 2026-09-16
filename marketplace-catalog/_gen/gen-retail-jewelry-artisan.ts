@@ -165,7 +165,7 @@ function hero(): Node {
                                     text: 'Made at the bench, one at a time.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Forge & Fold is a one-person jewelry workshop. Every piece is hammered, stamped and set by hand in recycled sterling silver and bronze — so no two are ever exactly alike, and yours carries the marks of the hands that made it.',
+                                    text: 'Forge & Fold is a one-person jewelry workshop. Every piece is hammered, stamped and set by hand in recycled sterling silver and bronze, so no two are ever exactly alike, and yours carries the marks of the hands that made it.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -258,7 +258,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Fresh off the bench' }),
     editorialBand({
         heading: 'Every mark left on purpose',
-        lead: 'Nothing here is cast in a hundred at a time. Each piece is forged, hammered and stamped by hand, then oxidised and finished at the bench — the little irregularities are the point, not a flaw. When you wear one, you can see where the hammer landed.',
+        lead: 'Nothing here is cast in a hundred at a time. Each piece is forged, hammered and stamped by hand, then oxidised and finished at the bench: the little irregularities are the point, not a flaw. When you wear one, you can see where the hammer landed.',
         assetId: 'forge-band-bench',
         cta: 'How it’s made',
         href: '/blog/made-at-the-bench',
@@ -267,7 +267,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.rings', layout: 'carousel', heading: 'The ring bench' }),
     editorialBand({
         heading: 'No two the same',
-        lead: 'Because every piece is made by hand from raw metal — and set with rough-cut, one-of-a-kind stones — the one you order is genuinely yours. Solid recycled silver and bronze, built to be worn hard, patina and all, and repaired at the bench for as long as you own it.',
+        lead: 'Because every piece is made by hand from raw metal (and set with rough-cut, one-of-a-kind stones) the one you order is genuinely yours. Solid recycled silver and bronze, built to be worn hard, patina and all, and repaired at the bench for as long as you own it.',
         assetId: 'forge-band-story',
         cta: 'Shop one-of-a-kind',
         href: '/collections',
@@ -312,7 +312,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Made by hand, to order' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Forged, stamped and finished by hand in recycled sterling silver or bronze — so yours will have its own small variations. Made to order in about a week, wrapped in a cloth pouch, and repaired at the bench for as long as you own it. Not right? Send it back unworn within 30 days.',
+                                        text: 'Forged, stamped and finished by hand in recycled sterling silver or bronze, so yours will have its own small variations. Made to order in about a week, wrapped in a cloth pouch, and repaired at the bench for as long as you own it. Not right? Send it back unworn within 30 days.',
                                     }),
                                 ],
                             }),
@@ -351,13 +351,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The whole bench',
-        'Every piece the workshop makes, in recycled sterling silver and bronze — rings, earrings, necklaces and cuffs. Filter by metal or category, or sort however you like; all of it is forged, stamped and set by hand, and made to order.'
+        'Every piece the workshop makes, in recycled sterling silver and bronze: rings, earrings, necklaces and cuffs. Filter by metal or category, or sort however you like; all of it is forged, stamped and set by hand, and made to order.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'The pieces grouped the way people actually shop — the newest work off the bench, the everyday metal you’ll reach for daily, the true one-of-a-kind pieces set with rough stones, and gifts that land every time.'
+        'The pieces grouped the way people actually shop: the newest work off the bench, the everyday metal you’ll reach for daily, the true one-of-a-kind pieces set with rough stones, and gifts that land every time.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -370,7 +370,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your bag' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping over $75, a cloth pouch with every order, and 30-day returns on anything unworn. Each piece is made to order by hand, so give it about a week at the bench before it ships — worth the wait for something no one else has.',
+                        text: 'Free shipping over $75, a cloth pouch with every order, and 30-day returns on anything unworn. Each piece is made to order by hand, so give it about a week at the bench before it ships: worth the wait for something no one else has.',
                     }),
                 ],
             }),
@@ -384,7 +384,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'From the bench' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the workshop — how a piece is forged from raw metal, what silver and bronze actually do over time, and how to care for handmade jewelry so it only gets better. Plain, honest, no jargon.',
+                        text: 'Notes from the workshop: how a piece is forged from raw metal, what silver and bronze actually do over time, and how to care for handmade jewelry so it only gets better. Plain, honest, no jargon.',
                     }),
                 ],
             }),
@@ -401,13 +401,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Forge & Fold' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Forge & Fold began at a scarred wooden bench in a rented corner of a shared studio, with a hammer, a torch, and a stubborn preference for making things the slow way. It hasn’t really changed. Every piece still starts as a length of raw metal and gets hammered, filed, stamped and set entirely by hand — one maker, one bench, one piece at a time.',
+                        text: 'Forge & Fold began at a scarred wooden bench in a rented corner of a shared studio, with a hammer, a torch, and a stubborn preference for making things the slow way. It hasn’t really changed. Every piece still starts as a length of raw metal and gets hammered, filed, stamped and set entirely by hand. One maker, one bench, one piece at a time.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'The metal is recycled sterling silver and bronze; the stones are rough-cut and one of a kind, chosen for character rather than clarity. Nothing is cast in bulk, nothing is plated, and nothing is pretending to be something it isn’t. The hammer marks stay, the patina is left where it belongs, and the piece is finished by the same hands that started it.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'What that means for you: jewelry with real weight and a real story, made to be worn hard and to wear in beautifully. And because it was made here by hand, it can be mended here by hand — bring anything I’ve made back to the bench any time, for as long as you own it.',
+                        text: 'What that means for you: jewelry with real weight and a real story, made to be worn hard and to wear in beautifully. And because it was made here by hand, it can be mended here by hand. Bring anything I’ve made back to the bench any time, for as long as you own it.',
                     }),
                 ],
             }),
@@ -422,7 +422,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'A question about a piece, a custom commission, a resize, or a repair? Tell me what you’re after and I’ll write back myself — it’s just me at the bench, so give it a day or two.',
+        intro: 'A question about a piece, a custom commission, a resize, or a repair? Tell me what you’re after and I’ll write back myself: it’s just me at the bench, so give it a day or two.',
         submitLabel: 'Email the workshop',
     }),
 ];
@@ -467,11 +467,11 @@ interface Product {
 // birthstone is a dropdown of rough-cut months.
 const RING_SIZES = ['5', '6', '7', '8', '9'];
 const BIRTHSTONES = [
-    'April — Rough Aquamarine',
-    'June — Raw Moonstone',
-    'August — Raw Peridot',
-    'October — Raw Tourmaline',
-    'December — Raw Turquoise',
+    'April: Rough Aquamarine',
+    'June: Raw Moonstone',
+    'August: Raw Peridot',
+    'October: Raw Tourmaline',
+    'December: Raw Turquoise',
 ];
 
 const metalOption: OptionDecl = {
@@ -584,7 +584,7 @@ const PRODUCTS: Product[] = [
         handle: 'hammered-hoop-earrings',
         title: 'Hammered Hoops',
         description:
-            'The hoop you put in and forget about — a lightweight round of solid wire, hammered flat so it throws light from a dozen tiny facets, with a secure hook closure. Small enough for every day, characterful enough that people ask where you got them.',
+            'The hoop you put in and forget about: a lightweight round of solid wire, hammered flat so it throws light from a dozen tiny facets, with a secure hook closure. Small enough for every day, characterful enough that people ask where you got them.',
         silverPrice: 88,
         sku: 'FF-HOOP',
         productType: 'Earrings',
@@ -592,14 +592,14 @@ const PRODUCTS: Product[] = [
         collections: ['new-at-the-bench', 'best-sellers', 'everyday-metal'],
         tags: ['earrings', 'hoops', 'hammered', 'everyday'],
         asset: 'forge-prod-hoops',
-        seoTitle: 'Hammered Hoops — hand-forged silver or bronze | Forge & Fold',
+        seoTitle: 'Hammered Hoops: hand-forged silver or bronze | Forge & Fold',
         seoDescription: 'Lightweight hand-hammered hoop earrings in recycled sterling silver or bronze, with a secure hook closure.',
     }),
     piece({
         handle: 'pebble-stud-earrings',
         title: 'Pebble Studs',
         description:
-            'A pair of tiny hand-formed studs with a molten, river-pebble texture — no two domes quite identical, because they’re shaped one at a time under the hammer. The everyday earring that goes with everything and never has to come out.',
+            'A pair of tiny hand-formed studs with a molten, river-pebble texture: no two domes quite identical, because they’re shaped one at a time under the hammer. The everyday earring that goes with everything and never has to come out.',
         silverPrice: 58,
         sku: 'FF-STUD',
         productType: 'Earrings',
@@ -607,47 +607,47 @@ const PRODUCTS: Product[] = [
         collections: ['everyday-metal', 'gifts'],
         tags: ['earrings', 'studs', 'textured', 'everyday'],
         asset: 'forge-prod-studs',
-        seoTitle: 'Pebble Studs — textured hand-made stud earrings | Forge & Fold',
+        seoTitle: 'Pebble Studs: textured hand-made stud earrings | Forge & Fold',
         seoDescription: 'Tiny hand-formed pebble-textured stud earrings in recycled sterling silver or bronze. No two quite alike.',
     }),
     ring({
         handle: 'raw-stone-ring',
         title: 'Raw Stone Ring',
         description:
-            'A rough-cut, uncut stone raised in a hand-built bezel on a chunky forged band — chosen for character, not clarity, so the one you receive is genuinely one of a kind. Substantial, a little wild, and made to become the ring you never take off.',
+            'A rough-cut, uncut stone raised in a hand-built bezel on a chunky forged band: chosen for character, not clarity, so the one you receive is genuinely one of a kind. Substantial, a little wild, and made to become the ring you never take off.',
         silverPrice: 132,
         sku: 'FF-RAW',
         collections: ['new-at-the-bench', 'one-of-a-kind'],
         tags: ['ring', 'raw-stone', 'statement', 'one-of-a-kind'],
         asset: 'forge-prod-rawstone',
-        seoTitle: 'Raw Stone Ring — rough-cut stone, hand-forged band | Forge & Fold',
+        seoTitle: 'Raw Stone Ring: rough-cut stone, hand-forged band | Forge & Fold',
         seoDescription: 'A rough-cut one-of-a-kind stone in a hand-built bezel on a chunky forged band, in silver or bronze.',
     }),
     ring({
         handle: 'carved-signet-ring',
         title: 'Carved Signet Ring',
         description:
-            'A solid signet with a hand-carved, hammer-textured face — the ring you engrave with an initial or leave raw to wear in on its own. Weighty without being clumsy, and just as good stacked against the raw stone ring as worn alone.',
+            'A solid signet with a hand-carved, hammer-textured face: the ring you engrave with an initial or leave raw to wear in on its own. Weighty without being clumsy, and just as good stacked against the raw stone ring as worn alone.',
         silverPrice: 145,
         sku: 'FF-SIGNET',
         collections: ['best-sellers', 'one-of-a-kind'],
         tags: ['ring', 'signet', 'carved', 'engravable'],
         asset: 'forge-prod-signet',
-        seoTitle: 'Carved Signet Ring — hand-textured solid signet | Forge & Fold',
+        seoTitle: 'Carved Signet Ring: hand-textured solid signet | Forge & Fold',
         seoDescription: 'A solid hand-carved, hammer-textured signet ring in recycled sterling silver or bronze. Engravable.',
     }),
     {
         handle: 'mixed-metal-pendant',
         title: 'Mixed-Metal Pendant',
         description:
-            'A small forged disc where silver and bronze are fused and hammered together, so the two metals bleed into one another differently on every piece. Hangs on an 18" oxidised silver chain — the everyday necklace that layers with anything and warms up as it wears.',
+            'A small forged disc where silver and bronze are fused and hammered together, so the two metals bleed into one another differently on every piece. Hangs on an 18" oxidised silver chain: the everyday necklace that layers with anything and warms up as it wears.',
         status: 'active',
         productType: 'Necklace',
         vendor: 'Forge & Fold',
         tags: ['necklace', 'pendant', 'mixed-metal', 'layering'],
         categoryHandles: ['necklaces'],
         collectionHandles: ['everyday-metal', 'gifts', 'one-of-a-kind'],
-        seoTitle: 'Mixed-Metal Pendant — fused silver & bronze | Forge & Fold',
+        seoTitle: 'Mixed-Metal Pendant: fused silver & bronze | Forge & Fold',
         seoDescription: 'A hand-fused silver-and-bronze forged disc on an 18" oxidised silver chain. One of a kind, made to layer.',
         variants: [{ sku: 'FF-MIX-PENDANT', priceCents: money(118), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'forge-prod-pendant', isPrimary: true, alt: 'A mixed-metal pendant of silver and bronze on a chain' }],
@@ -656,14 +656,14 @@ const PRODUCTS: Product[] = [
         handle: 'raw-birthstone-pendant',
         title: 'Raw Birthstone Pendant',
         description:
-            'A single rough-cut birthstone set in a rustic hand-built bezel on a fine chain — pick the month that means something and the stone is chosen and set to match. Personal without being fussy, and worn far past the birthday it marks.',
+            'A single rough-cut birthstone set in a rustic hand-built bezel on a fine chain. Pick the month that means something and the stone is chosen and set to match. Personal without being fussy, and worn far past the birthday it marks.',
         status: 'active',
         productType: 'Necklace',
         vendor: 'Forge & Fold',
         tags: ['necklace', 'birthstone', 'raw-stone', 'personalized', 'gift'],
         categoryHandles: ['necklaces'],
         collectionHandles: ['new-at-the-bench', 'one-of-a-kind', 'gifts'],
-        seoTitle: 'Raw Birthstone Pendant — rough-cut, hand-set | Forge & Fold',
+        seoTitle: 'Raw Birthstone Pendant: rough-cut, hand-set | Forge & Fold',
         seoDescription: 'A rough-cut birthstone in a rustic hand-built bezel on a fine chain, set to your month, in silver or bronze.',
         options: [metalOption, birthstoneOption],
         variants: [
@@ -689,7 +689,7 @@ const PRODUCTS: Product[] = [
         handle: 'hand-stamped-cuff',
         title: 'Hand-Stamped Cuff',
         description:
-            'A solid open cuff, stamped by hand with a run of small marks and left with an oxidised, lived-in finish — the piece that reads as made, not bought. Gently springs on over the wrist and holds its shape for years; each one stamped a little differently.',
+            'A solid open cuff, stamped by hand with a run of small marks and left with an oxidised, lived-in finish: the piece that reads as made, not bought. Gently springs on over the wrist and holds its shape for years; each one stamped a little differently.',
         silverPrice: 96,
         sku: 'FF-CUFF',
         productType: 'Bracelet',
@@ -697,14 +697,14 @@ const PRODUCTS: Product[] = [
         collections: ['best-sellers', 'one-of-a-kind', 'everyday-metal'],
         tags: ['bracelet', 'cuff', 'stamped', 'oxidised'],
         asset: 'forge-prod-cuff',
-        seoTitle: 'Hand-Stamped Cuff — oxidised open cuff | Forge & Fold',
+        seoTitle: 'Hand-Stamped Cuff: oxidised open cuff | Forge & Fold',
         seoDescription: 'A solid open cuff hand-stamped with small marks and an oxidised finish, in recycled silver or bronze.',
     }),
     piece({
         handle: 'forged-chain-bracelet',
         title: 'Forged Chain Bracelet',
         description:
-            'A chunky bracelet built link by link from solid wire — each loop soldered closed, hammered and cleaned up by hand, then hung on a substantial lobster clasp. Has real weight and a satisfying rattle; wears bright or takes on a patina, whichever you leave it.',
+            'A chunky bracelet built link by link from solid wire. Each loop soldered closed, hammered and cleaned up by hand, then hung on a substantial lobster clasp. Has real weight and a satisfying rattle; wears bright or takes on a patina, whichever you leave it.',
         silverPrice: 92,
         sku: 'FF-CHAIN',
         productType: 'Bracelet',
@@ -712,7 +712,7 @@ const PRODUCTS: Product[] = [
         collections: ['new-at-the-bench', 'everyday-metal'],
         tags: ['bracelet', 'chain', 'forged', 'everyday'],
         asset: 'forge-prod-chain',
-        seoTitle: 'Forged Chain Bracelet — hand-built solid links | Forge & Fold',
+        seoTitle: 'Forged Chain Bracelet: hand-built solid links | Forge & Fold',
         seoDescription: 'A chunky hand-forged chain bracelet built link by link in recycled sterling silver or bronze.',
     }),
 ];
@@ -752,7 +752,7 @@ const COMMERCE = {
         {
             handle: 'one-of-a-kind',
             name: 'One of a kind',
-            description: 'Pieces set with rough stones — no two the same.',
+            description: 'Pieces set with rough stones: no two the same.',
             type: 'manual',
             featured: false,
             productHandles: ['raw-stone-ring', 'raw-birthstone-pendant', 'hand-stamped-cuff', 'mixed-metal-pendant'],
@@ -781,16 +781,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How a piece is made, start to finish',
-            excerpt: 'From a length of raw wire to a finished ring — the forging, the hammering, the stamping and the patina, and why doing it slowly by hand is the whole point.',
+            excerpt: 'From a length of raw wire to a finished ring: the forging, the hammering, the stamping and the patina, and why doing it slowly by hand is the whole point.',
             featuredImage: { $asset: 'forge-post-bench' },
             body: {
                 type: 'doc',
                 content: [
-                    para('People sometimes assume handmade means a piece was assembled from ready-made parts. It doesn’t — not here. Everything starts as raw metal: a length of solid sterling or bronze wire, or a flat sheet. From there it’s heated, hammered, filed, stamped and set entirely by hand at one bench. No casting a hundred at a time, no plating, no shortcuts that would let two pieces come out identical.'),
+                    para('People sometimes assume handmade means a piece was assembled from ready-made parts. It doesn’t, not here. Everything starts as raw metal: a length of solid sterling or bronze wire, or a flat sheet. From there it’s heated, hammered, filed, stamped and set entirely by hand at one bench. No casting a hundred at a time, no plating, no shortcuts that would let two pieces come out identical.'),
                     h2('Forging and shaping'),
-                    para('A ring begins as a straight length of wire, annealed soft in the torch flame, then bent around a steel mandrel and hammered true. The hammering isn’t just shaping — it work-hardens the metal so the finished piece holds up to years of wear, and it leaves the faceted texture you can see catching the light. That texture is a record of the making, which is exactly why it stays.'),
+                    para('A ring begins as a straight length of wire, annealed soft in the torch flame, then bent around a steel mandrel and hammered true. The hammering isn’t just shaping. It work-hardens the metal so the finished piece holds up to years of wear, and it leaves the faceted texture you can see catching the light. That texture is a record of the making, which is exactly why it stays.'),
                     h2('Stamping, setting and patina'),
-                    para('Marks are struck one at a time with steel stamps and a hammer, so a stamped cuff is never quite the same twice. Stones are set in bezels built up by hand around each rough stone — since the stones are uncut, no two settings are identical either. Finally the piece is oxidised to bring out the texture, then polished back on the high points, so shadow sits in the marks and light rides the edges. Then it’s yours: made once, by hand, for you.'),
+                    para('Marks are struck one at a time with steel stamps and a hammer, so a stamped cuff is never quite the same twice. Stones are set in bezels built up by hand around each rough stone, since the stones are uncut, no two settings are identical either. Finally the piece is oxidised to bring out the texture, then polished back on the high points, so shadow sits in the marks and light rides the edges. Then it’s yours: made once, by hand, for you.'),
                 ],
             },
         },
@@ -801,16 +801,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Silver or bronze: what each metal actually does',
-            excerpt: 'Not a taste test — a practical look at how sterling silver and bronze wear, age and patina, and how to pick the one you’ll actually reach for.',
+            excerpt: 'Not a taste test: a practical look at how sterling silver and bronze wear, age and patina, and how to pick the one you’ll actually reach for.',
             featuredImage: { $asset: 'forge-post-metals' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Every piece here is offered in two metals, and they’re genuinely different — not a color swap. Both are solid and recycled: .925 sterling silver, or a warm architectural bronze. The choice comes down to tone, how each one ages, and budget, because bronze runs a good bit less than the same piece in silver.'),
+                    para('Every piece here is offered in two metals, and they’re genuinely different, not a color swap. Both are solid and recycled: .925 sterling silver, or a warm architectural bronze. The choice comes down to tone, how each one ages, and budget, because bronze runs a good bit less than the same piece in silver.'),
                     h2('Tone and how they age'),
-                    para('Sterling silver is bright and cool, and it takes an oxidised finish beautifully — the marks and textures go dark and the whole piece reads as considered. Left alone it slowly tarnishes to a soft grey patina, which is either something you love or something you polish back to bright in seconds with a cloth. Bronze is warm and golden, closer to old gold than to brass, and it develops a rich living patina over time as it reacts to your skin — some people seal it, most just let it deepen.'),
+                    para('Sterling silver is bright and cool, and it takes an oxidised finish beautifully: the marks and textures go dark and the whole piece reads as considered. Left alone it slowly tarnishes to a soft grey patina, which is either something you love or something you polish back to bright in seconds with a cloth. Bronze is warm and golden, closer to old gold than to brass, and it develops a rich living patina over time as it reacts to your skin. Some people seal it, most just let it deepen.'),
                     h2('Which to choose'),
-                    para('If you want bright-and-cool, or you plan to wear a piece next to existing silver, go sterling. If you want warm-and-golden, or you like the idea of a metal that visibly changes with you, go bronze — and it’s the friendlier price to try a design on. And mixing the two is the whole idea behind the mixed-metal pendant: a warm bronze cuff next to a cool silver ring reads as intentional now, not careless.'),
+                    para('If you want bright-and-cool, or you plan to wear a piece next to existing silver, go sterling. If you want warm-and-golden, or you like the idea of a metal that visibly changes with you, go bronze, and it’s the friendlier price to try a design on. And mixing the two is the whole idea behind the mixed-metal pendant: a warm bronze cuff next to a cool silver ring reads as intentional now, not careless.'),
                 ],
             },
         },
@@ -821,16 +821,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Caring for handmade silver and bronze',
-            excerpt: 'Handmade metal is tougher than it looks and asks very little — here’s the whole routine, how to handle the patina, and the two things to actually avoid.',
+            excerpt: 'Handmade metal is tougher than it looks and asks very little: here’s the whole routine, how to handle the patina, and the two things to actually avoid.',
             featuredImage: { $asset: 'forge-post-care' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Hand-forged jewelry is made to be worn, not shelved. It’s solid metal — no plating to wear through — so a scratch just becomes part of the story and a knock rarely does real harm. A few small habits keep silver bright and let bronze patina the way you want it to, instead of by accident.'),
+                    para('Hand-forged jewelry is made to be worn, not shelved. It’s solid metal (no plating to wear through) so a scratch just becomes part of the story and a knock rarely does real harm. A few small habits keep silver bright and let bronze patina the way you want it to, instead of by accident.'),
                     h2('The everyday routine'),
-                    para('Put jewelry on last — after lotion, perfume and hairspray, which are the main things that dull a finish. Take rings and cuffs off for heavy work, the gym and the washing-up; it’s grit and knocks, not water, that wear a piece down fastest. A quick rub with a soft cloth after wear keeps silver bright. About once a month, warm water, a drop of dish soap and a soft brush brings everything back — then dry it properly before it’s put away.'),
+                    para('Put jewelry on last: after lotion, perfume and hairspray, which are the main things that dull a finish. Take rings and cuffs off for heavy work, the gym and the washing-up; it’s grit and knocks, not water, that wear a piece down fastest. A quick rub with a soft cloth after wear keeps silver bright. About once a month, warm water, a drop of dish soap and a soft brush brings everything back, then dry it properly before it’s put away.'),
                     h2('Patina, storage, and what to avoid'),
-                    para('The oxidised finish and the bronze patina are meant to be there — so skip the dip-style silver cleaners, which strip the deliberate darkness right out of the stamped marks. If a piece goes further than you like, that’s an easy fix at the bench. Store pieces apart so they don’t scratch each other, and keep silver in a little zip bag to slow tarnish. The two things to genuinely avoid: chlorine (take everything off before a pool or hot tub) and abrasive pastes on anything set with a stone. When in doubt, send it back — cleaning and re-finishing anything I’ve made is free, for as long as you own it.'),
+                    para('The oxidised finish and the bronze patina are meant to be there, so skip the dip-style silver cleaners, which strip the deliberate darkness right out of the stamped marks. If a piece goes further than you like, that’s an easy fix at the bench. Store pieces apart so they don’t scratch each other, and keep silver in a little zip bag to slow tarnish. The two things to genuinely avoid: chlorine (take everything off before a pool or hot tub) and abrasive pastes on anything set with a stone. When in doubt, send it back, cleaning and re-finishing anything I’ve made is free, for as long as you own it.'),
                 ],
             },
         },
@@ -845,7 +845,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Artisan Jeweler',
     theme: THEME,
     summary:
-        'A complete, working shop for a handmade / artisan jeweler: a real catalogue of hand-forged pieces in recycled sterling silver and bronze — hammered hoops, a raw-stone ring, a hand-stamped cuff, a mixed-metal pendant, studs, a forged chain, a signet and a raw birthstone pendant — with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Earthy theme — warm clay ground, bark ink, oxidised-bronze primary, fired-copper accent. Shipped as Forge & Fold.',
+        'A complete, working shop for a handmade / artisan jeweler: a real catalogue of hand-forged pieces in recycled sterling silver and bronze, hammered hoops, a raw-stone ring, a hand-stamped cuff, a mixed-metal pendant, studs, a forged chain, a signet and a raw birthstone pendant, with Metal and Size variants, categories, collections, a bespoke PDP and a merchandised home page. Earthy theme, warm clay ground, bark ink, oxidised-bronze primary, fired-copper accent. Shipped as Forge & Fold.',
     tagline: 'An earthy, working storefront for a handmade jeweler.',
     vertical: 'retail',
     industry: 'Artisan jeweler',
@@ -858,14 +858,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Forge & Fold — handmade jewelry in silver and bronze',
+            title: 'Forge & Fold: handmade jewelry in silver and bronze',
             description:
-                'Forge & Fold is a one-person jewelry workshop — rings, earrings, necklaces and cuffs forged, stamped and set by hand in recycled sterling silver and bronze. No two pieces the same.',
+                'Forge & Fold is a one-person jewelry workshop: rings, earrings, necklaces and cuffs forged, stamped and set by hand in recycled sterling silver and bronze. No two pieces the same.',
         },
         about: {
             title: 'About Forge & Fold',
             description:
-                'How Forge & Fold works — one maker, one bench, raw recycled metal and rough-cut stones, hammered and set by hand, and repaired for life.',
+                'How Forge & Fold works. One maker, one bench, raw recycled metal and rough-cut stones, hammered and set by hand, and repaired for life.',
         },
     },
     home: HOME,

@@ -212,7 +212,7 @@ export function checkClass(className: string): VocabularyIssue | null {
     return {
       className,
       reason: 'arbitrary-value',
-      hint: 'Arbitrary values only compile where Tailwind can SEE them, and an authored tree is never scanned — this emits no CSS at all. Use a scale token instead (e.g. `leading-none` rather than `leading-[1.05]`).',
+      hint: 'Arbitrary values only compile where Tailwind can SEE them, and an authored tree is never scanned. This emits no CSS at all. Use a scale token instead (e.g. `leading-none` rather than `leading-[1.05]`).',
     };
   }
 
@@ -228,7 +228,7 @@ export function checkClass(className: string): VocabularyIssue | null {
       reason: 'viewport-variant',
       hint:
         `\`${className}\` is measured against the browser window, so the builder's phone and tablet ` +
-        `previews cannot reflow it — the design changes on a real device but never on the canvas. ` +
+        `previews cannot reflow it: the design changes on a real device but never on the canvas. ` +
         `Write \`${viewport.container}:${viewport.rest}\` instead, and make sure some parent carries ` +
         `\`@container\` (every seeded section, the nav and the footer already do).`,
       // Unambiguous as a SUBSTITUTION, but not unconditionally safe to apply: the hint's
@@ -269,7 +269,7 @@ export function checkClass(className: string): VocabularyIssue | null {
     className,
     reason: 'out-of-range',
     hint: near
-      ? `\`${family}-${value}\` is not in the declared scale and emits no CSS — the nearest declared step is \`${family}-${near}\`. Declared: ${sortValues(values).join(', ')}.`
+      ? `\`${family}-${value}\` is not in the declared scale and emits no CSS: the nearest declared step is \`${family}-${near}\`. Declared: ${sortValues(values).join(', ')}.`
       : `\`${family}-${value}\` is not in the declared scale and emits no CSS. Declared: ${sortValues(values).join(', ')}.`,
     // Only when a nearest step exists. A declared family with no numeric values at all
     // leaves `near` null, and there is nothing to substitute.
@@ -332,7 +332,7 @@ export const validateResponsiveVocabulary: ClassValidator = (cls) => {
       ok: false,
       reason:
         `${token} sizes itself against the browser window, so the phone and tablet previews ` +
-        `can't show what it does. Use ${viewport.container}:${viewport.rest} instead — it measures ` +
+        `can't show what it does. Use ${viewport.container}:${viewport.rest} instead: it measures ` +
         `the space the block is actually in, which is what the preview changes.`,
     };
   }

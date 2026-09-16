@@ -149,7 +149,7 @@ export function PaletteTool() {
               toast="silicaui theme copied"
               hint={
                 <>
-                  silicaui is a design system — it turns one set of colors into every button, badge
+                  silicaui is a design system. It turns one set of colors into every button, badge
                   and card on a site, so you set your colors once instead of hunting them down
                   screen by screen. Paste this into the stylesheet that controls how your site looks
                   and your palette takes over, in both light and dark mode. sparx itself is built on
@@ -199,7 +199,7 @@ export function PaletteTool() {
                 <Shuffle className="h-4 w-4" /> Shuffle
               </Button>
               <span className="text-md">
-                or press <Kbd size="sm">Space</Kbd> — lock the colors you want to keep
+                or press <Kbd size="sm">Space</Kbd> to lock the colors you want to keep
               </span>
             </div>
             <PaletteSwatches
@@ -320,7 +320,7 @@ function LockToggle({
     ? ({ '--btn-bg': ink, '--btn-fg': hex } as React.CSSProperties)
     : ({ '--btn-accent': ink } as React.CSSProperties);
   return (
-    <Tooltip content={locked ? 'Locked — kept on shuffle' : 'Unlocked — changes on shuffle'}>
+    <Tooltip content={locked ? 'Locked: kept on shuffle' : 'Unlocked: changes on shuffle'}>
       <Button
         type="button"
         size="xs"

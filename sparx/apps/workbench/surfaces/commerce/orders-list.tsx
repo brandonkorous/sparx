@@ -67,7 +67,7 @@ function emptyAdvice(search: string, filterLabel: string | null): string {
   }
   if (filterLabel) {
     parts.push(
-      `You are only seeing orders marked “${filterLabel}” — switch back to All for the rest.`
+      `You are only seeing orders marked “${filterLabel}”. Switch back to All for the rest.`
     );
   }
   return parts.join(' ');
@@ -209,7 +209,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<ShoppingBag className="size-6" aria-hidden />}
             title="Could not load your orders"
-            description="This is a problem reaching the server. Your orders are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your orders are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
           <p className="p-4 text-sm" role="status">

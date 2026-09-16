@@ -95,7 +95,7 @@
     {
       "handle": "the-glass-orchard",
       "title": "The Glass Orchard",
-      "description": "A luminous novel about three sisters who inherit a failing greenhouse and the secret their late father grew inside it. Sorensen writes like sunlight through glass — warm, exact, quietly dazzling. The new release the whole team fought over first, and our clearest pick of the season.",
+      "description": "A luminous novel about three sisters who inherit a failing greenhouse and the secret their late father grew inside it. Sorensen writes like sunlight through glass: warm, exact, quietly dazzling. The new release the whole team fought over first, and our clearest pick of the season.",
       "status": "active",
       "productType": "Book",
       "vendor": "Ada Sorensen",
@@ -148,7 +148,7 @@
     {
       "handle": "northbound",
       "title": "Northbound",
-      "description": "A propulsive literary thriller about a night-train guard who realises the same passenger has boarded every run for a month. Merrin keeps the screws turning without ever cheating you — taut, atmospheric, and impossible to put down past chapter three. Clear your evening.",
+      "description": "A propulsive literary thriller about a night-train guard who realises the same passenger has boarded every run for a month. Merrin keeps the screws turning without ever cheating you: taut, atmospheric, and impossible to put down past chapter three. Clear your evening.",
       "status": "active",
       "productType": "Book",
       "vendor": "Cass Merrin",
@@ -201,7 +201,7 @@
     {
       "handle": "static-and-signal",
       "title": "Static & Signal",
-      "description": "Twelve stories about connection in a wired world — a help-line worker, a viral stranger, a marriage conducted mostly in read receipts. Anand is funny and precise and never cruel, and this is the collection we hand to people who claim they don’t read short stories.",
+      "description": "Twelve stories about connection in a wired world: a help-line worker, a viral stranger, a marriage conducted mostly in read receipts. Anand is funny and precise and never cruel, and this is the collection we hand to people who claim they don’t read short stories.",
       "status": "active",
       "productType": "Book",
       "vendor": "Priya Anand",
@@ -254,7 +254,7 @@
     {
       "handle": "the-attention-diet",
       "title": "The Attention Diet",
-      "description": "A clear, refreshingly un-preachy look at what our attention is actually worth and how to spend it better — grounded in real research, written like a good conversation. No shame, no ten-step app detox, just a smarter way to think about the thing everyone’s selling. The nonfiction we keep re-ordering.",
+      "description": "A clear, refreshingly un-preachy look at what our attention is actually worth and how to spend it better: grounded in real research, written like a good conversation. No shame, no ten-step app detox, just a smarter way to think about the thing everyone’s selling. The nonfiction we keep re-ordering.",
       "status": "active",
       "productType": "Book",
       "vendor": "Rowan Vesper",
@@ -307,7 +307,7 @@
     {
       "handle": "deep-time-bright-water",
       "title": "Deep Time, Bright Water",
-      "description": "A geologist’s love letter to rivers — how they carve deep time into a landscape, and what they carry of us downstream. Osei braids field science with memoir so gracefully you barely notice you’re learning, and you’ll never look at a stream the same way. Genuinely readable science at its best.",
+      "description": "A geologist’s love letter to rivers: how they carve deep time into a landscape, and what they carry of us downstream. Osei braids field science with memoir so gracefully you barely notice you’re learning, and you’ll never look at a stream the same way. Genuinely readable science at its best.",
       "status": "active",
       "productType": "Book",
       "vendor": "Malik Osei",
@@ -315,7 +315,7 @@
       "categoryHandles": ["nonfiction"],
       "collectionHandles": ["the-nonfiction-shelf"],
       "seoTitle": "Deep Time, Bright Water by Malik Osei | Volume Books",
-      "seoDescription": "A geologist’s love letter to rivers — field science braided with memoir. Readable science at its best.",
+      "seoDescription": "A geologist’s love letter to rivers: field science braided with memoir. Readable science at its best.",
       "options": [
         {
           "name": "Format",
@@ -360,7 +360,7 @@
     {
       "handle": "otto-and-the-midnight-library",
       "title": "Otto and the Midnight Library",
-      "description": "A gorgeous picture book about a small bear who discovers the library comes alive after closing time — and that the quietest reader can be the bravest hero. Brightwater’s art glows, and the read-aloud rhythm is a bedtime dream. For ages 3–7, and for any grown-up who loves a library.",
+      "description": "A gorgeous picture book about a small bear who discovers the library comes alive after closing time, and that the quietest reader can be the bravest hero. Brightwater’s art glows, and the read-aloud rhythm is a bedtime dream. For ages 3–7, and for any grown-up who loves a library.",
       "status": "active",
       "productType": "Book",
       "vendor": "Lena Brightwater",
@@ -466,14 +466,14 @@
     {
       "handle": "volume-enamel-pin-set",
       "title": "Volume Reader Pin Set",
-      "description": "Three hard-enamel pins for the shelf-proud reader — a tiny stack of books, an open cover, and our little \"V\" mark — on a printed backing card that’s a small gift in itself. Bright, sturdy, and cheerfully collectable. The easy add-on that makes any order feel like a treat.",
+      "description": "Three hard-enamel pins for the shelf-proud reader (a tiny stack of books, an open cover, and our little \"V\" mark) on a printed backing card that’s a small gift in itself. Bright, sturdy, and cheerfully collectable. The easy add-on that makes any order feel like a treat.",
       "status": "active",
       "productType": "Accessory",
       "vendor": "Volume Books",
       "tags": ["gift", "pin", "accessory"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts-for-readers"],
-      "seoTitle": "Volume Reader Pin Set — three enamel pins | Volume Books",
+      "seoTitle": "Volume Reader Pin Set: three enamel pins | Volume Books",
       "seoDescription": "Three bright hard-enamel pins for the shelf-proud reader, on a printed backing card. A cheerful little gift.",
       "variants": [
         {
@@ -494,14 +494,14 @@
     {
       "handle": "clip-reading-light",
       "title": "Clip Reading Light",
-      "description": "A slim, rechargeable clip-on light that warms up or cools down to suit the page — bright enough to read by, dim enough not to wake anyone. Clamps onto a paperback or a hardcover without marking it, folds flat, and runs for weeks on a charge. The gift every night-owl reader secretly wants.",
+      "description": "A slim, rechargeable clip-on light that warms up or cools down to suit the page: bright enough to read by, dim enough not to wake anyone. Clamps onto a paperback or a hardcover without marking it, folds flat, and runs for weeks on a charge. The gift every night-owl reader secretly wants.",
       "status": "active",
       "productType": "Accessory",
       "vendor": "Volume Books",
       "tags": ["gift", "reading-light", "accessory"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts-for-readers"],
-      "seoTitle": "Clip Reading Light — warm/cool rechargeable book light | Volume Books",
+      "seoTitle": "Clip Reading Light: warm/cool rechargeable book light | Volume Books",
       "seoDescription": "A slim rechargeable clip-on reading light, warm or cool, bright enough to read by and dim enough not to wake anyone.",
       "variants": [
         {
@@ -522,14 +522,14 @@
     {
       "handle": "volume-reading-subscription",
       "title": "Volume Reading Subscription",
-      "description": "One hand-picked book on your doorstep every month — tell us what you’re into and we choose something we’d actually press on you, wrap it, and post it with a note on why. Fiction, nonfiction, or a bit of both; pause, swap or cancel any time. The gift that keeps someone reading widely all year.",
+      "description": "One hand-picked book on your doorstep every month. Tell us what you’re into and we choose something we’d actually press on you, wrap it, and post it with a note on why. Fiction, nonfiction, or a bit of both; pause, swap or cancel any time. The gift that keeps someone reading widely all year.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Volume Books",
       "tags": ["subscription", "gift", "book-club"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts-for-readers", "staff-picks"],
-      "seoTitle": "Volume Reading Subscription — a hand-picked book, monthly | Volume Books",
+      "seoTitle": "Volume Reading Subscription: a hand-picked book, monthly | Volume Books",
       "seoDescription": "A hand-picked book on your doorstep every month, wrapped with a note on why we chose it. Pause or cancel any time.",
       "options": [
         {

@@ -74,7 +74,7 @@ export const SOCIAL_CATALOG: SocialPlatformDescriptor[] = [
   {
     platform: 'youtube',
     name: 'YouTube',
-    blurb: 'Publish Shorts — short vertical videos — to your YouTube channel.',
+    blurb: 'Publish Shorts (short vertical videos) to your YouTube channel.',
     phase: 'Phase 3',
   },
 ];

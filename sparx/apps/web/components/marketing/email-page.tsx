@@ -48,7 +48,7 @@ export function EmailPage() {
             <Spark color={E.color} />
           </>
         }
-        lede="Deliverability, your own domain, what it costs, and how it fits — answered straight. Still deciding? Read the email docs or start the 14-day trial."
+        lede="Deliverability, your own domain, what it costs, and how it fits: answered straight. Still deciding? Read the email docs or start the 14-day trial."
       />
       <EmailCta />
     </>
@@ -66,31 +66,31 @@ const EMAIL_FAQ: FaqItem[] = [
     id: 'email-deliverability',
     question: 'Will my email actually reach the inbox?',
     answer:
-      'Deliverability is the whole point. The moment your domain verifies, sparx authenticates it with SPF, DKIM, and DMARC and signs every message with your DKIM key. Bounce rate is watched against a 2% threshold and spam complaints against 0.1% per domain, with hard bounces and complaints suppressed automatically — the practices that keep a sender out of the spam folder.',
+      'Deliverability is the whole point. The moment your domain verifies, sparx authenticates it with SPF, DKIM, and DMARC and signs every message with your DKIM key. Bounce rate is watched against a 2% threshold and spam complaints against 0.1% per domain, with hard bounces and complaints suppressed automatically: the practices that keep a sender out of the spam folder.',
   },
   {
     id: 'email-own-domain',
     question: 'Do I send from my own domain?',
     answer:
-      'Yes. Add your domain, drop in the DNS records sparx generates for you, and once they verify your mail sends from your own address — orders@yourbrand.com, not a shared blast domain. Until a domain is verified, email sends from the shared sparx domain so you are never blocked while DNS propagates.',
+      'Yes. Add your domain, drop in the DNS records sparx generates for you, and once they verify your mail sends from your own address: orders@yourbrand.com, not a shared blast domain. Until a domain is verified, email sends from the shared sparx domain so you are never blocked while DNS propagates.',
   },
   {
     id: 'email-types',
     question: 'What is the difference between transactional and marketing email?',
     answer:
-      'Transactional emails are triggered by platform events — an order confirmation, a shipping update, a password reset, a quote reply — and go out the instant the event fires. Marketing broadcasts are ones you choose to send to a CRM segment. Both run on the same engine, the same domain, and the same reputation, with one set of analytics.',
+      'Transactional emails are triggered by platform events (an order confirmation, a shipping update, a password reset, a quote reply) and go out the instant the event fires. Marketing broadcasts are ones you choose to send to a CRM segment. Both run on the same engine, the same domain, and the same reputation, with one set of analytics.',
   },
   {
     id: 'email-pricing',
     question: 'How much does sparx Email cost?',
     answer:
-      'A flat $29/mo. No per-email fees and no contact-tier surcharges — send 10,000 or 1,000,000 emails a month for the same price. Add any other modules à la carte and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
+      'A flat $29/mo. No per-email fees and no contact-tier surcharges. Send 10,000 or 1,000,000 emails a month for the same price. Add any other modules à la carte and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'email-crm',
     question: 'Do my email events feed the rest of sparx?',
     answer:
-      'Yes. Opens, clicks, bounces, and unsubscribes write straight onto the customer record in the CRM, so a segment like “opened the last email but did not buy” is always current — there is no list to export and nothing to sync. Your AI assistant can read the same stats over MCP.',
+      'Yes. Opens, clicks, bounces, and unsubscribes write straight onto the customer record in the CRM, so a segment like “opened the last email but did not buy” is always current. There is no list to export and nothing to sync. Your AI assistant can read the same stats over MCP.',
   },
   {
     id: 'email-templates',
@@ -105,10 +105,10 @@ function EmailProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
       n: <>1{<Spark color={E.color} />}</>,
-      l: 'database under email, customers, and orders — nothing to sync',
+      l: 'database under email, customers, and orders: nothing to sync',
     },
-    { n: '$0', l: 'per email — flat monthly, send 10K or 1M for the same price' },
-    { n: '3', l: 'records auto-configured — SPF, DKIM, DMARC, then monitored' },
+    { n: '$0', l: 'per email: flat monthly, send 10K or 1M for the same price' },
+    { n: '3', l: 'records auto-configured: SPF, DKIM, DMARC, then monitored' },
     { n: '<2%', l: 'bounce-rate guardrail watched per domain, complaints under 0.1%' },
   ];
   return (
@@ -153,7 +153,7 @@ function EmailPricing() {
             </Text>
           </div>
           <Text className="m-0 max-w-[640px] text-sm">
-            A flat $29/mo — transactional and marketing email, automations, templates, and
+            A flat $29/mo: transactional and marketing email, automations, templates, and
             broadcasts. No per-email fees and no contact-tier surcharges; send 10K or 1M a month for
             the same price. Switch it on alongside whatever modules you run. Start free for 14 days;
             no card to begin.
@@ -184,7 +184,7 @@ function EmailCta() {
           <Spark color={E.color} />
         </Display>
         <Text variant="lead" className="m-0 max-w-[640px]">
-          Turn Email on, add your domain, and transactional mail starts flowing immediately — the
+          Turn Email on, add your domain, and transactional mail starts flowing immediately: the
           marketing tools are there when you want them. No migration weekend, no contract; turn it
           off the day you stop, and your data stays yours.
         </Text>

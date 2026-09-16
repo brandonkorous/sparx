@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Lumen — clean, refillable candles & home fragrance",
-      "seoDescription": "Lumen is a modern home-fragrance studio: clean coconut-soy candles, diffusers and sprays, blended phthalate-free with the whole ingredient list on the box — and built to be refilled, not thrown out.",
+      "seoTitle": "Lumen: clean, refillable candles & home fragrance",
+      "seoDescription": "Lumen is a modern home-fragrance studio: clean coconut-soy candles, diffusers and sprays, blended phthalate-free with the whole ingredient list on the box, and built to be refilled, not thrown out.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -787,7 +787,7 @@
                         "tag": "p",
                         "class": "max-w-md text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Lumen is a small home-fragrance studio making candles the honest way — coconut-soy wax, cotton wicks, phthalate-free scent, and vessels built to be refilled rather than thrown out. Fragrance that smells fresh and clean, with nothing to hide on the label."
+                          "Lumen is a small home-fragrance studio making candles the honest way: coconut-soy wax, cotton wicks, phthalate-free scent, and vessels built to be refilled rather than thrown out. Fragrance that smells fresh and clean, with nothing to hide on the label."
                         ],
                         "id": "d18f9d3e-61ad-4568-ae84-c17c8b311f69",
                         "ord": "a1"
@@ -1038,7 +1038,7 @@
                         "tag": "p",
                         "class": "text-base leading-relaxed text-base-content",
                         "children": [
-                          "A clean coconut-soy blend with cotton wicks — a slow, even burn and no paraffin soot on the ceiling."
+                          "A clean coconut-soy blend with cotton wicks: a slow, even burn and no paraffin soot on the ceiling."
                         ],
                         "id": "77d1cb2f-358f-4574-a6ef-39e15bfd4686",
                         "ord": "a1"
@@ -1092,7 +1092,7 @@
                         "tag": "p",
                         "class": "text-base leading-relaxed text-base-content",
                         "children": [
-                          "Every vessel is built to be washed and refilled — buy the candle once, then top it up for less, forever."
+                          "Every vessel is built to be washed and refilled: buy the candle once, then top it up for less, forever."
                         ],
                         "id": "34745b14-7688-4f55-9e96-c5183da3a92f",
                         "ord": "a1"
@@ -1355,7 +1355,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We pour in coconut-soy wax with cotton wicks, blend our scents phthalate-free, and print the whole ingredient list on every candle. No mystery “fragrance,” no soot, no guessing what you’re breathing in — just a clean, even burn and a scent that stays true from the first hour to the last."
+                          "We pour in coconut-soy wax with cotton wicks, blend our scents phthalate-free, and print the whole ingredient list on every candle. No mystery “fragrance,” no soot, no guessing what you’re breathing in. Just a clean, even burn and a scent that stays true from the first hour to the last."
                         ],
                         "id": "7886c6b4-c5e5-48ca-8821-7537e7843435",
                         "ord": "a1"
@@ -1617,7 +1617,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every Lumen vessel is made to be washed out and poured again. When a candle burns down, a refill drops straight back in — same ceramic, same shelf, a little less money and a lot less waste. It’s the easy, quiet way to keep a home smelling good without a bin full of glass."
+                          "Every Lumen vessel is made to be washed out and poured again. When a candle burns down, a refill drops straight back in: same ceramic, same shelf, a little less money and a lot less waste. It’s the easy, quiet way to keep a home smelling good without a bin full of glass."
                         ],
                         "id": "4955bac3-a22f-4d97-8ec6-35a5e762882c",
                         "ord": "a1"
@@ -1664,7 +1664,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Lumen",
+      "seoTitle": "Shop: Lumen",
       "seoDescription": "Browse everything Lumen makes, with prices and options at a glance. Candle & home fragrance.",
       "root": {
         "kind": "element",
@@ -1696,7 +1696,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every candle, diffuser, spray, refill and gift we make — poured in small batches in coconut-soy wax, blended phthalate-free, and built to be refilled. Filter by scent or format, or sort however you like."
+                      "Every candle, diffuser, spray, refill and gift we make: poured in small batches in coconut-soy wax, blended phthalate-free, and built to be refilled. Filter by scent or format, or sort however you like."
                     ],
                     "id": "e609adb0-0b6f-4a33-928e-a942f383c522",
                     "ord": "a1"
@@ -1724,7 +1724,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Lumen",
+      "seoTitle": "Collections: Lumen",
       "seoDescription": "Explore the collections at Lumen, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1756,7 +1756,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The range grouped the way people actually shop — what’s new this season, the best-sellers, flame-free fragrance for every room, and the refills that keep a vessel going."
+                      "The range grouped the way people actually shop: what’s new this season, the best-sellers, flame-free fragrance for every room, and the refills that keep a vessel going."
                     ],
                     "id": "23340a47-d8bb-4796-bdf4-58ba1ab03132",
                     "ord": "a1"
@@ -1784,7 +1784,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Lumen",
+      "seoTitle": "Your cart: Lumen",
       "seoDescription": "Review what is in your cart and check out securely at Lumen.",
       "root": {
         "kind": "element",
@@ -1816,7 +1816,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $50, and everything ships in plastic-free, recyclable packaging. Changed your mind on a scent? Tell us within 30 days and we’ll swap it — clean fragrance should feel good all the way through."
+                      "Free shipping on orders over $50, and everything ships in plastic-free, recyclable packaging. Changed your mind on a scent? Tell us within 30 days and we’ll swap it: clean fragrance should feel good all the way through."
                     ],
                     "id": "1ae26ab1-19cd-4ed9-a0d3-7f427db8d72b",
                     "ord": "a1"
@@ -1844,7 +1844,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Lumen",
+      "seoTitle": "Search: Lumen",
       "seoDescription": "Search Lumen for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1904,7 +1904,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Lumen",
+      "seoTitle": "Journal: Lumen",
       "seoDescription": "Stories, guides and notes from Lumen.",
       "root": {
         "kind": "element",
@@ -1936,7 +1936,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the studio — what actually goes into a clean candle, how the refill system works, and how to get every even hour out of a burn. Plain, honest, no wellness fog."
+                      "Notes from the studio: what actually goes into a clean candle, how the refill system works, and how to get every even hour out of a burn. Plain, honest, no wellness fog."
                     ],
                     "id": "c5acf543-683c-4a7e-bb19-373ae4305ba3",
                     "ord": "a1"
@@ -2070,7 +2070,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Lumen",
-      "seoDescription": "Why Lumen makes candles the honest way — coconut-soy wax, cotton wicks, phthalate-free scent you can read on the label, and vessels designed to be washed out and refilled.",
+      "seoDescription": "Why Lumen makes candles the honest way: coconut-soy wax, cotton wicks, phthalate-free scent you can read on the label, and vessels designed to be washed out and refilled.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2101,7 +2101,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Lumen started with a simple, slightly annoyed question: why is it so hard to find out what’s actually in a candle? Most of them list one word — “fragrance” — and burn a black ring onto the ceiling. We wanted the opposite: a candle we could read the whole label of, that smelled clean and fresh and burned without leaving anything behind."
+                      "Lumen started with a simple, slightly annoyed question: why is it so hard to find out what’s actually in a candle? Most of them list one word (“fragrance”) and burn a black ring onto the ceiling. We wanted the opposite: a candle we could read the whole label of, that smelled clean and fresh and burned without leaving anything behind."
                     ],
                     "id": "6c938185-2340-4995-99d2-ac53503d2558",
                     "ord": "a1"
@@ -2111,7 +2111,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "So everything is poured by hand in a coconut-soy blend, with lead-free cotton wicks and fragrance we blend phthalate- and paraben-free, then tested for weeks before a scent earns a place. We print the full ingredient list on every box, and we design each vessel to be washed out and refilled — because the cleanest candle is also the one you don’t throw away."
+                      "So everything is poured by hand in a coconut-soy blend, with lead-free cotton wicks and fragrance we blend phthalate- and paraben-free, then tested for weeks before a scent earns a place. We print the full ingredient list on every box, and we design each vessel to be washed out and refilled, because the cleanest candle is also the one you don’t throw away."
                     ],
                     "id": "faa9bf52-96b8-4472-bbbf-c45dc5680db3",
                     "ord": "a2"
@@ -2121,7 +2121,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No mystery scent, no soot, no landfill of empty glass. Just bright, honest fragrance for ordinary days — and a refill waiting when it burns down."
+                      "No mystery scent, no soot, no landfill of empty glass. Just bright, honest fragrance for ordinary days, and a refill waiting when it burns down."
                     ],
                     "id": "044d90af-5bce-458b-a40c-2ccb9ab79f61",
                     "ord": "a3"
@@ -2141,8 +2141,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Lumen",
-      "seoDescription": "Get in touch with Lumen — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Lumen",
+      "seoDescription": "Get in touch with Lumen: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2449,8 +2449,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Lumen",
-      "seoDescription": "Product details at Lumen — candle & home fragrance, with options and pricing.",
+      "seoTitle": "Product: Lumen",
+      "seoDescription": "Product details at Lumen: candle & home fragrance, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2813,7 +2813,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Coconut-soy wax, a lead-free cotton wick and phthalate-free fragrance — the full ingredient list is on the box. Roughly a 45-hour burn. Trim the wick to a quarter inch before each light, and when it’s done, wash the vessel and drop in a refill."
+                              "Coconut-soy wax, a lead-free cotton wick and phthalate-free fragrance: the full ingredient list is on the box. Roughly a 45-hour burn. Trim the wick to a quarter inch before each light, and when it’s done, wash the vessel and drop in a refill."
                             ],
                             "id": "52e2e876-1be6-421f-b16b-0d6f1d8a5f77",
                             "ord": "a1"

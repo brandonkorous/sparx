@@ -109,7 +109,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('commerce.category.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Add a category — hold Shift to open alongside, Alt for a new window',
+          title: 'Add a category: hold Shift to open alongside, Alt for a new window',
         }}
         views={{
           target: '/commerce/categories',
@@ -139,7 +139,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             title="Could not load your categories"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isPending ? (
           <PaneWaiting />
@@ -155,7 +155,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No categories yet',
               description:
-                'Categories are the aisles of your website menu — the structure shoppers browse down. Add your first one to get started.',
+                'Categories are the aisles of your website menu: the structure shoppers browse down. Add your first one to get started.',
             }}
           />
         ) : (

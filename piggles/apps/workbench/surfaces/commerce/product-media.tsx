@@ -143,7 +143,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s photos</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing about the photos has changed — they just
+            This is a problem reaching the server. Nothing about the photos has changed. They just
             could not be read just now.
           </AlertDescription>
         </AlertContent>

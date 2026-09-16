@@ -32,7 +32,7 @@ export const EmailDomain = z
       .replace(/\/.*$/, '')
   )
   .refine((d) => /^[a-z0-9-]+(\.[a-z0-9-]+)+$/.test(d), {
-    message: 'That does not look like a domain — try something like acme.com',
+    message: 'That does not look like a domain. Try something like acme.com',
   });
 
 // Engine profile shape stored in companies.engine_profiles JSONB. Used

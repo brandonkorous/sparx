@@ -354,7 +354,7 @@ export const purchaseOrdersProcessor: EntityProcessor = {
         );
         if (existing !== null) {
           action = 'skip';
-          errorMsg = 'Already here — an existing purchase order is never overwritten.';
+          errorMsg = 'Already here: an existing purchase order is never overwritten.';
         }
       } catch (error) {
         logger.warn({ err: error }, 'po preview failed');

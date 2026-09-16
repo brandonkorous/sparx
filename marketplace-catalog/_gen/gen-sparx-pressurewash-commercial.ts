@@ -183,7 +183,7 @@ const SCHEDULING = {
       handle: 'site-assessment',
       name: 'On-site assessment',
       description:
-        'A crew lead walks your property, sizes up every surface — facade, glass, walkways, lot — and flags what needs attention and how often. You leave with a clear scope and a plan. Always free, no obligation.',
+        'A crew lead walks your property, sizes up every surface (facade, glass, walkways, lot) and flags what needs attention and how often. You leave with a clear scope and a plan. Always free, no obligation.',
       durationMinutes: 45,
       priceCents: 0,
       bufferAfterMin: 15,
@@ -195,7 +195,7 @@ const SCHEDULING = {
       handle: 'free-quote',
       name: 'Free quote',
       description:
-        'Already know what you need cleaned? We measure the job, confirm access and timing, and send a written, itemized quote — one-time or on a schedule. No pressure, and always free.',
+        'Already know what you need cleaned? We measure the job, confirm access and timing, and send a written, itemized quote. One-time or on a schedule. No pressure, and always free.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -270,7 +270,7 @@ const HOME = [
   photoHero({
     image: url(IMG.hero),
     alt: 'A clean commercial storefront and glass facade along a city block',
-    title: 'Commercial exteriors, cleaned on schedule — without disrupting your business.',
+    title: 'Commercial exteriors, cleaned on schedule, without disrupting your business.',
     sub: 'ProWash Exterior Cleaning keeps storefronts, buildings, lots and fleets looking sharp for property managers and businesses across the region. Fully insured, contract-ready, and worked around your hours. Start with a free on-site assessment.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See services', href: '/book' },
@@ -281,7 +281,7 @@ const HOME = [
     items: [
       {
         title: 'Fully insured & compliant',
-        body: 'Licensed, insured and trained on water-reclamation and safe-access rules — with certificates of insurance sent to your office before we ever set up.',
+        body: 'Licensed, insured and trained on water-reclamation and safe-access rules, with certificates of insurance sent to your office before we ever set up.',
       },
       {
         title: 'Scheduled service contracts',
@@ -289,18 +289,18 @@ const HOME = [
       },
       {
         title: 'From storefronts to fleets',
-        body: 'Glass facades, building exteriors, walkways, parking lots, garages and vehicle fleets — one crew and one point of contact for every exterior surface you own.',
+        body: 'Glass facades, building exteriors, walkways, parking lots, garages and vehicle fleets. One crew and one point of contact for every exterior surface you own.',
       },
       {
         title: 'Minimal business disruption',
-        body: 'We work early mornings, evenings and weekends, cordon cleanly and keep your entrances and traffic flowing — your customers barely notice we were there.',
+        body: 'We work early mornings, evenings and weekends, cordon cleanly and keep your entrances and traffic flowing. Your customers barely notice we were there.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Book a consultation',
     intro:
-      'The assessments and consultations businesses book most. Full details and live availability are on the booking page — a lead comes to you.',
+      'The assessments and consultations businesses book most. Full details and live availability are on the booking page: a lead comes to you.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -314,7 +314,7 @@ const HOME = [
         name: 'Free quote',
         priceCents: 0,
         durationMin: 30,
-        desc: 'Know what you need? A written, itemized quote — one-time or scheduled.',
+        desc: 'Know what you need? A written, itemized quote. One-time or scheduled.',
       },
       {
         name: 'Parking lot & garage consultation',
@@ -336,7 +336,7 @@ const HOME = [
     alt: 'A technician soft-washing the exterior of a commercial building',
     heading: 'Cleaning on a schedule, not a scramble',
     body: [
-      'Grime, algae, gum and oil don’t take a season off — and chasing a different washer every time is how a property slips from sharp to shabby. A scheduled contract keeps it handled: we build a cadence around each surface and site, then simply show up.',
+      'Grime, algae, gum and oil don’t take a season off, and chasing a different washer every time is how a property slips from sharp to shabby. A scheduled contract keeps it handled: we build a cadence around each surface and site, then simply show up.',
       'One insured contract covers every location and every surface you own, with one crew and one point of contact. You approve the plan once; we keep it looking its best on a rhythm you can budget around.',
     ],
     cta: { label: 'Plan a service contract', href: '/book' },
@@ -347,21 +347,21 @@ const HOME = [
     heading: 'How the on-site assessment works',
     reverse: true,
     body: [
-      'A crew lead walks your property with you — checking the facade material, glass, walkways, drains and lot — and flags what needs attention, what method it calls for, and how often it should be done to stay ahead of buildup.',
-      'You get a clear, written scope: the surfaces, the approach, the access and timing, and a price you can put in a budget. No jargon and no pressure — just a plan and honest numbers. The assessment is always free.',
+      'A crew lead walks your property with you (checking the facade material, glass, walkways, drains and lot) and flags what needs attention, what method it calls for, and how often it should be done to stay ahead of buildup.',
+      'You get a clear, written scope: the surfaces, the approach, the access and timing, and a price you can put in a budget. No jargon and no pressure. Just a plan and honest numbers. The assessment is always free.',
     ],
   }),
   teamRow({
     heading: 'The crew leads you’ll work with',
     intro:
-      'Real people, background-checked and trained — you’ll know who’s coming, what they specialize in, and when to expect them before they arrive.',
+      'Real people, background-checked and trained: you’ll know who’s coming, what they specialize in, and when to expect them before they arrive.',
     members: [
       {
         name: 'Ray Delgado',
         role: 'Building & storefront lead',
         image: url(IMG.ray),
         alt: 'Ray Delgado, building and storefront lead',
-        bio: 'Facades, glass and retail fronts done clean and streak-free — Ray runs most on-site assessments.',
+        bio: 'Facades, glass and retail fronts done clean and streak-free: Ray runs most on-site assessments.',
       },
       {
         name: 'Marcus Hale',
@@ -375,7 +375,7 @@ const HOME = [
         role: 'Fleet & contracts lead',
         image: url(IMG.devon),
         alt: 'Devon Pierce, fleet and contracts lead',
-        bio: 'Recurring fleet routes and multi-site contracts — Devon keeps every location on cadence.',
+        bio: 'Recurring fleet routes and multi-site contracts: Devon keeps every location on cadence.',
       },
     ],
   }),
@@ -386,7 +386,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'See what a cleaner property looks like',
-    sub: 'Book a free on-site assessment or a quote and get a clear, honest scope for your storefronts, buildings, lots or fleet — with numbers you can budget around.',
+    sub: 'Book a free on-site assessment or a quote and get a clear, honest scope for your storefronts, buildings, lots or fleet, with numbers you can budget around.',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
 ];
@@ -396,7 +396,7 @@ const BOOK_INTRO = [
     image: url(IMG.lot),
     alt: 'A large commercial parking lot and multi-level garage from above',
     title: 'Book a consultation',
-    sub: 'Choose an assessment or consultation to see what it covers, how long it takes and live availability — then pick your crew lead and time.',
+    sub: 'Choose an assessment or consultation to see what it covers, how long it takes and live availability, then pick your crew lead and time.',
     primary: { label: 'See consultation types below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -409,7 +409,7 @@ const ABOUT = [
     alt: 'A clean commercial storefront and glass facade along a city block',
     heading: 'About ProWash Exterior Cleaning',
     body: [
-      'We started ProWash because commercial properties deserve better than a washer who shows up once, leaves streaks, and never answers the phone again. A clean exterior is the first thing a customer sees — it should be handled by people who treat it like it matters.',
+      'We started ProWash because commercial properties deserve better than a washer who shows up once, leaves streaks, and never answers the phone again. A clean exterior is the first thing a customer sees. It should be handled by people who treat it like it matters.',
       'We’re an insured, professional crew built for scheduled work: storefronts, building exteriors, lots, garages and fleets, kept sharp on a cadence you can rely on. One contract, one point of contact, and results you don’t have to chase.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
@@ -420,7 +420,7 @@ const ABOUT = [
     items: [
       {
         title: 'Assess first',
-        body: 'Every scope starts with a real walk-through of your property — the right method for each surface, never a template quote guessed from the curb.',
+        body: 'Every scope starts with a real walk-through of your property: the right method for each surface, never a template quote guessed from the curb.',
       },
       {
         title: 'Insured & documented',
@@ -428,7 +428,7 @@ const ABOUT = [
       },
       {
         title: 'On cadence, on time',
-        body: 'Recurring visits scheduled and reminded before each service — your property stays presentable without a single call from you.',
+        body: 'Recurring visits scheduled and reminded before each service. Your property stays presentable without a single call from you.',
       },
     ],
   }),
@@ -448,7 +448,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a crew lead online — pick an assessment or consultation, a day and a time in about a minute.',
+    sub: 'See live availability and reserve a crew lead online. Pick an assessment or consultation, a day and a time in about a minute.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -459,8 +459,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-pressurewash-commercial',
   name: 'Pressure Washing (Commercial)',
   summary:
-    'A professional commercial exterior-cleaning site — a deep slate palette with a sharp amber accent, built around online booking. Property managers book a free site assessment, quote or service consultation in about a minute; three crew leads carry their own skills and hours as dispatchable resources. Leads with insured, scheduled service contracts from storefronts to fleets. Ships as "ProWash Exterior Cleaning", a commercial pressure-washing company.',
-  tagline: 'A professional, contract-ready template for commercial exterior cleaning — book consultations from day one.',
+    'A professional commercial exterior-cleaning site: a deep slate palette with a sharp amber accent, built around online booking. Property managers book a free site assessment, quote or service consultation in about a minute; three crew leads carry their own skills and hours as dispatchable resources. Leads with insured, scheduled service contracts from storefronts to fleets. Ships as "ProWash Exterior Cleaning", a commercial pressure-washing company.',
+  tagline: 'A professional, contract-ready template for commercial exterior cleaning. Book consultations from day one.',
   industry: 'Pressure washing',
   sortWeight: 7,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -469,9 +469,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'ProWash Exterior Cleaning — commercial pressure washing',
+      title: 'ProWash Exterior Cleaning: commercial pressure washing',
       description:
-        'ProWash Exterior Cleaning keeps commercial storefronts, buildings, lots and fleets sharp — insured, on schedule, minimal disruption. Book a free assessment online.',
+        'ProWash Exterior Cleaning keeps commercial storefronts, buildings, lots and fleets sharp: insured, on schedule, minimal disruption. Book a free assessment online.',
     },
   },
   home: HOME,

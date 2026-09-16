@@ -297,7 +297,7 @@ function MediaPickerDialog({
           .catch(() => {
             toast.add({
               title: 'Uploaded, but could not open it',
-              description: 'It is in your library — pick it from the grid.',
+              description: 'It is in your library. Pick it from the grid.',
               type: 'warning',
             });
           });
@@ -345,7 +345,7 @@ function MediaPickerDialog({
           : `${String(failed)} of ${String(files.length)} did not upload`,
         description: allFailed
           ? 'Nothing was added. Try again in a moment.'
-          : 'The rest are in your library — pick them from the grid.',
+          : 'The rest are in your library. Pick them from the grid.',
         type: allFailed ? 'error' : 'warning',
       });
     }
@@ -370,7 +370,7 @@ function MediaPickerDialog({
             <DialogTitle>{multiple ? 'Choose pictures' : 'Choose a picture'}</DialogTitle>
             <DialogDescription>
               {multiple
-                ? 'Tap as many as you want — they are added in the order you tap them. Upload a new one, or pick from your library. Nothing is saved until you save the whole page.'
+                ? 'Tap as many as you want. They are added in the order you tap them. Upload a new one, or pick from your library. Nothing is saved until you save the whole page.'
                 : 'Pick one from your library, or upload a new one. Your choice is not saved until you save the whole page.'}
             </DialogDescription>
           </div>
@@ -527,10 +527,10 @@ function MediaPickerDialog({
                   {search
                     ? `No pictures match “${search.trim()}”.`
                     : activeCollection
-                      ? `“${activeCollection.name}” is empty — save pictures to it with the folder button on each one.`
+                      ? `“${activeCollection.name}” is empty. Save pictures to it with the folder button on each one.`
                       : group
                         ? 'No pictures in this group yet.'
-                        : 'No pictures yet — upload one to get started.'}
+                        : 'No pictures yet. Upload one to get started.'}
                 </Text>
               </div>
             ) : (
@@ -625,7 +625,7 @@ function MediaPickerDialog({
                           <DropdownMenuLabel>Save to collection</DropdownMenuLabel>
                           {collectionList.length === 0 ? (
                             <DropdownMenuItem disabled>
-                              No collections yet — make one above
+                              No collections yet. Make one above
                             </DropdownMenuItem>
                           ) : (
                             collectionList.map((c) => (

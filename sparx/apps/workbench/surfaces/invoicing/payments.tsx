@@ -100,7 +100,7 @@ export function PaymentsSection({ doc }: PaymentsSectionProps) {
         </Text>
       ) : !payments || payments.length === 0 ? (
         <Text className="text-sm">
-          No payments recorded yet. When money comes in — however it comes in — record it here and
+          No payments recorded yet. When money comes in (however it comes in), record it here and
           the balance updates everywhere.
         </Text>
       ) : (
@@ -222,7 +222,7 @@ function RecordPaymentDialog({ doc }: { doc: BillingDocument }) {
           <DialogDescription>
             {doc.balance > 0
               ? `${formatMoney(doc.balance, doc.currency)} is still owed on ${doc.number ?? 'this document'}.`
-              : `${doc.number ?? 'This document'} has no balance — record a deposit or a refund.`}
+              : `${doc.number ?? 'This document'} has no balance: record a deposit or a refund.`}
           </DialogDescription>
 
           <div className="flex flex-col gap-4 py-2">
@@ -285,7 +285,7 @@ function RecordPaymentDialog({ doc }: { doc: BillingDocument }) {
                   />
                 }
               />
-              <FieldDescription>Optional — whatever helps you find it later</FieldDescription>
+              <FieldDescription>Optional: whatever helps you find it later</FieldDescription>
             </Field>
 
             {record.error ? (

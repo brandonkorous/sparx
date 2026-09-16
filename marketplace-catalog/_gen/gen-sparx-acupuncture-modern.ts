@@ -135,7 +135,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'New-client and cosmetic sessions hold your practitioner and room for a full hour. A cancellation inside 24 hours, or a missed session, is charged in full — reschedule earlier and there’s no fee.',
+        'New-client and cosmetic sessions hold your practitioner and room for a full hour. A cancellation inside 24 hours, or a missed session, is charged in full: reschedule earlier and there’s no fee.',
     },
   ],
   resources: [
@@ -194,7 +194,7 @@ const SCHEDULING = {
       handle: 'acupuncture-session',
       name: 'Acupuncture session',
       description:
-        'A focused, evidence-informed treatment for pain, tension, digestion or general balance — the studio’s core visit.',
+        'A focused, evidence-informed treatment for pain, tension, digestion or general balance: the studio’s core visit.',
       durationMinutes: 60,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -208,7 +208,7 @@ const SCHEDULING = {
       handle: 'facial-acupuncture',
       name: 'Facial & cosmetic acupuncture',
       description:
-        'A gentle, needle-based facial that supports collagen and circulation — a calm, natural alternative to injectables.',
+        'A gentle, needle-based facial that supports collagen and circulation: a calm, natural alternative to injectables.',
       durationMinutes: 75,
       priceCents: 15500,
       bufferAfterMin: 10,
@@ -223,7 +223,7 @@ const SCHEDULING = {
       handle: 'dry-needling-session',
       name: 'Dry needling',
       description:
-        'Targeted trigger-point work to release tight muscles and ease movement — ideal alongside training or recovery.',
+        'Targeted trigger-point work to release tight muscles and ease movement: ideal alongside training or recovery.',
       durationMinutes: 45,
       priceCents: 8500,
       assignmentStrategy: 'any_available',
@@ -265,7 +265,7 @@ const SCHEDULING = {
       handle: 'follow-up-session',
       name: 'Follow-up session',
       description:
-        'A shorter return visit to keep progress going once your plan is underway — booked between fuller treatments.',
+        'A shorter return visit to keep progress going once your plan is underway: booked between fuller treatments.',
       durationMinutes: 30,
       priceCents: 6500,
       assignmentStrategy: 'any_available',
@@ -284,7 +284,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A bright, minimal treatment room with a single clean table and soft daylight',
     title: 'Calm, evidence-informed acupuncture',
-    sub: 'A modern studio for acupuncture, facial acupuncture and stress & sleep support — gentle, considered care that meets you where you are.',
+    sub: 'A modern studio for acupuncture, facial acupuncture and stress & sleep support: gentle, considered care that meets you where you are.',
     primary: { label: 'Book a session', href: '/book' },
     secondary: { label: 'See sessions', href: '/book' },
     overlay: 'dark',
@@ -293,7 +293,7 @@ const HOME = [
     items: [
       {
         title: 'Evidence-informed care',
-        body: 'Licensed practitioners who blend acupuncture with modern clinical understanding — no mysticism, just careful, personalised treatment.',
+        body: 'Licensed practitioners who blend acupuncture with modern clinical understanding: no mysticism, just careful, personalised treatment.',
       },
       {
         title: 'A calm, modern space',
@@ -301,7 +301,7 @@ const HOME = [
       },
       {
         title: 'Facial & cosmetic acupuncture',
-        body: 'A gentle, needle-based approach to skin and glow — a natural, low-intervention alternative to injectables.',
+        body: 'A gentle, needle-based approach to skin and glow: a natural, low-intervention alternative to injectables.',
       },
       {
         title: 'Easy online booking',
@@ -327,14 +327,14 @@ const HOME = [
     alt: 'A calm modern reception with sage-toned walls and simple wood details',
     heading: 'An integrative approach',
     body: [
-      'Meridian Wellness sits where traditional acupuncture meets modern clinical care. We take a full history, listen properly, and build a plan around your body and your goals — not a one-size protocol.',
-      'That means honest expectations, gentle technique, and treatment you can actually feel working — session by session, without the mystique.',
+      'Meridian Wellness sits where traditional acupuncture meets modern clinical care. We take a full history, listen properly, and build a plan around your body and your goals, not a one-size protocol.',
+      'That means honest expectations, gentle technique, and treatment you can actually feel working: session by session, without the mystique.',
     ],
     cta: { label: 'Book a session', href: '/book' },
   }),
   teamRow({
     heading: 'Your practitioners',
-    intro: 'Book by name — you’ll see the same practitioner as your plan progresses.',
+    intro: 'Book by name: you’ll see the same practitioner as your plan progresses.',
     members: [
       { name: 'Dr. Lena Osei, L.Ac.', role: 'Founder · Facial & wellness', image: url(IMG.lena), alt: 'Dr. Lena Osei, licensed acupuncturist', bio: 'Cosmetic acupuncture and whole-body wellness. Lena leads the studio.' },
       { name: 'Marcus Feld, L.Ac.', role: 'Pain & dry needling', image: url(IMG.marcus), alt: 'Marcus Feld, licensed acupuncturist', bio: 'Sports recovery, dry needling and hands-on pain relief.' },
@@ -371,7 +371,7 @@ const ABOUT = [
     alt: 'A bright, minimal treatment room with a single clean table and soft daylight',
     heading: 'About Meridian Wellness',
     body: [
-      'We started Meridian Wellness to make acupuncture feel modern, calm and genuinely useful — grounded in careful practice, free of jargon and pressure.',
+      'We started Meridian Wellness to make acupuncture feel modern, calm and genuinely useful: grounded in careful practice, free of jargon and pressure.',
       'No rushing, no upselling, no vague promises. Just licensed practitioners, clean quiet rooms, and treatment planned around the real you.',
     ],
     cta: { label: 'Book a session', href: '/book' },
@@ -381,7 +381,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'A real intake first', body: 'Every plan starts with a full conversation about your history, your goals and how you actually feel day to day.' },
-      { title: 'Gentle, considered technique', body: 'Fine needles, careful placement and unhurried sessions — comfortable enough that most people simply rest and unwind.' },
+      { title: 'Gentle, considered technique', body: 'Fine needles, careful placement and unhurried sessions: comfortable enough that most people simply rest and unwind.' },
       { title: 'A plan you can keep', body: 'We’re honest about what to expect and how often to come, and we’ll help you fold sessions into a routine that lasts.' },
     ],
   }),
@@ -400,7 +400,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your session online — no phone tag.',
+    sub: 'See live availability and reserve your session online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a session', href: '/book' },
   }),
@@ -411,8 +411,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-acupuncture-modern',
   name: 'Acupuncture (Modern)',
   summary:
-    'A clean, calming site for a modern integrative acupuncture studio — a soft sage-and-white minimal palette, a modern sans display and online booking from day one. Installs a working booking flow: seven session types (acupuncture, facial/cosmetic acupuncture, dry needling, stress & sleep), three licensed practitioners you book by name with their own hours, and two treatment rooms as bookable resources. Ships as "Meridian Wellness".',
-  tagline: 'A clean, modern template for acupuncture & wellness studios — book online from day one.',
+    'A clean, calming site for a modern integrative acupuncture studio: a soft sage-and-white minimal palette, a modern sans display and online booking from day one. Installs a working booking flow: seven session types (acupuncture, facial/cosmetic acupuncture, dry needling, stress & sleep), three licensed practitioners you book by name with their own hours, and two treatment rooms as bookable resources. Ships as "Meridian Wellness".',
+  tagline: 'A clean, modern template for acupuncture & wellness studios. Book online from day one.',
   industry: 'Acupuncture',
   sortWeight: 45,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -421,7 +421,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Meridian Wellness — modern acupuncture & wellness',
+      title: 'Meridian Wellness: modern acupuncture & wellness',
       description:
         'Meridian Wellness is a calm, modern acupuncture studio for pain, stress, sleep and facial acupuncture. Book your practitioner online.',
     },

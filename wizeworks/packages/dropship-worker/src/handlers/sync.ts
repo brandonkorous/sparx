@@ -38,12 +38,12 @@ export async function handleSyncStarted(
   });
 
   if (!supplier) {
-    log.warn({ supplierId }, 'dropship sync: supplier not found or deleted — acking');
+    log.warn({ supplierId }, 'dropship sync: supplier not found or deleted, acking');
     return;
   }
 
   if (supplier.status === 'disconnected') {
-    log.info({ supplierId }, 'dropship sync: supplier disconnected — skipping');
+    log.info({ supplierId }, 'dropship sync: supplier disconnected, skipping');
     return;
   }
 
@@ -134,7 +134,7 @@ export async function handleSyncStarted(
             supplierProductId: product.supplierProductId,
             err: err instanceof Error ? err.message : String(err),
           },
-          'dropship sync: upsert failed for product — skipping'
+          'dropship sync: upsert failed for product, skipping'
         );
         failed++;
       }

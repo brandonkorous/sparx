@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Inkyard Trade Supply — print, signage & sublimation distributor",
-      "seoDescription": "Inkyard is a trade supplier to print shops and sign makers — cast vinyl, HTV, banner media, wide-format & dye-sub ink and sublimation blanks by the roll and case, at trade prices, with net-30 terms and next-day dispatch. Open a trade account.",
+      "seoTitle": "Inkyard Trade Supply. Print, signage & sublimation distributor",
+      "seoDescription": "Inkyard is a trade supplier to print shops and sign makers: cast vinyl, HTV, banner media, wide-format & dye-sub ink and sublimation blanks by the roll and case, at trade prices, with net-30 terms and next-day dispatch. Open a trade account.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Inkyard is a trade supplier to print shops, sign makers and decorators. We stock the vinyl, banner, ink and sublimation blanks that keep your presses and plotters running — by the roll, box and case, at trade prices, out the door next day."
+                          "Inkyard is a trade supplier to print shops, sign makers and decorators. We stock the vinyl, banner, ink and sublimation blanks that keep your presses and plotters running: by the roll, box and case, at trade prices, out the door next day."
                         ],
                         "id": "9760a5be-de8b-4dc7-8cbb-3cc4c6506448",
                         "ord": "a1"
@@ -1213,7 +1213,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Open a trade account and you buy the way a working shop should — by the roll and the case, at wholesale rates, on terms. No retail markups, no waiting a week for a roll of banner."
+                          "Open a trade account and you buy the way a working shop should: by the roll and the case, at wholesale rates, on terms. No retail markups, no waiting a week for a roll of banner."
                         ],
                         "id": "f26903d0-5679-4d1a-8482-d018d9eaf8b3",
                         "ord": "a1"
@@ -1326,7 +1326,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A named account manager who knows your printers, your profiles and your standing order — and helps color-match a spot when a brand job demands it."
+                              "A named account manager who knows your printers, your profiles and your standing order, and helps color-match a spot when a brand job demands it."
                             ],
                             "id": "88db588f-f7b2-4e43-9178-65e5b86d17ea",
                             "ord": "a1"
@@ -1604,7 +1604,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Stop chasing a vinyl house, an ink house and a blanks house on three separate orders. Consolidate your consumables onto one trade account — one catalog to buy from, one statement to reconcile, and one person who picks up the phone when a roll is short."
+                          "Stop chasing a vinyl house, an ink house and a blanks house on three separate orders. Consolidate your consumables onto one trade account. One catalog to buy from, one statement to reconcile, and one person who picks up the phone when a roll is short."
                         ],
                         "id": "ccc79cd3-3124-4f33-8612-abead2b4ea43",
                         "ord": "a1"
@@ -1639,7 +1639,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Inkyard Trade Supply",
+      "seoTitle": "Shop: Inkyard Trade Supply",
       "seoDescription": "Browse everything Inkyard Trade Supply makes, with prices and options at a glance. Print, signage & sublimation supply.",
       "root": {
         "kind": "element",
@@ -1671,7 +1671,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every line we stock — cast vinyl and HTV, banner and board, wide-format and dye-sub ink, and sublimation blanks, sold by the roll, box and case. Filter by line or sort by price; trade accounts see their contract pricing at checkout."
+                      "Every line we stock: cast vinyl and HTV, banner and board, wide-format and dye-sub ink, and sublimation blanks, sold by the roll, box and case. Filter by line or sort by price; trade accounts see their contract pricing at checkout."
                     ],
                     "id": "f64a0be1-7229-4bdb-8646-39860a254659",
                     "ord": "a1"
@@ -1699,7 +1699,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Inkyard Trade Supply",
+      "seoTitle": "Collections: Inkyard Trade Supply",
       "seoDescription": "Explore the collections at Inkyard Trade Supply, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1731,7 +1731,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalog grouped the way a shop actually buys — best sellers, new lines just in, the everyday print-shop essentials, signage media, the sublimation station, and the rolls you reorder on a schedule."
+                      "The catalog grouped the way a shop actually buys: best sellers, new lines just in, the everyday print-shop essentials, signage media, the sublimation station, and the rolls you reorder on a schedule."
                     ],
                     "id": "e521e03a-151d-4897-8036-c16998b982ce",
                     "ord": "a1"
@@ -1759,7 +1759,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Inkyard Trade Supply",
+      "seoTitle": "Your cart: Inkyard Trade Supply",
       "seoDescription": "Review what is in your cart and check out securely at Inkyard Trade Supply.",
       "root": {
         "kind": "element",
@@ -1819,7 +1819,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Inkyard Trade Supply",
+      "seoTitle": "Search: Inkyard Trade Supply",
       "seoDescription": "Search Inkyard Trade Supply for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1879,7 +1879,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Inkyard Trade Supply",
+      "seoTitle": "Journal: Inkyard Trade Supply",
       "seoDescription": "Stories, guides and notes from Inkyard Trade Supply.",
       "root": {
         "kind": "element",
@@ -1911,7 +1911,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical guidance from the trade counter — how to pick the right vinyl, get clean sublimation transfers, and stock a media room so a job never waits on a roll. Written for the people running the presses, not for a catalog."
+                      "Practical guidance from the trade counter: how to pick the right vinyl, get clean sublimation transfers, and stock a media room so a job never waits on a roll. Written for the people running the presses, not for a catalog."
                     ],
                     "id": "00509697-032e-42d5-8a4f-0811cf868396",
                     "ord": "a1"
@@ -2045,7 +2045,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Inkyard Trade Supply",
-      "seoDescription": "How Inkyard stocks, prices and ships — one catalog, one account, one invoice, wholesale media by the roll and case, and stock that is actually on the shelf when you order it.",
+      "seoDescription": "How Inkyard stocks, prices and ships. One catalog, one account, one invoice, wholesale media by the roll and case, and stock that is actually on the shelf when you order it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2076,7 +2076,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Inkyard Trade Supply is a wholesale supplier to the print trade. We stock the media, ink and blanks that keep a sign shop, a wide-format printer or a garment decorator running — and we sell them to the trade by the roll, box and case, at wholesale, on terms."
+                      "Inkyard Trade Supply is a wholesale supplier to the print trade. We stock the media, ink and blanks that keep a sign shop, a wide-format printer or a garment decorator running, and we sell them to the trade by the roll, box and case, at wholesale, on terms."
                     ],
                     "id": "fe1deaff-e9e3-44f1-a8b6-8b67604f8472",
                     "ord": "a1"
@@ -2096,7 +2096,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No minimum-order gymnastics, no mystery lead times, no ink that ships out of profile. Just clean-running media, priced fairly and out the door next day — the boring reliability a shop is built on."
+                      "No minimum-order gymnastics, no mystery lead times, no ink that ships out of profile. Just clean-running media, priced fairly and out the door next day: the boring reliability a shop is built on."
                     ],
                     "id": "2100978a-d7b5-499e-b663-5c6576648126",
                     "ord": "a3"
@@ -2116,7 +2116,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Inkyard Trade Supply",
+      "seoTitle": "Open a trade account: Inkyard Trade Supply",
       "seoDescription": "Set up a trade account with Inkyard: wholesale per-unit pricing, bulk breaks, net-30 terms and a dedicated account manager. Wholesale enquiries and bulk media quotes start here.",
       "root": {
         "kind": "element",
@@ -2424,8 +2424,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Inkyard Trade Supply",
-      "seoDescription": "Product details at Inkyard Trade Supply — print, signage & sublimation supply, with options and pricing.",
+      "seoTitle": "Product: Inkyard Trade Supply",
+      "seoDescription": "Product details at Inkyard Trade Supply. Print, signage & sublimation supply, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2788,7 +2788,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is the per-unit list rate. Trade accounts unlock bulk breaks — deeper per-roll and per-case pricing at a full box, a pallet, or a standing order — set for your account in your dashboard."
+                              "The price shown is the per-unit list rate. Trade accounts unlock bulk breaks: deeper per-roll and per-case pricing at a full box, a pallet, or a standing order. Set for your account in your dashboard."
                             ],
                             "id": "3f47c529-2253-42ba-9d1e-abef825e831c",
                             "ord": "a1"

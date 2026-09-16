@@ -11,14 +11,14 @@ export const SITE_GUIDE: Guide = {
       app: 'site',
       anchor: 'nav-builder.page',
       title: 'Your pages live here',
-      body: 'Every page on your website — the front page, About, anything you add. Open one and you edit it directly: drag things around, change the words, add a section.',
+      body: 'Every page on your website: the front page, About, anything you add. Open one and you edit it directly: drag things around, change the words, add a section.',
     },
     {
       id: 'site.theme',
       app: 'site',
       anchor: 'nav-builder.theme',
       title: 'The look, in one place',
-      body: 'Colors, fonts and spacing for the whole site. Change them here and every page follows — you never have to restyle a page one at a time.',
+      body: 'Colors, fonts and spacing for the whole site. Change them here and every page follows. You never have to restyle a page one at a time.',
     },
     {
       id: 'site.preview',
@@ -46,7 +46,7 @@ export const CONTENT_GUIDE: Guide = {
       app: 'content',
       anchor: 'nav-cms.content.list',
       title: 'Everything you write goes here',
-      body: 'Blog posts, news, notices, case studies — whatever kinds of writing your site has. Write it once here and the site shows it wherever it belongs.',
+      body: 'Blog posts, news, notices, case studies: whatever kinds of writing your site has. Write it once here and the site shows it wherever it belongs.',
     },
     {
       id: 'content.media',
@@ -60,7 +60,7 @@ export const CONTENT_GUIDE: Guide = {
       app: 'content',
       anchor: 'nav-cms.types.list',
       title: 'When you need a kind of your own',
-      body: 'Recipes, venues, staff bios, a fleet list — you decide what a "thing" is and what goes on it, and your site gets a page for each one. Most businesses never need this, and it is here the day you do.',
+      body: 'Recipes, venues, staff bios, a fleet list. You decide what a "thing" is and what goes on it, and your site gets a page for each one. Most businesses never need this, and it is here the day you do.',
     },
   ],
 };

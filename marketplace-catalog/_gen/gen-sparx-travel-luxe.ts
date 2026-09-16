@@ -172,7 +172,7 @@ const SCHEDULING = {
       handle: 'discovery-call',
       name: 'Discovery call',
       description:
-        'A relaxed 30-minute call to talk through where you dream of going, how you like to travel and how we can help — no fee, no obligation.',
+        'A relaxed 30-minute call to talk through where you dream of going, how you like to travel and how we can help: no fee, no obligation.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -183,7 +183,7 @@ const SCHEDULING = {
       handle: 'custom-itinerary-consult',
       name: 'Custom itinerary consultation',
       description:
-        'A full planning session to shape a bespoke, day-by-day itinerary — the flights, the stays, the tables and the moments that make it yours.',
+        'A full planning session to shape a bespoke, day-by-day itinerary: the flights, the stays, the tables and the moments that make it yours.',
       durationMinutes: 60,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -194,7 +194,7 @@ const SCHEDULING = {
       handle: 'honeymoon-consult',
       name: 'Honeymoon consultation',
       description:
-        'Plan the trip of a lifetime for two — private villas, romantic escapes and the details handled, so all you do is arrive.',
+        'Plan the trip of a lifetime for two: private villas, romantic escapes and the details handled, so all you do is arrive.',
       durationMinutes: 60,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -205,7 +205,7 @@ const SCHEDULING = {
       handle: 'luxury-trip-consult',
       name: 'Luxury trip consultation',
       description:
-        'For the once-in-a-decade journey — the finest suites, private guides and seamless logistics across every leg of the trip.',
+        'For the once-in-a-decade journey: the finest suites, private guides and seamless logistics across every leg of the trip.',
       durationMinutes: 60,
       priceCents: 35000,
       assignmentStrategy: 'customer_choice',
@@ -216,7 +216,7 @@ const SCHEDULING = {
       handle: 'family-travel-consult',
       name: 'Family travel consultation',
       description:
-        'Multi-generational trips that work for everyone — the right pace, the right rooms and experiences that delight all ages.',
+        'Multi-generational trips that work for everyone: the right pace, the right rooms and experiences that delight all ages.',
       durationMinutes: 60,
       priceCents: 20000,
       assignmentStrategy: 'customer_choice',
@@ -227,7 +227,7 @@ const SCHEDULING = {
       handle: 'group-travel-consult',
       name: 'Group & celebration consultation',
       description:
-        'Milestone birthdays, anniversaries and friends’ getaways — one advisor coordinating the whole party so no one is left planning.',
+        'Milestone birthdays, anniversaries and friends’ getaways. One advisor coordinating the whole party so no one is left planning.',
       durationMinutes: 45,
       priceCents: 20000,
       assignmentStrategy: 'customer_choice',
@@ -238,7 +238,7 @@ const SCHEDULING = {
       handle: 'vip-experience-consult',
       name: 'VIP access & experiences consultation',
       description:
-        'The doors most travelers never see — private access, hard-to-get reservations and once-in-a-lifetime experiences, arranged for you.',
+        'The doors most travelers never see: private access, hard-to-get reservations and once-in-a-lifetime experiences, arranged for you.',
       durationMinutes: 45,
       priceCents: 50000,
       assignmentStrategy: 'customer_choice',
@@ -254,7 +254,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'An infinity pool overlooking a turquoise coastline at golden hour',
     title: 'The world, planned around you',
-    sub: 'Wander & Co. is a private travel advisory for discerning travelers — bespoke itineraries, quiet luxury and access you can’t book yourself, all handled by one advisor who knows your name.',
+    sub: 'Wander & Co. is a private travel advisory for discerning travelers: bespoke itineraries, quiet luxury and access you can’t book yourself, all handled by one advisor who knows your name.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See how we work', href: '/book' },
     overlay: 'dark',
@@ -263,11 +263,11 @@ const HOME = [
     items: [
       {
         title: 'Your personal travel advisor',
-        body: 'One dedicated advisor who learns how you like to travel and plans every trip with you — not a call centre, not a booking site.',
+        body: 'One dedicated advisor who learns how you like to travel and plans every trip with you, not a call centre, not a booking site.',
       },
       {
         title: 'Bespoke itineraries, start to finish',
-        body: 'Every journey is built from scratch around you — the stays, the routes, the tables and the timing, considered down to the detail.',
+        body: 'Every journey is built from scratch around you: the stays, the routes, the tables and the timing, considered down to the detail.',
       },
       {
         title: 'VIP access & perks',
@@ -275,7 +275,7 @@ const HOME = [
       },
       {
         title: '24/7 support while you travel',
-        body: 'A missed connection, a change of plan, a late-night question — we’re a message away, wherever you are in the world.',
+        body: 'A missed connection, a change of plan, a late-night question: we’re a message away, wherever you are in the world.',
       },
     ],
   }),
@@ -310,19 +310,19 @@ const HOME = [
     alt: 'A travel advisor mapping a route over open guidebooks and a world map',
     heading: 'Bespoke, from the first conversation',
     body: [
-      'We don’t sell packages. Every trip begins with a conversation — how you like to move, what you want to feel, the pace that suits you — and grows into an itinerary built entirely around you.',
+      'We don’t sell packages. Every trip begins with a conversation (how you like to move, what you want to feel, the pace that suits you) and grows into an itinerary built entirely around you.',
       'Then we handle it all: the flights and transfers, the right rooms, the reservations worth having and the small touches waiting when you arrive. You travel; we take care of the rest.',
     ],
     cta: { label: 'Start planning', href: '/book' },
     surface: 'muted',
   }),
   testimonial({
-    quote: 'Elena planned three weeks across Japan for our anniversary and it was flawless — the ryokan, a private tea ceremony, a table we could never have got ourselves. It was the trip of a lifetime, and we never once had to worry.',
+    quote: 'Elena planned three weeks across Japan for our anniversary and it was flawless: the ryokan, a private tea ceremony, a table we could never have got ourselves. It was the trip of a lifetime, and we never once had to worry.',
     attribution: 'Catherine & David, traveled 2025',
   }),
   bookingCta({
     title: 'Let’s plan somewhere unforgettable',
-    sub: 'Start with a complimentary discovery call. Pick an advisor and a time that suits you — it takes about a minute.',
+    sub: 'Start with a complimentary discovery call. Pick an advisor and a time that suits you. It takes about a minute.',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
 ];
@@ -345,7 +345,7 @@ const ABOUT = [
     alt: 'An infinity pool overlooking a turquoise coastline at golden hour',
     heading: 'About Wander & Co.',
     body: [
-      'Wander & Co. began with a simple belief: the best trips aren’t booked, they’re planned — by someone who listens, knows the world first-hand, and cares how it turns out.',
+      'Wander & Co. began with a simple belief: the best trips aren’t booked, they’re planned, by someone who listens, knows the world first-hand, and cares how it turns out.',
       'We’re a small advisory by design. Fewer travelers, more attention, and the kind of relationships with hotels and guides that quietly open doors. Every journey we plan is bespoke, and every traveler is someone we come to know.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
@@ -354,7 +354,7 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'We listen first', body: 'Every plan starts with your story — where you’ve been, what moved you, and what you’re dreaming of next.' },
+      { title: 'We listen first', body: 'Every plan starts with your story: where you’ve been, what moved you, and what you’re dreaming of next.' },
       { title: 'We design it around you', body: 'A bespoke itinerary built from scratch, refined with you until every day feels right.' },
       { title: 'We’re with you throughout', body: 'From the first idea to the trip home, one advisor and round-the-clock support have you covered.' },
     ],
@@ -374,7 +374,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather begin online?',
-    sub: 'Book a complimentary discovery call and see live availability — no phone tag, no pressure.',
+    sub: 'Book a complimentary discovery call and see live availability: no phone tag, no pressure.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -385,8 +385,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-travel-luxe',
   name: 'Travel Advisory (Luxury)',
   summary:
-    'A refined, editorial travel-advisory site — a deep navy-teal palette, a warm brass accent and an elegant serif display over ivory, with worldly destination photography carrying the page. Installs a working consultation-booking flow: a real menu of consult types (discovery call, custom itineraries, honeymoons, luxury and VIP trips), three travel advisors you book by name with their own hours, and a planning-fee deposit policy. Ships as "Wander & Co. Travel", a luxury bespoke travel studio.',
-  tagline: 'A refined template for luxury travel advisories — book consultations online from day one.',
+    'A refined, editorial travel-advisory site: a deep navy-teal palette, a warm brass accent and an elegant serif display over ivory, with worldly destination photography carrying the page. Installs a working consultation-booking flow: a real menu of consult types (discovery call, custom itineraries, honeymoons, luxury and VIP trips), three travel advisors you book by name with their own hours, and a planning-fee deposit policy. Ships as "Wander & Co. Travel", a luxury bespoke travel studio.',
+  tagline: 'A refined template for luxury travel advisories. Book consultations online from day one.',
   industry: 'Travel',
   sortWeight: 16,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -395,9 +395,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Wander & Co. Travel — a luxury bespoke travel advisory',
+      title: 'Wander & Co. Travel: a luxury bespoke travel advisory',
       description:
-        'Wander & Co. is a private travel advisory for discerning travelers — bespoke itineraries, honeymoons, luxury trips and VIP access. Book a consultation online.',
+        'Wander & Co. is a private travel advisory for discerning travelers: bespoke itineraries, honeymoons, luxury trips and VIP access. Book a consultation online.',
     },
   },
   home: HOME,

@@ -244,7 +244,7 @@ export async function archiveWarehouse(ctx: ServiceContext, warehouseId: string)
     });
     if (activeStock) {
       throw new InventoryValidationError(
-        'Cannot archive a warehouse that still holds stock — transfer or zero out levels first'
+        'Cannot archive a warehouse that still holds stock: transfer or zero out levels first'
       );
     }
 

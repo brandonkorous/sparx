@@ -96,7 +96,7 @@ export interface GatedDelivery {
 
 export const DEFAULT_SILICA_FORM_CONFIG: SilicaFormConfig = {
   name: '',
-  successMessage: 'Thanks — we got your message and will be in touch soon.',
+  successMessage: 'Thanks. We got your message and will be in touch soon.',
   notify: true,
   addToCrm: false,
   openDeal: false,
@@ -104,7 +104,7 @@ export const DEFAULT_SILICA_FORM_CONFIG: SilicaFormConfig = {
   autoresponder: false,
   autoresponderSubject: 'We received your message',
   autoresponderMessage:
-    "Thanks for reaching out — we've received your message and will get back to you shortly.",
+    "Thanks for reaching out: we've received your message and will get back to you shortly.",
   scoring: null,
   delivery: null,
 };
@@ -153,7 +153,7 @@ export function readSilicaFormConfig(raw: unknown): SilicaFormConfig {
         subject: str(g.subject, 'Here is your download'),
         message: str(
           g.message,
-          'Thanks for asking — here is the file you wanted. The link works for the next seven days.'
+          'Thanks for asking. Here is the file you wanted. The link works for the next seven days.'
         ),
       };
     })(),

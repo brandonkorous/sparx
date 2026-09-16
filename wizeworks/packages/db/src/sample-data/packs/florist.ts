@@ -151,7 +151,7 @@ export const floristPack: SampleDataPack = {
       region: 'NC',
       postalCode: '28801',
       properties: {
-        standingDate: '14 February — always before 11am, she leaves for work at noon',
+        standingDate: '14 February: always before 11am, she leaves for work at noon',
         usualStyle: 'garden',
         deliveryNotes: 'Blue door on the side. Leave with Marta at number 20 if out.',
       },
@@ -167,7 +167,7 @@ export const floristPack: SampleDataPack = {
       postalCode: '28806',
       properties: {
         standingDate: '9 September, his mother’s birthday',
-        avoidFlowers: 'No lilies — his wife reacts to the pollen',
+        avoidFlowers: 'No lilies: his wife reacts to the pollen',
         usualStyle: 'structured',
       },
     },
@@ -301,14 +301,14 @@ export const floristPack: SampleDataPack = {
       title: 'The Market Bouquet',
       handle: 'market-bouquet',
       description: `<p>Whatever came off the van that morning, wrapped in kraft and tied with cotton string. We make it up fresh each day, which is the only honest way to sell a bouquet: you get what is genuinely at its best this week rather than what a photograph promised three months ago.</p>
-<p>Expect something loose and garden-style — a few focal blooms, something airy through the middle, and foliage with a bit of movement in it. In April that is ranunculus and blossom; in September it is dahlias and grasses.</p>
+<p>Expect something loose and garden-style, a few focal blooms, something airy through the middle, and foliage with a bit of movement in it. In April that is ranunculus and blossom; in September it is dahlias and grasses.</p>
 <h3>How long it lasts</h3>
 <p>Seven to ten days with a fresh cut and clean water. There is a sachet of flower food in the wrap and a card explaining what to do with it, because most bouquets die of neglect in the first forty-eight hours rather than old age.</p>`,
       productType: 'Bouquet',
       productTypeKey: 'general',
       vendor: 'Wildroot',
       tags: ['fresh', 'seasonal', 'gift'],
-      seoTitle: 'The Market Bouquet — seasonal hand-tied flowers',
+      seoTitle: 'The Market Bouquet: seasonal hand-tied flowers',
       seoDescription:
         'A hand-tied seasonal bouquet made up fresh each morning from whatever is at its best that week. Three sizes, flower food included.',
       emoji: '💐',
@@ -398,11 +398,11 @@ export const floristPack: SampleDataPack = {
         {
           rating: 4,
           title: 'Lovely, and genuinely seasonal',
-          body: 'You do have to accept you are not choosing the flowers. That is the point and it is worth it — I have had things in these I would never have picked and loved.',
+          body: 'You do have to accept you are not choosing the flowers. That is the point and it is worth it: I have had things in these I would never have picked and loved.',
           authorPersona: 'niamh',
           daysAgo: 26,
           response:
-            'Thank you Niamh — that is exactly the deal, and we are glad it landed. Ask for a peek at the buckets any Friday if you want to see what is coming.',
+            'Thank you Niamh. That is exactly the deal, and we are glad it landed. Ask for a peek at the buckets any Friday if you want to see what is coming.',
         },
       ],
       questions: [
@@ -466,7 +466,7 @@ export const floristPack: SampleDataPack = {
       key: 'ranunculus',
       title: 'Ranunculus, by the Bunch',
       handle: 'ranunculus',
-      description: `<p>Ten stems, layered like tissue paper, in whatever the field is giving that week — usually a mix of coral, cream and a dusty pink that photographs far better than it sounds.</p>
+      description: `<p>Ten stems, layered like tissue paper, in whatever the field is giving that week, usually a mix of coral, cream and a dusty pink that photographs far better than it sounds.</p>
 <p>They are a short season and a short vase life: five or six days, and worth every one of them. When they are gone in June they are gone until February.</p>`,
       productType: 'Cut stems',
       productTypeKey: 'general',
@@ -537,7 +537,7 @@ export const floristPack: SampleDataPack = {
       key: 'dried-wreath',
       title: 'Dried Everlasting Wreath',
       handle: 'dried-wreath',
-      description: `<p>A twelve-inch wreath on a copper ring — dried eucalyptus, bunny tails, strawflower and a bit of preserved oak. Made in the shop, one at a time, so no two come out quite the same.</p>
+      description: `<p>A twelve-inch wreath on a copper ring: dried eucalyptus, bunny tails, strawflower and a bit of preserved oak. Made in the shop, one at a time, so no two come out quite the same.</p>
 <p>It will not drop, will not need water, and will still be on the door next year if you keep it out of direct sun. This is also the thing everybody makes at the Saturday workshop, if you would rather build your own.</p>`,
       productType: 'Wreath',
       productTypeKey: 'home_goods',
@@ -629,7 +629,7 @@ export const floristPack: SampleDataPack = {
           body: 'Is this safe around a cat?',
           displayName: 'Sam',
           answer:
-            'Not really — the leaves upset cats and dogs if they chew them. Ask us for the parlour palm or the calathea instead; both are fine and about the same money.',
+            'Not really: the leaves upset cats and dogs if they chew them. Ask us for the parlour palm or the calathea instead; both are fine and about the same money.',
           daysAgo: 15,
         },
       ],
@@ -639,7 +639,7 @@ export const floristPack: SampleDataPack = {
       title: 'Tall Glass Vase',
       handle: 'tall-glass-vase',
       description: `<p>A plain, heavy-bottomed glass cylinder, twenty-five centimetres tall. Made at Ridgeway Glassworks in Greensboro. It holds a Generous bouquet without help and does not tip over when the dog goes past.</p>
-<p>Nothing clever about it, which is the point — a vase should disappear behind what is in it.</p>`,
+<p>Nothing clever about it, which is the point: a vase should disappear behind what is in it.</p>`,
       productType: 'Vase',
       productTypeKey: 'home_goods',
       attributes: {
@@ -685,7 +685,7 @@ export const floristPack: SampleDataPack = {
       attributes: {
         material: 'Soda-lime glass',
         dimensions: '9, 12 and 15 cm',
-        care: 'Hand wash — the necks are narrow',
+        care: 'Hand wash: the necks are narrow',
       },
       vendor: 'Ridgeway Glassworks',
       tags: ['vase', 'glass', 'gift'],
@@ -754,7 +754,7 @@ export const floristPack: SampleDataPack = {
       key: 'first-vase-set',
       title: 'The First Vase Set',
       handle: 'first-vase-set',
-      description: `<p>A Generous bouquet, the tall glass vase it fits, and the care kit that keeps it going — the three things somebody moving into a new place does not yet own.</p>
+      description: `<p>A Generous bouquet, the tall glass vase it fits, and the care kit that keeps it going: the three things somebody moving into a new place does not yet own.</p>
 <p>Cheaper than the parts, and it arrives ready to put straight on a table rather than in a sink while somebody hunts for something to stand it in.</p>`,
       productType: 'Gift set',
       productTypeKey: 'general',
@@ -867,7 +867,7 @@ export const floristPack: SampleDataPack = {
         key: 'bouquet-evening',
         name: 'Hand-Tied Bouquet Evening',
         description:
-          'A Thursday evening class on the spiral hand-tie every florist uses. You build two — one to leave with and one to give away — and learn why the stems have to go the same way round.',
+          'A Thursday evening class on the spiral hand-tie every florist uses. You build two (one to leave with and one to give away) and learn why the stems have to go the same way round.',
         durationMinutes: 120,
         priceCents: 6800,
         capacity: 8,
@@ -930,7 +930,7 @@ export const floristPack: SampleDataPack = {
         ),
         h2('Cut them again, properly'),
         p(
-          'Take two centimetres off every stem at a slant, with something sharp. A slant means the cut end cannot sit flat on the bottom of the vase and seal itself shut, and sharp means cutting rather than crushing — kitchen scissors squash the very tubes the flower drinks through, which is why a bouquet trimmed with them fades days early.'
+          'Take two centimetres off every stem at a slant, with something sharp. A slant means the cut end cannot sit flat on the bottom of the vase and seal itself shut, and sharp means cutting rather than crushing: kitchen scissors squash the very tubes the flower drinks through, which is why a bouquet trimmed with them fades days early.'
         ),
         h2('Nothing below the water line'),
         p(
@@ -946,10 +946,10 @@ export const floristPack: SampleDataPack = {
         ),
         h3('And the things that do not work'),
         ul(
-          'A copper penny — modern pennies are barely copper and it does nothing.',
-          'Aspirin — the theory is sound and the dose is far too small to matter.',
-          'Lemonade — sugar with no biocide, so you feed the bacteria as well as the flower.',
-          'Hairspray — it seals the petal and stops the flower breathing.'
+          'A copper penny: modern pennies are barely copper and it does nothing.',
+          'Aspirin: the theory is sound and the dose is far too small to matter.',
+          'Lemonade: sugar with no biocide, so you feed the bacteria as well as the flower.',
+          'Hairspray. It seals the petal and stops the flower breathing.'
         )
       ),
     },
@@ -966,7 +966,7 @@ export const floristPack: SampleDataPack = {
         ),
         h2('Late winter'),
         p(
-          'Ranunculus, anemone, narcissus and the first blossom. Short stems, extraordinary color, and a vase life of five or six days rather than ten — worth knowing if you are planning something and want it to last the weekend.'
+          'Ranunculus, anemone, narcissus and the first blossom. Short stems, extraordinary color, and a vase life of five or six days rather than ten: worth knowing if you are planning something and want it to last the weekend.'
         ),
         h2('Spring'),
         p(
@@ -995,7 +995,7 @@ export const floristPack: SampleDataPack = {
       daysAgo: 41,
       body: doc(
         p(
-          'People come in for this having never done it before and apologise for not knowing the words. There is nothing to know in advance — here is all of it.'
+          'People come in for this having never done it before and apologize for not knowing the words. There is nothing to know in advance. Here is all of it.'
         ),
         h2('What the arrangements are called'),
         ul(
@@ -1006,7 +1006,7 @@ export const floristPack: SampleDataPack = {
         ),
         h2('Who sends what'),
         p(
-          'The immediate family sends the casket spray. Everyone else sends whatever they like — there is no rule, and nobody at a funeral has ever counted. If the notice says family flowers only, send something to the house the following week instead.'
+          'The immediate family sends the casket spray. Everyone else sends whatever they like. There is no rule, and nobody at a funeral has ever counted. If the notice says family flowers only, send something to the house the following week instead.'
         ),
         h2('What we need from you'),
         ul(
@@ -1035,7 +1035,7 @@ export const floristPack: SampleDataPack = {
         'I am booked on the wreath workshop this Saturday but I have to be out of town. Is there space the week after, or can somebody take my place?',
     },
     {
-      subject: 'Standing order — skip next week',
+      subject: 'Standing order: skip next week',
       detail:
         "The café is closed for a refit all next week, so please do not make up Tuesday's arrangements. Back to normal the week after.",
     },

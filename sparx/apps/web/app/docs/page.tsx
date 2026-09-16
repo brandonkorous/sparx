@@ -4,7 +4,7 @@ import { DocArticle, DocSection, NextSteps, NextCard, DocLink } from '@/componen
 export const metadata: Metadata = {
   title: 'Documentation',
   description:
-    'Start here. Guides, REST & GraphQL API reference, SDKs, and the MCP server for building on sparx — the modular content and commerce OS.',
+    'Start here. Guides, REST & GraphQL API reference, SDKs, and the MCP server for building on sparx: the modular content and commerce OS.',
   alternates: { canonical: '/docs' },
 };
 
@@ -20,7 +20,7 @@ export default function DocsIndexPage() {
   return (
     <DocArticle
       title="Documentation"
-      lede="Everything you need to build on sparx — the modular content and commerce OS. sparx is API-first: every feature is an endpoint before it's a screen, and a native MCP server lets AI agents read and write live business data."
+      lede="Everything you need to build on sparx: the modular content and commerce OS. sparx is API-first: every feature is an endpoint before it's a screen, and a native MCP server lets AI agents read and write live business data."
     >
       <DocSection id="start" title="Start here">
         <p>
@@ -75,7 +75,7 @@ export default function DocsIndexPage() {
           </li>
           <li>
             <strong>Modular and feature-flagged.</strong> A tenant activates only the modules it
-            uses — content, commerce, CRM, CMS, email, B2B, dropship, AI. Disabled modules return a
+            uses: content, commerce, CRM, CMS, email, B2B, dropship, AI. Disabled modules return a
             clear error and store no data.
           </li>
           <li>
@@ -85,7 +85,7 @@ export default function DocsIndexPage() {
           </li>
           <li>
             <strong>Multi-tenant by default.</strong> Every API key is tenant-scoped and isolated by
-            PostgreSQL Row-Level Security — a key can never reach another tenant’s data.
+            PostgreSQL Row-Level Security: a key can never reach another tenant’s data.
           </li>
         </ul>
       </DocSection>

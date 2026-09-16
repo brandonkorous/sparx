@@ -151,7 +151,7 @@ function hero(): Node {
                                     { text: 'Solutions for every skin' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'A short range of skincare essentials — a cleanser, a serum, a cream, an SPF — made for every skin, and nothing it does not need.',
+                                    text: 'A short range of skincare essentials (a cleanser, a serum, a cream, an SPF) made for every skin, and nothing it does not need.',
                                 }),
                                 el('a', 'text-base font-semibold uppercase tracking-wide text-base-content underline underline-offset-4', {
                                     attrs: { href: '/shop' },
@@ -282,7 +282,7 @@ function missionBand(): Node {
             el('div', 'mx-auto flex w-full max-w-4xl flex-col items-center gap-6 text-center', {
                 children: [
                     el('p', 'text-3xl font-bold uppercase leading-tight tracking-tight @3xl:text-5xl', {
-                        text: 'Nue is a skincare studio building a calmer, simpler routine — a short range of essentials, made for every skin, and nothing you do not need.',
+                        text: 'Nue is a skincare studio building a calmer, simpler routine: a short range of essentials, made for every skin, and nothing you do not need.',
                     }),
                 ],
             }),
@@ -296,7 +296,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Best sellers' }),
     editorialBand({
         heading: 'The morning ritual',
-        lead: 'Four steps, five minutes: cleanse, treat, moisturize, protect. The order is the whole method — each step earns its place, and there is nothing to add.',
+        lead: 'Four steps, five minutes: cleanse, treat, moisturize, protect. The order is the whole method. Each step earns its place, and there is nothing to add.',
         assetId: 'band-ritual',
         cta: 'See the routine',
         href: '/shop',
@@ -305,7 +305,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.treat', layout: 'carousel', heading: 'Treat' }),
     editorialBand({
         heading: 'Made for every skin',
-        lead: 'No line for oily, no line for dry, no ten-step maze. One considered range that works across skin types, ages and seasons — because most skin wants less, done well.',
+        lead: 'No line for oily, no line for dry, no ten-step maze. One considered range that works across skin types, ages and seasons, because most skin wants less, done well.',
         assetId: 'band-every-skin',
         cta: 'Read our approach',
         href: '/about',
@@ -328,10 +328,10 @@ const ABOUT: Node[] = [
                         text: 'About Nue',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Nue is a skincare studio with a short memory for trends and a long one for what actually works. We make a small range of essentials — a cleanser, a serum, a moisturizer, an SPF, and a handful of things around them — formulated to be gentle enough for daily use and honest about what each one does.',
+                        text: 'Nue is a skincare studio with a short memory for trends and a long one for what actually works. We make a small range of essentials (a cleanser, a serum, a moisturizer, an SPF, and a handful of things around them) formulated to be gentle enough for daily use and honest about what each one does.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'There is no line for oily skin and no line for dry, no ten-step maze, and nothing you do not need. Just a considered routine that works across skin types, ages and seasons — packaged plainly, priced fairly, and made for every skin. That is the whole idea: solutions for every skin.',
+                        text: 'There is no line for oily skin and no line for dry, no ten-step maze, and nothing you do not need. Just a considered routine that works across skin types, ages and seasons: packaged plainly, priced fairly, and made for every skin. That is the whole idea: solutions for every skin.',
                     }),
                 ],
             }),
@@ -346,7 +346,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Talk to us',
-        intro: 'Not sure where to start, or which of two to choose? Tell us about your skin and what you are hoping to change, and a real person — not a script — will point you to the shortest routine that will do it.',
+        intro: 'Not sure where to start, or which of two to choose? Tell us about your skin and what you are hoping to change, and a real person (not a script) will point you to the shortest routine that will do it.',
         submitLabel: 'Email the studio',
     }),
 ];
@@ -407,12 +407,12 @@ const PRODUCTS: Product[] = [
         tags: ['cleanser', 'gentle', 'fragrance-free', 'daily'],
         categoryHandles: ['cleanse'],
         collectionHandles: ['best-sellers', 'the-morning-ritual', 'the-evening-ritual', 'the-essentials'],
-        seoTitle: 'The Everyday Cleanser — gentle daily face wash',
+        seoTitle: 'The Everyday Cleanser: gentle daily face wash',
         seoDescription: 'A soft gel-to-milk cleanser that removes make-up and SPF without stripping the skin.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Mild coconut-derived surfactants lift away sunscreen, make-up and grime, while glycerin and panthenol keep the barrier soft — so skin is clean without the tight, squeaky feeling that means it has been stripped.',
+                'Mild coconut-derived surfactants lift away sunscreen, make-up and grime, while glycerin and panthenol keep the barrier soft, so skin is clean without the tight, squeaky feeling that means it has been stripped.',
             howToUse:
                 'Massage a small amount over damp skin morning and night; it turns from a gel to a light milk as you work it in. Rinse with lukewarm water and pat dry. Follow with serum and moisturiser while skin is still slightly damp.',
             skinType: ['all'],
@@ -433,19 +433,19 @@ const PRODUCTS: Product[] = [
         handle: 'gentle-exfoliant',
         title: 'Gentle Exfoliant',
         description:
-            'A low-percentage overnight exfoliant that resurfaces with lactic and gluconolactone acids — enough to smooth and brighten, not so much that it stings. The one acid step most routines actually need, and the only one Nue makes.',
+            'A low-percentage overnight exfoliant that resurfaces with lactic and gluconolactone acids: enough to smooth and brighten, not so much that it stings. The one acid step most routines actually need, and the only one Nue makes.',
         status: 'active',
         productType: 'Exfoliant',
         vendor: 'Nue Skincare',
         tags: ['exfoliant', 'lactic-acid', 'resurfacing', 'treat'],
         categoryHandles: ['cleanse'],
         collectionHandles: ['the-evening-ritual'],
-        seoTitle: 'Gentle Exfoliant — low-percentage lactic acid treatment',
+        seoTitle: 'Gentle Exfoliant: low-percentage lactic acid treatment',
         seoDescription: 'A gentle overnight lactic-acid exfoliant that smooths and brightens without stinging.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'A low percentage of lactic acid resurfaces and brightens, paired with gluconolactone — a gentle PHA that also holds water — and allantoin to soothe, so it smooths without the sting of a harsher acid.',
+                'A low percentage of lactic acid resurfaces and brightens, paired with gluconolactone (a gentle PHA that also holds water) and allantoin to soothe, so it smooths without the sting of a harsher acid.',
             howToUse:
                 'At night, two or three times a week, smooth a thin layer over clean, dry skin and let it absorb before moisturiser. Introduce it slowly, avoid layering with other acids, and always wear SPF the next morning.',
             skinType: ['all', 'sensitive'],
@@ -462,19 +462,19 @@ const PRODUCTS: Product[] = [
         handle: 'barrier-repair-serum',
         title: 'Barrier Repair Serum',
         description:
-            'A quiet workhorse of niacinamide, ceramides and panthenol that rebuilds a stressed skin barrier over a few weeks — the reason skin stops feeling reactive, red and thirsty. Layers under anything, plays well with everything.',
+            'A quiet workhorse of niacinamide, ceramides and panthenol that rebuilds a stressed skin barrier over a few weeks: the reason skin stops feeling reactive, red and thirsty. Layers under anything, plays well with everything.',
         status: 'active',
         productType: 'Serum',
         vendor: 'Nue Skincare',
         tags: ['serum', 'niacinamide', 'ceramides', 'barrier', 'treat'],
         categoryHandles: ['treat'],
         collectionHandles: ['best-sellers', 'the-morning-ritual', 'new-arrivals'],
-        seoTitle: 'Barrier Repair Serum — niacinamide & ceramide serum',
+        seoTitle: 'Barrier Repair Serum: niacinamide & ceramide serum',
         seoDescription: 'A niacinamide, ceramide and panthenol serum that rebuilds a stressed skin barrier.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Niacinamide calms and helps skin make its own lipids, ceramides replace the ones a stressed barrier has lost, and panthenol soothes — together they rebuild reactive, red, thirsty skin over a few weeks.',
+                'Niacinamide calms and helps skin make its own lipids, ceramides replace the ones a stressed barrier has lost, and panthenol soothes: together they rebuild reactive, red, thirsty skin over a few weeks.',
             howToUse:
                 'Press a few drops into clean skin morning and night, before your moisturiser. It layers under anything and plays well with everything, so it fits either end of the routine. Used daily, the effect builds quietly.',
             skinType: ['dry', 'sensitive'],
@@ -495,21 +495,21 @@ const PRODUCTS: Product[] = [
         handle: 'facial-recovery-oil',
         title: 'Facial Recovery Oil',
         description:
-            'A weightless blend of squalane, rosehip and a little vitamin E that seals in everything beneath it and leaves skin soft by morning. Three or four drops, pressed in last at night — the difference between hydrated and truly comfortable skin.',
+            'A weightless blend of squalane, rosehip and a little vitamin E that seals in everything beneath it and leaves skin soft by morning. Three or four drops, pressed in last at night: the difference between hydrated and truly comfortable skin.',
         status: 'active',
         productType: 'Face oil',
         vendor: 'Nue Skincare',
         tags: ['oil', 'squalane', 'rosehip', 'overnight', 'treat'],
         categoryHandles: ['treat'],
         collectionHandles: ['the-evening-ritual'],
-        seoTitle: 'Facial Recovery Oil — squalane & rosehip night oil',
+        seoTitle: 'Facial Recovery Oil: squalane & rosehip night oil',
         seoDescription: 'A weightless squalane and rosehip night oil that seals in hydration and softens skin.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'Plant-derived squalane mimics skin’s own oils to seal in everything beneath it, rosehip seed oil brings essential fatty acids to soften and even tone, and a little vitamin E steadies the blend.',
             howToUse:
-                'As the last step at night, warm three or four drops between the palms and press — do not rub — over moisturiser to lock in hydration. Use nightly for dry skin, or a couple of nights a week when skin feels tight.',
+                'As the last step at night, warm three or four drops between the palms and press (do not rub), over moisturiser to lock in hydration. Use nightly for dry skin, or a couple of nights a week when skin feels tight.',
             skinType: ['dry', 'normal'],
             volume: '30 ml / 1.0 fl oz',
             fullIngredients:
@@ -524,21 +524,21 @@ const PRODUCTS: Product[] = [
         handle: 'overnight-renewal-mask',
         title: 'Overnight Renewal Mask',
         description:
-            'A rich leave-on cream mask you wear to bed twice a week — hyaluronic acid and shea to flood dry, tired skin, so you wake to the plump, rested face a good night is supposed to give you. No rinsing, no mess on the pillow.',
+            'A rich leave-on cream mask you wear to bed twice a week: hyaluronic acid and shea to flood dry, tired skin, so you wake to the plump, rested face a good night is supposed to give you. No rinsing, no mess on the pillow.',
         status: 'active',
         productType: 'Mask',
         vendor: 'Nue Skincare',
         tags: ['mask', 'overnight', 'hyaluronic-acid', 'hydrating', 'treat'],
         categoryHandles: ['treat'],
         collectionHandles: ['the-evening-ritual'],
-        seoTitle: 'Overnight Renewal Mask — leave-on hydrating night mask',
+        seoTitle: 'Overnight Renewal Mask. Leave-on hydrating night mask',
         seoDescription: 'A rich leave-on overnight cream mask with hyaluronic acid and shea for tired, dry skin.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Multi-weight hyaluronic acid floods dry, tired skin with water, while shea butter and glycerin seal it in overnight — so you wake to the plump, rested face a good night is meant to give you.',
+                'Multi-weight hyaluronic acid floods dry, tired skin with water, while shea butter and glycerin seal it in overnight, so you wake to the plump, rested face a good night is meant to give you.',
             howToUse:
-                'Twice a week, smooth a generous layer over clean skin as the final step before bed and leave it on — no rinsing. It sinks in without transferring to the pillow. On very dry nights, use it in place of your moisturiser.',
+                'Twice a week, smooth a generous layer over clean skin as the final step before bed and leave it on: no rinsing. It sinks in without transferring to the pillow. On very dry nights, use it in place of your moisturiser.',
             skinType: ['dry', 'normal'],
             volume: '50 ml / 1.7 fl oz',
             fullIngredients:
@@ -553,19 +553,19 @@ const PRODUCTS: Product[] = [
         handle: 'quiet-eye-cream',
         title: 'Quiet Eye Cream',
         description:
-            'A light caffeine-and-peptide cream for the thin skin around the eyes — enough to de-puff a slow morning and soften fine lines, without the pilling that ruins concealer. A little goes a long way, so a tube lasts.',
+            'A light caffeine-and-peptide cream for the thin skin around the eyes: enough to de-puff a slow morning and soften fine lines, without the pilling that ruins concealer. A little goes a long way, so a tube lasts.',
         status: 'active',
         productType: 'Eye cream',
         vendor: 'Nue Skincare',
         tags: ['eye-cream', 'caffeine', 'peptides', 'treat'],
         categoryHandles: ['treat'],
         collectionHandles: ['the-evening-ritual'],
-        seoTitle: 'Quiet Eye Cream — caffeine & peptide eye cream',
+        seoTitle: 'Quiet Eye Cream: caffeine & peptide eye cream',
         seoDescription: 'A light caffeine-and-peptide eye cream that de-puffs and softens fine lines without pilling.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Caffeine helps de-puff a slow morning, peptides support firmness over time, and a light dose of hyaluronic acid smooths the look of fine lines — in a fast-absorbing cream that will not pill under concealer.',
+                'Caffeine helps de-puff a slow morning, peptides support firmness over time, and a light dose of hyaluronic acid smooths the look of fine lines: in a fast-absorbing cream that will not pill under concealer.',
             howToUse:
                 'Morning and night, tap a small amount around the orbital bone with your ring finger, working from the inner corner outward. A little goes a long way, so a tube lasts. Let it settle before eye make-up.',
             skinType: ['all'],
@@ -582,21 +582,21 @@ const PRODUCTS: Product[] = [
         handle: 'ultimate-moisturizer',
         title: 'Ultimate Moisturizer',
         description:
-            'The cream the whole range is built around — glycerin, squalane and ceramides in a texture that sinks in fast and sits invisibly under SPF or make-up. Rich enough for winter, light enough for summer, and the last step most days need.',
+            'The cream the whole range is built around: glycerin, squalane and ceramides in a texture that sinks in fast and sits invisibly under SPF or make-up. Rich enough for winter, light enough for summer, and the last step most days need.',
         status: 'active',
         productType: 'Moisturizer',
         vendor: 'Nue Skincare',
         tags: ['moisturizer', 'ceramides', 'glycerin', 'daily', 'moisturize'],
         categoryHandles: ['moisturize'],
         collectionHandles: ['best-sellers', 'the-morning-ritual', 'the-essentials'],
-        seoTitle: 'Ultimate Moisturizer — daily ceramide face cream',
+        seoTitle: 'Ultimate Moisturizer: daily ceramide face cream',
         seoDescription: 'A glycerin, squalane and ceramide face cream that sinks in fast and layers under SPF.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Glycerin draws water in, squalane softens, and ceramides shore up the barrier — a balanced trio in a texture that sinks in fast and sits invisibly under SPF or make-up, rich enough for winter, light enough for summer.',
+                'Glycerin draws water in, squalane softens, and ceramides shore up the barrier: a balanced trio in a texture that sinks in fast and sits invisibly under SPF or make-up, rich enough for winter, light enough for summer.',
             howToUse:
-                'Smooth a pea-to-almond-sized amount over the face and neck as the last step of the routine — after serum, and in the morning before SPF. Warm it between the fingers first so it presses in rather than dragging.',
+                'Smooth a pea-to-almond-sized amount over the face and neck as the last step of the routine: after serum, and in the morning before SPF. Warm it between the fingers first so it presses in rather than dragging.',
             skinType: ['all'],
             volume: '50 ml / 100 ml',
             fullIngredients:
@@ -615,21 +615,21 @@ const PRODUCTS: Product[] = [
         handle: 'daily-mineral-spf',
         title: 'Daily Mineral SPF 30',
         description:
-            'A lightweight mineral sunscreen that finishes matte and leaves no white cast on any skin tone — the one step that does more for how skin ages than everything else combined. Wears cleanly under make-up, reapplies without a fuss.',
+            'A lightweight mineral sunscreen that finishes matte and leaves no white cast on any skin tone: the one step that does more for how skin ages than everything else combined. Wears cleanly under make-up, reapplies without a fuss.',
         status: 'active',
         productType: 'SPF',
         vendor: 'Nue Skincare',
         tags: ['spf', 'mineral', 'sunscreen', 'daily', 'protect'],
         categoryHandles: ['protect'],
         collectionHandles: ['best-sellers', 'the-morning-ritual', 'the-essentials'],
-        seoTitle: 'Daily Mineral SPF 30 — no-white-cast mineral sunscreen',
+        seoTitle: 'Daily Mineral SPF 30: no-white-cast mineral sunscreen',
         seoDescription: 'A lightweight matte mineral SPF 30 that leaves no white cast and wears under make-up.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'Non-nano zinc oxide gives broad-spectrum SPF 30 mineral protection tinted to leave no white cast on any skin tone, with niacinamide and glycerin so it wears like skincare rather than a chalky sunscreen.',
             howToUse:
-                'As the final morning step, apply two finger-lengths over the face and neck — more than feels necessary — and let it set before make-up. Reapply across a long day outdoors; do not rely on the SPF in your make-up alone.',
+                'As the final morning step, apply two finger-lengths over the face and neck (more than feels necessary), and let it set before make-up. Reapply across a long day outdoors; do not rely on the SPF in your make-up alone.',
             skinType: ['all', 'sensitive'],
             volume: '50 ml / 1.7 fl oz',
             fullIngredients:
@@ -644,19 +644,19 @@ const PRODUCTS: Product[] = [
         handle: 'hydrating-essence-mist',
         title: 'Hydrating Essence Mist',
         description:
-            'A fine essence mist of hyaluronic acid and aloe to press in before serum, or over make-up when skin feels tight. Not a gimmick spritz — a real hydrating layer that helps everything after it absorb, and a small ritual on a long day.',
+            'A fine essence mist of hyaluronic acid and aloe to press in before serum, or over make-up when skin feels tight. Not a gimmick spritz: a real hydrating layer that helps everything after it absorb, and a small ritual on a long day.',
         status: 'active',
         productType: 'Mist',
         vendor: 'Nue Skincare',
         tags: ['mist', 'essence', 'hyaluronic-acid', 'hydrating', 'moisturize'],
         categoryHandles: ['moisturize'],
         collectionHandles: ['new-arrivals'],
-        seoTitle: 'Hydrating Essence Mist — hyaluronic acid face mist',
+        seoTitle: 'Hydrating Essence Mist: hyaluronic acid face mist',
         seoDescription: 'A fine hyaluronic-acid and aloe essence mist that hydrates and preps skin for serum.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Low-weight hyaluronic acid and betaine lay down a real hydrating layer that helps everything after it absorb, while aloe and panthenol calm — not a gimmick spritz, but a genuine essence step.',
+                'Low-weight hyaluronic acid and betaine lay down a real hydrating layer that helps everything after it absorb, while aloe and panthenol calm, not a gimmick spritz, but a genuine essence step.',
             howToUse:
                 'Mist over clean skin and press in with the palms before serum, or spritz over make-up through the day when skin feels tight. Hold it a hand’s width away and let the fine mist settle rather than soaking the face.',
             skinType: ['all'],
@@ -673,21 +673,21 @@ const PRODUCTS: Product[] = [
         handle: 'body-softening-lotion',
         title: 'Body Softening Lotion',
         description:
-            'A fast-absorbing body lotion with oat, shea and glycerin that softens rough patches and settles in seconds, so you can dress straight after. Lightly and briefly scented, then gone — nothing that fights your fragrance.',
+            'A fast-absorbing body lotion with oat, shea and glycerin that softens rough patches and settles in seconds, so you can dress straight after. Lightly and briefly scented, then gone. Nothing that fights your fragrance.',
         status: 'active',
         productType: 'Body',
         vendor: 'Nue Skincare',
         tags: ['body', 'lotion', 'oat', 'shea', 'daily'],
         categoryHandles: ['body'],
         collectionHandles: ['the-essentials'],
-        seoTitle: 'Body Softening Lotion — fast-absorbing oat & shea lotion',
+        seoTitle: 'Body Softening Lotion: fast-absorbing oat & shea lotion',
         seoDescription: 'A fast-absorbing oat, shea and glycerin body lotion that softens skin in seconds.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Colloidal oat calms and softens rough, tight patches, shea butter and glycerin hold in moisture, and a light non-greasy base absorbs in seconds — so you can dress straight after without waiting for it to sink in.',
+                'Colloidal oat calms and softens rough, tight patches, shea butter and glycerin hold in moisture, and a light non-greasy base absorbs in seconds, so you can dress straight after without waiting for it to sink in.',
             howToUse:
-                'Smooth over the whole body after a shower while skin is still slightly damp, concentrating on elbows, knees and anywhere that runs dry. Lightly and briefly scented, then gone — nothing that fights your fragrance.',
+                'Smooth over the whole body after a shower while skin is still slightly damp, concentrating on elbows, knees and anywhere that runs dry. Lightly and briefly scented, then gone. Nothing that fights your fragrance.',
             skinType: ['all', 'dry'],
             volume: '250 ml / 400 ml',
             fullIngredients:
@@ -706,19 +706,19 @@ const PRODUCTS: Product[] = [
         handle: 'overnight-lip-mask',
         title: 'Overnight Lip Mask',
         description:
-            'A thick, non-sticky balm that repairs chapped, flaking lips while you sleep — shea, squalane and a whisper of vanilla. Wake up to soft lips that take color cleanly. Keeps in a pocket for the worst of winter, too.',
+            'A thick, non-sticky balm that repairs chapped, flaking lips while you sleep: shea, squalane and a whisper of vanilla. Wake up to soft lips that take color cleanly. Keeps in a pocket for the worst of winter, too.',
         status: 'active',
         productType: 'Lip care',
         vendor: 'Nue Skincare',
         tags: ['lip', 'balm', 'overnight', 'shea', 'body'],
         categoryHandles: ['body'],
         collectionHandles: ['the-evening-ritual'],
-        seoTitle: 'Overnight Lip Mask — repairing shea lip balm',
+        seoTitle: 'Overnight Lip Mask: repairing shea lip balm',
         seoDescription: 'A thick, non-sticky overnight lip mask of shea and squalane that repairs chapped lips.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Shea butter and squalane form a rich, cushioning seal that repairs chapped, flaking lips overnight, with a whisper of vanilla and vitamin E — thick enough to work while you sleep, never sticky or waxy.',
+                'Shea butter and squalane form a rich, cushioning seal that repairs chapped, flaking lips overnight, with a whisper of vanilla and vitamin E: thick enough to work while you sleep, never sticky or waxy.',
             howToUse:
                 'Press a generous layer onto the lips as the last thing before bed and wake to soft lips that take color cleanly. Keep it in a pocket for the worst of winter, and use it as a nightly balm whenever lips feel raw.',
             skinType: ['all'],
@@ -735,25 +735,25 @@ const PRODUCTS: Product[] = [
         handle: 'the-complete-ritual',
         title: 'The Complete Ritual',
         description:
-            'The whole routine in one box — cleanser, barrier serum, moisturizer and SPF, at a saving on buying them apart. The honest way to start with Nue: everything you need for the four-step ritual, and nothing you do not.',
+            'The whole routine in one box: cleanser, barrier serum, moisturizer and SPF, at a saving on buying them apart. The honest way to start with Nue: everything you need for the four-step ritual, and nothing you do not.',
         status: 'active',
         productType: 'Set',
         vendor: 'Nue Skincare',
         tags: ['set', 'ritual', 'gift', 'starter'],
         categoryHandles: ['treat'],
         collectionHandles: ['best-sellers', 'new-arrivals'],
-        seoTitle: 'The Complete Ritual — Nue four-step skincare set',
-        seoDescription: 'The full four-step routine — cleanser, serum, moisturizer and SPF — in one boxed set.',
+        seoTitle: 'The Complete Ritual: Nue four-step skincare set',
+        seoDescription: 'The full four-step routine (cleanser, serum, moisturizer and SPF) in one boxed set.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'The four essentials that carry the routine: the gel-to-milk Everyday Cleanser, the niacinamide-and-ceramide Barrier Repair Serum, the glycerin-squalane-ceramide Ultimate Moisturizer, and the no-cast Daily Mineral SPF 30.',
             howToUse:
-                'The whole method is the order. Morning: cleanse, serum, moisturiser, then SPF. Evening: cleanse, serum, moisturiser. Introduce it as your everyday routine and give it a month — skin changes slowly, and the results that last arrive quietly.',
+                'The whole method is the order. Morning: cleanse, serum, moisturiser, then SPF. Evening: cleanse, serum, moisturiser. Introduce it as your everyday routine and give it a month, skin changes slowly, and the results that last arrive quietly.',
             skinType: ['all'],
             volume: 'Four full-size essentials',
             fullIngredients:
-                'Each essential carries its own full INCI list — see the Everyday Cleanser, Barrier Repair Serum, Ultimate Moisturizer and Daily Mineral SPF 30 pages for the complete lists.',
+                'Each essential carries its own full INCI list: see the Everyday Cleanser, Barrier Repair Serum, Ultimate Moisturizer and Daily Mineral SPF 30 pages for the complete lists.',
         },
         variants: [
             { sku: 'NUE-RITUAL-SET', priceCents: money(180), isDefault: true, inventoryPolicy: 'continue' },
@@ -788,7 +788,7 @@ const COMMERCE = {
         {
             handle: 'the-morning-ritual',
             name: 'The Morning Ritual',
-            description: 'Cleanse, treat, moisturize, protect — in five minutes.',
+            description: 'Cleanse, treat, moisturize, protect: in five minutes.',
             type: 'manual',
             featured: false,
             productHandles: [
@@ -849,17 +849,17 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The bare basics of a skin routine',
-            excerpt: 'You need four things, not fourteen. A plain guide to a routine that actually holds — and why everything past it is optional.',
+            excerpt: 'You need four things, not fourteen. A plain guide to a routine that actually holds, and why everything past it is optional.',
             featuredImage: { $asset: 'post-a-bare-routine' },
             body: {
                 type: 'doc',
                 content: [
                     para('A good skin routine is shorter than the internet would have you believe. For most people, most of the time, four steps do almost all of the work: clean skin, one treatment, moisture, and sun protection. Everything else is a refinement, not a requirement.'),
                     h2('The four that matter'),
-                    para('Cleanse to take the day off without stripping. Treat with one active you actually need — a barrier serum for reactive skin, a gentle acid for texture, rarely both at once. Moisturize to hold water in. And in the morning, protect with an SPF, which does more for how skin ages than any serum ever will.'),
+                    para('Cleanse to take the day off without stripping. Treat with one active you actually need: a barrier serum for reactive skin, a gentle acid for texture, rarely both at once. Moisturize to hold water in. And in the morning, protect with an SPF, which does more for how skin ages than any serum ever will.'),
                     h2('Why less works better'),
-                    para('Every product you add is another thing that can irritate, pill or interact badly with the last. A shorter routine is easier to keep up, cheaper to run, and — because your skin is not being asked to cope with ten new ingredients at once — usually calmer. Consistency beats complexity every time.'),
-                    para('Start with the four. Live with them for a month. Add something only when your skin tells you it is missing — not because a fifth step was on sale.'),
+                    para('Every product you add is another thing that can irritate, pill or interact badly with the last. A shorter routine is easier to keep up, cheaper to run, and (because your skin is not being asked to cope with ten new ingredients at once) usually calmer. Consistency beats complexity every time.'),
+                    para('Start with the four. Live with them for a month. Add something only when your skin tells you it is missing, not because a fifth step was on sale.'),
                 ],
             },
         },
@@ -870,16 +870,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'What a barrier serum actually does',
-            excerpt: 'If your skin is red, tight and reactive, the problem is usually the barrier — not a missing miracle ingredient. Here is what to do about it.',
+            excerpt: 'If your skin is red, tight and reactive, the problem is usually the barrier, not a missing miracle ingredient. Here is what to do about it.',
             featuredImage: { $asset: 'post-barrier-serum' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Your skin barrier is the outermost layer — the mix of cells and lipids that keeps water in and irritants out. When it is working, skin feels comfortable and looks even. When it is damaged, by over-cleansing or too many actives, skin turns tight, red, flaky and stingy no matter what you put on it.'),
+                    para('Your skin barrier is the outermost layer: the mix of cells and lipids that keeps water in and irritants out. When it is working, skin feels comfortable and looks even. When it is damaged, by over-cleansing or too many actives, skin turns tight, red, flaky and stingy no matter what you put on it.'),
                     h2('Rebuild, do not strip'),
-                    para('A barrier serum is not a quick fix; it is a repair job. Niacinamide calms and helps the skin make its own lipids, ceramides replace the ones that have been lost, and panthenol soothes while the rest gets to work. Used daily, the effect builds over a few weeks — skin stops reacting to things that used to set it off.'),
+                    para('A barrier serum is not a quick fix; it is a repair job. Niacinamide calms and helps the skin make its own lipids, ceramides replace the ones that have been lost, and panthenol soothes while the rest gets to work. Used daily, the effect builds over a few weeks: skin stops reacting to things that used to set it off.'),
                     h2('The signs it is working'),
-                    para('You will notice it in what stops happening: less stinging when you apply the next step, less redness by evening, fewer random flare-ups. That is the barrier doing its job again. The goal is skin that is boring, in the best possible way — comfortable, even, and unbothered.'),
+                    para('You will notice it in what stops happening: less stinging when you apply the next step, less redness by evening, fewer random flare-ups. That is the barrier doing its job again. The goal is skin that is boring, in the best possible way, comfortable, even, and unbothered.'),
                     para('If you only add one treatment to a bare routine, and your skin runs reactive, make it this one.'),
                 ],
             },
@@ -896,9 +896,9 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('If we could get you to keep just one habit, it would be this: wear sunscreen every morning, all year, indoors near windows included. Daily sun protection does more to keep skin even, firm and unlined than any serum on the shelf — including ours. It is not close.'),
+                    para('If we could get you to keep just one habit, it would be this: wear sunscreen every morning, all year, indoors near windows included. Daily sun protection does more to keep skin even, firm and unlined than any serum on the shelf, including ours. It is not close.'),
                     h2('The amount is more than you think'),
-                    para('Most people use a third of what they should. For a face, that is roughly two finger-lengths of product — enough that you can see it go on before it settles. Under-apply and an SPF 30 behaves like an SPF 8. Reapply across a long day outdoors, and do not count the SPF in your make-up as your whole defence.'),
+                    para('Most people use a third of what they should. For a face, that is roughly two finger-lengths of product: enough that you can see it go on before it settles. Under-apply and an SPF 30 behaves like an SPF 8. Reapply across a long day outdoors, and do not count the SPF in your make-up as your whole defence.'),
                     h2('Finish is why people wear it'),
                     para('The best sunscreen is the one you will actually put on, and that comes down to finish. A modern mineral SPF should sit matte, leave no white cast on any skin tone, and disappear under make-up. Get the feel right and the habit sticks. Get it wrong and the most important step becomes the one you skip.'),
                     para('No white cast, no greasy sheen, no excuses. That is the whole brief for a sunscreen worth keeping by the sink.'),
@@ -1011,7 +1011,7 @@ const SHOP: Node[] = [
                         { text: 'Shop the range' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'The whole of Nue in one place — cleanse, treat, moisturize, protect, and the few considered extras around them. Filter by step or sort however you like; every product here is made for every skin, and nothing it does not need.',
+                        text: 'The whole of Nue in one place: cleanse, treat, moisturize, protect, and the few considered extras around them. Filter by step or sort however you like; every product here is made for every skin, and nothing it does not need.',
                     }),
                 ],
             }),
@@ -1048,14 +1048,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'The range',
-        'Cleanse, treat, moisturize, protect — and the few considered extras around them, grouped the way a routine is actually built. Start where your skin needs the most help; every product here is made for every skin, and nothing it does not need.'
+        'Cleanse, treat, moisturize, protect, and the few considered extras around them, grouped the way a routine is actually built. Start where your skin needs the most help; every product here is made for every skin, and nothing it does not need.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Search Nue',
-        'Looking for a step, an ingredient, or something you read once? Search the whole range and the Journal below — a barrier serum, an SPF that leaves no cast, or just where to start.'
+        'Looking for a step, an ingredient, or something you read once? Search the whole range and the Journal below: a barrier serum, an SPF that leaves no cast, or just where to start.'
     ),
 ];
 
@@ -1070,7 +1070,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Nue Journal' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Plain notes on skin — what a routine actually needs, what each step is for, and why less, done well, beats a shelf of things you will not keep up. No trends, no jargon, just what works.',
+                        text: 'Plain notes on skin: what a routine actually needs, what each step is for, and why less, done well, beats a shelf of things you will not keep up. No trends, no jargon, just what works.',
                     }),
                 ],
             }),
@@ -1092,7 +1092,7 @@ const CART: Node[] = [
                         { text: 'Your cart' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Complimentary carbon-neutral shipping on every order, a few samples tucked in to try something new, and 30 days to return anything — opened or not — for a full refund. Skincare is personal; take your time deciding.',
+                        text: 'Complimentary carbon-neutral shipping on every order, a few samples tucked in to try something new, and 30 days to return anything (opened or not) for a full refund. Skincare is personal; take your time deciding.',
                     }),
                 ],
             }),
@@ -1107,7 +1107,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-luxe-minimal',
     name: 'Luxe Minimal',
     summary:
-        'A quiet-luxury storefront where imagery carries the weight and type stays out of the way — a full-bleed hero with a bottom-left headline, a 4-up category-tile row, best-sellers and treatment carousels, full-bleed editorial bands and a centered mission statement, all warm-neutral monochrome with no accent. Modelled on the minimal-luxury archetype; shipped as Nue Skincare, a premium-skincare essentials brand.',
+        'A quiet-luxury storefront where imagery carries the weight and type stays out of the way: a full-bleed hero with a bottom-left headline, a 4-up category-tile row, best-sellers and treatment carousels, full-bleed editorial bands and a centered mission statement, all warm-neutral monochrome with no accent. Modelled on the minimal-luxury archetype; shipped as Nue Skincare, a premium-skincare essentials brand.',
     tagline: 'A minimal, image-led luxury template for premium skincare, beauty and wellness brands.',
     vertical: 'retail',
     industry: 'Premium skincare',
@@ -1125,14 +1125,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Nue Skincare — a short range of skincare essentials',
+            title: 'Nue Skincare: a short range of skincare essentials',
             description:
-                'Nue Skincare is a short, considered range of skincare essentials — a cleanser, a serum, a cream, an SPF — made for every skin, and nothing it does not need.',
+                'Nue Skincare is a short, considered range of skincare essentials (a cleanser, a serum, a cream, an SPF) made for every skin, and nothing it does not need.',
         },
         about: {
             title: 'About Nue Skincare',
             description:
-                'Why Nue Skincare keeps its range short — the thinking, the formulas and the skin-first approach behind every essential.',
+                'Why Nue Skincare keeps its range short: the thinking, the formulas and the skin-first approach behind every essential.',
         },
     },
     home: HOME,

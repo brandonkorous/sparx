@@ -112,7 +112,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Raise an invoice — hold Shift to open alongside, Alt for a new window"
+            title="Raise an invoice: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open(
                 'b2b.invoice.detail',
@@ -180,7 +180,7 @@ export function InvoicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faReceipt} className="size-6" aria-hidden />}
             title="Could not load your invoices"
-            description="This is a problem reaching the server. Your invoices are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your invoices are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <PaneWaiting label="Loading invoices…" />

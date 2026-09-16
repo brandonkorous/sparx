@@ -137,7 +137,7 @@ describe('validateBarcode', () => {
 
   it('reports the length it actually got', () => {
     const result = validateBarcode('03600029145', 'upc_a');
-    expect(result.error).toMatch(/12 digits — this one has 11/);
+    expect(result.error).toMatch(/12 digits: this one has 11/);
   });
 
   it('validates a UPC-E through its expansion', () => {

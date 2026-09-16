@@ -188,7 +188,7 @@ export function fillSlots(root: Node, fills: Record<string, Fill>): Node {
  *  shallow copy would let one site's fill reach every other site's chrome. */
 function cloneBlock(key: string): Node {
   const template = getBlock(key);
-  if (!template) throw new Error(`silica block "${key}" not found — is silicaui current?`);
+  if (!template) throw new Error(`silica block "${key}" not found: is silicaui current?`);
   return structuredClone(template.root);
 }
 
@@ -691,7 +691,7 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
             // and a café that neither sells nor publishes gets a wrong one either
             // way. This says what a mailing list is actually for, and promises
             // nothing about how often or about what kind of business this is.
-            'Join the list — we’ll email when there’s something worth knowing.'
+            'Join the list: we’ll email when there’s something worth knowing.'
           : commerceEnabled
             ? 'Everything you publish and sell, in one place.'
             : 'Everything you publish, in one place.',

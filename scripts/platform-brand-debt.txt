@@ -1,5 +1,5 @@
-<p>A hands-on two-day cohort: leave with a live sparx site, a stocked catalog and your first checkout tested — no code, no jargon.</p>
-A full-service sparx partner — we design, build and run content-and-commerce sites for growing businesses, then stay on as their team.
+<p>A hands-on two-day cohort: leave with a live sparx site, a stocked catalog and your first checkout tested, no code, no jargon.</p>
+A full-service sparx partner. We design, build and run content-and-commerce sites for growing businesses, then stay on as their team.
 Sparx footer
 Sparx navbar
 fill the slots and they are the tenant’s. For the FRAME prefer sparx.navbar / sparx.footer, which are these
@@ -13,11 +13,11 @@ sparx order ${ref}
 sparx platform billing
 sparx subdomain
 sparx tenant ${params.tenantId}
-sparx — manage your subscription
+sparx: manage your subscription
 sparx_${Math.random().toString(36).slice(2, 18)}
 sparxb2b.com → B2B
 sparxcms.com → CMS
 sparxcrm.com → CRM
 sparxemail.com → Email
-zsh — sparx
-— The sparx team
+zsh: sparx
+The sparx team

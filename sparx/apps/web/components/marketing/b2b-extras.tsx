@@ -29,15 +29,15 @@ export function B2bFleet() {
   const points = [
     {
       title: 'Fitment-aware catalog',
-      body: 'Accounts with a registered fleet see a “fits your fleet” badge and fitment-matched products first — relevant parts surface, incompatible ones still browse with a warning.',
+      body: 'Accounts with a registered fleet see a “fits your fleet” badge and fitment-matched products first: relevant parts surface, incompatible ones still browse with a warning.',
     },
     {
       title: 'Bookable service',
-      body: 'Add the Scheduling module and a fleet account books service from the same portal — service types, durations, and capacity, tied to the account, with confirmations and reminders. Booking is its own $29/mo module; B2B brings the account and fleet context.',
+      body: 'Add the Scheduling module and a fleet account books service from the same portal: service types, durations, and capacity, tied to the account, with confirmations and reminders. Booking is its own $29/mo module; B2B brings the account and fleet context.',
     },
     {
       title: 'History per unit',
-      body: 'Service history records against the vehicle in the fleet profile, and parts from an order link to the service record — the full picture for the next visit.',
+      body: 'Service history records against the vehicle in the fleet profile, and parts from an order link to the service record: the full picture for the next visit.',
     },
   ];
   return (
@@ -45,7 +45,7 @@ export function B2bFleet() {
       <SectionHeader
         accent={M.color}
         headline="Fleet management, and service when the account needs it"
-        lede="For accounts that run equipment or vehicles, sparx stores a fleet profile — and, paired with the Scheduling module, books service against it. Fleet is one capability of B2B; a salon-products or office-coffee distributor never touches it, while a parts-and-service supplier leans on it daily."
+        lede="For accounts that run equipment or vehicles, sparx stores a fleet profile, and, paired with the Scheduling module, books service against it. Fleet is one capability of B2B; a salon-products or office-coffee distributor never touches it, while a parts-and-service supplier leans on it daily."
       />
       <div className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {points.map((p) => (
@@ -79,7 +79,7 @@ export function B2bSameEngine() {
   const cols: EngineCol[] = [
     {
       title: 'Your site',
-      body: 'List price, public catalog, card and wallet checkout — the orders you take from anyone who lands on the site.',
+      body: 'List price, public catalog, card and wallet checkout: the orders you take from anyone who lands on the site.',
       points: [
         'List pricing, open catalog, guest checkout.',
         'Cards, Apple Pay, Google Pay, Link via Stripe.',
@@ -103,7 +103,7 @@ export function B2bSameEngine() {
       <SectionHeader
         accent={M.color}
         headline="Retail and wholesale, one engine underneath"
-        lede="B2B isn’t a separate store you keep in sync. It’s a sales channel layered on Commerce — the same products, inventory, checkout, and customer record, with account pricing and terms switched on for the buyers who get them."
+        lede="B2B isn’t a separate store you keep in sync. It’s a sales channel layered on Commerce: the same products, inventory, checkout, and customer record, with account pricing and terms switched on for the buyers who get them."
       />
       <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
         {cols.map((c) => (
@@ -111,7 +111,7 @@ export function B2bSameEngine() {
         ))}
       </div>
       <Text size={14} className="mt-5 max-w-[700px]">
-        B2B requires Commerce — it’s wholesale on top of the commerce engine, so they run as one and
+        B2B requires Commerce: it’s wholesale on top of the commerce engine, so they run as one and
         bill as one. See{' '}
         <a href="/commerce" className={`${M.ink} font-medium`}>
           Commerce

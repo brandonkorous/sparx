@@ -136,7 +136,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Life happens — just give us at least 24 hours’ notice to reschedule and we’ll find another time that fits. We send a friendly reminder the day before and two hours ahead.',
+        'Life happens. Just give us at least 24 hours’ notice to reschedule and we’ll find another time that fits. We send a friendly reminder the day before and two hours ahead.',
     },
     {
       handle: 'no-show',
@@ -187,7 +187,7 @@ const SCHEDULING = {
       handle: 'life-coaching-session',
       name: 'Life coaching session',
       description:
-        'A focused one-on-one session to work through a change, a decision or a season of life — at your pace, with real support.',
+        'A focused one-on-one session to work through a change, a decision or a season of life: at your pace, with real support.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -209,7 +209,7 @@ const SCHEDULING = {
       handle: 'confidence-session',
       name: 'Confidence & self-worth session',
       description:
-        'Practical, warm work on speaking up, setting boundaries and trusting yourself — so you show up as you, without apology.',
+        'Practical, warm work on speaking up, setting boundaries and trusting yourself, so you show up as you, without apology.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -220,7 +220,7 @@ const SCHEDULING = {
       handle: 'work-life-balance-session',
       name: 'Work–life balance session',
       description:
-        'Untangle the overwhelm and rebuild a week that has room for the things that matter — rest, people and you.',
+        'Untangle the overwhelm and rebuild a week that has room for the things that matter: rest, people and you.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -258,7 +258,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A person smiling in warm morning light, looking hopeful and at ease',
     title: 'Your next chapter starts with one conversation',
-    sub: 'Warm, judgment-free coaching for the moments that ask for change — a new season, a big decision, or simply wanting to feel more like yourself again.',
+    sub: 'Warm, judgment-free coaching for the moments that ask for change: a new season, a big decision, or simply wanting to feel more like yourself again.',
     primary: { label: 'Book a free discovery call', href: '/book' },
     secondary: { label: 'See how we help', href: '/book' },
     overlay: 'dark',
@@ -267,15 +267,15 @@ const HOME = [
     items: [
       {
         title: 'Certified life coaches',
-        body: 'Trained, credentialed coaches who’ve guided hundreds of people through real change — not generic advice from a book.',
+        body: 'Trained, credentialed coaches who’ve guided hundreds of people through real change, not generic advice from a book.',
       },
       {
         title: 'Judgment-free & supportive',
-        body: 'A safe, encouraging space to say the thing out loud. No shame, no fixing you — just steady support and honest reflection.',
+        body: 'A safe, encouraging space to say the thing out loud. No shame, no fixing you. Just steady support and honest reflection.',
       },
       {
         title: 'Practical tools you’ll use',
-        body: 'Every session ends with something to carry into your week — a small step, a reframe, a habit that actually sticks.',
+        body: 'Every session ends with something to carry into your week: a small step, a reframe, a habit that actually sticks.',
       },
       {
         title: 'Flexible virtual sessions',
@@ -302,20 +302,20 @@ const HOME = [
     heading: 'Change happens one gentle shift at a time',
     body: [
       'You don’t need to have it all figured out to begin. Our approach is simple and human: we start where you are, get honest about what you want, and take it one steady step at a time.',
-      'It’s less about pushing harder and more about seeing clearly — noticing the mindset and habits quietly shaping your days, then choosing the small, doable changes that add up to a life that feels like yours.',
+      'It’s less about pushing harder and more about seeing clearly: noticing the mindset and habits quietly shaping your days, then choosing the small, doable changes that add up to a life that feels like yours.',
     ],
     cta: { label: 'Book a free discovery call', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your coaches',
-    intro: 'Book with the coach whose focus fits you best — you’ll work with the same person throughout your journey.',
+    intro: 'Book with the coach whose focus fits you best: you’ll work with the same person throughout your journey.',
     members: [
       {
         name: 'Elena Ross',
         role: 'Life & transitions coach',
         image: url(IMG.elena),
         alt: 'Elena Ross, life & transitions coach',
-        bio: 'Guides people through big life changes — careers, moves, new chapters — with warmth and a steady, mindset-first approach.',
+        bio: 'Guides people through big life changes (careers, moves, new chapters) with warmth and a steady, mindset-first approach.',
       },
       {
         name: 'Marcus Bell',
@@ -341,7 +341,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'The first step is a free conversation',
-    sub: 'No commitment, no pressure — just 30 minutes to talk it through and see how coaching could help. Book a time that works for you.',
+    sub: 'No commitment, no pressure. Just 30 minutes to talk it through and see how coaching could help. Book a time that works for you.',
     cta: { label: 'Book a free discovery call', href: '/book' },
   }),
 ];
@@ -364,8 +364,8 @@ const ABOUT = [
     alt: 'Two people in relaxed conversation on a bright video call',
     heading: 'About Brightpath',
     body: [
-      'Brightpath began with a simple belief: everyone deserves a caring, capable person in their corner when life asks them to change. Not a lecturer, not a guru — a coach who listens, believes in you, and helps you move forward.',
-      'We work with people from every walk of life — those navigating transitions, rebuilding confidence, chasing more balance, or simply wanting to feel purposeful again. Wherever you’re starting from, you’re welcome here.',
+      'Brightpath began with a simple belief: everyone deserves a caring, capable person in their corner when life asks them to change. Not a lecturer, not a guru, a coach who listens, believes in you, and helps you move forward.',
+      'We work with people from every walk of life. Those navigating transitions, rebuilding confidence, chasing more balance, or simply wanting to feel purposeful again. Wherever you’re starting from, you’re welcome here.',
     ],
     cta: { label: 'Book a free discovery call', href: '/book' },
   }),
@@ -403,7 +403,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Ready to take the first step?',
-    sub: 'Book your free discovery call online and see live availability — no phone tag, no pressure.',
+    sub: 'Book your free discovery call online and see live availability: no phone tag, no pressure.',
     surface: 'muted',
     cta: { label: 'Book a free discovery call', href: '/book' },
   }),
@@ -414,8 +414,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-lifecoach-wellness',
   name: 'Life Coach (Wellness)',
   summary:
-    'A warm, encouraging site for a life & wellness coaching practice — a cream palette, a terracotta primary and a soft humanist serif, with hopeful photography carrying the page. Installs online booking from day one: a free discovery call plus real coaching sessions (life, mindset, confidence, balance, purpose), and three coaches you book by name as bookable resources with their own hours. Ships as "Brightpath Life Coaching".',
-  tagline: 'A warm, uplifting template for life & wellness coaches — book online from day one.',
+    'A warm, encouraging site for a life & wellness coaching practice: a cream palette, a terracotta primary and a soft humanist serif, with hopeful photography carrying the page. Installs online booking from day one: a free discovery call plus real coaching sessions (life, mindset, confidence, balance, purpose), and three coaches you book by name as bookable resources with their own hours. Ships as "Brightpath Life Coaching".',
+  tagline: 'A warm, uplifting template for life & wellness coaches. Book online from day one.',
   industry: 'Life coaching',
   sortWeight: 11,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -424,9 +424,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Brightpath Life Coaching — warm, judgment-free coaching',
+      title: 'Brightpath Life Coaching: warm, judgment-free coaching',
       description:
-        'Brightpath Life Coaching helps you navigate change with warm, certified coaching — life transitions, confidence, mindset, balance and purpose. Book a free discovery call online.',
+        'Brightpath Life Coaching helps you navigate change with warm, certified coaching: life transitions, confidence, mindset, balance and purpose. Book a free discovery call online.',
     },
   },
   home: HOME,

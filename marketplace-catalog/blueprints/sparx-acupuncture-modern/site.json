@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Meridian Wellness — modern acupuncture & wellness",
+      "seoTitle": "Meridian Wellness: modern acupuncture & wellness",
       "seoDescription": "Meridian Wellness is a calm, modern acupuncture studio for pain, stress, sleep and facial acupuncture. Book your practitioner online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A modern studio for acupuncture, facial acupuncture and stress & sleep support — gentle, considered care that meets you where you are."
+                      "A modern studio for acupuncture, facial acupuncture and stress & sleep support: gentle, considered care that meets you where you are."
                     ],
                     "id": "35a433a8-afb3-46e1-8897-cd7be3ed51bb",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Licensed practitioners who blend acupuncture with modern clinical understanding — no mysticism, just careful, personalised treatment."
+                              "Licensed practitioners who blend acupuncture with modern clinical understanding: no mysticism, just careful, personalised treatment."
                             ],
                             "id": "a2c3fc8d-51c5-4f58-a705-6191777f8ce7",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A gentle, needle-based approach to skin and glow — a natural, low-intervention alternative to injectables."
+                              "A gentle, needle-based approach to skin and glow: a natural, low-intervention alternative to injectables."
                             ],
                             "id": "90072959-3d6a-4fa4-b43b-36c8397cf530",
                             "ord": "a1"
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Meridian Wellness sits where traditional acupuncture meets modern clinical care. We take a full history, listen properly, and build a plan around your body and your goals — not a one-size protocol."
+                          "Meridian Wellness sits where traditional acupuncture meets modern clinical care. We take a full history, listen properly, and build a plan around your body and your goals, not a one-size protocol."
                         ],
                         "id": "61d182ab-56ea-4283-b6a9-b597e4fe56a6",
                         "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "That means honest expectations, gentle technique, and treatment you can actually feel working — session by session, without the mystique."
+                          "That means honest expectations, gentle technique, and treatment you can actually feel working: session by session, without the mystique."
                         ],
                         "id": "8c730cd8-f075-47c5-ac88-9435ad10ad2a",
                         "ord": "a2"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same practitioner as your plan progresses."
+                          "Book by name: you’ll see the same practitioner as your plan progresses."
                         ],
                         "id": "cf00e02e-634a-47b6-bb1a-d3a34d361f63",
                         "ord": "a1"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Meridian Wellness",
+      "seoTitle": "Book: Meridian Wellness",
       "seoDescription": "See what Meridian Wellness offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "c2f466f1-38f2-4db4-b05b-4dccc8e6abc0",
                         "ord": "a1"
@@ -1663,7 +1663,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "New-client and cosmetic sessions hold your practitioner and room for a full hour. A cancellation inside 24 hours, or a missed session, is charged in full — reschedule earlier and there’s no fee."
+                              "New-client and cosmetic sessions hold your practitioner and room for a full hour. A cancellation inside 24 hours, or a missed session, is charged in full: reschedule earlier and there’s no fee."
                             ],
                             "id": "00d62da2-18e8-4fe9-ade0-6889552e58d2",
                             "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Meridian Wellness",
+      "seoTitle": "About: Meridian Wellness",
       "seoDescription": "Who Meridian Wellness is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Meridian Wellness to make acupuncture feel modern, calm and genuinely useful — grounded in careful practice, free of jargon and pressure."
+                          "We started Meridian Wellness to make acupuncture feel modern, calm and genuinely useful: grounded in careful practice, free of jargon and pressure."
                         ],
                         "id": "09668d07-ae58-42c6-bb60-24d38362b1b1",
                         "ord": "a1"
@@ -1865,7 +1865,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Fine needles, careful placement and unhurried sessions — comfortable enough that most people simply rest and unwind."
+                              "Fine needles, careful placement and unhurried sessions: comfortable enough that most people simply rest and unwind."
                             ],
                             "id": "fcf65997-4944-4a37-92e0-7b0983202e54",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Meridian Wellness",
+      "seoTitle": "Visit: Meridian Wellness",
       "seoDescription": "Where to find Meridian Wellness, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Meridian Wellness will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Meridian Wellness will get back to you, usually the same day."
                         ],
                         "id": "c41e70a5-651d-4b4b-b81e-87bf68b89e89",
                         "ord": "a1"
@@ -2384,7 +2384,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your session online — no phone tag."
+                      "See live availability and reserve your session online: no phone tag."
                     ],
                     "id": "477c81e9-a492-48d9-9ce6-67be76ea7faa",
                     "ord": "a1"

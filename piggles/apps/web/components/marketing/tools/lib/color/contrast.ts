@@ -58,7 +58,7 @@ export function gradeContrast(fg: Rgb, bg: Rgb): ContrastVerdict {
     smallestUsable: aaNormal
       ? 'Any size, including small print'
       : aaLarge
-        ? 'Large text only — 24px, or 19px if bold'
+        ? 'Large text only: 24px, or 19px if bold'
         : null,
   };
 }

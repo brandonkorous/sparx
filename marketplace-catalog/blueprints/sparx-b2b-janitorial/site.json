@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Saniworx — janitorial & facility supply, by the case",
-      "seoDescription": "Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities — cleaning chemicals, paper, liners and tools by the case, at trade pricing, on a delivery schedule you set.",
+      "seoTitle": "Saniworx: janitorial & facility supply, by the case",
+      "seoDescription": "Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities: cleaning chemicals, paper, liners and tools by the case, at trade pricing, on a delivery schedule you set.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities. We stock the cleaning chemicals, paper, liners and tools your building runs on — sold by the case, priced for the trade, and delivered on a schedule you can plan around."
+                          "Saniworx is a janitorial and facility-supply distributor for offices, schools and facilities. We stock the cleaning chemicals, paper, liners and tools your building runs on: sold by the case, priced for the trade, and delivered on a schedule you can plan around."
                         ],
                         "id": "53c8291a-14a5-4b37-b4bd-cb383b6442a1",
                         "ord": "a1"
@@ -1272,7 +1272,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Pick your delivery days and we build the route around them — weekly, biweekly or monthly — so consumables land before your closets run empty, not after."
+                              "Pick your delivery days and we build the route around them (weekly, biweekly or monthly) so consumables land before your closets run empty, not after."
                             ],
                             "id": "e5d07ea7-92b3-4c43-93ba-29651950a56c",
                             "ord": "a1"
@@ -1326,7 +1326,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One person who knows your building, your standing order and your budget — reachable by phone or email, not a ticket queue."
+                              "One person who knows your building, your standing order and your budget: reachable by phone or email, not a ticket queue."
                             ],
                             "id": "68197388-f409-417d-9d5e-d3e78421534c",
                             "ord": "a1"
@@ -1380,7 +1380,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Chemicals, paper, liners and tools on a single account and a single invoice — fewer vendors to manage and fewer boxes at the dock."
+                              "Chemicals, paper, liners and tools on a single account and a single invoice: fewer vendors to manage and fewer boxes at the dock."
                             ],
                             "id": "7af43749-66e0-4319-b6c4-f2663d7f452f",
                             "ord": "a1"
@@ -1682,7 +1682,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Saniworx",
+      "seoTitle": "Shop: Saniworx",
       "seoDescription": "Browse everything Saniworx makes, with prices and options at a glance. Janitorial & facility supplies.",
       "root": {
         "kind": "element",
@@ -1714,7 +1714,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every case we stock — cleaning chemicals, paper and tissue, can liners, and the tools to use them. Each product lists its pack size and minimum order quantity; prices are per-case trade prices. Filter by category, or sort however you order."
+                      "Every case we stock: cleaning chemicals, paper and tissue, can liners, and the tools to use them. Each product lists its pack size and minimum order quantity; prices are per-case trade prices. Filter by category, or sort however you order."
                     ],
                     "id": "d1b187d4-8514-4462-9df1-5d6b0cf54597",
                     "ord": "a1"
@@ -1742,7 +1742,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Saniworx",
+      "seoTitle": "Collections: Saniworx",
       "seoDescription": "Explore the collections at Saniworx, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1774,7 +1774,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalogue grouped the way a building actually orders it — new-account essentials, the movers every closet reorders, a full restroom program, and floor-care sets. Build a standing order from a program in a few clicks."
+                      "The catalogue grouped the way a building actually orders it: new-account essentials, the movers every closet reorders, a full restroom program, and floor-care sets. Build a standing order from a program in a few clicks."
                     ],
                     "id": "2945454e-4cd0-4eeb-b9c9-f8659da5af3e",
                     "ord": "a1"
@@ -1802,7 +1802,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Saniworx",
+      "seoTitle": "Your cart: Saniworx",
       "seoDescription": "Review what is in your cart and check out securely at Saniworx.",
       "root": {
         "kind": "element",
@@ -1834,7 +1834,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Prices shown are per-case trade prices. Open trade accounts check out on net-30 with a PO number and free freight on qualifying orders — your account manager confirms delivery days on your first standing order."
+                      "Prices shown are per-case trade prices. Open trade accounts check out on net-30 with a PO number and free freight on qualifying orders. Your account manager confirms delivery days on your first standing order."
                     ],
                     "id": "6077eb7d-bfb9-49f6-bc16-8118e3736871",
                     "ord": "a1"
@@ -1862,7 +1862,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Saniworx",
+      "seoTitle": "Search: Saniworx",
       "seoDescription": "Search Saniworx for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1922,7 +1922,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Saniworx",
+      "seoTitle": "Journal: Saniworx",
       "seoDescription": "Stories, guides and notes from Saniworx.",
       "root": {
         "kind": "element",
@@ -1954,7 +1954,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical notes for the people who keep buildings running — cleaning protocols that hold up to an audit, how to read cost-per-use instead of shelf price, and where sustainable supply actually saves money."
+                      "Practical notes for the people who keep buildings running: cleaning protocols that hold up to an audit, how to read cost-per-use instead of shelf price, and where sustainable supply actually saves money."
                     ],
                     "id": "7230742e-6a7a-4c7c-a5f8-c21f4d7fba2f",
                     "ord": "a1"
@@ -2088,7 +2088,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Saniworx",
-      "seoDescription": "How Saniworx supplies buildings — deep-stocked cases, honest trade pricing, scheduled deliveries and a real person on the phone. Keep the closet stocked, keep the schedule.",
+      "seoDescription": "How Saniworx supplies buildings: deep-stocked cases, honest trade pricing, scheduled deliveries and a real person on the phone. Keep the closet stocked, keep the schedule.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2119,7 +2119,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Saniworx started as a single delivery route serving a handful of office parks that were tired of chasing four vendors for one supply closet. It grew the way a good distributor should — one building, one standing order, one on-time delivery at a time — and it still runs on the same promise: keep the closet stocked, keep the price honest, keep the schedule."
+                      "Saniworx started as a single delivery route serving a handful of office parks that were tired of chasing four vendors for one supply closet. It grew the way a good distributor should (one building, one standing order, one on-time delivery at a time) and it still runs on the same promise: keep the closet stocked, keep the price honest, keep the schedule."
                     ],
                     "id": "c27732a9-db90-40f6-a805-7f572fb10196",
                     "ord": "a1"
@@ -2159,7 +2159,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Saniworx",
+      "seoTitle": "Open a trade account: Saniworx",
       "seoDescription": "Set up contract pricing, net-30 terms and a delivery schedule for your building. Tell us your square footage and closets and we’ll build your supply program.",
       "root": {
         "kind": "element",
@@ -2196,7 +2196,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tell us about your building — square footage, the closets you stock, and how often you want deliveries — and we’ll set up contract pricing, net-30 terms and a delivery schedule that fits. A real person at the warehouse will get back to you."
+                          "Tell us about your building (square footage, the closets you stock, and how often you want deliveries) and we’ll set up contract pricing, net-30 terms and a delivery schedule that fits. A real person at the warehouse will get back to you."
                         ],
                         "id": "c73fa166-d59c-4c1b-aa16-ea0bb3fc0ce9",
                         "ord": "a1"
@@ -2467,8 +2467,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Saniworx",
-      "seoDescription": "Product details at Saniworx — janitorial & facility supplies, with options and pricing.",
+      "seoTitle": "Product: Saniworx",
+      "seoDescription": "Product details at Saniworx: janitorial & facility supplies, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2831,7 +2831,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Priced per case for the trade, with volume breaks on standing orders and better pricing under a contract. Open accounts order on net-30 with PO numbers on every line, and safety data sheets are on file for every chemical — pulled for your binder on request."
+                              "Priced per case for the trade, with volume breaks on standing orders and better pricing under a contract. Open accounts order on net-30 with PO numbers on every line, and safety data sheets are on file for every chemical: pulled for your binder on request."
                             ],
                             "id": "94fcf165-34be-4469-9ab9-2d5fbf20bd0f",
                             "ord": "a1"

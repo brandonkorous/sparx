@@ -19,13 +19,13 @@ const WAYPOINTS: { color: string; tag: string; title: React.ReactNode; body: str
     color: 'var(--color-module-builder)',
     tag: 'week 1',
     title: 'Site',
-    body: 'Stand up your site with the builder — pages, content, and catalog.',
+    body: 'Stand up your site with the builder: pages, content, and catalog.',
   },
   {
     color: 'var(--color-module-crm)',
     tag: 'week 2',
     title: 'Customers',
-    body: 'Set up the CRM — contacts, segments, the pipeline that tracks every lead.',
+    body: 'Set up the CRM: contacts, segments, the pipeline that tracks every lead.',
   },
   {
     color: 'var(--color-module-email)',
@@ -37,7 +37,7 @@ const WAYPOINTS: { color: string; tag: string; title: React.ReactNode; body: str
     color: 'var(--color-module-automations)',
     tag: 'week 4',
     title: 'Automation',
-    body: 'Wire the flows that run the business while you sleep — the automation layer.',
+    body: 'Wire the flows that run the business while you sleep: the automation layer.',
   },
 ];
 
@@ -47,7 +47,7 @@ export function BootcampArc() {
       <SectionHeader
         accent={PRIMARY}
         headline={<>Build it piece by piece. Graduate the day you launch</>}
-        lede="The bootcamp is a build. Week by week, you stand up a real business on sparx — site, customers, email, automation — and the graduation moment is the one that matters: hitting publish and going live."
+        lede="The bootcamp is a build. Week by week, you stand up a real business on sparx (site, customers, email, automation) and the graduation moment is the one that matters: hitting publish and going live."
       />
 
       {/* RULE #2: the mono `week 1`…`graduation` step markers that sat directly
@@ -78,7 +78,7 @@ export function BootcampArc() {
               <Spark color={PRIMARY} />
             </Text>
             <Text size={14} className="mt-[7px]">
-              Hit publish. Your business is live — and everything you built is yours.
+              Hit publish. Your business is live, and everything you built is yours.
             </Text>
           </div>
         </div>

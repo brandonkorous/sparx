@@ -376,7 +376,7 @@ export function entryStatusState(status: EntryStatus): {
       return {
         label: 'Published',
         tone: 'success',
-        detail: 'This is live on your site — anyone can read it now.',
+        detail: 'This is live on your site. Anyone can read it now.',
       };
     case 'scheduled':
       return {
@@ -396,7 +396,7 @@ export function entryStatusState(status: EntryStatus): {
       return {
         label: 'Draft',
         tone: 'info',
-        detail: 'This is saved but hidden — only you can see it until you publish it.',
+        detail: 'This is saved but hidden. Only you can see it until you publish it.',
       };
   }
 }

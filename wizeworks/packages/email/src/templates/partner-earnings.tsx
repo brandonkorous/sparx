@@ -37,7 +37,7 @@ function copyFor(p: PartnerEarningsEmailProps): Copy {
     case 'referral':
       return {
         heading: 'You have a new referral',
-        lead: 'Someone signed up through your referral link. When they start paying, you start earning — we&rsquo;ll let you know the moment your first commission lands.',
+        lead: 'Someone signed up through your referral link. When they start paying, you start earning. We&rsquo;ll let you know the moment your first commission lands.',
         cta: 'View referrals',
         status: 'Referred',
         tone: 'info',

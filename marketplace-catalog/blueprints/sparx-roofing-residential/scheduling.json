@@ -119,7 +119,7 @@
     {
       "handle": "free-inspection",
       "name": "Free roof inspection",
-      "description": "We climb up, check every slope, flashing and valley, and walk you through what we find in plain language — no charge, no pressure.",
+      "description": "We climb up, check every slope, flashing and valley, and walk you through what we find in plain language: no charge, no pressure.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -154,7 +154,7 @@
     {
       "handle": "replacement-estimate",
       "name": "Replacement estimate",
-      "description": "A full measure-up and an honest, itemized written quote to re-roof your home — materials, timeline and price, before any work is booked.",
+      "description": "A full measure-up and an honest, itemized written quote to re-roof your home: materials, timeline and price, before any work is booked.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -188,7 +188,7 @@
     {
       "handle": "gutter-service",
       "name": "Gutter cleaning & repair",
-      "description": "Gutters and downspouts cleared, resecured and tested to run — so water leaves the roof instead of sitting on it.",
+      "description": "Gutters and downspouts cleared, resecured and tested to run, so water leaves the roof instead of sitting on it.",
       "durationMinutes": 90,
       "priceCents": 14900,
       "bufferAfterMin": 15,
@@ -206,7 +206,7 @@
     {
       "handle": "maintenance-tune-up",
       "name": "Roof maintenance tune-up",
-      "description": "A yearly once-over — sealants topped up, loose shingles nailed, debris cleared — to add years to the roof you already have.",
+      "description": "A yearly once-over (sealants topped up, loose shingles nailed, debris cleared) to add years to the roof you already have.",
       "durationMinutes": 90,
       "priceCents": 16900,
       "bufferAfterMin": 15,

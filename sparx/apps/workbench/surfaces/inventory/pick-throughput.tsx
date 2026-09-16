@@ -90,7 +90,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Gauge className="size-6" aria-hidden />}
           title="Nothing has been picked in this period"
-          description="Generate a walk from an order and work it, and this fills in — how fast, how accurately, and which shelves keep coming up empty."
+          description="Generate a walk from an order and work it, and this fills in: how fast, how accurately, and which shelves keep coming up empty."
         />
       );
     }

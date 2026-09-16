@@ -56,7 +56,7 @@ async function main(): Promise<void> {
   // GCP→Azure migration quietly turned every publish into a no-op that reported
   // success. Nothing here needs a cloud's project id any more — @wizeworks/events
   // owns that, and only the pubsub adapter ever sees it.
-  console.info('events: transport resolved —', resolveTransport().kind);
+  console.info('events: transport resolved to', resolveTransport().kind);
 
   // Bridge the CRM bus (crm.customer.*) + platform bus (order.*) to real
   // Pub/Sub so the commerce-indexer can keep search live. MUST run before

@@ -71,7 +71,7 @@ export function BuilderOverflow({ label, actions, controls, attention }: Builder
         // Right-most control on the bar, so a centred tooltip hangs off the pane
         // edge.
         align="end"
-        content={attention ? `${label} — there is work to publish` : label}
+        content={attention ? `${label}: there is work to publish` : label}
       >
         <PopoverTrigger>
           <Button size="sm" shape="square" className="relative shrink-0" aria-label={label}>

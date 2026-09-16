@@ -52,7 +52,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'deals-won-by-month',
     name: 'Deals won each month',
     description:
-      'Closed-won value month by month over the last year — whether you are growing, and by how much.',
+      'Closed-won value month by month over the last year: whether you are growing, and by how much.',
     objectKey: 'deal',
     filters: { logic: 'AND', conditions: [{ field: 'closedAt', operator: 'is_set' }] },
     groupBy: { field: 'closedAt', bucket: 'month' },
@@ -75,7 +75,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'customers-by-stage',
     name: 'Customers by stage',
     description:
-      'Everyone on your list grouped by where they have got to — leads, customers, the ones who went quiet.',
+      'Everyone on your list grouped by where they have got to: leads, customers, the ones who went quiet.',
     objectKey: 'contact',
     filters: NO_FILTER,
     groupBy: { field: 'lifecycleStage' },
@@ -87,7 +87,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'spend-by-company',
     name: 'Spend by company',
     description:
-      'Lifetime spend added up by the company people work for — where your money actually comes from.',
+      'Lifetime spend added up by the company people work for: where your money actually comes from.',
     objectKey: 'contact',
     filters: { logic: 'AND', conditions: [{ field: 'company', operator: 'is_set' }] },
     groupBy: { field: 'company' },
@@ -102,7 +102,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'requests-by-urgency',
     name: 'Requests by urgency',
     description:
-      'Open support requests grouped by how urgent they are — what your team should pick up first.',
+      'Open support requests grouped by how urgent they are: what your team should pick up first.',
     objectKey: 'ticket',
     filters: { logic: 'AND', conditions: [{ field: 'resolvedAt', operator: 'is_not_set' }] },
     groupBy: { field: 'priority' },
@@ -114,7 +114,7 @@ export const BUILTIN_REPORTS: BuiltinReport[] = [
     slug: 'requests-opened-by-week',
     name: 'Requests opened each week',
     description:
-      'How much is coming in, week by week, over the last quarter — whether your support load is growing.',
+      'How much is coming in, week by week, over the last quarter: whether your support load is growing.',
     objectKey: 'ticket',
     filters: NO_FILTER,
     groupBy: { field: 'createdAt', bucket: 'week' },

@@ -296,7 +296,7 @@ function TicketEditor({
     create.isError || update.isError
       ? ticketErrorMessage(
           create.error ?? update.error,
-          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
+          'The server did not answer. Nothing was changed and your work is still on screen. Try again in a moment.'
         )
       : null;
 
@@ -354,7 +354,7 @@ function TicketEditor({
           toast.add({
             title:
               target && (target.stageType === 'resolved' || target.stageType === 'closed')
-                ? 'Marked as sorted — the customer’s clock stops here'
+                ? 'Marked as sorted: the customer’s clock stops here'
                 : `Moved to ${target?.name ?? 'the next stage'}`,
             type: 'success',
           });
@@ -375,7 +375,7 @@ function TicketEditor({
     const ok = await confirm({
       title: `Delete request ${view.ticket.number}?`,
       description:
-        'This is for a request that should not exist — the usual way to finish one is to move it to a closing step, which keeps it in your response-time figures. Deleting takes it out of your lists; its history is kept and it can be brought back by support if needed.',
+        'This is for a request that should not exist: the usual way to finish one is to move it to a closing step, which keeps it in your response-time figures. Deleting takes it out of your lists; its history is kept and it can be brought back by support if needed.',
       confirmLabel: 'Delete this request',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -497,7 +497,7 @@ function TicketEditor({
             <Text>
               Use this for something a customer has asked for that somebody still owes them an
               answer on. Requests from your website forms, live chat and email arrive here on their
-              own — this is for the ones that came in another way.
+              own. This is for the ones that came in another way.
             </Text>
           ) : null}
 
@@ -601,7 +601,7 @@ function TicketEditor({
                 <ClockLine label="Sorted out" clock={view.resolution} kept="Sorted" />
                 {policy ? (
                   <Text>
-                    Measured against “{policy.name}” —{' '}
+                    Measured against “{policy.name}”:{' '}
                     {targetLabel(target?.firstResponseMinutes ?? null) ?? 'no reply target'} to
                     reply,{' '}
                     {targetLabel(target?.resolutionMinutes ?? null) ?? 'no resolution target'} to
@@ -644,7 +644,7 @@ function TicketEditor({
           {view?.ticket.customerId ? (
             <FormSection
               title="The conversation"
-              description="Anything you send from here is filed against this request — which is also what records that you replied."
+              description="Anything you send from here is filed against this request, which is also what records that you replied."
             >
               <EngagementComposer
                 customerId={view.ticket.customerId}
@@ -657,7 +657,7 @@ function TicketEditor({
               <AlertContent>
                 <AlertTitle>Nobody is linked to this request</AlertTitle>
                 <AlertDescription>
-                  Link a customer above and you can reply from here — and replying is what records
+                  Link a customer above and you can reply from here, and replying is what records
                   that this request has been answered.
                 </AlertDescription>
               </AlertContent>
@@ -683,7 +683,7 @@ function TicketEditor({
             <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
               <Text className="text-sm">
                 Close a request you have dealt with by moving it to a closing step. Delete is for
-                one that should never have been here — a duplicate, or spam.
+                one that should never have been here: a duplicate, or spam.
               </Text>
               <Button
                 size="sm"

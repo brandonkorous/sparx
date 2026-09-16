@@ -268,7 +268,7 @@ export async function update(
     // delete + recreate, mirroring Shopify's UX.
     if (input.type !== undefined && input.type !== before.type) {
       throw new CommerceValidationError(
-        `Cannot change collection type from "${before.type}" to "${input.type}" — delete and recreate instead`
+        `Cannot change collection type from "${before.type}" to "${input.type}": delete and recreate instead`
       );
     }
 
@@ -335,7 +335,7 @@ export async function setProducts(ctx: ServiceContext, rawInput: unknown): Promi
     if (!collection) throw new CommerceNotFoundError('Collection', input.collectionId);
     if (collection.type !== 'manual') {
       throw new CommerceConflictError(
-        'Cannot set products on a rules-driven collection — edit the ruleSet instead',
+        'Cannot set products on a rules-driven collection. Edit the ruleSet instead',
         'type'
       );
     }
@@ -499,7 +499,7 @@ export async function reindex(ctx: ServiceContext, collectionId: string): Promis
   if (!collection) throw new CommerceNotFoundError('Collection', collectionId);
   if (collection.type !== 'rules') {
     throw new CommerceConflictError(
-      'Only rules-driven collections need reindexing — manual lists are already authoritative',
+      'Only rules-driven collections need reindexing: manual lists are already authoritative',
       'type'
     );
   }

@@ -430,7 +430,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
 
   async function handleDuplicate(): Promise<void> {
     const copy = await duplicate.mutateAsync({ id });
-    toast.add({ title: 'Copied — this one is yours to change.', type: 'success' });
+    toast.add({ title: 'Copied. This one is yours to change.', type: 'success' });
     ctx.open('crm.report.builder', { id: copy.id }, { target: 'replace' });
   }
 
@@ -459,7 +459,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className="flex flex-col gap-5">
           {readOnly ? (
             <Alert color="info">
-              This is one of the reports sparx ships. Make a copy to change anything — your copy is
+              This is one of the reports sparx ships. Make a copy to change anything. Your copy is
               yours entirely.
             </Alert>
           ) : null}
@@ -482,7 +482,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 rows={2}
                 value={draft.description}
                 disabled={readOnly}
-                placeholder="Optional — a sentence for whoever opens this next."
+                placeholder="Optional: a sentence for whoever opens this next."
                 onChange={(event) => set('description', event.target.value)}
               />
             </Field>
@@ -537,7 +537,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               />
               <FieldDescription>
-                A rolling period stays true tomorrow — which is what makes a report worth pinning to
+                A rolling period stays true tomorrow, which is what makes a report worth pinning to
                 a dashboard.
               </FieldDescription>
             </Field>
@@ -642,7 +642,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                 value={draft.groupByField}
                 disabled={readOnly}
                 items={{
-                  '': 'Nothing — just one total',
+                  '': 'Nothing: just one total',
                   ...Object.fromEntries(fields.map((f) => [f.path, f.label])),
                 }}
                 onValueChange={(next) => {
@@ -673,7 +673,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
             {draft.opaqueFilters ? (
               <Alert color="info">
                 This report narrows what it counts in a way that cannot be shown as a simple list of
-                rules. It is being kept exactly as it is — saving will not change it.
+                rules. It is being kept exactly as it is: saving will not change it.
               </Alert>
             ) : (
               <>
@@ -820,7 +820,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
 
                       {isComplete(condition) ? null : (
                         <Text className="text-sm">
-                          Not narrowing anything yet — this rule needs something to compare with.
+                          Not narrowing anything yet. This rule needs something to compare with.
                         </Text>
                       )}
                     </div>
@@ -831,7 +831,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
                     UI's Field context and throws outside a `<Field>`. */}
                 {draft.conditions.length === 0 ? (
                   <Text className="text-sm">
-                    Every one of them counts right now. Add a rule to leave some out — only deals
+                    Every one of them counts right now. Add a rule to leave some out. Only deals
                     over a certain size, only requests still open, only people in one place.
                   </Text>
                 ) : null}
@@ -910,7 +910,7 @@ export function ReportBuilderSurface({ ctx }: { ctx: SurfaceContext }) {
               />
               {preview.data.truncated ? (
                 <Alert color="info">
-                  Showing the first {preview.data.rows.length} rows — narrow the period or add a
+                  Showing the first {preview.data.rows.length} rows: narrow the period or add a
                   filter to see a complete answer.
                 </Alert>
               ) : null}

@@ -182,7 +182,7 @@ const SCHEDULING = {
             handle: 'fine-interior-consult',
             name: 'Fine interior consultation',
             description:
-                'A considered plan for a high-end interior — color, sheen, meticulous prep and a flawless finish.',
+                'A considered plan for a high-end interior: color, sheen, meticulous prep and a flawless finish.',
             durationMinutes: 60,
             priceCents: 12000,
             assignmentStrategy: 'customer_choice',
@@ -195,7 +195,7 @@ const SCHEDULING = {
             handle: 'cabinet-refinishing-consult',
             name: 'Cabinet refinishing consultation',
             description:
-                'For kitchens and built-ins — we assess the joinery and plan a durable, hand-finished refinish.',
+                'For kitchens and built-ins. We assess the joinery and plan a durable, hand-finished refinish.',
             durationMinutes: 60,
             priceCents: 12000,
             assignmentStrategy: 'customer_choice',
@@ -208,7 +208,7 @@ const SCHEDULING = {
             handle: 'specialty-finish-consult',
             name: 'Specialty finish consultation',
             description:
-                'Limewash, Venetian plaster, metallics and hand-glazing — we plan the technique your room calls for.',
+                'Limewash, Venetian plaster, metallics and hand-glazing. We plan the technique your room calls for.',
             durationMinutes: 75,
             priceCents: 15000,
             assignmentStrategy: 'customer_choice',
@@ -221,7 +221,7 @@ const SCHEDULING = {
             handle: 'historic-home-consult',
             name: 'Historic-home consultation',
             description:
-                'Period-sensitive work on older homes — careful stripping, repair and finishes true to the era.',
+                'Period-sensitive work on older homes: careful stripping, repair and finishes true to the era.',
             durationMinutes: 90,
             priceCents: 18000,
             assignmentStrategy: 'customer_choice',
@@ -234,7 +234,7 @@ const SCHEDULING = {
             handle: 'woodwork-refinishing-consult',
             name: 'Woodwork refinishing consultation',
             description:
-                'Trim, staircases, doors and panelling — stripped, repaired and refinished with a hand-rubbed touch.',
+                'Trim, staircases, doors and panelling: stripped, repaired and refinished with a hand-rubbed touch.',
             durationMinutes: 60,
             priceCents: 12000,
             assignmentStrategy: 'customer_choice',
@@ -247,7 +247,7 @@ const SCHEDULING = {
             handle: 'color-finish-consult',
             name: 'Color & finish consultation',
             description:
-                'An in-home session on palette, sheen and finish — samples on your walls, in your light.',
+                'An in-home session on palette, sheen and finish: samples on your walls, in your light.',
             durationMinutes: 60,
             priceCents: 10000,
             assignmentStrategy: 'customer_choice',
@@ -265,7 +265,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A beautifully finished sitting room with hand-painted panelling and soft daylight',
         title: 'Fine finishes, done by hand',
-        sub: 'Heritage Painters is a fine-finishes studio for discerning homes — meticulous prep, specialty finishes and cabinet and woodwork refinishing, finished to a craftsman’s standard. Book a consultation to begin.',
+        sub: 'Heritage Painters is a fine-finishes studio for discerning homes: meticulous prep, specialty finishes and cabinet and woodwork refinishing, finished to a craftsman’s standard. Book a consultation to begin.',
         primary: { label: 'Book a consultation', href: '/book' },
         secondary: { label: 'See our work', href: '/book' },
         overlay: 'dark',
@@ -274,7 +274,7 @@ const HOME = [
         items: [
             {
                 title: 'Master craftsmen',
-                body: 'Seasoned finishers who have spent careers on brush and blade. You get the same steady hands, start to finish — never a rotating crew.',
+                body: 'Seasoned finishers who have spent careers on brush and blade. You get the same steady hands, start to finish, never a rotating crew.',
             },
             {
                 title: 'Meticulous preparation',
@@ -282,7 +282,7 @@ const HOME = [
             },
             {
                 title: 'Specialty & fine finishes',
-                body: 'Limewash, Venetian plaster, hand-glazing, metallics and hand-rubbed lacquers — techniques most crews don’t offer, done properly.',
+                body: 'Limewash, Venetian plaster, hand-glazing, metallics and hand-rubbed lacquers: techniques most crews don’t offer, done properly.',
             },
             {
                 title: 'Historic-home expertise',
@@ -292,7 +292,7 @@ const HOME = [
     }),
     serviceMenu({
         heading: 'Ways to work with us',
-        intro: 'Every project starts with a conversation. Here are a few of the ways in — full prices and live availability are on the booking page.',
+        intro: 'Every project starts with a conversation. Here are a few of the ways in: full prices and live availability are on the booking page.',
         surface: 'muted',
         columns: 2,
         items: [
@@ -308,7 +308,7 @@ const HOME = [
         alt: 'A painter carefully cutting a crisp line along fine trim with a sable brush',
         heading: 'The craft is in the preparation',
         body: [
-            'We begin with a walk-through and a plan — the right primer, the right sheen, the order of work — then the slow, careful part: filling, sanding and caulking until every surface is honest and true, so the color has something worthy to sit on.',
+            'We begin with a walk-through and a plan (the right primer, the right sheen, the order of work) then the slow, careful part: filling, sanding and caulking until every surface is honest and true, so the color has something worthy to sit on.',
             'Only then do we finish, coat by unhurried coat, cutting clean lines by hand and leaving rooms that look considered, personal and built to last.',
         ],
         cta: { label: 'Book a consultation', href: '/book' },
@@ -330,7 +330,7 @@ const HOME = [
     }),
     bookingCta({
         title: 'Ready to give your home the finish it deserves?',
-        sub: 'Start with a consultation — choose a craftsman, see live availability and pick a time that suits you.',
+        sub: 'Start with a consultation. Choose a craftsman, see live availability and pick a time that suits you.',
         cta: { label: 'Book a consultation', href: '/book' },
     }),
 ];
@@ -354,7 +354,7 @@ const ABOUT = [
         heading: 'About Heritage Painters',
         body: [
             'Heritage Painters began with a simple conviction: fine finishes are earned through patience, not speed. We take on a small number of projects at a time so every surface gets the prep, the care and the steady hand it deserves.',
-            'From a single hand-painted room to a whole-home refinish, we bring the same craft — honest advice, meticulous preparation and finishes made to be lived with for years, not repainted in two.',
+            'From a single hand-painted room to a whole-home refinish, we bring the same craft: honest advice, meticulous preparation and finishes made to be lived with for years, not repainted in two.',
         ],
         cta: { label: 'Book a consultation', href: '/book' },
     }),
@@ -362,8 +362,8 @@ const ABOUT = [
         surface: 'muted',
         heading: 'How we work',
         items: [
-            { title: 'A considered pace', body: 'We take on a handful of projects at once. That’s deliberate — it’s how each room gets the preparation and finishing it needs to last.' },
-            { title: 'Honest about the work', body: 'We plan to your home and your budget from the first visit and keep it visible throughout — no creeping numbers, no shortcuts hidden under the paint.' },
+            { title: 'A considered pace', body: 'We take on a handful of projects at once. That’s deliberate: it’s how each room gets the preparation and finishing it needs to last.' },
+            { title: 'Honest about the work', body: 'We plan to your home and your budget from the first visit and keep it visible throughout: no creeping numbers, no shortcuts hidden under the paint.' },
             { title: 'Finishes that endure', body: 'The best compliment we get is that our work still looks right years later. We prepare properly and finish patiently, so it does.' },
         ],
     }),
@@ -382,7 +382,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and reserve your consultation online — no phone tag.',
+        sub: 'See live availability and reserve your consultation online: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book a consultation', href: '/book' },
     }),
@@ -393,8 +393,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-painting-premium',
     name: 'Painting (Premium)',
     summary:
-        'A refined site for a premium fine-finishes painting studio — a deep heritage-green palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary walk-through to cabinet refinishing, specialty finishes and historic-home work, three craftsmen you book by name with their own hours, and a project-deposit policy. Ships as "Heritage Painters".',
-    tagline: 'A refined, craftsman template for fine-finishes painters — book consultations online from day one.',
+        'A refined site for a premium fine-finishes painting studio: a deep heritage-green palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary walk-through to cabinet refinishing, specialty finishes and historic-home work, three craftsmen you book by name with their own hours, and a project-deposit policy. Ships as "Heritage Painters".',
+    tagline: 'A refined, craftsman template for fine-finishes painters. Book consultations online from day one.',
     industry: 'Painting',
     sortWeight: 25,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -403,9 +403,9 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Heritage Painters — a fine-finishes painting studio',
+            title: 'Heritage Painters: a fine-finishes painting studio',
             description:
-                'Heritage Painters is a premium fine-finishes studio — high-end interiors, cabinet refinishing, fine woodwork, specialty finishes and historic-home work. Book a consultation online.',
+                'Heritage Painters is a premium fine-finishes studio: high-end interiors, cabinet refinishing, fine woodwork, specialty finishes and historic-home work. Book a consultation online.',
         },
     },
     home: HOME,

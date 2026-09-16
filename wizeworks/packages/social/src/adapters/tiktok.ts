@@ -143,7 +143,7 @@ export function classifyTikTokAudit(options: readonly string[]): SocialAccessPro
       grantedScopes: null,
       appReview: 'pending',
       detail:
-        'TikTok will only accept private posts from this account right now. That usually means the app review has not finished — though it also happens when the TikTok account itself is set to private, so check that before chasing TikTok.',
+        'TikTok will only accept private posts from this account right now. That usually means the app review has not finished, though it also happens when the TikTok account itself is set to private, so check that before chasing TikTok.',
     };
   }
   return {

@@ -83,7 +83,7 @@ function EmailsBody({
       <PaneLoadError
         icon={GLYPH}
         title="Could not load your emails"
-        description="This is a problem reaching the server. None of your designs are affected — nothing has been lost."
+        description="This is a problem reaching the server. None of your designs are affected. Nothing has been lost."
         onRetry={onRetry}
       />
     );
@@ -94,7 +94,7 @@ function EmailsBody({
       <EmptyState
         icon={GLYPH}
         title="No emails here yet"
-        description="Name one above — “Spring offer”, “Thanks for booking” — and it opens straight into the editor, blank and ready to write."
+        description="Name one above (“Spring offer”, “Thanks for booking”) and it opens straight into the editor, blank and ready to write."
       />
     );
   }
@@ -158,7 +158,7 @@ function AddEmail({
         <Input
           size="sm"
           value={name}
-          placeholder="Name a new email — “Spring offer”, “Thanks for booking”"
+          placeholder="Name a new email: “Spring offer”, “Thanks for booking”"
           onChange={(event) => setName(event.currentTarget.value)}
           onKeyDown={(event) => {
             if (event.key === 'Enter') void add();

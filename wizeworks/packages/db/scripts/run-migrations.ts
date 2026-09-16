@@ -150,7 +150,7 @@ async function reconcileMigrationRenames(connectionUrl: string): Promise<void> {
   await client.connect();
   try {
     if (!(await hasMigrationsTable(client))) {
-      console.log('[migrate] no _prisma_migrations table yet — nothing to reconcile.');
+      console.log('[migrate] no _prisma_migrations table yet. Nothing to reconcile.');
       return;
     }
     for (const [oldName, newName] of KNOWN_MIGRATION_RENAMES) {
@@ -199,7 +199,7 @@ async function clearFailedMigrations(connectionUrl: string): Promise<void> {
   await client.connect();
   try {
     if (!(await hasMigrationsTable(client))) {
-      console.log('[migrate] no _prisma_migrations table yet — nothing to clear.');
+      console.log('[migrate] no _prisma_migrations table yet. Nothing to clear.');
       return;
     }
     const { rows } = await client.query<{ migration_name: string }>(
@@ -225,7 +225,7 @@ async function main(): Promise<void> {
   let migrationUrl: string;
 
   if (PROJECT_ID) {
-    console.log(`[migrate] GCP mode — fetching secrets from project ${PROJECT_ID}…`);
+    console.log(`[migrate] GCP mode: fetching secrets from project ${PROJECT_ID}…`);
     const [appPassword, ownerPassword] = await Promise.all([
       getSecret('sparx-db-app-password'),
       getSecret('sparx-db-owner-password'),
@@ -252,7 +252,7 @@ async function main(): Promise<void> {
     // DATABASE_URL and must run as the owner.
     databaseUrl = DIRECT_URL;
     migrationUrl = DIRECT_URL;
-    console.log('[migrate] direct mode — using the supplied connection URL.');
+    console.log('[migrate] direct mode: using the supplied connection URL.');
     console.log('[migrate] no Secret Manager, no Auth Proxy sidecar.');
   }
 

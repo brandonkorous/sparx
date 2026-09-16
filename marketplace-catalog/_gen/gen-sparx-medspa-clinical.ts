@@ -206,7 +206,7 @@ const SCHEDULING = {
     {
       handle: 'hydrafacial',
       name: 'HydraFacial',
-      description: 'A medical-grade cleanse, exfoliation and hydration in one session — visibly fresher skin, zero downtime.',
+      description: 'A medical-grade cleanse, exfoliation and hydration in one session: visibly fresher skin, zero downtime.',
       durationMinutes: 60,
       priceCents: 19900,
       bufferAfterMin: 10,
@@ -220,7 +220,7 @@ const SCHEDULING = {
     {
       handle: 'chemical-peel',
       name: 'Chemical peel',
-      description: 'A tailored peel to smooth tone and texture, dialed to your skin and your downtime — light to medium depth.',
+      description: 'A tailored peel to smooth tone and texture, dialed to your skin and your downtime: light to medium depth.',
       durationMinutes: 45,
       priceCents: 17500,
       bufferAfterMin: 10,
@@ -234,7 +234,7 @@ const SCHEDULING = {
     {
       handle: 'microneedling',
       name: 'Microneedling',
-      description: 'Collagen-induction therapy for fine lines, scarring and texture — a series builds firmer, clearer skin over time.',
+      description: 'Collagen-induction therapy for fine lines, scarring and texture: a series builds firmer, clearer skin over time.',
       durationMinutes: 75,
       priceCents: 29900,
       bufferAfterMin: 15,
@@ -248,7 +248,7 @@ const SCHEDULING = {
     {
       handle: 'laser-hair-removal',
       name: 'Laser hair removal',
-      description: 'Comfortable, effective laser hair reduction for face or body, safe across skin types — priced per area.',
+      description: 'Comfortable, effective laser hair reduction for face or body, safe across skin types: priced per area.',
       durationMinutes: 30,
       priceCents: 14900,
       bufferAfterMin: 10,
@@ -262,7 +262,7 @@ const SCHEDULING = {
     {
       handle: 'iv-therapy',
       name: 'IV therapy',
-      description: 'A registered nurse–administered vitamin drip for hydration, energy and recovery — chosen to fit how you feel that day.',
+      description: 'A registered nurse–administered vitamin drip for hydration, energy and recovery: chosen to fit how you feel that day.',
       durationMinutes: 45,
       priceCents: 12500,
       assignmentStrategy: 'any_available',
@@ -290,11 +290,11 @@ const HOME = [
     items: [
       {
         title: 'Results you can measure',
-        body: 'We photograph and baseline your skin first, then check back against it — so progress is something you can see, not just feel.',
+        body: 'We photograph and baseline your skin first, then check back against it, so progress is something you can see, not just feel.',
       },
       {
         title: 'Medical-grade, not spa-grade',
-        body: 'Clinical devices and pharmaceutical-strength formulations, used at the right depth for your skin — not a generic day-spa menu.',
+        body: 'Clinical devices and pharmaceutical-strength formulations, used at the right depth for your skin, not a generic day-spa menu.',
       },
       {
         title: 'Licensed providers, every time',
@@ -304,14 +304,14 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Treatments',
-    intro: 'A few of the things we do most. Full pricing and live availability are on the booking page — and a free consultation comes first if you’re not sure.',
+    intro: 'A few of the things we do most. Full pricing and live availability are on the booking page, and a free consultation comes first if you’re not sure.',
     surface: 'muted',
     columns: 3,
     items: [
-      { name: 'HydraFacial', priceCents: 19900, durationMin: 60, desc: 'Cleanse, exfoliate and hydrate — fresher skin, no downtime.' },
+      { name: 'HydraFacial', priceCents: 19900, durationMin: 60, desc: 'Cleanse, exfoliate and hydrate: fresher skin, no downtime.' },
       { name: 'Microneedling', priceCents: 29900, durationMin: 75, desc: 'Collagen-induction therapy for texture, lines and scarring.' },
       { name: 'Chemical peel', priceCents: 17500, durationMin: 45, desc: 'A tailored peel for tone and smoothness, dialed to your skin.' },
-      { name: 'Laser hair removal', priceCents: 14900, durationMin: 30, desc: 'Comfortable, effective reduction — safe across skin types.' },
+      { name: 'Laser hair removal', priceCents: 14900, durationMin: 30, desc: 'Comfortable, effective reduction: safe across skin types.' },
       { name: 'IV therapy', priceCents: 12500, durationMin: 45, desc: 'Nurse-administered drips for hydration, energy and recovery.' },
       { name: 'Skin analysis', priceCents: 7500, durationMin: 30, desc: 'Imaging and measured baselines to plan what comes next.' },
     ],
@@ -322,14 +322,14 @@ const HOME = [
     alt: 'A clean, light-filled skin-clinic interior',
     heading: 'The Lumen approach',
     body: [
-      'We don’t sell you a package on day one. Every plan starts with a consultation and a proper skin analysis, so what we recommend is based on your skin — not a menu we’re trying to move.',
+      'We don’t sell you a package on day one. Every plan starts with a consultation and a proper skin analysis, so what we recommend is based on your skin, not a menu we’re trying to move.',
       'Then we build a course of treatments with clear expectations: what it does, how long it takes, and when you’ll see it. Honest, medical, and paced for real results that hold.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
   teamRow({
     heading: 'Your providers',
-    intro: 'Book by name — a licensed provider you’ll get to know, with a medical director overseeing every plan.',
+    intro: 'Book by name: a licensed provider you’ll get to know, with a medical director overseeing every plan.',
     members: [
       { name: 'Dr. Elise Warren', role: 'Medical director', image: url(IMG.elise), alt: 'Dr. Elise Warren, medical director', bio: 'Oversees every treatment plan. Leads peels, microneedling and laser.' },
       { name: 'Jordan Pierce, RN', role: 'Aesthetic nurse', image: url(IMG.jordan), alt: 'Jordan Pierce, RN, aesthetic nurse', bio: 'Registered nurse for IV therapy, skin analysis and consultations.' },
@@ -342,7 +342,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Start with a free consultation',
-    sub: 'Tell us what’s bothering you and we’ll build a plan — no pressure, no package. It takes about a minute to book.',
+    sub: 'Tell us what’s bothering you and we’ll build a plan: no pressure, no package. It takes about a minute to book.',
     cta: { label: 'Book online', href: '/book' },
   }),
 ];
@@ -365,7 +365,7 @@ const ABOUT = [
     alt: 'A bright, calm treatment room in clinical white and soft mint',
     heading: 'About Lumen',
     body: [
-      'We opened Lumen to do aesthetic skincare the way medicine should be done — with a real assessment, licensed hands, and outcomes you can measure rather than promises you can’t.',
+      'We opened Lumen to do aesthetic skincare the way medicine should be done, with a real assessment, licensed hands, and outcomes you can measure rather than promises you can’t.',
       'That means a consultation before a credit card, a plan built around your skin, and providers who tell you honestly what will and won’t work. Calm, clean, and genuinely clinical.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
@@ -374,7 +374,7 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'Assessment first', body: 'Every plan opens with imaging and a measured baseline, so we treat your actual skin — not a guess.' },
+      { title: 'Assessment first', body: 'Every plan opens with imaging and a measured baseline, so we treat your actual skin, not a guess.' },
       { title: 'Medical oversight', body: 'A medical director signs off on treatment plans, and a licensed provider performs every session.' },
       { title: 'Paced for results', body: 'We build a realistic course with clear expectations, then check back against your baseline as it holds.' },
     ],
@@ -395,7 +395,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a consultation or treatment online — no phone tag.',
+    sub: 'See live availability and reserve a consultation or treatment online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -406,8 +406,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-medspa-clinical',
   name: 'Med Spa (Clinical)',
   summary:
-    'A clean, clinical med-spa site — clinical white and pale mint, a calm teal-sage primary and a warm-sand accent, with a modern sans throughout. Installs a working booking flow: a free consultation you approve, plus HydraFacial, peels, microneedling, laser and IV therapy booked to licensed providers across two treatment rooms, with a deposit on treatments. Ships as "Lumen", a results-forward skin clinic.',
-  tagline: 'A clinical, results-forward template for med spas — book online from day one.',
+    'A clean, clinical med-spa site: clinical white and pale mint, a calm teal-sage primary and a warm-sand accent, with a modern sans throughout. Installs a working booking flow: a free consultation you approve, plus HydraFacial, peels, microneedling, laser and IV therapy booked to licensed providers across two treatment rooms, with a deposit on treatments. Ships as "Lumen", a results-forward skin clinic.',
+  tagline: 'A clinical, results-forward template for med spas. Book online from day one.',
   industry: 'Med spa',
   sortWeight: 81,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -416,9 +416,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Lumen — a clinical med spa & skin clinic',
+      title: 'Lumen: a clinical med spa & skin clinic',
       description:
-        'Lumen is a clinical skin studio for HydraFacial, peels, microneedling, laser and IV therapy — planned by licensed providers and measured against real results. Book online.',
+        'Lumen is a clinical skin studio for HydraFacial, peels, microneedling, laser and IV therapy: planned by licensed providers and measured against real results. Book online.',
     },
   },
   home: HOME,

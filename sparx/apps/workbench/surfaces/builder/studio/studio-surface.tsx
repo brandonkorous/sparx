@@ -888,10 +888,10 @@ function StudioEditor({
             title: `${String(n)} thing${n === 1 ? '' : 's'} on your site ${n === 1 ? 'is' : 'are'} broken`,
             description:
               n === 1
-                ? 'One thing on your site would not work for a visitor — a link that goes nowhere, ' +
+                ? 'One thing on your site would not work for a visitor: a link that goes nowhere, ' +
                   'an image with no picture in it, or a page with nothing on it. You can publish ' +
                   'anyway and fix it after, or look at it first.'
-                : `${String(n)} things on your site would not work for a visitor — links that go ` +
+                : `${String(n)} things on your site would not work for a visitor: links that go ` +
                   'nowhere, images with no picture in them, or pages with nothing on them. You can ' +
                   'publish anyway and fix them after, or look at them first.',
             confirmLabel: 'Publish anyway',

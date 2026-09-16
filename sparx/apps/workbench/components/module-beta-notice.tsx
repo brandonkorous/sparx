@@ -58,7 +58,7 @@ const BETA_NOTICES: Partial<Record<WorkbenchModule, BetaNotice>> = {
     title: 'Social is in beta',
     body: [
       'The social networks are still reviewing sparx’s access to post on your behalf, so expect some rough edges for now: an account may not connect yet, a post can sit in the queue longer than you expect, and numbers or comments may be incomplete or slow to appear.',
-      'Everything you write, schedule and plan is kept. As each network approves us, your queue starts going out to it — you will not have to redo anything.',
+      'Everything you write, schedule and plan is kept. As each network approves us, your queue starts going out to it. You will not have to redo anything.',
     ],
   },
 };

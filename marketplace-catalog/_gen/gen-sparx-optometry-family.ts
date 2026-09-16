@@ -132,7 +132,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead.',
+        'Please give us at least 24 hours’ notice if you need to change or cancel. It lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead.',
     },
     {
       handle: 'optometry-no-show',
@@ -141,7 +141,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Longer visits reserve an exam room and a doctor just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases.',
+        'Longer visits reserve an exam room and a doctor just for you, so we hold a card on file. Nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases.',
     },
   ],
   resources: [
@@ -186,7 +186,7 @@ const SCHEDULING = {
       handle: 'comprehensive-eye-exam',
       name: 'Comprehensive eye exam',
       description:
-        'A thorough, unhurried check of your vision and eye health — sharpness, prescription, pressure and a look at the health of your eyes, with plenty of time for questions. The right first step for anyone new to us, at any age.',
+        'A thorough, unhurried check of your vision and eye health: sharpness, prescription, pressure and a look at the health of your eyes, with plenty of time for questions. The right first step for anyone new to us, at any age.',
       durationMinutes: 40,
       priceCents: 12900,
       bufferAfterMin: 10,
@@ -201,7 +201,7 @@ const SCHEDULING = {
       handle: 'contact-lens-exam',
       name: 'Contact lens exam & fitting',
       description:
-        'Everything a comprehensive exam covers, plus a proper contact-lens fitting — measurements, a trial pair and a hands-on lesson if you’re new to lenses. We’ll find the fit that feels comfortable all day.',
+        'Everything a comprehensive exam covers, plus a proper contact-lens fitting: measurements, a trial pair and a hands-on lesson if you’re new to lenses. We’ll find the fit that feels comfortable all day.',
       durationMinutes: 50,
       priceCents: 15900,
       bufferAfterMin: 10,
@@ -216,7 +216,7 @@ const SCHEDULING = {
       handle: 'kids-eye-exam',
       name: 'Kids’ eye exam',
       description:
-        'A friendly, playful eye check made just for little ones — no reading required for the youngest, lots of encouragement, and gentle screening for the vision problems that matter most as kids grow. First visits are our favourite.',
+        'A friendly, playful eye check made just for little ones: no reading required for the youngest, lots of encouragement, and gentle screening for the vision problems that matter most as kids grow. First visits are our favourite.',
       durationMinutes: 30,
       priceCents: 9900,
       bufferAfterMin: 10,
@@ -246,7 +246,7 @@ const SCHEDULING = {
       handle: 'medical-eye-visit',
       name: 'Medical eye visit',
       description:
-        'Red, painful, or suddenly blurry? Got something in your eye, or an infection that won’t settle? Request a focused medical visit and we’ll examine what’s going on, ease it, and sort out the next step — often the same day.',
+        'Red, painful, or suddenly blurry? Got something in your eye, or an infection that won’t settle? Request a focused medical visit and we’ll examine what’s going on, ease it, and sort out the next step, often the same day.',
       durationMinutes: 30,
       priceCents: 11900,
       bufferAfterMin: 10,
@@ -262,7 +262,7 @@ const SCHEDULING = {
       handle: 'frame-styling',
       name: 'Frame styling session',
       description:
-        'Bring your prescription (or your last pair) and let our optician help you find frames you’ll love — shapes that suit your face, lenses that suit your day, and honest advice on what’s worth it. No exam needed, and it’s free.',
+        'Bring your prescription (or your last pair) and let our optician help you find frames you’ll love: shapes that suit your face, lenses that suit your day, and honest advice on what’s worth it. No exam needed, and it’s free.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -275,7 +275,7 @@ const SCHEDULING = {
       handle: 'annual-checkup',
       name: 'Annual eye checkup',
       description:
-        'Your regular yearly visit — a quick, friendly update of your prescription and a health check to keep everything on track. The easy way to stay ahead of changes before they become a problem.',
+        'Your regular yearly visit: a quick, friendly update of your prescription and a health check to keep everything on track. The easy way to stay ahead of changes before they become a problem.',
       durationMinutes: 30,
       priceCents: 10900,
       bufferAfterMin: 10,
@@ -295,7 +295,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A bright, friendly optical shop with big windows and rows of glasses on warm-lit shelves',
     title: 'Clear vision for the whole family',
-    sub: 'Warm, unhurried eye care for every age — comprehensive exams, kids’ vision, contacts, dry-eye help and a wall of frames to love. New patients always welcome.',
+    sub: 'Warm, unhurried eye care for every age: comprehensive exams, kids’ vision, contacts, dry-eye help and a wall of frames to love. New patients always welcome.',
     primary: { label: 'Book an eye exam', href: '/book' },
     secondary: { label: 'See appointments', href: '/book' },
     overlay: 'soft',
@@ -312,7 +312,7 @@ const HOME = [
       },
       {
         title: 'Kids genuinely welcome',
-        body: 'From a toddler’s first check to a teenager’s new contacts, we make eye exams playful and easy — gentle doctors, no scary words, plenty of high-fives.',
+        body: 'From a toddler’s first check to a teenager’s new contacts, we make eye exams playful and easy: gentle doctors, no scary words, plenty of high-fives.',
       },
       {
         title: 'A huge frame selection',
@@ -322,14 +322,14 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Appointments',
-    intro: 'A few of the visits we see most. Full prices and live availability are on the booking page — and frame styling is always free.',
+    intro: 'A few of the visits we see most. Full prices and live availability are on the booking page, and frame styling is always free.',
     surface: 'muted',
     columns: 2,
     items: [
       { name: 'Comprehensive eye exam', priceCents: 12900, durationMin: 40, desc: 'A full check of your vision and eye health.' },
       { name: 'Contact lens exam & fitting', priceCents: 15900, durationMin: 50, desc: 'An exam plus a proper contact-lens fitting.' },
       { name: 'Kids’ eye exam', priceCents: 9900, durationMin: 30, desc: 'A friendly, playful check made for little ones.' },
-      { name: 'Dry-eye consultation', priceCents: 8900, durationMin: 30, desc: 'Find out why your eyes bother you — and fix it.' },
+      { name: 'Dry-eye consultation', priceCents: 8900, durationMin: 30, desc: 'Find out why your eyes bother you, and fix it.' },
       { name: 'Medical eye visit', priceCents: 11900, durationMin: 30, desc: 'Red, painful or blurry? Often seen the same day.' },
       { name: 'Frame styling session', priceCents: 0, durationMin: 30, desc: 'Free, friendly help choosing frames you’ll love.' },
     ],
@@ -340,27 +340,27 @@ const HOME = [
     alt: 'A calm, welcoming eye-care exam room with a phoropter and soft daylight',
     heading: 'Family eye care, the warm way',
     body: [
-      'Clearview is a neighbourhood practice built for real families — the kind of place where the whole household can be seen in one trip, where the optician remembers your kids’ names, and where nobody is ever made to feel rushed or upsold.',
-      'We keep things simple and honest: clear prices, gentle exams, and only the lenses and care you actually need. Come in for a check-up, a new prescription, or just to browse frames — and leave seeing better and feeling looked after.',
+      'Clearview is a neighbourhood practice built for real families: the kind of place where the whole household can be seen in one trip, where the optician remembers your kids’ names, and where nobody is ever made to feel rushed or upsold.',
+      'We keep things simple and honest: clear prices, gentle exams, and only the lenses and care you actually need. Come in for a check-up, a new prescription, or just to browse frames, and leave seeing better and feeling looked after.',
     ],
     cta: { label: 'Book your visit', href: '/book' },
   }),
   teamRow({
     heading: 'Meet the team',
-    intro: 'Book by name — you’ll see friendly, familiar faces every visit.',
+    intro: 'Book by name: you’ll see friendly, familiar faces every visit.',
     members: [
-      { name: 'Dr. Elena Reyes', role: 'Optometrist', image: url(IMG.elena), alt: 'Dr. Elena Reyes, optometrist, smiling warmly', bio: 'Comprehensive exams, contacts and medical eye care — with a gentle, patient way about her. Elena founded the practice.' },
-      { name: 'Dr. Marcus Bell', role: 'Optometrist · kids & dry-eye', image: url(IMG.marcus), alt: 'Dr. Marcus Bell, optometrist, in the exam room', bio: 'A favourite with little ones and anyone battling dry, tired eyes — Marcus makes first visits fun and fear-free.' },
-      { name: 'Nadia Okafor', role: 'Licensed optician', image: url(IMG.nadia), alt: 'Nadia Okafor, licensed optician, helping choose frames', bio: 'The eye for frames — Nadia helps you find the pair that fits your face, your lenses and your life.' },
+      { name: 'Dr. Elena Reyes', role: 'Optometrist', image: url(IMG.elena), alt: 'Dr. Elena Reyes, optometrist, smiling warmly', bio: 'Comprehensive exams, contacts and medical eye care, with a gentle, patient way about her. Elena founded the practice.' },
+      { name: 'Dr. Marcus Bell', role: 'Optometrist · kids & dry-eye', image: url(IMG.marcus), alt: 'Dr. Marcus Bell, optometrist, in the exam room', bio: 'A favourite with little ones and anyone battling dry, tired eyes: Marcus makes first visits fun and fear-free.' },
+      { name: 'Nadia Okafor', role: 'Licensed optician', image: url(IMG.nadia), alt: 'Nadia Okafor, licensed optician, helping choose frames', bio: 'The eye for frames: Nadia helps you find the pair that fits your face, your lenses and your life.' },
     ],
   }),
   testimonial({
-    quote: 'My kids actually look forward to the eye doctor now — and I finally found frames I love instead of settling. The whole team is warm, patient and never pushy. We’ve moved the whole family here.',
+    quote: 'My kids actually look forward to the eye doctor now, and I finally found frames I love instead of settling. The whole team is warm, patient and never pushy. We’ve moved the whole family here.',
     attribution: 'Bianca, mum of two & patient since 2022',
   }),
   bookingCta({
     title: 'New patients always welcome',
-    sub: 'Pick a visit, choose your doctor and see live times. It takes about a minute — and we’ll take it from there.',
+    sub: 'Pick a visit, choose your doctor and see live times. It takes about a minute, and we’ll take it from there.',
     cta: { label: 'Book an eye exam', href: '/book' },
   }),
 ];
@@ -383,7 +383,7 @@ const ABOUT = [
     alt: 'A bright, friendly optical shop with big windows and rows of glasses on warm-lit shelves',
     heading: 'About Clearview Eye Care',
     body: [
-      'We opened Clearview to be the kind of eye doctor we’d want for our own families — warm, honest and genuinely unhurried. Somewhere every age feels welcome, from a child’s first exam to a grandparent’s yearly check.',
+      'We opened Clearview to be the kind of eye doctor we’d want for our own families: warm, honest and genuinely unhurried. Somewhere every age feels welcome, from a child’s first exam to a grandparent’s yearly check.',
       'No upselling, no lectures, no confusing jargon. Just thorough exams, clear explanations, and a friendly team that treats you like a neighbour, because you probably are one.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
@@ -392,9 +392,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we care for your eyes',
     items: [
-      { title: 'We listen first', body: 'Every visit starts with a real conversation about your eyes, your day and your budget — so the plan fits your life, not a sales target.' },
+      { title: 'We listen first', body: 'Every visit starts with a real conversation about your eyes, your day and your budget, so the plan fits your life, not a sales target.' },
       { title: 'Honest, clear pricing', body: 'We’ll always tell you the cost before we start, file your insurance for you, and never push lenses or extras you don’t need.' },
-      { title: 'Gentle for every age', body: 'Wriggly toddlers, nervous first-timers, busy teens and everyone after — we know how to make each one comfortable and glad they came.' },
+      { title: 'Gentle for every age', body: 'Wriggly toddlers, nervous first-timers, busy teens and everyone after. We know how to make each one comfortable and glad they came.' },
     ],
   }),
 ];
@@ -412,7 +412,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your family’s appointments online — no phone tag, no hold music.',
+    sub: 'See live availability and reserve your family’s appointments online: no phone tag, no hold music.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -423,8 +423,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-optometry-family',
   name: 'Optometry (Family)',
   summary:
-    'A warm, family-friendly optometry site — a clear teal palette, a warm coral accent and rounded type, with gentle, all-ages copy. Installs a working online booking flow for eye exams: real visit types (comprehensive and contact-lens exams, kids’ exams, dry-eye, medical visits and free frame styling), two optometrists and an optician booked by name with their own hours, exam rooms as resources, and a no-show hold policy. Ships as "Clearview Eye Care", a family eye-care practice.',
-  tagline: 'A warm, family template for optometry practices — book eye exams online from day one.',
+    'A warm, family-friendly optometry site: a clear teal palette, a warm coral accent and rounded type, with gentle, all-ages copy. Installs a working online booking flow for eye exams: real visit types (comprehensive and contact-lens exams, kids’ exams, dry-eye, medical visits and free frame styling), two optometrists and an optician booked by name with their own hours, exam rooms as resources, and a no-show hold policy. Ships as "Clearview Eye Care", a family eye-care practice.',
+  tagline: 'A warm, family template for optometry practices. Book eye exams online from day one.',
   industry: 'Optometry',
   sortWeight: 44,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -433,9 +433,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Clearview Eye Care — a friendly family optometrist',
+      title: 'Clearview Eye Care: a friendly family optometrist',
       description:
-        'Clearview Eye Care is a warm, all-ages optometry practice for comprehensive eye exams, kids’ vision, contacts, dry-eye help, medical eye visits and glasses. New patients welcome — book an eye exam online.',
+        'Clearview Eye Care is a warm, all-ages optometry practice for comprehensive eye exams, kids’ vision, contacts, dry-eye help, medical eye visits and glasses. New patients welcome. Book an eye exam online.',
     },
   },
   home: HOME,

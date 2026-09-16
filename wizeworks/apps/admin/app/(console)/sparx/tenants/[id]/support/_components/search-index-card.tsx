@@ -23,7 +23,7 @@ export function SearchIndexCard({
         </Stack>
         {index.unavailable ? (
           <Text variant="muted">
-            The search index is currently unavailable — document counts can’t be read right now.
+            The search index is currently unavailable: document counts can’t be read right now.
           </Text>
         ) : index.collections.length === 0 ? (
           <Text variant="muted">No indexed collections for this tenant yet.</Text>

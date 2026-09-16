@@ -253,7 +253,7 @@ function Composer({ id, disabled }: { id: string; disabled: boolean }) {
           <DropdownMenuContent>
             {(quickReplies.data ?? []).length === 0 ? (
               <DropdownMenuItem disabled>
-                No saved replies yet — add them in Chat settings
+                No saved replies yet. Add them in Chat settings
               </DropdownMenuItem>
             ) : (
               (quickReplies.data ?? []).map((reply) => (

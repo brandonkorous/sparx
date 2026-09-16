@@ -140,7 +140,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show — otherwise the hold is released after your visit.',
+        'Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show, otherwise the hold is released after your visit.',
     },
   ],
   resources: [
@@ -192,7 +192,7 @@ const SCHEDULING = {
       handle: 'wellness-exam',
       name: 'Wellness exam',
       description:
-        'A head-to-tail check-up for a healthy dog or cat — weight, heart, teeth, coat and a plan to keep them feeling their best.',
+        'A head-to-tail check-up for a healthy dog or cat: weight, heart, teeth, coat and a plan to keep them feeling their best.',
       durationMinutes: 30,
       priceCents: 6500,
       assignmentStrategy: 'customer_choice',
@@ -249,7 +249,7 @@ const SCHEDULING = {
       handle: 'senior-wellness',
       name: 'Senior wellness',
       description:
-        'A gentle, thorough check-in for older pets — mobility, weight, bloodwork and comfort, so their golden years stay easy.',
+        'A gentle, thorough check-in for older pets: mobility, weight, bloodwork and comfort, so their golden years stay easy.',
       durationMinutes: 45,
       priceCents: 12000,
       bufferAfterMin: 10,
@@ -264,7 +264,7 @@ const SCHEDULING = {
       handle: 'dental-cleaning',
       name: 'Dental cleaning',
       description:
-        'A full dental under anesthesia with pre-op bloodwork — scaling, polishing and a look under the gumline for a fresher, healthier mouth.',
+        'A full dental under anesthesia with pre-op bloodwork: scaling, polishing and a look under the gumline for a fresher, healthier mouth.',
       durationMinutes: 90,
       priceCents: 34000,
       bufferAfterMin: 15,
@@ -279,7 +279,7 @@ const SCHEDULING = {
       handle: 'nail-trim',
       name: 'Nail trim',
       description:
-        'A quick, low-stress nail trim with our tech — in and out, no exam needed. Walk-ins welcome when we can fit you in.',
+        'A quick, low-stress nail trim with our tech: in and out, no exam needed. Walk-ins welcome when we can fit you in.',
       durationMinutes: 20,
       priceCents: 2500,
       assignmentStrategy: 'any_available',
@@ -298,7 +298,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A happy dog resting a paw on a caring veterinarian during a check-up',
     title: 'Your pet’s second family',
-    sub: 'A friendly neighborhood clinic for dogs and cats — wellness, vaccines, sick visits, dental and senior care, all under one warm roof.',
+    sub: 'A friendly neighborhood clinic for dogs and cats: wellness, vaccines, sick visits, dental and senior care, all under one warm roof.',
     primary: { label: 'Book an appointment', href: '/book' },
     secondary: { label: 'See our services', href: '/book' },
     overlay: 'dark',
@@ -307,7 +307,7 @@ const HOME = [
     items: [
       {
         title: 'Compassionate care',
-        body: 'Gentle hands, calm rooms and all the time your pet needs. We treat every animal like our own — because to us, they are.',
+        body: 'Gentle hands, calm rooms and all the time your pet needs. We treat every animal like our own, because to us, they are.',
       },
       {
         title: 'Same-day sick visits',
@@ -315,11 +315,11 @@ const HOME = [
       },
       {
         title: 'Dogs & cats welcome',
-        body: 'From a wiggly new puppy to a wise old cat, we care for the whole family — and keep the visit as low-stress as we can.',
+        body: 'From a wiggly new puppy to a wise old cat, we care for the whole family, and keep the visit as low-stress as we can.',
       },
       {
         title: 'Clear, honest pricing',
-        body: 'You’ll always know the cost before we begin. No surprises, no upsells — just straight answers and fair prices.',
+        body: 'You’ll always know the cost before we begin. No surprises, no upsells. Just straight answers and fair prices.',
       },
     ],
   }),
@@ -361,7 +361,7 @@ const HOME = [
     alt: 'A veterinarian gently holding a cat in a bright, calm exam room',
     heading: 'Care that starts with listening',
     body: [
-      'Cedar Paws is a neighborhood clinic, not a rush-you-through hospital. We keep the day unhurried so every visit gets a real conversation — about your pet, your worries, and what will actually help.',
+      'Cedar Paws is a neighborhood clinic, not a rush-you-through hospital. We keep the day unhurried so every visit gets a real conversation, about your pet, your worries, and what will actually help.',
       'You’ll see doctors and techs who remember your pet’s name, know their history, and explain everything in plain language. That’s the whole idea: fewer surprises, more trust, and a team that’s genuinely on your side.',
     ],
     cta: { label: 'Book an appointment', href: '/book' },
@@ -382,7 +382,7 @@ const HOME = [
         role: 'Veterinarian',
         image: url(IMG.sam),
         alt: 'Dr. Sam Reyes, veterinarian',
-        bio: 'A soft spot for senior pets and the anxious ones — the cats who hide and the dogs who shake.',
+        bio: 'A soft spot for senior pets and the anxious ones: the cats who hide and the dogs who shake.',
       },
       {
         name: 'Jordan Blake',
@@ -423,7 +423,7 @@ const ABOUT = [
     alt: 'A happy dog resting a paw on a caring veterinarian during a check-up',
     heading: 'About Cedar Paws',
     body: [
-      'We opened Cedar Paws to be the kind of clinic we’d want for our own pets — warm, unhurried, and honest. A place where you’re greeted by name, where the exam room feels calm, and where nobody makes you feel rushed or talked-down-to.',
+      'We opened Cedar Paws to be the kind of clinic we’d want for our own pets: warm, unhurried, and honest. A place where you’re greeted by name, where the exam room feels calm, and where nobody makes you feel rushed or talked-down-to.',
       'We’re a full-service neighborhood practice for dogs and cats: wellness and vaccines, sick and same-day visits, dentistry, surgery and gentle senior care. Whatever your pet needs, we’ll walk through it together.',
     ],
     cta: { label: 'Book an appointment', href: '/book' },
@@ -434,11 +434,11 @@ const ABOUT = [
     items: [
       {
         title: 'Low-stress by design',
-        body: 'Quiet rooms, gentle handling and treats on hand — we work at your pet’s pace to make the visit easier on everyone.',
+        body: 'Quiet rooms, gentle handling and treats on hand. We work at your pet’s pace to make the visit easier on everyone.',
       },
       {
         title: 'Plain-language answers',
-        body: 'We explain what we see, what it means and what your options are — no jargon, no pressure, just clear guidance you can trust.',
+        body: 'We explain what we see, what it means and what your options are: no jargon, no pressure, just clear guidance you can trust.',
       },
       {
         title: 'Here for the long haul',
@@ -461,7 +461,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live openings and reserve your pet’s time online — no phone tag, no hold music.',
+    sub: 'See live openings and reserve your pet’s time online: no phone tag, no hold music.',
     surface: 'muted',
     cta: { label: 'Book an appointment', href: '/book' },
   }),
@@ -472,8 +472,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-vet-neighborhood',
   name: 'Veterinary (Neighborhood)',
   summary:
-    'A warm, friendly neighborhood vet-clinic site — a caring teal palette, a coral accent and a clean warm-white ground. Installs a working booking flow: appointment types (wellness, vaccines, sick visits, dental, senior care), two vets and a tech you book by name, and exam rooms as resources so each visit reserves both a doctor and a room. Ships as "Cedar Paws Veterinary", a full-service clinic for dogs and cats.',
-  tagline: 'A warm, friendly template for neighborhood vet clinics — book online from day one.',
+    'A warm, friendly neighborhood vet-clinic site: a caring teal palette, a coral accent and a clean warm-white ground. Installs a working booking flow: appointment types (wellness, vaccines, sick visits, dental, senior care), two vets and a tech you book by name, and exam rooms as resources so each visit reserves both a doctor and a room. Ships as "Cedar Paws Veterinary", a full-service clinic for dogs and cats.',
+  tagline: 'A warm, friendly template for neighborhood vet clinics. Book online from day one.',
   industry: 'Veterinary',
   sortWeight: 62,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -482,9 +482,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Cedar Paws Veterinary — a friendly neighborhood vet clinic',
+      title: 'Cedar Paws Veterinary: a friendly neighborhood vet clinic',
       description:
-        'Cedar Paws is a full-service neighborhood vet for dogs and cats — wellness, vaccines, sick visits, dental and senior care. Book your appointment online.',
+        'Cedar Paws is a full-service neighborhood vet for dogs and cats: wellness, vaccines, sick visits, dental and senior care. Book your appointment online.',
     },
   },
   home: HOME,

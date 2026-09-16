@@ -35,7 +35,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Auto & Industrial',
     tagline: 'Parts, tools, and supplies for vehicles and the shop floor.',
     description:
-      'Shop auto parts, industrial supplies, and equipment from independent sellers across the network — fitment-aware, in stock, and ready to ship.',
+      'Shop auto parts, industrial supplies, and equipment from independent sellers across the network: fitment-aware, in stock, and ready to ship.',
     icon: 'Wrench',
   },
   {
@@ -43,7 +43,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Beauty & Wellness',
     tagline: 'Independent skincare, cosmetics, and self-care brands.',
     description:
-      'Discover independent beauty, skincare, and wellness brands selling direct on sparx.market — small-batch, original, and shipped from the maker.',
+      'Discover independent beauty, skincare, and wellness brands selling direct on sparx.market: small-batch, original, and shipped from the maker.',
     icon: 'Sparkles',
   },
   {
@@ -51,7 +51,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Home & Living',
     tagline: 'Furniture, decor, and goods for every room.',
     description:
-      'Furnish and decorate from independent home-goods sellers on sparx.market — kitchen, decor, furniture, and the things that make a space yours.',
+      'Furnish and decorate from independent home-goods sellers on sparx.market: kitchen, decor, furniture, and the things that make a space yours.',
     icon: 'Home',
   },
   {
@@ -59,7 +59,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Fashion & Apparel',
     tagline: 'Clothing, accessories, and footwear from real sellers.',
     description:
-      'Browse apparel, accessories, and footwear from independent fashion sellers on sparx.market — new arrivals from brands you won’t find on the big marketplaces.',
+      'Browse apparel, accessories, and footwear from independent fashion sellers on sparx.market: new arrivals from brands you won’t find on the big marketplaces.',
     icon: 'Shirt',
   },
   {
@@ -67,7 +67,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Food & Drink',
     tagline: 'Pantry, specialty, and small-batch food and beverage.',
     description:
-      'Stock up on specialty food and drink from independent makers on sparx.market — pantry staples, small-batch treats, and regional favorites.',
+      'Stock up on specialty food and drink from independent makers on sparx.market: pantry staples, small-batch treats, and regional favorites.',
     icon: 'UtensilsCrossed',
   },
   {
@@ -75,7 +75,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Tech & Electronics',
     tagline: 'Gadgets, accessories, and components.',
     description:
-      'Find electronics, gadgets, and components from independent tech sellers on sparx.market — accessories, parts, and hard-to-find gear.',
+      'Find electronics, gadgets, and components from independent tech sellers on sparx.market: accessories, parts, and hard-to-find gear.',
     icon: 'Cpu',
   },
   {
@@ -83,7 +83,7 @@ export const MARKET_CATEGORIES: readonly MarketCategory[] = [
     name: 'Everything Else',
     tagline: 'Everything that doesn’t fit a single aisle.',
     description:
-      'Browse everything else on sparx.market — the long tail of independent sellers and the products that defy a category.',
+      'Browse everything else on sparx.market: the long tail of independent sellers and the products that defy a category.',
     icon: 'LayoutGrid',
   },
 ] as const;

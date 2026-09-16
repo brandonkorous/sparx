@@ -77,7 +77,7 @@ const listClassSessions: SiteTool = {
 const bookAppointment: SiteTool = {
   name: 'book_appointment',
   description:
-    'Book an appointment for a service at a start time. Guest booking — provide the customer’s name + email; no account needed. Confirm the slot with check_availability first.',
+    'Book an appointment for a service at a start time. Guest booking: provide the customer’s name + email; no account needed. Confirm the slot with check_availability first.',
   kind: 'guest_write',
   module: 'scheduling',
   input: z.object({

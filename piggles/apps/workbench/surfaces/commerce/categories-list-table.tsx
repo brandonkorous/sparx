@@ -87,7 +87,7 @@ function ProductCount({ category }: { category: CategoryChoice }) {
     <span className="inline-flex items-center justify-end gap-2">
       {String(category.productCount)}
       <Tooltip
-        content={`${String(hidden)} more ${hidden === 1 ? 'product is' : 'products are'} filed under this heading but not on your website — archived, still a draft, or kept for one of your other sites.`}
+        content={`${String(hidden)} more ${hidden === 1 ? 'product is' : 'products are'} filed under this heading but not on your website: archived, still a draft, or kept for one of your other sites.`}
       >
         <Badge color="info" variant="soft" size="sm">
           {String(hidden)} not shown

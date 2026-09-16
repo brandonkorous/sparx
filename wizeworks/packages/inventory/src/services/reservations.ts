@@ -507,7 +507,7 @@ export async function pickWarehouseFor(
   });
   if (candidates.length === 0) {
     throw new InventoryValidationError(
-      'No active warehouses exist — create one before reserving stock'
+      'No active warehouses exist: create one before reserving stock'
     );
   }
 

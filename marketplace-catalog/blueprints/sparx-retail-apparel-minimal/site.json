@@ -290,7 +290,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -718,8 +718,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Kestrel — well-made essentials, built to be kept",
-      "seoDescription": "Kestrel makes a small wardrobe of essentials in honest cloth — the tee, the knit, the trouser, the coat — cut to last and to wear together. Buy less, wear it longer.",
+      "seoTitle": "Kestrel: well-made essentials, built to be kept",
+      "seoDescription": "Kestrel makes a small wardrobe of essentials in honest cloth (the tee, the knit, the trouser, the coat) cut to last and to wear together. Buy less, wear it longer.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -775,7 +775,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Kestrel makes a small wardrobe of essentials in good cloth — the tee, the knit, the trouser, the coat — cut to last and to wear together. No logos, no seasons to chase. Buy less, wear it longer."
+                          "Kestrel makes a small wardrobe of essentials in good cloth (the tee, the knit, the trouser, the coat) cut to last and to wear together. No logos, no seasons to chase. Buy less, wear it longer."
                         ],
                         "id": "a6e0693e-9dfd-44d9-a1ac-2fa585f26aaf",
                         "ord": "a2"
@@ -1240,7 +1240,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We work with a handful of family mills and a small factory we visit ourselves — long-staple cottons, full-weight wools, seams finished to survive a decade of washes. A Kestrel piece is meant to be the last one you buy of its kind."
+                          "We work with a handful of family mills and a small factory we visit ourselves: long-staple cottons, full-weight wools, seams finished to survive a decade of washes. A Kestrel piece is meant to be the last one you buy of its kind."
                         ],
                         "id": "491ecddc-a641-4bef-a862-89831c9095a8",
                         "ord": "a2"
@@ -1522,7 +1522,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Everything here is cut to work with everything else — one palette of bone, stone, charcoal and camel, so any two pieces already go together. Start with a few, add slowly, and get dressed in ten seconds flat."
+                          "Everything here is cut to work with everything else. One palette of bone, stone, charcoal and camel, so any two pieces already go together. Start with a few, add slowly, and get dressed in ten seconds flat."
                         ],
                         "id": "6a4e077c-d2c9-4d54-bf2a-af560778e1ba",
                         "ord": "a2"
@@ -1557,7 +1557,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Kestrel",
+      "seoTitle": "Shop: Kestrel",
       "seoDescription": "Browse everything Kestrel makes, with prices and options at a glance. Clothing boutique.",
       "root": {
         "kind": "element",
@@ -1597,7 +1597,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The whole wardrobe in one place — tees and shirts, knitwear, trousers, outerwear and a few good accessories. One palette, cut to layer. Filter by category or sort however you like."
+                      "The whole wardrobe in one place: tees and shirts, knitwear, trousers, outerwear and a few good accessories. One palette, cut to layer. Filter by category or sort however you like."
                     ],
                     "id": "99501f46-5dea-4087-964f-c49fdf08d471",
                     "ord": "a2"
@@ -1625,7 +1625,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Kestrel",
+      "seoTitle": "Collections: Kestrel",
       "seoDescription": "Explore the collections at Kestrel, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1665,7 +1665,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The pieces gathered the way people actually get dressed — the everyday essentials, this season’s new cuts, the knitwear edit and the tailoring. Start anywhere."
+                      "The pieces gathered the way people actually get dressed: the everyday essentials, this season’s new cuts, the knitwear edit and the tailoring. Start anywhere."
                     ],
                     "id": "0caeccd3-87cd-4e15-9d10-470c5b78671a",
                     "ord": "a2"
@@ -1693,7 +1693,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Kestrel",
+      "seoTitle": "Your cart: Kestrel",
       "seoDescription": "Review what is in your cart and check out securely at Kestrel.",
       "root": {
         "kind": "element",
@@ -1733,7 +1733,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping over $150 and free returns within 30 days — try it on at home, send back what isn’t right, no questions. Everything is packed in recycled, plastic-free wrap."
+                      "Free shipping over $150 and free returns within 30 days. Try it on at home, send back what isn’t right, no questions. Everything is packed in recycled, plastic-free wrap."
                     ],
                     "id": "93134b1f-6dd7-4f07-99d2-22863bb578a5",
                     "ord": "a2"
@@ -1761,7 +1761,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Kestrel",
+      "seoTitle": "Search: Kestrel",
       "seoDescription": "Search Kestrel for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1829,7 +1829,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Kestrel",
+      "seoTitle": "Journal: Kestrel",
       "seoDescription": "Stories, guides and notes from Kestrel.",
       "root": {
         "kind": "element",
@@ -1869,7 +1869,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "On building a wardrobe you actually wear — how to read a fabric, why fewer is better, and how to make good clothes last. Plainly written, no trend-chasing."
+                      "On building a wardrobe you actually wear: how to read a fabric, why fewer is better, and how to make good clothes last. Plainly written, no trend-chasing."
                     ],
                     "id": "7cd91567-766e-4c22-a13a-5221297c17a5",
                     "ord": "a2"
@@ -2002,7 +2002,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Kestrel — clothes that stay",
+      "seoTitle": "About Kestrel: clothes that stay",
       "seoDescription": "Why Kestrel keeps the range small: essentials in honest cloth, made directly with the mills and factory, priced honestly, cut to be kept for years.",
       "root": {
         "kind": "element",
@@ -2042,7 +2042,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Kestrel began with a simple frustration: too much of what we owned fell apart, went out of style, or never quite went with anything else. So we set out to make the opposite — a short list of essentials, in honest cloth, cut to wear together for years."
+                      "Kestrel began with a simple frustration: too much of what we owned fell apart, went out of style, or never quite went with anything else. So we set out to make the opposite, a short list of essentials, in honest cloth, cut to wear together for years."
                     ],
                     "id": "46e1e818-464e-4bb1-8993-35165d77e09d",
                     "ord": "a2"
@@ -2062,7 +2062,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We work directly with the mills and the factory that make our clothes, pay fairly for good work, and price honestly — no seasonal markdowns to disguise, no logo tax. Just good clothes, made to be kept."
+                      "We work directly with the mills and the factory that make our clothes, pay fairly for good work, and price honestly: no seasonal markdowns to disguise, no logo tax. Just good clothes, made to be kept."
                     ],
                     "id": "da1896d1-66db-4ecb-bc90-747cc0cf49a4",
                     "ord": "a4"
@@ -2082,8 +2082,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Kestrel",
-      "seoDescription": "Get in touch with Kestrel — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Kestrel",
+      "seoDescription": "Get in touch with Kestrel: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2398,8 +2398,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Kestrel",
-      "seoDescription": "Product details at Kestrel — clothing boutique, with options and pricing.",
+      "seoTitle": "Product: Kestrel",
+      "seoDescription": "Product details at Kestrel: clothing boutique, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2762,7 +2762,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Cut in full-weight cloth and finished with reinforced seams, so it holds its shape wash after wash. Fits true — take your usual size; between two, size down for a cleaner line. Free returns within 30 days if it isn’t right."
+                              "Cut in full-weight cloth and finished with reinforced seams, so it holds its shape wash after wash. Fits true: take your usual size; between two, size down for a cleaner line. Free returns within 30 days if it isn’t right."
                             ],
                             "id": "718c821e-c3f4-4db4-ae4e-5b42008015b7",
                             "ord": "a1"

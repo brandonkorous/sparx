@@ -86,7 +86,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             q || status || locationId
               ? 'Try a different search, or clear the filters.'
-              : 'A run is where parts come off the shelf and a finished thing goes on it. Write a recipe first, then plan a run against it — the stock moves when you mark it made.'
+              : 'A run is where parts come off the shelf and a finished thing goes on it. Write a recipe first, then plan a run against it: the stock moves when you mark it made.'
           }
           actions={
             q || status || locationId ? null : (

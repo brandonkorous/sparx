@@ -47,7 +47,7 @@ export function WebhookFields({
             }
           />
           <FieldDescription>
-            A short name so you can tell these apart. Just for you — it is never sent anywhere.
+            A short name so you can tell these apart. Just for you. It is never sent anywhere.
           </FieldDescription>
         </Field>
 
@@ -74,7 +74,7 @@ export function WebhookFields({
             }
           />
           <FieldDescription>
-            On, notifications are sent as events happen. Off, nothing is sent — handy while whoever
+            On, notifications are sent as events happen. Off, nothing is sent: handy while whoever
             receives them is still setting things up.
           </FieldDescription>
         </Field>

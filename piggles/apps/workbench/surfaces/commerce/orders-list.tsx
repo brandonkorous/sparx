@@ -146,7 +146,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faBagShopping} className="size-6" aria-hidden />}
             title="Could not load your orders"
-            description="This is a problem reaching the server. Your orders are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your orders are unaffected. Nothing has been lost."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading orders…" />
@@ -160,7 +160,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               filtered
                 ? emptyAdvice(search.trim(), filter === 'all' ? null : active.label)
-                : 'Sales show up here with what was bought and what is owed — the ones people place on your website, and the ones you take in person.'
+                : 'Sales show up here with what was bought and what is owed: the ones people place on your website, and the ones you take in person.'
             }
             actions={
               filtered ? undefined : (

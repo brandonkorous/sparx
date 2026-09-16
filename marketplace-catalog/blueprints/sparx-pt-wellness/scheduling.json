@@ -173,7 +173,7 @@
     {
       "handle": "initial-evaluation",
       "name": "Initial evaluation",
-      "description": "An unhurried first visit — we listen to your whole history, assess gently, and build a plan together. Where the care begins.",
+      "description": "An unhurried first visit. We listen to your whole history, assess gently, and build a plan together. Where the care begins.",
       "durationMinutes": 60,
       "priceCents": 14000,
       "bufferAfterMin": 10,
@@ -197,7 +197,7 @@
     {
       "handle": "follow-up-session",
       "name": "Follow-up session",
-      "description": "A one-on-one treatment visit as your plan progresses — hands-on work, guided movement, small steady wins.",
+      "description": "A one-on-one treatment visit as your plan progresses: hands-on work, guided movement, small steady wins.",
       "durationMinutes": 45,
       "priceCents": 9500,
       "assignmentStrategy": "customer_choice",
@@ -220,7 +220,7 @@
     {
       "handle": "pelvic-health-visit",
       "name": "Pelvic & women’s-health visit",
-      "description": "Private, respectful care for pelvic health, pregnancy and postpartum recovery — with a therapist who specializes in it.",
+      "description": "Private, respectful care for pelvic health, pregnancy and postpartum recovery, with a therapist who specializes in it.",
       "durationMinutes": 60,
       "priceCents": 13500,
       "bufferAfterMin": 10,
@@ -244,7 +244,7 @@
     {
       "handle": "balance-fall-prevention",
       "name": "Balance & fall prevention",
-      "description": "Gentle, confidence-building work for steadier standing and safer walking — thoughtfully paced for all ages and abilities.",
+      "description": "Gentle, confidence-building work for steadier standing and safer walking: thoughtfully paced for all ages and abilities.",
       "durationMinutes": 45,
       "priceCents": 10000,
       "assignmentStrategy": "customer_choice",
@@ -267,7 +267,7 @@
     {
       "handle": "chronic-pain-session",
       "name": "Chronic-pain session",
-      "description": "A calm, whole-person approach to persistent pain — pacing, hands-on care and movement that meets you where you are.",
+      "description": "A calm, whole-person approach to persistent pain: pacing, hands-on care and movement that meets you where you are.",
       "durationMinutes": 60,
       "priceCents": 12500,
       "assignmentStrategy": "customer_choice",
@@ -313,7 +313,7 @@
     {
       "handle": "wellness-consult",
       "name": "Wellness consult",
-      "description": "A friendly, no-cost conversation about your goals — the easiest way to see if we’re the right fit before you book care.",
+      "description": "A friendly, no-cost conversation about your goals: the easiest way to see if we’re the right fit before you book care.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",

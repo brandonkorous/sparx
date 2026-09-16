@@ -286,7 +286,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
                 heroSlide(
                   'bg-primary text-primary-content',
                   'Built to go the distance',
-                  'Engineered frames, tested on every terrain — find the ride that fits the way you move.',
+                  'Engineered frames, tested on every terrain: find the ride that fits the way you move.',
                   'Shop the lineup'
                 ),
                 heroSlide(
@@ -298,7 +298,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
                 heroSlide(
                   'bg-accent text-accent-content',
                   'Service that comes to you',
-                  'Book a tune-up online and a certified mechanic handles the rest — at your door, on your schedule.',
+                  'Book a tune-up online and a certified mechanic handles the rest: at your door, on your schedule.',
                   'Book a tune-up'
                 ),
               ],
@@ -325,7 +325,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
     kind: 'comprehensive',
     icon: 'gallery-horizontal',
     description:
-      'A row of partner or press logos that scrolls continuously and pauses on hover — the live strip doubles itself for a seamless loop; the canvas shows it at rest.',
+      'A row of partner or press logos that scrolls continuously and pauses on hover: the live strip doubles itself for a seamless loop; the canvas shows it at rest.',
     surfaces: ['page', 'site'],
     tags: ['marquee', 'logos', 'logo cloud', 'ticker', 'scroller', 'press', 'marketing'],
     tree: behave(
@@ -555,7 +555,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
             ),
             faqItem(
               'Do you offer wholesale pricing?',
-              'Yes — approved trade accounts unlock tiered pricing and net terms. Apply from the wholesale page and we review within two business days.'
+              'Yes: approved trade accounts unlock tiered pricing and net terms. Apply from the wholesale page and we review within two business days.'
             ),
             faqItem(
               'Can I change my order after checkout?',
@@ -592,7 +592,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
             name: 'Panels',
             children: [
               tabPanel(
-                'A quick summary of the product — what it is, who it is for, and why it stands out from the rest of the lineup.',
+                'A quick summary of the product: what it is, who it is for, and why it stands out from the rest of the lineup.',
                 false
               ),
               tabPanel(
@@ -600,7 +600,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
                 true
               ),
               tabPanel(
-                'What customers are saying after living with it — the praise, the caveats, and the details that only show up after a few weeks.',
+                'What customers are saying after living with it: the praise, the caveats, and the details that only show up after a few weeks.',
                 true
               ),
             ],

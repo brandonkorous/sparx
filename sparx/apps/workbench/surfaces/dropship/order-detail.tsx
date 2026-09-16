@@ -107,7 +107,7 @@ export function DropshipOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: 'Try routing this order again?',
       description:
-        'This asks the system to route the customer order to its suppliers again. Use it when a supplier never received the order or it failed to send. It is safe to run more than once — an order that already reached the supplier is not sent twice.',
+        'This asks the system to route the customer order to its suppliers again. Use it when a supplier never received the order or it failed to send. It is safe to run more than once: an order that already reached the supplier is not sent twice.',
       confirmLabel: 'Route it again',
       cancelLabel: 'Cancel',
       color: 'warning',

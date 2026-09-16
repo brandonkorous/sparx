@@ -151,7 +151,7 @@ function ModuleRow({
             ))}
           </ul>
           <p className="text-sm">
-            Replaces {m.replaces} — about <span className="font-medium">${m.elsewhere}/mo</span>{' '}
+            Replaces {m.replaces}, about <span className="font-medium">${m.elsewhere}/mo</span>{' '}
             bought separately.
           </p>
         </div>

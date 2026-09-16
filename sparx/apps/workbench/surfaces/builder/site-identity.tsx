@@ -90,7 +90,7 @@ export function SiteIdentitySurface({ ctx }: { ctx: SurfaceContext }) {
             possible here. */}
         <PaneLoadError
           title="Could not load this site's identity"
-          description="This is a problem reaching the server — your site's name and logo are unaffected."
+          description="This is a problem reaching the server. Your site's name and logo are unaffected."
           onRetry={() => {
             void brandQuery.refetch();
             void propertyQuery.refetch();
@@ -257,11 +257,11 @@ function IdentityEditor({
               {address ? (
                 <>
                   {' '}
-                  <span className="font-mono break-all">{address}</span> — its header, footer, and
+                  <span className="font-mono break-all">{address}</span>: its header, footer, and
                   browser tab.
                 </>
               ) : (
-                ' this site — its header, footer, and browser tab.'
+                ' this site. Its header, footer, and browser tab.'
               )}
             </Text>
           </div>
@@ -292,7 +292,7 @@ function IdentityEditor({
                 }
               />
               <FieldDescription>
-                The name customers see on this site — its title, header, and emails. Your legal or
+                The name customers see on this site. Its title, header, and emails. Your legal or
                 billing name is set separately in your account settings.
               </FieldDescription>
             </Field>
@@ -319,16 +319,16 @@ function IdentityEditor({
 
           <FormSection
             title="Logo & favicon"
-            description="Pictures customers see across your site. Leave one blank to keep it simple — your name shows as text instead."
+            description="Pictures customers see across your site. Leave one blank to keep it simple. Your name shows as text instead."
           >
             <BrandImageField
-              label="Logo — light backgrounds"
+              label="Logo: light backgrounds"
               help="Your main logo, shown on light surfaces like the header."
               value={logoLight}
               onChange={setLogoLight}
             />
             <BrandImageField
-              label="Logo — dark backgrounds"
+              label="Logo: dark backgrounds"
               help="A light or reversed version for dark surfaces. If you skip it, your light logo is used everywhere."
               value={logoDark}
               onChange={setLogoDark}
@@ -428,7 +428,7 @@ function IdentityEditor({
               `{mode}` lands them on the surface being named. */}
           <div className="border-base-300 flex flex-wrap items-center gap-3 border-t pt-5">
             <Text className="flex-1 text-base">
-              How your header and footer are arranged — and your colors, type, and shapes — are
+              How your header and footer are arranged (and your colors, type, and shapes) are
               designed in the editor.
             </Text>
             <Button

@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ace & Able Handyman — home repairs & installs",
-      "seoDescription": "Ace & Able Handyman handles repairs, installs, drywall, mounting and honey-do lists — one skilled, licensed pro who shows up on time. Book a visit or a free estimate online.",
+      "seoTitle": "Ace & Able Handyman: home repairs & installs",
+      "seoDescription": "Ace & Able Handyman handles repairs, installs, drywall, mounting and honey-do lists. One skilled, licensed pro who shows up on time. Book a visit or a free estimate online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "The repairs, installs and half-finished projects piling up around the house — handled by one skilled pro who shows up on time and does it right the first time."
+                      "The repairs, installs and half-finished projects piling up around the house: handled by one skilled pro who shows up on time and does it right the first time."
                     ],
                     "id": "ed6e5be2-30e2-4229-bcb2-275700a4550f",
                     "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Fully licensed and insured, so the person working in your home is covered — and so are you."
+                              "Fully licensed and insured, so the person working in your home is covered, and so are you."
                             ],
                             "id": "44322932-c925-4aaa-b0a2-8ebeb5296e3b",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The jobs we get called for most. Every price and live availability is on the booking page — and the first estimate is always free."
+                          "The jobs we get called for most. Every price and live availability is on the booking page, and the first estimate is always free."
                         ],
                         "id": "01a06f71-5ed6-485c-9c30-2cf258a017c1",
                         "ord": "a1"
@@ -1217,7 +1217,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A lot of pros won’t bother with a loose hinge or a single shelf. We will. The small stuff is exactly what piles up — and exactly what we’re here for."
+                          "A lot of pros won’t bother with a loose hinge or a single shelf. We will. The small stuff is exactly what piles up, and exactly what we’re here for."
                         ],
                         "id": "2c2abf80-4479-4138-b149-b4dcdb2c9392",
                         "ord": "a1"
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book the visit and one of these three shows up — every one of them a seasoned, background-checked pro."
+                          "Book the visit and one of these three shows up: every one of them a seasoned, background-checked pro."
                         ],
                         "id": "3331a35f-8baa-4aee-a670-d13cfffdbe66",
                         "ord": "a1"
@@ -1461,7 +1461,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "TVs, shelves, fixtures and flat-pack — mounted solid and dead level, every time."
+                                  "TVs, shelves, fixtures and flat-pack: mounted solid and dead level, every time."
                                 ],
                                 "id": "00e84757-8fdc-40d1-9ea1-4064816d5ede",
                                 "ord": "a2"
@@ -1501,7 +1501,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“They mounted our TV, fixed two doors and hung a gallery wall in one afternoon — and swept up before they left. First time in years the honey-do list is actually empty.”"
+                      "“They mounted our TV, fixed two doors and hung a gallery wall in one afternoon, and swept up before they left. First time in years the honey-do list is actually empty.”"
                     ],
                     "id": "cf341b0f-4662-4c0e-a009-ab585752ab0f",
                     "ord": "a0"
@@ -1576,7 +1576,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Ace & Able Handyman",
+      "seoTitle": "Book: Ace & Able Handyman",
       "seoDescription": "See what Ace & Able Handyman offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1700,7 +1700,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "aed8a62f-f9bd-4a26-8d3a-985eb66f23cc",
                         "ord": "a1"
@@ -1770,7 +1770,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Ace & Able Handyman",
+      "seoTitle": "About: Ace & Able Handyman",
       "seoDescription": "Who Ace & Able Handyman is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1819,7 +1819,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Ace & Able Handyman on a simple idea: most people don’t need a specialist for every little thing — they need one reliable pro who can do a bit of everything and actually turns up."
+                          "We started Ace & Able Handyman on a simple idea: most people don’t need a specialist for every little thing. They need one reliable pro who can do a bit of everything and actually turns up."
                         ],
                         "id": "711a36b4-cc8f-48f9-a0b7-fdb0bcd179b1",
                         "ord": "a1"
@@ -1829,7 +1829,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "That’s us. Repairs, installs, drywall, carpentry, mounting, the endless honey-do list — one call, one trusted crew, one price you agreed to up front. No run-around, no mess left behind."
+                          "That’s us. Repairs, installs, drywall, carpentry, mounting, the endless honey-do list. One call, one trusted crew, one price you agreed to up front. No run-around, no mess left behind."
                         ],
                         "id": "20f109b5-fd45-4644-8fd1-ba568bd2c89c",
                         "ord": "a2"
@@ -1907,7 +1907,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We look at the job in person and give you a clear, written price before we pick up a tool — and the estimate is always free."
+                              "We look at the job in person and give you a clear, written price before we pick up a tool, and the estimate is always free."
                             ],
                             "id": "d0979552-2978-47aa-8625-3bd0cec4910a",
                             "ord": "a1"
@@ -1961,7 +1961,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We tidy up before we go and stand behind the work. If something’s not right, we come back and fix it — no argument."
+                              "We tidy up before we go and stand behind the work. If something’s not right, we come back and fix it: no argument."
                             ],
                             "id": "ae2ae7af-dec1-49a3-b134-c26a5c3536f8",
                             "ord": "a1"
@@ -1989,7 +1989,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Ace & Able Handyman",
+      "seoTitle": "Visit: Ace & Able Handyman",
       "seoDescription": "Where to find Ace & Able Handyman, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2026,7 +2026,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Ace & Able Handyman will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Ace & Able Handyman will get back to you, usually the same day."
                         ],
                         "id": "d9743e3f-01fa-4e61-b28b-f7ff35ef6423",
                         "ord": "a1"
@@ -2453,7 +2453,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and lock in your visit online — no phone tag, no waiting on a callback."
+                      "See live availability and lock in your visit online: no phone tag, no waiting on a callback."
                     ],
                     "id": "79077c84-acd3-4bd7-af76-a9054db9a4ad",
                     "ord": "a1"

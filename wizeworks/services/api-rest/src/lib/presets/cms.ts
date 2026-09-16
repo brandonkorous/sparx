@@ -171,7 +171,7 @@ const topicTaxonomyPreset: ModulePreset = definePreset({
   kind: 'taxonomy',
   name: 'Topic taxonomy',
   description:
-    'A hierarchical “Topic” taxonomy seeded with News, Guides, Announcements, and Product updates — tag any content entry to organize and filter it.',
+    'A hierarchical “Topic” taxonomy seeded with News, Guides, Announcements, and Product updates: tag any content entry to organize and filter it.',
   iconKey: 'tags',
   tags: ['cms', 'taxonomy', 'topics'],
   summary: [

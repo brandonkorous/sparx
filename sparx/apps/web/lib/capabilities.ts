@@ -79,7 +79,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'builder',
     name: 'Builder',
-    summary: 'Sites, pages, layouts, and email — visually authored, no code.',
+    summary: 'Sites, pages, layouts, and email: visually authored, no code.',
     color: 'module-builder',
     fill: 'bg-module-builder',
     content: 'text-module-builder-content',
@@ -151,7 +151,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
       live('Abandoned-cart capture'),
       live('Multi-step checkout'),
       live('Address validation'),
-      live('Stripe — card, Apple/Google Pay, Link'),
+      live('Stripe: card, Apple/Google Pay, Link'),
       live('Stripe Connect payouts'),
       live('Swap in other payment providers'),
       live('Tax zones + TaxJar / Avalara'),
@@ -174,7 +174,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'cms',
     name: 'CMS',
-    summary: 'Words, media, structured content, and SEO — standalone or paired.',
+    summary: 'Words, media, structured content, and SEO: standalone or paired.',
     color: 'module-cms',
     fill: 'bg-module-cms',
     content: 'text-module-cms-content',
@@ -203,7 +203,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'crm',
     name: 'CRM',
-    summary: 'Customers, pipeline, segments, and activity — on your live data.',
+    summary: 'Customers, pipeline, segments, and activity: on your live data.',
     color: 'module-crm',
     fill: 'bg-module-crm',
     content: 'text-module-crm-content',
@@ -321,7 +321,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'inventory',
     name: 'Inventory',
-    summary: 'Stock you can actually trust — counted, costed, and checked against itself.',
+    summary: 'Stock you can actually trust: counted, costed, and checked against itself.',
     color: 'module-inventory',
     fill: 'bg-module-inventory',
     content: 'text-module-inventory-content',
@@ -332,16 +332,16 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     // every prospect as unbuilt. Status here is customer-facing: a wrong "live"
     // is a broken promise and a wrong "planned" is a lost sale.
     capabilities: [
-      live('Many warehouses — yours, a partner’s, or a van'),
+      live('Many warehouses: yours, a partner’s, or a van'),
       live('Per-location stock levels'),
       live('Soft & hard reservations'),
       live('Every change recorded, with who and why'),
       live('The numbers check themselves overnight'),
-      live('Explain any number — where it came from'),
+      live('Explain any number: where it came from'),
       live('Shelves & put-away suggestions'),
       live('Barcode scanning on a phone'),
       live('Pick lists, packing & verification'),
-      live('Counts — cycle, full, and opening'),
+      live('Counts: cycle, full, and opening'),
       live('Transfers between your locations'),
       live('Lots, serial numbers & recalls'),
       live('Expiry dates & what to shift first'),
@@ -349,11 +349,11 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
       live('Recipes & builds from components'),
       live('True cost, freight and duty included'),
       live('Suppliers, purchase orders & receiving'),
-      live('Supplier scorecards — who is actually late'),
+      live('Supplier scorecards, who is actually late'),
       live('Purchase-order approvals'),
       live('What to reorder, and why'),
       live('Forecasts & stockout risk'),
-      live('Backorders — what you have promised'),
+      live('Backorders: what you have promised'),
       live('Consignment & stock you don’t own'),
       live('Reports, exports & scheduled sends'),
       live('Journals & a reconciliation that explains itself'),
@@ -366,7 +366,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
       // was the marketing site promising a button the app deliberately does not
       // offer — the same wrong-"live" failure this whole block was rewritten to
       // fix, one line further down the list.
-      building('Direct sync — QuickBooks & Xero'),
+      building('Direct sync: QuickBooks & Xero'),
       live('Sync with your warehouse system'),
       live('Set up in half an hour from a spreadsheet'),
       live('Your own columns on any record'),
@@ -379,14 +379,14 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     // NOT "AI-first": the $19 buys the chat product and the agent that runs it,
     // never the intelligence. The concierge is inert until the tenant connects
     // their own Anthropic or OpenAI key, and escalates to a human until they do.
-    summary: 'Site chat with a real-time staff inbox — answer first with your own AI.',
+    summary: 'Site chat with a real-time staff inbox: answer first with your own AI.',
     color: 'module-chat',
     fill: 'bg-module-chat',
     content: 'text-module-chat-content',
     module: true,
     capabilities: [
       live('Site chat widget'),
-      live('First response from your own AI — bring an Anthropic or OpenAI key'),
+      live('First response from your own AI: bring an Anthropic or OpenAI key'),
       live('Confidence-gated human handoff'),
       live('Real-time staff inbox'),
       live('Conversation assignment'),
@@ -468,7 +468,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'seo',
     name: 'SEO & AI Discoverability',
-    summary: 'Built to rank — and built to be read by AI crawlers.',
+    summary: 'Built to rank, and built to be read by AI crawlers.',
     color: 'module-seo',
     fill: 'bg-module-seo',
     content: 'text-module-seo-content',
@@ -490,7 +490,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'automation',
     name: 'Automation',
-    summary: 'One place to say "when this happens, do that" — across every module.',
+    summary: 'One place to say "when this happens, do that": across every module.',
     color: 'module-automations',
     fill: 'bg-module-automations',
     content: 'text-module-automations-content',
@@ -514,7 +514,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'multisite',
     name: 'Multi-site & Multi-brand',
-    summary: 'Many sites under one tenant — shared data where you want it.',
+    summary: 'Many sites under one tenant: shared data where you want it.',
     color: 'module-builder',
     fill: 'bg-module-builder',
     content: 'text-module-builder-content',
@@ -577,7 +577,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'billing',
     name: 'Billing & Subscriptions',
-    summary: 'Per-module pricing — no seats, no tiers, off the day you stop.',
+    summary: 'Per-module pricing: no seats, no tiers, off the day you stop.',
     color: 'success',
     fill: 'bg-success',
     content: 'text-success-content',
@@ -595,7 +595,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'onboarding',
     name: 'Onboarding',
-    summary: 'A live site in under five minutes — modules first, no card.',
+    summary: 'A live site in under five minutes: modules first, no card.',
     color: 'warning',
     fill: 'bg-warning',
     content: 'text-warning-content',
@@ -634,7 +634,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'domains',
     name: 'Domains & SSL',
-    summary: 'Search, buy, and connect a domain — HTTPS live in under a minute.',
+    summary: 'Search, buy, and connect a domain: HTTPS live in under a minute.',
     color: 'info',
     fill: 'bg-info',
     content: 'text-info-content',
@@ -654,7 +654,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
   {
     id: 'attribution',
     name: 'Attribution & Analytics',
-    summary: 'Know which channel actually drove the signup — and the sale.',
+    summary: 'Know which channel actually drove the signup, and the sale.',
     color: 'module-chat',
     fill: 'bg-module-chat',
     content: 'text-module-chat-content',

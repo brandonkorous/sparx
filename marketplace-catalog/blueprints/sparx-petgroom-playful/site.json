@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Scrub & Wag — friendly dog grooming",
+      "seoTitle": "Scrub & Wag: friendly dog grooming",
       "seoDescription": "Scrub & Wag is a bright, fear-free dog grooming shop. Baths, full grooms, de-shed treatments and nail trims priced by size. Book your groomer online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A bright, fear-free neighborhood dog grooming shop — baths, full grooms and nail trims for every breed and size, done calmly and never rushed."
+                      "A bright, fear-free neighborhood dog grooming shop: baths, full grooms and nail trims for every breed and size, done calmly and never rushed."
                     ],
                     "id": "6cbd0063-d4d0-4bc1-9512-d8a3df220c70",
                     "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One dog at a time per groomer — no packed kennels, no barking chaos. Your dog gets our full attention."
+                              "One dog at a time per groomer: no packed kennels, no barking chaos. Your dog gets our full attention."
                             ],
                             "id": "3fc1d202-c325-43b6-ad0b-377dfe1b93df",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Chihuahua to Great Dane, doodle to double-coat — every dog is welcome and priced fairly by size."
+                              "Chihuahua to Great Dane, doodle to double-coat: every dog is welcome and priced fairly by size."
                             ],
                             "id": "3ae5bc42-6e7d-4112-8d42-0d81d8b27e97",
                             "ord": "a1"
@@ -844,7 +844,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Bath & brush — small"],
+                                "children": ["Bath & brush: small"],
                                 "id": "4599d582-598f-4a42-9286-3dd4b9cb68fd",
                                 "ord": "a0"
                               },
@@ -897,7 +897,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Full groom — small"],
+                                "children": ["Full groom: small"],
                                 "id": "3f66b2b3-e542-4709-975d-6c6df48c80f4",
                                 "ord": "a0"
                               },
@@ -950,7 +950,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Full groom — large"],
+                                "children": ["Full groom: large"],
                                 "id": "4138a2df-1860-4c07-8ecd-5c239254ae93",
                                 "ord": "a0"
                               },
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — your dog gets to know the same friendly face each visit."
+                          "Book by name. Your dog gets to know the same friendly face each visit."
                         ],
                         "id": "def759c2-7d04-4287-8be5-e0bf6b082d6e",
                         "ord": "a1"
@@ -1405,7 +1405,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "The double-coat whisperer — huskies, shepherds and shedders of all kinds."
+                                  "The double-coat whisperer: huskies, shepherds and shedders of all kinds."
                                 ],
                                 "id": "19612c82-8534-427d-ad6d-77dced7a2f00",
                                 "ord": "a2"
@@ -1647,7 +1647,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Scrub & Wag",
+      "seoTitle": "Book: Scrub & Wag",
       "seoDescription": "See what Scrub & Wag offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1771,7 +1771,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "92e551a5-e9da-4087-863f-b2a63c8d1bdf",
                         "ord": "a1"
@@ -1840,7 +1840,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over — it only keeps a no-show from taking a groomer’s whole afternoon."
+                              "Full grooms hold a $15 deposit that comes right off your total. Reschedule with 48 hours’ notice and it carries over. It only keeps a no-show from taking a groomer’s whole afternoon."
                             ],
                             "id": "9bc1d14b-8883-4acf-8520-e1c5007b7a90",
                             "ord": "a1"
@@ -1878,7 +1878,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Scrub & Wag",
+      "seoTitle": "About: Scrub & Wag",
       "seoDescription": "Who Scrub & Wag is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1937,7 +1937,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we keep it small, gentle and unhurried — fear-free handling, cage-free drying, and one dog at a time per groomer. Just clean, happy dogs and owners who trust us with them."
+                          "So we keep it small, gentle and unhurried: fear-free handling, cage-free drying, and one dog at a time per groomer. Just clean, happy dogs and owners who trust us with them."
                         ],
                         "id": "86b3ae6b-cf3d-403d-9cd4-7fda5e6b5e5a",
                         "ord": "a2"
@@ -2097,7 +2097,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Scrub & Wag",
+      "seoTitle": "Visit: Scrub & Wag",
       "seoDescription": "Where to find Scrub & Wag, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2134,7 +2134,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Scrub & Wag will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Scrub & Wag will get back to you, usually the same day."
                         ],
                         "id": "e2f05c81-0a2d-436d-8d4a-0f05aacb27e1",
                         "ord": "a1"
@@ -2559,7 +2559,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live openings and grab your dog’s spot online — no phone tag, no hold music."
+                      "See live openings and grab your dog’s spot online: no phone tag, no hold music."
                     ],
                     "id": "b8b83f98-5530-4608-aa87-38a3329ccd43",
                     "ord": "a1"

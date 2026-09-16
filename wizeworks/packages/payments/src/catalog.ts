@@ -110,7 +110,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     name: '{platform} Pay',
     tagline: 'Recommended',
     blurb:
-      'Accept cards in minutes. {platform} handles disputes, settlement, and PCI, and pays out to your bank automatically. Flat 0.5% per transaction — no monthly fee, and better blended rates as you grow.',
+      'Accept cards in minutes. {platform} handles disputes, settlement, and PCI, and pays out to your bank automatically. Flat 0.5% per transaction: no monthly fee, and better blended rates as you grow.',
     recommended: true,
     onboarding: 'sparx_hosted',
     checkout: 'inline',
@@ -126,7 +126,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     name: 'Your own Stripe',
     processor: 'Stripe',
     blurb:
-      'Route checkout to your own Stripe account. No {platform} fee — you own disputes, PCI, and payouts. Paste your secret key and webhook signing secret from the Stripe dashboard.',
+      'Route checkout to your own Stripe account. No {platform} fee. You own disputes, PCI, and payouts. Paste your secret key and webhook signing secret from the Stripe dashboard.',
     onboarding: 'api_keys',
     checkout: 'inline',
     capabilities: CARD_CAPS,
@@ -156,7 +156,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     ],
     environments: false,
     sparxFee: false,
-    feeNote: 'No {platform} fee — you pay Stripe’s rates directly.',
+    feeNote: 'No {platform} fee. You pay Stripe’s rates directly.',
     regions: ['US', 'CA', 'GB', 'EU', 'AU'],
     docsUrl: 'https://dashboard.stripe.com/apikeys',
   },
@@ -164,7 +164,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     id: 'square',
     name: 'Square',
     blurb:
-      'Use your existing Square account. Great if you also sell in person — your online and POS sales land in one Square balance. Shoppers pay on a Square-hosted page; no {platform} fee.',
+      'Use your existing Square account. Great if you also sell in person. Your online and POS sales land in one Square balance. Shoppers pay on a Square-hosted page; no {platform} fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     capabilities: CARD_CAPS,
@@ -200,7 +200,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No {platform} fee — you pay Square’s rates directly.',
+    feeNote: 'No {platform} fee. You pay Square’s rates directly.',
     regions: ['US', 'CA', 'GB', 'AU', 'JP'],
     docsUrl: 'https://developer.squareup.com/apps',
   },
@@ -208,7 +208,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     id: 'authorize_net',
     name: 'Authorize.net',
     blurb:
-      'The classic for established US merchants. Keep your Authorize.net account and gateway rates — {platform} routes checkout to an Authorize.net hosted payment page. No {platform} fee.',
+      'The classic for established US merchants. Keep your Authorize.net account and gateway rates: {platform} routes checkout to an Authorize.net hosted payment page. No {platform} fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     capabilities: CARD_CAPS,
@@ -248,7 +248,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No {platform} fee — you pay your Authorize.net rates directly.',
+    feeNote: 'No {platform} fee. You pay your Authorize.net rates directly.',
     regions: ['US', 'CA', 'GB', 'AU'],
     docsUrl: 'https://account.authorize.net/',
   },
@@ -256,7 +256,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     id: 'first_pay',
     name: '1stPayGateway',
     blurb:
-      'Common with ISO/agent-sold merchant accounts. Keep your 1stPayGateway processing — {platform} routes checkout to a 1stPay hosted page. No {platform} fee.',
+      'Common with ISO/agent-sold merchant accounts. Keep your 1stPayGateway processing: {platform} routes checkout to a 1stPay hosted page. No {platform} fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     // `storedMethods: false` here means UNVERIFIED, not impossible — 1stPay's
@@ -285,7 +285,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No {platform} fee — you pay your 1stPayGateway rates directly.',
+    feeNote: 'No {platform} fee. You pay your 1stPayGateway rates directly.',
     regions: ['US'],
     docsUrl: 'https://secure.1stpaygateway.net/',
   },
@@ -294,7 +294,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     name: 'Custom gateway',
     processor: 'payment processor',
     blurb:
-      'Use any other processor. Point {platform} at your gateway’s hosted checkout URL and credentials; {platform} redirects shoppers there and reconciles on return. For full control, a developer can drop in a code adapter — see the plugin contract.',
+      'Use any other processor. Point {platform} at your gateway’s hosted checkout URL and credentials; {platform} redirects shoppers there and reconciles on return. For full control, a developer can drop in a code adapter: see the plugin contract.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     // A generic hosted redirect has no vault seam to reach through, so there is
@@ -331,7 +331,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No {platform} fee — your processor’s rates apply.',
+    feeNote: 'No {platform} fee. Your processor’s rates apply.',
     regions: [],
   },
   {
@@ -346,7 +346,7 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     id: 'paypal',
     name: 'PayPal',
     blurb:
-      'Let customers pay with their PayPal balance, Venmo, or Pay Later. Customers can save their PayPal account for repeat orders. No {platform} fee — you pay PayPal’s rates directly.',
+      'Let customers pay with their PayPal balance, Venmo, or Pay Later. Customers can save their PayPal account for repeat orders. No {platform} fee. You pay PayPal’s rates directly.',
     onboarding: 'api_keys',
     checkout: 'redirect',
     // PayPal's vault is the Payment Method Tokens v3 API — the shopper approves
@@ -378,14 +378,14 @@ const CATALOG_TEMPLATE: readonly GatewayDescriptor[] = [
     ],
     environments: true,
     sparxFee: false,
-    feeNote: 'No {platform} fee — you pay PayPal’s rates directly.',
+    feeNote: 'No {platform} fee. You pay PayPal’s rates directly.',
     regions: ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'NL', 'IT', 'ES', 'JP'],
   },
   {
     id: 'manual',
     name: 'Manual payments',
     blurb:
-      'Record check, cash, wire, or ACH by hand. No online card payments and no fee — you mark orders and invoices paid yourself.',
+      'Record check, cash, wire, or ACH by hand. No online card payments and no fee. You mark orders and invoices paid yourself.',
     onboarding: 'manual',
     checkout: 'none',
     // No processor at all — cash, cheque, bank transfer. A recurring order here

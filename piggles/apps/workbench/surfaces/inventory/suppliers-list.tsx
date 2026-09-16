@@ -80,7 +80,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
           title="Could not load your suppliers"
-          description="This is a problem reaching the server. Your suppliers are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your suppliers are unaffected: the list just could not be read just now."
         />
       );
     }

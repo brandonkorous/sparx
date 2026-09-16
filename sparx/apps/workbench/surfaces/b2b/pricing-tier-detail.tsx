@@ -108,7 +108,7 @@ function TierLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           error={tierQuery.error}
           noun="tier"
           title="Could not load this tier"
-          description="This is a problem reaching the server. The tier itself is unaffected — nothing has been lost."
+          description="This is a problem reaching the server. The tier itself is unaffected. Nothing has been lost."
           onRetry={() => {
             void tierQuery.refetch();
           }}
@@ -285,7 +285,7 @@ function TierEditor({ ctx, id, tier }: { ctx: SurfaceContext; id: string; tier?:
                 Add a price tier
               </Heading>
               <Text>
-                Set a discount once and give it to every account you put on this tier — instead of
+                Set a discount once and give it to every account you put on this tier: instead of
                 setting one per customer.
               </Text>
             </div>
@@ -312,7 +312,7 @@ function TierEditor({ ctx, id, tier }: { ctx: SurfaceContext; id: string; tier?:
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  What you call this level — Trade, Distributor, Key account.
+                  What you call this level: Trade, Distributor, Key account.
                 </FieldDescription>
               )}
             </Field>

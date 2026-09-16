@@ -107,8 +107,8 @@
   "products": [
     {
       "handle": "copier-paper-carton",
-      "title": "Copier Paper — Carton of 5 Reams",
-      "description": "Bright 20 lb, 92-bright multipurpose paper that runs clean through copiers, laser and inkjet without jamming or curling. A carton is 5 reams — 2,500 sheets. MOQ 1 carton. Pick the sheet size your machines take.",
+      "title": "Copier Paper: Carton of 5 Reams",
+      "description": "Bright 20 lb, 92-bright multipurpose paper that runs clean through copiers, laser and inkjet without jamming or curling. A carton is 5 reams: 2,500 sheets. MOQ 1 carton. Pick the sheet size your machines take.",
       "status": "active",
       "productType": "Paper",
       "vendor": "Worksmith Supply Co.",
@@ -171,8 +171,8 @@
     },
     {
       "handle": "ballpoint-pens-box",
-      "title": "Retractable Ballpoint Pens — Box of 50",
-      "description": "Smooth 1.0 mm medium-point retractable ballpoints with a cushioned grip and a click that survives a year of meetings. A box is 50 pens. MOQ 2 boxes — enough to stock the supply drawer and the ones that walk off. Pick your ink.",
+      "title": "Retractable Ballpoint Pens: Box of 50",
+      "description": "Smooth 1.0 mm medium-point retractable ballpoints with a cushioned grip and a click that survives a year of meetings. A box is 50 pens. MOQ 2 boxes: enough to stock the supply drawer and the ones that walk off. Pick your ink.",
       "status": "active",
       "productType": "Writing",
       "vendor": "Worksmith Supply Co.",
@@ -235,7 +235,7 @@
     },
     {
       "handle": "wirebound-notebooks-case",
-      "title": "Wirebound Notebooks — Case of 24",
+      "title": "Wirebound Notebooks: Case of 24",
       "description": "College-ruled wirebound notebooks, 70 sheets of 20 lb paper that does not bleed through, with a poly cover that survives a bag. A case is 24 books. MOQ 1 case. The pad every desk, meeting room and new hire goes through.",
       "status": "active",
       "productType": "Writing",
@@ -257,13 +257,13 @@
         {
           "assetId": "prod-notebooks",
           "isPrimary": true,
-          "alt": "Wirebound Notebooks — Case of 24"
+          "alt": "Wirebound Notebooks: Case of 24"
         }
       ]
     },
     {
       "handle": "laser-toner-box",
-      "title": "Laser Toner Cartridges — Box of 2",
+      "title": "Laser Toner Cartridges: Box of 2",
       "description": "High-quality compatible black laser toner that drops straight into the workhorse mono printers most offices run, at a fraction of the branded-cartridge price. A box is 2 cartridges. MOQ 1 box. Pick standard or high-yield for the heavy printers.",
       "status": "active",
       "productType": "Ink & toner",
@@ -316,8 +316,8 @@
     },
     {
       "handle": "desk-organiser-case",
-      "title": "Desk Organiser Sets — Case of 6",
-      "description": "A five-piece steel-mesh desk set — pen cup, letter tray, sorter, memo holder and clip caddy — that turns a cluttered desk into one someone can actually work at. A case is 6 sets. MOQ 1 case. Ideal for a new-hire fit-out or a whole-floor refresh.",
+      "title": "Desk Organiser Sets: Case of 6",
+      "description": "A five-piece steel-mesh desk set (pen cup, letter tray, sorter, memo holder and clip caddy) that turns a cluttered desk into one someone can actually work at. A case is 6 sets. MOQ 1 case. Ideal for a new-hire fit-out or a whole-floor refresh.",
       "status": "active",
       "productType": "Furniture",
       "vendor": "Worksmith Supply Co.",
@@ -338,14 +338,14 @@
         {
           "assetId": "prod-organiser",
           "isPrimary": true,
-          "alt": "Desk Organiser Sets — Case of 6"
+          "alt": "Desk Organiser Sets: Case of 6"
         }
       ]
     },
     {
       "handle": "ergonomic-task-chair",
-      "title": "Ergonomic Mesh Task Chair — Carton of 1",
-      "description": "A breathable mesh-back task chair with adjustable lumbar, seat height and armrests — the chair a team can sit in for eight hours without a physio bill. Ships one to a carton, assembled in minutes. MOQ 4 chairs — enough to fit out a room. Pick the frame color.",
+      "title": "Ergonomic Mesh Task Chair: Carton of 1",
+      "description": "A breathable mesh-back task chair with adjustable lumbar, seat height and armrests: the chair a team can sit in for eight hours without a physio bill. Ships one to a carton, assembled in minutes. MOQ 4 chairs, enough to fit out a room. Pick the frame color.",
       "status": "active",
       "productType": "Furniture",
       "vendor": "Worksmith Supply Co.",
@@ -397,8 +397,8 @@
     },
     {
       "handle": "dry-erase-whiteboards-case",
-      "title": "Dry-Erase Whiteboards — Case of 2",
-      "description": "Magnetic dry-erase boards with an aluminium frame and a marker tray, wiping clean with no ghosting after months of stand-ups. A case is 2 boards. MOQ 1 case. Pick the size that fits the wall — a huddle room or a whole planning wall.",
+      "title": "Dry-Erase Whiteboards: Case of 2",
+      "description": "Magnetic dry-erase boards with an aluminium frame and a marker tray, wiping clean with no ghosting after months of stand-ups. A case is 2 boards. MOQ 1 case. Pick the size that fits the wall: a huddle room or a whole planning wall.",
       "status": "active",
       "productType": "Furniture",
       "vendor": "Worksmith Supply Co.",
@@ -450,8 +450,8 @@
     },
     {
       "handle": "disinfecting-wipes-case",
-      "title": "Disinfecting Wipes — Case of 12",
-      "description": "Alcohol-free disinfecting wipes that clean desks, keyboards, phones and door handles without leaving a film — 75 wipes a canister, a case of 12. MOQ 2 cases. The line a shared office burns through fastest, and the one you never want to run short of.",
+      "title": "Disinfecting Wipes: Case of 12",
+      "description": "Alcohol-free disinfecting wipes that clean desks, keyboards, phones and door handles without leaving a film: 75 wipes a canister, a case of 12. MOQ 2 cases. The line a shared office burns through fastest, and the one you never want to run short of.",
       "status": "active",
       "productType": "Breakroom & cleaning",
       "vendor": "Worksmith Supply Co.",
@@ -472,14 +472,14 @@
         {
           "assetId": "prod-wipes",
           "isPrimary": true,
-          "alt": "Disinfecting Wipes — Case of 12"
+          "alt": "Disinfecting Wipes: Case of 12"
         }
       ]
     },
     {
       "handle": "breakroom-restock-case",
       "title": "Breakroom Restock Case",
-      "description": "The breakroom staples in one carton — a tin of ground coffee, a sleeve of paper cups, stir sticks, sugar, creamer and napkins — enough to keep a small team caffeinated and fed for a month. MOQ 1 case. Put it on a standing order and the breakroom never runs dry.",
+      "description": "The breakroom staples in one carton: a tin of ground coffee, a sleeve of paper cups, stir sticks, sugar, creamer and napkins, enough to keep a small team caffeinated and fed for a month. MOQ 1 case. Put it on a standing order and the breakroom never runs dry.",
       "status": "active",
       "productType": "Breakroom & cleaning",
       "vendor": "Worksmith Supply Co.",
@@ -487,7 +487,7 @@
       "categoryHandles": ["breakroom"],
       "collectionHandles": ["keep-it-stocked", "new-in"],
       "seoTitle": "Breakroom Restock Case | Worksmith Supply",
-      "seoDescription": "A breakroom restock carton — coffee, cups, stir sticks, sugar, creamer and napkins. One month for a small team.",
+      "seoDescription": "A breakroom restock carton: coffee, cups, stir sticks, sugar, creamer and napkins. One month for a small team.",
       "variants": [
         {
           "sku": "WSS-BRK-RESTOCK",
@@ -507,7 +507,7 @@
     {
       "handle": "office-starter-bundle",
       "title": "Office Starter Bundle",
-      "description": "Everything a new office or satellite desk runs out of first — a carton of copier paper, a box of pens, a case of notebooks, a desk organiser set and a case of disinfecting wipes, packed together and priced below the sum of its boxes. MOQ 1 bundle. The fastest way to stock a workspace from empty.",
+      "description": "Everything a new office or satellite desk runs out of first: a carton of copier paper, a box of pens, a case of notebooks, a desk organiser set and a case of disinfecting wipes, packed together and priced below the sum of its boxes. MOQ 1 bundle. The fastest way to stock a workspace from empty.",
       "status": "active",
       "productType": "Bundle",
       "vendor": "Worksmith Supply Co.",
@@ -515,7 +515,7 @@
       "categoryHandles": ["paper-ink"],
       "collectionHandles": ["new-office-setup", "workspace-essentials"],
       "seoTitle": "Office Starter Bundle | Worksmith Supply",
-      "seoDescription": "A curated starter bundle — paper, pens, notebooks, a desk organiser and wipes, priced below the sum of its boxes.",
+      "seoDescription": "A curated starter bundle: paper, pens, notebooks, a desk organiser and wipes, priced below the sum of its boxes.",
       "variants": [
         {
           "sku": "WSS-KIT-STARTER",

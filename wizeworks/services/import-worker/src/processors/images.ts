@@ -168,5 +168,5 @@ export async function ingestImage(
 
 /** The sentence shown on a row whose image had to be linked rather than copied. */
 export function linkedNotice(reason: string): string {
-  return `Linked rather than copied, because ${reason}. It still shows on your site, but it is served from your old platform — replace it before you close that account.`;
+  return `Linked rather than copied, because ${reason}. It still shows on your site, but it is served from your old platform: replace it before you close that account.`;
 }

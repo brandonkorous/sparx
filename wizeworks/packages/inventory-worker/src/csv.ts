@@ -68,7 +68,7 @@ export function parseCsvInventory(
     if (!rawSku) continue;
     const quantity = parseInt(rawQty ?? '', 10);
     if (isNaN(quantity)) {
-      logger.warn(`inventory-worker: row ${i + 1} — invalid quantity "${rawQty}", skipping`);
+      logger.warn(`inventory-worker: row ${i + 1}: invalid quantity "${rawQty}", skipping`);
       continue;
     }
     const rawLoc = locIdx !== -1 ? (cells[locIdx]?.trim() ?? '') : '';

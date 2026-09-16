@@ -36,7 +36,7 @@ async function query(name: string, type: DnsRecordType): Promise<DnsAnswer[]> {
     response = await fetch(url, { headers: { accept: 'application/dns-json' } });
   } catch {
     throw new LookupError(
-      'Could not reach the lookup service. Check your connection — this is the one part of this tool that needs one.'
+      'Could not reach the lookup service. Check your connection. This is the one part of this tool that needs one.'
     );
   }
 
@@ -97,9 +97,9 @@ export async function checkSpf(domain: string): Promise<EmailAuthFinding> {
     return {
       kind: 'spf',
       status: 'bad',
-      title: `${spf.length} SPF records — one too many`,
+      title: `${spf.length} SPF records: one too many`,
       detail:
-        'A domain may only publish one SPF record. Most mail servers treat two as an error and ignore both, which fails every message at once. This usually happens after signing up for a new email service and pasting in its record alongside the existing one — the fix is to merge them into a single line.',
+        'A domain may only publish one SPF record. Most mail servers treat two as an error and ignore both, which fails every message at once. This usually happens after signing up for a new email service and pasting in its record alongside the existing one: the fix is to merge them into a single line.',
       record: spf.map((s) => s.data).join('\n'),
     };
   }
@@ -134,7 +134,7 @@ export async function checkSpf(domain: string): Promise<EmailAuthFinding> {
       kind: 'spf',
       status: 'warn',
       title: 'SPF record does too much looking up',
-      detail: `This record needs about ${lookups} lookups to evaluate, and the limit is ten — past that, servers give up and the check fails. It usually means several services have been added over the years. Removing ones you no longer use is the usual fix.`,
+      detail: `This record needs about ${lookups} lookups to evaluate, and the limit is ten: past that, servers give up and the check fails. It usually means several services have been added over the years. Removing ones you no longer use is the usual fix.`,
       record,
     };
   }
@@ -173,7 +173,7 @@ export async function checkDmarc(domain: string): Promise<EmailAuthFinding> {
       title: reports ? 'DMARC is in monitoring mode' : 'DMARC is monitoring, but reporting nowhere',
       detail: reports
         ? 'This is the right place to start: nothing is being rejected, and reports are coming to you about everything sending as your domain. Once those reports look clean, tighten the policy to quarantine.'
-        : 'The policy is set to monitor, but no reporting address is given — so nothing is being enforced AND nobody is being told anything. Add an rua address so the monitoring produces something you can read.',
+        : 'The policy is set to monitor, but no reporting address is given, so nothing is being enforced AND nobody is being told anything. Add an rua address so the monitoring produces something you can read.',
       record: dmarc.data,
     };
   }
@@ -229,7 +229,7 @@ export async function checkDkim(domain: string, selectors: string[]): Promise<Em
     kind: 'dkim',
     status: 'unknown',
     title: 'Could not find a DKIM key',
-    detail: `DKIM keys are published under a name your mail provider chooses, and there is no way to list them — they can only be guessed at. The usual ones were tried (${selectors.join(', ')}) without a match. That does not mean you have no DKIM: check your mail provider's settings for the exact name, and try it above.`,
+    detail: `DKIM keys are published under a name your mail provider chooses, and there is no way to list them. They can only be guessed at. The usual ones were tried (${selectors.join(', ')}) without a match. That does not mean you have no DKIM: check your mail provider's settings for the exact name, and try it above.`,
   };
 }
 

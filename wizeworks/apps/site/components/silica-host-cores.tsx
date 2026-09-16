@@ -147,7 +147,7 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             tenantSlug={ctx.site.slug}
             handle={ctx.recordHandle ?? ''}
             heading={toHeadingText(node.props?.heading, 'Reviews')}
-            emptyText={toHeadingText(node.props?.emptyText, 'No reviews yet — be the first.')}
+            emptyText={toHeadingText(node.props?.emptyText, 'No reviews yet: be the first.')}
             showForm={node.props?.showForm !== false}
           />
         );
@@ -160,7 +160,7 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             tenantSlug={ctx.site.slug}
             handle={ctx.recordHandle ?? ''}
             heading={toHeadingText(node.props?.heading, 'Questions')}
-            emptyText={toHeadingText(node.props?.emptyText, 'No questions yet — ask us anything.')}
+            emptyText={toHeadingText(node.props?.emptyText, 'No questions yet. Ask us anything.')}
             showForm={node.props?.showForm !== false}
           />
         );

@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ironworks Supply Co. — industrial & MRO distributor",
-      "seoDescription": "Ironworks is an industrial MRO distributor — fasteners, abrasives, safety, PPE and bulk consumables sold by the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.",
+      "seoTitle": "Ironworks Supply Co. industrial & MRO distributor",
+      "seoDescription": "Ironworks is an industrial MRO distributor: fasteners, abrasives, safety, PPE and bulk consumables sold by the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Ironworks is a maintenance, repair and operations distributor. We stock the fasteners, abrasives, PPE and shop consumables that keep a floor running — sold by the case, priced for the trade, and dispatched fast."
+                          "Ironworks is a maintenance, repair and operations distributor. We stock the fasteners, abrasives, PPE and shop consumables that keep a floor running: sold by the case, priced for the trade, and dispatched fast."
                         ],
                         "id": "a4b3e571-de87-4424-8c5c-5acdb86cdbb8",
                         "ord": "a1"
@@ -1213,7 +1213,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Open a trade account and you buy the way a business should — by the case, at wholesale rates, on terms. No consumer markups, no runaround."
+                          "Open a trade account and you buy the way a business should: by the case, at wholesale rates, on terms. No consumer markups, no runaround."
                         ],
                         "id": "48a483d0-bcae-4f8d-a641-a040910bac50",
                         "ord": "a1"
@@ -1326,7 +1326,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A direct line to a real person who knows your shop, your standing order and what you go through — not a ticket queue."
+                              "A direct line to a real person who knows your shop, your standing order and what you go through, not a ticket queue."
                             ],
                             "id": "a5c89e5a-9e0b-4904-9247-6d5f53931058",
                             "ord": "a1"
@@ -1639,7 +1639,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Ironworks Supply Co.",
+      "seoTitle": "Shop: Ironworks Supply Co.",
       "seoDescription": "Browse everything Ironworks Supply Co. makes, with prices and options at a glance. Industrial & MRO supply.",
       "root": {
         "kind": "element",
@@ -1671,7 +1671,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every line we stock — fasteners, abrasives, safety and PPE, and bulk shop consumables, sold by the case. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout."
+                      "Every line we stock: fasteners, abrasives, safety and PPE, and bulk shop consumables, sold by the case. Filter by aisle or sort by price; trade accounts see their contract pricing at checkout."
                     ],
                     "id": "a4bf8df9-fae0-46c8-b24c-488409cdfbfc",
                     "ord": "a1"
@@ -1699,7 +1699,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Ironworks Supply Co.",
+      "seoTitle": "Collections: Ironworks Supply Co.",
       "seoDescription": "Explore the collections at Ironworks Supply Co., grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1731,7 +1731,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalog grouped the way a purchaser actually buys — best sellers, new lines just in, the shop-floor essentials, safety & PPE, and the bulk consumables you reorder on a schedule."
+                      "The catalog grouped the way a purchaser actually buys: best sellers, new lines just in, the shop-floor essentials, safety & PPE, and the bulk consumables you reorder on a schedule."
                     ],
                     "id": "21f7e03c-384d-4adb-89d1-8ef3a743fb83",
                     "ord": "a1"
@@ -1759,7 +1759,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Ironworks Supply Co.",
+      "seoTitle": "Your cart: Ironworks Supply Co.",
       "seoDescription": "Review what is in your cart and check out securely at Ironworks Supply Co..",
       "root": {
         "kind": "element",
@@ -1819,7 +1819,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Ironworks Supply Co.",
+      "seoTitle": "Search: Ironworks Supply Co.",
       "seoDescription": "Search Ironworks Supply Co. for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1879,7 +1879,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Ironworks Supply Co.",
+      "seoTitle": "Journal: Ironworks Supply Co.",
       "seoDescription": "Stories, guides and notes from Ironworks Supply Co..",
       "root": {
         "kind": "element",
@@ -1911,7 +1911,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical guidance from the warehouse floor — how to stock an MRO room, pick the right abrasive, and outfit a crew in PPE. Written for the people doing the buying, not for a catalog."
+                      "Practical guidance from the warehouse floor: how to stock an MRO room, pick the right abrasive, and outfit a crew in PPE. Written for the people doing the buying, not for a catalog."
                     ],
                     "id": "8c6ff630-6f1c-43ca-9639-0ecbf6aded2b",
                     "ord": "a1"
@@ -2045,7 +2045,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Ironworks Supply Co.",
-      "seoDescription": "How Ironworks stocks, prices and ships — one catalog, one account, one invoice, wholesale by the case, and stock that is actually on the shelf when you order it.",
+      "seoDescription": "How Ironworks stocks, prices and ships. One catalog, one account, one invoice, wholesale by the case, and stock that is actually on the shelf when you order it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2076,7 +2076,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Ironworks Supply Co. is an industrial MRO distributor. We stock the unglamorous, essential lines that keep a maintenance shop, a fabrication floor or a fleet garage running — and we sell them to the trade by the case, at wholesale, on terms."
+                      "Ironworks Supply Co. is an industrial MRO distributor. We stock the unglamorous, essential lines that keep a maintenance shop, a fabrication floor or a fleet garage running, and we sell them to the trade by the case, at wholesale, on terms."
                     ],
                     "id": "568a4e4a-6510-4d79-91a5-55f0162c1ce1",
                     "ord": "a1"
@@ -2096,7 +2096,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the parts, priced fairly and out the door — the boring reliability a shop is built on."
+                      "No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just the parts, priced fairly and out the door: the boring reliability a shop is built on."
                     ],
                     "id": "53971824-4d5b-44a9-9337-926cb0932a1a",
                     "ord": "a3"
@@ -2116,7 +2116,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Ironworks Supply Co.",
+      "seoTitle": "Open a trade account: Ironworks Supply Co.",
       "seoDescription": "Set up a trade account with Ironworks: wholesale per-case pricing, volume breaks, net-30 terms and a dedicated account manager. Wholesale enquiries and bulk quotes start here.",
       "root": {
         "kind": "element",
@@ -2424,8 +2424,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Ironworks Supply Co.",
-      "seoDescription": "Product details at Ironworks Supply Co. — industrial & mro supply, with options and pricing.",
+      "seoTitle": "Product: Ironworks Supply Co.",
+      "seoDescription": "Product details at Ironworks Supply Co. industrial & mro supply, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2788,7 +2788,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is the per-case list rate. Trade accounts unlock volume breaks — deeper per-case pricing at a pallet, a full skid, or a standing order — set for your account in your dashboard."
+                              "The price shown is the per-case list rate. Trade accounts unlock volume breaks (deeper per-case pricing at a pallet, a full skid, or a standing order) set for your account in your dashboard."
                             ],
                             "id": "9ecbcf95-3a48-4430-8e90-aa21114ad5e7",
                             "ord": "a1"

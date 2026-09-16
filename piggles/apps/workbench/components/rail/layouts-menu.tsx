@@ -88,7 +88,7 @@ export function LayoutsMenu({ siteKey, expanded }: { siteKey: string; expanded: 
     const ok = await confirm({
       title: `Delete the "${workspace.name}" layout?`,
       description:
-        'Only the saved arrangement is deleted — nothing that was open in it is touched. There is no undo.',
+        'Only the saved arrangement is deleted. Nothing that was open in it is touched. There is no undo.',
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -103,7 +103,7 @@ export function LayoutsMenu({ siteKey, expanded }: { siteKey: string; expanded: 
     const ok = await confirm({
       title: 'Close everything and start empty?',
       description: controller.hasUnsavedWork()
-        ? 'Something here has unsaved edits — starting empty discards them. There is no undo.'
+        ? 'Something here has unsaved edits: starting empty discards them. There is no undo.'
         : 'Everything open closes and the page reloads empty. Your saved layouts are not affected.',
       confirmLabel: 'Start empty',
       cancelLabel: 'Keep what I have',

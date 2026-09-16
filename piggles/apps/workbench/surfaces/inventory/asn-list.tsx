@@ -90,7 +90,7 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
           description={
             view === 'overdue'
               ? 'Every shipment a supplier told you about has either arrived or is still inside its date.'
-              : 'When a supplier tells you what they have shipped — by email, on a file, or through their own system — record it against the order and it appears here. Receiving then pre-fills from it instead of being typed from scratch.'
+              : 'When a supplier tells you what they have shipped (by email, on a file, or through their own system), record it against the order and it appears here. Receiving then pre-fills from it instead of being typed from scratch.'
           }
         />
       );

@@ -17,7 +17,7 @@ import { renderStoryOg } from '@/lib/og-story';
 // cards worked everywhere except LinkedIn. Nothing here needs the edge runtime
 // (system fonts, inline SVG, no network), so this matches the other module cards.
 export const runtime = 'nodejs';
-export const alt = 'sparx — Your story, multiplied.';
+export const alt = 'sparx. Your story, multiplied.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -25,7 +25,7 @@ export const contentType = 'image/png';
 // card cleanly); the homepage hero opens on the same one. Guarded so an empty set
 // fails the build loudly rather than rendering a card with no story.
 const SALON = STORY_EXAMPLES[0];
-if (!SALON) throw new Error('STORY_EXAMPLES is empty — no story to render the OG card from.');
+if (!SALON) throw new Error('STORY_EXAMPLES is empty: no story to render the OG card from.');
 const SALON_STORY = SALON.story;
 
 export default function Image() {

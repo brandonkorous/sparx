@@ -122,7 +122,7 @@
     {
       "handle": "site-assessment",
       "name": "Home site assessment",
-      "description": "An electrician walks your home, checks your panel and wiring, and maps out what your project needs — the honest starting point for any bigger job.",
+      "description": "An electrician walks your home, checks your panel and wiring, and maps out what your project needs: the honest starting point for any bigger job.",
       "durationMinutes": 90,
       "priceCents": 9900,
       "assignmentStrategy": "any_available",
@@ -156,7 +156,7 @@
     {
       "handle": "free-estimate",
       "name": "Free estimate",
-      "description": "Have a specific job in mind? Book a no-cost visit and leave with a clear, written price — no surprises, no pressure.",
+      "description": "Have a specific job in mind? Book a no-cost visit and leave with a clear, written price: no surprises, no pressure.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -173,7 +173,7 @@
     {
       "handle": "smart-home-consult",
       "name": "Smart-home & automation consult",
-      "description": "Lighting, switches, sensors and hubs that actually talk to each other. We plan a setup that fits how you live — plainly explained, nothing over-sold.",
+      "description": "Lighting, switches, sensors and hubs that actually talk to each other. We plan a setup that fits how you live: plainly explained, nothing over-sold.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -207,7 +207,7 @@
     {
       "handle": "solar-battery-hookup-consult",
       "name": "Solar & battery hookup consult",
-      "description": "Adding panels or a home battery? We handle the electrical side — the connection, the transfer switch and the inspection — and explain the rebates you qualify for.",
+      "description": "Adding panels or a home battery? We handle the electrical side (the connection, the transfer switch and the inspection) and explain the rebates you qualify for.",
       "durationMinutes": 90,
       "priceCents": 4900,
       "assignmentStrategy": "any_available",

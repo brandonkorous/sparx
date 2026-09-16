@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Copper & Cole — a heritage barbershop",
+      "seoTitle": "Copper & Cole: a heritage barbershop",
       "seoDescription": "Copper & Cole is a heritage barbershop for sharp cuts, clean skin fades, beard work and a hot-towel straight-razor shave. Walk in or book your barber online.",
       "root": {
         "kind": "element",
@@ -691,7 +691,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Got a free hour? Come in. If a chair’s open we’ll take you — no appointment needed, no attitude at the door."
+                              "Got a free hour? Come in. If a chair’s open we’ll take you: no appointment needed, no attitude at the door."
                             ],
                             "id": "742635f3-0215-47b1-8e9c-47ff83540936",
                             "ord": "a1"
@@ -1092,7 +1092,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Copper & Cole has run the same way since 2014 — real barbers, real chairs, and the old tools kept sharp. No gimmicks, no rushing you out the door."
+                          "Copper & Cole has run the same way since 2014: real barbers, real chairs, and the old tools kept sharp. No gimmicks, no rushing you out the door."
                         ],
                         "id": "a1f48413-663d-46a2-bd40-ad526729ddc3",
                         "ord": "a1"
@@ -1167,7 +1167,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — the same hands every time, or take whoever’s open."
+                          "Book by name: the same hands every time, or take whoever’s open."
                         ],
                         "id": "eccf1dd4-5caf-4277-85f6-d045f20c17c9",
                         "ord": "a1"
@@ -1447,7 +1447,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Best cut in the city, hands down. The shave alone is worth the trip — hot towel, straight razor, the works. I don’t go anywhere else.”"
+                      "“Best cut in the city, hands down. The shave alone is worth the trip: hot towel, straight razor, the works. I don’t go anywhere else.”"
                     ],
                     "id": "66d2a382-868f-4152-85b0-6cc7ffd6b34d",
                     "ord": "a0"
@@ -1491,7 +1491,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Pick your service, pick your barber, see live times. Or just walk in — we’ll sort you out."
+                      "Pick your service, pick your barber, see live times. Or just walk in: we’ll sort you out."
                     ],
                     "id": "76b01dbb-5fde-48db-84e8-0e0b648b2f95",
                     "ord": "a1"
@@ -1522,7 +1522,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Copper & Cole",
+      "seoTitle": "Book: Copper & Cole",
       "seoDescription": "See what Copper & Cole offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1654,7 +1654,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "36e8fdc8-fca6-4579-aff4-0f026729c985",
                         "ord": "a1"
@@ -1686,7 +1686,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Walk in or book ahead — either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out."
+                              "Walk in or book ahead. Either works. If you booked and can’t make it, give us 12 hours so we can hand the chair to someone else. We text a reminder the day before and two hours out."
                             ],
                             "id": "210909de-f2c7-403a-b938-7ee6ffc39d6e",
                             "ord": "a1"
@@ -1723,7 +1723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The shave and the full combo hold your barber for the better part of an hour. No deposit — just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook."
+                              "The shave and the full combo hold your barber for the better part of an hour. No deposit. Just give us 24 hours if plans change. Two no-shows and we’ll ask you to call to rebook."
                             ],
                             "id": "153f5779-a34c-47ba-9df1-aebe061a3e61",
                             "ord": "a1"
@@ -1761,7 +1761,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Copper & Cole",
+      "seoTitle": "About: Copper & Cole",
       "seoDescription": "Who Copper & Cole is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1810,7 +1810,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Copper & Cole in 2014 to run a barbershop the old way — real barbers, sharp tools, and time taken over every cut and shave."
+                          "We opened Copper & Cole in 2014 to run a barbershop the old way: real barbers, sharp tools, and time taken over every cut and shave."
                         ],
                         "id": "d6a778d7-908c-4813-b136-939ff47ae6bf",
                         "ord": "a1"
@@ -1980,7 +1980,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Copper & Cole",
+      "seoTitle": "Visit: Copper & Cole",
       "seoDescription": "Where to find Copper & Cole, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2017,7 +2017,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Copper & Cole will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Copper & Cole will get back to you, usually the same day."
                         ],
                         "id": "2e8c1fd0-473f-4d29-a48e-4b9d5b0c89dc",
                         "ord": "a1"
@@ -2467,7 +2467,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book your chair online and see live times — walk-ins still welcome whenever a chair’s open."
+                      "Book your chair online and see live times: walk-ins still welcome whenever a chair’s open."
                     ],
                     "id": "96384f5d-67eb-44f1-996b-d09dc21bca5c",
                     "ord": "a1"

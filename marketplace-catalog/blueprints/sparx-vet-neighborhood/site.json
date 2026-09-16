@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Cedar Paws Veterinary — a friendly neighborhood vet clinic",
-      "seoDescription": "Cedar Paws is a full-service neighborhood vet for dogs and cats — wellness, vaccines, sick visits, dental and senior care. Book your appointment online.",
+      "seoTitle": "Cedar Paws Veterinary: a friendly neighborhood vet clinic",
+      "seoDescription": "Cedar Paws is a full-service neighborhood vet for dogs and cats: wellness, vaccines, sick visits, dental and senior care. Book your appointment online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A friendly neighborhood clinic for dogs and cats — wellness, vaccines, sick visits, dental and senior care, all under one warm roof."
+                      "A friendly neighborhood clinic for dogs and cats: wellness, vaccines, sick visits, dental and senior care, all under one warm roof."
                     ],
                     "id": "5611775f-758c-499c-a422-5ca0f1736340",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Gentle hands, calm rooms and all the time your pet needs. We treat every animal like our own — because to us, they are."
+                              "Gentle hands, calm rooms and all the time your pet needs. We treat every animal like our own, because to us, they are."
                             ],
                             "id": "9649c6a2-d3f1-4fe7-bfd1-5907e47ac53c",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "From a wiggly new puppy to a wise old cat, we care for the whole family — and keep the visit as low-stress as we can."
+                              "From a wiggly new puppy to a wise old cat, we care for the whole family, and keep the visit as low-stress as we can."
                             ],
                             "id": "4d4bab96-e82e-42f0-894b-bd31710941ce",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll always know the cost before we begin. No surprises, no upsells — just straight answers and fair prices."
+                              "You’ll always know the cost before we begin. No surprises, no upsells. Just straight answers and fair prices."
                             ],
                             "id": "2a8dcd76-4778-407e-9ea9-dcb268e7f9f7",
                             "ord": "a1"
@@ -1113,7 +1113,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Cedar Paws is a neighborhood clinic, not a rush-you-through hospital. We keep the day unhurried so every visit gets a real conversation — about your pet, your worries, and what will actually help."
+                          "Cedar Paws is a neighborhood clinic, not a rush-you-through hospital. We keep the day unhurried so every visit gets a real conversation, about your pet, your worries, and what will actually help."
                         ],
                         "id": "27e46616-238b-490c-a7e1-59ff4b0b71eb",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "A soft spot for senior pets and the anxious ones — the cats who hide and the dogs who shake."
+                                  "A soft spot for senior pets and the anxious ones: the cats who hide and the dogs who shake."
                                 ],
                                 "id": "501ed2cf-4dce-4548-8eda-94c49a0f3a20",
                                 "ord": "a2"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Cedar Paws Veterinary",
+      "seoTitle": "Book: Cedar Paws Veterinary",
       "seoDescription": "See what Cedar Paws Veterinary offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "4cf247ae-a2ab-4ac3-9521-21fed61f4d29",
                         "ord": "a1"
@@ -1663,7 +1663,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show — otherwise the hold is released after your visit."
+                              "Longer appointments hold a card on file to reserve the room and the doctor’s time. You’re only charged for a same-day cancellation or a no-show, otherwise the hold is released after your visit."
                             ],
                             "id": "4149b271-5759-4bc7-bf4a-92a6cb028fa6",
                             "ord": "a1"
@@ -1699,7 +1699,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Cedar Paws Veterinary",
+      "seoTitle": "About: Cedar Paws Veterinary",
       "seoDescription": "Who Cedar Paws Veterinary is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1748,7 +1748,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Cedar Paws to be the kind of clinic we’d want for our own pets — warm, unhurried, and honest. A place where you’re greeted by name, where the exam room feels calm, and where nobody makes you feel rushed or talked-down-to."
+                          "We opened Cedar Paws to be the kind of clinic we’d want for our own pets: warm, unhurried, and honest. A place where you’re greeted by name, where the exam room feels calm, and where nobody makes you feel rushed or talked-down-to."
                         ],
                         "id": "9ea55c90-a3b4-4069-9056-241b408e84e0",
                         "ord": "a1"
@@ -1836,7 +1836,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Quiet rooms, gentle handling and treats on hand — we work at your pet’s pace to make the visit easier on everyone."
+                              "Quiet rooms, gentle handling and treats on hand. We work at your pet’s pace to make the visit easier on everyone."
                             ],
                             "id": "5b7c5b50-0afb-4747-8d7c-48838b9f06ce",
                             "ord": "a1"
@@ -1863,7 +1863,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We explain what we see, what it means and what your options are — no jargon, no pressure, just clear guidance you can trust."
+                              "We explain what we see, what it means and what your options are: no jargon, no pressure, just clear guidance you can trust."
                             ],
                             "id": "f66b41b1-a65f-4b00-8404-d53f5d05684b",
                             "ord": "a1"
@@ -1918,7 +1918,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Cedar Paws Veterinary",
+      "seoTitle": "Visit: Cedar Paws Veterinary",
       "seoDescription": "Where to find Cedar Paws Veterinary, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1955,7 +1955,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Cedar Paws Veterinary will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Cedar Paws Veterinary will get back to you, usually the same day."
                         ],
                         "id": "cadda553-5a8e-489a-a556-1a32d725ace8",
                         "ord": "a1"
@@ -2380,7 +2380,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live openings and reserve your pet’s time online — no phone tag, no hold music."
+                      "See live openings and reserve your pet’s time online: no phone tag, no hold music."
                     ],
                     "id": "a8feab37-13f1-4f20-9a6f-618a3a358358",
                     "ord": "a1"

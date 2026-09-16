@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Clearmind Therapy — modern online therapy",
-      "seoDescription": "Clearmind is an online-first therapy practice — secure video sessions with licensed therapists, evenings and weekends. Start with a free matching call and book online.",
+      "seoTitle": "Clearmind Therapy: modern online therapy",
+      "seoDescription": "Clearmind is an online-first therapy practice: secure video sessions with licensed therapists, evenings and weekends. Start with a free matching call and book online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Talk to a licensed therapist by secure video — from home, on your schedule, evenings and weekends included. Getting started takes one short call."
+                      "Talk to a licensed therapist by secure video: from home, on your schedule, evenings and weekends included. Getting started takes one short call."
                     ],
                     "id": "ddc0616b-2f50-4a7e-af1d-57de47165c6a",
                     "ord": "a1"
@@ -691,7 +691,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Start with a free 20-minute call. We’ll listen to what you need and match you with a therapist who’s the right fit — no endless searching."
+                              "Start with a free 20-minute call. We’ll listen to what you need and match you with a therapist who’s the right fit: no endless searching."
                             ],
                             "id": "fb6eb9fd-c3f6-4fdd-8d61-4dc160370c63",
                             "ord": "a1"
@@ -718,7 +718,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Sessions happen over private, encrypted video. No waiting room, no commute — just a calm, confidential space wherever you are."
+                              "Sessions happen over private, encrypted video. No waiting room, no commute. Just a calm, confidential space wherever you are."
                             ],
                             "id": "4a2726da-891b-4eab-9e40-d9f980a8880b",
                             "ord": "a1"
@@ -1092,7 +1092,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Clearmind is online-first on purpose. Good therapy shouldn’t depend on living near the right office or finding a free afternoon — so we built it around your life, not the other way around."
+                          "Clearmind is online-first on purpose. Good therapy shouldn’t depend on living near the right office or finding a free afternoon, so we built it around your life, not the other way around."
                         ],
                         "id": "b1882e70-75d5-4d9c-921a-8d5af9ce5227",
                         "ord": "a1"
@@ -1167,7 +1167,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same person each session, someone who gets to know you and your story."
+                          "Book by name: you’ll see the same person each session, someone who gets to know you and your story."
                         ],
                         "id": "631dab24-7100-473d-a7f9-ddf4f00052ba",
                         "ord": "a1"
@@ -1420,7 +1420,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a free 20-minute matching call — no cost, no commitment, just a conversation. It takes about a minute to book."
+                      "Start with a free 20-minute matching call: no cost, no commitment, just a conversation. It takes about a minute to book."
                     ],
                     "id": "1267859b-d460-4b33-812a-7f664def0a57",
                     "ord": "a1"
@@ -1451,7 +1451,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Clearmind Therapy",
+      "seoTitle": "Book: Clearmind Therapy",
       "seoDescription": "See what Clearmind Therapy offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1575,7 +1575,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "f5a43703-7820-4648-a7a1-ed969da7371b",
                         "ord": "a1"
@@ -1607,7 +1607,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Please give at least 24 hours’ notice to reschedule or cancel — life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+                              "Please give at least 24 hours’ notice to reschedule or cancel: life happens, and there’s no charge when you let us know in time. We send a reminder the day before and two hours ahead."
                             ],
                             "id": "7b693a91-2159-42d8-a0a9-1374a9c72a9c",
                             "ord": "a1"
@@ -1682,7 +1682,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Clearmind Therapy",
+      "seoTitle": "About: Clearmind Therapy",
       "seoDescription": "Who Clearmind Therapy is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1741,7 +1741,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we built a practice around access: licensed therapists, secure video, evening and weekend hours, and pricing that doesn’t make regular care feel like a luxury. Asking for help is a strength — our job is to make the next step an easy one."
+                          "So we built a practice around access: licensed therapists, secure video, evening and weekend hours, and pricing that doesn’t make regular care feel like a luxury. Asking for help is a strength. Our job is to make the next step an easy one."
                         ],
                         "id": "5e5073a7-4ae3-47bd-9116-54ce21f61d56",
                         "ord": "a2"
@@ -1873,7 +1873,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every session is confidential and encrypted. What you share stays between you and your therapist — full stop."
+                              "Every session is confidential and encrypted. What you share stays between you and your therapist: full stop."
                             ],
                             "id": "da0d230f-f418-40a3-b3ef-eedf5b98502c",
                             "ord": "a1"
@@ -1901,7 +1901,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Clearmind Therapy",
+      "seoTitle": "Visit: Clearmind Therapy",
       "seoDescription": "Where to find Clearmind Therapy, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1938,7 +1938,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Clearmind Therapy will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Clearmind Therapy will get back to you, usually the same day."
                         ],
                         "id": "bdac75c4-747f-4ee0-81d8-ea353a7a5c49",
                         "ord": "a1"
@@ -2390,7 +2390,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve a free matching call online — no phone tag, no waiting room."
+                      "See live availability and reserve a free matching call online: no phone tag, no waiting room."
                     ],
                     "id": "cb136f90-a70d-44e2-9bca-56ae21804dc9",
                     "ord": "a1"

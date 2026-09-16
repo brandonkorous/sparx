@@ -499,8 +499,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Kade Nakamura — creative developer",
-      "seoDescription": "Kade Nakamura builds real-time WebGL, interactive interfaces and developer tooling — selected builds, the breakdowns behind them, and how to start a project.",
+      "seoTitle": "Kade Nakamura: creative developer",
+      "seoDescription": "Kade Nakamura builds real-time WebGL, interactive interfaces and developer tooling: selected builds, the breakdowns behind them, and how to start a project.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -566,7 +566,7 @@
                             "tag": "span",
                             "class": "text-base text-secondary",
                             "children": [
-                              "kade — creative developer · webgl / interactive / tooling"
+                              "kade: creative developer · webgl / interactive / tooling"
                             ],
                             "id": "377d3e32-3e84-4053-acde-753853498b8d",
                             "ord": "a1"
@@ -597,7 +597,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
                         "children": [
-                          "I build things that run in a browser — real-time WebGL, interactive interfaces, and the tools other developers use to make them. Ten years of shipping the demo AND the production build behind it."
+                          "I build things that run in a browser: real-time WebGL, interactive interfaces, and the tools other developers use to make them. Ten years of shipping the demo AND the production build behind it."
                         ],
                         "id": "8390b87c-2444-4b70-848f-e7750b79ecf9",
                         "ord": "a1"
@@ -739,7 +739,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Three recent things I built and shipped. Each one opens to the full breakdown — what it is, the part that was actually hard, the stack, and what went live."
+                          "Three recent things I built and shipped. Each one opens to the full breakdown: what it is, the part that was actually hard, the stack, and what went live."
                         ],
                         "id": "1c46d209-d4c5-435c-97a3-359b992ef8cd",
                         "ord": "a1"
@@ -909,7 +909,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A terminal-UI toolkit for building fast, keyboard-driven console apps — panes, tables and a real layout engine."
+                              "A terminal-UI toolkit for building fast, keyboard-driven console apps: panes, tables and a real layout engine."
                             ],
                             "id": "634980a9-46d3-4873-aa7a-68a6c4c5fb3b",
                             "ord": "a3"
@@ -1131,7 +1131,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A WebGPU renderer for a generative-art studio — compute shaders doing the heavy lifting so a browser tab can drive a wall of screens."
+                              "A WebGPU renderer for a generative-art studio: compute shaders doing the heavy lifting so a browser tab can drive a wall of screens."
                             ],
                             "id": "c02c61bc-980d-4638-a4e0-29ca574e659c",
                             "ord": "a1"
@@ -1185,7 +1185,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Maintaining Loom and a handful of smaller libraries — issues answered, PRs reviewed, and the occasional 2am refactor when a bug is too interesting to leave."
+                              "Maintaining Loom and a handful of smaller libraries: issues answered, PRs reviewed, and the occasional 2am refactor when a bug is too interesting to leave."
                             ],
                             "id": "8be32956-9ccf-40a6-9a1d-2830ff50601b",
                             "ord": "a1"
@@ -1229,7 +1229,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-primary-content",
                     "children": [
-                      "I take on a few build-heavy projects at a time — the ones where the demo has to survive contact with production. If that sounds like yours, let’s talk."
+                      "I take on a few build-heavy projects at a time: the ones where the demo has to survive contact with production. If that sounds like yours, let’s talk."
                     ],
                     "id": "c74c5beb-6f2f-4c6a-902e-1d3957d0e5e7",
                     "ord": "a1"
@@ -1260,8 +1260,8 @@
       "name": "Work",
       "kind": "singleton",
       "slug": "work",
-      "seoTitle": "Work — Kade Nakamura",
-      "seoDescription": "Selected projects and case studies by Kade Nakamura — the work, the thinking, and the outcome.",
+      "seoTitle": "Work: Kade Nakamura",
+      "seoDescription": "Selected projects and case studies by Kade Nakamura: the work, the thinking, and the outcome.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1425,7 +1425,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Kade Nakamura — creative developer",
+      "seoTitle": "About Kade Nakamura: creative developer",
       "seoDescription": "Ten years in real-time graphics and the web platform, end to end: the shader that renders it, the budget that keeps it fast, and the pipeline that ships it.",
       "root": {
         "kind": "element",
@@ -1462,7 +1462,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I’m a creative developer. That means I live in the seam between design and engineering — the demos that look impossible, the interfaces that feel alive, and the tools that make building them faster. Ten years in, mostly real-time graphics and the web platform."
+                          "I’m a creative developer. That means I live in the seam between design and engineering: the demos that look impossible, the interfaces that feel alive, and the tools that make building them faster. Ten years in, mostly real-time graphics and the web platform."
                         ],
                         "id": "b1167bf2-8af2-469d-8011-bf48795dfb8b",
                         "ord": "a1"
@@ -1472,7 +1472,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I care about the whole path, not just the pretty frame: the shader that renders it, the memory budget that keeps it at 60fps, and the build pipeline that ships it to a phone. A prototype that can’t survive production was never finished — it was a screenshot."
+                          "I care about the whole path, not just the pretty frame: the shader that renders it, the memory budget that keeps it at 60fps, and the build pipeline that ships it to a phone. A prototype that can’t survive production was never finished. It was a screenshot."
                         ],
                         "id": "ed3d27b7-a3d5-444c-abb5-5d85dd1795f0",
                         "ord": "a2"
@@ -1627,8 +1627,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Kade Nakamura",
-      "seoDescription": "Start a project with Kade Nakamura — availability, what a good brief looks like, and where to reach them.",
+      "seoTitle": "Contact: Kade Nakamura",
+      "seoDescription": "Start a project with Kade Nakamura: availability, what a good brief looks like, and where to reach them.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1664,7 +1664,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I’m open to select WebGL, interactive and tooling work. A good first message tells me what you’re trying to make, roughly when, and where it has to run — but a half-formed idea and a deadline is a fine place to start too."
+                          "I’m open to select WebGL, interactive and tooling work. A good first message tells me what you’re trying to make, roughly when, and where it has to run, but a half-formed idea and a deadline is a fine place to start too."
                         ],
                         "id": "20c081e3-4060-475e-a467-14ff6230e536",
                         "ord": "a1"
@@ -1946,8 +1946,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Project — Kade Nakamura",
-      "seoDescription": "A project by Kade Nakamura — the brief, the process, and the result, in one case study.",
+      "seoTitle": "Project: Kade Nakamura",
+      "seoDescription": "A project by Kade Nakamura: the brief, the process, and the result, in one case study.",
       "root": {
         "kind": "element",
         "tag": "div",

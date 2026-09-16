@@ -291,7 +291,7 @@ export function legalItemStatus(item: ChecklistItem): LegalStatus {
           // `legal_template_version` after creation. A stale page could not be made
           // current by any means. The action beside this row is what makes the
           // sentence keepable.
-          `The starter wording has been updated since this page was made.${live ? ' Your live page still shows the older version.' : ''} You can take the new wording — what is on the page now is kept in its history.`
+          `The starter wording has been updated since this page was made.${live ? ' Your live page still shows the older version.' : ''} You can take the new wording: what is on the page now is kept in its history.`
         : 'This still uses the sparx starter wording. Read it through, make it fit your business, then mark it reviewed.',
       needsReview: true,
       stale,
@@ -302,7 +302,7 @@ export function legalItemStatus(item: ChecklistItem): LegalStatus {
     return {
       label: 'Published',
       tone: 'success',
-      detail: 'Live on your site — anyone can read it.',
+      detail: 'Live on your site. Anyone can read it.',
       needsReview: false,
       stale: false,
     };

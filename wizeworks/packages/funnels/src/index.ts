@@ -114,7 +114,7 @@ export async function updateFunnel(
     const nextGoal = input.goal === undefined ? current.goal : input.goal;
     if (nextStatus === 'active' && !hasGoal(nextGoal)) {
       throw new FunnelRuleError(
-        'Say what this funnel is trying to achieve before turning it on — without a goal it can only report what happened, not whether it worked.'
+        'Say what this funnel is trying to achieve before turning it on, without a goal it can only report what happened, not whether it worked.'
       );
     }
 
@@ -192,7 +192,7 @@ function assertKeysPreserved(before: FunnelStages, after: FunnelStages): void {
   const lost = before.filter((s) => !kept.has(s.key)).map((s) => s.key);
   if (lost.length > 0) {
     throw new FunnelRuleError(
-      `Pause the funnel before removing ${lost.length === 1 ? 'a stage' : 'stages'} — ${lost.join(', ')} already ${lost.length === 1 ? 'has' : 'have'} history recorded against ${lost.length === 1 ? 'it' : 'them'}. Renaming is fine.`
+      `Pause the funnel before removing ${lost.length === 1 ? 'a stage' : 'stages'}: ${lost.join(', ')} already ${lost.length === 1 ? 'has' : 'have'} history recorded against ${lost.length === 1 ? 'it' : 'them'}. Renaming is fine.`
     );
   }
 }

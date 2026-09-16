@@ -43,7 +43,7 @@ export function CrmHero() {
   // (docs/brain/business/audience.md), so the promise has to be stated as
   // something that happens to them, not as an architecture.
   const lede =
-    'Every order they placed, every email they opened, every quote you sent them — it is all already somewhere in your business. sparx keeps it on one page, so whoever is serving them can see it without coming to ask you first.';
+    'Every order they placed, every email they opened, every quote you sent them. It is all already somewhere in your business. sparx keeps it on one page, so whoever is serving them can see it without coming to ask you first.';
   // Four claims, four hues — each the color of the thing it names, so the row
   // reads as four different promises instead of four copies of one. They were
   // four identical pale pills, each led by the same small cyan dot. Re-worded

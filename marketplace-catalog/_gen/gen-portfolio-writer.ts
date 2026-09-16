@@ -68,7 +68,7 @@ interface Asset {
 }
 
 const ASSETS: Asset[] = [
-    { id: 'manuscript-desk', url: src('manuscript-desk'), alt: 'A writer’s desk in morning light — loose pages, a notebook, and a cooling cup of coffee' },
+    { id: 'manuscript-desk', url: src('manuscript-desk'), alt: 'A writer’s desk in morning light: loose pages, a notebook, and a cooling cup of coffee' },
     { id: 'manuscript-city', url: src('manuscript-city'), alt: 'A rain-slicked city street at dusk, shopfront light pooling on the pavement' },
     { id: 'manuscript-window', url: src('manuscript-window'), alt: 'Rain running down a window over a quiet interior, an open book on the sill' },
     { id: 'manuscript-letters', url: src('manuscript-letters'), alt: 'A tray of metal letterpress type, close enough to read the mirrored letters' },
@@ -107,7 +107,7 @@ function mastheadBand(): Node {
                         ],
                     }),
                     el('p', 'max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl', {
-                        text: 'I write long and short — reported features, first-person essays, and a fortnightly newsletter — about how we spend our days: the work we do, the places we do it in, and the small daily fight to keep our attention our own. Fifteen years at it, most of them freelance, always following the question rather than the beat.',
+                        text: 'I write long and short (reported features, first-person essays, and a fortnightly newsletter) about how we spend our days: the work we do, the places we do it in, and the small daily fight to keep our attention our own. Fifteen years at it, most of them freelance, always following the question rather than the beat.',
                     }),
                 ],
             }),
@@ -162,7 +162,7 @@ function selectedWritingBand(): Node {
                             writingRow({
                                 rubric: 'Essay',
                                 title: 'The Long Way to the Desk',
-                                dek: 'On the small, stubborn rituals we build around work — and what they quietly protect us from.',
+                                dek: 'On the small, stubborn rituals we build around work, and what they quietly protect us from.',
                                 publication: 'Meridian Quarterly',
                                 date: 'March 2026',
                                 href: '/blog/the-long-way-to-the-desk',
@@ -178,7 +178,7 @@ function selectedWritingBand(): Node {
                             writingRow({
                                 rubric: 'Newsletter',
                                 title: 'Notes on Attention, No. 14',
-                                dek: 'A fortnightly letter — this issue, on the difference between being interrupted and being distracted.',
+                                dek: 'A fortnightly letter. This issue, on the difference between being interrupted and being distracted.',
                                 publication: 'The Long Field',
                                 date: 'Issue 14 · 2026',
                                 href: '/blog/notes-on-attention-14',
@@ -211,7 +211,7 @@ function colophonBand(): Node {
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         children: [
-                            el('span', undefined, { text: 'For commissions, pitches and the newsletter — ' }),
+                            el('span', undefined, { text: 'For commissions, pitches and the newsletter: ' }),
                             el('a', 'font-semibold text-primary transition-colors hover:text-base-content', {
                                 attrs: { href: '/contact' },
                                 text: 'get in touch',
@@ -240,7 +240,7 @@ const WORK: Node[] = [
                         { text: 'Writing' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Essays, reporting, criticism and the newsletter — the last few years of it, most recent first. Each piece opens to the full read.',
+                        text: 'Essays, reporting, criticism and the newsletter: the last few years of it, most recent first. Each piece opens to the full read.',
                     }),
                 ],
             }),
@@ -352,10 +352,10 @@ const ABOUT: Node[] = [
                                 text: 'I’m a writer, mostly of essays and reported features, and I’ve spent fifteen years trying to describe ordinary working life clearly enough that it stops looking ordinary.',
                             }),
                             el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                                text: 'I started on the local desk of a coastal paper, covering council meetings and closing shops, and I never quite left that world behind — the reporting I care about most is still close to the ground, spent with people doing the work that keeps a place standing. The essays grew out of the reporting: the questions that were too slow, or too personal, for a news page.',
+                                text: 'I started on the local desk of a coastal paper, covering council meetings and closing shops, and I never quite left that world behind: the reporting I care about most is still close to the ground, spent with people doing the work that keeps a place standing. The essays grew out of the reporting: the questions that were too slow, or too personal, for a news page.',
                             }),
                             el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                                text: 'These days I write to commission for a handful of magazines, review the occasional novel, and send The Long Field — a fortnightly newsletter about work, cities and the strange economics of attention — to a few thousand readers who put up with me. I write slowly, edit hard, and believe the second draft is where the writing actually happens.',
+                                text: 'These days I write to commission for a handful of magazines, review the occasional novel, and send The Long Field: a fortnightly newsletter about work, cities and the strange economics of attention, to a few thousand readers who put up with me. I write slowly, edit hard, and believe the second draft is where the writing actually happens.',
                             }),
                         ],
                     }),
@@ -400,9 +400,9 @@ const CONTACT: Node[] = [
     contactSection({
         heading: 'Get in touch',
         intro: [
-            'I’m open to commissions and I read every pitch. Essays, reported features, criticism — if there’s a story you think I’m the right person to tell, write and tell me why.',
-            'A useful note tells me the idea, roughly how long it wants to be, and when you’d need it. A half-formed idea is a perfectly good place to begin — most of mine start that way.',
-            'Or subscribe to The Long Field — a fortnightly letter on work and attention, and the quietest way to keep up with what I’m writing.',
+            'I’m open to commissions and I read every pitch. Essays, reported features, criticism. If there’s a story you think I’m the right person to tell, write and tell me why.',
+            'A useful note tells me the idea, roughly how long it wants to be, and when you’d need it. A half-formed idea is a perfectly good place to begin. Most of mine start that way.',
+            'Or subscribe to The Long Field: a fortnightly letter on work and attention, and the quietest way to keep up with what I’m writing.',
         ],
         submitLabel: 'Email Iris',
         secondary: { label: 'Read the writing first', href: '/work' },
@@ -415,7 +415,7 @@ const AUTHORS = [
     {
         slug: 'iris-bellamy',
         displayName: 'Iris Bellamy',
-        bio: 'Iris Bellamy is a writer on the coast — essays and reported features on work, cities and attention, in Meridian Quarterly, The Coastal Review and Ledger & Ink. She writes The Long Field, a fortnightly newsletter. Slow drafts, hard edits.',
+        bio: 'Iris Bellamy is a writer on the coast: essays and reported features on work, cities and attention, in Meridian Quarterly, The Coastal Review and Ledger & Ink. She writes The Long Field, a fortnightly newsletter. Slow drafts, hard edits.',
         avatarAssetId: 'manuscript-portrait',
     },
 ];
@@ -440,14 +440,14 @@ const CONTENT = [
         body: {
             title: 'The Long Way to the Desk',
             excerpt:
-                'On the small, stubborn rituals we build around work — and what they quietly protect us from.',
+                'On the small, stubborn rituals we build around work, and what they quietly protect us from.',
             featuredImage: { $asset: 'manuscript-desk' },
             body: {
                 type: 'doc',
                 content: [
                     para('For a long time I believed the trouble with my working day was a problem of scheduling, the kind a better calendar might fix. I moved the hard hours earlier, then later. I tried the cold clarity of six in the morning and the warm fatigue of four in the afternoon. None of it took, and it took me longer than I care to admit to understand why: the difficulty was never when I sat down, but what I had to be willing to feel once I got there.'),
                     h2('The ritual before the work'),
-                    para('Every writer I know keeps a private liturgy — the walk, the second coffee, the tidying of a desk that was already tidy. We are gently mocked for it, and we deserve to be, a little. But I have stopped believing the rituals are procrastination in a better coat. They are the slow work of lowering the volume of everything that is not the sentence, until the sentence is the loudest thing in the room. The walk is not avoidance; it is tuning.'),
+                    para('Every writer I know keeps a private liturgy: the walk, the second coffee, the tidying of a desk that was already tidy. We are gently mocked for it, and we deserve to be, a little. But I have stopped believing the rituals are procrastination in a better coat. They are the slow work of lowering the volume of everything that is not the sentence, until the sentence is the loudest thing in the room. The walk is not avoidance; it is tuning.'),
                     para('What the ritual protects, I think, is the willingness to be bad for a while. You cannot get to a true paragraph without passing through several false ones, and the false ones are humiliating in a way that the empty page is not. An empty page is only potential. A bad paragraph is evidence. The ritual is how you make it safe to produce evidence.'),
                     h2('What the day is for'),
                     para('I have come to measure a working day not by how much I produced but by whether I told myself the truth in it. Some days the truth is that the piece is not working and the honest move is to cut the half I was proudest of. Those days feel like losses and are not. The word count went down and the writing went up, and no calendar in the world has a column for that.'),
@@ -471,12 +471,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The city I thought I knew ends around eleven at night. After that a different one takes over, run by people the daytime rarely meets: the bakers proving tomorrow’s bread, the nurses on the long ward, the drivers moving the goods that will be on shelves before the first commuter is awake. For three months I kept their hours, and the thing that stayed with me was not how hard the work is — though it is — but how invisible it is designed to be.'),
+                    para('The city I thought I knew ends around eleven at night. After that a different one takes over, run by people the daytime rarely meets: the bakers proving tomorrow’s bread, the nurses on the long ward, the drivers moving the goods that will be on shelves before the first commuter is awake. For three months I kept their hours, and the thing that stayed with me was not how hard the work is (though it is) but how invisible it is designed to be.'),
                     h2('The economy of the small hours'),
                     para('A night shift is arranged so that you never see it working. The bins are emptied, the floors are cleaned, the systems are patched, all in the window between the last person leaving and the first arriving, so that the morning looks like it simply happened. The people I followed spoke about this with a kind of dry pride. Their job, as one cleaner put it to me at three in the morning, is to make it look like nobody has a job.'),
-                    para('That invisibility has a price, and the people who pay it are the ones least able to. Night work pays a premium that rarely covers what it costs the body, and the shift patterns fall hardest on those with the fewest other options — new arrivals, students, parents fitting work around a second job or a child. The premium is real. So is the sleep debt, the missed dinners, the slow erosion of the ordinary daytime life the rest of us take as the baseline.'),
+                    para('That invisibility has a price, and the people who pay it are the ones least able to. Night work pays a premium that rarely covers what it costs the body, and the shift patterns fall hardest on those with the fewest other options: new arrivals, students, parents fitting work around a second job or a child. The premium is real. So is the sleep debt, the missed dinners, the slow erosion of the ordinary daytime life the rest of us take as the baseline.'),
                     h2('What the daytime owes'),
-                    para('I went looking for hardship and found competence. The night shift is not a lesser version of the day; it is a distinct expertise, a way of reading a quiet building or an empty road that the daytime never has to learn. The people who work it know things about the city — where it leaks, where it strains, who it forgets — that no daytime survey will ever surface, because the daytime is not awake to ask.'),
+                    para('I went looking for hardship and found competence. The night shift is not a lesser version of the day; it is a distinct expertise, a way of reading a quiet building or an empty road that the daytime never has to learn. The people who work it know things about the city (where it leaks, where it strains, who it forgets) that no daytime survey will ever surface, because the daytime is not awake to ask.'),
                     para('We could pay for that knowledge, and mostly we do not. The least the daytime owes the night is to stop pretending the morning arrives on its own. It arrives because someone stayed up to make it. This piece is a small attempt to keep them awake in the record, at least, a little longer than the shift itself.'),
                 ],
             },
@@ -492,18 +492,18 @@ const CONTENT = [
         body: {
             title: 'Notes on Attention, No. 14',
             excerpt:
-                'A fortnightly letter — this issue, on the difference between being interrupted and being distracted.',
+                'A fortnightly letter. This issue, on the difference between being interrupted and being distracted.',
             featuredImage: { $asset: 'manuscript-window' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Welcome back to The Long Field. It rained here all week, which is the best weather for a newsletter about attention, because rain is the rare interruption that does not ask anything of you. You can watch it or not; it will carry on. I have been thinking about that — the difference between an interruption and a distraction — because I suspect we have been blaming the wrong one.'),
+                    para('Welcome back to The Long Field. It rained here all week, which is the best weather for a newsletter about attention, because rain is the rare interruption that does not ask anything of you. You can watch it or not; it will carry on. I have been thinking about that (the difference between an interruption and a distraction) because I suspect we have been blaming the wrong one.'),
                     h2('Interruption is external; distraction is a deal'),
-                    para('An interruption comes from outside: the doorbell, the child, the colleague at your desk. It is rude, and it is honest — it declares itself and then it is over. A distraction is quieter and less innocent, because a distraction is something you agree to. The phone does not reach into your pocket. You reach for it, in the small gap where the work got hard, and you make a tiny private deal: a moment of relief now, in exchange for the thread you were holding.'),
+                    para('An interruption comes from outside: the doorbell, the child, the colleague at your desk. It is rude, and it is honest. It declares itself and then it is over. A distraction is quieter and less innocent, because a distraction is something you agree to. The phone does not reach into your pocket. You reach for it, in the small gap where the work got hard, and you make a tiny private deal: a moment of relief now, in exchange for the thread you were holding.'),
                     para('Naming it as a deal changed how I felt about it, because a deal can be renegotiated and a victimhood cannot. I am not being stolen from. I am selling something cheaply, over and over, and the buyer is very good at making the price look like nothing.'),
                     h2('A small practice'),
-                    para('So here is the practice I have been keeping, offered in the spirit of one reader to another rather than as advice. When I notice the reach — and the whole thing is learning to notice the reach — I try to name what I am fleeing before I flee it. Usually it is a sentence I do not know how to finish. Naming it does not make the sentence easier. But it moves the difficulty back into view, where it can be worked on, instead of letting it dissolve into a feed.'),
-                    para('That is all for this issue. As ever, hit reply and tell me what you are paying attention to, or failing to — I read every one, and the best of them end up shaping where this letter goes next. Back in a fortnight. — Iris'),
+                    para('So here is the practice I have been keeping, offered in the spirit of one reader to another rather than as advice. When I notice the reach (and the whole thing is learning to notice the reach), I try to name what I am fleeing before I flee it. Usually it is a sentence I do not know how to finish. Naming it does not make the sentence easier. But it moves the difficulty back into view, where it can be worked on, instead of letting it dissolve into a feed.'),
+                    para('That is all for this issue. As ever, hit reply and tell me what you are paying attention to, or failing to: I read every one, and the best of them end up shaping where this letter goes next. Back in a fortnight. Iris'),
                 ],
             },
         },
@@ -523,13 +523,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('There is a particular pleasure, almost illicit now, in a novel that will not be hurried. I mean the long book — the eight-hundred-page kind that asks for a season of your life and gives no sign, for the first two hundred pages, that it intends to reward the loan. We are trained to distrust these books. They are inefficient. They do not respect our time. And that, I have come to think, is precisely the point of them.'),
+                    para('There is a particular pleasure, almost illicit now, in a novel that will not be hurried. I mean the long book: the eight-hundred-page kind that asks for a season of your life and gives no sign, for the first two hundred pages, that it intends to reward the loan. We are trained to distrust these books. They are inefficient. They do not respect our time. And that, I have come to think, is precisely the point of them.'),
                     h2('Length as an argument'),
                     para('A long novel is not a short novel that lost discipline. Its length is an argument about how meaning accumulates: slowly, by repetition and return, the way a person actually comes to understand a marriage or a city or themselves. A book that arrives at its insight in two hundred crisp pages is telling you that understanding is a matter of the right information. The long book insists it is a matter of time, and time cannot be summarised. You have to serve it.'),
-                    para('This is why the great long novels are so often about ordinary duration — a year on an estate, a family across three generations, a single day stretched to the width of a life. The form and the subject agree. Nothing important, they say, happens quickly, and the book will not insult the slowness of real change by pretending otherwise.'),
+                    para('This is why the great long novels are so often about ordinary duration: a year on an estate, a family across three generations, a single day stretched to the width of a life. The form and the subject agree. Nothing important, they say, happens quickly, and the book will not insult the slowness of real change by pretending otherwise.'),
                     h2('The ending that declines to resolve'),
-                    para('And so the endings. The books I love most tend to close without closing — a last image rather than a last answer, a door left ajar. Readers sometimes feel cheated by this, and I understand the feeling, but I think it is the opposite of a cheat. A resolution is a small lie a novel can tell to send you home comfortable. The refusal to resolve is the book keeping faith with its own argument: that the thing it has been describing is still going on, out past the final page, in the same unfinished way your own life is.'),
-                    para('Read slowly enough and you stop waiting for the ending at all. The book becomes a place you live for a while rather than a problem you are solving, and when it lets you go, unresolved, it leaves you where all the best reading leaves you — back in your own unfinished life, slightly better at bearing that it does not resolve either.'),
+                    para('And so the endings. The books I love most tend to close without closing: a last image rather than a last answer, a door left ajar. Readers sometimes feel cheated by this, and I understand the feeling, but I think it is the opposite of a cheat. A resolution is a small lie a novel can tell to send you home comfortable. The refusal to resolve is the book keeping faith with its own argument: that the thing it has been describing is still going on, out past the final page, in the same unfinished way your own life is.'),
+                    para('Read slowly enough and you stop waiting for the ending at all. The book becomes a place you live for a while rather than a problem you are solving, and when it lets you go, unresolved, it leaves you where all the best reading leaves you: back in your own unfinished life, slightly better at bearing that it does not resolve either.'),
                 ],
             },
         },
@@ -543,7 +543,7 @@ const SPEC: PortfolioSiteSpec = {
     key: 'sparx-portfolio-writer',
     name: 'Writer Portfolio',
     summary:
-        'A read-me portfolio for a working writer: a type-only editorial masthead, selected writing as a hairline-ruled index (not cards), reading pages that give an essay room, and a plain about + contact. The words are the work — warm-paper page, serif across, one oxblood on rubrics and links. Shipped as Iris Bellamy.',
+        'A read-me portfolio for a working writer: a type-only editorial masthead, selected writing as a hairline-ruled index (not cards), reading pages that give an essay room, and a plain about + contact. The words are the work, warm-paper page, serif across, one oxblood on rubrics and links. Shipped as Iris Bellamy.',
     tagline: 'An editorial, type-led portfolio for an essayist & reporter.',
     industry: 'Writer & essayist',
     requiresModules: ['builder', 'cms', 'email'],
@@ -558,14 +558,14 @@ const SPEC: PortfolioSiteSpec = {
     chrome: { navbar: 'centerLinks', footer: 'columns', showCta: false },
     seo: {
         home: {
-            title: 'Iris Bellamy — writer',
+            title: 'Iris Bellamy: writer',
             description:
-                'Iris Bellamy is a writer on the coast — essays and reporting on work, cities and attention. Selected writing, a fortnightly newsletter, and how to commission her.',
+                'Iris Bellamy is a writer on the coast: essays and reporting on work, cities and attention. Selected writing, a fortnightly newsletter, and how to commission her.',
         },
         about: {
-            title: 'About Iris Bellamy — essayist & reporter',
+            title: 'About Iris Bellamy: essayist & reporter',
             description:
-                'Fifteen years of essays and reported features on ordinary working life — from a coastal news desk to the magazines, plus The Long Field newsletter.',
+                'Fifteen years of essays and reported features on ordinary working life: from a coastal news desk to the magazines, plus The Long Field newsletter.',
         },
     },
     home: HOME,

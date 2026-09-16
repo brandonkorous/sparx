@@ -33,6 +33,8 @@ export interface InvoiceHeader {
   billTo: { name: string; email: string; address: string };
   taxRate: number;
   notes: string;
+  /** `YYYY-MM-DD` as typed, or '' for none. Sent as an instant, or null. */
+  dueAt: string;
   currency: string;
 }
 
@@ -103,7 +105,7 @@ function usableLines(lines: DraftLine[]): DraftLine[] {
   const nameless = kept.find((line) => !line.description.trim());
   if (nameless) {
     throw new InvoiceValidationError(
-      'Every line needs a description — one has a price but nothing saying what it is for.'
+      'Every line needs a description. One has a price but nothing saying what it is for.'
     );
   }
   // The API requires a POSITIVE quantity (AddBillingLineInput), so a line whose
@@ -126,6 +128,10 @@ function headerBody(header: InvoiceHeader) {
     taxRate: header.taxRate,
     billTo: header.billTo,
     notes: header.notes || null,
+    // Midday UTC, not midnight: a due date is a DAY, and midnight lands on the
+    // day before for anyone west of UTC, so the invoice would read as due a day
+    // early for them and go late a day early with it.
+    dueAt: header.dueAt ? new Date(`${header.dueAt}T12:00:00Z`).toISOString() : null,
   };
 }
 

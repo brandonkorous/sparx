@@ -5,7 +5,7 @@
     "status": "published",
     "body": {
       "title": "Inside the One: how a planar driver moves air",
-      "excerpt": "Most headphones push air with a cone. The One uses a flat sheet — and the difference is why it sounds the way it does.",
+      "excerpt": "Most headphones push air with a cone. The One uses a flat sheet, and the difference is why it sounds the way it does.",
       "featuredImage": {
         "$asset": "post-planar"
       },
@@ -17,7 +17,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Open almost any headphone and you find a small paper or plastic cone, driven from a single point at its centre by a coil of wire. It works, and it is cheap, but a cone pushed from the middle flexes at its edges — and that flexing is distortion you can hear as a faint ring or a smear on fast, complex music."
+                "text": "Open almost any headphone and you find a small paper or plastic cone, driven from a single point at its centre by a coil of wire. It works, and it is cheap, but a cone pushed from the middle flexes at its edges, and that flexing is distortion you can hear as a faint ring or a smear on fast, complex music."
               }
             ]
           },
@@ -59,7 +59,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The trade is that a planar film is harder to drive than a cone — which is why the One opens up so much more from a proper amplifier than from a phone, and why we make the Pulse. Give it the power it wants and the stage widens, the bass firms up, and the quiet details step forward out of the black."
+                "text": "The trade is that a planar film is harder to drive than a cone, which is why the One opens up so much more from a proper amplifier than from a phone, and why we make the Pulse. Give it the power it wants and the stage widens, the bass firms up, and the quiet details step forward out of the black."
               }
             ]
           },
@@ -115,7 +115,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The drone of a plane is low and steady, and cancelling handles it well. A crying child, a closing door, a colleague two desks away — these are higher and sudden, and no cancelling touches them much. A pair that crushes the low drone while ignoring everything else can measure beautifully and still leave you reaching for the volume."
+                "text": "The drone of a plane is low and steady, and cancelling handles it well. A crying child, a closing door, a colleague two desks away. These are higher and sudden, and no cancelling touches them much. A pair that crushes the low drone while ignoring everything else can measure beautifully and still leave you reaching for the volume."
               }
             ]
           },
@@ -136,7 +136,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Push cancelling hard and it introduces its own pressure — that faint, ears-blocked feeling that turns a long flight into a headache. We tune for the point where the world drops away but your ears stay relaxed, then we publish the figure that point produces, not the biggest one we could force."
+                "text": "Push cancelling hard and it introduces its own pressure. That faint, ears-blocked feeling that turns a long flight into a headache. We tune for the point where the world drops away but your ears stay relaxed, then we publish the figure that point produces, not the biggest one we could force."
               }
             ]
           },
@@ -145,7 +145,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "So read the number, but trust your ears. The right question is never \"how many decibels\" — it is \"can I wear this for six hours and forget I have it on.\""
+                "text": "So read the number, but trust your ears. The right question is never \"how many decibels\". It is \"can I wear this for six hours and forget I have it on.\""
               }
             ]
           }
@@ -171,7 +171,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "There are two schools. One says a speaker should be a flat, honest window — it plays exactly what was recorded and adds nothing. The other says a little extra bass and a little extra sparkle make music more fun, and fun is the point. Both are right, which is precisely the problem."
+                "text": "There are two schools. One says a speaker should be a flat, honest window. It plays exactly what was recorded and adds nothing. The other says a little extra bass and a little extra sparkle make music more fun, and fun is the point. Both are right, which is precisely the problem."
               }
             ]
           },
@@ -192,7 +192,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "We voice the Monolith flat, because a colored speaker flatters some records and wrecks others — and once the color is baked in you cannot take it back out. Flat means a well-made recording sounds thrilling and a badly-made one sounds honest about it, which is the speaker telling you the truth rather than a lie you happen to like."
+                "text": "We voice the Monolith flat, because a colored speaker flatters some records and wrecks others, and once the color is baked in you cannot take it back out. Flat means a well-made recording sounds thrilling and a badly-made one sounds honest about it, which is the speaker telling you the truth rather than a lie you happen to like."
               }
             ]
           },
@@ -213,7 +213,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Flat at the speaker is not flat at your chair — walls, glass and furniture bend the sound on its way to you. That is why the Monolith measures its own placement and corrects for the room, and why the excitement, when you want it, belongs on a tone control you can turn back, not in a driver you cannot."
+                "text": "Flat at the speaker is not flat at your chair: walls, glass and furniture bend the sound on its way to you. That is why the Monolith measures its own placement and corrects for the room, and why the excitement, when you want it, belongs on a tone control you can turn back, not in a driver you cannot."
               }
             ]
           },
@@ -222,7 +222,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Reference or fun is a false choice. Build it honest, hand the shaping to the listener, and you get both — on the nights you want each one."
+                "text": "Reference or fun is a false choice. Build it honest, hand the shaping to the listener, and you get both: on the nights you want each one."
               }
             ]
           }

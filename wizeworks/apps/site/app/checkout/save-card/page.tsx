@@ -31,7 +31,7 @@ export default async function SaveCardPage() {
       <h1 className="text-base-content mb-2 text-4xl font-semibold tracking-tight">Save a card</h1>
       <p className="text-md mb-6">
         For repeat orders, so you don’t have to enter it again. We never see or store your card
-        number — it’s held securely by our payment processor.
+        number: it’s held securely by our payment processor.
       </p>
       {/* useSearchParams needs a Suspense boundary to keep the route from
           opting the whole page out of static rendering. */}

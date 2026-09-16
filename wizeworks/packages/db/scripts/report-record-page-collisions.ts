@@ -156,7 +156,7 @@ async function main() {
     // collision group can be empty.
     if (!winner) continue;
     console.log(`property ${propertyId}  tenant ${winner.tenantId}`);
-    console.log(`  ${recordType} — ${group.length} templates`);
+    console.log(`  ${recordType}: ${group.length} templates`);
     for (const r of group) {
       const mark = r.id === winner.id ? 'KEEP  ' : 'demote';
       const live = r.publishedAt ? 'published' : 'draft';

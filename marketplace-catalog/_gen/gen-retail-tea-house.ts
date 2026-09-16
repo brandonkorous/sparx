@@ -165,7 +165,7 @@ function hero(): Node {
                   text: 'Slow down. Steep well.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Steepwell is a small loose-leaf tea house. We source whole-leaf tea from gardens we can name, keep it in small batches so it stays fragrant, and send it fresh — so the cup in your hands tastes like the hillside it came from.',
+                  text: 'Steepwell is a small loose-leaf tea house. We source whole-leaf tea from gardens we can name, keep it in small batches so it stays fragrant, and send it fresh, so the cup in your hands tastes like the hillside it came from.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -258,7 +258,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'This season’s teas' }),
   editorialBand({
     heading: 'Whole leaf, small batches',
-    lead: 'We buy whole-leaf tea, not the broken dust that fills most bags, and we keep it in small sealed batches so it stays fragrant instead of fading on a warehouse shelf. Every tea is tasted before it’s tinned — if the cup isn’t right, it doesn’t go out.',
+    lead: 'We buy whole-leaf tea, not the broken dust that fills most bags, and we keep it in small sealed batches so it stays fragrant instead of fading on a warehouse shelf. Every tea is tasted before it’s tinned: if the cup isn’t right, it doesn’t go out.',
     assetId: 'tea-band-ritual',
     cta: 'How we source',
     href: '/blog/where-the-leaves-come-from',
@@ -267,7 +267,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.category.green-white', layout: 'carousel', heading: 'Green & white' }),
   editorialBand({
     heading: 'A pot a week, handled',
-    lead: 'The tea club is the easy way to keep the shelf stocked: choose your tins, choose how often, and they arrive fresh on your schedule. Rotate through the whole shelf or stay with your favourite — skip, swap or cancel any time, no lock-in.',
+    lead: 'The tea club is the easy way to keep the shelf stocked: choose your tins, choose how often, and they arrive fresh on your schedule. Rotate through the whole shelf or stay with your favourite, skip, swap or cancel any time, no lock-in.',
     assetId: 'tea-band-club',
     cta: 'Join the tea club',
     href: '/shop/subscription',
@@ -312,7 +312,7 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'How to steep it' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'One teaspoon per cup, water just off the boil for black and herbal or a touch cooler for green and white, and a two-to-four-minute steep. Every tin carries its own time and temperature — good tea forgives a little, so taste as you go and steep it the way you like it.',
+                    text: 'One teaspoon per cup, water just off the boil for black and herbal or a touch cooler for green and white, and a two-to-four-minute steep. Every tin carries its own time and temperature: good tea forgives a little, so taste as you go and steep it the way you like it.',
                   }),
                 ],
               }),
@@ -351,11 +351,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'Shop tea',
-    'Every tea on the shelf right now — green and white, black and oolong, spiced chai and caffeine-free herbals, plus the pots and infusers to brew them. Filter by type or caffeine, or sort however you like; all of it ships fresh from small batches.'
+    'Every tea on the shelf right now: green and white, black and oolong, spiced chai and caffeine-free herbals, plus the pots and infusers to brew them. Filter by type or caffeine, or sort however you like; all of it ships fresh from small batches.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The teas grouped the way people actually drink them — this season’s harvest, the everyday favourites, the caffeine-free evening cups, and starter kits for a new brewing ritual.'),
+  pageMasthead('Collections', 'The teas grouped the way people actually drink them. This season’s harvest, the everyday favourites, the caffeine-free evening cups, and starter kits for a new brewing ritual.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search Steepwell', 'Looking for a green, a chai, or a brewing guide? Search the whole shelf and the journal below.'),
@@ -367,7 +367,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a tea is for you? Tell us and we’ll make it right — a good cup should be a small pleasure, never a gamble.',
+            text: 'Free shipping on orders over $40, and every tin is filled from a small fresh batch and sent within two days. Not sure a tea is for you? Tell us and we’ll make it right: a good cup should be a small pleasure, never a gamble.',
           }),
         ],
       }),
@@ -381,7 +381,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Steepwell journal' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Notes from the tea room — how to steep a better cup, where the leaves actually come from, and how to make an unhurried few minutes of it. Plain, useful, no tea snobbery.',
+            text: 'Notes from the tea room: how to steep a better cup, where the leaves actually come from, and how to make an unhurried few minutes of it. Plain, useful, no tea snobbery.',
           }),
         ],
       }),
@@ -398,13 +398,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Steepwell' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Steepwell began with a shelf of tins, a small kettle, and the plain frustration of never being able to buy a green tea that still tasted alive. It grew the slow way — one garden, one regular, one shared pot at a time — and it still runs on the same idea: source well, keep it fresh, and never rush the cup.',
+            text: 'Steepwell began with a shelf of tins, a small kettle, and the plain frustration of never being able to buy a green tea that still tasted alive. It grew the slow way (one garden, one regular, one shared pot at a time) and it still runs on the same idea: source well, keep it fresh, and never rush the cup.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We buy whole-leaf tea from growers and importers we can name, and we pay above the commodity rate because the people who tend these gardens deserve a living from them. Then we keep the tea in small sealed batches, taste every one, and only tin what’s worth pouring a second cup of.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'No mystery blends, no tea gone dusty and grey, nothing older than it should be. Just good leaf, handled with care from the hillside to your kitchen — and a quiet few minutes to enjoy it.',
+            text: 'No mystery blends, no tea gone dusty and grey, nothing older than it should be. Just good leaf, handled with care from the hillside to your kitchen, and a quiet few minutes to enjoy it.',
           }),
         ],
       }),
@@ -501,43 +501,43 @@ const PRODUCTS: Product[] = [
     handle: 'jade-cloud-green',
     title: 'Jade Cloud Green',
     description:
-      'A high-mountain green from Guizhou, pan-fired and gently curled — soft and sweet, with notes of steamed greens, chestnut and a clean melon finish. No bitterness, no grassiness; the green tea for people who thought they didn’t like green tea.',
+      'A high-mountain green from Guizhou, pan-fired and gently curled: soft and sweet, with notes of steamed greens, chestnut and a clean melon finish. No bitterness, no grassiness; the green tea for people who thought they didn’t like green tea.',
     price: 16,
     sku: 'STEEP-GRN-JADE',
     categories: ['green-white'],
     collections: ['new-season', 'best-sellers', 'green-white-set'],
     tags: ['green', 'single-origin', 'caffeinated'],
     asset: 'prod-jade-green',
-    seoTitle: 'Jade Cloud Green — high-mountain green tea | Steepwell',
-    seoDescription: 'A soft, sweet pan-fired green from Guizhou — chestnut and melon, no bitterness. Whole leaf.',
+    seoTitle: 'Jade Cloud Green: high-mountain green tea | Steepwell',
+    seoDescription: 'A soft, sweet pan-fired green from Guizhou: chestnut and melon, no bitterness. Whole leaf.',
   }),
   tin({
     handle: 'silver-needle-white',
     title: 'Silver Needle White',
     description:
-      'The gentlest tea we carry — unopened buds picked in early spring and only withered and dried, nothing more. Delicate and honeyed, with cucumber and a faint florality. Steep it long and low; it rewards patience and forgives almost nothing else.',
+      'The gentlest tea we carry: unopened buds picked in early spring and only withered and dried, nothing more. Delicate and honeyed, with cucumber and a faint florality. Steep it long and low; it rewards patience and forgives almost nothing else.',
     price: 24,
     sku: 'STEEP-WHT-SILVER',
     categories: ['green-white'],
     collections: ['new-season', 'green-white-set'],
     tags: ['white', 'single-origin', 'caffeinated', 'delicate'],
     asset: 'prod-silver-needle',
-    seoTitle: 'Silver Needle White — spring-picked white tea | Steepwell',
-    seoDescription: 'Early-spring buds, withered and dried — honeyed, delicate, faintly floral. Whole leaf.',
+    seoTitle: 'Silver Needle White: spring-picked white tea | Steepwell',
+    seoDescription: 'Early-spring buds, withered and dried: honeyed, delicate, faintly floral. Whole leaf.',
   }),
   {
     handle: 'ceremonial-matcha',
     title: 'Ceremonial Matcha',
     description:
-      'Stone-ground shade-grown matcha from Uji, whisked to a bright jade froth — vegetal and umami-rich with a sweet, lingering finish and none of the chalky bitterness of culinary grade. Whisk it with water for the traditional bowl, or into warm milk for a latte.',
+      'Stone-ground shade-grown matcha from Uji, whisked to a bright jade froth: vegetal and umami-rich with a sweet, lingering finish and none of the chalky bitterness of culinary grade. Whisk it with water for the traditional bowl, or into warm milk for a latte.',
     status: 'active',
     productType: 'Tea',
     vendor: 'Steepwell Tea House',
     tags: ['matcha', 'green', 'single-origin', 'caffeinated'],
     categoryHandles: ['green-white'],
     collectionHandles: ['best-sellers', 'starter-ritual'],
-    seoTitle: 'Ceremonial Matcha — stone-ground Uji matcha | Steepwell',
-    seoDescription: 'Shade-grown ceremonial matcha from Uji — bright, umami-rich, sweet-finishing. Whisk and pour.',
+    seoTitle: 'Ceremonial Matcha: stone-ground Uji matcha | Steepwell',
+    seoDescription: 'Shade-grown ceremonial matcha from Uji: bright, umami-rich, sweet-finishing. Whisk and pour.',
     options: [{ name: 'Size', displayType: 'dropdown', values: [{ value: '30g tin' }, { value: '100g tin' }] }],
     variants: [
       { sku: 'STEEP-MAT-CER-30', priceCents: money(34), isDefault: true, inventoryPolicy: 'continue', optionValues: { Size: '30g tin' } },
@@ -549,57 +549,57 @@ const PRODUCTS: Product[] = [
     handle: 'golden-assam-black',
     title: 'Golden Assam Black',
     description:
-      'A second-flush Assam thick with golden tips — the classic breakfast cup, malty and full-bodied with a honeyed edge and enough backbone to take milk without disappearing. The one you reach for before you’re quite awake.',
+      'A second-flush Assam thick with golden tips: the classic breakfast cup, malty and full-bodied with a honeyed edge and enough backbone to take milk without disappearing. The one you reach for before you’re quite awake.',
     price: 14,
     sku: 'STEEP-BLK-ASSAM',
     categories: ['black-oolong'],
     collections: ['new-season', 'best-sellers'],
     tags: ['black', 'single-origin', 'caffeinated', 'breakfast'],
     asset: 'prod-assam',
-    seoTitle: 'Golden Assam Black — malty breakfast tea | Steepwell',
-    seoDescription: 'A tippy second-flush Assam — malty, full-bodied, honeyed, and happy with milk. Whole leaf.',
+    seoTitle: 'Golden Assam Black: malty breakfast tea | Steepwell',
+    seoDescription: 'A tippy second-flush Assam: malty, full-bodied, honeyed, and happy with milk. Whole leaf.',
   }),
   tin({
     handle: 'iron-goddess-oolong',
     title: 'Iron Goddess Oolong',
     description:
-      'A rolled Tie Guan Yin oolong, lightly oxidised and roasted — orchid on the nose, buttery and lingering in the cup, and endlessly re-steepable. Open the same leaves three or four times and each pour tells you something new.',
+      'A rolled Tie Guan Yin oolong, lightly oxidised and roasted: orchid on the nose, buttery and lingering in the cup, and endlessly re-steepable. Open the same leaves three or four times and each pour tells you something new.',
     price: 22,
     sku: 'STEEP-OOL-IRON',
     categories: ['black-oolong'],
     collections: ['new-season', 'green-white-set'],
     tags: ['oolong', 'single-origin', 'caffeinated'],
     asset: 'prod-oolong',
-    seoTitle: 'Iron Goddess Oolong — Tie Guan Yin oolong | Steepwell',
-    seoDescription: 'A rolled, lightly roasted Tie Guan Yin — orchid, butter, and many honest re-steeps. Whole leaf.',
+    seoTitle: 'Iron Goddess Oolong: Tie Guan Yin oolong | Steepwell',
+    seoDescription: 'A rolled, lightly roasted Tie Guan Yin: orchid, butter, and many honest re-steeps. Whole leaf.',
   }),
   tin({
     handle: 'house-masala-chai',
     title: 'House Masala Chai',
     description:
-      'Our own blend of bold Assam with hand-cracked cardamom, cinnamon, ginger, clove and black pepper — warming and properly spiced, not sweet. Simmer it in milk and water for the real thing, or steep it straight for a lighter spiced cup.',
+      'Our own blend of bold Assam with hand-cracked cardamom, cinnamon, ginger, clove and black pepper: warming and properly spiced, not sweet. Simmer it in milk and water for the real thing, or steep it straight for a lighter spiced cup.',
     price: 15,
     sku: 'STEEP-CHAI-HOUSE',
     categories: ['black-oolong'],
     collections: ['best-sellers'],
     tags: ['chai', 'black', 'blend', 'spiced', 'caffeinated'],
     asset: 'prod-chai',
-    seoTitle: 'House Masala Chai — spiced black tea blend | Steepwell',
-    seoDescription: 'Bold Assam with cardamom, cinnamon, ginger, clove and pepper — warming, not sweet. Whole leaf.',
+    seoTitle: 'House Masala Chai: spiced black tea blend | Steepwell',
+    seoDescription: 'Bold Assam with cardamom, cinnamon, ginger, clove and pepper: warming, not sweet. Whole leaf.',
   }),
   tin({
     handle: 'chamomile-meadow',
     title: 'Chamomile Meadow',
     description:
-      'Whole Egyptian chamomile flowers, not the dust that hides in most tea bags — softly apple-sweet, gently floral and genuinely calming. A caffeine-free cup for the end of the day, or any hour that could use slowing down.',
+      'Whole Egyptian chamomile flowers, not the dust that hides in most tea bags: softly apple-sweet, gently floral and genuinely calming. A caffeine-free cup for the end of the day, or any hour that could use slowing down.',
     price: 13,
     sku: 'STEEP-HRB-CHAM',
     categories: ['herbal'],
     collections: ['caffeine-free', 'starter-ritual'],
     tags: ['herbal', 'caffeine-free', 'evening'],
     asset: 'prod-chamomile',
-    seoTitle: 'Chamomile Meadow — whole-flower chamomile | Steepwell',
-    seoDescription: 'Whole Egyptian chamomile flowers — apple-sweet, gently floral, caffeine-free. A calm evening cup.',
+    seoTitle: 'Chamomile Meadow: whole-flower chamomile | Steepwell',
+    seoDescription: 'Whole Egyptian chamomile flowers: apple-sweet, gently floral, caffeine-free. A calm evening cup.',
   }),
   tin({
     handle: 'amber-rooibos',
@@ -612,22 +612,22 @@ const PRODUCTS: Product[] = [
     collections: ['caffeine-free'],
     tags: ['herbal', 'rooibos', 'caffeine-free'],
     asset: 'prod-rooibos',
-    seoTitle: 'Amber Rooibos — caffeine-free red bush tea | Steepwell',
-    seoDescription: 'Naturally sweet South African rooibos — honey, vanilla and warm wood. Caffeine-free.',
+    seoTitle: 'Amber Rooibos: caffeine-free red bush tea | Steepwell',
+    seoDescription: 'Naturally sweet South African rooibos: honey, vanilla and warm wood. Caffeine-free.',
   }),
   {
     handle: 'tea-sampler',
     title: 'The Steepwell Sampler',
     description:
-      'Five small tins to taste your way across the shelf — a green, a black, an oolong, a chai and a caffeine-free herbal, each enough for several pots. The easiest way to find your tea, and a genuinely lovely thing to give.',
+      'Five small tins to taste your way across the shelf: a green, a black, an oolong, a chai and a caffeine-free herbal, each enough for several pots. The easiest way to find your tea, and a genuinely lovely thing to give.',
     status: 'active',
     productType: 'Gift',
     vendor: 'Steepwell Tea House',
     tags: ['sampler', 'gift', 'variety'],
     categoryHandles: ['gifts'],
     collectionHandles: ['gifts', 'starter-ritual'],
-    seoTitle: 'The Steepwell Sampler — five-tea tasting set | Steepwell',
-    seoDescription: 'Five small tins — green, black, oolong, chai and a herbal — to taste across the shelf. A lovely gift.',
+    seoTitle: 'The Steepwell Sampler: five-tea tasting set | Steepwell',
+    seoDescription: 'Five small tins (green, black, oolong, chai and a herbal) to taste across the shelf. A lovely gift.',
     variants: [{ sku: 'STEEP-SAMPLER', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-sampler', isPrimary: true, alt: 'A sampler box of five tea tins' }],
   },
@@ -635,15 +635,15 @@ const PRODUCTS: Product[] = [
     handle: 'cast-iron-teapot',
     title: 'Cast-Iron Teapot',
     description:
-      'A matte-black tetsubin-style cast-iron pot with an enamel-lined interior and a removable stainless infuser basket — it holds heat beautifully for a long, even steep and pours clean. 0.6 litres, enough for two or three cups; a pot to keep for years.',
+      'A matte-black tetsubin-style cast-iron pot with an enamel-lined interior and a removable stainless infuser basket. It holds heat beautifully for a long, even steep and pours clean. 0.6 litres, enough for two or three cups; a pot to keep for years.',
     status: 'active',
     productType: 'Teaware',
     vendor: 'Steepwell Tea House',
     tags: ['teaware', 'brewing', 'teapot'],
     categoryHandles: ['tools'],
     collectionHandles: ['brewing-tools', 'gifts'],
-    seoTitle: 'Cast-Iron Teapot — enamel-lined tetsubin | Steepwell',
-    seoDescription: 'A matte cast-iron teapot with an enamel lining and stainless infuser — holds heat, pours clean. 0.6L.',
+    seoTitle: 'Cast-Iron Teapot: enamel-lined tetsubin | Steepwell',
+    seoDescription: 'A matte cast-iron teapot with an enamel lining and stainless infuser: holds heat, pours clean. 0.6L.',
     variants: [{ sku: 'STEEP-TOOL-POT', priceCents: money(58), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-teapot', isPrimary: true, alt: 'A cast-iron teapot' }],
   },
@@ -651,15 +651,15 @@ const PRODUCTS: Product[] = [
     handle: 'glass-infuser-mug',
     title: 'Glass Infuser Mug',
     description:
-      'A double-walled glass mug with a fine stainless infuser and a lid that doubles as a drip tray — watch the leaves unfurl, lift the basket when it’s ready, and drink from the same cup. The simplest way to brew loose leaf at your desk.',
+      'A double-walled glass mug with a fine stainless infuser and a lid that doubles as a drip tray: watch the leaves unfurl, lift the basket when it’s ready, and drink from the same cup. The simplest way to brew loose leaf at your desk.',
     status: 'active',
     productType: 'Teaware',
     vendor: 'Steepwell Tea House',
     tags: ['teaware', 'brewing', 'infuser'],
     categoryHandles: ['tools'],
     collectionHandles: ['brewing-tools', 'starter-ritual'],
-    seoTitle: 'Glass Infuser Mug — double-walled brewing mug | Steepwell',
-    seoDescription: 'A double-walled glass mug with a fine stainless infuser and lid — brew loose leaf and drink from one cup.',
+    seoTitle: 'Glass Infuser Mug: double-walled brewing mug | Steepwell',
+    seoDescription: 'A double-walled glass mug with a fine stainless infuser and lid: brew loose leaf and drink from one cup.',
     variants: [{ sku: 'STEEP-TOOL-INF', priceCents: money(16), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-infuser', isPrimary: true, alt: 'A glass infuser mug' }],
   },
@@ -667,15 +667,15 @@ const PRODUCTS: Product[] = [
     handle: 'subscription',
     title: 'Tea Club Subscription',
     description:
-      'Fresh tea on your schedule — pick how many tins and how often, and we fill and ship them to match. Rotate through the whole shelf or stay with your favourites; skip, swap or cancel any time. The easiest way to keep good tea in the house.',
+      'Fresh tea on your schedule. Pick how many tins and how often, and we fill and ship them to match. Rotate through the whole shelf or stay with your favourites; skip, swap or cancel any time. The easiest way to keep good tea in the house.',
     status: 'active',
     productType: 'Subscription',
     vendor: 'Steepwell Tea House',
     tags: ['subscription', 'gift'],
     categoryHandles: ['gifts'],
     collectionHandles: ['best-sellers', 'gifts'],
-    seoTitle: 'Tea Club Subscription — fresh tea, on your schedule | Steepwell',
-    seoDescription: 'A flexible tea subscription — choose tins and cadence; skip, swap or cancel any time.',
+    seoTitle: 'Tea Club Subscription: fresh tea, on your schedule | Steepwell',
+    seoDescription: 'A flexible tea subscription. Choose tins and cadence; skip, swap or cancel any time.',
     options: [{ name: 'Plan', displayType: 'dropdown', values: [{ value: 'One tin' }, { value: 'Two tins' }] }],
     variants: [
       { sku: 'STEEP-SUB-1', priceCents: money(19), isDefault: true, inventoryPolicy: 'continue', optionValues: { Plan: 'One tin' } },
@@ -766,16 +766,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'How to steep a better cup',
-      excerpt: 'Most bad tea isn’t bad tea — it’s good leaf brewed too hot, too long, or with too little of it. Three dials and you’re there.',
+      excerpt: 'Most bad tea isn’t bad tea: it’s good leaf brewed too hot, too long, or with too little of it. Three dials and you’re there.',
       featuredImage: { $asset: 'post-brewing' },
       body: {
         type: 'doc',
         content: [
-          para('A better cup almost never comes from a fancier tea — it comes from brewing the tea you already have a little more carefully. There are really only three things to get right: how much leaf, how hot the water, and how long you leave it. Once you have a feel for those, everything on the shelf opens up.'),
+          para('A better cup almost never comes from a fancier tea. It comes from brewing the tea you already have a little more carefully. There are really only three things to get right: how much leaf, how hot the water, and how long you leave it. Once you have a feel for those, everything on the shelf opens up.'),
           h2('Leaf, heat, time'),
-          para('Start with about a teaspoon of loose leaf per cup — more than you think, because whole leaf is airy and a mean pinch makes thin, sour tea. Match the heat to the tea: water just off the boil for black, oolong, chai and herbals, and a little cooler — rested a minute off the boil — for green and white, which scorch and turn bitter if you pour boiling water straight on them. Then steep to the tin’s time, usually two to four minutes, and taste toward the end.'),
+          para('Start with about a teaspoon of loose leaf per cup: more than you think, because whole leaf is airy and a mean pinch makes thin, sour tea. Match the heat to the tea: water just off the boil for black, oolong, chai and herbals, and a little cooler (rested a minute off the boil) for green and white, which scorch and turn bitter if you pour boiling water straight on them. Then steep to the tin’s time, usually two to four minutes, and taste toward the end.'),
           h2('Taste, then adjust'),
-          para('Tea tells you what it needs. Thin and sour means it was under — add more leaf or a little more time. Harsh and drying means it was over — pull it sooner, or cool the water. Change one thing at a time and taste again. And keep going with the same leaves: most good tea, especially oolong and green, gives you a second and third steep that’s often better than the first.'),
+          para('Tea tells you what it needs. Thin and sour means it was under. Add more leaf or a little more time. Harsh and drying means it was over: pull it sooner, or cool the water. Change one thing at a time and taste again. And keep going with the same leaves: most good tea, especially oolong and green, gives you a second and third steep that’s often better than the first.'),
         ],
       },
     },
@@ -791,9 +791,9 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('Most tea is sold as a commodity — bought and blended with no reference to which garden it came from or how good it is, then packed into bags where broken dust is a feature, not a flaw. We buy the other way: specific lots, from gardens and cooperatives we can name, through importers who’ve spent years building relationships with the growers.'),
+          para('Most tea is sold as a commodity: bought and blended with no reference to which garden it came from or how good it is, then packed into bags where broken dust is a feature, not a flaw. We buy the other way: specific lots, from gardens and cooperatives we can name, through importers who’ve spent years building relationships with the growers.'),
           h2('Why we pay above the market'),
-          para('Tea grown at altitude, plucked by hand to two leaves and a bud, and processed with care costs far more to produce than the commodity price rewards. If we want growers to keep making tea this good — and to keep improving it — they have to earn a living from it. Paying above the market isn’t charity; it’s simply what keeps the good leaf being made.'),
+          para('Tea grown at altitude, plucked by hand to two leaves and a bud, and processed with care costs far more to produce than the commodity price rewards. If we want growers to keep making tea this good (and to keep improving it), they have to earn a living from it. Paying above the market isn’t charity; it’s simply what keeps the good leaf being made.'),
           h2('What that gets you'),
           para('Traceability, first: when you can name the garden, you can taste what a region, an altitude and a season actually do to a cup, year after year. And freshness: whole leaf, kept in small sealed batches and sold before it fades, tastes like something. The name on the tin is a promise that someone, somewhere, was paid fairly to grow something worth steeping.'),
         ],
@@ -811,11 +811,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('The best thing about brewing loose leaf isn’t only the cup at the end — it’s the four unhurried minutes in the middle, when the only thing you have to do is wait. In a day built out of notifications, a pot of tea is a small, defensible pause, and it’s worth treating it as one rather than rushing it like everything else.'),
+          para('The best thing about brewing loose leaf isn’t only the cup at the end: it’s the four unhurried minutes in the middle, when the only thing you have to do is wait. In a day built out of notifications, a pot of tea is a small, defensible pause, and it’s worth treating it as one rather than rushing it like everything else.'),
           h2('Set a small stage'),
-          para('You don’t need a ceremony or a cabinet of teaware. A pot or an infuser mug, a cup you actually like holding, and a clear spot to put them is plenty. Warm the pot, measure the leaf, pour the water, and then — this is the part — leave your phone somewhere else while it steeps. Watch the leaves open if you’re using glass; it’s genuinely nice to look at.'),
+          para('You don’t need a ceremony or a cabinet of teaware. A pot or an infuser mug, a cup you actually like holding, and a clear spot to put them is plenty. Warm the pot, measure the leaf, pour the water, and then (this is the part) leave your phone somewhere else while it steeps. Watch the leaves open if you’re using glass; it’s genuinely nice to look at.'),
           h2('Let the wait be the point'),
-          para('Those few minutes are the ritual, not an interruption to it. Some people use them to look out a window, some to breathe, some to think through the day ahead before it starts making demands. However you spend them, the tea gives you a reason to stop that a screen never will — and the cup, brewed with a little attention, is better for the wait.'),
+          para('Those few minutes are the ritual, not an interruption to it. Some people use them to look out a window, some to breathe, some to think through the day ahead before it starts making demands. However you spend them, the tea gives you a reason to stop that a screen never will, and the cup, brewed with a little attention, is better for the wait.'),
         ],
       },
     },
@@ -830,7 +830,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Tea House (Loose Leaf)',
   theme: THEME,
   summary:
-    'A complete, working shop for a loose-leaf tea house: a real catalogue of single-origin greens, whites, blacks, oolong, chai and caffeine-free herbals, a matcha, a sampler set, brewing teaware and a flexible tea-club subscription, with categories, collections, a bespoke tea-shop PDP and a full merchandised home page. Calm botanical theme — soft oat-green paper, a muted jade primary, a warm clay accent. Shipped as Steepwell Tea House.',
+    'A complete, working shop for a loose-leaf tea house: a real catalogue of single-origin greens, whites, blacks, oolong, chai and caffeine-free herbals, a matcha, a sampler set, brewing teaware and a flexible tea-club subscription, with categories, collections, a bespoke tea-shop PDP and a full merchandised home page. Calm botanical theme, soft oat-green paper, a muted jade primary, a warm clay accent. Shipped as Steepwell Tea House.',
   tagline: 'A calm, working storefront for a loose-leaf tea house.',
   vertical: 'retail',
   industry: 'Tea house',
@@ -843,14 +843,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'Steepwell Tea House — loose-leaf tea, sourced and kept fresh',
+      title: 'Steepwell Tea House: loose-leaf tea, sourced and kept fresh',
       description:
-        'Steepwell is a small loose-leaf tea house — single-origin greens, blacks, oolong, chai and caffeine-free herbals, a matcha, teaware and a flexible tea club. Source well, keep it fresh, never rush the cup.',
+        'Steepwell is a small loose-leaf tea house: single-origin greens, blacks, oolong, chai and caffeine-free herbals, a matcha, teaware and a flexible tea club. Source well, keep it fresh, never rush the cup.',
     },
     about: {
       title: 'About Steepwell Tea House',
       description:
-        'How Steepwell sources, keeps and ships tea — whole leaf, named gardens, fair prices, and cups that taste the way the hillside meant them to.',
+        'How Steepwell sources, keeps and ships tea: whole leaf, named gardens, fair prices, and cups that taste the way the hillside meant them to.',
     },
   },
   home: HOME,

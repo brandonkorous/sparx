@@ -37,7 +37,7 @@ export function DiscountLifecycle({
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Text className="text-sm">
-          Retiring switches this discount off for good — it cannot be reopened afterwards.
+          Retiring switches this discount off for good. It cannot be reopened afterwards.
         </Text>
         <Button size="sm" variant="outline" color="danger" loading={retiring} onClick={onRetire}>
           <Icon glyph={faTrashCan} className="size-4" aria-hidden />

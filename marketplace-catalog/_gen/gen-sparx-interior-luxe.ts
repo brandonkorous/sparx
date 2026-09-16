@@ -195,7 +195,7 @@ const SCHEDULING = {
       handle: 'full-service-design-consult',
       name: 'Full-service design consultation',
       description:
-        'The starting consultation for a complete, managed design project — concept through install.',
+        'The starting consultation for a complete, managed design project: concept through install.',
       durationMinutes: 90,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -208,7 +208,7 @@ const SCHEDULING = {
       handle: 'renovation-consult',
       name: 'Renovation consultation',
       description:
-        'For kitchens, baths and larger works — we plan the design, the trades and the timeline together.',
+        'For kitchens, baths and larger works. We plan the design, the trades and the timeline together.',
       durationMinutes: 90,
       priceCents: 25000,
       assignmentStrategy: 'customer_choice',
@@ -221,7 +221,7 @@ const SCHEDULING = {
       handle: 'furnishing-styling-consult',
       name: 'Furnishing & styling consultation',
       description:
-        'Layering the finishing pieces — furniture, textiles and objects that make a room feel complete.',
+        'Layering the finishing pieces: furniture, textiles and objects that make a room feel complete.',
       durationMinutes: 60,
       priceCents: 18000,
       assignmentStrategy: 'customer_choice',
@@ -234,7 +234,7 @@ const SCHEDULING = {
       handle: 'single-room-consult',
       name: 'Single-room consultation',
       description:
-        'One room, fully considered — a plan, a palette and the pieces to bring it together.',
+        'One room, fully considered: a plan, a palette and the pieces to bring it together.',
       durationMinutes: 60,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -247,7 +247,7 @@ const SCHEDULING = {
       handle: 'in-home-consultation',
       name: 'In-home consultation',
       description:
-        'We come to you — walk the space together, take it in, and map what’s possible on the spot.',
+        'We come to you: walk the space together, take it in, and map what’s possible on the spot.',
       durationMinutes: 90,
       priceCents: 30000,
       assignmentStrategy: 'customer_choice',
@@ -265,7 +265,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A serene living room in warm neutrals with considered furniture and soft daylight',
     title: 'Interiors made for the way you live',
-    sub: 'Atelier Nord is a full-service residential design studio — considered rooms, careful renovations and pieces sourced with intention. Book a consultation to begin.',
+    sub: 'Atelier Nord is a full-service residential design studio: considered rooms, careful renovations and pieces sourced with intention. Book a consultation to begin.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See our services', href: '/book' },
     overlay: 'dark',
@@ -274,7 +274,7 @@ const HOME = [
     items: [
       {
         title: 'Full-service, start to finish',
-        body: 'From the first sketch to the final cushion, we design, manage and install — so you live with the result, not the logistics.',
+        body: 'From the first sketch to the final cushion, we design, manage and install, so you live with the result, not the logistics.',
       },
       {
         title: 'Trade-only sourcing',
@@ -292,14 +292,14 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Ways to work with us',
-    intro: 'Every project starts with a conversation. Here are a few of the ways in — full prices and live availability are on the booking page.',
+    intro: 'Every project starts with a conversation. Here are a few of the ways in: full prices and live availability are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
       { name: 'Discovery call', priceCents: 0, durationMin: 30, desc: 'A complimentary call to talk through your space and how we can help.' },
       { name: 'Design consultation', priceCents: 15000, durationMin: 60, desc: 'A focused session on your rooms, your goals and a plan to get there.' },
       { name: 'Full-service design', priceCents: 25000, durationMin: 90, desc: 'The starting consultation for a complete, managed design project.' },
-      { name: 'In-home consultation', priceCents: 30000, durationMin: 90, desc: 'We come to you — walk the space together and map the possibilities.' },
+      { name: 'In-home consultation', priceCents: 30000, durationMin: 90, desc: 'We come to you: walk the space together and map the possibilities.' },
     ],
     cta: { label: 'See everything & book', href: '/book' },
   }),
@@ -308,7 +308,7 @@ const HOME = [
     alt: 'A designer’s table with fabric swatches, floor plans and material samples',
     heading: 'How a project unfolds',
     body: [
-      'We begin with a conversation and a walk-through, then a considered concept — floor plans, palettes and the pieces that bring a room together, presented so you can picture the whole before a single thing is ordered.',
+      'We begin with a conversation and a walk-through, then a considered concept: floor plans, palettes and the pieces that bring a room together, presented so you can picture the whole before a single thing is ordered.',
       'From there we source, manage the trades and handle the install, revealing rooms that feel finished, personal and entirely yours.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
@@ -325,12 +325,12 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'They listened before they designed. Every room feels like us, only more considered — and they handled a full renovation without a single sleepless night.',
+    quote: 'They listened before they designed. Every room feels like us, only more considered, and they handled a full renovation without a single sleepless night.',
     attribution: 'The Halvorsen family, whole-home project',
   }),
   bookingCta({
     title: 'Ready to reimagine your home?',
-    sub: 'Start with a consultation — choose a designer, see live availability and pick a time that suits you.',
+    sub: 'Start with a consultation. Choose a designer, see live availability and pick a time that suits you.',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
 ];
@@ -354,7 +354,7 @@ const ABOUT = [
     heading: 'About Atelier Nord',
     body: [
       'Atelier Nord began with a simple belief: a home should be designed around the people who live in it, not a trend or a template. We work with a small number of residential clients at a time, so every project gets the attention it deserves.',
-      'From single rooms to whole-home renovations, we bring the same care — honest advice, considered design, and a calm hand on every detail from concept to install.',
+      'From single rooms to whole-home renovations, we bring the same care: honest advice, considered design, and a calm hand on every detail from concept to install.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -363,7 +363,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'A considered pace', body: 'We take on a handful of projects at once. That’s deliberate: it’s how each room gets the thought, sourcing and management it needs.' },
-      { title: 'Honest about budget', body: 'We plan to your budget from the first meeting and keep it visible throughout — no creeping numbers, no awkward surprises at the end.' },
+      { title: 'Honest about budget', body: 'We plan to your budget from the first meeting and keep it visible throughout: no creeping numbers, no awkward surprises at the end.' },
       { title: 'Yours, not ours', body: 'The best compliment we get is that a home looks like the people in it. We design to your life, then step back so it’s entirely yours.' },
     ],
   }),
@@ -382,7 +382,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your consultation online — no phone tag.',
+    sub: 'See live availability and reserve your consultation online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -393,8 +393,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-interior-luxe',
   name: 'Interior Design (Luxe)',
   summary:
-    'A refined, editorial site for a high-end interior design studio — a deep charcoal palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary discovery call to full-service and in-home design, three designers you book by name with their own hours, and a design-deposit policy. Ships as "Atelier Nord", a residential design studio.',
-  tagline: 'A refined, editorial template for interior design studios — book consultations online from day one.',
+    'A refined, editorial site for a high-end interior design studio: a deep charcoal palette, a warm brass accent and an elegant serif display over soft-lit interiors. Installs a working booking flow: consultation types from a complimentary discovery call to full-service and in-home design, three designers you book by name with their own hours, and a design-deposit policy. Ships as "Atelier Nord", a residential design studio.',
+  tagline: 'A refined, editorial template for interior design studios. Book consultations online from day one.',
   industry: 'Interior design',
   sortWeight: 36,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -403,9 +403,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Atelier Nord — a residential interior design studio',
+      title: 'Atelier Nord: a residential interior design studio',
       description:
-        'Atelier Nord is a full-service interior design studio for discerning homeowners — considered design, renovations, furnishing and styling. Book a consultation online.',
+        'Atelier Nord is a full-service interior design studio for discerning homeowners: considered design, renovations, furnishing and styling. Book a consultation online.',
     },
   },
   home: HOME,

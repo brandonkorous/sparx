@@ -120,7 +120,7 @@ export function FaviconTool() {
             { label: 'Code to add', value: output.html },
             { label: 'Manifest file', value: output.manifest },
           ],
-          note: 'The icon files stay on your computer, exactly as promised. Open the tool again with the same picture and these settings to download them, put them in the top level of your website, then add the code to every page. Look at it at sixteen pixels before you commit — that is the size that decides whether it works.',
+          note: 'The icon files stay on your computer, exactly as promised. Open the tool again with the same picture and these settings to download them, put them in the top level of your website, then add the code to every page. Look at it at sixteen pixels before you commit. That is the size that decides whether it works.',
         }
       : null
   );

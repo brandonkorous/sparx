@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Frame & Lens — designer eyewear at an honest price",
-      "seoDescription": "Frame & Lens designs eyewear in-house and sells it direct — optical, sunglasses, blue-light and reading frames with prescription lenses, and a free home try-on. Great frames, honest prices.",
+      "seoTitle": "Frame & Lens: designer eyewear at an honest price",
+      "seoDescription": "Frame & Lens designs eyewear in-house and sells it direct: optical, sunglasses, blue-light and reading frames with prescription lenses, and a free home try-on. Great frames, honest prices.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Frame & Lens designs eyewear in-house and sells it direct, so you get frames that would cost three times as much on the high street. Every pair ships with prescription, blue-light or sun lenses — and you can try five at home, free, before you spend a penny."
+                          "Frame & Lens designs eyewear in-house and sells it direct, so you get frames that would cost three times as much on the high street. Every pair ships with prescription, blue-light or sun lenses, and you can try five at home, free, before you spend a penny."
                         ],
                         "id": "d1c11875-c39a-48de-91ee-03a5bea2ab20",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Pick any five frames and we’ll send them to you to try for five days — no charge, no deposit, return shipping included. Live with them, take photos, ask the group chat. Keep the one you love and send the rest back; only then do you pay."
+                          "Pick any five frames and we’ll send them to you to try for five days: no charge, no deposit, return shipping included. Live with them, take photos, ask the group chat. Keep the one you love and send the rest back; only then do you pay."
                         ],
                         "id": "c99af0dd-7c71-41a3-8d9c-a6b9cd627ea4",
                         "ord": "a1"
@@ -1539,7 +1539,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every pair is glazed to order in our own lab with anti-glare, scratch-resistant lenses as standard — single vision, progressive, blue-light or polarised sun. Send us your prescription at checkout, or add it later. No upsells, no surprise fees."
+                          "Every pair is glazed to order in our own lab with anti-glare, scratch-resistant lenses as standard: single vision, progressive, blue-light or polarised sun. Send us your prescription at checkout, or add it later. No upsells, no surprise fees."
                         ],
                         "id": "cf1a020b-bd56-45f5-9cf7-e68ca606b76b",
                         "ord": "a1"
@@ -1574,7 +1574,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Frame & Lens",
+      "seoTitle": "Shop: Frame & Lens",
       "seoDescription": "Browse everything Frame & Lens makes, with prices and options at a glance. Eyewear & optical.",
       "root": {
         "kind": "element",
@@ -1606,7 +1606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every frame we make — optical, sunglasses, blue-light and reading — each in its own colorways with the lens choice built in. Filter by shape or category, or sort however you like; all of it comes with our free home try-on."
+                      "Every frame we make (optical, sunglasses, blue-light and reading) each in its own colorways with the lens choice built in. Filter by shape or category, or sort however you like; all of it comes with our free home try-on."
                     ],
                     "id": "edf8bc08-fb9c-434b-92ee-b00b20d28a5d",
                     "ord": "a1"
@@ -1634,7 +1634,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Frame & Lens",
+      "seoTitle": "Collections: Frame & Lens",
       "seoDescription": "Explore the collections at Frame & Lens, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1666,7 +1666,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The frames grouped the way people actually shop — new arrivals, the best sellers, the optical line, sunglasses, blue-light, and the free home try-on kit to start with."
+                      "The frames grouped the way people actually shop: new arrivals, the best sellers, the optical line, sunglasses, blue-light, and the free home try-on kit to start with."
                     ],
                     "id": "e4cf4a64-95af-450e-a51b-b7b4c7b46838",
                     "ord": "a1"
@@ -1694,7 +1694,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Frame & Lens",
+      "seoTitle": "Your cart: Frame & Lens",
       "seoDescription": "Review what is in your cart and check out securely at Frame & Lens.",
       "root": {
         "kind": "element",
@@ -1726,7 +1726,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping and free returns, always — and 30 days to change your mind on any pair. Not sure of your prescription? Add it after checkout; we’ll hold your order and email you a reminder."
+                      "Free shipping and free returns, always, and 30 days to change your mind on any pair. Not sure of your prescription? Add it after checkout; we’ll hold your order and email you a reminder."
                     ],
                     "id": "9f91a9d8-6490-4d06-bed1-89272f751e64",
                     "ord": "a1"
@@ -1754,7 +1754,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Frame & Lens",
+      "seoTitle": "Search: Frame & Lens",
       "seoDescription": "Search Frame & Lens for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Frame & Lens",
+      "seoTitle": "Journal: Frame & Lens",
       "seoDescription": "Stories, guides and notes from Frame & Lens.",
       "root": {
         "kind": "element",
@@ -1846,7 +1846,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Plain, useful guides to buying glasses online — how to choose a frame, what the lens options actually mean, and which shapes suit which faces. No jargon, no pressure."
+                      "Plain, useful guides to buying glasses online: how to choose a frame, what the lens options actually mean, and which shapes suit which faces. No jargon, no pressure."
                     ],
                     "id": "d9128aa4-1847-4454-9d5f-4288fb1b6130",
                     "ord": "a1"
@@ -1980,7 +1980,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Frame & Lens",
-      "seoDescription": "Why Frame & Lens designs its own frames and sells them direct — Italian acetate, Japanese titanium, honest prices, and a free home try-on so you’re sure before you buy.",
+      "seoDescription": "Why Frame & Lens designs its own frames and sells them direct: Italian acetate, Japanese titanium, honest prices, and a free home try-on so you’re sure before you buy.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2011,7 +2011,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Frame & Lens started with a simple frustration: a pair of glasses that cost forty pounds to make was selling for three hundred, and nobody could tell you why. So we cut out the middle. We design our frames in-house, make them from Italian acetate and Japanese titanium, and sell them direct — which is how a genuinely good pair lands at a genuinely fair price."
+                      "Frame & Lens started with a simple frustration: a pair of glasses that cost forty pounds to make was selling for three hundred, and nobody could tell you why. So we cut out the middle. We design our frames in-house, make them from Italian acetate and Japanese titanium, and sell them direct, which is how a genuinely good pair lands at a genuinely fair price."
                     ],
                     "id": "35b5f26f-c7b5-4d1e-ba92-4a0cdc482dd8",
                     "ord": "a1"
@@ -2031,7 +2031,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No pushy add-ons, no lens jargon, no “anti-reflective upgrade” at the till — the coatings that matter come as standard. Just well-made eyewear, an honest price, and a way to be sure before you buy."
+                      "No pushy add-ons, no lens jargon, no “anti-reflective upgrade” at the till: the coatings that matter come as standard. Just well-made eyewear, an honest price, and a way to be sure before you buy."
                     ],
                     "id": "8c021bcc-20e7-4cfb-bcc1-e22f20149b15",
                     "ord": "a3"
@@ -2051,8 +2051,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Frame & Lens",
-      "seoDescription": "Get in touch with Frame & Lens — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Frame & Lens",
+      "seoDescription": "Get in touch with Frame & Lens: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2088,7 +2088,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Not sure which frame suits you, need help reading your prescription, or want to check on an order? Tell us what you’re after and a real person on our team — not a bot — will get back to you."
+                          "Not sure which frame suits you, need help reading your prescription, or want to check on an order? Tell us what you’re after and a real person on our team (not a bot) will get back to you."
                         ],
                         "id": "23ff5220-99fb-484c-8a42-5eb0c0f2c7dc",
                         "ord": "a1"
@@ -2359,8 +2359,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Frame & Lens",
-      "seoDescription": "Product details at Frame & Lens — eyewear & optical, with options and pricing.",
+      "seoTitle": "Product: Frame & Lens",
+      "seoDescription": "Product details at Frame & Lens: eyewear & optical, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2723,7 +2723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Choose your lens type at checkout and add your prescription now or later — we’ll email a reminder. Anti-glare and scratch-resistant coatings come as standard, cut and fitted in our own lab, and every pair ships in a protective case with a cloth."
+                              "Choose your lens type at checkout and add your prescription now or later: we’ll email a reminder. Anti-glare and scratch-resistant coatings come as standard, cut and fitted in our own lab, and every pair ships in a protective case with a cloth."
                             ],
                             "id": "75ce346e-31e7-4165-b926-d34f10e3325d",
                             "ord": "a1"

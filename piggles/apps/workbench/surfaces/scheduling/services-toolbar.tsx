@@ -59,7 +59,7 @@ export function ServicesToolbar({
         label: 'New service',
         icon: faPlus,
         onClick: onNew,
-        title: 'New service — hold Shift to open alongside, Alt for a new window',
+        title: 'New service: hold Shift to open alongside, Alt for a new window',
       }}
       controls={
         <>

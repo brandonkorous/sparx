@@ -14,7 +14,7 @@ const propertyIdArg = z
   .optional()
   .describe(
     'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
-      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'MULTIPLE sites. Call list_sites first to get each site’s id, then pass it here to target ' +
       'that specific site.'
   );
 
@@ -35,7 +35,7 @@ export const listBuilderPages: McpToolDefinition = {
   name: 'list_builder_pages',
   description:
     'List a site’s Builder pages (the page catalog): id, name, slug, kind (singleton | collection), recordType, position, ' +
-    'and whether each is published. Trees are omitted — call get_builder_page for one. Seeds the curated starter set on first use.',
+    'and whether each is published. Trees are omitted. Call get_builder_page for one. Seeds the curated starter set on first use.',
   scope: 'read:builder',
   confirmation: false,
   input: z.object({ propertyId: propertyIdArg }),

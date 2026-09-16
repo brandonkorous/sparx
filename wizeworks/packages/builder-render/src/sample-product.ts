@@ -19,12 +19,12 @@ import type { BuilderProduct } from './commerce-types';
 export const SAMPLE_BUILDER_PRODUCT: BuilderProduct = {
   id: 'sample-product',
   handle: 'sample-product',
-  title: 'Sample Product — Trailhead Insulated Jacket',
+  title: 'Sample Product: Trailhead Insulated Jacket',
   price: 148,
   compareAtPrice: 188,
   description:
-    'Sample product copy. Use it to design your product page — the buy box, the gallery, the ' +
-    'details — before you have real products. Every published product renders through this layout.',
+    'Sample product copy. Use it to design your product page: the buy box, the gallery, the ' +
+    'details: before you have real products. Every published product renders through this layout.',
   images: [],
   sku: 'SAMPLE-JKT',
   currency: 'USD',
@@ -139,10 +139,10 @@ export const SAMPLE_BUILDER_PRODUCT: BuilderProduct = {
   // apparel product would carry.
   attributes: {
     fabric:
-      'Sample copy — a 3-layer insulated shell with a recycled ripstop face and a brushed inner. Replace this with the real fabric story per product.',
+      'Sample copy: a 3-layer insulated shell with a recycled ripstop face and a brushed inner. Replace this with the real fabric story per product.',
     fit: 'Regular fit, true to size, with room to layer.',
     care: 'Machine wash cold, tumble dry low. Do not iron the membrane.',
-    materials: 'Face — 100%, Insulation — 80%',
+    materials: 'Face: 100%, Insulation: 80%',
     origin: 'Vietnam',
   },
   attributeSections: [
@@ -151,7 +151,7 @@ export const SAMPLE_BUILDER_PRODUCT: BuilderProduct = {
       label: 'Fabric & construction',
       kind: 'long_text',
       value:
-        'Sample copy — a 3-layer insulated shell with a recycled ripstop face and a brushed inner. Replace this with the real fabric story per product.',
+        'Sample copy: a 3-layer insulated shell with a recycled ripstop face and a brushed inner. Replace this with the real fabric story per product.',
       items: [],
     },
     {

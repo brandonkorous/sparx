@@ -116,7 +116,7 @@ function PayoutSetup({ connected }: { connected: boolean }) {
     <div className="flex flex-col gap-3">
       <Text className="text-sm">
         Connect a bank account so sparx can pay your commissions. Setup is handled by our payments
-        provider — you will be taken there to confirm your details, then brought back here.
+        provider. You will be taken there to confirm your details, then brought back here.
       </Text>
       <Button
         color="module"

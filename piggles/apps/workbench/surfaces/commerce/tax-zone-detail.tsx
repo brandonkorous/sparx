@@ -356,7 +356,7 @@ function ZoneEditor({
           {isNew ? (
             <FormSection
               title="Where"
-              description="This is fixed once the place is created — to move it later, delete it and add a new one."
+              description="This is fixed once the place is created: to move it later, delete it and add a new one."
             >
               <Field>
                 <FieldLabel>Country</FieldLabel>
@@ -597,7 +597,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
         </Text>
       ) : rows.length === 0 ? (
         <Text className="text-sm">
-          No rate set yet — nothing is charged here until you add one below.
+          No rate set yet. Nothing is charged here until you add one below.
         </Text>
       ) : (
         <div className="flex flex-col">

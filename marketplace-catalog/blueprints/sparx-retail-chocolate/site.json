@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Cacao & Co. — bean-to-bar chocolate, made by hand",
-      "seoDescription": "Cacao & Co. is a bean-to-bar chocolatier — single-origin bars, hand-rolled truffles and a monthly subscription, made from named-farm cacao and tempered to order. Buy well, make it ourselves, keep it small.",
+      "seoTitle": "Cacao & Co. bean-to-bar chocolate, made by hand",
+      "seoDescription": "Cacao & Co. is a bean-to-bar chocolatier: single-origin bars, hand-rolled truffles and a monthly subscription, made from named-farm cacao and tempered to order. Buy well, make it ourselves, keep it small.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Cacao & Co. is a bean-to-bar chocolatier. We buy cacao from farms we can name, roast and grind it ourselves, and temper it by hand — so a single-origin bar tastes of the place it grew, not just of “dark chocolate.”"
+                          "Cacao & Co. is a bean-to-bar chocolatier. We buy cacao from farms we can name, roast and grind it ourselves, and temper it by hand, so a single-origin bar tastes of the place it grew, not just of “dark chocolate.”"
                         ],
                         "id": "4d19385d-3547-4df0-ba04-3d10465493a5",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most “chocolatiers” melt someone else’s chocolate. We don’t. We roast the beans, crack and winnow them, grind for days in a stone melanger, then temper and mould by hand — so every step, and every flavour, is ours."
+                          "Most “chocolatiers” melt someone else’s chocolate. We don’t. We roast the beans, crack and winnow them, grind for days in a stone melanger, then temper and mould by hand, so every step, and every flavour, is ours."
                         ],
                         "id": "398471a2-9877-4a02-86d2-f681a9cc7a68",
                         "ord": "a1"
@@ -1539,7 +1539,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A subscription is the good kind of habit: a new pairing of single-origin bars arrives freshly tempered on your schedule. Skip, swap or cancel any time — no lock-in, just something to look forward to."
+                          "A subscription is the good kind of habit: a new pairing of single-origin bars arrives freshly tempered on your schedule. Skip, swap or cancel any time, no lock-in, just something to look forward to."
                         ],
                         "id": "ae436f43-906d-4802-8eb9-984dbf38b58e",
                         "ord": "a1"
@@ -1574,7 +1574,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Cacao & Co.",
+      "seoTitle": "Shop: Cacao & Co.",
       "seoDescription": "Browse everything Cacao & Co. makes, with prices and options at a glance. Chocolatier.",
       "root": {
         "kind": "element",
@@ -1606,7 +1606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we’re making right now — single-origin bars, truffle and confection boxes, drinking chocolate, gift sets and the subscription. Filter by origin or cacao percentage, or sort however you like; all of it is tempered to order."
+                      "Everything we’re making right now: single-origin bars, truffle and confection boxes, drinking chocolate, gift sets and the subscription. Filter by origin or cacao percentage, or sort however you like; all of it is tempered to order."
                     ],
                     "id": "21868d88-124b-4722-845a-ea5585d0a234",
                     "ord": "a1"
@@ -1634,7 +1634,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Cacao & Co.",
+      "seoTitle": "Collections: Cacao & Co.",
       "seoDescription": "Explore the collections at Cacao & Co., grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1666,7 +1666,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The chocolate grouped the way people actually shop — what’s new this season, the bars people come back for, the single origins side by side, and gifts ready to send."
+                      "The chocolate grouped the way people actually shop: what’s new this season, the bars people come back for, the single origins side by side, and gifts ready to send."
                     ],
                     "id": "788753c5-22aa-45a3-baf1-4c3504d45c99",
                     "ord": "a1"
@@ -1694,7 +1694,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Cacao & Co.",
+      "seoTitle": "Your cart: Cacao & Co.",
       "seoDescription": "Review what is in your cart and check out securely at Cacao & Co..",
       "root": {
         "kind": "element",
@@ -1726,7 +1726,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $50, and everything is tempered to order and packed to travel cool. Melted in transit or not quite right? Tell us and we’ll make it good — chocolate should be a pleasure, start to finish."
+                      "Free shipping on orders over $50, and everything is tempered to order and packed to travel cool. Melted in transit or not quite right? Tell us and we’ll make it good: chocolate should be a pleasure, start to finish."
                     ],
                     "id": "97a4de7d-f87e-49a9-a1db-9848c864aeb5",
                     "ord": "a1"
@@ -1754,7 +1754,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Cacao & Co.",
+      "seoTitle": "Search: Cacao & Co.",
       "seoDescription": "Search Cacao & Co. for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Cacao & Co.",
+      "seoTitle": "Journal: Cacao & Co.",
       "seoDescription": "Stories, guides and notes from Cacao & Co..",
       "root": {
         "kind": "element",
@@ -1846,7 +1846,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the workshop — how a bean becomes a bar, how to taste chocolate properly, and where the cacao actually comes from. Plain, useful, no snobbery."
+                      "Notes from the workshop: how a bean becomes a bar, how to taste chocolate properly, and where the cacao actually comes from. Plain, useful, no snobbery."
                     ],
                     "id": "01c60b8e-fd05-4717-b67d-35948ecf9550",
                     "ord": "a1"
@@ -1980,7 +1980,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Cacao & Co.",
-      "seoDescription": "How Cacao & Co. buys, roasts, grinds and tempers — small batches, named farms, fair prices, and chocolate that tastes of where it grew.",
+      "seoDescription": "How Cacao & Co. buys, roasts, grinds and tempers: small batches, named farms, fair prices, and chocolate that tastes of where it grew.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2011,7 +2011,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Cacao & Co. started with a second-hand melanger, a sack of Madagascan beans, and a suspicion that the chocolate in the shops was hiding what cacao could actually taste like. It grew the slow way — one origin, one batch, one market stall at a time — and it still runs on the same idea: buy well, make it ourselves, keep it small."
+                      "Cacao & Co. started with a second-hand melanger, a sack of Madagascan beans, and a suspicion that the chocolate in the shops was hiding what cacao could actually taste like. It grew the slow way (one origin, one batch, one market stall at a time) and it still runs on the same idea: buy well, make it ourselves, keep it small."
                     ],
                     "id": "0122e8f0-8a4c-4fd2-8dc4-41fa48960690",
                     "ord": "a1"
@@ -2051,8 +2051,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Cacao & Co.",
-      "seoDescription": "Get in touch with Cacao & Co. — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Cacao & Co.",
+      "seoDescription": "Get in touch with Cacao & Co. questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2359,8 +2359,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Cacao & Co.",
-      "seoDescription": "Product details at Cacao & Co. — chocolatier, with options and pricing.",
+      "seoTitle": "Product: Cacao & Co.",
+      "seoDescription": "Product details at Cacao & Co. chocolatier, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2723,7 +2723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every bar and box is tempered and finished the week it ships, then packed to travel cool. Chocolate keeps best somewhere dark and around room temperature — no fridge, which dulls the snap and blooms the surface. Enjoy within three months."
+                              "Every bar and box is tempered and finished the week it ships, then packed to travel cool. Chocolate keeps best somewhere dark and around room temperature: no fridge, which dulls the snap and blooms the surface. Enjoy within three months."
                             ],
                             "id": "e477ea76-0d5f-47ce-80dd-29460feca98f",
                             "ord": "a1"

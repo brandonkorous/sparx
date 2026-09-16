@@ -65,7 +65,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s prices</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing about the product has changed — its
+            This is a problem reaching the server. Nothing about the product has changed. Its
             versions just could not be read just now.
           </AlertDescription>
         </AlertContent>
@@ -112,7 +112,7 @@ export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: 
         live.length === 0 ? null : (
           <FormSection
             title="How this product is sold"
-            description="There is one version of this product. Shoppers do not choose anything — they just buy it."
+            description="There is one version of this product. Shoppers do not choose anything. They just buy it."
           >
             {live.map((variant) => (
               <VariantRow

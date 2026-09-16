@@ -120,7 +120,7 @@ const pipelinePresets: ModulePreset[] = [
     slug: 'recruiting',
     name: 'Recruiting pipeline',
     description:
-      'A hiring funnel from application to offer — screen, interview, final round, and hire. Reuse the deal board for candidates.',
+      'A hiring funnel from application to offer: screen, interview, final round, and hire. Reuse the deal board for candidates.',
     iconKey: 'users',
     tags: ['recruiting', 'hr'],
     stages: [
@@ -185,7 +185,7 @@ const segmentPresets: ModulePreset[] = [
     slug: 'vip-customers',
     name: 'VIP customers',
     description:
-      'Your highest-value, still-active customers — $10,000+ lifetime spend with an order in the last 60 days. Target them with early access and perks.',
+      'Your highest-value, still-active customers: $10,000+ lifetime spend with an order in the last 60 days. Target them with early access and perks.',
     iconKey: 'crown',
     tags: ['retention', 'vip'],
     chip: '$10k+ · active 60d',
@@ -201,9 +201,9 @@ const segmentPresets: ModulePreset[] = [
   }),
   segmentPreset({
     slug: 'dormant-winback',
-    name: 'Dormant — win-back',
+    name: 'Dormant: win-back',
     description:
-      'Past buyers who have gone quiet — at least one order, but nothing in 90+ days. The natural audience for a win-back campaign.',
+      'Past buyers who have gone quiet: at least one order, but nothing in 90+ days. The natural audience for a win-back campaign.',
     iconKey: 'clock-alert',
     tags: ['retention', 'churn'],
     chip: 'Ordered · 90d+ quiet',
@@ -221,7 +221,7 @@ const segmentPresets: ModulePreset[] = [
     slug: 'email-engaged',
     name: 'Email engaged',
     description:
-      'Subscribers who opened or clicked an email in the last 30 days and still hold marketing consent — your warmest list for the next send.',
+      'Subscribers who opened or clicked an email in the last 30 days and still hold marketing consent. Your warmest list for the next send.',
     iconKey: 'mail-check',
     tags: ['marketing', 'engagement'],
     chip: 'Opened/clicked 30d',

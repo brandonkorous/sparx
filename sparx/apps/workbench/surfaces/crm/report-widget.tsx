@@ -184,7 +184,7 @@ export function ReportWidget({
           </table>
           {data.rows.length > 8 ? (
             <Badge color="neutral" variant="soft">
-              +{data.rows.length - 8} more — open the report
+              +{data.rows.length - 8} more. Open the report
             </Badge>
           ) : null}
         </div>

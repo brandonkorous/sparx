@@ -140,7 +140,7 @@ async function ensurePushChannel(
   } catch (err) {
     logger.warn(
       { tenantId, connectionId: conn.id, err },
-      'calendar-oauth: push channel setup failed — polling fallback'
+      'calendar-oauth: push channel setup failed, polling fallback'
     );
   }
 }

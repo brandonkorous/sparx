@@ -318,7 +318,7 @@ export async function updateSocialPostTargets(
       for (const row of rows) {
         if (row.status === 'published') {
           throw badRequest(
-            `"${row.targetName}" has already been posted to — it can't be removed from this post.`
+            `"${row.targetName}" has already been posted to. It can't be removed from this post.`
           );
         }
       }
@@ -407,7 +407,7 @@ export async function retrySocialPostTarget(
     });
     if (!target) return null;
     if (target.status === 'published') {
-      throw badRequest(`"${target.targetName}" already went out — there is nothing to retry.`);
+      throw badRequest(`"${target.targetName}" already went out. There is nothing to retry.`);
     }
     if (target.status === 'publishing') {
       throw badRequest(`"${target.targetName}" is going out right now.`);

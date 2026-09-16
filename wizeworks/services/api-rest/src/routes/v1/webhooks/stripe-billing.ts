@@ -175,7 +175,7 @@ const stripeBillingWebhookRoutes: FastifyPluginAsync = async (app) => {
       // Dev / pre-ops: no plan has a billing webhook secret configured. Acknowledge
       // so Stripe (or a test) doesn't retry; nothing is reconciled.
       request.log.warn(
-        'no billing webhook secret configured for any plan — acknowledged without processing'
+        'no billing webhook secret configured for any plan: acknowledged without processing'
       );
       await reply.code(200).send({ received: true });
       return;
@@ -358,7 +358,7 @@ async function dispatch(
       break;
     }
     default:
-      log.debug({ type: event.type }, 'stripe billing webhook: unhandled event type — ignored');
+      log.debug({ type: event.type }, 'stripe billing webhook: unhandled event type, ignored');
   }
 }
 

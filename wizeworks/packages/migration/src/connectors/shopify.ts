@@ -44,7 +44,7 @@ function shopDomain(credentials: Credentials): string {
   const raw = (credentials.shop ?? '').trim().toLowerCase();
   if (raw === '') {
     throw new ConnectorError('We need your Shopify store address.', {
-      hint: 'It looks like your-store.myshopify.com — you can see it in the address bar of your Shopify admin.',
+      hint: 'It looks like your-store.myshopify.com. You can see it in the address bar of your Shopify admin.',
     });
   }
   // Tenants paste all of these: the bare handle, the domain, the full admin URL.
@@ -55,7 +55,7 @@ function shopDomain(credentials: Credentials): string {
   const domain = host.includes('.') ? host : `${host}.myshopify.com`;
   if (!domain.endsWith('.myshopify.com')) {
     throw new ConnectorError(`${domain} is not a Shopify store address.`, {
-      hint: 'Use the .myshopify.com one rather than your own domain name — Shopify only answers on that one.',
+      hint: 'Use the .myshopify.com one rather than your own domain name: Shopify only answers on that one.',
     });
   }
   return domain;
@@ -749,9 +749,9 @@ export const shopifyConnector: Connector = {
   vendors: ['shopify'],
   instructions: [
     'In Shopify, go to Settings → Apps and sales channels → Develop apps.',
-    'Click "Create an app", give it any name — "site migration" does fine — and create it.',
+    'Click "Create an app", give it any name ("site migration" does fine) and create it.',
     'Open Configuration → Admin API integration → Configure, and tick the read permissions for products, inventory, customers, orders, discounts, content and online store navigation.',
-    'Save, then go to API credentials and click "Install app". Copy the Admin API access token it shows you — Shopify only shows it once.',
+    'Save, then go to API credentials and click "Install app". Copy the Admin API access token it shows you: Shopify only shows it once.',
     'Orders older than sixty days need the "read all orders" permission, which Shopify makes you request on the same screen.',
   ],
   fields: [
@@ -772,7 +772,7 @@ export const shopifyConnector: Connector = {
       required: true,
       pattern: '^shp(at|ca)_[A-Za-z0-9]{20,}$',
       patternHint:
-        'That does not look like an Admin API access token — they start with shpat_. The API key and secret next to it are different things.',
+        'That does not look like an Admin API access token. They start with shpat_. The API key and secret next to it are different things.',
     },
   ],
   resources: [
@@ -782,7 +782,7 @@ export const shopifyConnector: Connector = {
       entity: 'collections',
       label: 'Collections',
       pageSize: PAGE.simple,
-      note: 'Shopify has no export for these — this is the only way they move.',
+      note: 'Shopify has no export for these. This is the only way they move.',
     },
     { entity: 'customers', label: 'Customers', pageSize: PAGE.customers },
     {

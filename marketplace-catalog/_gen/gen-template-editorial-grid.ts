@@ -184,7 +184,7 @@ function hero(): Node {
             alt: 'A quiet room furnished in oak, stone and wool',
             headingTag: 'h1',
             heading: 'Objects made to keep',
-            lead: 'Furniture and objects for the considered home — made in small runs from oak, stone, wool and clay, and built to outlast the season they arrive in.',
+            lead: 'Furniture and objects for the considered home: made in small runs from oak, stone, wool and clay, and built to outlast the season they arrive in.',
             primary: { text: 'Shop new arrivals', href: '/shop' },
             secondary: { text: 'The Atelier Journal', href: '/journal' },
         }),
@@ -193,7 +193,7 @@ function hero(): Node {
             alt: 'A lounge chair in a sunlit corner',
             headingTag: 'h2',
             heading: 'Seating, considered',
-            lead: 'Chairs and stools built around the way a body actually rests — solid oak and turned walnut, joined to last a generation.',
+            lead: 'Chairs and stools built around the way a body actually rests: solid oak and turned walnut, joined to last a generation.',
             primary: { text: 'Shop seating', href: '/shop' },
         }),
         heroSlide({
@@ -201,7 +201,7 @@ function hero(): Node {
             alt: 'Warm lamplight against a dark wall',
             headingTag: 'h2',
             heading: 'Light, softened',
-            lead: 'Linen and paper shades that turn a hard bulb into something worth sitting beside — warm, quiet, and made to be lived with.',
+            lead: 'Linen and paper shades that turn a hard bulb into something worth sitting beside: warm, quiet, and made to be lived with.',
             primary: { text: 'Shop lighting', href: '/shop' },
         }),
         heroSlide({
@@ -209,7 +209,7 @@ function hero(): Node {
             alt: 'A table set with ceramic and stoneware',
             headingTag: 'h2',
             heading: 'The set table',
-            lead: 'Stoneware, ceramic and brass for the objects a table earns over years — thrown, glazed and finished by hand.',
+            lead: 'Stoneware, ceramic and brass for the objects a table earns over years: thrown, glazed and finished by hand.',
             primary: { text: 'Shop tabletop', href: '/shop' },
         }),
     ]);
@@ -287,7 +287,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New arrivals' }),
     editorialBand({
         heading: 'Seating, considered',
-        lead: 'Chairs and stools built around the way a body actually rests — solid oak and turned walnut, joined to last a generation.',
+        lead: 'Chairs and stools built around the way a body actually rests: solid oak and turned walnut, joined to last a generation.',
         assetId: 'feature-seating',
         cta: 'A closer look',
         href: '/collections',
@@ -303,7 +303,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.lighting', layout: 'carousel', heading: 'Lighting' }),
     editorialBand({
         heading: 'The set table',
-        lead: 'Stoneware, ceramic and brass for the objects a table earns over years — thrown, glazed and finished by hand.',
+        lead: 'Stoneware, ceramic and brass for the objects a table earns over years: thrown, glazed and finished by hand.',
         assetId: 'feature-tabletop',
         cta: 'A closer look',
         href: '/collections',
@@ -325,7 +325,7 @@ const ABOUT: Node[] = [
                         text: 'About Atelier Nord',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Atelier Nord is a small design studio making furniture and objects for the considered home. We work in oak, walnut, stone, wool and clay — materials that age into something better than they began — and we make in small runs, in our own workshop, by the people whose names are on the work.',
+                        text: 'Atelier Nord is a small design studio making furniture and objects for the considered home. We work in oak, walnut, stone, wool and clay (materials that age into something better than they began) and we make in small runs, in our own workshop, by the people whose names are on the work.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'Nothing here is bought in and re-badged. We can tell you where every piece came from, who made it, and how to keep it going for decades. That is the whole idea: objects made to keep.',
@@ -343,7 +343,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Visit the studio',
-        intro: 'Our workshop and showroom are open by appointment. Tell us what you are looking for — a single piece, a whole room, or something made to your measurements — and we will find a time.',
+        intro: 'Our workshop and showroom are open by appointment. Tell us what you are looking for (a single piece, a whole room, or something made to your measurements) and we will find a time.',
         submitLabel: 'Email the studio',
     }),
 ];
@@ -403,14 +403,14 @@ const PRODUCTS: Product[] = [
         tags: ['oak', 'lounge', 'seating', 'handmade'],
         categoryHandles: ['seating'],
         collectionHandles: ['new-arrivals', 'seating'],
-        seoTitle: 'Nord Oak Lounge Chair — solid white-oak lounge chair',
+        seoTitle: 'Nord Oak Lounge Chair: solid white-oak lounge chair',
         seoDescription: 'A hand-shaped solid white-oak lounge chair with a slung, re-upholsterable seat.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
                 'A solid white-oak frame, hand-shaped and finished in hard wax oil, over a webbed seat suspension. The slung seat and back come in natural linen or charcoal wool, tacked so they can be re-tensioned or replaced rather than bonded shut.',
             dimensions: 'W 68 × D 82 × H 74 cm; seat H 38 cm',
-            care: 'Dust the frame and refresh the hard wax oil with a cloth once a year — a knock sands out of solid oak rather than chipping through. Vacuum the upholstery gently, treat spills promptly, and the covers can be re-tensioned or remade when they eventually tire.',
+            care: 'Dust the frame and refresh the hard wax oil with a cloth once a year: a knock sands out of solid oak rather than chipping through. Vacuum the upholstery gently, treat spills promptly, and the covers can be re-tensioned or remade when they eventually tire.',
             origin: 'Made in our Oslo workshop',
         },
         options: [
@@ -426,19 +426,19 @@ const PRODUCTS: Product[] = [
         handle: 'walnut-turned-stool',
         title: 'Walnut Turned Stool',
         description:
-            'A little stool turned from a single billet of walnut — a seat, a side table, a step to the top shelf. Finished with hard wax oil that you can refresh with a cloth in five minutes.',
+            'A little stool turned from a single billet of walnut: a seat, a side table, a step to the top shelf. Finished with hard wax oil that you can refresh with a cloth in five minutes.',
         status: 'active',
         productType: 'Seating',
         vendor: 'Atelier Nord',
         tags: ['walnut', 'stool', 'seating', 'handmade'],
         categoryHandles: ['seating'],
         collectionHandles: ['seating'],
-        seoTitle: 'Walnut Turned Stool — solid walnut stool',
+        seoTitle: 'Walnut Turned Stool: solid walnut stool',
         seoDescription: 'A stool turned from a single billet of solid walnut, finished in hard wax oil.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
-                'Turned from a single billet of solid walnut — seat, legs and stretcher all one timber, with no joins to work loose — in a natural or smoked finish sealed with hard wax oil.',
+                'Turned from a single billet of solid walnut (seat, legs and stretcher all one timber, with no joins to work loose) in a natural or smoked finish sealed with hard wax oil.',
             dimensions: 'Ø 32 × H 45 cm',
             care: 'Wipe with a dry or barely damp cloth and re-apply hard wax oil once or twice a year to feed the grain. Keep it clear of a radiator’s direct heat so the timber does not dry out and check, and it will serve as a seat, a side table or a step for decades.',
             origin: 'Made in our Oslo workshop',
@@ -463,14 +463,14 @@ const PRODUCTS: Product[] = [
         tags: ['travertine', 'stone', 'table', 'objects'],
         categoryHandles: ['objects'],
         collectionHandles: ['new-arrivals'],
-        seoTitle: 'Travertine Side Table — solid stone side table',
+        seoTitle: 'Travertine Side Table: solid stone side table',
         seoDescription: 'A round side table cut from a single piece of unfilled honed travertine.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
-                'Cut from a single piece of unfilled Italian travertine, the top honed smooth and the edges left soft. Solid stone through and through — no core, no veneer, no filler in the natural pitting.',
+                'Cut from a single piece of unfilled Italian travertine, the top honed smooth and the edges left soft. Solid stone through and through: no core, no veneer, no filler in the natural pitting.',
             dimensions: 'Ø 40 × H 45 cm',
-            care: 'Seal it with a penetrating stone sealer when new and again every year or two; sealed, it shrugs off water rings and the odd spill — you wipe it and move on. The faint marks a life leaves in the stone are the reason to own the real thing.',
+            care: 'Seal it with a penetrating stone sealer when new and again every year or two; sealed, it shrugs off water rings and the odd spill. You wipe it and move on. The faint marks a life leaves in the stone are the reason to own the real thing.',
             origin: 'Made in Italy',
         },
         variants: [{ sku: 'ATN-SIDETABLE', priceCents: money(680), isDefault: true, inventoryPolicy: 'continue' }],
@@ -487,7 +487,7 @@ const PRODUCTS: Product[] = [
         tags: ['linen', 'lighting', 'floor-lamp', 'brass'],
         categoryHandles: ['lighting'],
         collectionHandles: ['new-arrivals', 'lighting'],
-        seoTitle: 'Linen-Shade Floor Lamp — dimmable brass floor lamp',
+        seoTitle: 'Linen-Shade Floor Lamp: dimmable brass floor lamp',
         seoDescription: 'A slim brass floor lamp with a hand-sewn linen drum shade, dimmable at the base.',
         productTypeKey: 'home_goods',
         attributes: {
@@ -511,14 +511,14 @@ const PRODUCTS: Product[] = [
         tags: ['paper', 'lighting', 'pendant'],
         categoryHandles: ['lighting'],
         collectionHandles: ['lighting'],
-        seoTitle: 'Paper-Shade Pendant — folded paper pendant light',
+        seoTitle: 'Paper-Shade Pendant: folded paper pendant light',
         seoDescription: 'A folded paper pendant lamp with braided cord and a brass ceiling cup.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
                 'A folded paper shade that glows like a lantern and packs flat, hung on three metres of braided fabric cord with a solid-brass ceiling cup in the same brass as our lamps.',
             dimensions: 'Ø 45 × H 40 cm; 3 m cord',
-            care: 'Dust with a dry, soft brush only — paper does not take a damp cloth. Fit a cool-running LED bulb (E27, 8 W max), and the shade folds flat again if you ever move house.',
+            care: 'Dust with a dry, soft brush only: paper does not take a damp cloth. Fit a cool-running LED bulb (E27, 8 W max), and the shade folds flat again if you ever move house.',
             origin: 'Made in Denmark',
         },
         variants: [{ sku: 'ATN-PENDANT', priceCents: money(280), isDefault: true, inventoryPolicy: 'continue' }],
@@ -535,14 +535,14 @@ const PRODUCTS: Product[] = [
         tags: ['ceramic', 'carafe', 'tabletop', 'handmade'],
         categoryHandles: ['tabletop'],
         collectionHandles: ['tabletop'],
-        seoTitle: 'Hand-Thrown Ceramic Carafe — one-litre matte carafe',
+        seoTitle: 'Hand-Thrown Ceramic Carafe. One-litre matte carafe',
         seoDescription: 'A one-litre hand-thrown ceramic carafe in a soft matte white glaze.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
                 'Thrown on the wheel from stoneware clay and glazed in a soft matte white that breaks to bare clay at the rim. One litre, watertight, and balanced to pour clean without a drip.',
             dimensions: 'Ø 11 × H 22 cm; 1 L',
-            care: 'Dishwasher-safe, though hand washing keeps the matte glaze even over the years. The unglazed rim may darken a little with use — that is the clay showing through, not a fault, and it wipes back.',
+            care: 'Dishwasher-safe, though hand washing keeps the matte glaze even over the years. The unglazed rim may darken a little with use. That is the clay showing through, not a fault, and it wipes back.',
             origin: 'Made in Portugal',
         },
         variants: [{ sku: 'ATN-CARAFE', priceCents: money(78), isDefault: true, inventoryPolicy: 'continue' }],
@@ -552,21 +552,21 @@ const PRODUCTS: Product[] = [
         handle: 'stoneware-vase-set',
         title: 'Stoneware Vase Set',
         description:
-            'A pair of stoneware vases — one tall and narrow, one low and wide — glazed in a speckled oatmeal that suits a single stem or a whole armful. Sold together, made to sit apart.',
+            'A pair of stoneware vases (one tall and narrow, one low and wide) glazed in a speckled oatmeal that suits a single stem or a whole armful. Sold together, made to sit apart.',
         status: 'active',
         productType: 'Tabletop',
         vendor: 'Atelier Nord',
         tags: ['stoneware', 'vase', 'tabletop', 'set'],
         categoryHandles: ['tabletop'],
         collectionHandles: ['new-arrivals', 'tabletop'],
-        seoTitle: 'Stoneware Vase Set — pair of speckled stoneware vases',
+        seoTitle: 'Stoneware Vase Set: pair of speckled stoneware vases',
         seoDescription: 'A pair of speckled-oatmeal stoneware vases, one tall and one low.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
-                'A pair of wheel-thrown stoneware vases — one tall and narrow, one low and wide — in a speckled oatmeal glaze. Sold together, both watertight, and made to sit apart.',
+                'A pair of wheel-thrown stoneware vases (one tall and narrow, one low and wide) in a speckled oatmeal glaze. Sold together, both watertight, and made to sit apart.',
             dimensions: 'Tall Ø 12 × H 26 cm; low Ø 18 × H 14 cm',
-            care: 'Both hold water for fresh stems — rinse and dry after each use. Dishwasher-safe, but a gentle hand wash keeps the speckled glaze looking its best; empty them before a hard frost if they live on a sill.',
+            care: 'Both hold water for fresh stems: rinse and dry after each use. Dishwasher-safe, but a gentle hand wash keeps the speckled glaze looking its best; empty them before a hard frost if they live on a sill.',
             origin: 'Made in Portugal',
         },
         variants: [{ sku: 'ATN-VASESET', priceCents: money(145), isDefault: true, inventoryPolicy: 'continue' }],
@@ -583,14 +583,14 @@ const PRODUCTS: Product[] = [
         tags: ['wool', 'throw', 'textiles'],
         categoryHandles: ['textiles'],
         collectionHandles: ['textiles'],
-        seoTitle: 'Lambswool Throw — brushed British lambswool throw',
+        seoTitle: 'Lambswool Throw: brushed British lambswool throw',
         seoDescription: 'A generously sized brushed British-lambswool throw with a fringed edge.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
                 '100% British lambswool, woven with a soft brushed face and finished with a hand-knotted fringe, in oat or slate. Warm without weight, and naturally springy so it does not crush flat.',
             dimensions: '130 × 180 cm',
-            care: 'Air it rather than wash it where you can; when it needs it, dry-clean or hand wash cool on the wool cycle and dry flat. No tumble dryer — heat felts the wool — and comb the fringe straight with your fingers.',
+            care: 'Air it rather than wash it where you can; when it needs it, dry-clean or hand wash cool on the wool cycle and dry flat. No tumble dryer (heat felts the wool) and comb the fringe straight with your fingers.',
             origin: 'Made in the United Kingdom',
         },
         options: [
@@ -613,7 +613,7 @@ const PRODUCTS: Product[] = [
         tags: ['mohair', 'cushion', 'textiles'],
         categoryHandles: ['textiles'],
         collectionHandles: ['new-arrivals', 'textiles'],
-        seoTitle: 'Mohair Cushion — plush mohair cushion with down pad',
+        seoTitle: 'Mohair Cushion: plush mohair cushion with down pad',
         seoDescription: 'A deep plush mohair cushion with a feather-down pad and a hidden zip.',
         productTypeKey: 'home_goods',
         attributes: {
@@ -643,14 +643,14 @@ const PRODUCTS: Product[] = [
         tags: ['leather', 'storage', 'objects'],
         categoryHandles: ['objects'],
         collectionHandles: [],
-        seoTitle: 'Leather Magazine Sling — saddle-leather magazine holder',
+        seoTitle: 'Leather Magazine Sling: saddle-leather magazine holder',
         seoDescription: 'A hand-riveted vegetable-tanned saddle-leather magazine sling.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
                 'Cut from vegetable-tanned saddle leather and riveted by hand with solid-brass hardware. Undyed, so it darkens and softens the more it is used.',
             dimensions: 'Panel 40 × 30 cm; hangs to 55 cm',
-            care: 'Wipe with a dry cloth and feed it with a neutral leather balm once or twice a year. It will patina and darken with use — that is the leather living, not wearing out — so just keep it out of standing water.',
+            care: 'Wipe with a dry cloth and feed it with a neutral leather balm once or twice a year. It will patina and darken with use (that is the leather living, not wearing out) so just keep it out of standing water.',
             origin: 'Made in Italy',
         },
         variants: [{ sku: 'ATN-SLING', priceCents: money(240), isDefault: true, inventoryPolicy: 'continue' }],
@@ -667,12 +667,12 @@ const PRODUCTS: Product[] = [
         tags: ['cork', 'tray', 'tabletop'],
         categoryHandles: ['tabletop'],
         collectionHandles: ['tabletop'],
-        seoTitle: 'Cork Serving Tray — cork tray with oak lip',
+        seoTitle: 'Cork Serving Tray: cork tray with oak lip',
         seoDescription: 'A light cork serving tray pressed from a single slab with a solid oak lip.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
-                'Pressed from a single slab of natural cork with a solid-oak lip — light, warm to the hand, quiet to set down and kind to glassware. It even floats.',
+                'Pressed from a single slab of natural cork with a solid-oak lip: light, warm to the hand, quiet to set down and kind to glassware. It even floats.',
             dimensions: 'W 45 × D 30 × H 4 cm',
             care: 'Wipe with a damp cloth and dry flat; cork does not like a long soak or a dishwasher. A little food-safe oil on the oak lip once a year keeps it from drying and lightening.',
             origin: 'Made in Portugal',
@@ -691,14 +691,14 @@ const PRODUCTS: Product[] = [
         tags: ['brass', 'candle', 'objects'],
         categoryHandles: ['objects'],
         collectionHandles: ['tabletop'],
-        seoTitle: 'Brass Candleholder — turned solid-brass candleholder',
+        seoTitle: 'Brass Candleholder: turned solid-brass candleholder',
         seoDescription: 'A turned solid-brass candleholder with a weighted base and wide drip dish.',
         productTypeKey: 'home_goods',
         attributes: {
             materials:
                 'Turned from solid brass with a weighted base and a wide drip dish, sized for a standard dinner candle. Left unlacquered so it takes on a living patina.',
             dimensions: 'Ø 12 × H 9 cm',
-            care: 'Peel cooled wax away by hand and wipe it clean; polish the brass to bring the shine back, or leave it to darken — both are right. Unlacquered brass patinas over time, exactly as it should.',
+            care: 'Peel cooled wax away by hand and wipe it clean; polish the brass to bring the shine back, or leave it to darken. Both are right. Unlacquered brass patinas over time, exactly as it should.',
             origin: 'Made in our Oslo workshop',
         },
         variants: [{ sku: 'ATN-CANDLE', priceCents: money(89), isDefault: true, inventoryPolicy: 'continue' }],
@@ -771,7 +771,7 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The case for solid oak',
-            excerpt: 'Why we build in solid timber when a veneer would cost a third as much — and how a chair earns its price back over thirty years.',
+            excerpt: 'Why we build in solid timber when a veneer would cost a third as much, and how a chair earns its price back over thirty years.',
             featuredImage: { $asset: 'post-oak' },
             body: {
                 type: 'doc',
@@ -780,7 +780,7 @@ const CONTENT = [
                     h2('You are buying decades, not a season'),
                     para('Solid timber can be sanded back, re-oiled, and repaired more or less forever. We size our joints so a chair can be taken apart and re-glued rather than thrown away, and we keep the same oak in stock for years so a replacement part matches the original.'),
                     h2('It moves, and that is fine'),
-                    para('Wood breathes with the seasons — it always has. We build to allow for it rather than fight it, which is why our tops are not glued rigidly across their width. A hairline gap in February that closes again in July is the material doing exactly what it should.'),
+                    para('Wood breathes with the seasons. It always has. We build to allow for it rather than fight it, which is why our tops are not glued rigidly across their width. A hairline gap in February that closes again in July is the material doing exactly what it should.'),
                     para('None of this is nostalgia. It is the cheapest way we know to own something good: buy once, keep it working, and hand it on.'),
                 ],
             },
@@ -801,7 +801,7 @@ const CONTENT = [
                     h2('Seal it once, then relax'),
                     para('An unfilled travertine top wants a penetrating sealer when it is new and again every year or two. That is the whole maintenance routine. Sealed, it shrugs off water rings and the occasional spill; you wipe it and move on.'),
                     h2('The marks are the point'),
-                    para('Stone records the life of a room. A faint ring from a warm cup, a soft edge where hands have rested — these are not damage, they are the reason to own the real thing instead of a printed laminate that looks the same on day one and tired on day one thousand.'),
+                    para('Stone records the life of a room. A faint ring from a warm cup, a soft edge where hands have rested. These are not damage, they are the reason to own the real thing instead of a printed laminate that looks the same on day one and tired on day one thousand.'),
                     para('Use it. Set your coffee down on it. It has survived worse than you.'),
                 ],
             },
@@ -813,17 +813,17 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'A room in three objects',
-            excerpt: 'You do not furnish a room all at once. A study of one corner, built from a chair, a lamp and a stone table — and why that is enough.',
+            excerpt: 'You do not furnish a room all at once. A study of one corner, built from a chair, a lamp and a stone table, and why that is enough.',
             featuredImage: { $asset: 'post-room' },
             body: {
                 type: 'doc',
                 content: [
-                    para('The best rooms we visit were never designed in one go. They were assembled, slowly, around a few things worth keeping — and everything else earned its place by being genuinely needed.'),
+                    para('The best rooms we visit were never designed in one go. They were assembled, slowly, around a few things worth keeping, and everything else earned its place by being genuinely needed.'),
                     h2('Start with where you sit'),
-                    para('A single good chair fixes a corner in place. Put a lamp beside it for the evenings and a small hard surface within arm’s reach for a cup and a book, and you have made somewhere to be — which is more than most fully furnished rooms manage.'),
+                    para('A single good chair fixes a corner in place. Put a lamp beside it for the evenings and a small hard surface within arm’s reach for a cup and a book, and you have made somewhere to be, which is more than most fully furnished rooms manage.'),
                     h2('Leave room to grow'),
                     para('A corner that is finished is a corner that is closed. Three considered objects with space around them invite the next thing when it comes; a wall of furniture bought in a weekend never does.'),
-                    para('Buy less, choose better, and let the room fill itself over years. That is not a compromise — it is the plan.'),
+                    para('Buy less, choose better, and let the room fill itself over years. That is not a compromise. It is the plan.'),
                 ],
             },
         },
@@ -929,7 +929,7 @@ const SHOP: Node[] = [
                         { text: 'The full catalogue' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Every piece Atelier Nord currently makes — seating, lighting, tabletop and textiles, filtered and sorted however you like. Small runs, made to keep.',
+                        text: 'Every piece Atelier Nord currently makes: seating, lighting, tabletop and textiles, filtered and sorted however you like. Small runs, made to keep.',
                     }),
                 ],
             }),
@@ -964,14 +964,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'The collections',
-        'Seating, lighting, tabletop, textiles and the small objects a room is made of — grouped the way we think about a home, so you can start where you are furnishing.'
+        'Seating, lighting, tabletop, textiles and the small objects a room is made of: grouped the way we think about a home, so you can start where you are furnishing.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Search the studio',
-        'Looking for something specific — a material, a room, a piece you saw once? Search the whole catalogue and the Journal below.'
+        'Looking for something specific: a material, a room, a piece you saw once? Search the whole catalogue and the Journal below.'
     ),
 ];
 
@@ -986,7 +986,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Atelier Journal' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from the workshop — how a piece is made, how to live with the materials, and the thinking behind objects made to keep.',
+                        text: 'Notes from the workshop: how a piece is made, how to live with the materials, and the thinking behind objects made to keep.',
                     }),
                 ],
             }),
@@ -1008,7 +1008,7 @@ const CART: Node[] = [
                         { text: 'Your cart' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Everything here is made to order in our own workshop, crated by hand and shipped insured. Thirty days to return anything unused — take your time deciding.',
+                        text: 'Everything here is made to order in our own workshop, crated by hand and shipped insured. Thirty days to return anything unused: take your time deciding.',
                     }),
                 ],
             }),
@@ -1023,7 +1023,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-editorial-grid',
     name: 'Editorial Grid',
     summary:
-        'A magazine-quiet storefront for design furniture and objects — a full-bleed serif hero over a repeating editorial-band and shoppable-carousel rhythm, in a paper-ground mono theme. Modelled on the editorial-streetwear archetype; shipped as Atelier Nord.',
+        'A magazine-quiet storefront for design furniture and objects: a full-bleed serif hero over a repeating editorial-band and shoppable-carousel rhythm, in a paper-ground mono theme. Modelled on the editorial-streetwear archetype; shipped as Atelier Nord.',
     tagline: 'An editorial, gallery-quiet template for makers of considered furniture and objects.',
     vertical: 'retail',
     industry: 'Design furniture & objects',
@@ -1039,14 +1039,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Atelier Nord — furniture & objects made to keep',
+            title: 'Atelier Nord: furniture & objects made to keep',
             description:
-                'Atelier Nord makes furniture and objects for the considered home — oak, walnut, stone, wool and clay, made in small runs and built to outlast the season they arrive in.',
+                'Atelier Nord makes furniture and objects for the considered home: oak, walnut, stone, wool and clay, made in small runs and built to outlast the season they arrive in.',
         },
         about: {
-            title: 'About Atelier Nord — a small design studio',
+            title: 'About Atelier Nord: a small design studio',
             description:
-                'The people, materials and workshop behind Atelier Nord — why we make in small runs, by hand, from materials that age into something better than they began.',
+                'The people, materials and workshop behind Atelier Nord: why we make in small runs, by hand, from materials that age into something better than they began.',
         },
     },
     home: HOME,

@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Haul Away Junk Removal — fast, friendly junk & debris pickup",
-      "seoDescription": "Haul Away is a friendly local junk removal crew — furniture, appliances, garage and estate cleanouts and construction debris, hauled fast with upfront flat pricing. Book a free quote or a pickup online.",
+      "seoTitle": "Haul Away Junk Removal: fast, friendly junk & debris pickup",
+      "seoDescription": "Haul Away is a friendly local junk removal crew: furniture, appliances, garage and estate cleanouts and construction debris, hauled fast with upfront flat pricing. Book a free quote or a pickup online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Furniture, appliances, garage and estate cleanouts, construction debris — hauled away fast and friendly. Book a free quote online and we’ll give you a flat price before we lift a thing."
+                      "Furniture, appliances, garage and estate cleanouts, construction debris: hauled away fast and friendly. Book a free quote online and we’ll give you a flat price before we lift a thing."
                     ],
                     "id": "19d6ccf1-8f1e-457c-a8c6-89cc45a775a7",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You pay for the space your stuff takes in the truck — quoted flat and in writing before we start. No hourly meter, no surprises at the curb."
+                              "You pay for the space your stuff takes in the truck: quoted flat and in writing before we start. No hourly meter, no surprises at the curb."
                             ],
                             "id": "52bb5df7-4d13-4c72-bfc1-31a0a24347ca",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You point, we carry. Up the stairs, out of the basement, off the back deck — our crew does every bit of the heavy lifting."
+                              "You point, we carry. Up the stairs, out of the basement, off the back deck. Our crew does every bit of the heavy lifting."
                             ],
                             "id": "97de3f8d-b8ff-472a-9233-0bde91a65b7d",
                             "ord": "a1"
@@ -925,7 +925,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["One bulky item — mattress, couch or old fridge."],
+                            "children": ["One bulky item: mattress, couch or old fridge."],
                             "id": "24836377-d767-4ac8-b8b4-96446f603a43",
                             "ord": "a2"
                           }
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "One — book a free quote online in about a minute. Two — we show up in the window we promised, size up your pile and hand you a flat price on the spot."
+                          "One. Book a free quote online in about a minute. Two. We show up in the window we promised, size up your pile and hand you a flat price on the spot."
                         ],
                         "id": "32fff3c1-b091-46f0-b23e-ea575a17a406",
                         "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Three — say the word and it’s gone. We load it, sweep up and haul it off, all in the same visit. You point at the pile; we do the rest."
+                          "Three: say the word and it’s gone. We load it, sweep up and haul it off, all in the same visit. You point at the pile; we do the rest."
                         ],
                         "id": "7cd0568d-f9fd-43cc-88dd-5d8841d1bf7a",
                         "ord": "a2"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Friendly, background-checked and in uniform — the same folks who’ll carry it out and sweep up after."
+                          "Friendly, background-checked and in uniform: the same folks who’ll carry it out and sweep up after."
                         ],
                         "id": "a0559f37-ee1d-4556-b1d4-0623d63b3f81",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Heavy sofas, fridges and washers down tight stairwells without a mark on the wall — that’s Marta’s specialty."
+                                  "Heavy sofas, fridges and washers down tight stairwells without a mark on the wall: that’s Marta’s specialty."
                                 ],
                                 "id": "00213b3e-a5ec-4973-8347-015cd23997e2",
                                 "ord": "a2"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Haul Away Junk Removal",
+      "seoTitle": "Book: Haul Away Junk Removal",
       "seoDescription": "See what Haul Away Junk Removal offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1521,7 +1521,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose what you need gone to see the flat price, how long it takes and the next open time — then pick your crew and day."
+                      "Choose what you need gone to see the flat price, how long it takes and the next open time, then pick your crew and day."
                     ],
                     "id": "90a3d88f-4ceb-45ba-82e0-e85ddf628656",
                     "ord": "a1"
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "5cfc6f06-18f4-4aa5-923c-cce600d8cbbc",
                         "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Haul Away Junk Removal",
+      "seoTitle": "About: Haul Away Junk Removal",
       "seoDescription": "Who Haul Away Junk Removal is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1760,7 +1760,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re a friendly, local crew that hauls furniture, appliances, garage and estate cleanouts and construction debris — for homeowners, landlords, contractors and anyone with a pile that needs to disappear. No hourly meter, no upsells, no runaround."
+                          "We’re a friendly, local crew that hauls furniture, appliances, garage and estate cleanouts and construction debris, for homeowners, landlords, contractors and anyone with a pile that needs to disappear. No hourly meter, no upsells, no runaround."
                         ],
                         "id": "d0535bc5-7fb6-4669-83ed-7dd902d5c904",
                         "ord": "a2"
@@ -1865,7 +1865,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You never have to drag anything to the curb. We carry it out from wherever it sits — stairs, basements, back yards and all."
+                              "You never have to drag anything to the curb. We carry it out from wherever it sits: stairs, basements, back yards and all."
                             ],
                             "id": "024a39f5-3a39-49c0-b6b5-63ce82a827ef",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Haul Away Junk Removal",
+      "seoTitle": "Visit: Haul Away Junk Removal",
       "seoDescription": "Where to find Haul Away Junk Removal, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Haul Away Junk Removal will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Haul Away Junk Removal will get back to you, usually the same day."
                         ],
                         "id": "a391ee02-5366-4be9-a213-113589aeb545",
                         "ord": "a1"
@@ -2409,7 +2409,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See the next open times and reserve your pickup online — no phone tag, no waiting on hold."
+                      "See the next open times and reserve your pickup online: no phone tag, no waiting on hold."
                     ],
                     "id": "942b9af1-4a2e-46b0-97ac-b1407c88d886",
                     "ord": "a1"

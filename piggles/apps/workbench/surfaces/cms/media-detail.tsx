@@ -474,7 +474,7 @@ function ManageAsset({
               <Text className="text-sm">
                 {inUse
                   ? `It is used by ${usedInLabel(asset) ?? 'something on your site'}. Remove it from there first, then you can delete it.`
-                  : 'Removes it from your library for good. This cannot be undone. Check the site editor first — a picture placed straight into a page is not counted above.'}
+                  : 'Removes it from your library for good. This cannot be undone. Check the site editor first: a picture placed straight into a page is not counted above.'}
               </Text>
             </div>
             <Button

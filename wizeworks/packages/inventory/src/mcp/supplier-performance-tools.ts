@@ -29,7 +29,7 @@ const Uuid = z.string().uuid();
 const supplierPerformance: McpToolDefinition = {
   name: 'get_supplier_performance',
   description:
-    "One supplier's scorecard: how often they deliver on time, how often the quantity matches what was ordered, how far their invoices drift from the agreed price, their average lead time and how much it varies, and what you have spent with them. Returns null when that supplier has never been scored — which happens when there is not enough delivery history yet, and is a real answer rather than a zero.",
+    "One supplier's scorecard: how often they deliver on time, how often the quantity matches what was ordered, how far their invoices drift from the agreed price, their average lead time and how much it varies, and what you have spent with them. Returns null when that supplier has never been scored, which happens when there is not enough delivery history yet, and is a real answer rather than a zero.",
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({ supplierId: Uuid }),
@@ -42,7 +42,7 @@ const supplierPerformance: McpToolDefinition = {
 const scorecards: McpToolDefinition = {
   name: 'list_supplier_scorecards',
   description:
-    'The supplier league table, worst first. Use this for "which of my suppliers is the problem". Suppliers with too little history to score sort last and are counted separately rather than being left out — "we cannot yet measure these five" is part of an honest answer. Also reports when the scoring sweep last ran, so a stale table is visible as stale.',
+    'The supplier league table, worst first. Use this for "which of my suppliers is the problem". Suppliers with too little history to score sort last and are counted separately rather than being left out: "we cannot yet measure these five" is part of an honest answer. Also reports when the scoring sweep last ran, so a stale table is visible as stale.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -58,7 +58,7 @@ const scorecards: McpToolDefinition = {
 const priceLadder: McpToolDefinition = {
   name: 'get_supplier_price_ladder',
   description:
-    'What one item costs from one supplier at each order size — the quantity breaks, in ascending order. Use this to answer "is it worth ordering more to get the next price" before raising a purchase order.',
+    'What one item costs from one supplier at each order size: the quantity breaks, in ascending order. Use this to answer "is it worth ordering more to get the next price" before raising a purchase order.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -91,7 +91,7 @@ const approvals: McpToolDefinition = {
 const asns: McpToolDefinition = {
   name: 'list_advance_ship_notices',
   description:
-    'What suppliers have told you is on its way but has not arrived: the order it belongs to, what is on the truck, and when it was said to land. `overdueOnly` narrows to the ones that are past their stated arrival date and still not here — the chase list.',
+    'What suppliers have told you is on its way but has not arrived: the order it belongs to, what is on the truck, and when it was said to land. `overdueOnly` narrows to the ones that are past their stated arrival date and still not here, the chase list.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({
@@ -108,7 +108,7 @@ const asns: McpToolDefinition = {
 const asn: McpToolDefinition = {
   name: 'get_advance_ship_notice',
   description:
-    'One despatch note in full — every line the supplier says is on the vehicle, against what the purchase order asked for, so a short shipment is visible before the pallet is opened.',
+    'One despatch note in full: every line the supplier says is on the vehicle, against what the purchase order asked for, so a short shipment is visible before the pallet is opened.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({ id: Uuid }),
@@ -121,7 +121,7 @@ const asn: McpToolDefinition = {
 const supplierReturns: McpToolDefinition = {
   name: 'list_supplier_returns',
   description:
-    'Stock sent back to suppliers, and what it is worth. `awaitingCreditOnly` is the money question: everything despatched to a supplier with no credit note recorded against it — the amount you are owed and nobody is chasing.',
+    'Stock sent back to suppliers, and what it is worth. `awaitingCreditOnly` is the money question: everything despatched to a supplier with no credit note recorded against it, the amount you are owed and nobody is chasing.',
   scope: 'read:inventory',
   confirmation: false,
   input: z.object({

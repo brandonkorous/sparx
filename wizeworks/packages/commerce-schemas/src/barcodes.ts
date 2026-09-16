@@ -264,7 +264,7 @@ export function validateBarcode(raw: string, declared?: BarcodeSymbology): Barco
         ok: false,
         value,
         symbology,
-        error: `${symbologyLabel(symbology)} is ${expected} digits — this one has ${value.length}.`,
+        error: `${symbologyLabel(symbology)} is ${expected} digits: this one has ${value.length}.`,
       };
     }
   }
@@ -308,7 +308,7 @@ function checkDigitResult(
       symbology,
       // Naming the expected digit turns "invalid" into something a person can
       // act on — nine times in ten one digit was mis-typed and this shows which.
-      error: `Check digit does not match — this code should end in ${want}, not ${given}.`,
+      error: `Check digit does not match: this code should end in ${want}, not ${given}.`,
     };
   }
   return { ok: true, value, symbology };
@@ -339,10 +339,10 @@ export const SYMBOLOGY_HINTS: Record<BarcodeSymbology, string> = {
   ean_8: 'A shortened 8-digit code for small packages.',
   gtin_14: 'The 14-digit code identifying a case or carton.',
   itf_14: 'The wide 14-digit code printed straight onto corrugated boxes.',
-  code_128: 'Any letters or numbers — internal codes, shipping labels.',
-  code_39: 'Letters and digits — asset tags and older systems.',
+  code_128: 'Any letters or numbers: internal codes, shipping labels.',
+  code_39: 'Letters and digits: asset tags and older systems.',
   qr: 'A square 2D code, readable off-angle by a phone camera.',
-  other: 'Something else — stored as scanned, not validated.',
+  other: 'Something else: stored as scanned, not validated.',
 };
 
 // ── Internal codes ──────────────────────────────────────────────────────────

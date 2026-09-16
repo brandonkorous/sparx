@@ -15,7 +15,7 @@ import { BoardTile, Specimen } from './tile';
 export function ButtonsTile() {
   return (
     <BoardTile title="Buttons" hint="The thing people click, in every color and weight you have.">
-      <Specimen label="Solid — the action a page exists for">
+      <Specimen label="Solid: the action a page exists for">
         <Button color="primary">Order now</Button>
         <Button color="secondary">See the menu</Button>
         <Button color="accent">Book a table</Button>

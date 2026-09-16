@@ -112,13 +112,13 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
           <Text className="text-sm">
             {clientName} wants to act in your sparx workspace through the MCP server. Choose exactly
-            what it can do — revoke anytime in AI Connections.
+            what it can do: revoke anytime in AI Connections.
           </Text>
         </div>
 
         <Alert color="warning" className="text-sm">
           Grants an external app live access to your data. Access tokens are delivered to{' '}
-          <strong>{redirectHost}</strong> — only continue if you started this connection yourself.
+          <strong>{redirectHost}</strong>. Only continue if you started this connection yourself.
         </Alert>
 
         {queryError ? (

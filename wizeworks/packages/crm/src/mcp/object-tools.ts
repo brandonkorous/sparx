@@ -29,7 +29,7 @@ import type { McpToolDefinition } from './registry';
 export const listObjectTypes: McpToolDefinition = {
   name: 'list_crm_object_types',
   description:
-    'List every kind of record this business keeps — the four built-in ones (customer, company, deal, request) plus any they invented — with the extra details declared on each. Call this BEFORE writing a customer, deal or company if you intend to set any field beyond the standard ones: it is the only way to learn what this particular business tracks.',
+    'List every kind of record this business keeps: the four built-in ones (customer, company, deal, request) plus any they invented, with the extra details declared on each. Call this BEFORE writing a customer, deal or company if you intend to set any field beyond the standard ones: it is the only way to learn what this particular business tracks.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -48,7 +48,7 @@ export const listObjectTypes: McpToolDefinition = {
 export const getObjectType: McpToolDefinition = {
   name: 'get_crm_object_type',
   description:
-    "Read one record type in full, including its property schema — the typed list of extra details this business tracks on it. The schema's field keys are exactly the keys to send in `customProperties` (on a customer / deal / company) or `values` (on a custom record).",
+    "Read one record type in full, including its property schema: the typed list of extra details this business tracks on it. The schema's field keys are exactly the keys to send in `customProperties` (on a customer / deal / company) or `values` (on a custom record).",
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -62,7 +62,7 @@ export const getObjectType: McpToolDefinition = {
 export const listRecords: McpToolDefinition = {
   name: 'list_crm_records',
   description:
-    'List the rows of a record type this business invented (not customers, deals or companies — those have their own tools). Returns each row with its `values` bag.',
+    'List the rows of a record type this business invented (not customers, deals or companies, those have their own tools). Returns each row with its `values` bag.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -89,7 +89,7 @@ export const getRecord: McpToolDefinition = {
 export const createObjectType: McpToolDefinition = {
   name: 'create_crm_object_type',
   description:
-    'Invent a new kind of record for this business — a service contract, a property listing, a piece of equipment. Supply `propertySchema.fields` as a list of typed fields (see get_crm_object_type for the vocabulary: text, long_text, number, currency, boolean, date, datetime, enum, url, email, user, reference, asset, calculated, object, repeater). Set `primaryFieldKey` to the field that names the record. This creates a whole new list, detail view, search and automation trigger — confirm what is being added before calling.',
+    'Invent a new kind of record for this business: a service contract, a property listing, a piece of equipment. Supply `propertySchema.fields` as a list of typed fields (see get_crm_object_type for the vocabulary: text, long_text, number, currency, boolean, date, datetime, enum, url, email, user, reference, asset, calculated, object, repeater). Set `primaryFieldKey` to the field that names the record. This creates a whole new list, detail view, search and automation trigger: confirm what is being added before calling.',
   scope: 'write:crm',
   confirmation: true,
   input: CreateObjectDefInput,
@@ -99,7 +99,7 @@ export const createObjectType: McpToolDefinition = {
 export const updateObjectType: McpToolDefinition = {
   name: 'update_crm_object_type',
   description:
-    'Change a record type: rename it, or change the extra details tracked on it. Works on the built-in customer / company / deal / request too — that is how you add "warranty expires" to every customer. WARNING: `propertySchema` REPLACES the whole field list, so read the current one with get_crm_object_type and send it back with your additions, never just the new field. Removing a field hides it but does not erase what was stored, so re-adding it brings the values back.',
+    'Change a record type: rename it, or change the extra details tracked on it. Works on the built-in customer / company / deal / request too. That is how you add "warranty expires" to every customer. WARNING: `propertySchema` REPLACES the whole field list, so read the current one with get_crm_object_type and send it back with your additions, never just the new field. Removing a field hides it but does not erase what was stored, so re-adding it brings the values back.',
   scope: 'write:crm',
   confirmation: true,
   input: UpdateObjectDefInput.extend({ objectKey: z.string() }),
@@ -124,7 +124,7 @@ export const archiveObjectType: McpToolDefinition = {
 export const createRecord: McpToolDefinition = {
   name: 'create_crm_record',
   description:
-    'Add a row of a business-defined record type. `values` keys must match the field keys on that type — call get_crm_object_type first. Fields marked `calculated` are worked out by the server and anything sent for them is ignored.',
+    'Add a row of a business-defined record type. `values` keys must match the field keys on that type. Call get_crm_object_type first. Fields marked `calculated` are worked out by the server and anything sent for them is ignored.',
   scope: 'write:crm',
   confirmation: true,
   input: CreateCrmRecordInput,

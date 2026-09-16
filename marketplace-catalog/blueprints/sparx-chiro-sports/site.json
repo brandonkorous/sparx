@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Kinetic Spine & Sport — sports chiropractic & rehab",
+      "seoTitle": "Kinetic Spine & Sport: sports chiropractic & rehab",
       "seoDescription": "Sports chiropractic, active-release, dry needling and progressive rehab for athletes and active people. Book a movement assessment online.",
       "root": {
         "kind": "element",
@@ -597,7 +597,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Get back to training — stronger than the injury"],
+                    "children": ["Get back to training: stronger than the injury"],
                     "id": "c9c41e19-cfbc-4607-ad64-8349d36eb17b",
                     "ord": "a0"
                   },
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We treat athletes every day — from weekend runners to competitive lifters. You get someone who understands the demand you’re training back toward."
+                              "We treat athletes every day: from weekend runners to competitive lifters. You get someone who understands the demand you’re training back toward."
                             ],
                             "id": "f93efbd5-d6b2-4d5e-bdaa-47a0e7b6ea1a",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We assess how you actually move under load and find the weak link — then load it, so the injury doesn’t come back."
+                              "We assess how you actually move under load and find the weak link, then load it, so the injury doesn’t come back."
                             ],
                             "id": "fc3addb0-7a88-4cca-a93d-deb9df4acc52",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Straight-talking visits with clear times and prices. Full availability is on the booking page — pick a provider and a slot that works."
+                          "Straight-talking visits with clear times and prices. Full availability is on the booking page. Pick a provider and a slot that works."
                         ],
                         "id": "9ccc50fd-6e47-42c0-b4ad-292c118eb81a",
                         "ord": "a1"
@@ -872,7 +872,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["The full screen — find the limit, build the plan."],
+                            "children": ["The full screen: find the limit, build the plan."],
                             "id": "e80ae566-abb0-49b2-85b1-4160f92dfc00",
                             "ord": "a2"
                           }
@@ -1102,7 +1102,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Assess, treat, rebuild — the Kinetic method"],
+                        "children": ["Assess, treat, rebuild: the Kinetic method"],
                         "id": "db1c78d7-d811-4fb5-8ac7-76959bc512e1",
                         "ord": "a0"
                       },
@@ -1111,7 +1111,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most clinics chase the pain. We chase the cause. Every athlete starts with a movement assessment, so we treat the reason the tissue failed — not just the spot that hurts."
+                          "Most clinics chase the pain. We chase the cause. Every athlete starts with a movement assessment, so we treat the reason the tissue failed, not just the spot that hurts."
                         ],
                         "id": "6446ec45-0bc6-4498-96f0-fede1f61224c",
                         "ord": "a1"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with someone who knows your history and your goals."
+                          "Book by name: you’ll work with someone who knows your history and your goals."
                         ],
                         "id": "2b0707e9-c4e9-4a5e-b7b8-32ba56d0906f",
                         "ord": "a1"
@@ -1299,7 +1299,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Dry needling and progressive rehab — the strength work that makes the fix stick."
+                                  "Dry needling and progressive rehab: the strength work that makes the fix stick."
                                 ],
                                 "id": "3c7d8c59-04b6-44ee-b24d-09340ab20d82",
                                 "ord": "a2"
@@ -1395,7 +1395,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Tore my calf eight weeks out from my marathon and thought I was done. Kinetic had me back on the start line — and I ran a PR. They didn’t just patch me up, they rebuilt me.”"
+                      "“Tore my calf eight weeks out from my marathon and thought I was done. Kinetic had me back on the start line, and I ran a PR. They didn’t just patch me up, they rebuilt me.”"
                     ],
                     "id": "e1817c12-04dc-4e79-a8ab-7d9b188ab7fc",
                     "ord": "a0"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Kinetic Spine & Sport",
+      "seoTitle": "Book: Kinetic Spine & Sport",
       "seoDescription": "See what Kinetic Spine & Sport offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "a4808f74-90b8-4249-9e46-4ff8dcfb7077",
                         "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Kinetic Spine & Sport",
+      "seoTitle": "About: Kinetic Spine & Sport",
       "seoDescription": "Who Kinetic Spine & Sport is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We built Kinetic for the people other clinics send home with a heat pack and a shrug. Athletes, lifters, runners, weekend warriors — anyone whose life doesn’t stop when something tweaks."
+                          "We built Kinetic for the people other clinics send home with a heat pack and a shrug. Athletes, lifters, runners, weekend warriors. Anyone whose life doesn’t stop when something tweaks."
                         ],
                         "id": "80031830-4547-4ab7-9789-c4bff2163805",
                         "ord": "a1"
@@ -1760,7 +1760,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity — because getting out of pain and getting back to performance are two different jobs, and we do both."
+                          "It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity, because getting out of pain and getting back to performance are two different jobs, and we do both."
                         ],
                         "id": "18c67244-5713-49a9-bb73-cd9b4faf5683",
                         "ord": "a2"
@@ -1892,7 +1892,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We work to a target — a return-to-sport date, a lift, a race — not an open-ended schedule of maintenance visits."
+                              "We work to a target (a return-to-sport date, a lift, a race) not an open-ended schedule of maintenance visits."
                             ],
                             "id": "d36345fc-1484-40d4-b172-6ea4f278a3ec",
                             "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Kinetic Spine & Sport",
+      "seoTitle": "Visit: Kinetic Spine & Sport",
       "seoDescription": "Where to find Kinetic Spine & Sport, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Kinetic Spine & Sport will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Kinetic Spine & Sport will get back to you, usually the same day."
                         ],
                         "id": "e2bd0336-37b5-4c1a-a6e7-b1a743eb4348",
                         "ord": "a1"
@@ -2409,7 +2409,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your time online — no phone tag, no waiting room hold music."
+                      "See live availability and reserve your time online: no phone tag, no waiting room hold music."
                     ],
                     "id": "0184c435-fed5-49ff-9de4-258c4924e2e9",
                     "ord": "a1"

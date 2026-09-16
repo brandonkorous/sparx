@@ -219,7 +219,7 @@ export function installEmailActions(): void {
     module: null,
     gates: [],
     manifestNote:
-      'external effect: enqueues a transactional ScheduledSend to a staff address (platform-level — no email-module gate; tenant-active + kill-switch apply)',
+      'external effect: enqueues a transactional ScheduledSend to a staff address (platform-level, no email-module gate; tenant-active + kill-switch apply)',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       const cfg = InternalConfig.parse(effect.config);
       // Recipient: a trigger-field email → an explicit address → the tenant notify

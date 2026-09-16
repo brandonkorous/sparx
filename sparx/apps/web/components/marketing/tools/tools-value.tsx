@@ -24,19 +24,19 @@ const PILLARS: Pillar[] = [
     icon: Layers,
     module: 'builder',
     title: 'One platform, not twelve tabs',
-    body: 'Your site, content, CRM, email, commerce, and B2B live in one place — one login, one bill. Stop renting a dozen disconnected tools and paying someone to wire them together.',
+    body: 'Your site, content, CRM, email, commerce, and B2B live in one place. One login, one bill. Stop renting a dozen disconnected tools and paying someone to wire them together.',
   },
   {
     icon: Database,
     module: 'cms',
     title: 'One source of truth',
-    body: 'Every module sits on the same data. A customer, a page, an order, a campaign — one record, read everywhere. No sync jobs, no Zapier, no version that disagrees with the other version.',
+    body: 'Every module sits on the same data. A customer, a page, an order, a campaign. One record, read everywhere. No sync jobs, no Zapier, no version that disagrees with the other version.',
   },
   {
     icon: ToggleRight,
     module: 'commerce',
     title: 'Pay only for what you switch on',
-    body: 'Modules turn on independently. Run CMS on its own, CRM on its own, or the full stack — all of it first-class. No tiers, no seat minimums, no paying for capability you never touch.',
+    body: 'Modules turn on independently. Run CMS on its own, CRM on its own, or the full stack. All of it first-class. No tiers, no seat minimums, no paying for capability you never touch.',
   },
   {
     icon: Sparkles,
@@ -58,7 +58,7 @@ export function ToolsValue() {
           {/* Was one 65-word paragraph. A lede is the sentence that earns the
               next scroll, not a summary of the product. */}
           <Text variant="lead" className="max-w-3xl">
-            Every tool here is built on sparx — one platform for your site, your content and, when
+            Every tool here is built on sparx. One platform for your site, your content and, when
             you sell, your orders. Turn on the parts you need and leave the rest off.
           </Text>
         </div>

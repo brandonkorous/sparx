@@ -24,7 +24,7 @@ export function CornersSection() {
     <RailSection
       icon="box"
       title="Corners"
-      hint="How round everything is — square and formal, or soft and friendly."
+      hint="How round everything is: square and formal, or soft and friendly."
     >
       {scalarsIn('radius').map((token) => (
         <CornerRow key={token.key} token={token} />

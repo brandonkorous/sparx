@@ -30,7 +30,7 @@ export function StoryHelp(): ReactNode {
           Ways to shape your story
         </Heading>
         <Text className="text-sm">
-          There’s no wrong answer — it’s your story, not a form. Change anything, add as much as you
+          There’s no wrong answer: it’s your story, not a form. Change anything, add as much as you
           like, and your plan on the right keeps pace.
         </Text>
       </div>
@@ -44,7 +44,7 @@ export function StoryHelp(): ReactNode {
             </span>
           }
         >
-          <span className="font-medium">Tap any colored phrase</span> to swap it — pick a different
+          <span className="font-medium">Tap any colored phrase</span> to swap it. Pick a different
           business, who it’s for, or how customers buy.
         </HelpRow>
 
@@ -56,7 +56,7 @@ export function StoryHelp(): ReactNode {
           }
         >
           <span className="font-medium">Tap a dashed +</span> to add another way people buy, or
-          another thing you do — each one switches on the module it needs.
+          another thing you do. Each one switches on the module it needs.
         </HelpRow>
 
         <HelpRow
@@ -66,7 +66,7 @@ export function StoryHelp(): ReactNode {
             </span>
           }
         >
-          <span className="font-medium">Remove anything with its ✕</span> — your story only carries
+          <span className="font-medium">Remove anything with its ✕</span>: your story only carries
           what you actually do, and dropping it drops that module from your plan.
         </HelpRow>
       </ul>

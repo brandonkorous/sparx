@@ -182,7 +182,7 @@ const SCHEDULING = {
       handle: 'service-call-diagnostic',
       name: 'Service call & diagnostic',
       description:
-        'A technician comes out, traces the fault and explains exactly what’s wrong in plain terms — then gives you a fixed price to fix it before any work starts. The flat call fee comes off the repair if you go ahead.',
+        'A technician comes out, traces the fault and explains exactly what’s wrong in plain terms, then gives you a fixed price to fix it before any work starts. The flat call fee comes off the repair if you go ahead.',
       durationMinutes: 60,
       priceCents: 8900,
       bufferAfterMin: 15,
@@ -196,7 +196,7 @@ const SCHEDULING = {
       handle: 'free-repair-estimate',
       name: 'Free repair estimate',
       description:
-        'Know what’s broken and just want a number? We assess the equipment or the problem and give you a written, no-pressure quote for the repair — parts and labor spelled out. Always free.',
+        'Know what’s broken and just want a number? We assess the equipment or the problem and give you a written, no-pressure quote for the repair: parts and labor spelled out. Always free.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -209,7 +209,7 @@ const SCHEDULING = {
       handle: 'pump-motor-repair',
       name: 'Pump & motor repair',
       description:
-        'A noisy, leaking or dead pump diagnosed and repaired — seals, bearings, motors and variable-speed drives across every major brand. We carry the common parts, so most jobs are done in a single visit.',
+        'A noisy, leaking or dead pump diagnosed and repaired: seals, bearings, motors and variable-speed drives across every major brand. We carry the common parts, so most jobs are done in a single visit.',
       durationMinutes: 90,
       priceCents: 14900,
       bufferAfterMin: 15,
@@ -223,7 +223,7 @@ const SCHEDULING = {
       handle: 'heater-repair',
       name: 'Heater & heat-pump repair',
       description:
-        'Gas heaters and heat pumps that won’t fire, short-cycle or throw error codes — traced to the real cause and repaired, not just reset. A specialist who reads the board instead of guessing at parts.',
+        'Gas heaters and heat pumps that won’t fire, short-cycle or throw error codes: traced to the real cause and repaired, not just reset. A specialist who reads the board instead of guessing at parts.',
       durationMinutes: 90,
       priceCents: 15900,
       bufferAfterMin: 15,
@@ -237,7 +237,7 @@ const SCHEDULING = {
       handle: 'leak-detection',
       name: 'Leak detection',
       description:
-        'Losing water and can’t find where? We pressure-test the plumbing, dye-test the shell and fittings, and pinpoint the leak without tearing up your deck — then show you exactly what it takes to seal it.',
+        'Losing water and can’t find where? We pressure-test the plumbing, dye-test the shell and fittings, and pinpoint the leak without tearing up your deck, then show you exactly what it takes to seal it.',
       durationMinutes: 120,
       priceCents: 19900,
       bufferAfterMin: 15,
@@ -251,7 +251,7 @@ const SCHEDULING = {
       handle: 'equipment-upgrade-consult',
       name: 'Equipment & automation upgrade',
       description:
-        'Trade an old, power-hungry setup for a modern one — variable-speed pumps, efficient heaters and phone-controlled automation that runs the whole pad. We size it to your pool and show the running-cost savings before you spend.',
+        'Trade an old, power-hungry setup for a modern one: variable-speed pumps, efficient heaters and phone-controlled automation that runs the whole pad. We size it to your pool and show the running-cost savings before you spend.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -264,7 +264,7 @@ const SCHEDULING = {
       handle: 'resurfacing-consult',
       name: 'Resurfacing & renovation consult',
       description:
-        'Rough plaster, stained tile or a dated shell? We walk the pool, talk through finishes and give you a clear renovation plan with a written estimate — resurfacing, tile, coping and deck, all in one scope.',
+        'Rough plaster, stained tile or a dated shell? We walk the pool, talk through finishes and give you a clear renovation plan with a written estimate: resurfacing, tile, coping and deck, all in one scope.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -289,11 +289,11 @@ const HOME = [
     items: [
       {
         title: 'Certified technicians',
-        body: 'Factory-trained, background-checked pros who repair equipment for a living — not a route driver taking a guess at your pump.',
+        body: 'Factory-trained, background-checked pros who repair equipment for a living, not a route driver taking a guess at your pump.',
       },
       {
         title: 'All makes & models',
-        body: 'Pentair, Hayward, Jandy, Raypak and the rest — we carry the common parts and know the boards, so most repairs finish in one visit.',
+        body: 'Pentair, Hayward, Jandy, Raypak and the rest. We carry the common parts and know the boards, so most repairs finish in one visit.',
       },
       {
         title: 'Upfront diagnostics',
@@ -301,13 +301,13 @@ const HOME = [
       },
       {
         title: 'Equipment & automation upgrades',
-        body: 'When a fix isn’t worth it, we size a modern, efficient replacement — variable-speed pumps and phone-controlled automation that pay you back.',
+        body: 'When a fix isn’t worth it, we size a modern, efficient replacement: variable-speed pumps and phone-controlled automation that pay you back.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Repairs & service',
-    intro: 'The service calls homeowners book most. Full details and live availability are on the booking page — pick a problem and a time.',
+    intro: 'The service calls homeowners book most. Full details and live availability are on the booking page. Pick a problem and a time.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -315,13 +315,13 @@ const HOME = [
         name: 'Service call & diagnostic',
         priceCents: 8900,
         durationMin: 60,
-        desc: 'We find the fault and quote a fixed repair — fee comes off the fix.',
+        desc: 'We find the fault and quote a fixed repair: fee comes off the fix.',
       },
       {
         name: 'Pump & motor repair',
         priceCents: 14900,
         durationMin: 90,
-        desc: 'Seals, bearings, motors and drives — usually done in one visit.',
+        desc: 'Seals, bearings, motors and drives, usually done in one visit.',
       },
       {
         name: 'Leak detection',
@@ -343,7 +343,7 @@ const HOME = [
     alt: 'A technician pressure-testing pool plumbing to trace a hidden leak',
     heading: 'The diagnosis is the whole job',
     body: [
-      'Most pool problems get "fixed" three times because nobody found the real cause the first time. We do the opposite — pressure tests, dye tests, board readings and flow checks until we can point at exactly what’s wrong and why.',
+      'Most pool problems get "fixed" three times because nobody found the real cause the first time. We do the opposite: pressure tests, dye tests, board readings and flow checks until we can point at exactly what’s wrong and why.',
       'Then you get it in plain language: the fault, what it takes to repair, and a fixed price to approve before we start. The equipment you own is complex; the answer you get from us isn’t.',
     ],
     cta: { label: 'Book a service call', href: '/book' },
@@ -354,13 +354,13 @@ const HOME = [
     heading: 'When a repair isn’t worth it',
     reverse: true,
     body: [
-      'Sometimes the honest call is to stop repairing an old, power-hungry system and upgrade it. We’ll tell you when you’ve hit that line — and we’ll show you the math, not just push a sale.',
+      'Sometimes the honest call is to stop repairing an old, power-hungry system and upgrade it. We’ll tell you when you’ve hit that line, and we’ll show you the math, not just push a sale.',
       'A right-sized variable-speed pump, an efficient heater and automation you run from your phone can cut a pool’s running cost dramatically. We size it to your pool, install it clean, and set it up so it just works.',
     ],
   }),
   teamRow({
     heading: 'The technicians you’ll meet',
-    intro: 'Real specialists, background-checked and factory-trained — you’ll know who’s coming and what they’re expert in before they arrive.',
+    intro: 'Real specialists, background-checked and factory-trained: you’ll know who’s coming and what they’re expert in before they arrive.',
     members: [
       {
         name: 'Ray Alvarez',
@@ -381,7 +381,7 @@ const HOME = [
         role: 'Renovation & automation lead',
         image: url(IMG.devin),
         alt: 'Devin Cole, renovation and automation lead',
-        bio: 'Equipment upgrades, automation and full resurfacing — the bigger jobs, planned and done clean.',
+        bio: 'Equipment upgrades, automation and full resurfacing: the bigger jobs, planned and done clean.',
       },
     ],
   }),
@@ -402,7 +402,7 @@ const BOOK_INTRO = [
     image: url(IMG.spa),
     alt: 'A freshly resurfaced spa with clear water and new tile at dusk',
     title: 'Book a service call',
-    sub: 'Choose a service to see what it covers, how long it takes and live availability — then pick your technician and time.',
+    sub: 'Choose a service to see what it covers, how long it takes and live availability, then pick your technician and time.',
     primary: { label: 'See service types below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -415,8 +415,8 @@ const ABOUT = [
     alt: 'A pool equipment pad with a variable-speed pump, heater and automation panel',
     heading: 'About AquaTech Pool & Spa',
     body: [
-      'We started AquaTech because too many pool owners get handed guesses — a swapped part, a big bill, and the same problem a month later. Pools and spas are real machinery, and machinery deserves a real diagnosis.',
-      'We’re a small crew of factory-trained technicians who’d rather find the fault once than bill for it three times. Every job starts with tracing the actual cause, so you pay to fix the problem — not to chase it.',
+      'We started AquaTech because too many pool owners get handed guesses: a swapped part, a big bill, and the same problem a month later. Pools and spas are real machinery, and machinery deserves a real diagnosis.',
+      'We’re a small crew of factory-trained technicians who’d rather find the fault once than bill for it three times. Every job starts with tracing the actual cause, so you pay to fix the problem, not to chase it.',
     ],
     cta: { label: 'Book a service call', href: '/book' },
   }),
@@ -426,7 +426,7 @@ const ABOUT = [
     items: [
       {
         title: 'Diagnose first',
-        body: 'Every repair starts with a real diagnosis — tested and confirmed, never a part swapped on a hunch.',
+        body: 'Every repair starts with a real diagnosis: tested and confirmed, never a part swapped on a hunch.',
       },
       {
         title: 'Fixed prices',
@@ -454,7 +454,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a technician online — pick a service, a day and a time in about a minute.',
+    sub: 'See live availability and reserve a technician online. Pick a service, a day and a time in about a minute.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -465,8 +465,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-pool-repair',
   name: 'Pool & Spa (Repair)',
   summary:
-    'A deep, technical pool & spa REPAIR site — a navy-teal palette with a bright cyan signal accent, built around online booking. Homeowners book a service call, a free repair estimate or a specialist consult in about a minute; three technicians carry their own skills and hours as dispatchable resources. Leads with certified techs, all makes & models and upfront diagnostics. Ships as "AquaTech Pool & Spa", an equipment-and-renovation specialist.',
-  tagline: 'A deep, technical template for pool & spa repair pros — book service calls from day one.',
+    'A deep, technical pool & spa REPAIR site: a navy-teal palette with a bright cyan signal accent, built around online booking. Homeowners book a service call, a free repair estimate or a specialist consult in about a minute; three technicians carry their own skills and hours as dispatchable resources. Leads with certified techs, all makes & models and upfront diagnostics. Ships as "AquaTech Pool & Spa", an equipment-and-renovation specialist.',
+  tagline: 'A deep, technical template for pool & spa repair pros. Book service calls from day one.',
   industry: 'Pool service',
   sortWeight: 23,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -475,7 +475,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'AquaTech Pool & Spa — expert pool & spa repair',
+      title: 'AquaTech Pool & Spa: expert pool & spa repair',
       description:
         'AquaTech Pool & Spa repairs pumps, heaters and leaks, and handles equipment, automation and resurfacing. Certified technicians, fixed prices. Book a service call online.',
     },

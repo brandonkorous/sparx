@@ -40,7 +40,7 @@ export function DomainRenewalReminderEmail({
     >
       <EmailDisplayHeading>Domain expiring soon</EmailDisplayHeading>
       <EmailCallout tone={tone}>
-        {domainName} expires in {daysUntilExpiry} {dayLabel} — on {expiresAt}.
+        {domainName} expires in {daysUntilExpiry} {dayLabel}, on {expiresAt}.
       </EmailCallout>
       {autoRenew ? (
         <>

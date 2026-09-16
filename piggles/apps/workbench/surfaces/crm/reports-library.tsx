@@ -207,7 +207,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               needle
                 ? 'Try a different word.'
-                : 'Build one to answer a question about your business — or open one of ours and copy it.'
+                : 'Build one to answer a question about your business, or open one of ours and copy it.'
             }
           />
         ) : (
@@ -223,7 +223,7 @@ export function ReportsLibrarySurface({ ctx }: { ctx: SurfaceContext }) {
             {builtins.length > 0 ? (
               <section className="flex flex-col gap-2">
                 <Text>
-                  Ready-made — open one to see how it is built, then copy it and change a thing
+                  Ready-made. Open one to see how it is built, then copy it and change a thing
                 </Text>
                 {builtins.map((report) => (
                   <Row key={report.id} report={report} />

@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Fernwood Goods — everyday housewares, honestly made",
-      "seoDescription": "Fernwood Goods makes everyday housewares in cotton, linen, wood and glass — useful, unfussy things made from what the earth gives back and built to be kept.",
+      "seoTitle": "Fernwood Goods: everyday housewares, honestly made",
+      "seoDescription": "Fernwood Goods makes everyday housewares in cotton, linen, wood and glass: useful, unfussy things made from what the earth gives back and built to be kept.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -799,7 +799,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Everyday housewares in cotton, linen, wood and glass — the useful, unfussy things a kitchen and a home actually run on, made from what the earth gives back and built to be kept."
+                          "Everyday housewares in cotton, linen, wood and glass: the useful, unfussy things a kitchen and a home actually run on, made from what the earth gives back and built to be kept."
                         ],
                         "id": "0d16d9ee-44b4-4041-a69c-7925a64d2fec",
                         "ord": "a1"
@@ -1247,7 +1247,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Nothing here starts life in an oil well. Organic cotton, fast-growing bamboo, beeswax, seagrass and sand-into-glass — materials a field or a forest makes more of every year, chosen because they do the job and leave less behind."
+                          "Nothing here starts life in an oil well. Organic cotton, fast-growing bamboo, beeswax, seagrass and sand-into-glass: materials a field or a forest makes more of every year, chosen because they do the job and leave less behind."
                         ],
                         "id": "f03d97d9-293e-4ed9-9997-4639512e82f9",
                         "ord": "a1"
@@ -1521,7 +1521,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A dish towel that lasts ten years is cheaper and greener than ten that last one. We build for a long life and tell you plainly how to keep each thing going — wash it, oil it, refill it, and pass it on."
+                          "A dish towel that lasts ten years is cheaper and greener than ten that last one. We build for a long life and tell you plainly how to keep each thing going: wash it, oil it, refill it, and pass it on."
                         ],
                         "id": "5e7375d1-db91-4999-a570-fca0ea77197a",
                         "ord": "a1"
@@ -1815,7 +1815,7 @@
                             "tag": "p",
                             "class": "text-base text-base-content",
                             "children": [
-                              "Cotton, linen, wood, glass, beeswax and stone — grown or dug, not drilled. Every material a thing is made from is on the label."
+                              "Cotton, linen, wood, glass, beeswax and stone: grown or dug, not drilled. Every material a thing is made from is on the label."
                             ],
                             "id": "232d2944-fc1a-4f1d-a865-00265bc5dfd7",
                             "ord": "a1"
@@ -1842,7 +1842,7 @@
                             "tag": "p",
                             "class": "text-base text-base-content",
                             "children": [
-                              "These are things you buy once. Keep them well and most will outlive the shelf you bought them for — which is the cheapest, greenest thing they can do."
+                              "These are things you buy once. Keep them well and most will outlive the shelf you bought them for, which is the cheapest, greenest thing they can do."
                             ],
                             "id": "71c78a60-7d16-481f-b556-e71ae52730f6",
                             "ord": "a1"
@@ -1930,7 +1930,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We measure what we make — the water, the carbon, the waste — and publish it, warts and all. A small shop, honest numbers, and a plan to do a little better every year."
+                          "We measure what we make (the water, the carbon, the waste) and publish it, warts and all. A small shop, honest numbers, and a plan to do a little better every year."
                         ],
                         "id": "c371209c-d669-497d-95b6-906e29e6e21f",
                         "ord": "a1"
@@ -1986,7 +1986,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "What we make things from, how to keep them, and how we are doing on the planet — written plainly."
+                          "What we make things from, how to keep them, and how we are doing on the planet: written plainly."
                         ],
                         "id": "2c7799f6-d682-4108-a4d4-bf0d0a3454f1",
                         "ord": "a1"
@@ -2115,7 +2115,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Fernwood Goods",
+      "seoTitle": "Shop: Fernwood Goods",
       "seoDescription": "Browse everything Fernwood Goods makes, with prices and options at a glance. Eco everyday housewares.",
       "root": {
         "kind": "element",
@@ -2164,7 +2164,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every everyday thing Fernwood Goods makes — for the kitchen, the clean-up, the cupboard and the bath — filtered and sorted however you like. Honest materials, made to be kept."
+                          "Every everyday thing Fernwood Goods makes (for the kitchen, the clean-up, the cupboard and the bath) filtered and sorted however you like. Honest materials, made to be kept."
                         ],
                         "id": "b8c74592-47db-49d3-8da8-9b7371fa54e3",
                         "ord": "a1"
@@ -2196,7 +2196,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Fernwood Goods",
+      "seoTitle": "Collections: Fernwood Goods",
       "seoDescription": "Explore the collections at Fernwood Goods, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2228,7 +2228,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Small groups of everyday things gathered the way a home actually uses them — the kitchen, the clean-up, the cupboard, the table and the bath. Start where you are replacing plastic, and work outward from there."
+                      "Small groups of everyday things gathered the way a home actually uses them: the kitchen, the clean-up, the cupboard, the table and the bath. Start where you are replacing plastic, and work outward from there."
                     ],
                     "id": "68090ab1-ceb9-4a19-9fe3-093c3212df51",
                     "ord": "a1"
@@ -2256,7 +2256,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Fernwood Goods",
+      "seoTitle": "Your cart: Fernwood Goods",
       "seoDescription": "Review what is in your cart and check out securely at Fernwood Goods.",
       "root": {
         "kind": "element",
@@ -2288,7 +2288,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything ships in plastic-free packaging on carbon-neutral delivery, and you have thirty days to return anything unused for a full refund. Take your time deciding — these are things to keep."
+                      "Everything ships in plastic-free packaging on carbon-neutral delivery, and you have thirty days to return anything unused for a full refund. Take your time deciding. These are things to keep."
                     ],
                     "id": "284ebde2-015a-46b9-ab5c-c1b7305ddb3e",
                     "ord": "a1"
@@ -2316,7 +2316,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Fernwood Goods",
+      "seoTitle": "Search: Fernwood Goods",
       "seoDescription": "Search Fernwood Goods for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2348,7 +2348,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Looking for something in particular — a material, a room, or a plastic thing you want to swap out? Search the whole shop and the journal below by name, by material or by what it is for."
+                      "Looking for something in particular: a material, a room, or a plastic thing you want to swap out? Search the whole shop and the journal below by name, by material or by what it is for."
                     ],
                     "id": "3c59d107-f412-4ab4-a1ff-3b0522ec5071",
                     "ord": "a1"
@@ -2376,7 +2376,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Fernwood Goods",
+      "seoTitle": "Journal: Fernwood Goods",
       "seoDescription": "Stories, guides and notes from Fernwood Goods.",
       "root": {
         "kind": "element",
@@ -2408,7 +2408,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the shop, written plainly — what we make things from, how to keep them going for years, and how we are doing on the planet, warts and all."
+                      "Notes from the shop, written plainly: what we make things from, how to keep them going for years, and how we are doing on the planet, warts and all."
                     ],
                     "id": "91a3ccd1-08fb-4385-a675-e25533fdec2b",
                     "ord": "a1"
@@ -2542,7 +2542,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Fernwood Goods",
-      "seoDescription": "The materials, makers and thinking behind Fernwood Goods — a simpler, better-made everyday, built to last and gentle at the end.",
+      "seoDescription": "The materials, makers and thinking behind Fernwood Goods: a simpler, better-made everyday, built to last and gentle at the end.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2573,7 +2573,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Fernwood Goods is a small shop of everyday housewares — the towels, jars, brushes, baskets and bowls a home runs on — made from materials the earth makes more of. We started it because the ordinary things in most kitchens are quietly made of plastic and built to be thrown away, and we thought the useful stuff could be honest stuff instead."
+                      "Fernwood Goods is a small shop of everyday housewares (the towels, jars, brushes, baskets and bowls a home runs on) made from materials the earth makes more of. We started it because the ordinary things in most kitchens are quietly made of plastic and built to be thrown away, and we thought the useful stuff could be honest stuff instead."
                     ],
                     "id": "90057bfb-5b3f-43ac-bf7e-facc05e64c58",
                     "ord": "a1"
@@ -2583,7 +2583,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "So every item here earns its place twice: it has to work as well as the thing it replaces, and it has to be made from something you can name — cotton, linen, wood, glass, beeswax, stone. We tell you what each thing is made of, where it came from, and how to keep it going for years. That is the whole idea: everyday things, honestly made."
+                      "So every item here earns its place twice: it has to work as well as the thing it replaces, and it has to be made from something you can name, cotton, linen, wood, glass, beeswax, stone. We tell you what each thing is made of, where it came from, and how to keep it going for years. That is the whole idea: everyday things, honestly made."
                     ],
                     "id": "05a516db-a160-4c35-8b9c-5662825cd94a",
                     "ord": "a2"
@@ -2603,8 +2603,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Fernwood Goods",
-      "seoDescription": "Get in touch with Fernwood Goods — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Fernwood Goods",
+      "seoDescription": "Get in touch with Fernwood Goods: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2640,7 +2640,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A real person reads every message and replies, usually the same day. Ask us what something is made of, how to care for it, or what to buy for a home that is trying to use less plastic — we are happy to help."
+                          "A real person reads every message and replies, usually the same day. Ask us what something is made of, how to care for it, or what to buy for a home that is trying to use less plastic. We are happy to help."
                         ],
                         "id": "602ce1b8-e600-4744-a413-94a4eb8ecfbc",
                         "ord": "a1"
@@ -2911,8 +2911,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Fernwood Goods",
-      "seoDescription": "Product details at Fernwood Goods — eco everyday housewares, with options and pricing.",
+      "seoTitle": "Product: Fernwood Goods",
+      "seoDescription": "Product details at Fernwood Goods: eco everyday housewares, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

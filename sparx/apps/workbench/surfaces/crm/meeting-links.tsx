@@ -260,7 +260,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>You need something bookable first</AlertTitle>
                 <AlertDescription>
-                  A booking link points at one of your bookable services — that is where the length,
+                  A booking link points at one of your bookable services. That is where the length,
                   your availability and your cancellation terms come from. Set one up under
                   Scheduling, then come back.
                 </AlertDescription>
@@ -390,7 +390,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
               </Heading>
               <Text>
                 Make one and you get a web address you can put in an email signature, on a quote, or
-                in a reply — anyone who opens it picks a time from your real availability and the
+                in a reply. Anyone who opens it picks a time from your real availability and the
                 booking lands in your calendar, with the customer already attached.
               </Text>
             </div>
@@ -465,8 +465,8 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                   <AlertContent>
                     <AlertTitle>The old address stops working</AlertTitle>
                     <AlertDescription>
-                      Anyone holding <Text as="span">/meet/{editing.slug}</Text> — in an email you
-                      have already sent, in a signature, on a quote — will find it no longer
+                      Anyone holding <Text as="span">/meet/{editing.slug}</Text> (in an email you
+                      have already sent, in a signature, on a quote) will find it no longer
                       resolves. Change the address only if nobody has it yet.
                     </AlertDescription>
                   </AlertContent>
@@ -491,7 +491,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                 />
                 <FieldDescription>
                   The length, your free times, how much notice you need and your cancellation terms
-                  all come from this — change them there and every link follows.
+                  all come from this. Change them there and every link follows.
                 </FieldDescription>
               </Field>
 
@@ -503,7 +503,7 @@ export function MeetingLinksSurface({ ctx }: { ctx: SurfaceContext }) {
                   color="module"
                   rows={2}
                   value={description}
-                  placeholder="Twenty minutes to talk through what you need — no charge."
+                  placeholder="Twenty minutes to talk through what you need: no charge."
                   onChange={(event) => {
                     setDescription(event.target.value);
                   }}

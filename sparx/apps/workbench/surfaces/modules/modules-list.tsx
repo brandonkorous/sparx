@@ -228,7 +228,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         ? `It also turns on ${names(missingReqs)}, which ${meta.name} is built on.`
         : '',
       meta.price === 0
-        ? 'It is free — nothing is added to your bill.'
+        ? 'It is free. Nothing is added to your bill.'
         : trial
           ? `You are in your free trial until ${trialDate(billing)}, so nothing is charged for it yet.`
           : 'It is a paid feature, added to your monthly subscription.',
@@ -250,7 +250,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const onTurnOff = async (meta: ModuleMeta, _row: ModuleRow) => {
     const ok = await confirm({
       title: `Turn off ${meta.name}?`,
-      description: `${meta.name} stops working straight away — it leaves your sidebar and its features switch off across sparx. Nothing you have already created is deleted; it is just hidden until you turn ${meta.name} back on, and you stop being billed for it.`,
+      description: `${meta.name} stops working straight away. It leaves your sidebar and its features switch off across sparx. Nothing you have already created is deleted; it is just hidden until you turn ${meta.name} back on, and you stop being billed for it.`,
       confirmLabel: `Turn off ${meta.name}`,
       cancelLabel: 'Keep it on',
       color: 'danger',
@@ -310,7 +310,7 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         <div className={COLUMN}>
           <Text>
             These are the parts of sparx you can switch on. Turn one on and it appears in your
-            sidebar; turn it off and it stops entirely — nothing you have made is lost, it is only
+            sidebar; turn it off and it stops entirely. Nothing you have made is lost, it is only
             hidden until you turn it back on.
           </Text>
 

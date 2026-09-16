@@ -161,7 +161,7 @@ function AdjustScore({ objectKey, recordId }: { objectKey: string; recordId: str
           <FieldLabel>Why</FieldLabel>
           <Input
             color="module"
-            placeholder="e.g. Met them at the trade show — very keen"
+            placeholder="e.g. Met them at the trade show: very keen"
             value={reason}
             onChange={(e) => {
               setReason(e.target.value);
@@ -173,7 +173,7 @@ function AdjustScore({ objectKey, recordId }: { objectKey: string; recordId: str
       <Text className="text-sm">
         Use a minus sign to take points away. This shows in the history below with your name on it,
         and it sticks: re-scoring everyone keeps your adjustment and only recalculates the rules
-        part. It applies to this one record — anything true of everybody belongs in a rule.
+        part. It applies to this one record. Anything true of everybody belongs in a rule.
       </Text>
 
       <div className="flex gap-2">
@@ -234,7 +234,7 @@ function HistoryRow({ event, actorName }: { event: ScoreEventRow; actorName: str
         )}
         {event.reason !== null && event.reason !== '' ? (
           <Text as="span" className="text-sm">
-            {' — '}
+            {': '}
             {event.reason}
           </Text>
         ) : null}
@@ -298,8 +298,8 @@ export function ScorePanel({
           <AlertContent>
             <AlertTitle>You haven&rsquo;t said what makes a {noun} worth chasing</AlertTitle>
             <AlertDescription>
-              Scoring puts a number on every record from rules you write — how much they have spent,
-              how recently they replied, whatever matters to you — so the list can be sorted by who
+              Scoring puts a number on every record from rules you write (how much they have spent,
+              how recently they replied, whatever matters to you) so the list can be sorted by who
               to call first. Until you set it up, everybody sits at zero.
             </AlertDescription>
           </AlertContent>
@@ -394,7 +394,7 @@ export function ScorePanel({
               </AlertTitle>
               <AlertDescription>
                 Your rules on their own would put this {noun} at {live}. The change below says who
-                moved it and why, and it sticks — re-scoring everyone keeps the{' '}
+                moved it and why, and it sticks: re-scoring everyone keeps the{' '}
                 {scoreOffset > 0 ? '+' : '−'}
                 {Math.abs(scoreOffset)} and only recalculates the rest. If it is something you want
                 counted for everybody rather than just this {noun}, it belongs in the rules.

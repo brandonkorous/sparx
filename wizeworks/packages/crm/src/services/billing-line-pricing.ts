@@ -125,7 +125,7 @@ async function resolveCostCents(
     if (variant?.costCents != null) return variant.costCents;
   }
   throw new CrmValidationError(
-    'No cost basis for this pass-through line — enter a cost or link a variant that has a cost.'
+    'No cost basis for this pass-through line. Enter a cost or link a variant that has a cost.'
   );
 }
 

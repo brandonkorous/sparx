@@ -147,7 +147,7 @@ export function VariantEditor({ variant, label, draft, problem, onChange }: Edit
             <AlertTitle>This price is worked out for you</AlertTitle>
             <AlertDescription>
               It comes from a pricing rule based on what this costs you. Typing a price here changes
-              it now, but the rule will set it again next time your cost moves — change the rule on
+              it now, but the rule will set it again next time your cost moves. Change the rule on
               the Pricing tab to make it stick.
             </AlertDescription>
           </AlertContent>
@@ -189,7 +189,7 @@ export function VariantEditor({ variant, label, draft, problem, onChange }: Edit
           }}
         />
         <FieldDescription>
-          Leave this alone unless this one version differs — a downloadable size of an otherwise
+          Leave this alone unless this one version differs: a downloadable size of an otherwise
           posted product, say.
         </FieldDescription>
       </Field>

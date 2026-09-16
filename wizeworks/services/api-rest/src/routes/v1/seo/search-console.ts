@@ -116,7 +116,7 @@ const searchConsoleRoutes: FastifyPluginAsync = (app) => {
       // to look for.
       const platform = platformBrandIdentity(await tenantPlatformBrand(auth.tenantId)).name;
       throw badRequest(
-        `Google did not return a refresh token — remove ${platform} from your Google account permissions and reconnect.`
+        `Google did not return a refresh token: remove ${platform} from your Google account permissions and reconnect.`
       );
     }
     const sites = await listSites(tokens.accessToken);

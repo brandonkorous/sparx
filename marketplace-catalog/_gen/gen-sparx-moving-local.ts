@@ -132,7 +132,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 120],
       policyText:
-        'Give us at least 24 hours’ notice to move or cancel your estimate. We text a reminder the day before and confirm your arrival window that morning — estimates are always free and no-obligation.',
+        'Give us at least 24 hours’ notice to move or cancel your estimate. We text a reminder the day before and confirm your arrival window that morning: estimates are always free and no-obligation.',
     },
     {
       handle: 'move-deposit',
@@ -142,7 +142,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'A $50 deposit holds your moving day and comes straight off your final bill. Reschedule with 48 hours’ notice and it moves with you — no penalty, no lost deposit.',
+        'A $50 deposit holds your moving day and comes straight off your final bill. Reschedule with 48 hours’ notice and it moves with you: no penalty, no lost deposit.',
     },
   ],
   resources: [
@@ -173,7 +173,7 @@ const SCHEDULING = {
       handle: 'free-estimate',
       name: 'Free estimate',
       description:
-        'Tell us what you’re moving and we’ll come out, look it over and hand you a flat, written price — free, with zero obligation and no pressure to book.',
+        'Tell us what you’re moving and we’ll come out, look it over and hand you a flat, written price: free, with zero obligation and no pressure to book.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -251,7 +251,7 @@ const SCHEDULING = {
       handle: 'furniture-move-consult',
       name: 'Single-item & furniture move',
       description:
-        'One heavy, awkward piece — a piano, a gun safe, a sleeper sofa up three flights. We plan the lift, bring the gear to protect it, and hold your slot with a deposit.',
+        'One heavy, awkward piece: a piano, a gun safe, a sleeper sofa up three flights. We plan the lift, bring the gear to protect it, and hold your slot with a deposit.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -269,7 +269,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'Two uniformed movers carrying a wrapped sofa down a front walk to a loaded truck',
     title: 'Movers who show up and take care of your stuff',
-    sub: 'Local, friendly and fully insured — with flat, upfront quotes and crews that treat your things like their own. Get a free estimate online and we’ll give you a real price before moving day.',
+    sub: 'Local, friendly and fully insured, with flat, upfront quotes and crews that treat your things like their own. Get a free estimate online and we’ll give you a real price before moving day.',
     primary: { label: 'Get a free estimate', href: '/book' },
     secondary: { label: 'See what we move', href: '/book' },
     overlay: 'dark',
@@ -278,7 +278,7 @@ const HOME = [
     items: [
       {
         title: 'Upfront flat quotes',
-        body: 'You get one clear, written price before we lift a box — no hourly meter creeping up, no surprise fees added on at the curb when the truck’s already full.',
+        body: 'You get one clear, written price before we lift a box: no hourly meter creeping up, no surprise fees added on at the curb when the truck’s already full.',
       },
       {
         title: 'Careful, insured crews',
@@ -286,17 +286,17 @@ const HOME = [
       },
       {
         title: 'Packing & supplies',
-        body: 'Boxes, tape, wrap and dish barrels — we can bring it all, or pack the whole place for you. Nothing loaded loose, nothing you have to figure out yourself.',
+        body: 'Boxes, tape, wrap and dish barrels. We can bring it all, or pack the whole place for you. Nothing loaded loose, nothing you have to figure out yourself.',
       },
       {
         title: 'On time, guaranteed',
-        body: 'We give you a real arrival window and text when we’re on the way. Moving day runs on your schedule, not ours — and we don’t leave until it’s done right.',
+        body: 'We give you a real arrival window and text when we’re on the way. Moving day runs on your schedule, not ours, and we don’t leave until it’s done right.',
       },
     ],
   }),
   serviceMenu({
     heading: 'What we can help you move',
-    intro: 'Every estimate is free. Pick the one that fits and see how long it takes and the next open time — then we come out and give you a flat, written price.',
+    intro: 'Every estimate is free. Pick the one that fits and see how long it takes and the next open time, then we come out and give you a flat, written price.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -332,21 +332,21 @@ const HOME = [
     alt: 'A mover carefully blanket-wrapping a dresser before loading it',
     heading: 'We treat your things like they’re ours',
     body: [
-      'Anyone can carry a box. What sets Sure Hands apart is what happens to the things you actually care about — the dresser from your grandmother, the TV you just paid for, the corner of the wall on the way out the door.',
-      'We wrap furniture in blankets, pad the sharp edges, lay runners on your floors and shrink-wrap the drawers so nothing shifts. Careful isn’t slower with us — it’s just how the job gets done.',
+      'Anyone can carry a box. What sets Sure Hands apart is what happens to the things you actually care about: the dresser from your grandmother, the TV you just paid for, the corner of the wall on the way out the door.',
+      'We wrap furniture in blankets, pad the sharp edges, lay runners on your floors and shrink-wrap the drawers so nothing shifts. Careful isn’t slower with us: it’s just how the job gets done.',
     ],
     cta: { label: 'Get your free estimate', href: '/book' },
   }),
   teamRow({
     heading: 'The crew who’ll be at your door',
-    intro: 'Real people, not day-labor strangers — the same friendly faces who show up, wrap it up and get you moved.',
+    intro: 'Real people, not day-labor strangers: the same friendly faces who show up, wrap it up and get you moved.',
     members: [
       {
         name: 'Jordan Pierce',
         role: 'Lead move coordinator',
         image: url(IMG.jordan),
         alt: 'Jordan Pierce, lead move coordinator',
-        bio: 'Jordan plans your move end to end — the crew, the truck, the timing — and answers the phone when you call.',
+        bio: 'Jordan plans your move end to end (the crew, the truck, the timing) and answers the phone when you call.',
       },
       {
         name: 'Tasha Owens',
@@ -360,7 +360,7 @@ const HOME = [
         role: 'Packing & loading lead',
         image: url(IMG.luis),
         alt: 'Luis Ferreira, packing and loading lead',
-        bio: 'Luis packs a truck like a puzzle so nothing moves in transit — and can box your whole kitchen faster than you’d believe.',
+        bio: 'Luis packs a truck like a puzzle so nothing moves in transit, and can box your whole kitchen faster than you’d believe.',
       },
     ],
   }),
@@ -370,7 +370,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Moving soon? Let’s get you a real price.',
-    sub: 'Book a free estimate online in about a minute. Pick a day, and we’ll confirm your window and come take a look — no obligation.',
+    sub: 'Book a free estimate online in about a minute. Pick a day, and we’ll confirm your window and come take a look: no obligation.',
     cta: { label: 'Get a free estimate', href: '/book' },
   }),
 ];
@@ -380,7 +380,7 @@ const BOOK_INTRO = [
     image: url(IMG.careful),
     alt: 'A mover carefully blanket-wrapping a dresser before loading it',
     title: 'Book your free estimate',
-    sub: 'Choose the kind of move you’re planning to see how long the visit takes and the next open time — then pick your day and we’ll come give you a flat, written price.',
+    sub: 'Choose the kind of move you’re planning to see how long the visit takes and the next open time, then pick your day and we’ll come give you a flat, written price.',
     primary: { label: 'See estimates below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -393,7 +393,7 @@ const ABOUT = [
     alt: 'Two uniformed movers carrying a wrapped sofa down a front walk to a loaded truck',
     heading: 'About Sure Hands Moving',
     body: [
-      'We started Sure Hands because moving shouldn’t be the horror story everyone warns you about — the crew that shows up late, the price that doubles at the end, the coffee table that comes off the truck with a fresh gouge.',
+      'We started Sure Hands because moving shouldn’t be the horror story everyone warns you about: the crew that shows up late, the price that doubles at the end, the coffee table that comes off the truck with a fresh gouge.',
       'We’re a local, family-run moving company serving homes and apartments across the area. Flat quotes, careful insured crews, and movers who genuinely take care of your stuff. Same friendly faces, honest prices, and a job done right the first time.',
     ],
     cta: { label: 'Get a free estimate', href: '/book' },
@@ -412,7 +412,7 @@ const ABOUT = [
       },
       {
         title: 'Done right, or we make it right',
-        body: 'We’re licensed and insured, and we stand behind every move. If something isn’t right, you call us and we fix it — we’re your neighbors, not a call center.',
+        body: 'We’re licensed and insured, and we stand behind every move. If something isn’t right, you call us and we fix it: we’re your neighbors, not a call center.',
       },
     ],
   }),
@@ -432,7 +432,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See the next open times and reserve your free estimate online — no phone tag, no waiting on hold.',
+    sub: 'See the next open times and reserve your free estimate online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Get a free estimate', href: '/book' },
   }),
@@ -443,8 +443,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-moving-local',
   name: 'Moving (Local & Friendly)',
   summary:
-    'A friendly local-mover site — a clean off-white palette with a confident green primary and warm amber accent, a sturdy sans display and photo-led care. Installs a working online booking flow: customers book a free estimate or an in-home walkthrough and get a real time slot. Ships a full estimate menu (local, apartment, packing, loading help, furniture), three move coordinators as dispatchable crews with their own hours, and standard + move-date deposit policies. Ships as "Sure Hands Moving".',
-  tagline: 'A friendly, reliable template for local movers — book free estimates online from day one.',
+    'A friendly local-mover site: a clean off-white palette with a confident green primary and warm amber accent, a sturdy sans display and photo-led care. Installs a working online booking flow: customers book a free estimate or an in-home walkthrough and get a real time slot. Ships a full estimate menu (local, apartment, packing, loading help, furniture), three move coordinators as dispatchable crews with their own hours, and standard + move-date deposit policies. Ships as "Sure Hands Moving".',
+  tagline: 'A friendly, reliable template for local movers. Book free estimates online from day one.',
   industry: 'Moving',
   sortWeight: 14,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -456,7 +456,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Sure Hands Moving — friendly local movers',
+      title: 'Sure Hands Moving: friendly local movers',
       description:
         'Sure Hands Moving is a local, family-run moving company with flat upfront quotes, careful insured crews and packing help. Book a free estimate online.',
     },

@@ -66,7 +66,7 @@ export function returnState(
       return {
         label: 'Waiting to be sent',
         tone: 'info',
-        detail: 'Approved — the customer has not put it in the post yet.',
+        detail: 'Approved: the customer has not put it in the post yet.',
       };
     case 'in_transit':
       return {
@@ -149,8 +149,8 @@ export const OUTCOME_LABELS: Record<string, string> = {
 export const CONDITION_LABELS: Record<string, string> = {
   unopened: 'Unopened',
   like_new: 'As new',
-  used_good: 'Used — good',
-  used_acceptable: 'Used — acceptable',
+  used_good: 'Used: good',
+  used_acceptable: 'Used: acceptable',
   damaged: 'Damaged',
   destroyed: 'Destroyed',
 };

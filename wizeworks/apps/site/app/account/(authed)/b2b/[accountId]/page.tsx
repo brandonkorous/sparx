@@ -146,7 +146,7 @@ export default function B2bAccountPage() {
               ? `${invoiceSummary.overdueCount} overdue ${invoiceSummary.overdueCount === 1 ? 'invoice' : 'invoices'}`
               : `${invoiceSummary.unpaidCount} unpaid ${invoiceSummary.unpaidCount === 1 ? 'invoice' : 'invoices'}`}
           </strong>
-          {' — '}
+          {', '}
           {formatMoney(overdueAmount, 'USD')} outstanding.{' '}
           <Link href={`/account/b2b/${accountId}/invoices`}>View invoices →</Link>
         </Alert>

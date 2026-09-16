@@ -44,7 +44,7 @@ export function PartnerControls({
       const ok = await confirm({
         title: suspended ? `Reinstate ${displayName}?` : `Suspend ${displayName}?`,
         description: suspended
-          ? `Reactivates the partner — they can host bootcamps, earn commissions, and appear in the public directory again.`
+          ? `Reactivates the partner. They can host bootcamps, earn commissions, and appear in the public directory again.`
           : `Suspends the partner: they stop earning commissions and drop from the public directory and this roster. Their ledger is kept. Reinstate from this page.`,
         confirmLabel: suspended ? 'Reinstate' : 'Suspend',
         color: suspended ? 'module' : 'danger',

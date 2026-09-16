@@ -138,7 +138,7 @@ export async function applyBinMovement(
   // it blocks the receipt that was going to fix the shortfall.
   if (newOnHand < 0 && input.delta < 0 && !input.allowNegative) {
     throw new InventoryValidationError(
-      `A shelf cannot hold a negative quantity — this bin has ${current.on_hand} and the change is ${input.delta}. ` +
+      `A shelf cannot hold a negative quantity: this bin has ${current.on_hand} and the change is ${input.delta}. ` +
         `Check whether the stock is on a different shelf before forcing it.`
     );
   }
@@ -440,7 +440,7 @@ async function drawDownAcrossBins(
       // way the shortfall is real and must be visible rather than dropped.
       allowNegative: true,
       note: allowNegative
-        ? 'Sold past what the shelves held — the location allows selling below zero.'
+        ? 'Sold past what the shelves held: the location allows selling below zero.'
         : 'The shelves did not add up to what left. Count this item to settle where it went.',
     });
   }

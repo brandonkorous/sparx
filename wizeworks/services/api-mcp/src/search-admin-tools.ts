@@ -53,7 +53,7 @@ const RebuildSearchIndexInput = z.object({
 const rebuildSearchIndexTool = {
   name: 'rebuild_search_index',
   description:
-    "Rebuild this tenant's search index from the database. Fixes a search index that has drifted out of sync — products that exist in the catalog but return no results in site search, the site's search page, or search_products. Rebuilds products, customers, orders, and the cross-type index unless you narrow it with `collections`. Runs in the background: the call returns immediately with a runId and a large catalog can take a few minutes to finish. Safe to run more than once. Only set `dropStale` when the index contains records that are gone from the database — it empties the index first, so search returns nothing until the rebuild completes.",
+    "Rebuild this tenant's search index from the database. Fixes a search index that has drifted out of sync: products that exist in the catalog but return no results in site search, the site's search page, or search_products. Rebuilds products, customers, orders, and the cross-type index unless you narrow it with `collections`. Runs in the background: the call returns immediately with a runId and a large catalog can take a few minutes to finish. Safe to run more than once. Only set `dropStale` when the index contains records that are gone from the database: it empties the index first, so search returns nothing until the rebuild completes.",
   scope: 'write:search' as const,
   confirmation: true,
   input: RebuildSearchIndexInput,

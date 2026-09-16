@@ -49,10 +49,10 @@ function fillOf(module: MarketingModule): string {
 // ── ONE-RECORD PROOF (before / after) ───────────────────────────────────────────
 export function CrmOneRecord() {
   const before: { module: MarketingModule | 'warn'; label: string; tag: string }[] = [
-    { module: 'commerce', label: 'Store platform — the order', tag: 'webhook ↻' },
-    { module: 'crm', label: 'Bolt-on CRM — a copy of the customer', tag: 'webhook ↻' },
-    { module: 'email', label: 'Email tool — its own list', tag: 'sync ↻' },
-    { module: 'b2b', label: 'Spreadsheet — the “real” numbers', tag: 'manual' },
+    { module: 'commerce', label: 'Store platform: the order', tag: 'webhook ↻' },
+    { module: 'crm', label: 'Bolt-on CRM: a copy of the customer', tag: 'webhook ↻' },
+    { module: 'email', label: 'Email tool: its own list', tag: 'sync ↻' },
+    { module: 'b2b', label: 'Spreadsheet: the “real” numbers', tag: 'manual' },
   ];
   const after: { module: MarketingModule; label: string }[] = [
     { module: 'commerce', label: 'orders & spend' },
@@ -160,7 +160,7 @@ export function CrmTurn() {
   const beats: { title: string; body: string }[] = [
     {
       title: 'Nothing to import',
-      body: 'Your customers are already here — they are the same people who placed the orders and opened the emails. Switching CRM on doesn’t move a single row, and there is no migration weekend to schedule.',
+      body: 'Your customers are already here. They are the same people who placed the orders and opened the emails. Switching CRM on doesn’t move a single row, and there is no migration weekend to schedule.',
     },
     {
       title: 'Nothing to sync',
@@ -168,7 +168,7 @@ export function CrmTurn() {
     },
     {
       title: 'Nothing to reconcile',
-      body: 'The number in a report and the number on the customer’s page are read from the same place, so they agree by default — and when one changes, it has already changed everywhere.',
+      body: 'The number in a report and the number on the customer’s page are read from the same place, so they agree by default, and when one changes, it has already changed everywhere.',
     },
   ];
   return (
@@ -193,8 +193,8 @@ export function CrmTurn() {
         There’s nothing to import. It’s already your data.
       </h2>
       <p className="mt-7 max-w-[860px] text-2xl leading-[1.45]">
-        sparx isn’t a CRM bolted onto a store. Whatever else you run here — orders, emails, quotes,
-        invoices — is already in the same place the customer record reads from. So switching CRM on
+        sparx isn’t a CRM bolted onto a store. Whatever else you run here (orders, emails, quotes,
+        invoices) is already in the same place the customer record reads from. So switching CRM on
         doesn’t move your data anywhere. It just stops keeping it in separate rooms.
       </p>
       <div className="mt-16 grid grid-cols-1 gap-x-10 gap-y-9 sm:grid-cols-3">

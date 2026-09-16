@@ -135,7 +135,7 @@ export function ConditionEditor({
   value,
   onChange,
   label = 'conditions',
-  emptyNote = 'No conditions yet — this runs every time its trigger happens.',
+  emptyNote = 'No conditions yet. This runs every time its trigger happens.',
   depth = 1,
   onRemove,
 }: {
@@ -211,7 +211,7 @@ export function ConditionEditor({
       </div>
 
       {value.conditions.length === 0 ? (
-        <p className="text-sm">{isRoot ? emptyNote : 'Empty group — add a condition.'}</p>
+        <p className="text-sm">{isRoot ? emptyNote : 'Empty group. Add a condition.'}</p>
       ) : (
         <div className="flex flex-col gap-2">
           {value.conditions.map((node, i) =>

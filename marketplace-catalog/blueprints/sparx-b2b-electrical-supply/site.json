@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Livewire Trade — electrical wholesaler for the trade",
-      "seoDescription": "Livewire is an electrical wholesaler — cable, consumer units, accessories, lighting and protection sold by the reel and the box at trade prices, with net-30 terms, same-day counter collection and next-day delivery. Open a trade account.",
+      "seoTitle": "Livewire Trade: electrical wholesaler for the trade",
+      "seoDescription": "Livewire is an electrical wholesaler: cable, consumer units, accessories, lighting and protection sold by the reel and the box at trade prices, with net-30 terms, same-day counter collection and next-day delivery. Open a trade account.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -770,7 +770,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Livewire is an electrical wholesaler for electricians and contractors. We carry the cable, consumer units, accessories, lighting and protection a first or second fix needs — sold by the reel and the box, at trade prices, ready on the counter or on the van next morning."
+                          "Livewire is an electrical wholesaler for electricians and contractors. We carry the cable, consumer units, accessories, lighting and protection a first or second fix needs: sold by the reel and the box, at trade prices, ready on the counter or on the van next morning."
                         ],
                         "id": "24bdb00f-b074-481b-9f64-3b323f85f22b",
                         "ord": "a1"
@@ -1215,7 +1215,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Open a trade account and you buy the way a contractor should — by the reel and the box, at wholesale rates, on terms. No consumer markups, no queueing behind a retail till."
+                          "Open a trade account and you buy the way a contractor should: by the reel and the box, at wholesale rates, on terms. No consumer markups, no queueing behind a retail till."
                         ],
                         "id": "33259aee-938b-43f7-83da-cb4e4c202339",
                         "ord": "a1"
@@ -1328,7 +1328,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A direct line to a real person who knows your firm, your standing lines and the jobs you run — not a call centre and a ticket number."
+                              "A direct line to a real person who knows your firm, your standing lines and the jobs you run, not a call centre and a ticket number."
                             ],
                             "id": "996b775e-8768-4a4c-89f3-da8899ef186f",
                             "ord": "a1"
@@ -1606,7 +1606,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Stop chasing four merchants for a single fix. Put the cable, the board, the accessories and the lighting on one trade account — one catalog to price a job from, one statement to reconcile, and one number to call when a line is short."
+                          "Stop chasing four merchants for a single fix. Put the cable, the board, the accessories and the lighting on one trade account. One catalog to price a job from, one statement to reconcile, and one number to call when a line is short."
                         ],
                         "id": "c76714c1-4a21-4035-b412-e036eeaa9410",
                         "ord": "a1"
@@ -1641,7 +1641,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Livewire Trade",
+      "seoTitle": "Shop: Livewire Trade",
       "seoDescription": "Browse everything Livewire Trade makes, with prices and options at a glance. Electrical wholesale.",
       "root": {
         "kind": "element",
@@ -1673,7 +1673,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every line we stock — cable and wiring, wiring accessories, lighting and circuit protection, sold by the reel, the box and the pack. Filter by trade or sort by price; trade accounts see their contract pricing at checkout."
+                      "Every line we stock: cable and wiring, wiring accessories, lighting and circuit protection, sold by the reel, the box and the pack. Filter by trade or sort by price; trade accounts see their contract pricing at checkout."
                     ],
                     "id": "382138b7-9219-4a2b-a9d3-84a175447d78",
                     "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Livewire Trade",
+      "seoTitle": "Collections: Livewire Trade",
       "seoDescription": "Explore the collections at Livewire Trade, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1733,7 +1733,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalog grouped the way a spark actually buys — best sellers, new lines just in, the first-fix essentials, lighting for the fit-out, and the circuit protection every board needs."
+                      "The catalog grouped the way a spark actually buys: best sellers, new lines just in, the first-fix essentials, lighting for the fit-out, and the circuit protection every board needs."
                     ],
                     "id": "27fd6043-b5b3-4a48-8695-94ed6816805e",
                     "ord": "a1"
@@ -1761,7 +1761,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Livewire Trade",
+      "seoTitle": "Your cart: Livewire Trade",
       "seoDescription": "Review what is in your cart and check out securely at Livewire Trade.",
       "root": {
         "kind": "element",
@@ -1821,7 +1821,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Livewire Trade",
+      "seoTitle": "Search: Livewire Trade",
       "seoDescription": "Search Livewire Trade for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1881,7 +1881,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Livewire Trade",
+      "seoTitle": "Journal: Livewire Trade",
       "seoDescription": "Stories, guides and notes from Livewire Trade.",
       "root": {
         "kind": "element",
@@ -1913,7 +1913,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical guidance from the trade counter — sizing cable and breakers, spec-ing a consumer unit, and stocking a van so you never lose a day to a missing part. Written for the people on the tools, not for a catalog."
+                      "Practical guidance from the trade counter: sizing cable and breakers, spec-ing a consumer unit, and stocking a van so you never lose a day to a missing part. Written for the people on the tools, not for a catalog."
                     ],
                     "id": "4d43a800-3c63-4f43-95ce-3a2c56bf1da9",
                     "ord": "a1"
@@ -2047,7 +2047,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Livewire Trade",
-      "seoDescription": "How Livewire stocks, prices and ships — one catalog, one account, one invoice, wholesale by the reel and the box, and stock that is actually on the shelf when you order it.",
+      "seoDescription": "How Livewire stocks, prices and ships. One catalog, one account, one invoice, wholesale by the reel and the box, and stock that is actually on the shelf when you order it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2078,7 +2078,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Livewire Trade is an electrical wholesaler. We stock the cable, consumer units, accessories, lighting and protection that a domestic rewire, a commercial fit-out or a maintenance call runs on — and we sell them to the trade by the reel and the box, at wholesale, on terms."
+                      "Livewire Trade is an electrical wholesaler. We stock the cable, consumer units, accessories, lighting and protection that a domestic rewire, a commercial fit-out or a maintenance call runs on, and we sell them to the trade by the reel and the box, at wholesale, on terms."
                     ],
                     "id": "5f3ec44f-4c7d-47cd-a4dc-7bc1fe994281",
                     "ord": "a1"
@@ -2098,7 +2098,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No minimum-order gymnastics, no mystery lead times, no pricing that jumps because you asked twice. Just the parts, to spec and priced fairly, ready on the counter or on the van — the boring reliability a job is built on."
+                      "No minimum-order gymnastics, no mystery lead times, no pricing that jumps because you asked twice. Just the parts, to spec and priced fairly, ready on the counter or on the van: the boring reliability a job is built on."
                     ],
                     "id": "acb0f0fb-d961-4058-9147-dd17ebe86b51",
                     "ord": "a3"
@@ -2118,7 +2118,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Livewire Trade",
+      "seoTitle": "Open a trade account: Livewire Trade",
       "seoDescription": "Set up a trade account with Livewire: wholesale per-unit pricing, volume breaks, net-30 terms, counter collection and next-day delivery, and a dedicated account manager. Wholesale enquiries and bulk quotes start here.",
       "root": {
         "kind": "element",
@@ -2426,8 +2426,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Livewire Trade",
-      "seoDescription": "Product details at Livewire Trade — electrical wholesale, with options and pricing.",
+      "seoTitle": "Product: Livewire Trade",
+      "seoDescription": "Product details at Livewire Trade: electrical wholesale, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2790,7 +2790,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is the per-unit list rate. Trade accounts unlock volume breaks — deeper pricing by the reel, the box or a standing order — set for your account in your dashboard."
+                              "The price shown is the per-unit list rate. Trade accounts unlock volume breaks (deeper pricing by the reel, the box or a standing order) set for your account in your dashboard."
                             ],
                             "id": "75c51d61-9fcc-4cf3-b925-8451da53481b",
                             "ord": "a1"

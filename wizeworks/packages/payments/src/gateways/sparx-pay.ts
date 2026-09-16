@@ -38,7 +38,7 @@ export const SPARX_PAY_ID = 'sparx_pay';
 
 class SparxPayUnconfiguredError extends Error {
   constructor() {
-    super('Card payments are unavailable — the platform Stripe key is not configured.');
+    super('Card payments are unavailable: the platform Stripe key is not configured.');
     this.name = 'SparxPayUnconfiguredError';
   }
 }

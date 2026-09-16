@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 const INCLUDED = [
   { what: 'All fifteen apps', amount: 'Every one', note: 'No app is an upgrade' },
   { what: 'Your business', amount: '1', note: 'A second business is its own subscription' },
-  { what: 'Locations', amount: '1', note: 'Shops, units, vans — add more any time' },
+  { what: 'Locations', amount: '1', note: 'Shops, units, vans: add more any time' },
   { what: 'Websites', amount: '1', note: 'On your own domain, certificate included' },
   { what: 'People on your team', amount: '3', note: 'Each with their own sign-in and access' },
   { what: 'Customer records', amount: '10,000', note: 'People and companies you deal with' },
@@ -88,7 +88,7 @@ const NEVER = [
 const FAQ = [
   {
     q: 'What happens if I go over one of the limits?',
-    a: 'Nothing you already have is touched, and nothing you are part way through is stopped. You get a quiet notice as you approach it, and the option to add more room in one tap at the moment it matters — with the price on the button, not behind it. If you do nothing, only new additions of that one kind pause. Your website stays up, your customers stay visible, and order confirmations and password resets always go out regardless.',
+    a: 'Nothing you already have is touched, and nothing you are part way through is stopped. You get a quiet notice as you approach it, and the option to add more room in one tap at the moment it matters, with the price on the button, not behind it. If you do nothing, only new additions of that one kind pause. Your website stays up, your customers stay visible, and order confirmations and password resets always go out regardless.',
   },
   {
     q: 'Can I get rid of extra capacity later?',
@@ -96,7 +96,7 @@ const FAQ = [
   },
   {
     q: 'Do I need a card to try it?',
-    a: 'No. The trial is fourteen days with no card. If you decide not to carry on, nothing happens — there is no charge to cancel before.',
+    a: 'No. The trial is fourteen days with no card. If you decide not to carry on, nothing happens. There is no charge to cancel before.',
   },
   {
     q: 'What if I run two businesses?',
@@ -104,7 +104,7 @@ const FAQ = [
   },
   {
     q: 'Can I take my data with me if I leave?',
-    a: 'All of it, whenever you want, in formats other software can actually read — customers, products, orders, invoices and everything you have written. You do not have to ask, and you do not have to be leaving.',
+    a: 'All of it, whenever you want, in formats other software can actually read: customers, products, orders, invoices and everything you have written. You do not have to ask, and you do not have to be leaving.',
   },
   {
     q: 'Is there a discount for paying yearly?',
@@ -117,7 +117,7 @@ export default function PricingPage() {
     <>
       <PageHero
         heading={`${PRICE_LABEL} a month. All fifteen apps. No upgrade buttons.`}
-        lede="You are not charged for what the software is allowed to do. You are charged when your business needs more room — more people, more storage, more email going out."
+        lede="You are not charged for what the software is allowed to do. You are charged when your business needs more room: more people, more storage, more email going out."
         figure={<PriceFigure />}
         assurances={['Free for 14 days', 'No card needed', 'Cancel by not carrying on']}
       >
@@ -143,7 +143,7 @@ export default function PricingPage() {
           <h2 className="text-3xl font-extrabold sm:text-4xl">What you get for it</h2>
           <p className="mt-6 text-lg">
             The allowances below are what one subscription includes. Most businesses never come near
-            any of them — they exist so that the price can stay the same for everybody who does not.
+            any of them. They exist so that the price can stay the same for everybody who does not.
           </p>
           {/* Spelled out, not `{APPS.length}`. The derived count is more
                 robust but it renders "15" three lines under a heading that says
@@ -152,8 +152,8 @@ export default function PricingPage() {
                 is ever added, this page is one of the places to update, which is
                 why /apps derives its own list rather than repeating one here. */}
           <p className="mt-4 text-lg">
-            Fifteen apps, and the two things that usually cost extra everywhere else — your own
-            domain and your own sending address — are in here too.
+            Fifteen apps, and the two things that usually cost extra everywhere else (your own
+            domain and your own sending address) are in here too.
           </p>
         </div>
 

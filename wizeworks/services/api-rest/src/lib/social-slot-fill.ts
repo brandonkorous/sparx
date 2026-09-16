@@ -220,7 +220,7 @@ export function startSocialSlotFillLoop(
     try {
       await runSocialSlotFillTick(logger);
     } catch (err) {
-      logger.error({ err }, 'social-slot-fill: tick threw — will retry next interval');
+      logger.error({ err }, 'social-slot-fill: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

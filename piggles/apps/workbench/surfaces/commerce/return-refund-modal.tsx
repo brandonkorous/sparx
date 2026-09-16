@@ -74,7 +74,7 @@ export function RefundReturnModal({
             title: 'Could not give the money back',
             description: returnErrorMessage(
               error,
-              'The refund did not go through. Nothing was changed — you can try again.'
+              'The refund did not go through. Nothing was changed. You can try again.'
             ),
             type: 'error',
           });

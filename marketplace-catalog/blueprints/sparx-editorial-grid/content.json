@@ -5,7 +5,7 @@
     "status": "published",
     "body": {
       "title": "The case for solid oak",
-      "excerpt": "Why we build in solid timber when a veneer would cost a third as much — and how a chair earns its price back over thirty years.",
+      "excerpt": "Why we build in solid timber when a veneer would cost a third as much, and how a chair earns its price back over thirty years.",
       "featuredImage": {
         "$asset": "post-oak"
       },
@@ -59,7 +59,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Wood breathes with the seasons — it always has. We build to allow for it rather than fight it, which is why our tops are not glued rigidly across their width. A hairline gap in February that closes again in July is the material doing exactly what it should."
+                "text": "Wood breathes with the seasons. It always has. We build to allow for it rather than fight it, which is why our tops are not glued rigidly across their width. A hairline gap in February that closes again in July is the material doing exactly what it should."
               }
             ]
           },
@@ -136,7 +136,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Stone records the life of a room. A faint ring from a warm cup, a soft edge where hands have rested — these are not damage, they are the reason to own the real thing instead of a printed laminate that looks the same on day one and tired on day one thousand."
+                "text": "Stone records the life of a room. A faint ring from a warm cup, a soft edge where hands have rested. These are not damage, they are the reason to own the real thing instead of a printed laminate that looks the same on day one and tired on day one thousand."
               }
             ]
           },
@@ -159,7 +159,7 @@
     "status": "published",
     "body": {
       "title": "A room in three objects",
-      "excerpt": "You do not furnish a room all at once. A study of one corner, built from a chair, a lamp and a stone table — and why that is enough.",
+      "excerpt": "You do not furnish a room all at once. A study of one corner, built from a chair, a lamp and a stone table, and why that is enough.",
       "featuredImage": {
         "$asset": "post-room"
       },
@@ -171,7 +171,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The best rooms we visit were never designed in one go. They were assembled, slowly, around a few things worth keeping — and everything else earned its place by being genuinely needed."
+                "text": "The best rooms we visit were never designed in one go. They were assembled, slowly, around a few things worth keeping, and everything else earned its place by being genuinely needed."
               }
             ]
           },
@@ -192,7 +192,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "A single good chair fixes a corner in place. Put a lamp beside it for the evenings and a small hard surface within arm’s reach for a cup and a book, and you have made somewhere to be — which is more than most fully furnished rooms manage."
+                "text": "A single good chair fixes a corner in place. Put a lamp beside it for the evenings and a small hard surface within arm’s reach for a cup and a book, and you have made somewhere to be, which is more than most fully furnished rooms manage."
               }
             ]
           },
@@ -222,7 +222,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Buy less, choose better, and let the room fill itself over years. That is not a compromise — it is the plan."
+                "text": "Buy less, choose better, and let the room fill itself over years. That is not a compromise. It is the plan."
               }
             ]
           }

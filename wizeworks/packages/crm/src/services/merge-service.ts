@@ -408,7 +408,7 @@ export async function merge(ctx: ServiceContext, rawInput: unknown): Promise<Mer
     const strayer = duplicates.find((d) => d.propertyId !== primary.propertyId);
     if (strayer !== undefined) {
       throw new CrmValidationError(
-        'These contacts belong to different sites, so they are two separate customers — of two separate businesses. Merge only combines contacts within the same site.',
+        'These contacts belong to different sites, so they are two separate customers: of two separate businesses. Merge only combines contacts within the same site.',
         [{ field: 'duplicateCustomerIds', message: 'must belong to the same site as the primary' }]
       );
     }

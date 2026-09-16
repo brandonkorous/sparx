@@ -185,7 +185,7 @@ export async function loadSampleData(
       if (!property) {
         throw new Error(
           `Cannot load sample data: tenant ${ctx.tenantId} has no primary site. ` +
-            'Every tenant gets one at provisioning — this tenant was built by a ' +
+            'Every tenant gets one at provisioning: this tenant was built by a ' +
             'fixture that skips it.'
         );
       }

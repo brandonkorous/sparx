@@ -86,7 +86,7 @@ export function installFormActions(): void {
     module: null,
     gates: [],
     manifestNote:
-      'external effect: enqueues a transactional form-notification email to the site owner/recipients (reply-to the submitter); platform-level — no email-module gate',
+      'external effect: enqueues a transactional form-notification email to the site owner/recipients (reply-to the submitter); platform-level, no email-module gate',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       if (effect.fields['form.notify'] !== true) return { skipped: 'notify_off' };
       const submissionId = optionalEntityId(effect.fields, 'form.submissionId');
@@ -139,7 +139,7 @@ export function installFormActions(): void {
     module: null,
     gates: [],
     manifestNote:
-      'external effect: enqueues a transactional confirmation email to the form submitter; platform-level — no email-module gate',
+      'external effect: enqueues a transactional confirmation email to the form submitter; platform-level, no email-module gate',
     async execute(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
       if (effect.fields['form.autoresponder'] !== true) return { skipped: 'autoresponder_off' };
       const submissionId = optionalEntityId(effect.fields, 'form.submissionId');

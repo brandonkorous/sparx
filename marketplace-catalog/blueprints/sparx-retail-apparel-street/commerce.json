@@ -29,7 +29,7 @@
     {
       "handle": "new-drop",
       "name": "The latest drop",
-      "description": "Everything that just landed — move fast.",
+      "description": "Everything that just landed. Move fast.",
       "type": "manual",
       "featured": true,
       "productHandles": [
@@ -92,14 +92,14 @@
     {
       "handle": "logo-tee",
       "title": "Cardinal Logo Tee",
-      "description": "The one that started it — a heavyweight 240gsm cotton tee with our bird mark screen-printed big across the chest in plastisol that will not peel. Boxy body, ribbed collar, dropped shoulder. Wears in, never wears out.",
+      "description": "The one that started it: a heavyweight 240gsm cotton tee with our bird mark screen-printed big across the chest in plastisol that will not peel. Boxy body, ribbed collar, dropped shoulder. Wears in, never wears out.",
       "status": "active",
       "productType": "Apparel",
       "vendor": "Cardinal Supply",
       "tags": ["tee", "graphic", "heavyweight"],
       "categoryHandles": ["tops"],
       "collectionHandles": ["new-drop", "best-sellers", "graphics"],
-      "seoTitle": "Cardinal Logo Tee — heavyweight graphic tee | Cardinal Supply",
+      "seoTitle": "Cardinal Logo Tee: heavyweight graphic tee | Cardinal Supply",
       "seoDescription": "A boxy 240gsm cotton tee with a big screen-printed chest logo. In black, bone and cardinal red.",
       "options": [
         {
@@ -318,14 +318,14 @@
     {
       "handle": "static-tee",
       "title": "Static Print Tee",
-      "description": "A glitched, blown-out static graphic printed edge to edge on the same heavyweight blank. Loud front, hit on the back, built to be the reason someone stops you on the street. Small run — when it is gone, it is gone.",
+      "description": "A glitched, blown-out static graphic printed edge to edge on the same heavyweight blank. Loud front, hit on the back, built to be the reason someone stops you on the street. Small run, when it is gone, it is gone.",
       "status": "active",
       "productType": "Apparel",
       "vendor": "Cardinal Supply",
       "tags": ["tee", "graphic", "print"],
       "categoryHandles": ["tops"],
       "collectionHandles": ["new-drop", "graphics"],
-      "seoTitle": "Static Print Tee — all-over graphic tee | Cardinal Supply",
+      "seoTitle": "Static Print Tee. All-over graphic tee | Cardinal Supply",
       "seoDescription": "A blown-out static graphic on a heavyweight cotton blank, front and back. In black, white and acid.",
       "options": [
         {
@@ -551,7 +551,7 @@
       "tags": ["hoodie", "fleece", "heavyweight"],
       "categoryHandles": ["fleece"],
       "collectionHandles": ["new-drop", "best-sellers", "fleece-shop"],
-      "seoTitle": "Heavyweight Hoodie — 400gsm brushed fleece | Cardinal Supply",
+      "seoTitle": "Heavyweight Hoodie: 400gsm brushed fleece | Cardinal Supply",
       "seoDescription": "A 400gsm brushed-back fleece pullover with a double-lined hood and boxy fit. In black, ash and cardinal.",
       "options": [
         {
@@ -770,14 +770,14 @@
     {
       "handle": "boxy-crewneck",
       "title": "Boxy Crewneck",
-      "description": "The hoodie’s quieter cousin — same 400gsm fleece, cropped a touch boxier, ribbed at the cuffs and hem so it sits right. Layer it, wear it solo, throw it under the coaches jacket. The workhorse of the fleece rack.",
+      "description": "The hoodie’s quieter cousin: same 400gsm fleece, cropped a touch boxier, ribbed at the cuffs and hem so it sits right. Layer it, wear it solo, throw it under the coaches jacket. The workhorse of the fleece rack.",
       "status": "active",
       "productType": "Fleece",
       "vendor": "Cardinal Supply",
       "tags": ["crewneck", "fleece", "heavyweight"],
       "categoryHandles": ["fleece"],
       "collectionHandles": ["fleece-shop", "best-sellers"],
-      "seoTitle": "Boxy Crewneck — 400gsm heavyweight fleece | Cardinal Supply",
+      "seoTitle": "Boxy Crewneck: 400gsm heavyweight fleece | Cardinal Supply",
       "seoDescription": "A boxy 400gsm fleece crewneck, ribbed at cuff and hem. In black, bone and forest.",
       "options": [
         {
@@ -996,14 +996,14 @@
     {
       "handle": "coaches-jacket",
       "title": "Sherpa Coaches Jacket",
-      "description": "A classic snap-front coaches jacket lined with heavy sherpa — wind-blocking nylon shell, deep hand pockets, our mark embroidered at the chest and printed big across the back. The outer layer the whole fit is built around.",
+      "description": "A classic snap-front coaches jacket lined with heavy sherpa: wind-blocking nylon shell, deep hand pockets, our mark embroidered at the chest and printed big across the back. The outer layer the whole fit is built around.",
       "status": "active",
       "productType": "Fleece",
       "vendor": "Cardinal Supply",
       "tags": ["jacket", "outerwear", "sherpa"],
       "categoryHandles": ["fleece"],
       "collectionHandles": ["new-drop", "fleece-shop"],
-      "seoTitle": "Sherpa Coaches Jacket — snap-front, sherpa-lined | Cardinal Supply",
+      "seoTitle": "Sherpa Coaches Jacket: snap-front, sherpa-lined | Cardinal Supply",
       "seoDescription": "A snap-front nylon coaches jacket with a heavy sherpa lining and back print. In black and concrete.",
       "options": [
         {
@@ -1165,14 +1165,14 @@
     {
       "handle": "utility-cargo",
       "title": "Utility Cargo Pant",
-      "description": "A relaxed, tapered cargo in tough cotton twill — six real pockets, reinforced knees, an adjustable hem so you can stack them or crop them clean over a boot. Made to haul gear and take a season of abuse without blinking.",
+      "description": "A relaxed, tapered cargo in tough cotton twill: six real pockets, reinforced knees, an adjustable hem so you can stack them or crop them clean over a boot. Made to haul gear and take a season of abuse without blinking.",
       "status": "active",
       "productType": "Bottoms",
       "vendor": "Cardinal Supply",
       "tags": ["cargo", "pants", "utility"],
       "categoryHandles": ["bottoms"],
       "collectionHandles": ["new-drop", "bottoms-shop"],
-      "seoTitle": "Utility Cargo Pant — tapered cotton twill | Cardinal Supply",
+      "seoTitle": "Utility Cargo Pant: tapered cotton twill | Cardinal Supply",
       "seoDescription": "A tapered six-pocket cargo pant in tough cotton twill with an adjustable hem. In black, olive and concrete.",
       "options": [
         {
@@ -1391,14 +1391,14 @@
     {
       "handle": "heavyweight-sweatpant",
       "title": "Heavyweight Sweatpant",
-      "description": "The bottom half of the fleece set — 400gsm brushed-back, tapered leg, ribbed cuff, deep zip pockets. Matches the hoodie and the crew color for color so you can run the full tracksuit or break it up.",
+      "description": "The bottom half of the fleece set: 400gsm brushed-back, tapered leg, ribbed cuff, deep zip pockets. Matches the hoodie and the crew color for color so you can run the full tracksuit or break it up.",
       "status": "active",
       "productType": "Bottoms",
       "vendor": "Cardinal Supply",
       "tags": ["sweatpant", "fleece", "heavyweight"],
       "categoryHandles": ["bottoms"],
       "collectionHandles": ["bottoms-shop", "fleece-shop"],
-      "seoTitle": "Heavyweight Sweatpant — 400gsm brushed fleece | Cardinal Supply",
+      "seoTitle": "Heavyweight Sweatpant: 400gsm brushed fleece | Cardinal Supply",
       "seoDescription": "A tapered 400gsm fleece sweatpant with a ribbed cuff and zip pockets. In black, ash and cardinal.",
       "options": [
         {
@@ -1624,7 +1624,7 @@
       "tags": ["cap", "hat", "accessory"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["new-drop", "accessories-shop"],
-      "seoTitle": "Six-Panel Cap — structured cotton twill | Cardinal Supply",
+      "seoTitle": "Six-Panel Cap: structured cotton twill | Cardinal Supply",
       "seoDescription": "A structured six-panel cap with an embroidered mark and buckle strap. In black, concrete and cardinal.",
       "options": [
         {
@@ -1688,7 +1688,7 @@
       "tags": ["tote", "bag", "accessory"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["accessories-shop"],
-      "seoTitle": "Heavy Canvas Tote — 16oz printed cotton canvas | Cardinal Supply",
+      "seoTitle": "Heavy Canvas Tote: 16oz printed cotton canvas | Cardinal Supply",
       "seoDescription": "A 16oz cotton-canvas tote with a big printed logo and webbing straps. In natural and black.",
       "options": [
         {
@@ -1734,14 +1734,14 @@
     {
       "handle": "cuffed-beanie",
       "title": "Cuffed Beanie",
-      "description": "A tight-knit ribbed beanie with a folded cuff and a woven bird tab — warm, low-profile, and the fastest way to finish a fit when it is cold. Runs true, stretches to fit, holds its shape wash after wash.",
+      "description": "A tight-knit ribbed beanie with a folded cuff and a woven bird tab: warm, low-profile, and the fastest way to finish a fit when it is cold. Runs true, stretches to fit, holds its shape wash after wash.",
       "status": "active",
       "productType": "Accessory",
       "vendor": "Cardinal Supply",
       "tags": ["beanie", "hat", "accessory"],
       "categoryHandles": ["accessories"],
       "collectionHandles": ["accessories-shop", "new-drop"],
-      "seoTitle": "Cuffed Beanie — ribbed knit | Cardinal Supply",
+      "seoTitle": "Cuffed Beanie: ribbed knit | Cardinal Supply",
       "seoDescription": "A tight ribbed cuffed beanie with a woven tab. In black, ash, cardinal and forest.",
       "options": [
         {

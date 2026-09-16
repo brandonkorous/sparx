@@ -99,7 +99,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
       title: `Add your ${item.title.toLowerCase()}?`,
       description: productCopy(
         'cms.legal.createHint',
-        'This creates a private draft from a Piggles starter template, so you have something to work from rather than a blank page. The starter wording is a starting point, not legal advice — read it through and make it fit your business before you publish. It will also be linked in your site footer.'
+        'This creates a private draft from a Piggles starter template, so you have something to work from rather than a blank page. The starter wording is a starting point, not legal advice. Read it through and make it fit your business before you publish. It will also be linked in your site footer.'
       ),
       confirmLabel: 'Add it',
       cancelLabel: 'Cancel',
@@ -169,7 +169,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Mark your ${item.title.toLowerCase()} as reviewed?`,
       description:
-        'Confirm you have read the starter wording and made it fit your business. This is not legal advice — if you are unsure, check it with your own advisor. This only clears the “needs review” note; it does not publish the page.',
+        'Confirm you have read the starter wording and made it fit your business. This is not legal advice: if you are unsure, check it with your own advisor. This only clears the “needs review” note; it does not publish the page.',
       confirmLabel: 'I have reviewed it',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -223,7 +223,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faScaleBalanced} className="size-6" aria-hidden />}
             title="Could not load your legal pages"
-            description="This is a problem reaching the server. None of your pages are affected — nothing has been lost."
+            description="This is a problem reaching the server. None of your pages are affected. Nothing has been lost."
             onRetry={() => {
               void checklist.refetch();
             }}
@@ -257,7 +257,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                           banner above three pages that still carry our guesses is
                           how an owner stops here — so it says so (issue 375). */}
                       {guessingCount > 0
-                        ? ` ${String(guessingCount)} of them ${guessingCount === 1 ? 'still says' : 'still say'} things we guessed about your business — they are marked below.`
+                        ? ` ${String(guessingCount)} of them ${guessingCount === 1 ? 'still says' : 'still say'} things we guessed about your business. They are marked below.`
                         : ''}
                     </AlertDescription>
                   </AlertContent>

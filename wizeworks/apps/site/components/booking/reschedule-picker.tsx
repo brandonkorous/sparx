@@ -118,7 +118,7 @@ export function ReschedulePicker({ tenantSlug, booking, submit, onDone, onClose 
       ) : slots === null ? (
         <p className="text-base-content text-sm">Choose a day to see available times.</p>
       ) : slots.length === 0 ? (
-        <p className="text-base-content text-sm">No openings that day — try another date.</p>
+        <p className="text-base-content text-sm">No openings that day. Try another date.</p>
       ) : (
         <div className="flex flex-wrap gap-2">
           {slots.map((s) => (

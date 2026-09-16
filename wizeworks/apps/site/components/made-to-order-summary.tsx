@@ -53,7 +53,7 @@ export function MadeToOrderSummary({
         <p className="text-base-content m-0 text-sm font-semibold">
           Ready from {ready}
           {madeToOrder.noticeDays !== null
-            ? ` — one item needs ${String(madeToOrder.noticeDays)} day${madeToOrder.noticeDays === 1 ? '' : 's'} to make.`
+            ? `, one item needs ${String(madeToOrder.noticeDays)} day${madeToOrder.noticeDays === 1 ? '' : 's'} to make.`
             : '.'}
         </p>
       ) : null}

@@ -98,7 +98,7 @@ export class ChromeBoundary extends Component<ChromeBoundaryProps, { failed: boo
     // unanswered is what makes an error message frightening. "Save your work
     // first" rather than a bare Reload: the panes are still holding drafts a
     // reload would discard, and this strip is the only place that knows it.
-    const message = `${this.props.whatStopped} Anything you have open is safe — save your work, then reload.`;
+    const message = `${this.props.whatStopped} Anything you have open is safe. Save your work, then reload.`;
 
     // A warning SURFACE, not warning-colored text on the page background. The
     // fallback stands in for regions with different chrome (the toolbar has a

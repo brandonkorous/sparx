@@ -50,7 +50,7 @@ function CollectionLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             error={error}
             noun="group"
             title="Could not load this group"
-            description="This is a problem reaching the server. The group itself is unaffected — nothing has been lost."
+            description="This is a problem reaching the server. The group itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void refetch();
             }}

@@ -115,7 +115,7 @@ export function PlacementsSection({ items, placements }: PlacementsSectionProps)
     const ok = await confirm({
       title: `Remove “${name}” from your footer?`,
       description:
-        'This only takes the link out of your footer — the page itself, and everything on it, stays exactly as it is. You can link it again whenever you like.',
+        'This only takes the link out of your footer: the page itself, and everything on it, stays exactly as it is. You can link it again whenever you like.',
       confirmLabel: 'Remove the link',
       cancelLabel: 'Keep it',
       color: 'danger',

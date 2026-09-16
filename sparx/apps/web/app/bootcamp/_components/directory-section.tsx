@@ -86,8 +86,8 @@ function EmptyState({ filtered }: { filtered: boolean }) {
     <div className="flex flex-col items-center gap-[18px] py-14 text-center">
       <p className="m-0 max-w-[440px] text-lg">
         {filtered
-          ? 'No bootcamps match these filters yet. Try clearing them — new sessions are added all the time.'
-          : 'No bootcamps in your area yet. Check back soon — or ask your sparx partner about hosting one.'}
+          ? 'No bootcamps match these filters yet. Try clearing them: new sessions are added all the time.'
+          : 'No bootcamps in your area yet. Check back soon, or ask your sparx partner about hosting one.'}
       </p>
       <div className="flex flex-wrap items-center justify-center gap-3">
         {filtered ? (

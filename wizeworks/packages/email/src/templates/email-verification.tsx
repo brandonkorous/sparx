@@ -38,7 +38,7 @@ export function EmailVerificationEmail({
       <EmailParagraph>{name ? `Hi ${name},` : 'Hi there,'}</EmailParagraph>
       {intro ? <EmailParagraph>{intro}</EmailParagraph> : null}
       <EmailParagraph>
-        Thanks for creating a {platform} account. Confirm this email address to unlock everything —
+        Thanks for creating a {platform} account. Confirm this email address to unlock everything:
         connecting a custom domain, going live, and sending email. The link expires in{' '}
         {expiresInMinutes} minutes.
       </EmailParagraph>

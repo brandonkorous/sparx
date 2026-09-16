@@ -158,7 +158,7 @@ function AddProduct({ ctx }: { ctx: SurfaceContext }) {
               title: `${trimmed} added`,
               description: onSale
                 ? 'It is on your website now.'
-                : 'It is saved but not on sale yet — put it on sale when you are ready.',
+                : 'It is saved but not on sale yet. Put it on sale when you are ready.',
               type: 'success',
             });
           });
@@ -169,7 +169,7 @@ function AddProduct({ ctx }: { ctx: SurfaceContext }) {
           afterPaneChange(() => {
             toast.add({
               title: `${trimmed} was added without a price`,
-              description: 'Set its price here — nobody can buy it until you do.',
+              description: 'Set its price here. Nobody can buy it until you do.',
               type: 'warning',
             });
           });
@@ -203,7 +203,7 @@ function AddProduct({ ctx }: { ctx: SurfaceContext }) {
               Add a product
             </Heading>
             <Text>
-              A product is one thing you sell. Give it a name and a price now — the description,
+              A product is one thing you sell. Give it a name and a price now: the description,
               photos and everything else can follow once it exists.
             </Text>
           </div>
@@ -261,7 +261,7 @@ function AddProduct({ ctx }: { ctx: SurfaceContext }) {
                 }
               />
               <FieldDescription>
-                The end of this product&apos;s page address on your website — yoursite.com/products/
+                The end of this product&apos;s page address on your website: yoursite.com/products/
                 {effectiveHandle || '…'}
               </FieldDescription>
             </Field>
@@ -307,7 +307,7 @@ function AddProduct({ ctx }: { ctx: SurfaceContext }) {
                 <FieldStatus status="error">{skuError}</FieldStatus>
               ) : (
                 <FieldDescription>
-                  Your own reference for this product — on labels, on invoices, in your records. It
+                  Your own reference for this product: on labels, on invoices, in your records. It
                   has to be different from every other code you use.
                 </FieldDescription>
               )}
@@ -354,7 +354,7 @@ const TABS: { value: string; label: string; what: string; plan: string }[] = [
     value: 'options',
     label: 'Options',
     what: 'Choosing sizes, colors and other options',
-    plan: 'This is where you set up the choices a shopper makes — Size: small, medium, large; Color: red, blue. Each choice can show as a dropdown, a color swatch or a picture. Changing these changes which versions of the product exist, so it is kept apart from everyday price editing.',
+    plan: 'This is where you set up the choices a shopper makes: Size: small, medium, large; Color: red, blue. Each choice can show as a dropdown, a color swatch or a picture. Changing these changes which versions of the product exist, so it is kept apart from everyday price editing.',
   },
   {
     value: 'variants',
@@ -372,13 +372,13 @@ const TABS: { value: string; label: string; what: string; plan: string }[] = [
     value: 'attributes',
     label: 'Details',
     what: 'The extra details for this kind of product',
-    plan: 'Pick what kind of product this is — clothing, food, a gadget — and fill in the extra details that kind carries, like fabric and care, ingredients, or specifications. These show on the product page.',
+    plan: 'Pick what kind of product this is (clothing, food, a gadget) and fill in the extra details that kind carries, like fabric and care, ingredients, or specifications. These show on the product page.',
   },
   {
     value: 'pricing',
     label: 'Pricing',
     what: 'Pricing rules',
-    plan: 'Prices that are worked out for you rather than typed — a markup on what you paid, and prices that apply only to certain customers or quantities.',
+    plan: 'Prices that are worked out for you rather than typed: a markup on what you paid, and prices that apply only to certain customers or quantities.',
   },
   {
     value: 'seo',
@@ -424,7 +424,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         error={error}
         noun="product"
         title="Could not load this product"
-        description="This is a problem reaching the server. The product itself is unaffected — nothing has been lost."
+        description="This is a problem reaching the server. The product itself is unaffected. Nothing has been lost."
         onRetry={() => {
           void refetch();
         }}
@@ -494,7 +494,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
     } catch (error) {
       toast.add({
         title: 'Could not save',
-        description: productErrorMessage(error, 'Your changes are still here — nothing was lost.'),
+        description: productErrorMessage(error, 'Your changes are still here. Nothing was lost.'),
         type: 'error',
       });
     }

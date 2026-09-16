@@ -52,7 +52,7 @@ export function DocumentFigure({
       </HeroRows>
 
       <p className="px-5 py-4 text-base font-semibold">
-        Everything here describes what {PRODUCT.name} actually does — no clause is in it because
+        Everything here describes what {PRODUCT.name} actually does: no clause is in it because
         other companies have one.
       </p>
     </HeroPanel>

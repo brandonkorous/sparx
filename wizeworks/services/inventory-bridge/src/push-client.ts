@@ -77,7 +77,7 @@ export class SparxBridgeClient {
         attempt++;
         if (attempt > this.config.MAX_RETRIES) throw err;
         const delayMs = backoffMs(attempt);
-        log.warn('request failed — retrying', { url, attempt, delayMs, err: errMessage(err) });
+        log.warn('request failed: retrying', { url, attempt, delayMs, err: errMessage(err) });
         await sleep(delayMs);
       }
     }

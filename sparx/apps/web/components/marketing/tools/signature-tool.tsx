@@ -183,8 +183,8 @@ export function SignatureTool() {
 
   const copySignature = async () => {
     const ok = await copyHtml(html, buildSignatureText(data));
-    if (ok) toast.success('Signature copied — paste into your email settings');
-    else toast.error('Copy failed — use “Copy HTML” and paste the source instead');
+    if (ok) toast.success('Signature copied: paste into your email settings');
+    else toast.error('Copy failed: use “Copy HTML” and paste the source instead');
   };
 
   const field = (id: string, label: string, key: keyof SignatureData, type?: string) => (
@@ -281,7 +281,7 @@ export function SignatureTool() {
             <CopyButton value={html} label="Copy HTML" toastLabel="HTML source copied" />
           </div>
           <Text variant="caption" className="m-0">
-            “Copy signature” puts formatted HTML on your clipboard — paste it straight into Gmail,
+            “Copy signature” puts formatted HTML on your clipboard. Paste it straight into Gmail,
             Outlook, or Apple Mail signature settings. Your details are saved on this device only.
           </Text>
         </Panel>

@@ -98,7 +98,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add a way to file content — hold Shift to open alongside, Alt for a new window"
+            title="Add a way to file content. Hold Shift to open alongside, Alt for a new window"
             onClick={create}
           >
             <Plus className="size-4" aria-hidden />
@@ -127,12 +127,12 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
             noResults={{
               icon: <Tags className="size-6" aria-hidden />,
               title: 'Nothing matches that',
-              description: 'Try part of the name — or clear the search to see them all.',
+              description: 'Try part of the name, or clear the search to see them all.',
             }}
             firstRun={{
               title: 'No ways to file content yet',
               description:
-                'A way to file content — like Categories or Tags — lets readers find everything you have written on one subject. Add your first one to get started.',
+                'A way to file content (like Categories or Tags) lets readers find everything you have written on one subject. Add your first one to get started.',
               actions: (
                 <Button
                   size="sm"

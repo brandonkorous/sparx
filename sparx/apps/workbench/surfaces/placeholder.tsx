@@ -38,7 +38,7 @@ export function createPlaceholderSurface({ icon: Icon, title, body }: Placeholde
           className="max-w-md"
           icon={<Icon className="text-module size-8" aria-hidden />}
           title={title}
-          description={`${body} This screen is still being built — it will open here when it is ready.`}
+          description={`${body} This screen is still being built. It will open here when it is ready.`}
         />
       </div>
     );

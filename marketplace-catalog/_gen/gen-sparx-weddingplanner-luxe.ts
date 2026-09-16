@@ -175,7 +175,7 @@ const SCHEDULING = {
     {
       handle: 'discovery-call',
       name: 'Discovery call',
-      description: 'A relaxed 30-minute call to hear your vision, your date and your budget — and see if we’re the right fit. No cost, no pressure.',
+      description: 'A relaxed 30-minute call to hear your vision, your date and your budget, and see if we’re the right fit. No cost, no pressure.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -185,7 +185,7 @@ const SCHEDULING = {
     {
       handle: 'full-planning-consult',
       name: 'Full planning consultation',
-      description: 'A deep-dive session for couples who want us start to finish — venue, vendors, design, timeline and the day itself.',
+      description: 'A deep-dive session for couples who want us start to finish: venue, vendors, design, timeline and the day itself.',
       durationMinutes: 60,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -195,7 +195,7 @@ const SCHEDULING = {
     {
       handle: 'partial-planning-consult',
       name: 'Partial planning consultation',
-      description: 'You’ve made a start — we come in to shape the vendors, design and logistics, and carry it over the line.',
+      description: 'You’ve made a start. We come in to shape the vendors, design and logistics, and carry it over the line.',
       durationMinutes: 45,
       priceCents: 10000,
       assignmentStrategy: 'customer_choice',
@@ -205,7 +205,7 @@ const SCHEDULING = {
     {
       handle: 'day-of-coordination-consult',
       name: 'Day-of coordination consultation',
-      description: 'You’ve planned it beautifully — we step in for the final weeks to run the timeline, the vendors and the day so you can be present.',
+      description: 'You’ve planned it beautifully. We step in for the final weeks to run the timeline, the vendors and the day so you can be present.',
       durationMinutes: 45,
       priceCents: 8000,
       assignmentStrategy: 'customer_choice',
@@ -215,7 +215,7 @@ const SCHEDULING = {
     {
       handle: 'design-styling-consult',
       name: 'Design & styling consultation',
-      description: 'A creative session on the look and feel — palette, florals, tablescapes, lighting and the details that tie your day together.',
+      description: 'A creative session on the look and feel: palette, florals, tablescapes, lighting and the details that tie your day together.',
       durationMinutes: 60,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -235,7 +235,7 @@ const SCHEDULING = {
     {
       handle: 'venue-tour-consult',
       name: 'Venue tour walkthrough',
-      description: 'Meet us at a shortlisted venue and we’ll walk it with you — flow, capacity, backup plans and how your design will sit in the space.',
+      description: 'Meet us at a shortlisted venue and we’ll walk it with you: flow, capacity, backup plans and how your design will sit in the space.',
       durationMinutes: 60,
       priceCents: 9000,
       assignmentStrategy: 'customer_choice',
@@ -251,7 +251,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A candlelit garden wedding reception at golden hour',
     title: 'The wedding you’ve pictured, handled with grace',
-    sub: 'Ever After Events is a full-service wedding studio for couples who want a beautiful day and a calm road to it. Design, planning and flawless coordination — all in one place.',
+    sub: 'Ever After Events is a full-service wedding studio for couples who want a beautiful day and a calm road to it. Design, planning and flawless coordination. All in one place.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See how we help', href: '/book' },
     overlay: 'dark',
@@ -264,7 +264,7 @@ const HOME = [
       },
       {
         title: 'A trusted vendor circle',
-        body: 'Florists, photographers, caterers and venues we know and love — matched to your style and your budget, never a cold guess from a directory.',
+        body: 'Florists, photographers, caterers and venues we know and love: matched to your style and your budget, never a cold guess from a directory.',
       },
       {
         title: 'Design & styling',
@@ -272,13 +272,13 @@ const HOME = [
       },
       {
         title: 'A stress-free day',
-        body: 'On the day, we run the timeline and the vendors so you don’t touch a thing. You get to be fully present — and so does everyone you love.',
+        body: 'On the day, we run the timeline and the vendors so you don’t touch a thing. You get to be fully present, and so does everyone you love.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Ways to work with us',
-    intro: 'Every couple starts with a consultation. Choose the one that fits where you are — full prices and live availability are on the booking page.',
+    intro: 'Every couple starts with a consultation. Choose the one that fits where you are: full prices and live availability are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -307,13 +307,13 @@ const HOME = [
     alt: 'A bright design studio with mood boards, swatches and florals',
     heading: 'Our philosophy: fewer weddings, all of us',
     body: [
-      'We take on a small number of weddings each season so every couple gets our full attention — not a template with your name dropped in. Your day is designed from your story, not last season’s trend board.',
-      'From the first mood board to the last dance, one team stays with you the whole way. No handoffs, no surprises — just a calm, considered plan and people who genuinely care that it goes beautifully.',
+      'We take on a small number of weddings each season so every couple gets our full attention, not a template with your name dropped in. Your day is designed from your story, not last season’s trend board.',
+      'From the first mood board to the last dance, one team stays with you the whole way. No handoffs, no surprises. Just a calm, considered plan and people who genuinely care that it goes beautifully.',
     ],
     cta: { label: 'Start with a consultation', href: '/book' },
   }),
   testimonial({
-    quote: 'We honestly enjoyed our engagement instead of drowning in spreadsheets. On the day we didn’t lift a finger — everything was exactly as we’d dreamed, only better. Worth every penny and then some.',
+    quote: 'We honestly enjoyed our engagement instead of drowning in spreadsheets. On the day we didn’t lift a finger. Everything was exactly as we’d dreamed, only better. Worth every penny and then some.',
     attribution: 'Sofia & James, married Autumn 2025',
   }),
   bookingCta({
@@ -328,7 +328,7 @@ const BOOK_INTRO = [
     image: url(IMG.work2),
     alt: 'A bride and groom beneath a floral arch at sunset',
     title: 'Book your consultation',
-    sub: 'Choose a consultation to see what it covers, how long it takes and live availability — then pick your planner and time.',
+    sub: 'Choose a consultation to see what it covers, how long it takes and live availability, then pick your planner and time.',
     primary: { label: 'See consultations below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -342,7 +342,7 @@ const ABOUT = [
     heading: 'About Ever After Events',
     body: [
       'Ever After Events began with a simple belief: planning a wedding should feel as joyful as the day itself. Too many couples spend their engagement stressed and stretched thin. We exist to take that weight off your shoulders.',
-      'We’re a full-service studio — design, planning and coordination under one roof — led by planners who’ve shaped hundreds of celebrations, from intimate garden ceremonies to multi-day destination weddings.',
+      'We’re a full-service studio (design, planning and coordination under one roof) led by planners who’ve shaped hundreds of celebrations, from intimate garden ceremonies to multi-day destination weddings.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -350,9 +350,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'It starts with your story', body: 'Every plan begins with a real conversation about the two of you — how you met, how you celebrate, and the day you’ve always pictured.' },
-      { title: 'One team, all the way', body: 'The people you meet on your first call are the people running your wedding. No handoffs, no strangers on the day — just familiar faces who know your plan cold.' },
-      { title: 'Beautiful and buttoned-up', body: 'We obsess over the look and the logistics in equal measure — the tablescape and the timeline — so your day is as smooth as it is stunning.' },
+      { title: 'It starts with your story', body: 'Every plan begins with a real conversation about the two of you: how you met, how you celebrate, and the day you’ve always pictured.' },
+      { title: 'One team, all the way', body: 'The people you meet on your first call are the people running your wedding. No handoffs, no strangers on the day. Just familiar faces who know your plan cold.' },
+      { title: 'Beautiful and buttoned-up', body: 'We obsess over the look and the logistics in equal measure (the tablescape and the timeline) so your day is as smooth as it is stunning.' },
     ],
   }),
   galleryStrip({
@@ -380,7 +380,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a consultation online — no phone tag, and the first call is complimentary.',
+    sub: 'See live availability and reserve a consultation online: no phone tag, and the first call is complimentary.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -391,8 +391,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-weddingplanner-luxe',
   name: 'Wedding Planner (Luxe)',
   summary:
-    'An elegant, romantic wedding-studio site — a soft-ivory palette, a dusty-rose primary and a champagne-gold accent, with editorial wedding photography carrying the page. Installs online booking for planning consultations, planners you book by name as bookable resources, and a booking-deposit policy. Ships as "Ever After Events", a luxury full-service wedding planner.',
-  tagline: 'A romantic, editorial template for wedding planners — book consultations from day one.',
+    'An elegant, romantic wedding-studio site: a soft-ivory palette, a dusty-rose primary and a champagne-gold accent, with editorial wedding photography carrying the page. Installs online booking for planning consultations, planners you book by name as bookable resources, and a booking-deposit policy. Ships as "Ever After Events", a luxury full-service wedding planner.',
+  tagline: 'A romantic, editorial template for wedding planners. Book consultations from day one.',
   industry: 'Event planning',
   sortWeight: 40,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -401,9 +401,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Ever After Events — luxury wedding planning',
+      title: 'Ever After Events: luxury wedding planning',
       description:
-        'Ever After Events is a full-service wedding studio — planning, design and day-of coordination. Book a consultation online and start with a complimentary discovery call.',
+        'Ever After Events is a full-service wedding studio: planning, design and day-of coordination. Book a consultation online and start with a complimentary discovery call.',
     },
   },
   home: HOME,

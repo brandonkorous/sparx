@@ -32,7 +32,7 @@ export function DomainLiveEmail({ domainName, siteUrl, dashboardUrl }: DomainLiv
     >
       <EmailDisplayHeading>Your domain is live</EmailDisplayHeading>
       <EmailParagraph>
-        Good news — {domainName} is connected, secured with HTTPS, and now serving your site. Anyone
+        Good news: {domainName} is connected, secured with HTTPS, and now serving your site. Anyone
         who visits it lands on your {platform} site automatically.
       </EmailParagraph>
 
@@ -41,7 +41,7 @@ export function DomainLiveEmail({ domainName, siteUrl, dashboardUrl }: DomainLiv
       <EmailActionButton href={url}>Visit your site</EmailActionButton>
 
       <EmailFinePrint>
-        Your SSL certificate renews automatically — there&apos;s nothing you need to maintain.
+        Your SSL certificate renews automatically. There&apos;s nothing you need to maintain.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );

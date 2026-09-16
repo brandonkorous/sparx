@@ -24,7 +24,7 @@ export const SPARX_MARKET_GATEWAY_ID = 'sparx_market';
 export class MarketPaymentsUnconfiguredError extends Error {
   constructor() {
     super(
-      'sparx.market payments are unavailable — the platform Stripe key (STRIPE_SECRET_KEY) is not configured.'
+      'sparx.market payments are unavailable: the platform Stripe key (STRIPE_SECRET_KEY) is not configured.'
     );
     this.name = 'MarketPaymentsUnconfiguredError';
   }

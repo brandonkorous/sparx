@@ -105,7 +105,7 @@ function usableLines(lines: DraftLine[]): DraftLine[] {
   const nameless = kept.find((line) => !line.description.trim());
   if (nameless) {
     throw new InvoiceValidationError(
-      'Every line needs a description — one has a price but nothing saying what it is for.'
+      'Every line needs a description. One has a price but nothing saying what it is for.'
     );
   }
   // The API requires a POSITIVE quantity (AddBillingLineInput), so a line whose

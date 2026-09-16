@@ -108,7 +108,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
           label: 'Add one',
           icon: faPlus,
           onClick: openNew,
-          title: 'Add one — hold Shift to open alongside, Alt for a new window',
+          title: 'Add one: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <>

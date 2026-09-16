@@ -68,7 +68,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             error={error}
             noun="basket"
             title="Could not load this cart"
-            description="This is a problem reaching the server. The cart itself is unaffected — nothing has been changed or lost."
+            description="This is a problem reaching the server. The cart itself is unaffected. Nothing has been changed or lost."
             onRetry={() => {
               void refetch();
             }}
@@ -92,7 +92,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faCartShopping} className="size-6" aria-hidden />}
             title="This cart is no longer here"
-            description="It may have been paid for and turned into an order, or cleared away after sitting untouched. Nothing is wrong — there is just nothing to show."
+            description="It may have been paid for and turned into an order, or cleared away after sitting untouched. Nothing is wrong. There is just nothing to show."
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       title: 'Mark this cart as recovered?',
       description:
         `This records that ${shopper} came back to this cart. Use it when you have confirmed the ` +
-        'sale went through another way — it does not charge anyone or send anything.',
+        'sale went through another way. It does not charge anyone or send anything.',
       confirmLabel: 'Mark as recovered',
       cancelLabel: 'Leave it',
       color: 'module',
@@ -181,7 +181,7 @@ export function CartDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Text className="text-base font-medium">Mark this cart as recovered</Text>
                 <Text className="text-sm">
                   Records that the shopper came back to it. It does not charge anyone or send any
-                  email — it just updates the cart’s state for your reports.
+                  email. It just updates the cart’s state for your reports.
                 </Text>
               </div>
               <Button

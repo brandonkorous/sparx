@@ -38,7 +38,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "It starts with organic or biodynamic farming — no synthetic herbicides, pesticides or fertilisers — and usually with a small grower who picks by hand and actually walks their own rows. Healthy fruit off living soil is the whole game; you cannot fix bad farming in the cellar, and the best natural winemakers barely try to."
+                "text": "It starts with organic or biodynamic farming (no synthetic herbicides, pesticides or fertilisers) and usually with a small grower who picks by hand and actually walks their own rows. Healthy fruit off living soil is the whole game; you cannot fix bad farming in the cellar, and the best natural winemakers barely try to."
               }
             ]
           },
@@ -59,7 +59,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Then, as little intervention as the wine allows. Fermentation with the wild yeast that arrives on the grapes, rather than a packet of lab yeast chosen for a predictable flavour. No added acid, color, tannin or sugar. No fining or heavy filtering to strip it clear. And little or no added sulphur — a touch at bottling is fine and often sensible; drowning the wine in it is not."
+                "text": "Then, as little intervention as the wine allows. Fermentation with the wild yeast that arrives on the grapes, rather than a packet of lab yeast chosen for a predictable flavour. No added acid, color, tannin or sugar. No fining or heavy filtering to strip it clear. And little or no added sulphur: a touch at bottling is fine and often sensible; drowning the wine in it is not."
               }
             ]
           },
@@ -68,7 +68,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "What you get for all that restraint is wine that tastes of a specific place and a specific year, and that moves in the glass as you drink it. It can be a little wilder than you are used to. That is not a fault to apologise for — it is the point."
+                "text": "What you get for all that restraint is wine that tastes of a specific place and a specific year, and that moves in the glass as you drink it. It can be a little wilder than you are used to. That is not a fault to apologise for. It is the point."
               }
             ]
           }
@@ -94,7 +94,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Wine pairing has been made far more precious than it needs to be. The old rules — red with meat, white with fish — get you maybe half of the way and steer you wrong the rest. Here is how we actually think about it behind the counter."
+                "text": "Wine pairing has been made far more precious than it needs to be. The old rules (red with meat, white with fish) get you maybe half of the way and steer you wrong the rest. Here is how we actually think about it behind the counter."
               }
             ]
           },
@@ -115,7 +115,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The one trick that covers most of it: match the weight of the wine to the weight of the food. A delicate white flatters a delicate plate; a big magnum of red wants a roast. After that, look for a bridge — something acidic, herbal or savoury in the glass that echoes something on the plate. A saline mineral white next to oysters is not a coincidence, it is a rhyme."
+                "text": "The one trick that covers most of it: match the weight of the wine to the weight of the food. A delicate white flatters a delicate plate; a big magnum of red wants a roast. After that, look for a bridge. Something acidic, herbal or savoury in the glass that echoes something on the plate. A saline mineral white next to oysters is not a coincidence, it is a rhyme."
               }
             ]
           },
@@ -136,7 +136,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Skin-contact orange with anything spiced, roasted or full of umami — curry, roast chicken, a hard cheese. A chillable red with pizza, charcuterie or a tomato-heavy anything. Dry rosé with a summer salad or grilled fish. Pét-nat with fried food, full stop; the fizz and acidity cut straight through the fat. And when in doubt, a bright natural white does more work than any single bottle has a right to."
+                "text": "Skin-contact orange with anything spiced, roasted or full of umami: curry, roast chicken, a hard cheese. A chillable red with pizza, charcuterie or a tomato-heavy anything. Dry rosé with a summer salad or grilled fish. Pét-nat with fried food, full stop; the fizz and acidity cut straight through the fat. And when in doubt, a bright natural white does more work than any single bottle has a right to."
               }
             ]
           }
@@ -150,7 +150,7 @@
     "status": "published",
     "body": {
       "title": "How to taste a bottle, without the ceremony",
-      "excerpt": "Swirling and sniffing looks like a performance. It is actually just a quick way to figure out whether you like something — here is the whole method.",
+      "excerpt": "Swirling and sniffing looks like a performance. It is actually just a quick way to figure out whether you like something. Here is the whole method.",
       "featuredImage": {
         "$asset": "post-tasting"
       },
@@ -183,7 +183,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Look first — color tells you about age and style before you have tasted a thing; a red going brick at the rim has some age on it, a cloudy white is probably unfiltered and natural. Then smell: swirl once to wake it up and take a short sniff. You are not naming twelve fruits, just noticing whether it smells fresh and alive or tired and flat. Then taste, and let it sit on your tongue for a second before you swallow."
+                "text": "Look first: color tells you about age and style before you have tasted a thing; a red going brick at the rim has some age on it, a cloudy white is probably unfiltered and natural. Then smell: swirl once to wake it up and take a short sniff. You are not naming twelve fruits, just noticing whether it smells fresh and alive or tired and flat. Then taste, and let it sit on your tongue for a second before you swallow."
               }
             ]
           },
@@ -204,7 +204,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Acidity is what makes your mouth water — it is freshness, and natural wine usually has it in spades. Tannin is the grippy, drying feeling, mostly in reds and oranges; it is texture, not a flaw. And length is simply how long the flavour hangs around after you swallow — the longer, generally, the better the wine. That is genuinely most of it. Notice those three, decide if you would pour a second glass, and you are tasting like a pro."
+                "text": "Acidity is what makes your mouth water. It is freshness, and natural wine usually has it in spades. Tannin is the grippy, drying feeling, mostly in reds and oranges; it is texture, not a flaw. And length is simply how long the flavour hangs around after you swallow: the longer, generally, the better the wine. That is genuinely most of it. Notice those three, decide if you would pour a second glass, and you are tasting like a pro."
               }
             ]
           }

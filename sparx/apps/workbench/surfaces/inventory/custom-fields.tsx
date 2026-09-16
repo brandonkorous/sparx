@@ -85,10 +85,10 @@ const TYPES: CustomFieldType[] = [
  *  read it. "Item" and "stock at a location" is the distinction people get wrong
  *  — an aisle number belongs to the location, a part number belongs to the item. */
 const ENTITY_HELP: Record<CustomFieldEntity, string> = {
-  variant: 'Facts about the thing itself, wherever it is kept — a part number, a material, a size.',
-  level: 'Facts about stock at ONE place — the aisle, the shelf, who this pallet is earmarked for.',
-  supplier: 'Facts about who you buy from — an account number, a certification, a rep.',
-  purchase_order: 'Facts about an order — the project it is charged to, who asked for it.',
+  variant: 'Facts about the thing itself, wherever it is kept: a part number, a material, a size.',
+  level: 'Facts about stock at ONE place: the aisle, the shelf, who this pallet is earmarked for.',
+  supplier: 'Facts about who you buy from: an account number, a certification, a rep.',
+  purchase_order: 'Facts about an order: the project it is charged to, who asked for it.',
 };
 
 /** Which records carry their own columns into a LIST you can edit in bulk.
@@ -178,8 +178,8 @@ function NewFieldDialog({
               }}
             />
             <Text className="text-sm">
-              You can rename this later. The short name it is stored under — the one that appears in
-              your spreadsheet exports — is set from this now and then stays put.
+              You can rename this later. The short name it is stored under (the one that appears in
+              your spreadsheet exports) is set from this now and then stays put.
             </Text>
           </Field>
 
@@ -199,7 +199,7 @@ function NewFieldDialog({
               ))}
             </NativeSelect>
             <Text className="text-sm">
-              This is checked whenever anything is written — by hand, by an import, or by an
+              This is checked whenever anything is written: by hand, by an import, or by an
               assistant. A number field refuses text rather than quietly keeping it.
             </Text>
           </Field>
@@ -254,7 +254,7 @@ function NewFieldDialog({
               <span className="flex flex-col">
                 <Text className="font-medium">Show it as a column in the stock grid</Text>
                 <Text className="text-sm">
-                  Off by default — twelve extra columns by surprise is nobody&rsquo;s idea of help.
+                  Off by default: twelve extra columns by surprise is nobody&rsquo;s idea of help.
                 </Text>
               </span>
               <Switch
@@ -405,7 +405,7 @@ function FieldTable({ fields, entity }: { fields: CustomField[]; entity: CustomF
                       const ok = await confirm({
                         title: `Turn off ${field.label}?`,
                         description:
-                          'It stops appearing on forms, in lists and in exports. Nothing anybody typed is deleted — turn it back on and every value is still there.',
+                          'It stops appearing on forms, in lists and in exports. Nothing anybody typed is deleted. Turn it back on and every value is still there.',
                         confirmLabel: 'Turn it off',
                         cancelLabel: 'Keep it',
                         color: 'danger',

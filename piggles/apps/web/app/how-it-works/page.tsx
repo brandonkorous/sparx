@@ -57,7 +57,7 @@ const ARRIVES: Record<PigglesGroup, string> = {
   people:
     'A customer list with a pipeline in it and the stages a small business actually uses, not an empty database.',
   money:
-    'Your accounts, your invoice numbering and a template with your name on it — ready to send the first one.',
+    'Your accounts, your invoice numbering and a template with your name on it: ready to send the first one.',
   run: 'You, as the owner, with access to everything, and the settings a second person will need on the day you hire them.',
 };
 
@@ -72,14 +72,14 @@ const NOT_LOCKED = [
   },
   {
     title: 'Nothing has to be undone first',
-    body: 'Showing one later does not reset anything or start you over. It has been sitting there the whole time with your business already in it — the customers, the products and the numbers it needs are the ones you have been using.',
+    body: 'Showing one later does not reset anything or start you over. It has been sitting there the whole time with your business already in it: the customers, the products and the numbers it needs are the ones you have been using.',
   },
 ];
 
 const DAYS = [
   {
     title: 'No card, at all',
-    body: 'Not held, not authorised, not asked for. There is nothing to cancel if you decide it is not for you — the trial simply ends.',
+    body: 'Not held, not authorised, not asked for. There is nothing to cancel if you decide it is not for you: the trial simply ends.',
   },
   {
     title: 'All fifteen apps, the whole time',
@@ -96,7 +96,7 @@ export default function HowItWorksPage() {
     <>
       <PageHero
         heading="Two questions, and then a business that already works."
-        lede="Fifteen apps is a lot to look at and nothing to set up. Signing up asks what the business is called and what you want to start with — and everything below is already done by the time you get there."
+        lede="Fifteen apps is a lot to look at and nothing to set up. Signing up asks what the business is called and what you want to start with, and everything below is already done by the time you get there."
         figure={<StepsFigure />}
         assurances={['Free for 14 days', 'No card needed', 'Nobody rings you']}
       >
@@ -121,7 +121,7 @@ export default function HowItWorksPage() {
             <p className="mt-6 max-w-[58ch] text-lg">
               Not the first step of the form. There is no second page, no card, no company size, no
               &ldquo;how did you hear about us&rdquo;, and nobody rings you. The second question is
-              the only one that changes anything, and it changes what you see — never what you are
+              the only one that changes anything, and it changes what you see, never what you are
               allowed to have.
             </p>
           </div>

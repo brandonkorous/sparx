@@ -205,7 +205,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                     <AlertTitle>Live carrier rates are turned off right now</AlertTitle>
                     <AlertDescription>
                       {shipFromWarning} Until then, shoppers only see the delivery options you set
-                      up below — your connected carrier’s live prices won’t appear at checkout.
+                      up below. Your connected carrier’s live prices won’t appear at checkout.
                     </AlertDescription>
                   </AlertContent>
                 </Alert>
@@ -221,7 +221,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                     <AlertTitle>Right now, customers collect from you</AlertTitle>
                     <AlertDescription>
                       You haven’t set up any delivery yet, so the only choice at checkout is to come
-                      and collect — nothing gets posted, and nothing is charged for delivery. That’s
+                      and collect. Nothing gets posted, and nothing is charged for delivery. That’s
                       exactly right for a shop people come to. If you do post orders out, add a
                       region below and set what you charge.
                     </AlertDescription>
@@ -253,8 +253,8 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                   <EmptyState
                     size="sm"
                     icon={<Truck className="size-6" aria-hidden />}
-                    title="You don’t deliver — people collect"
-                    description="That’s all set up and working. If you start posting orders out, add your first region — for example one covering your own country — then give it a delivery option and a price."
+                    title="You don’t deliver: people collect"
+                    description="That’s all set up and working. If you start posting orders out, add your first region (for example one covering your own country), then give it a delivery option and a price."
                   />
                 ) : (
                   <div className="flex flex-col">
@@ -267,7 +267,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
 
               <FormSection
                 title="Product groups"
-                description="Most shops need just one. Add another only if some products ship differently — bulky freight, or anything that needs a signature — so they can be priced on their own."
+                description="Most shops need just one. Add another only if some products ship differently (bulky freight, or anything that needs a signature) so they can be priced on their own."
                 action={
                   <Button
                     size="sm"

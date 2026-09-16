@@ -164,7 +164,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faInbox} className="size-6" aria-hidden />}
             title="Could not load your submissions"
-            description="This is a problem reaching the server. Nothing anyone sent has been lost — none of it is affected."
+            description="This is a problem reaching the server. Nothing anyone sent has been lost: none of it is affected."
             onRetry={() => {
               void refetch();
             }}
@@ -178,7 +178,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               narrowed
                 ? emptyAdvice(statusFilter === 'all' ? null : activeStatus.label, activeFormName)
-                : 'When someone fills in a form on your site — a contact request, an enquiry, a sign-up — it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
+                : 'When someone fills in a form on your site (a contact request, an enquiry, a sign-up), it lands here. Add a form to a page in the editor and its submissions will show up in this inbox.'
             }
           />
         ) : (

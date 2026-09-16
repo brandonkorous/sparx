@@ -130,7 +130,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
       const code = res.error.code;
       setError(
         code === 'PASSWORD_TOO_SHORT'
-          ? 'That password is too short — please use at least 8 characters.'
+          ? 'That password is too short: please use at least 8 characters.'
           : code === 'PASSWORD_TOO_LONG'
             ? 'That password is too long. Something under 128 characters will do.'
             : code === 'INVALID_TOKEN'

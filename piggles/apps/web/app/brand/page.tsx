@@ -36,13 +36,13 @@ const BRAND_ROLES = [
   {
     token: 'primary',
     fill: 'bg-primary text-primary-content',
-    note: 'Piggles Pink — takes dark ink; white measures 2.44',
+    note: 'Piggles Pink: takes dark ink; white measures 2.44',
     ratio: '5.69',
   },
   {
     token: 'secondary',
     fill: 'bg-secondary text-secondary-content',
-    note: 'Deep charcoal — the wordmark color',
+    note: 'Deep charcoal: the wordmark color',
     ratio: '12.47',
   },
   {
@@ -54,7 +54,7 @@ const BRAND_ROLES = [
   {
     token: 'neutral',
     fill: 'bg-neutral text-neutral-content',
-    note: 'Warm plum-grey — a different ROLE from secondary',
+    note: 'Warm plum-gray: a different ROLE from secondary',
     ratio: '9.04',
   },
 ] as const;
@@ -71,12 +71,12 @@ const SEMANTIC_ROLES = [
   {
     token: 'danger',
     fill: 'bg-danger text-danger-content',
-    note: 'Destructive — what statusTone() returns',
+    note: 'Destructive: what statusTone() returns',
   },
 ] as const;
 
 const SURFACES = [
-  { token: 'base-100', fill: 'bg-base-100', role: 'Top surface — cards, dialogs, windows' },
+  { token: 'base-100', fill: 'bg-base-100', role: 'Top surface: cards, dialogs, windows' },
   { token: 'base-200', fill: 'bg-base-200', role: 'The canvas everything sits on' },
   { token: 'base-300', fill: 'bg-base-300', role: 'Deepest recess, strongest separation' },
 ] as const;
@@ -178,7 +178,7 @@ function ThemePanel({ theme, label }: { theme: string; label: string }) {
           ))}
         </div>
         <p className="mt-3 text-sm">
-          base-100 is the lightest of the three in <em>both</em> themes — raised surfaces catch more
+          base-100 is the lightest of the three in <em>both</em> themes: raised surfaces catch more
           light.
         </p>
       </Section>
@@ -216,7 +216,7 @@ function ThemePanel({ theme, label }: { theme: string; label: string }) {
           ))}
         </div>
         <p className="mt-3 text-sm">
-          The Delete button and the brand pink must never read as the same color — the reason dark{' '}
+          The Delete button and the brand pink must never read as the same color: the reason dark{' '}
           <code>error</code> is a red rather than another rose.
         </p>
       </Section>
@@ -238,7 +238,7 @@ function ThemePanel({ theme, label }: { theme: string; label: string }) {
               <CardTitle>Fields are 12px</CardTitle>
               <p>
                 Buttons and inputs share the field tier, so they line up and round together. The
-                mark is a squircle — if the UI runs sharp, the logo looks borrowed.
+                mark is a squircle: if the UI runs sharp, the logo looks borrowed.
               </p>
             </CardBody>
           </Card>

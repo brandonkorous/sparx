@@ -167,7 +167,7 @@ export function CapabilityCatalog({ prices }: { prices: Record<string, string> }
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="Search capabilities"
-          placeholder={`Search all ${TOTALS.all} — try "appointments", "invoice", "discount", "domain"`}
+          placeholder={`Search all ${TOTALS.all}: try "appointments", "invoice", "discount", "domain"`}
         />
         <div className="flex flex-wrap items-center gap-2.5">
           {FILTERS.map((f) => (
@@ -231,7 +231,7 @@ export function CapabilityCatalog({ prices }: { prices: Record<string, string> }
             <section className="flex flex-col gap-8">
               <GroupHeader
                 title="The modules you pay for"
-                lede="Each one is a full product, priced flat, switched on and off whenever the business changes. Turn one off and it stops billing the same day — your records stay put."
+                lede="Each one is a full product, priced flat, switched on and off whenever the business changes. Turn one off and it stops billing the same day. Your records stay put."
               />
               {/* Multi-column, not grid — a mosaic that packs.
                   These cards range from 5 capabilities (AI) to 40 (Commerce), and
@@ -265,7 +265,7 @@ export function CapabilityCatalog({ prices }: { prices: Record<string, string> }
             <section className="flex flex-col gap-8">
               <GroupHeader
                 title="The part you never pay for"
-                lede="Search, security, domains, automation, analytics — the foundation every module is built on. There is no plan that leaves these out and no upgrade that adds them."
+                lede="Search, security, domains, automation, analytics: the foundation every module is built on. There is no plan that leaves these out and no upgrade that adds them."
               />
               <div className="border-base-300 bg-base-100 rounded-4xl border p-8 sm:p-10">
                 {/* Same mosaic as the modules above, for the same reason —
@@ -411,7 +411,7 @@ function EmptyState({ query, onClear }: { query: string; onClear: () => void }) 
         Nothing here matches &ldquo;{query}&rdquo;
       </Heading>
       <Text variant="lead" className="max-w-2xl">
-        Try the plainest word for the job — &ldquo;booking&rdquo;, &ldquo;invoice&rdquo;,
+        Try the plainest word for the job: &ldquo;booking&rdquo;, &ldquo;invoice&rdquo;,
         &ldquo;refund&rdquo;, &ldquo;newsletter&rdquo;. If it genuinely is not here, tell us and we
         will say honestly whether it is coming.
       </Text>

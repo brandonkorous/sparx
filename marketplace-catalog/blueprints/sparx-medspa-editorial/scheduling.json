@@ -215,7 +215,7 @@
     {
       "handle": "signature-facial",
       "name": "Signature facial",
-      "description": "A tailored deep-cleanse, mask and lymphatic massage — calibrated to your skin for a lit-from-within finish.",
+      "description": "A tailored deep-cleanse, mask and lymphatic massage: calibrated to your skin for a lit-from-within finish.",
       "durationMinutes": 60,
       "priceCents": 18500,
       "bufferAfterMin": 10,
@@ -261,7 +261,7 @@
     {
       "handle": "microneedling",
       "name": "Microneedling",
-      "description": "Collagen-boosting micro-channels for firmer, brighter, more even skin — with a serum infusion to finish.",
+      "description": "Collagen-boosting micro-channels for firmer, brighter, more even skin, with a serum infusion to finish.",
       "durationMinutes": 60,
       "priceCents": 35000,
       "bufferAfterMin": 15,
@@ -284,7 +284,7 @@
     {
       "handle": "injectables-consult",
       "name": "Injectables consultation",
-      "description": "A private consult with our nurse injector to talk through options, expectations and a plan — booked with approval first.",
+      "description": "A private consult with our nurse injector to talk through options, expectations and a plan: booked with approval first.",
       "durationMinutes": 30,
       "priceCents": 0,
       "requiresApproval": true,
@@ -329,7 +329,7 @@
     {
       "handle": "laser-session",
       "name": "Laser session",
-      "description": "Targeted laser for tone, pigment and clarity — a quick, considered session with real results over time.",
+      "description": "Targeted laser for tone, pigment and clarity: a quick, considered session with real results over time.",
       "durationMinutes": 30,
       "priceCents": 27500,
       "bufferAfterMin": 10,

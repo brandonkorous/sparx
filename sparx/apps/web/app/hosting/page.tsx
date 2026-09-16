@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Managed hosting — sparx',
+  title: 'Managed hosting: sparx',
   description:
     'WizeWorks operates your sparx infrastructure: GKE, Postgres, Postal, Redis, monitoring, on-call. $750/mo, includes 24/7 incident response.',
   alternates: { canonical: '/hosting' },

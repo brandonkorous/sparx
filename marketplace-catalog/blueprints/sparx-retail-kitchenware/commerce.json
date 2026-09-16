@@ -3,7 +3,7 @@
     {
       "handle": "cookware",
       "name": "Cookware",
-      "description": "Pans and pots — carbon steel, cast iron and stainless.",
+      "description": "Pans and pots: carbon steel, cast iron and stainless.",
       "featured": true
     },
     {
@@ -55,7 +55,7 @@
     {
       "handle": "gifts",
       "name": "Gifts",
-      "description": "The ones worth wrapping — for weddings, new homes and good cooks.",
+      "description": "The ones worth wrapping, for weddings, new homes and good cooks.",
       "type": "manual",
       "featured": true,
       "productHandles": [
@@ -107,7 +107,7 @@
       "tags": ["cookware", "carbon-steel", "skillet", "frying-pan"],
       "categoryHandles": ["cookware"],
       "collectionHandles": ["new-season", "best-sellers", "cookware-edit", "starter-kits"],
-      "seoTitle": "Carbon-Steel Skillet — everyday frying pan | Copper & Cast",
+      "seoTitle": "Carbon-Steel Skillet: everyday frying pan | Copper & Cast",
       "seoDescription": "A heavy carbon-steel skillet with a forged handle that seasons to a natural non-stick and lasts a lifetime.",
       "options": [
         {
@@ -153,7 +153,7 @@
     {
       "handle": "enamel-dutch-oven",
       "title": "Enamelled Cast-Iron Dutch Oven",
-      "description": "A 5.5-quart cast-iron pot under a smooth enamel glaze — the workhorse for braises, bread, stews and Sunday sauce. Heavy walls hold a low, even heat for hours; goes stovetop to oven to table and comes clean with a wipe. One pot that does the work of five.",
+      "description": "A 5.5-quart cast-iron pot under a smooth enamel glaze: the workhorse for braises, bread, stews and Sunday sauce. Heavy walls hold a low, even heat for hours; goes stovetop to oven to table and comes clean with a wipe. One pot that does the work of five.",
       "status": "active",
       "productType": "Cookware",
       "vendor": "Copper & Cast",
@@ -161,7 +161,7 @@
       "categoryHandles": ["cookware"],
       "collectionHandles": ["new-season", "cookware-edit", "gifts"],
       "seoTitle": "Enamelled Cast-Iron Dutch Oven, 5.5 qt | Copper & Cast",
-      "seoDescription": "A 5.5-quart enamelled cast-iron Dutch oven for braises, bread and stews — stovetop to oven to table.",
+      "seoDescription": "A 5.5-quart enamelled cast-iron Dutch oven for braises, bread and stews: stovetop to oven to table.",
       "options": [
         {
           "name": "Color",
@@ -228,14 +228,14 @@
     {
       "handle": "chefs-knife",
       "title": "Forged Chef’s Knife",
-      "description": "The one knife that does ninety percent of the work. Forged from high-carbon steel and ground by hand to a keen, lasting edge, with a full tang and a bolster that puts the balance right at your grip. Rock-chop, slice, or dice all day — sharpen it now and then and it’ll outlast the block.",
+      "description": "The one knife that does ninety percent of the work. Forged from high-carbon steel and ground by hand to a keen, lasting edge, with a full tang and a bolster that puts the balance right at your grip. Rock-chop, slice, or dice all day: sharpen it now and then and it’ll outlast the block.",
       "status": "active",
       "productType": "Knife",
       "vendor": "Copper & Cast",
       "tags": ["knives", "chef-knife", "forged", "high-carbon-steel"],
       "categoryHandles": ["knives"],
       "collectionHandles": ["new-season", "best-sellers", "knives-edit", "gifts", "starter-kits"],
-      "seoTitle": "Forged Chef’s Knife — high-carbon steel | Copper & Cast",
+      "seoTitle": "Forged Chef’s Knife: high-carbon steel | Copper & Cast",
       "seoDescription": "A hand-forged high-carbon chef’s knife with a full tang and balanced bolster that holds a keen edge.",
       "options": [
         {
@@ -281,14 +281,14 @@
     {
       "handle": "paring-knife",
       "title": "Forged Paring Knife",
-      "description": "The little knife you use more than you’d think — peeling, trimming, coring, deveining, and any close work the chef’s knife is too big for. Same forged high-carbon steel and full tang, sized to sit in your hand and steer with your fingertips. Buy it with the chef’s knife and skip the rest of the block.",
+      "description": "The little knife you use more than you’d think: peeling, trimming, coring, deveining, and any close work the chef’s knife is too big for. Same forged high-carbon steel and full tang, sized to sit in your hand and steer with your fingertips. Buy it with the chef’s knife and skip the rest of the block.",
       "status": "active",
       "productType": "Knife",
       "vendor": "Copper & Cast",
       "tags": ["knives", "paring-knife", "forged", "high-carbon-steel"],
       "categoryHandles": ["knives"],
       "collectionHandles": ["knives-edit", "gifts"],
-      "seoTitle": "Forged Paring Knife — high-carbon steel | Copper & Cast",
+      "seoTitle": "Forged Paring Knife: high-carbon steel | Copper & Cast",
       "seoDescription": "A hand-forged high-carbon paring knife with a full tang for peeling, trimming and close work.",
       "variants": [
         {
@@ -309,15 +309,15 @@
     {
       "handle": "olive-wood-spoon-set",
       "title": "Olive-Wood Spoon Set",
-      "description": "A set of three utensils turned from a single piece of olive wood — a deep cooking spoon, a slotted spoon, and a flat-edged spatula for scraping a fond. Kind to seasoned pans and non-stick alike, warm in the hand, and beautiful enough to leave in the crock by the stove. Oil now and then; they last for years.",
+      "description": "A set of three utensils turned from a single piece of olive wood: a deep cooking spoon, a slotted spoon, and a flat-edged spatula for scraping a fond. Kind to seasoned pans and non-stick alike, warm in the hand, and beautiful enough to leave in the crock by the stove. Oil now and then; they last for years.",
       "status": "active",
       "productType": "Tool",
       "vendor": "Copper & Cast",
       "tags": ["tools", "utensils", "olive-wood", "spoons"],
       "categoryHandles": ["tools"],
       "collectionHandles": ["gifts"],
-      "seoTitle": "Olive-Wood Spoon Set — 3 piece | Copper & Cast",
-      "seoDescription": "A three-piece olive-wood utensil set — cooking spoon, slotted spoon and spatula, kind to every pan.",
+      "seoTitle": "Olive-Wood Spoon Set: 3 piece | Copper & Cast",
+      "seoDescription": "A three-piece olive-wood utensil set: cooking spoon, slotted spoon and spatula, kind to every pan.",
       "variants": [
         {
           "sku": "CC-SPOONSET",
@@ -337,7 +337,7 @@
     {
       "handle": "stainless-saucepan",
       "title": "Tri-Ply Stainless Saucepan",
-      "description": "A tri-ply saucepan with an aluminium core clad in stainless, so it heats evenly edge to edge with no hot spots — the pan for sauces, grains, blanching and reductions. A long stay-cool handle, a pouring lip, and a mirror interior that shows you exactly what your sauce is doing. Dishwasher-safe and induction-ready.",
+      "description": "A tri-ply saucepan with an aluminium core clad in stainless, so it heats evenly edge to edge with no hot spots: the pan for sauces, grains, blanching and reductions. A long stay-cool handle, a pouring lip, and a mirror interior that shows you exactly what your sauce is doing. Dishwasher-safe and induction-ready.",
       "status": "active",
       "productType": "Cookware",
       "vendor": "Copper & Cast",
@@ -345,7 +345,7 @@
       "categoryHandles": ["cookware"],
       "collectionHandles": ["best-sellers", "cookware-edit"],
       "seoTitle": "Tri-Ply Stainless Saucepan | Copper & Cast",
-      "seoDescription": "A tri-ply stainless saucepan with an aluminium core for even heat — sauces, grains and reductions.",
+      "seoDescription": "A tri-ply stainless saucepan with an aluminium core for even heat: sauces, grains and reductions.",
       "options": [
         {
           "name": "Size",
@@ -390,15 +390,15 @@
     {
       "handle": "mixing-bowl-set",
       "title": "Stainless Mixing-Bowl Set",
-      "description": "A nesting set of five stainless bowls, from a tiny prep bowl to a big-batch mixing bowl — light, unbreakable, and the ones that get used every single day. Deep enough to whisk without a mess, flat-bottomed so they sit still, and they stack down to almost nothing in the cupboard.",
+      "description": "A nesting set of five stainless bowls, from a tiny prep bowl to a big-batch mixing bowl: light, unbreakable, and the ones that get used every single day. Deep enough to whisk without a mess, flat-bottomed so they sit still, and they stack down to almost nothing in the cupboard.",
       "status": "active",
       "productType": "Tool",
       "vendor": "Copper & Cast",
       "tags": ["tools", "bowls", "stainless", "prep"],
       "categoryHandles": ["tools"],
       "collectionHandles": ["gifts", "starter-kits"],
-      "seoTitle": "Stainless Mixing-Bowl Set — 5 piece | Copper & Cast",
-      "seoDescription": "A nesting five-piece stainless mixing-bowl set — light, unbreakable and used every day.",
+      "seoTitle": "Stainless Mixing-Bowl Set: 5 piece | Copper & Cast",
+      "seoDescription": "A nesting five-piece stainless mixing-bowl set: light, unbreakable and used every day.",
       "variants": [
         {
           "sku": "CC-BOWLSET",
@@ -418,14 +418,14 @@
     {
       "handle": "walnut-pepper-mill",
       "title": "Walnut Pepper Mill",
-      "description": "A tall pepper mill turned from solid walnut over a hardened steel burr that grinds from a fine dust to a coarse crack and holds its setting. Freshly cracked pepper is a different ingredient than the pre-ground stuff — this is the small upgrade that makes everything you cook taste better.",
+      "description": "A tall pepper mill turned from solid walnut over a hardened steel burr that grinds from a fine dust to a coarse crack and holds its setting. Freshly cracked pepper is a different ingredient than the pre-ground stuff. This is the small upgrade that makes everything you cook taste better.",
       "status": "active",
       "productType": "Tool",
       "vendor": "Copper & Cast",
       "tags": ["tools", "pepper-mill", "walnut", "grinder"],
       "categoryHandles": ["tools"],
       "collectionHandles": ["gifts"],
-      "seoTitle": "Walnut Pepper Mill — steel-burr grinder | Copper & Cast",
+      "seoTitle": "Walnut Pepper Mill: steel-burr grinder | Copper & Cast",
       "seoDescription": "A tall solid-walnut pepper mill with a hardened steel burr, adjustable from fine dust to a coarse crack.",
       "variants": [
         {
@@ -446,15 +446,15 @@
     {
       "handle": "starter-cookware-set",
       "title": "Starter Cookware Set",
-      "description": "Everything a real kitchen needs and nothing it doesn’t: the carbon-steel skillet, the tri-ply saucepan, and the enamelled Dutch oven, bundled to build a kitchen from scratch. Three pans that cover searing, sauce and slow cooking — the set we’d hand someone moving into their first place. Priced below buying them apart.",
+      "description": "Everything a real kitchen needs and nothing it doesn’t: the carbon-steel skillet, the tri-ply saucepan, and the enamelled Dutch oven, bundled to build a kitchen from scratch. Three pans that cover searing, sauce and slow cooking, the set we’d hand someone moving into their first place. Priced below buying them apart.",
       "status": "active",
       "productType": "Cookware set",
       "vendor": "Copper & Cast",
       "tags": ["sets", "cookware", "starter", "bundle"],
       "categoryHandles": ["sets"],
       "collectionHandles": ["new-season", "best-sellers", "starter-kits", "gifts"],
-      "seoTitle": "Starter Cookware Set — skillet, saucepan & Dutch oven | Copper & Cast",
-      "seoDescription": "A three-pan starter set — carbon-steel skillet, tri-ply saucepan and cast-iron Dutch oven — to build a kitchen from scratch.",
+      "seoTitle": "Starter Cookware Set: skillet, saucepan & Dutch oven | Copper & Cast",
+      "seoDescription": "A three-pan starter set (carbon-steel skillet, tri-ply saucepan and cast-iron Dutch oven) to build a kitchen from scratch.",
       "variants": [
         {
           "sku": "CC-STARTERSET",
@@ -467,7 +467,7 @@
         {
           "assetId": "kw-prod-starter-set",
           "isPrimary": true,
-          "alt": "A starter cookware set — skillet, saucepan and Dutch oven"
+          "alt": "A starter cookware set: skillet, saucepan and Dutch oven"
         }
       ]
     }

@@ -687,8 +687,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Northgate University — news, research and campus life",
-      "seoDescription": "The official news office of Northgate University — research findings from the labs, campus and community reporting, health and science, arts and athletics, and what is happening on campus.",
+      "seoTitle": "Northgate University: news, research and campus life",
+      "seoDescription": "The official news office of Northgate University: research findings from the labs, campus and community reporting, health and science, arts and athletics, and what is happening on campus.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1066,7 +1066,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "Reporting from every part of the university — findings from the labs, life on the quad, and the teams that carry the Northgate name."
+                          "Reporting from every part of the university: findings from the labs, life on the quad, and the teams that carry the Northgate name."
                         ],
                         "id": "64c57a35-6f52-47f8-9005-c115ef4edfc1",
                         "ord": "a1"
@@ -2240,7 +2240,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Northgate University",
+      "seoTitle": "Shop: Northgate University",
       "seoDescription": "Browse everything Northgate University makes, with prices and options at a glance. University & campus news.",
       "root": {
         "kind": "element",
@@ -2298,7 +2298,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Northgate University",
+      "seoTitle": "Collections: Northgate University",
       "seoDescription": "Explore the collections at Northgate University, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2339,7 +2339,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Northgate University",
+      "seoTitle": "Your cart: Northgate University",
       "seoDescription": "Review what is in your cart and check out securely at Northgate University.",
       "root": {
         "kind": "element",
@@ -2380,7 +2380,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Northgate University",
+      "seoTitle": "Search: Northgate University",
       "seoDescription": "Search Northgate University for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2421,7 +2421,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Northgate University",
+      "seoTitle": "Journal: Northgate University",
       "seoDescription": "Stories, guides and notes from Northgate University.",
       "root": {
         "kind": "element",
@@ -2453,7 +2453,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Research findings, campus life, and the people who make the university — reported by the news office for students, faculty, alumni and the public."
+                      "Research findings, campus life, and the people who make the university: reported by the news office for students, faculty, alumni and the public."
                     ],
                     "id": "247a5255-2b5f-4153-8e73-5677f284383e",
                     "ord": "a1"
@@ -2586,8 +2586,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About the Northgate Newsroom — the university news office",
-      "seoDescription": "Who the Northgate Newsroom is and how it works — the official news office reporting the research, teaching and life of the university to the campus, alumni and the public.",
+      "seoTitle": "About the Northgate Newsroom: the university news office",
+      "seoDescription": "Who the Northgate Newsroom is and how it works: the official news office reporting the research, teaching and life of the university to the campus, alumni and the public.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2618,7 +2618,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The Northgate Newsroom is the official news office of Northgate University. We report on the research, teaching and life of the institution — the findings coming out of the labs, the decisions shaping the campus, and the students, faculty and staff behind them."
+                      "The Northgate Newsroom is the official news office of Northgate University. We report on the research, teaching and life of the institution: the findings coming out of the labs, the decisions shaping the campus, and the students, faculty and staff behind them."
                     ],
                     "id": "9d4ef78e-d380-4522-a218-8f805a24e7e9",
                     "ord": "a1"
@@ -2658,8 +2658,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Northgate University",
-      "seoDescription": "Get in touch with Northgate University — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Northgate University",
+      "seoDescription": "Get in touch with Northgate University: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2966,8 +2966,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Article — Northgate University",
-      "seoDescription": "A story from Northgate University — the writing, the reporting and the notes behind it.",
+      "seoTitle": "Article: Northgate University",
+      "seoDescription": "A story from Northgate University: the writing, the reporting and the notes behind it.",
       "root": {
         "kind": "element",
         "tag": "div",

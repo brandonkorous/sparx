@@ -126,7 +126,7 @@ async function main(): Promise<void> {
           }
           const verb = APPLY ? 'migrated' : 'would migrate';
           console.log(
-            `${verb} ${table} ${String(row.id)} — ${rowNodes} node(s), col(s): ${sets.map((s) => s.col).join(', ')}`
+            `${verb} ${table} ${String(row.id)}: ${rowNodes} node(s), col(s): ${sets.map((s) => s.col).join(', ')}`
           );
         }
       }

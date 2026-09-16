@@ -134,7 +134,7 @@ export function ApproveReturnModal({
           color="module"
           rows={2}
           value={staffNote}
-          placeholder="Optional — only your team sees this."
+          placeholder="Optional. Only your team sees this."
           aria-label="Note for your team"
           onChange={(event) => {
             setStaffNote(event.target.value);

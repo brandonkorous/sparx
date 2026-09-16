@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Frond — sculptural plants, planters & stands for considered spaces",
-      "seoDescription": "Frond is a modern plant studio — sculptural plants chosen for their form, paired with designed planters and stands, and shipped ready to place. Greenery as design, not decoration.",
+      "seoTitle": "Frond: sculptural plants, planters & stands for considered spaces",
+      "seoDescription": "Frond is a modern plant studio: sculptural plants chosen for their form, paired with designed planters and stands, and shipped ready to place. Greenery as design, not decoration.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Frond is a plant studio for people who care how a space is put together. We choose plants for their form, pair each one with a planter and a stand that belong to it, and ship the whole object ready to place — so the greenery reads as design, not decoration."
+                          "Frond is a plant studio for people who care how a space is put together. We choose plants for their form, pair each one with a planter and a stand that belong to it, and ship the whole object ready to place, so the greenery reads as design, not decoration."
                         ],
                         "id": "9d73f971-fb0f-44a4-8955-69b519b076d7",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We don’t stock everything green. Each plant earns its place on line, silhouette and how it holds a room — the paddle of a bird of paradise, the spare geometry of a cactus, the weight of a rubber plant’s leaf. Fewer plants, chosen the way you’d choose a chair."
+                          "We don’t stock everything green. Each plant earns its place on line, silhouette and how it holds a room: the paddle of a bird of paradise, the spare geometry of a cactus, the weight of a rubber plant’s leaf. Fewer plants, chosen the way you’d choose a chair."
                         ],
                         "id": "b1ea2c1a-a3da-4496-94a4-70a109fb5c1b",
                         "ord": "a1"
@@ -1745,7 +1745,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Plant of the month is the slow way to build a considered collection: tell us your light and your space, and a curated plant — matched to a planter that suits it — arrives on your schedule. Skip, swap or cancel any time; no lock-in, ever."
+                          "Plant of the month is the slow way to build a considered collection: tell us your light and your space, and a curated plant (matched to a planter that suits it) arrives on your schedule. Skip, swap or cancel any time; no lock-in, ever."
                         ],
                         "id": "4ff77afd-63fb-42d0-8aa2-3612a939e3b4",
                         "ord": "a1"
@@ -1780,7 +1780,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Frond",
+      "seoTitle": "Shop: Frond",
       "seoDescription": "Browse everything Frond makes, with prices and options at a glance. Plant studio.",
       "root": {
         "kind": "element",
@@ -1812,7 +1812,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we’re carrying right now — sculptural plants, the planters and stands that finish them, and a short, considered care kit. Filter by piece or by size; each plant ships potted, checked by hand, with a single plain card on light and water."
+                      "Everything we’re carrying right now: sculptural plants, the planters and stands that finish them, and a short, considered care kit. Filter by piece or by size; each plant ships potted, checked by hand, with a single plain card on light and water."
                     ],
                     "id": "3eec81ac-a9aa-4717-bcaf-551c1a370fa6",
                     "ord": "a1"
@@ -1840,7 +1840,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Frond",
+      "seoTitle": "Collections: Frond",
       "seoDescription": "Explore the collections at Frond, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1872,7 +1872,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The studio grouped the way people actually shop — what’s new in, the sculptural statement plants, planters and stands, the low-effort pieces, and pairings we’d put together ourselves."
+                      "The studio grouped the way people actually shop: what’s new in, the sculptural statement plants, planters and stands, the low-effort pieces, and pairings we’d put together ourselves."
                     ],
                     "id": "5024dad7-739a-40ed-93a1-b8e1aab59f1d",
                     "ord": "a1"
@@ -1900,7 +1900,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Frond",
+      "seoTitle": "Your cart: Frond",
       "seoDescription": "Review what is in your cart and check out securely at Frond.",
       "root": {
         "kind": "element",
@@ -1932,7 +1932,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping over $75, and every plant travels braced and cushioned with a care card inside. If a piece arrives less than perfect, send a photo within a week and we’ll put it right — a plant should settle a room, not stress you out."
+                      "Free shipping over $75, and every plant travels braced and cushioned with a care card inside. If a piece arrives less than perfect, send a photo within a week and we’ll put it right: a plant should settle a room, not stress you out."
                     ],
                     "id": "1a35dbbb-c8bb-43dc-ad29-3cbe4dceb778",
                     "ord": "a1"
@@ -1960,7 +1960,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Frond",
+      "seoTitle": "Search: Frond",
       "seoDescription": "Search Frond for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2020,7 +2020,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Frond",
+      "seoTitle": "Journal: Frond",
       "seoDescription": "Stories, guides and notes from Frond.",
       "root": {
         "kind": "element",
@@ -2052,7 +2052,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the studio — choosing a plant for its form, pairing it with the right planter, and the small habits that keep a considered space alive. Design-minded, plainly written."
+                      "Notes from the studio: choosing a plant for its form, pairing it with the right planter, and the small habits that keep a considered space alive. Design-minded, plainly written."
                     ],
                     "id": "8bca34dd-0fe1-4a1a-9618-c5d70731f3bb",
                     "ord": "a1"
@@ -2186,7 +2186,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Frond",
-      "seoDescription": "How Frond chooses, pairs and ships plants — a short, considered range of sculptural plants, small-run planters and stands, treated as one composed object.",
+      "seoDescription": "How Frond chooses, pairs and ships plants: a short, considered range of sculptural plants, small-run planters and stands, treated as one composed object.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2217,7 +2217,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Frond began with a simple frustration: plants are sold like produce and styled like an afterthought, when the good ones are as considered as any object you’d bring into a room. So we built a studio that treats a plant, its planter and its stand as one composed piece — chosen together, shipped together, placed together."
+                      "Frond began with a simple frustration: plants are sold like produce and styled like an afterthought, when the good ones are as considered as any object you’d bring into a room. So we built a studio that treats a plant, its planter and its stand as one composed piece, chosen together, shipped together, placed together."
                     ],
                     "id": "68ddb29d-d9fd-4582-bbd8-37ee59c5ce27",
                     "ord": "a1"
@@ -2257,8 +2257,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Frond",
-      "seoDescription": "Get in touch with Frond — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Frond",
+      "seoDescription": "Get in touch with Frond: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2294,7 +2294,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Styling a corner and not sure what fits, planning plants for an office or a project, or want a piece you can’t see here? Send a photo of the space and a note — a real person at the studio will help you compose it."
+                          "Styling a corner and not sure what fits, planning plants for an office or a project, or want a piece you can’t see here? Send a photo of the space and a note: a real person at the studio will help you compose it."
                         ],
                         "id": "0a87bc84-85b8-4c3a-b670-4b4dae9a1ba8",
                         "ord": "a1"
@@ -2565,8 +2565,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Frond",
-      "seoDescription": "Product details at Frond — plant studio, with options and pricing.",
+      "seoTitle": "Product: Frond",
+      "seoDescription": "Product details at Frond: plant studio, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2929,7 +2929,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Choose a size and, if you like, the planter it was styled with — it arrives potted, checked by hand and packed to travel, with a single card on light, water and where it looks best. Give it a week to settle into its spot before you judge it."
+                              "Choose a size and, if you like, the planter it was styled with. It arrives potted, checked by hand and packed to travel, with a single card on light, water and where it looks best. Give it a week to settle into its spot before you judge it."
                             ],
                             "id": "c45f6a97-814b-4543-aec2-33f6ab2f439e",
                             "ord": "a1"

@@ -57,7 +57,7 @@ export function CustomerBookingsTab({
         isEmpty={rows.length === 0}
         icon={<Icon glyph={faCalendarCheck} className="size-6" aria-hidden />}
         emptyTitle="Never booked in"
-        emptyDescription="Nothing has been booked for this person yet. Anything taken for them — online or by hand — appears here."
+        emptyDescription="Nothing has been booked for this person yet. Anything taken for them (online or by hand) appears here."
       >
         <Table size="sm" hover>
           <thead>

@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Life happens — just give us at least 24 hours’ notice to reschedule or cancel, and there’s no charge. We’ll send you a reminder two days before, the day before, and two hours ahead."
+      "policyText": "Life happens. Just give us at least 24 hours’ notice to reschedule or cancel, and there’s no charge. We’ll send you a reminder two days before, the day before, and two hours ahead."
     },
     {
       "handle": "late-cancel",
@@ -229,7 +229,7 @@
     {
       "handle": "individual-therapy",
       "name": "Individual therapy",
-      "description": "A standard 50-minute session, one-on-one — a steady, confidential space to work through whatever you’re carrying, at your pace.",
+      "description": "A standard 50-minute session, one-on-one: a steady, confidential space to work through whatever you’re carrying, at your pace.",
       "durationMinutes": 50,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -252,7 +252,7 @@
     {
       "handle": "couples-therapy",
       "name": "Couples therapy",
-      "description": "A 60-minute session for two — a calm, even-handed space to be heard, understand each other again, and rebuild the way you talk.",
+      "description": "A 60-minute session for two: a calm, even-handed space to be heard, understand each other again, and rebuild the way you talk.",
       "durationMinutes": 60,
       "priceCents": 18000,
       "bufferAfterMin": 10,
@@ -276,7 +276,7 @@
     {
       "handle": "teen-therapy",
       "name": "Teen therapy",
-      "description": "A 50-minute session built for adolescents — a warm, judgment-free place for a teen to feel understood, with parents looped in as it helps.",
+      "description": "A 50-minute session built for adolescents: a warm, judgment-free place for a teen to feel understood, with parents looped in as it helps.",
       "durationMinutes": 50,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -299,7 +299,7 @@
     {
       "handle": "anxiety-session",
       "name": "Anxiety & stress session",
-      "description": "A focused 50-minute session for anxiety, worry and burnout — practical tools you can use between visits, alongside the deeper work.",
+      "description": "A focused 50-minute session for anxiety, worry and burnout: practical tools you can use between visits, alongside the deeper work.",
       "durationMinutes": 50,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -322,7 +322,7 @@
     {
       "handle": "trauma-session",
       "name": "Trauma-focused session",
-      "description": "A gentle, carefully paced 60-minute session for processing trauma — always on your terms, never faster than feels safe.",
+      "description": "A gentle, carefully paced 60-minute session for processing trauma: always on your terms, never faster than feels safe.",
       "durationMinutes": 60,
       "priceCents": 17000,
       "bufferAfterMin": 10,
@@ -346,7 +346,7 @@
     {
       "handle": "telehealth-session",
       "name": "Telehealth session",
-      "description": "A 50-minute individual session over secure video — the same care as in the room, from wherever you feel most at ease.",
+      "description": "A 50-minute individual session over secure video: the same care as in the room, from wherever you feel most at ease.",
       "durationMinutes": 50,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",

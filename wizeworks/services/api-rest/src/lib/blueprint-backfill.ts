@@ -224,7 +224,7 @@ export function registerBlueprintBackfillConsumer(logger: FastifyBaseLogger): ()
     } catch (err) {
       logger.error(
         { err, tenantId: event.tenantId, module: slug },
-        'blueprint-backfill: forward failed — reconcile will retry'
+        'blueprint-backfill: forward failed, reconcile will retry'
       );
     }
   });
@@ -288,7 +288,7 @@ export function startBlueprintBackfillReconcileLoop(
     try {
       await reconcileBlueprintBackfill(logger);
     } catch (err) {
-      logger.error({ err }, 'blueprint-backfill-reconcile: tick threw — will retry next interval');
+      logger.error({ err }, 'blueprint-backfill-reconcile: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

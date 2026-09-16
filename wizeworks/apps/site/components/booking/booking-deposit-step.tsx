@@ -119,10 +119,10 @@ function DepositInner({
   const verb = type === 'card_hold' ? 'Authorize' : 'Pay';
   const lead =
     type === 'card_hold'
-      ? `${serviceName} ${INTRO.card_hold} — a hold of ${money(amountCents)}, charged only if you miss the appointment or cancel late.`
+      ? `${serviceName} ${INTRO.card_hold}: a hold of ${money(amountCents)}, charged only if you miss the appointment or cancel late.`
       : type === 'deposit'
         ? `${serviceName} ${INTRO.deposit} ${money(amountCents)}.`
-        : `${serviceName} ${INTRO.prepay} — ${money(amountCents)}.`;
+        : `${serviceName} ${INTRO.prepay}: ${money(amountCents)}.`;
 
   return (
     <form onSubmit={confirm} className="card border-base-300 grid gap-3 border p-4">

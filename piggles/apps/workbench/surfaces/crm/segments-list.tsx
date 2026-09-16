@@ -102,7 +102,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
               color="module"
               size="sm"
               className="shrink-0"
-              title="New segment — hold Shift to open alongside, Alt for a new window"
+              title="New segment: hold Shift to open alongside, Alt for a new window"
               onClick={(event) => {
                 ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
               }}
@@ -150,7 +150,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faFilter} className="size-6" aria-hidden />}
             title="Could not load your segments"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -169,7 +169,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No segments yet',
               description:
-                'A segment is a saved group of customers who share something — big spenders, or everyone who has not bought in a year. Create your first one to start targeting a group.',
+                'A segment is a saved group of customers who share something: big spenders, or everyone who has not bought in a year. Create your first one to start targeting a group.',
             }}
           />
         ) : (

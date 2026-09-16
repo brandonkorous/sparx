@@ -83,7 +83,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
     const ok = await confirm({
       title: `Disconnect ${address}?`,
       description:
-        'sparx stops reading new email from this mailbox and stops sending through it. The conversations already on your customers’ records are kept — disconnecting a mailbox has never meant deleting a year of correspondence.',
+        'sparx stops reading new email from this mailbox and stops sending through it. The conversations already on your customers’ records are kept: disconnecting a mailbox has never meant deleting a year of correspondence.',
       confirmLabel: 'Disconnect it',
       cancelLabel: 'Keep it connected',
       color: 'danger',
@@ -108,7 +108,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <Button
               color="module"
               size="sm"
-              title="Connect a mailbox — hold Shift to open alongside, Alt for a new window"
+              title="Connect a mailbox: hold Shift to open alongside, Alt for a new window"
               onClick={connectMailbox}
             >
               <Plus className="size-4" aria-hidden />
@@ -140,7 +140,7 @@ export function MailboxesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <EmptyState
               icon={<Mailbox className="size-6" aria-hidden />}
               title="Could not load your mailboxes"
-              description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+              description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
               actions={
                 <Button
                   size="sm"

@@ -375,7 +375,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s photos</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing about the photos has changed — they just
+            This is a problem reaching the server. Nothing about the photos has changed. They just
             could not be read just now.
           </AlertDescription>
         </AlertContent>
@@ -404,7 +404,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
         title="Photos"
         description={
           images.length > 0
-            ? 'Shoppers see these in this order. Your main photo always comes first — it is the one used in lists, on cards and in search results.'
+            ? 'Shoppers see these in this order. Your main photo always comes first. It is the one used in lists, on cards and in search results.'
             : 'The pictures shoppers see on this product’s page.'
         }
       >
@@ -505,7 +505,7 @@ export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Pro
               rejections
                 .map(
                   (rejection) =>
-                    `“${rejection.file.name}” was not added — it is either too large or not a picture.`
+                    `“${rejection.file.name}” was not added. It is either too large or not a picture.`
                 )
                 .join(' ')
             );
@@ -681,7 +681,7 @@ function ImageDetails({
                 setDraft((current) => ({ ...current, mode: next as ShowMode }));
               }}
             >
-              <RadioOption value="always">Always — whatever the shopper picks</RadioOption>
+              <RadioOption value="always">Always: whatever the shopper picks</RadioOption>
               <RadioOption value="variant" disabled={variants.length === 0}>
                 Only on one particular version
               </RadioOption>
@@ -697,7 +697,7 @@ function ImageDetails({
             on a mug that comes in Cobalt does not. */}
         <FieldDescription>
           {hasOptions
-            ? `Use the last one to show this photo whenever someone picks a particular ${firstOptionName.toLowerCase()}${firstValueName ? ` — ${firstValueName}, say` : ''}, without tying it to one version.`
+            ? `Use the last one to show this photo whenever someone picks a particular ${firstOptionName.toLowerCase()}${firstValueName ? ` (${firstValueName}, say)` : ''}, without tying it to one version.`
             : 'This product has no size or color choices yet, so every photo shows for everyone. Add choices on the Options tab to pin a photo to one of them.'}
         </FieldDescription>
       </Field>

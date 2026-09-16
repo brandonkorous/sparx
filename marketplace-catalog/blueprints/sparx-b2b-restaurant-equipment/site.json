@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Pass Supply Co. — commercial kitchen & restaurant equipment",
-      "seoDescription": "Pass Supply is a commercial kitchen and restaurant-equipment distributor — prep tables, cooking gear, food storage, front-of-house service and smallwares, sold by the unit and the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.",
+      "seoTitle": "Pass Supply Co. commercial kitchen & restaurant equipment",
+      "seoDescription": "Pass Supply is a commercial kitchen and restaurant-equipment distributor: prep tables, cooking gear, food storage, front-of-house service and smallwares, sold by the unit and the case at trade prices, with net-30 terms and fast dispatch. Open a trade account.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Pass Supply Co. outfits commercial kitchens — restaurants, cafés, caterers and ghost kitchens. The prep tables, cooking gear, storage and smallwares a working line runs on, sold by the unit and by the case, priced for the trade and dispatched fast."
+                          "Pass Supply Co. outfits commercial kitchens: restaurants, cafés, caterers and ghost kitchens. The prep tables, cooking gear, storage and smallwares a working line runs on, sold by the unit and by the case, priced for the trade and dispatched fast."
                         ],
                         "id": "34907f45-01e4-4c47-a765-2e1b02d8cbf9",
                         "ord": "a1"
@@ -1213,7 +1213,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Open a trade account and you buy the way an operator should — by the unit and the case, at wholesale rates, on terms. No consumer markups, no runaround when a line goes down mid-service."
+                          "Open a trade account and you buy the way an operator should: by the unit and the case, at wholesale rates, on terms. No consumer markups, no runaround when a line goes down mid-service."
                         ],
                         "id": "c6dc8e42-d2b2-4a77-af69-efe5f5fb1fb6",
                         "ord": "a1"
@@ -1245,7 +1245,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Per-unit and per-case wholesale rates with volume breaks that deepen as your order grows. Kit a whole line or restock a station — the more you buy, the less each piece costs."
+                              "Per-unit and per-case wholesale rates with volume breaks that deepen as your order grows. Kit a whole line or restock a station: the more you buy, the less each piece costs."
                             ],
                             "id": "76582ca9-fe86-4662-b5d4-10fe6024e798",
                             "ord": "a1"
@@ -1326,7 +1326,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A direct line to a real person who knows your kitchen, your standing order and what you burn through — not a ticket queue at 4pm on a Friday."
+                              "A direct line to a real person who knows your kitchen, your standing order and what you burn through, not a ticket queue at 4pm on a Friday."
                             ],
                             "id": "b3d562e2-3eac-4896-825d-07b171fabc1c",
                             "ord": "a1"
@@ -1639,7 +1639,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Pass Supply Co.",
+      "seoTitle": "Shop: Pass Supply Co.",
       "seoDescription": "Browse everything Pass Supply Co. makes, with prices and options at a glance. Restaurant equipment & smallwares.",
       "root": {
         "kind": "element",
@@ -1671,7 +1671,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every line we stock — cooking, prep and storage, front of house, and smallwares, sold by the unit and the case. Filter by station or sort by price; trade accounts see their contract pricing at checkout."
+                      "Every line we stock: cooking, prep and storage, front of house, and smallwares, sold by the unit and the case. Filter by station or sort by price; trade accounts see their contract pricing at checkout."
                     ],
                     "id": "61dbc4a5-786d-4563-ad15-095902b43a0c",
                     "ord": "a1"
@@ -1699,7 +1699,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Pass Supply Co.",
+      "seoTitle": "Collections: Pass Supply Co.",
       "seoDescription": "Explore the collections at Pass Supply Co., grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1731,7 +1731,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalog grouped the way an operator actually buys — best sellers, new lines just in, everything to open a kitchen from empty, the front-of-house service kit, and the smallwares you reorder by the case."
+                      "The catalog grouped the way an operator actually buys: best sellers, new lines just in, everything to open a kitchen from empty, the front-of-house service kit, and the smallwares you reorder by the case."
                     ],
                     "id": "b2dc6ac9-8b03-4082-af74-56a3349bde60",
                     "ord": "a1"
@@ -1759,7 +1759,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Pass Supply Co.",
+      "seoTitle": "Your cart: Pass Supply Co.",
       "seoDescription": "Review what is in your cart and check out securely at Pass Supply Co..",
       "root": {
         "kind": "element",
@@ -1819,7 +1819,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Pass Supply Co.",
+      "seoTitle": "Search: Pass Supply Co.",
       "seoDescription": "Search Pass Supply Co. for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1879,7 +1879,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Pass Supply Co.",
+      "seoTitle": "Journal: Pass Supply Co.",
       "seoDescription": "Stories, guides and notes from Pass Supply Co..",
       "root": {
         "kind": "element",
@@ -1911,7 +1911,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Practical guidance from operators and our warehouse floor — how to kit out a new kitchen, choose cookware that survives service, and buy smallwares that last. Written for the people running the line, not for a catalog."
+                      "Practical guidance from operators and our warehouse floor: how to kit out a new kitchen, choose cookware that survives service, and buy smallwares that last. Written for the people running the line, not for a catalog."
                     ],
                     "id": "d9e706f6-a13d-426d-8c34-429709f27acb",
                     "ord": "a1"
@@ -2045,7 +2045,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Pass Supply Co.",
-      "seoDescription": "How Pass Supply stocks, prices and ships — one catalog, one account, one invoice, wholesale by the unit and the case, and kitchen-grade gear that is on the shelf when service depends on it.",
+      "seoDescription": "How Pass Supply stocks, prices and ships. One catalog, one account, one invoice, wholesale by the unit and the case, and kitchen-grade gear that is on the shelf when service depends on it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2076,7 +2076,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Pass Supply Co. is a commercial kitchen and restaurant-equipment distributor. We stock the durable, essential gear a working kitchen runs on — prep tables, cooking equipment, food storage, front-of-house service and smallwares — and we sell it to the trade by the unit and the case, at wholesale, on terms."
+                      "Pass Supply Co. is a commercial kitchen and restaurant-equipment distributor. We stock the durable, essential gear a working kitchen runs on: prep tables, cooking equipment, food storage, front-of-house service and smallwares, and we sell it to the trade by the unit and the case, at wholesale, on terms."
                     ],
                     "id": "586f93ac-f17b-4395-995c-02a3f9b2fdf0",
                     "ord": "a1"
@@ -2096,7 +2096,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just kitchen-grade gear, priced fairly and out the door — the boring reliability a good kitchen is built on."
+                      "No minimum-order gymnastics, no mystery lead times, no pricing that changes because you asked. Just kitchen-grade gear, priced fairly and out the door: the boring reliability a good kitchen is built on."
                     ],
                     "id": "4cbb4f0a-db13-4b35-8d4f-9c1f90a02a10",
                     "ord": "a3"
@@ -2116,7 +2116,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Open a trade account — Pass Supply Co.",
+      "seoTitle": "Open a trade account: Pass Supply Co.",
       "seoDescription": "Set up a trade account with Pass Supply: wholesale per-unit and per-case pricing, volume breaks, net-30 terms and a dedicated account manager. Fit-out quotes and multi-location supply start here.",
       "root": {
         "kind": "element",
@@ -2424,8 +2424,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Pass Supply Co.",
-      "seoDescription": "Product details at Pass Supply Co. — restaurant equipment & smallwares, with options and pricing.",
+      "seoTitle": "Product: Pass Supply Co.",
+      "seoDescription": "Product details at Pass Supply Co. restaurant equipment & smallwares, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2788,7 +2788,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is the list rate — per unit for equipment, per case for smallwares. Trade accounts unlock volume breaks — deeper pricing when you kit a full line, open a second location, or order to a standing schedule — set for your account in your dashboard."
+                              "The price shown is the list rate: per unit for equipment, per case for smallwares. Trade accounts unlock volume breaks, deeper pricing when you kit a full line, open a second location, or order to a standing schedule. Set for your account in your dashboard."
                             ],
                             "id": "13630111-24d7-4d42-a6fc-495cd20830f1",
                             "ord": "a1"

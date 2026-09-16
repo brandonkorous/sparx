@@ -26,7 +26,7 @@
   "products": [
     {
       "handle": "northgate-press-anthology",
-      "title": "Northgate Review — the tenth anthology",
+      "title": "Northgate Review: the tenth anthology",
       "description": "A hardback collection of the best essays, poetry and long-form reporting from a decade of the Northgate Review, the university’s literary and ideas journal. Edited by the faculty of Arts & Sciences.",
       "status": "active",
       "productType": "Book",
@@ -34,7 +34,7 @@
       "tags": ["press", "book", "anthology"],
       "categoryHandles": ["press"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Northgate Review — the tenth anthology | Northgate University Press",
+      "seoTitle": "Northgate Review: the tenth anthology | Northgate University Press",
       "seoDescription": "A hardback decade anthology of essays, poetry and reporting from the Northgate Review.",
       "variants": [
         {
@@ -90,7 +90,7 @@
       "tags": ["merch", "apparel", "alumni"],
       "categoryHandles": ["merch"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Northgate Alumni Tee — heavyweight cotton t-shirt",
+      "seoTitle": "Northgate Alumni Tee: heavyweight cotton t-shirt",
       "seoDescription": "A heavyweight cotton t-shirt with the Northgate seal, cut for everyday wear.",
       "variants": [
         {
@@ -118,7 +118,7 @@
       "tags": ["merch", "mug"],
       "categoryHandles": ["merch"],
       "collectionHandles": [],
-      "seoTitle": "Northgate Campus Mug — stoneware mug",
+      "seoTitle": "Northgate Campus Mug: stoneware mug",
       "seoDescription": "A stoneware mug with a line drawing of Hartwell Hall.",
       "variants": [
         {

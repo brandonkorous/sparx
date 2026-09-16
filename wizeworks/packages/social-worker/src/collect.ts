@@ -79,7 +79,7 @@ export async function collectPostMetrics(
   if (!isSocialTokenCryptoConfigured()) {
     logger.warn(
       { postId },
-      'SOCIAL_TOKEN_KEY unset — acking social.metrics.collect without pulling'
+      'SOCIAL_TOKEN_KEY unset: acking social.metrics.collect without pulling'
     );
     return { postId, collected: 0, skipped: 0 };
   }
@@ -153,7 +153,7 @@ export async function collectPostMetrics(
         logger.info(
           { postId, targetId: t.id, platform: t.platform, targetName: t.targetName },
           live.length === 0
-            ? 'metrics skipped: no connected account for this platform — reconnect it to resume numbers'
+            ? 'metrics skipped: no connected account for this platform, reconnect it to resume numbers'
             : 'metrics skipped: original destination is gone and more than one account matches by name'
         );
         skipped += 1;
@@ -175,7 +175,7 @@ export async function collectPostMetrics(
       // — silence here reads exactly like "this post has no numbers".
       logger.info(
         { postId, targetId: t.id, platform: t.platform, targetName: t.targetName },
-        'metrics skipped: account needs reconnecting — no usable access token'
+        'metrics skipped: account needs reconnecting, no usable access token'
       );
       skipped += 1;
       continue;

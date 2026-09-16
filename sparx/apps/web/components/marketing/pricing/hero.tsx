@@ -34,7 +34,7 @@ import { PricingModuleDeck } from './module-deck';
  */
 const COUNTERS = [
   { v: '$0', unit: ' / user', s: 'Seats are free. Add your whole team.' },
-  { v: '0%', s: 'Of every sale — no cut on top of your processor.' },
+  { v: '0%', s: 'Of every sale: no cut on top of your processor.' },
   { v: '$0', unit: ' setup', s: 'No onboarding, migration, or contract.' },
   { v: '14', unit: ' days', s: 'Free to try, with no card to start.' },
   { v: 'Same day', s: 'Switch a module off and billing stops.' },

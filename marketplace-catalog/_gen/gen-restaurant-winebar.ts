@@ -108,7 +108,7 @@ const ASSETS: Asset[] = [
   { id: 'decant-plate-1', url: src('decant-plate-1'), alt: 'A small plate of grilled seasonal vegetables to share' },
   { id: 'decant-plate-2', url: src('decant-plate-2'), alt: 'A charcuterie and cheese board with bread and honey' },
   { id: 'decant-plate-3', url: src('decant-plate-3'), alt: 'A small plate of cured fish with herbs and olive oil' },
-  { id: 'decant-room', url: src('decant-room'), alt: 'The wine bar interior — a marble counter, bar stools and low pendant lighting' },
+  { id: 'decant-room', url: src('decant-room'), alt: 'The wine bar interior: a marble counter, bar stools and low pendant lighting' },
   { id: 'decant-shelf', url: src('decant-shelf'), alt: 'A wall of wine bottles on dark timber shelving behind the bar' },
 ];
 
@@ -139,7 +139,7 @@ function heroBand(): Node {
                   text: 'Decant',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'A wine bar. Low-intervention bottles, a wall of things worth opening, and a few good plates to go with them. No fuss, no lecture — pull up a stool. Open evenings, Tuesday through Saturday.',
+                  text: 'A wine bar. Low-intervention bottles, a wall of things worth opening, and a few good plates to go with them. No fuss, no lecture: pull up a stool. Open evenings, Tuesday through Saturday.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -184,7 +184,7 @@ function byGlassBand(): Node {
                 text: 'Open tonight',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'We keep a dozen or so open by the glass and rotate them constantly — whatever’s drinking well and whatever we’re excited about. A few of this week’s pours. The rest is on the list, and the bottle wall is always open to browse.',
+                text: 'We keep a dozen or so open by the glass and rotate them constantly: whatever’s drinking well and whatever we’re excited about. A few of this week’s pours. The rest is on the list, and the bottle wall is always open to browse.',
               }),
               el('a', 'inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4', {
                 attrs: { href: '/menu' },
@@ -198,7 +198,7 @@ function byGlassBand(): Node {
               pour('Cascina Vecchia, Piedmont', 'Nebbiolo, light-pressed, rose petals and tar.', '15'),
               pour('Hirondelle Rouge, Beaujolais', 'Gamay, chilled, all crunchy red fruit.', '12'),
               pour('Steinbruch Riesling, Mosel', 'Off-dry, slate and lime, endlessly drinkable.', '14'),
-              pour('Poggio delle More, Etna', 'A pét-nat rosato — salty, foamy, joyful.', '13'),
+              pour('Poggio delle More, Etna', 'A pét-nat rosato: salty, foamy, joyful.', '13'),
             ],
           }),
         ],
@@ -230,15 +230,15 @@ function platesBand(): Node {
                 text: 'A few good plates',
               }),
               el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                text: 'Not a restaurant — a short list of small plates built to drink with. Cured things, a proper cheese board, and a couple of warm plates when you want more than a nibble.',
+                text: 'Not a restaurant: a short list of small plates built to drink with. Cured things, a proper cheese board, and a couple of warm plates when you want more than a nibble.',
               }),
             ],
           }),
           el('div', 'grid grid-cols-1 gap-6 @3xl:grid-cols-3', {
             children: [
-              card('decant-plate-3', 'To pick at', 'Olives, cured fish, house pickles — the salty little things a first glass wants.', 'A small plate of cured fish'),
-              card('decant-plate-2', 'Cheese & charcuterie', 'A board built to order from the counter — three, five or seven, with honey and bread.', 'A charcuterie and cheese board'),
-              card('decant-plate-1', 'Warm plates', 'A handful of hot things off the little kitchen — grilled greens, beans, a plate of the day.', 'A small plate of grilled vegetables'),
+              card('decant-plate-3', 'To pick at', 'Olives, cured fish, house pickles: the salty little things a first glass wants.', 'A small plate of cured fish'),
+              card('decant-plate-2', 'Cheese & charcuterie', 'A board built to order from the counter: three, five or seven, with honey and bread.', 'A charcuterie and cheese board'),
+              card('decant-plate-1', 'Warm plates', 'A handful of hot things off the little kitchen: grilled greens, beans, a plate of the day.', 'A small plate of grilled vegetables'),
             ],
           }),
           el('a', 'inline-flex w-fit items-center gap-2 text-base font-semibold text-accent underline underline-offset-4', {
@@ -258,7 +258,7 @@ function reserveBand(): Node {
       el('div', 'mx-auto grid w-full max-w-5xl gap-8 @3xl:grid-cols-2 @3xl:items-center', {
         children: [
           el('img', 'aspect-video w-full rounded-box border border-base-300 object-cover', {
-            attrs: { src: assetUrl('decant-room'), alt: 'The wine bar interior — a marble counter and bar stools', loading: 'lazy' },
+            attrs: { src: assetUrl('decant-room'), alt: 'The wine bar interior: a marble counter and bar stools', loading: 'lazy' },
           }),
           el('div', 'flex flex-col gap-5', {
             children: [
@@ -266,7 +266,7 @@ function reserveBand(): Node {
                 text: 'Grab a table, or the bar',
               }),
               el('p', 'text-lg leading-relaxed text-base-content', {
-                text: 'Book a table for a proper sit-down, or reserve a couple of stools at the counter — the best seats in the house, right across from the open bottles. Book online in under a minute; we keep a few spots back for walk-ins every night.',
+                text: 'Book a table for a proper sit-down, or reserve a couple of stools at the counter: the best seats in the house, right across from the open bottles. Book online in under a minute; we keep a few spots back for walk-ins every night.',
               }),
               el('div', 'flex flex-wrap gap-3', {
                 children: [
@@ -370,18 +370,18 @@ const MENU: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The list' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'A rotating dozen by the glass, a deeper wall by the bottle, and a short kitchen built to drink with. Nothing here is forever — ask what’s open, tell us what you like, and we’ll pour you something. Low-intervention where we can, always honest about what’s in the glass.',
+            text: 'A rotating dozen by the glass, a deeper wall by the bottle, and a short kitchen built to drink with. Nothing here is forever. Ask what’s open, tell us what you like, and we’ll pour you something. Low-intervention where we can, always honest about what’s in the glass.',
           }),
         ],
       }),
     ],
   }),
-  menuSection('By the glass', 'A rotating dozen — this is roughly this week. All available in a 125ml pour; ask for a taste before you commit.', [
+  menuSection('By the glass', 'A rotating dozen. This is roughly this week. All available in a 125ml pour; ask for a taste before you commit.', [
     { name: 'Blanc de Faubourg · Loire', desc: 'Chenin blanc, skin-contact, bone-dry and a little wild.', price: '13' },
     { name: 'Steinbruch Riesling · Mosel', desc: 'Off-dry, slate and lime, endlessly drinkable.', price: '14' },
     { name: 'Hirondelle Rouge · Beaujolais', desc: 'Gamay, served chilled, all crunchy red fruit.', price: '12' },
     { name: 'Cascina Vecchia · Piedmont', desc: 'Nebbiolo, light-pressed, rose petals and tar.', price: '15' },
-    { name: 'Poggio delle More · Etna', desc: 'A pét-nat rosato — salty, foamy, joyful.', price: '13' },
+    { name: 'Poggio delle More · Etna', desc: 'A pét-nat rosato: salty, foamy, joyful.', price: '13' },
     { name: 'Clos du Héron · Jura', desc: 'Savagnin, oxidative, walnut and green apple.', price: '16' },
   ]),
   menuSection('Small plates', 'The salty, snacky things a first glass wants. Built for the middle of the table.', [
@@ -394,22 +394,22 @@ const MENU: Node[] = [
   ]),
   menuSection('Cheese & charcuterie', 'Built to order at the counter. Pick a number; we’ll build the board with honey, pickles and bread.', [
     { name: 'Three', desc: 'Three cuts or cheeses of your choosing.', price: '16' },
-    { name: 'Five', desc: 'Five — the sweet spot for two or three of you.', price: '24' },
+    { name: 'Five', desc: 'Five: the sweet spot for two or three of you.', price: '24' },
     { name: 'Seven', desc: 'The full board, for the table.', price: '32' },
     { name: 'Just the cheese', desc: 'A rotating three from a nearby dairy, with honeycomb.', price: '15' },
   ]),
   menuSection('Larger plates', 'A handful of warm plates off the little kitchen, when a nibble won’t do.', [
-    { name: 'Wood-grilled flatbread, ’nduja, honey', desc: 'Blistered, spicy, sweet — the one everyone orders.', price: '15' },
+    { name: 'Wood-grilled flatbread, ’nduja, honey', desc: 'Blistered, spicy, sweet: the one everyone orders.', price: '15' },
     { name: 'Mussels, cider, garlic, cream', desc: 'A pot to share, with fries to mop it up.', price: '22' },
     { name: 'Steak, anchovy butter, watercress', desc: 'A grilled bavette, sliced, for one who’s hungry or two who aren’t.', price: '28' },
     { name: 'Mushrooms on toast, aged parmesan', desc: 'Seasonal mushrooms, garlic, a slick of butter.', price: '16' },
   ]),
-  menuSection('By the bottle', 'A short peek at the wall — hundreds more downstairs. Corkage on anything you spot on the shelf is $10 to drink in.', [
+  menuSection('By the bottle', 'A short peek at the wall: hundreds more downstairs. Corkage on anything you spot on the shelf is $10 to drink in.', [
     { name: 'Faubourg “Vieilles Vignes” · Loire', desc: 'The old-vine chenin, worth the sit-down.', price: '58' },
     { name: 'Cascina Vecchia Barbaresco · Piedmont', desc: 'Give it an hour and it gives everything back.', price: '92' },
     { name: 'Domaine du Héron · Jura', desc: 'Poulsard, pale and haunting, a table favourite.', price: '64' },
     { name: 'Steinbruch Grosses Gewächs · Mosel', desc: 'Dry riesling with years ahead of it.', price: '78' },
-    { name: 'House pét-nat, magnum', desc: 'For a crowd — pops loud, drinks easy.', price: '110' },
+    { name: 'House pét-nat, magnum', desc: 'For a crowd: pops loud, drinks easy.', price: '110' },
   ]),
 ];
 
@@ -422,7 +422,7 @@ const BOOK_INTRO: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Reserve' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Pick your party size and a time below — you’ll see live availability for the next few weeks, tables and bar stools alike. For groups of six or more, or to enquire about hiring the room on a Sunday, drop us a line and we’ll sort it.',
+            text: 'Pick your party size and a time below: you’ll see live availability for the next few weeks, tables and bar stools alike. For groups of six or more, or to enquire about hiring the room on a Sunday, drop us a line and we’ll sort it.',
           }),
         ],
       }),
@@ -439,13 +439,13 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Decant' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Decant is a small wine bar down a side street off the old cloth market. We opened with one idea: pour the wines we actually want to drink — mostly low-intervention, mostly from growers we can name — without the ceremony that usually comes attached. No sommelier speech, no white tablecloth. Just good bottles, a warm room, and someone behind the bar who’s happy to talk if you want to and happy not to if you don’t.',
+            text: 'Decant is a small wine bar down a side street off the old cloth market. We opened with one idea: pour the wines we actually want to drink (mostly low-intervention, mostly from growers we can name) without the ceremony that usually comes attached. No sommelier speech, no white tablecloth. Just good bottles, a warm room, and someone behind the bar who’s happy to talk if you want to and happy not to if you don’t.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The list changes every week — a rotating dozen by the glass, a wall of bottles you can browse, and a few things kept back for the regulars. The kitchen is small on purpose: a handful of plates built to go with what’s in your glass, not to compete with it.',
+            text: 'The list changes every week: a rotating dozen by the glass, a wall of bottles you can browse, and a few things kept back for the regulars. The kitchen is small on purpose: a handful of plates built to go with what’s in your glass, not to compete with it.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'The room’s not big, so book ahead for a table — but there’s almost always a stool free at the bar for a glass and a plate. Come in from the cold.',
+            text: 'The room’s not big, so book ahead for a table, but there’s almost always a stool free at the bar for a glass and a plate. Come in from the cold.',
           }),
         ],
       }),
@@ -503,7 +503,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [1440, 180],
       policyText:
-        'Tables are held for 15 minutes past your time. Plans change — just let us know by the day before and we’ll free your table for someone else. We’ll send a reminder the day before and a few hours ahead.',
+        'Tables are held for 15 minutes past your time. Plans change. Just let us know by the day before and we’ll free your table for someone else. We’ll send a reminder the day before and a few hours ahead.',
     },
     {
       handle: 'bar-standard',
@@ -512,7 +512,7 @@ const SCHEDULING = {
       cancellationWindowHours: 12,
       reminderOffsetsMin: [180],
       policyText:
-        'Bar stools are the loosest booking we do — grab them for a glass and a plate. If you can’t make it, a quick heads-up frees them for the next walk-in.',
+        'Bar stools are the loosest booking we do: grab them for a glass and a plate. If you can’t make it, a quick heads-up frees them for the next walk-in.',
     },
   ],
   resources: [
@@ -530,7 +530,7 @@ const SCHEDULING = {
       handle: 'table-for-two',
       name: 'Table for two',
       description:
-        'A table for two, for the evening. Two hours is plenty for a bottle and a few plates — we won’t rush you.',
+        'A table for two, for the evening. Two hours is plenty for a bottle and a few plates. We won’t rush you.',
       bookingType: 'reservation',
       durationMinutes: 120,
       assignmentStrategy: 'any_available',
@@ -551,7 +551,7 @@ const SCHEDULING = {
       handle: 'bar-seats',
       name: 'Bar seats',
       description:
-        'A pair of stools at the counter — the best seats in the house, right across from the open bottles. For one or two, a glass and a plate.',
+        'A pair of stools at the counter: the best seats in the house, right across from the open bottles. For one or two, a glass and a plate.',
       bookingType: 'reservation',
       durationMinutes: 90,
       assignmentStrategy: 'any_available',
@@ -567,7 +567,7 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-restaurant-winebar',
   name: 'Wine bar',
   summary:
-    'A complete, working site for an evening wine bar: a real by-the-glass and small-plates menu, and a live reservations flow (tables and bar stools as bookable resources, party-size reservation services, evening hours, a relaxed cancellation policy) on the /reserve page. Moody low-lit theme — charcoal-wine ground, a lit burgundy, a brass accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Decant.',
+    'A complete, working site for an evening wine bar: a real by-the-glass and small-plates menu, and a live reservations flow (tables and bar stools as bookable resources, party-size reservation services, evening hours, a relaxed cancellation policy) on the /reserve page. Moody low-lit theme, charcoal-wine ground, a lit burgundy, a brass accent. Pages: Home, Menu, Reserve, About, Visit. Shipped as Decant.',
   tagline: 'A moody, working template for a wine bar that takes reservations.',
   industry: 'Wine bar & small plates',
   sortWeight: 85,
@@ -593,14 +593,14 @@ const SPEC: ServiceSiteSpec = {
   },
   seo: {
     home: {
-      title: 'Decant — a wine bar',
+      title: 'Decant: a wine bar',
       description:
-        'Decant is an evening wine bar — a rotating dozen by the glass, a wall of low-intervention bottles, and a few good plates. Open Tue–Sat. See the list and reserve a table.',
+        'Decant is an evening wine bar: a rotating dozen by the glass, a wall of low-intervention bottles, and a few good plates. Open Tue–Sat. See the list and reserve a table.',
     },
     about: {
-      title: 'About Decant — the wine bar',
+      title: 'About Decant: the wine bar',
       description:
-        'A small, low-lit wine bar off the old cloth market — mostly low-intervention bottles from growers we can name, a short kitchen, and no ceremony. Pull up a stool.',
+        'A small, low-lit wine bar off the old cloth market: mostly low-intervention bottles from growers we can name, a short kitchen, and no ceremony. Pull up a stool.',
     },
   },
   home: HOME,

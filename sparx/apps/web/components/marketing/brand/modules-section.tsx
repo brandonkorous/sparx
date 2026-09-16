@@ -21,7 +21,7 @@ const MODULES: ModuleColor[] = [
     hex: '#6366F1',
     token: '--color-module-builder',
     bg: 'bg-module-builder',
-    why: 'The site-building foundation — where every tenant starts.',
+    why: 'The site-building foundation: where every tenant starts.',
   },
   {
     module: 'Commerce',
@@ -29,7 +29,7 @@ const MODULES: ModuleColor[] = [
     hex: '#F97316',
     token: '--color-module-commerce',
     bg: 'bg-module-commerce',
-    why: 'Action, conversion, energy — every “Buy Now” ever.',
+    why: 'Action, conversion, energy: every “Buy Now” ever.',
   },
   {
     module: 'CMS',
@@ -37,7 +37,7 @@ const MODULES: ModuleColor[] = [
     hex: '#14B8A6',
     token: '--color-module-cms',
     bg: 'bg-module-cms',
-    why: 'Editorial, calm, focused — content-creation energy.',
+    why: 'Editorial, calm, focused: content-creation energy.',
   },
   {
     module: 'CRM',
@@ -69,7 +69,7 @@ const MODULES: ModuleColor[] = [
     hex: '#EC4899',
     token: '--color-module-ai',
     bg: 'bg-module-ai',
-    why: 'Premium, intelligent, unexpected — different in kind.',
+    why: 'Premium, intelligent, unexpected: different in kind.',
   },
   {
     module: 'Dropship',
@@ -85,7 +85,7 @@ const MODULES: ModuleColor[] = [
     hex: '#65A30D',
     token: '--color-module-invoicing',
     bg: 'bg-module-invoicing',
-    why: 'Getting paid — cashflow, money in.',
+    why: 'Getting paid: cashflow, money in.',
   },
   {
     module: 'Inventory',
@@ -109,7 +109,7 @@ const MODULES: ModuleColor[] = [
     hex: '#F43F5E',
     token: '--color-module-scheduling',
     bg: 'bg-module-scheduling',
-    why: 'Time, rhythm, the calendar — booking and cadence.',
+    why: 'Time, rhythm, the calendar: booking and cadence.',
   },
   {
     module: 'Automations',
@@ -117,7 +117,7 @@ const MODULES: ModuleColor[] = [
     hex: '#D946EF',
     token: '--color-module-automations',
     bg: 'bg-module-automations',
-    why: 'Workflows firing — work happening on its own.',
+    why: 'Workflows firing: work happening on its own.',
   },
   {
     module: 'SEO',
@@ -140,7 +140,7 @@ export function ModulesSection() {
               Fourteen modules. <span>One color each</span>
             </>
           }
-          lede="Every module owns a single hue, and it surfaces identically in three places: the module’s marketing site, its nav item in the dashboard, and a soft color-mix wash on its cards. One softly-tinted card per module tells a tenant where they are — quiet wayfinding, no loud stripe and no label required."
+          lede="Every module owns a single hue, and it surfaces identically in three places: the module’s marketing site, its nav item in the dashboard, and a soft color-mix wash on its cards. One softly-tinted card per module tells a tenant where they are: quiet wayfinding, no loud stripe and no label required."
         />
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -178,13 +178,13 @@ export function ModulesSection() {
             Pink stays reserved for AI even though the palette has since grown to cover the full
             spectrum. Every other AI product reached for purple, teal, or blue; pink is unused in
             B2B SaaS AI branding and signals “different in kind”. Builder Indigo + Pink is
-            near-complementary, so it reads as hierarchy. (Rose is Scheduling’s hue, not AI’s — a
+            near-complementary, so it reads as hierarchy. (Rose is Scheduling’s hue, not AI’s: a
             neighbouring red that stays distinct because the two never share a surface.)
           </Callout>
           <Callout bg="bg-module-inventory" title="When a module color is also a semantic hue">
             Inventory’s Amber is the warning hue, so inside Inventory, stock alerts use danger/red
             to stay distinct from the module chrome. On a solid Amber or Yellow fill (Inventory,
-            SEO), text and icons use dark ink — white fails AA. Warning, danger, and success keep
+            SEO), text and icons use dark ink: white fails AA. Warning, danger, and success keep
             their meaning on every surface, in every module.
           </Callout>
         </div>

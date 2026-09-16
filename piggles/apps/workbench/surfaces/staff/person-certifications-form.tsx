@@ -109,7 +109,7 @@ export function NewCertificationForm({
             }
           />
           <FieldDescription>
-            Leave blank if it never expires — that is a real answer, and it will not be treated as a
+            Leave blank if it never expires. That is a real answer, and it will not be treated as a
             missing date.
           </FieldDescription>
         </Field>

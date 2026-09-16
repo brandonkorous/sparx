@@ -70,7 +70,7 @@ export function PaletteEditor({
 
       <p className="text-base">
         <strong>The job belongs to the position, not to the color.</strong> Drag a swatch under a
-        different heading to give it that job — move your pink to the front and it becomes{' '}
+        different heading to give it that job. Move your pink to the front and it becomes{' '}
         <span className="font-mono font-semibold">primary</span>, which is{' '}
         <span className="font-mono font-semibold">--color-primary</span> in every export below.
         Keeping a color pins it to the job it is doing, so shuffling leaves both alone.
@@ -84,7 +84,7 @@ export function PaletteEditor({
           <AlertContent>
             <AlertTitle>{VISIONS[vision].label}</AlertTitle>
             <AlertDescription>
-              {VISIONS[vision].blurb} The codes on each color have not changed — only what is on the
+              {VISIONS[vision].blurb} The codes on each color have not changed. Only what is on the
               screen has.
             </AlertDescription>
           </AlertContent>

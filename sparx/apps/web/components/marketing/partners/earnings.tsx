@@ -105,7 +105,7 @@ export function PartnersEarnings({ stacks }: { stacks: StackOption[] }) {
                   onClick={() => setStackKey(s.key)}
                   aria-pressed={s.key === stack.key}
                 >
-                  {`${s.label} — ${money(s.monthly)}/mo`}
+                  {`${s.label}: ${money(s.monthly)}/mo`}
                 </Button>
               ))}
             </div>
@@ -131,7 +131,7 @@ export function PartnersEarnings({ stacks }: { stacks: StackOption[] }) {
             <Text className="text-md">{tier.note}</Text>
           </Control>
 
-          <Control label={`Clients you bring over in a year — ${clients}`}>
+          <Control label={`Clients you bring over in a year: ${clients}`}>
             <div className="flex w-full max-w-xl items-center gap-4">
               <Text as="span" className="text-md">
                 1
@@ -166,7 +166,7 @@ export function PartnersEarnings({ stacks }: { stacks: StackOption[] }) {
               k={
                 sums.ongoingMonthly > 0
                   ? 'every month after, for as long as you manage them.'
-                  : 'the ongoing 5% starts once you are certified — nothing here yet.'
+                  : 'the ongoing 5% starts once you are certified. Nothing here yet.'
               }
               quiet={sums.ongoingMonthly === 0}
             />
@@ -186,7 +186,7 @@ export function PartnersEarnings({ stacks }: { stacks: StackOption[] }) {
             </Heading>
             <Text className="text-lg">
               {`Between them. The same stack costs ${money(stack.elsewhere)} a month across ` +
-                `separate subscriptions and ${money(stack.monthly)} a month on sparx — so every ` +
+                `separate subscriptions and ${money(stack.monthly)} a month on sparx, so every ` +
                 `client you move keeps ${money((stack.elsewhere - stack.monthly) * 12)} a year ` +
                 `that used to go to software. That is the conversation, and it is the reason ` +
                 `your fee never has to be the thing that gets cut.`}
@@ -203,7 +203,7 @@ export function PartnersEarnings({ stacks }: { stacks: StackOption[] }) {
           `Certified, plus 5% of every month after on accounts you manage as a Certified ` +
           `partner. Stack prices are sparx's own; the comparison figure is the published 2026 ` +
           `price of the tools each module replaces. Year one assumes each client stays the full ` +
-          `twelve months — real books churn, so treat it as the ceiling, not the forecast.`}
+          `twelve months: real books churn, so treat it as the ceiling, not the forecast.`}
       </Text>
     </div>
   );

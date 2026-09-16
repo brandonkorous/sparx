@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 12,
       "reminderOffsetsMin": [1440, 180],
-      "policyText": "No deposit, ever — we hold your table for 15 minutes past your time. Plans change; just let us know by the morning of and we’ll pass the table on. We’ll send a friendly reminder the day before and a few hours ahead. Walk-ins are always welcome at the counter."
+      "policyText": "No deposit, ever. We hold your table for 15 minutes past your time. Plans change; just let us know by the morning of and we’ll pass the table on. We’ll send a friendly reminder the day before and a few hours ahead. Walk-ins are always welcome at the counter."
     },
     {
       "handle": "large-table",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 180],
-      "policyText": "The big table is free to book — no deposit. Because it seats so many, we ask that you let us know a day ahead if plans change, so someone else can enjoy it. For seven or more, drop us a line and we’ll sort it."
+      "policyText": "The big table is free to book: no deposit. Because it seats so many, we ask that you let us know a day ahead if plans change, so someone else can enjoy it. For seven or more, drop us a line and we’ll sort it."
     }
   ],
   "resources": [
@@ -401,7 +401,7 @@
     {
       "handle": "table-for-two",
       "name": "Table for two",
-      "description": "A table for two, for lunch, dinner or Sunday brunch. Ninety minutes at the weekend, longer midweek — we won’t rush you.",
+      "description": "A table for two, for lunch, dinner or Sunday brunch. Ninety minutes at the weekend, longer midweek. We won’t rush you.",
       "bookingType": "reservation",
       "durationMinutes": 90,
       "assignmentStrategy": "any_available",
@@ -435,7 +435,7 @@
     {
       "handle": "table-for-six",
       "name": "Table for six",
-      "description": "The long table, for five or six. No deposit — just give us a day’s notice if plans change. For seven or more, email us and we’ll sort it.",
+      "description": "The long table, for five or six. No deposit. Just give us a day’s notice if plans change. For seven or more, email us and we’ll sort it.",
       "bookingType": "reservation",
       "durationMinutes": 120,
       "assignmentStrategy": "any_available",

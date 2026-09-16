@@ -108,7 +108,7 @@ export function DashboardsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title="No dashboards yet"
               description={productCopy(
                 'analytics.dashboards.firstRun',
-                'Dashboards arrive with the apps you switch on — add My Site and its traffic dashboard turns up here, for example.'
+                'Dashboards arrive with the apps you switch on. Add My Site and its traffic dashboard turns up here, for example.'
               )}
             />
           ) : (

@@ -59,7 +59,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Add a price tier — hold Shift to open alongside, Alt for a new window"
+            title="Add a price tier: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('b2b.pricing-tier.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -84,7 +84,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<DollarSign className="size-6" aria-hidden />}
             title="Could not load your price tiers"
-            description="This is a problem reaching the server. Your tiers are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your tiers are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -101,7 +101,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No price tiers yet',
               description:
-                'A price tier is a named trade level — trade, distributor, key account — with a discount you set once and give to every account on it. Add your first one, then put accounts on it.',
+                'A price tier is a named trade level (trade, distributor, key account) with a discount you set once and give to every account on it. Add your first one, then put accounts on it.',
             }}
           />
         ) : (

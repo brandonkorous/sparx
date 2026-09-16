@@ -92,7 +92,7 @@ const searchOrdersTool: SearchMcpTool = {
 const searchAllTool: SearchMcpTool = {
   name: 'search_all',
   description:
-    'Cross-collection search (products + customers + orders) in one call — the ⌘K palette. ' +
+    'Cross-collection search (products + customers + orders) in one call: the ⌘K palette. ' +
     'Returns the top few matches per collection. Use for a quick "what do we have matching X?".',
   scope: 'read:search',
   confirmation: false,

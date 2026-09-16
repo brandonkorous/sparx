@@ -168,7 +168,7 @@
     {
       "handle": "movement-assessment",
       "name": "Movement assessment",
-      "description": "A full-body movement screen — we find what’s limiting you, then build the plan to fix it and get you back to training.",
+      "description": "A full-body movement screen. We find what’s limiting you, then build the plan to fix it and get you back to training.",
       "durationMinutes": 45,
       "priceCents": 9500,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "sports-injury-visit",
       "name": "Sports injury visit",
-      "description": "Acute or nagging — a focused visit to diagnose the injury, calm it down and start you moving again.",
+      "description": "Acute or nagging: a focused visit to diagnose the injury, calm it down and start you moving again.",
       "durationMinutes": 40,
       "priceCents": 12000,
       "assignmentStrategy": "customer_choice",
@@ -214,7 +214,7 @@
     {
       "handle": "adjustment",
       "name": "Chiropractic adjustment",
-      "description": "A targeted adjustment to restore motion and take pressure off the joints — in and out, back to your day.",
+      "description": "A targeted adjustment to restore motion and take pressure off the joints: in and out, back to your day.",
       "durationMinutes": 20,
       "priceCents": 6500,
       "assignmentStrategy": "any_available",
@@ -285,7 +285,7 @@
     {
       "handle": "rehab-session",
       "name": "Rehab session",
-      "description": "Loaded, progressive rehab — the strength and control work that keeps the injury from coming back.",
+      "description": "Loaded, progressive rehab: the strength and control work that keeps the injury from coming back.",
       "durationMinutes": 60,
       "priceCents": 11000,
       "assignmentStrategy": "customer_choice",
@@ -308,7 +308,7 @@
     {
       "handle": "performance-consult",
       "name": "Performance consult",
-      "description": "A free sit-down to map your training goals and see whether we’re the right team to get you there — no pressure.",
+      "description": "A free sit-down to map your training goals and see whether we’re the right team to get you there: no pressure.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

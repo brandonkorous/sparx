@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Vela — new album Small Hours, out now",
-      "seoDescription": "Vela — a four-piece writing songs for the small hours. The new record Small Hours is out everywhere, and the tour is on the road. Music, tour, and everything in between.",
+      "seoTitle": "Vela: new album Small Hours, out now",
+      "seoDescription": "Vela: a four-piece writing songs for the small hours. The new record Small Hours is out everywhere, and the tour is on the road. Music, tour, and everything in between.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -809,7 +809,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "text-sm font-semibold uppercase tracking-wide text-primary",
-                                "children": ["New album — out now"],
+                                "children": ["New album: out now"],
                                 "id": "f2e0c955-cb3d-42c0-ad73-4e4e1b593966",
                                 "ord": "a0"
                               },
@@ -826,7 +826,7 @@
                                 "tag": "p",
                                 "class": "text-lg leading-relaxed text-base-content",
                                 "children": [
-                                  "Music, tour, and everything in between. Songs for the small hours — the new record, Small Hours, is out everywhere tonight."
+                                  "Music, tour, and everything in between. Songs for the small hours: the new record, Small Hours, is out everywhere tonight."
                                 ],
                                 "id": "0d01d6e6-0da5-4239-979a-867fc9e29dd8",
                                 "ord": "a2"
@@ -1063,7 +1063,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The Small Hours tour — a room, a record, and a very late night. Dates below; more added as we route them."
+                      "The Small Hours tour: a room, a record, and a very late night. Dates below; more added as we route them."
                     ],
                     "id": "289d9785-5e0f-458d-b95f-e08a2c062f66",
                     "ord": "a1"
@@ -1576,7 +1576,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Studio notes, single announcements and tour diary — newest first."
+                      "Studio notes, single announcements and tour diary: newest first."
                     ],
                     "id": "0e79e218-2d65-4599-9ba8-bb0f6ec8c571",
                     "ord": "a1"
@@ -1915,7 +1915,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Vela",
+      "seoTitle": "Shop: Vela",
       "seoDescription": "Browse everything Vela makes, with prices and options at a glance. Recording artist & band.",
       "root": {
         "kind": "element",
@@ -1973,7 +1973,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Vela",
+      "seoTitle": "Collections: Vela",
       "seoDescription": "Explore the collections at Vela, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2014,7 +2014,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Vela",
+      "seoTitle": "Your cart: Vela",
       "seoDescription": "Review what is in your cart and check out securely at Vela.",
       "root": {
         "kind": "element",
@@ -2055,7 +2055,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Vela",
+      "seoTitle": "Search: Vela",
       "seoDescription": "Search Vela for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2096,7 +2096,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Vela",
+      "seoTitle": "Journal: Vela",
       "seoDescription": "Stories, guides and notes from Vela.",
       "root": {
         "kind": "element",
@@ -2128,7 +2128,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Studio notes, single releases and postcards from the road — written by the band, published as it happens."
+                      "Studio notes, single releases and postcards from the road: written by the band, published as it happens."
                     ],
                     "id": "d47e9c14-1c37-4b13-b4bc-bdd5040d6ccf",
                     "ord": "a1"
@@ -2261,8 +2261,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Vela — the band, the record, the road",
-      "seoDescription": "Who Vela is and how they work — a self-produced, self-booked four-piece who record everything live in one room. No label between you and the band.",
+      "seoTitle": "About Vela: the band, the record, the road",
+      "seoDescription": "Who Vela is and how they work: a self-produced, self-booked four-piece who record everything live in one room. No label between you and the band.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2293,7 +2293,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Vela is a four-piece who write songs for the small hours — the ones you play on the drive home when the city has gone quiet. Formed in a shared flat over a winter of power cuts, the band built its sound the way it builds everything: live, in one room, with the lights low."
+                      "Vela is a four-piece who write songs for the small hours: the ones you play on the drive home when the city has gone quiet. Formed in a shared flat over a winter of power cuts, the band built its sound the way it builds everything: live, in one room, with the lights low."
                     ],
                     "id": "7a7d3e34-6e2d-4739-bef9-082bea8a836d",
                     "ord": "a1"
@@ -2303,7 +2303,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Three records in, they still self-produce, still tour in a van they own, and still answer the fan mail themselves. Small Hours, the new album, was cut to tape in the same flat where the first demos were made — a full circle nobody planned and everybody noticed."
+                      "Three records in, they still self-produce, still tour in a van they own, and still answer the fan mail themselves. Small Hours, the new album, was cut to tape in the same flat where the first demos were made: a full circle nobody planned and everybody noticed."
                     ],
                     "id": "b23a3fd7-62d6-49f6-b917-5ca6e7a8248c",
                     "ord": "a2"
@@ -2313,7 +2313,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "This site is where the band puts everything first — the releases, the dates, the notes from the studio floor, and the merch that keeps the van on the road. No label between you and them."
+                      "This site is where the band puts everything first: the releases, the dates, the notes from the studio floor, and the merch that keeps the van on the road. No label between you and them."
                     ],
                     "id": "1988f19d-1cf9-406b-9845-b0e6bde53b7a",
                     "ord": "a3"
@@ -2333,8 +2333,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Vela",
-      "seoDescription": "Get in touch with Vela — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Vela",
+      "seoDescription": "Get in touch with Vela: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2370,7 +2370,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Booking, press, sync licensing, or a note about a show — everything reaches the band. We read all of it, and we answer what we can."
+                          "Booking, press, sync licensing, or a note about a show. Everything reaches the band. We read all of it, and we answer what we can."
                         ],
                         "id": "3b5faba2-378b-47bb-afe5-97b4cd597f48",
                         "ord": "a1"
@@ -2641,8 +2641,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Article — Vela",
-      "seoDescription": "A story from Vela — the writing, the reporting and the notes behind it.",
+      "seoTitle": "Article: Vela",
+      "seoDescription": "A story from Vela: the writing, the reporting and the notes behind it.",
       "root": {
         "kind": "element",
         "tag": "div",

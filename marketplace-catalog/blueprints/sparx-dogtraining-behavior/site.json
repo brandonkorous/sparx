@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "K9 Method — private dog training & behavior",
+      "seoTitle": "K9 Method: private dog training & behavior",
       "seoDescription": "K9 Method is a results-driven private dog-training and behavior practice: reactivity, aggression, puppy foundations, board-and-train and service-dog work. Book your assessment online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Private training and board-and-train for the dogs other programs give up on — reactivity, aggression, puppy foundations and service-dog work. It starts with an assessment."
+                      "Private training and board-and-train for the dogs other programs give up on: reactivity, aggression, puppy foundations and service-dog work. It starts with an assessment."
                     ],
                     "id": "a3518713-a81c-463a-bfdc-222041cfa827",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every trainer here works cases full-time — reactivity, aggression, anxiety and obedience. You get the specialist your dog’s behavior actually calls for."
+                              "Every trainer here works cases full-time: reactivity, aggression, anxiety and obedience. You get the specialist your dog’s behavior actually calls for."
                             ],
                             "id": "afbf0464-0bf3-409b-a5a9-a7ce220e4c86",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Train where the behavior happens — in your home and your routine — or send your dog for immersive board-and-train and get the skills handed back to you."
+                              "Train where the behavior happens (in your home and your routine) or send your dog for immersive board-and-train and get the skills handed back to you."
                             ],
                             "id": "872e63e7-b80a-4778-9002-19fd102de5b1",
                             "ord": "a1"
@@ -1217,7 +1217,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most training fails because it treats symptoms and skips the cause. We do the opposite — a real assessment to understand why your dog does what it does, then a step-by-step plan that changes the behavior at its root."
+                          "Most training fails because it treats symptoms and skips the cause. We do the opposite: a real assessment to understand why your dog does what it does, then a step-by-step plan that changes the behavior at its root."
                         ],
                         "id": "d5a71f32-fa96-4c7f-b155-02c49c3084ad",
                         "ord": "a1"
@@ -1292,7 +1292,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with the specialist whose expertise fits your dog."
+                          "Book by name: you’ll work with the specialist whose expertise fits your dog."
                         ],
                         "id": "dacd5d45-e476-4702-97cc-2400dd4f6009",
                         "ord": "a1"
@@ -1405,7 +1405,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Calm under pressure with the toughest cases — leash reactivity, resource guarding and bite histories handled safely and humanely."
+                                  "Calm under pressure with the toughest cases: leash reactivity, resource guarding and bite histories handled safely and humanely."
                                 ],
                                 "id": "c7eaccb7-b896-4cc3-902c-4267e4c64b6c",
                                 "ord": "a2"
@@ -1501,7 +1501,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“We were ready to rehome our dog after two bad bites. Six weeks with K9 Method and he greets guests calmly at the door. They didn’t just fix the dog — they taught us how to keep him that way.”"
+                      "“We were ready to rehome our dog after two bad bites. Six weeks with K9 Method and he greets guests calmly at the door. They didn’t just fix the dog. They taught us how to keep him that way.”"
                     ],
                     "id": "2d392fd2-4d67-4492-942e-0e01d536b431",
                     "ord": "a0"
@@ -1576,7 +1576,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — K9 Method",
+      "seoTitle": "Book: K9 Method",
       "seoDescription": "See what K9 Method offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1700,7 +1700,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "18064e3b-451e-4fb9-9294-46cf27e35238",
                         "ord": "a1"
@@ -1807,7 +1807,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — K9 Method",
+      "seoTitle": "About: K9 Method",
       "seoDescription": "Who K9 Method is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1856,7 +1856,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "K9 Method exists for the dogs that group classes and quick fixes couldn’t reach — the reactive, the anxious, the ones with a bite history and an owner running out of options. We take those cases seriously, and we get results."
+                          "K9 Method exists for the dogs that group classes and quick fixes couldn’t reach: the reactive, the anxious, the ones with a bite history and an owner running out of options. We take those cases seriously, and we get results."
                         ],
                         "id": "ca2eeee1-1ed8-4343-9ceb-cd546bdb2d67",
                         "ord": "a1"
@@ -1866,7 +1866,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Our promise is simple: an honest assessment, a plan grounded in how dogs actually learn, and a specialist who treats your dog’s behavior — and your family’s safety — like it matters. Because it does."
+                          "Our promise is simple: an honest assessment, a plan grounded in how dogs actually learn, and a specialist who treats your dog’s behavior (and your family’s safety) like it matters. Because it does."
                         ],
                         "id": "145e865d-026b-4cc3-98aa-b76175734735",
                         "ord": "a2"
@@ -1971,7 +1971,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Clear, consistent, science-based training — no intimidation, no gimmicks. We change behavior by teaching, not by force."
+                              "Clear, consistent, science-based training: no intimidation, no gimmicks. We change behavior by teaching, not by force."
                             ],
                             "id": "1805b475-789a-42d2-8756-1fb877759639",
                             "ord": "a1"
@@ -2026,7 +2026,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — K9 Method",
+      "seoTitle": "Visit: K9 Method",
       "seoDescription": "Where to find K9 Method, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2063,7 +2063,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and K9 Method will get back to you — usually the same day."
+                          "Questions before you book? Send a note and K9 Method will get back to you, usually the same day."
                         ],
                         "id": "0626cd5a-2df0-40e3-b1bd-7ce3e44c35e6",
                         "ord": "a1"
@@ -2513,7 +2513,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your assessment online — no phone tag, no waiting on a callback."
+                      "See live availability and reserve your assessment online: no phone tag, no waiting on a callback."
                     ],
                     "id": "9db704ce-5b40-4bba-a05c-7fb7c327a572",
                     "ord": "a1"

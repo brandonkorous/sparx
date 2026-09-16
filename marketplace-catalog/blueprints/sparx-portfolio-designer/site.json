@@ -531,8 +531,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Sasha Rourke — product & UX designer",
-      "seoDescription": "Sasha Rourke is an independent product designer working across fintech and healthcare — selected work, case studies, and how to start a project.",
+      "seoTitle": "Sasha Rourke: product & UX designer",
+      "seoDescription": "Sasha Rourke is an independent product designer working across fintech and healthcare: selected work, case studies, and how to start a project.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -568,7 +568,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-xl leading-relaxed text-base-content @2xl:text-2xl",
                         "children": [
-                          "I’m Sasha Rourke — I design product interfaces and the systems behind them, from the first sketch to the shipped release. Twelve years, mostly fintech and health, always end to end."
+                          "I’m Sasha Rourke: I design product interfaces and the systems behind them, from the first sketch to the shipped release. Twelve years, mostly fintech and health, always end to end."
                         ],
                         "id": "67774ceb-fe51-460a-be35-3d81394b6195",
                         "ord": "a1"
@@ -1012,7 +1012,7 @@
                             "tag": "p",
                             "class": "text-lg leading-relaxed text-base-content",
                             "children": [
-                              "Kiln’s five squads were each rebuilding the same buttons. I built the shared system — tokens, components, and the docs that made teams actually adopt it."
+                              "Kiln’s five squads were each rebuilding the same buttons. I built the shared system: tokens, components, and the docs that made teams actually adopt it."
                             ],
                             "id": "8e707a59-3ab9-4a1c-8dd2-11aba631c330",
                             "ord": "a2"
@@ -1125,7 +1125,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "End-to-end interface design — flows, wireframes, high-fidelity screens, and the prototype that proves them before a line of code is written."
+                              "End-to-end interface design: flows, wireframes, high-fidelity screens, and the prototype that proves them before a line of code is written."
                             ],
                             "id": "540ffb10-5d90-419d-82f8-45baf98a261f",
                             "ord": "a1"
@@ -1179,7 +1179,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "I test with real users early and often — usability sessions, quick prototypes, and honest readouts that change what we build next."
+                              "I test with real users early and often: usability sessions, quick prototypes, and honest readouts that change what we build next."
                             ],
                             "id": "f56242df-1a3e-41be-9583-08067d2d1626",
                             "ord": "a1"
@@ -1254,8 +1254,8 @@
       "name": "Work",
       "kind": "singleton",
       "slug": "work",
-      "seoTitle": "Work — Sasha Rourke",
-      "seoDescription": "Selected projects and case studies by Sasha Rourke — the work, the thinking, and the outcome.",
+      "seoTitle": "Work: Sasha Rourke",
+      "seoDescription": "Selected projects and case studies by Sasha Rourke: the work, the thinking, and the outcome.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1286,7 +1286,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Case studies from the last few years — fintech, health, and the design systems underneath them. Each opens to the full story: the brief, the work, and what changed."
+                      "Case studies from the last few years: fintech, health, and the design systems underneath them. Each opens to the full story: the brief, the work, and what changed."
                     ],
                     "id": "c35ca7f9-ca4e-4b7d-bf0d-f474371339aa",
                     "ord": "a1"
@@ -1419,7 +1419,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Sasha Rourke — product designer",
+      "seoTitle": "About Sasha Rourke: product designer",
       "seoDescription": "Twelve years shipping product in fintech and healthcare, end to end: research, interface design, and the design systems that keep a team consistent.",
       "root": {
         "kind": "element",
@@ -1456,7 +1456,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I’m a product designer with twelve years of shipping real software — most of it in fintech and healthcare, where getting the details right actually matters to the person on the other end of the screen."
+                          "I’m a product designer with twelve years of shipping real software. Most of it in fintech and healthcare, where getting the details right actually matters to the person on the other end of the screen."
                         ],
                         "id": "fa8cc5f2-86ec-4f43-b160-c5de7b59a61d",
                         "ord": "a1"
@@ -1466,7 +1466,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I work end to end: the research that frames the problem, the flows and screens that solve it, and the design system that keeps a whole team consistent as they build. I care most about the boring parts done well — the empty states, the error messages, the second-time-through experience."
+                          "I work end to end: the research that frames the problem, the flows and screens that solve it, and the design system that keeps a whole team consistent as they build. I care most about the boring parts done well, the empty states, the error messages, the second-time-through experience."
                         ],
                         "id": "f04ef48a-8fe1-4678-a0b7-3e1d99c4bac7",
                         "ord": "a2"
@@ -1548,8 +1548,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Sasha Rourke",
-      "seoDescription": "Start a project with Sasha Rourke — availability, what a good brief looks like, and where to reach them.",
+      "seoTitle": "Contact: Sasha Rourke",
+      "seoDescription": "Start a project with Sasha Rourke: availability, what a good brief looks like, and where to reach them.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1585,7 +1585,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I’m available for select product-design and design-systems work. A good brief tells me the problem you’re solving, who for, and roughly when you need it — but a rough idea is a fine place to start too."
+                          "I’m available for select product-design and design-systems work. A good brief tells me the problem you’re solving, who for, and roughly when you need it, but a rough idea is a fine place to start too."
                         ],
                         "id": "da182a55-6544-49bb-9ee6-98d4f6bfe6be",
                         "ord": "a1"
@@ -1867,8 +1867,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Project — Sasha Rourke",
-      "seoDescription": "A project by Sasha Rourke — the brief, the process, and the result, in one case study.",
+      "seoTitle": "Project: Sasha Rourke",
+      "seoDescription": "A project by Sasha Rourke: the brief, the process, and the result, in one case study.",
       "root": {
         "kind": "element",
         "tag": "div",

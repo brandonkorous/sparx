@@ -141,7 +141,7 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: run, isPending, isError, error, refetch } = useAutomationRun(automationId, runId);
 
   useEffect(() => {
-    if (run) ctx.setTitle(automation ? `${automation.name} — run` : 'Run');
+    if (run) ctx.setTitle(automation ? `${automation.name}: run` : 'Run');
   }, [ctx, run, automation]);
 
   if (isError) {
@@ -212,11 +212,11 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="What happened, step by step"
-            description="Each step this run attempted, in order. “Held back” means a safety check stopped that one step — it is not a failure of the run."
+            description="Each step this run attempted, in order. “Held back” means a safety check stopped that one step. It is not a failure of the run."
           >
             {steps.length === 0 ? (
               <Text className="text-sm">
-                No steps were recorded — the run’s conditions may not have matched.
+                No steps were recorded: the run’s conditions may not have matched.
               </Text>
             ) : (
               <div className="flex flex-col gap-3">

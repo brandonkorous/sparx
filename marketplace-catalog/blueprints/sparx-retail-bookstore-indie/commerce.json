@@ -86,7 +86,7 @@
     {
       "handle": "the-salt-in-her-name",
       "title": "The Salt in Her Name",
-      "description": "A debut novel about a woman who returns to a fishing town to bury a mother she barely knew, and stays to untangle a family that would rather she didn’t. Salt-scoured, quietly furious, and tender in the places you don’t expect — the book the whole shop pressed on each other first.",
+      "description": "A debut novel about a woman who returns to a fishing town to bury a mother she barely knew, and stays to untangle a family that would rather she didn’t. Salt-scoured, quietly furious, and tender in the places you don’t expect: the book the whole shop pressed on each other first.",
       "status": "active",
       "productType": "Book",
       "vendor": "Marisol Vane",
@@ -139,7 +139,7 @@
     {
       "handle": "tin-ceilings",
       "title": "Tin Ceilings",
-      "description": "Three decades in a shrinking mill town, told through the tenants of one crooked apartment block. Frayne writes ordinary lives with the patience of someone who has actually lived one — funny, unshowy, and by the last chapter, quietly devastating.",
+      "description": "Three decades in a shrinking mill town, told through the tenants of one crooked apartment block. Frayne writes ordinary lives with the patience of someone who has actually lived one: funny, unshowy, and by the last chapter, quietly devastating.",
       "status": "active",
       "productType": "Book",
       "vendor": "Odell Frayne",
@@ -147,7 +147,7 @@
       "categoryHandles": ["fiction"],
       "collectionHandles": ["new-this-season", "the-fiction-shelf"],
       "seoTitle": "Tin Ceilings by Odell Frayne | Marginalia Books",
-      "seoDescription": "Three decades of ordinary lives in one crooked apartment block — funny, patient and quietly devastating.",
+      "seoDescription": "Three decades of ordinary lives in one crooked apartment block: funny, patient and quietly devastating.",
       "options": [
         {
           "name": "Format",
@@ -192,7 +192,7 @@
     {
       "handle": "small-hours",
       "title": "Small Hours",
-      "description": "Eleven short stories set between midnight and dawn — a night nurse, a locksmith, a woman who can’t stop driving. Belec is a miniaturist of the sleepless hours, and every one of these lands like a held breath. Perfect for readers who think they don’t like short stories.",
+      "description": "Eleven short stories set between midnight and dawn: a night nurse, a locksmith, a woman who can’t stop driving. Belec is a miniaturist of the sleepless hours, and every one of these lands like a held breath. Perfect for readers who think they don’t like short stories.",
       "status": "active",
       "productType": "Book",
       "vendor": "Junia Belec",
@@ -245,7 +245,7 @@
     {
       "handle": "a-field-guide-to-leaving",
       "title": "A Field Guide to Leaving",
-      "description": "A memoir in the shape of a naturalist’s notebook: every chapter is a species — the swift, the eel, the monarch — and a way of departing. Yao braids migration science with the year they left a marriage and a country, and it is one of the most quietly hopeful books we’ve read in ages.",
+      "description": "A memoir in the shape of a naturalist’s notebook: every chapter is a species (the swift, the eel, the monarch) and a way of departing. Yao braids migration science with the year they left a marriage and a country, and it is one of the most quietly hopeful books we’ve read in ages.",
       "status": "active",
       "productType": "Book",
       "vendor": "Perrin Yao",
@@ -298,7 +298,7 @@
     {
       "handle": "how-cities-breathe",
       "title": "How Cities Breathe",
-      "description": "A clear-eyed, genuinely readable account of what makes a street feel alive — light, width, corners, the humble bench — from an urbanist who’d rather show you than lecture. You’ll never walk your own neighbourhood the same way again. The nonfiction we keep re-ordering.",
+      "description": "A clear-eyed, genuinely readable account of what makes a street feel alive (light, width, corners, the humble bench) from an urbanist who’d rather show you than lecture. You’ll never walk your own neighbourhood the same way again. The nonfiction we keep re-ordering.",
       "status": "active",
       "productType": "Book",
       "vendor": "Tomas Ekhart",
@@ -306,7 +306,7 @@
       "categoryHandles": ["nonfiction"],
       "collectionHandles": ["new-this-season", "the-nonfiction-shelf"],
       "seoTitle": "How Cities Breathe by Tomas Ekhart | Marginalia Books",
-      "seoDescription": "A clear, readable account of what makes a street feel alive — light, width, corners, the humble bench.",
+      "seoDescription": "A clear, readable account of what makes a street feel alive: light, width, corners, the humble bench.",
       "options": [
         {
           "name": "Format",
@@ -351,7 +351,7 @@
     {
       "handle": "root-and-branch",
       "title": "Root and Branch",
-      "description": "A year in an old orchard, and a history of the apple that turns out to be a history of us — trade, empire, obsession, and one grafting knife. Calloway is the rare nature writer who is also very funny. Hand it to anyone who thinks they’re not a \"nature person\".",
+      "description": "A year in an old orchard, and a history of the apple that turns out to be a history of us: trade, empire, obsession, and one grafting knife. Calloway is the rare nature writer who is also very funny. Hand it to anyone who thinks they’re not a \"nature person\".",
       "status": "active",
       "productType": "Book",
       "vendor": "Neave Calloway",
@@ -411,7 +411,7 @@
       "tags": ["gift", "tote", "accessory"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts-for-readers"],
-      "seoTitle": "Marginalia Canvas Tote — a roomy book bag | Marginalia Books",
+      "seoTitle": "Marginalia Canvas Tote: a roomy book bag | Marginalia Books",
       "seoDescription": "A heavyweight natural-canvas tote, screen-printed and cut roomy enough for a stack of books.",
       "variants": [
         {
@@ -439,7 +439,7 @@
       "tags": ["gift", "bookmark", "accessory"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts-for-readers"],
-      "seoTitle": "The Foxed Page Bookmark Set — five letterpress bookmarks | Marginalia Books",
+      "seoTitle": "The Foxed Page Bookmark Set: five letterpress bookmarks | Marginalia Books",
       "seoDescription": "Five letterpress bookmarks on thick cotton stock, each printed with a line we love about reading.",
       "variants": [
         {
@@ -460,14 +460,14 @@
     {
       "handle": "marginalia-gift-card",
       "title": "Marginalia Gift Card",
-      "description": "The safest possible gift for a reader: a Marginalia gift card, redeemable in the shop or online against anything on the shelves. Delivered by email with a note you write, or printed on card to slip into a book — your choice. Never expires, never the wrong size.",
+      "description": "The safest possible gift for a reader: a Marginalia gift card, redeemable in the shop or online against anything on the shelves. Delivered by email with a note you write, or printed on card to slip into a book. Your choice. Never expires, never the wrong size.",
       "status": "active",
       "productType": "Gift card",
       "vendor": "Marginalia Books",
       "tags": ["gift", "gift-card"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts-for-readers"],
-      "seoTitle": "Marginalia Gift Card — the safe gift for any reader | Marginalia Books",
+      "seoTitle": "Marginalia Gift Card: the safe gift for any reader | Marginalia Books",
       "seoDescription": "A Marginalia gift card redeemable in the shop or online. Delivered by email or printed on card.",
       "options": [
         {
@@ -524,14 +524,14 @@
     {
       "handle": "the-marginalia-book-club",
       "title": "The Marginalia Book Club",
-      "description": "A hand-picked book on your doorstep every month — tell us what you like, and we choose one we’d press into your hands ourselves, wrap it, and post it with the card that says why. Fiction, nonfiction, or a surprise mix; skip or cancel any time. The gift that keeps someone reading widely all year.",
+      "description": "A hand-picked book on your doorstep every month. Tell us what you like, and we choose one we’d press into your hands ourselves, wrap it, and post it with the card that says why. Fiction, nonfiction, or a surprise mix; skip or cancel any time. The gift that keeps someone reading widely all year.",
       "status": "active",
       "productType": "Subscription",
       "vendor": "Marginalia Books",
       "tags": ["subscription", "gift", "book-club"],
       "categoryHandles": ["gifts"],
       "collectionHandles": ["gifts-for-readers", "staff-picks"],
-      "seoTitle": "The Marginalia Book Club — a hand-picked book, monthly | Marginalia Books",
+      "seoTitle": "The Marginalia Book Club: a hand-picked book, monthly | Marginalia Books",
       "seoDescription": "A hand-picked book on your doorstep every month, wrapped with the card that says why. Skip or cancel any time.",
       "options": [
         {

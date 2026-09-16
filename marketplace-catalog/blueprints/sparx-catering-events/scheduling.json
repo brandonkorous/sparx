@@ -123,7 +123,7 @@
     {
       "handle": "event-consultation",
       "name": "Event consultation",
-      "description": "A relaxed sit-down to shape your menu, service style, headcount and budget — no charge, no pressure.",
+      "description": "A relaxed sit-down to shape your menu, service style, headcount and budget: no charge, no pressure.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -176,7 +176,7 @@
     {
       "handle": "corporate-event-consult",
       "name": "Corporate event consult",
-      "description": "Plan catering for a launch, gala or company celebration — service levels, dietary needs and timing.",
+      "description": "Plan catering for a launch, gala or company celebration: service levels, dietary needs and timing.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -193,7 +193,7 @@
     {
       "handle": "seasonal-menu-tasting",
       "name": "Seasonal menu tasting",
-      "description": "Sample the season’s menu — the dishes at their peak right now — and build yours from what you love.",
+      "description": "Sample the season’s menu (the dishes at their peak right now) and build yours from what you love.",
       "durationMinutes": 90,
       "priceCents": 5000,
       "bufferAfterMin": 15,
@@ -211,7 +211,7 @@
     {
       "handle": "cocktail-reception-consult",
       "name": "Cocktail reception consult",
-      "description": "Design a canapé and bar experience — passed bites, grazing stations and pairings for a standing crowd.",
+      "description": "Design a canapé and bar experience: passed bites, grazing stations and pairings for a standing crowd.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -228,7 +228,7 @@
     {
       "handle": "large-event-consult",
       "name": "Large event consult",
-      "description": "For 100+ guests — logistics, staffing, rentals and flow, mapped out with your lead coordinator.",
+      "description": "For 100+ guests: logistics, staffing, rentals and flow, mapped out with your lead coordinator.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

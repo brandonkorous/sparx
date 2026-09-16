@@ -66,7 +66,7 @@ export function Onboarding({
     <AuthShell
       shape="setup"
       heading="A few quick things."
-      lede="Then you are in. Nothing here is a commitment — we set it all up for you and you can change your mind once you are inside."
+      lede="Then you are in. Nothing here is a commitment. We set it all up for you and you can change your mind once you are inside."
       panel={<RailPreview picked={a.picked} />}
     >
       <form action={action} className="flex flex-col gap-8">

@@ -222,7 +222,7 @@ export function PersonSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Text className="text-xs">
                   {productCopy(
                     'staff.notPayroll',
-                    'Piggles is not a payroll system. It records what people worked and what that cost — it does not withhold tax, file returns, or pay anybody.'
+                    'Piggles is not a payroll system. It records what people worked and what that cost. It does not withhold tax, file returns, or pay anybody.'
                   )}
                 </Text>
               </div>

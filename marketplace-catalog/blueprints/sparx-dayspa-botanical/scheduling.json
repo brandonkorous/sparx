@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Please give us at least 24 hours’ notice to change or cancel — it lets us offer the time to someone else. We’ll send a gentle reminder the day before and two hours ahead."
+      "policyText": "Please give us at least 24 hours’ notice to change or cancel. It lets us offer the time to someone else. We’ll send a gentle reminder the day before and two hours ahead."
     },
     {
       "handle": "spa-cancellation",
@@ -15,7 +15,7 @@
       "depositAmountCents": 4000,
       "cancellationWindowHours": 48,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Longer and couples treatments hold a $40 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over — inside 48 hours the deposit covers the room we set aside for you."
+      "policyText": "Longer and couples treatments hold a $40 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over: inside 48 hours the deposit covers the room we set aside for you."
     }
   ],
   "resources": [
@@ -299,7 +299,7 @@
     {
       "handle": "swedish-90",
       "name": "Swedish massage · 90 min",
-      "description": "The full ninety minutes — unhurried, whole-body, with time to work slowly and finish gently. Deeply restorative.",
+      "description": "The full ninety minutes: unhurried, whole-body, with time to work slowly and finish gently. Deeply restorative.",
       "durationMinutes": 90,
       "priceCents": 15500,
       "bufferAfterMin": 15,
@@ -347,7 +347,7 @@
     {
       "handle": "hot-stone",
       "name": "Hot-stone massage",
-      "description": "Warm basalt stones melt into tired muscles as the massage works around them — grounding, comforting, quietly indulgent.",
+      "description": "Warm basalt stones melt into tired muscles as the massage works around them: grounding, comforting, quietly indulgent.",
       "durationMinutes": 75,
       "priceCents": 14500,
       "bufferAfterMin": 20,
@@ -371,7 +371,7 @@
     {
       "handle": "aromatherapy-facial",
       "name": "Aromatherapy facial",
-      "description": "A calming facial with botanical oils and a long, mindful massage — skin left soft and glowing, shoulders left lighter.",
+      "description": "A calming facial with botanical oils and a long, mindful massage: skin left soft and glowing, shoulders left lighter.",
       "durationMinutes": 60,
       "priceCents": 12000,
       "bufferAfterMin": 15,
@@ -419,7 +419,7 @@
     {
       "handle": "couples-massage",
       "name": "Couples massage",
-      "description": "Two therapists, one calm room, side by side — an unhurried ninety minutes to slow down together.",
+      "description": "Two therapists, one calm room, side by side: an unhurried ninety minutes to slow down together.",
       "durationMinutes": 90,
       "priceCents": 30000,
       "bufferAfterMin": 20,
@@ -443,7 +443,7 @@
     {
       "handle": "sauna-session",
       "name": "Sauna session",
-      "description": "Forty-five quiet minutes in the cedar sauna to warm through and reset — book it on its own, or before a treatment.",
+      "description": "Forty-five quiet minutes in the cedar sauna to warm through and reset. Book it on its own, or before a treatment.",
       "durationMinutes": 45,
       "priceCents": 4000,
       "bufferAfterMin": 10,

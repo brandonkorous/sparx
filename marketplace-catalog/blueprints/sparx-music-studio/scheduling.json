@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Life happens — just give us 24 hours to reschedule and we’ll move your slot, no charge. We send a reminder the day before and two hours ahead so it never sneaks up on you."
+      "policyText": "Life happens. Just give us 24 hours to reschedule and we’ll move your slot, no charge. We send a reminder the day before and two hours ahead so it never sneaks up on you."
     },
     {
       "handle": "no-show",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Production and hour-long sessions hold both an instructor and a room, so we ask for 24 hours’ notice to move them. No deposit — but two no-shows and we’ll ask you to call to rebook so the room stays open for everyone."
+      "policyText": "Production and hour-long sessions hold both an instructor and a room, so we ask for 24 hours’ notice to move them. No deposit, but two no-shows and we’ll ask you to call to rebook so the room stays open for everyone."
     }
   ],
   "resources": [
@@ -208,7 +208,7 @@
     {
       "handle": "trial-lesson",
       "name": "Book a trial lesson",
-      "description": "Your first lesson, on any instrument — meet an instructor, plug in, and play. Thirty minutes to feel the room, talk about where you want to go, and see if we’re your studio. No commitment after.",
+      "description": "Your first lesson, on any instrument: meet an instructor, plug in, and play. Thirty minutes to feel the room, talk about where you want to go, and see if we’re your studio. No commitment after.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -231,7 +231,7 @@
     {
       "handle": "guitar-lesson",
       "name": "Guitar lesson",
-      "description": "Electric or acoustic, first chord or first solo. Real technique built around the songs you actually want to play — riffs, rhythm, tone and the theory that makes it click.",
+      "description": "Electric or acoustic, first chord or first solo. Real technique built around the songs you actually want to play: riffs, rhythm, tone and the theory that makes it click.",
       "durationMinutes": 45,
       "priceCents": 5500,
       "assignmentStrategy": "customer_choice",
@@ -254,7 +254,7 @@
     {
       "handle": "vocal-lesson",
       "name": "Vocal lesson",
-      "description": "Find your range and your voice. Breath, pitch, tone and stage confidence — pop, R&B, rock or musical theatre, built around the tracks you love to sing.",
+      "description": "Find your range and your voice. Breath, pitch, tone and stage confidence: pop, R&B, rock or musical theatre, built around the tracks you love to sing.",
       "durationMinutes": 45,
       "priceCents": 5500,
       "assignmentStrategy": "customer_choice",
@@ -277,7 +277,7 @@
     {
       "handle": "bass-lesson",
       "name": "Bass lesson",
-      "description": "Lock in with the drums and hold the whole thing down. Groove, timing, note choice and the pocket — the instrument that makes a band feel good.",
+      "description": "Lock in with the drums and hold the whole thing down. Groove, timing, note choice and the pocket: the instrument that makes a band feel good.",
       "durationMinutes": 45,
       "priceCents": 5500,
       "assignmentStrategy": "customer_choice",
@@ -300,7 +300,7 @@
     {
       "handle": "music-production-lesson",
       "name": "Music production & beat-making",
-      "description": "Build a track from nothing in a real production suite — beats, sampling, arrangement, mixing. Learn your DAW hands-on and walk out with something that sounds like you.",
+      "description": "Build a track from nothing in a real production suite: beats, sampling, arrangement, mixing. Learn your DAW hands-on and walk out with something that sounds like you.",
       "durationMinutes": 60,
       "priceCents": 7500,
       "bufferAfterMin": 10,
@@ -324,7 +324,7 @@
     {
       "handle": "songwriting-session",
       "name": "Songwriting session",
-      "description": "Turn ideas into finished songs. Melody, lyrics, structure and hooks — write with someone who’s released records and knows how to get you unstuck.",
+      "description": "Turn ideas into finished songs. Melody, lyrics, structure and hooks. Write with someone who’s released records and knows how to get you unstuck.",
       "durationMinutes": 60,
       "priceCents": 6500,
       "bufferAfterMin": 10,
@@ -348,7 +348,7 @@
     {
       "handle": "performance-coaching",
       "name": "Performance coaching",
-      "description": "Get ready for the stage. Setlists, presence, nerves and working a room — prep for a gig, an audition or an open mic with a coach who’s played them all.",
+      "description": "Get ready for the stage. Setlists, presence, nerves and working a room: prep for a gig, an audition or an open mic with a coach who’s played them all.",
       "durationMinutes": 60,
       "priceCents": 6500,
       "bufferAfterMin": 10,

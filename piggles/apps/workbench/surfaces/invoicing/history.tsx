@@ -49,7 +49,7 @@ export function HistorySection({ doc }: { doc: BillingDocument }) {
   return (
     <FormSection
       title="History"
-      description="Permanent records frozen as this document moved through its stages. Each opens exactly as it stood at that moment — later edits never change it."
+      description="Permanent records frozen as this document moved through its stages. Each opens exactly as it stood at that moment: later edits never change it."
     >
       <Table size="sm">
         <thead>

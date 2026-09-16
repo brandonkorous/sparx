@@ -44,7 +44,7 @@ function capabilityPhrases(vendor: DropshipVendor): string[] {
   if (vendor.capabilities.orderSubmission) phrases.push('Sends orders automatically');
   if (vendor.capabilities.trackingSync) phrases.push('Tracking comes back to you');
   if (vendor.capabilities.inventorySync) phrases.push('Keeps stock in step');
-  if (vendor.pod) phrases.push('Made to order — no stock to hold');
+  if (vendor.pod) phrases.push('Made to order: no stock to hold');
   return phrases;
 }
 

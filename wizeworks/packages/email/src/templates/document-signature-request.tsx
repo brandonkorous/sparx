@@ -92,7 +92,7 @@ export function DocumentSignatureRequestEmail({
         <strong>
           {label} {documentNumber}
         </strong>{' '}
-        to sign. Take a moment to review it and add your signature — it only takes a minute.
+        to sign. Take a moment to review it and add your signature. It only takes a minute.
       </EmailParagraph>
 
       <EmailAmountHero
@@ -122,6 +122,6 @@ export function documentSignatureRequestSubject(
   // stranger to sign something, is what a phishing attempt looks like.
   const from = (fromName ?? '').trim();
   return from
-    ? `${label} ${documentNumber} from ${from} — ready for your signature`
-    : `${label} ${documentNumber} — ready for your signature`;
+    ? `${label} ${documentNumber} from ${from}: ready for your signature`
+    : `${label} ${documentNumber}: ready for your signature`;
 }

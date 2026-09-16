@@ -5,7 +5,7 @@
     "status": "published",
     "body": {
       "title": "How we choose our materials",
-      "excerpt": "The one question every product has to answer before it earns a place in the shop — and why \"what is it made of?\" is harder than it sounds.",
+      "excerpt": "The one question every product has to answer before it earns a place in the shop, and why \"what is it made of?\" is harder than it sounds.",
       "featuredImage": {
         "$asset": "post-materials"
       },
@@ -17,7 +17,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Most housewares are quietly made of plastic. A dish brush, a food wrap, a laundry sheet, a storage tub — reach into an ordinary cupboard and almost everything in it started as oil and will end as landfill. We started Fernwood to see whether the useful, boring things could be made of something else without asking anyone to try harder or spend a fortune."
+                "text": "Most housewares are quietly made of plastic. A dish brush, a food wrap, a laundry sheet, a storage tub: reach into an ordinary cupboard and almost everything in it started as oil and will end as landfill. We started Fernwood to see whether the useful, boring things could be made of something else without asking anyone to try harder or spend a fortune."
               }
             ]
           },
@@ -59,7 +59,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The second test is the one that fails most \"eco\" products: it has to work at least as well as the plastic thing it replaces. A compostable brush that will not scrub a pan is not a win — it is a thing you use once and give up on. So every item earns its place twice, on the material and on the job, and plenty of samples never make it past the sink."
+                "text": "The second test is the one that fails most \"eco\" products: it has to work at least as well as the plastic thing it replaces. A compostable brush that will not scrub a pan is not a win. It is a thing you use once and give up on. So every item earns its place twice, on the material and on the job, and plenty of samples never make it past the sink."
               }
             ]
           },
@@ -136,7 +136,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Eventually the wax wears thin and the cling goes. That is not the end — you can re-wax a tired wrap with a grated block and a warm oven, and it comes back to life. We sell the refresh blocks for exactly this reason: a wrap you top up is a wrap you never throw away."
+                "text": "Eventually the wax wears thin and the cling goes. That is not the end. You can re-wax a tired wrap with a grated block and a warm oven, and it comes back to life. We sell the refresh blocks for exactly this reason: a wrap you top up is a wrap you never throw away."
               }
             ]
           },
@@ -159,7 +159,7 @@
     "status": "published",
     "body": {
       "title": "Our first carbon report",
-      "excerpt": "We measured a year of making and shipping everything in the shop, added it up, and are publishing the number — including the parts we are not proud of.",
+      "excerpt": "We measured a year of making and shipping everything in the shop, added it up, and are publishing the number, including the parts we are not proud of.",
       "featuredImage": {
         "$asset": "post-carbon"
       },
@@ -171,7 +171,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "This is the first year we have measured our whole footprint — the materials, the making, the packaging and the miles — and written it down. We are a small shop and the report is not perfect, but we would rather publish an honest, rough number than a polished, quiet nothing."
+                "text": "This is the first year we have measured our whole footprint (the materials, the making, the packaging and the miles) and written it down. We are a small shop and the report is not perfect, but we would rather publish an honest, rough number than a polished, quiet nothing."
               }
             ]
           },
@@ -213,7 +213,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "So this year we are consolidating shipments, moving to plastic-free packaging across the whole range, and switching our workshop to a renewable tariff. We are not buying offsets to call ourselves neutral — we would rather cut the real number than pay to look like we have."
+                "text": "So this year we are consolidating shipments, moving to plastic-free packaging across the whole range, and switching our workshop to a renewable tariff. We are not buying offsets to call ourselves neutral. We would rather cut the real number than pay to look like we have."
               }
             ]
           },

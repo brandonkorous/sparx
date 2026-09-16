@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Whiteglove Movers — premium white-glove & long-distance moving",
-      "seoDescription": "Whiteglove Movers is a premium moving company for long-distance and interstate moves — white-glove packing, fine-art and antiques, corporate relocation and storage. Book a consultation online.",
+      "seoTitle": "Whiteglove Movers: premium white-glove & long-distance moving",
+      "seoDescription": "Whiteglove Movers is a premium moving company for long-distance and interstate moves: white-glove packing, fine-art and antiques, corporate relocation and storage. Book a consultation online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Whiteglove Movers is a premium long-distance and white-glove moving company — meticulous packing, fine-art and antiques, corporate relocation and storage, with a dedicated manager on every move. Book a consultation to begin."
+                      "Whiteglove Movers is a premium long-distance and white-glove moving company: meticulous packing, fine-art and antiques, corporate relocation and storage, with a dedicated manager on every move. Book a consultation to begin."
                     ],
                     "id": "44ebcbbf-620f-4ec2-843c-454458fd1405",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One expert owns your move end to end — the plan, the crew, the timeline. One name, one number, from the first call to the last box."
+                              "One expert owns your move end to end: the plan, the crew, the timeline. One name, one number, from the first call to the last box."
                             ],
                             "id": "a97d5863-fe36-4b30-89ae-dca3e7415f17",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Custom crating, climate care and specialist handling for the pieces that can’t be replaced — paintings, pianos, sculpture and heirlooms."
+                              "Custom crating, climate care and specialist handling for the pieces that can’t be replaced: paintings, pianos, sculpture and heirlooms."
                             ],
                             "id": "4877feb1-8805-4658-b210-ea906f68e135",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every move starts with a conversation. Here are a few of the ways in — every consultation and estimate is complimentary, and live availability is on the booking page."
+                          "Every move starts with a conversation. Here are a few of the ways in: every consultation and estimate is complimentary, and live availability is on the booking page."
                         ],
                         "id": "babfb5a7-229e-4757-9462-e0a95e04d316",
                         "ord": "a1"
@@ -928,7 +928,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A guided video call and a detailed written estimate — no visit needed."
+                              "A guided video call and a detailed written estimate: no visit needed."
                             ],
                             "id": "1d29a324-a72e-4965-9a0c-2ad25abb2d7c",
                             "ord": "a2"
@@ -1117,7 +1117,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It begins with a survey — in your home or over video — where your manager takes a full inventory, understands what matters most, and builds a plan and a fixed, honest estimate before anything is booked."
+                          "It begins with a survey (in your home or over video) where your manager takes a full inventory, understands what matters most, and builds a plan and a fixed, honest estimate before anything is booked."
                         ],
                         "id": "89ffb07b-107d-4625-b120-02c13dccdb5a",
                         "ord": "a1"
@@ -1127,7 +1127,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "On move day our crew arrives on schedule, packs and protects every item by hand, and transports it under one careful watch. At the other end we unpack, place and reassemble — so you arrive to a home that’s ready, not a wall of boxes."
+                          "On move day our crew arrives on schedule, packs and protects every item by hand, and transports it under one careful watch. At the other end we unpack, place and reassemble, so you arrive to a home that’s ready, not a wall of boxes."
                         ],
                         "id": "ba273ebb-9366-4602-869f-8f8cee0d6c80",
                         "ord": "a2"
@@ -1192,7 +1192,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — the manager you meet is the one who runs your move, start to finish."
+                          "Book by name: the manager you meet is the one who runs your move, start to finish."
                         ],
                         "id": "b5635638-956c-41c8-a413-7090c7534d37",
                         "ord": "a1"
@@ -1401,7 +1401,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“We moved three states away with a house full of antiques and not a single scratch. Our manager handled everything — we just showed up to a home that was already put together. Genuinely the calmest move of our lives.”"
+                      "“We moved three states away with a house full of antiques and not a single scratch. Our manager handled everything. We just showed up to a home that was already put together. Genuinely the calmest move of our lives.”"
                     ],
                     "id": "305ea30d-fd11-4660-b05a-37d6cb1143dc",
                     "ord": "a0"
@@ -1445,7 +1445,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a complimentary consultation — choose a move manager, see live availability and pick a time that suits you."
+                      "Start with a complimentary consultation. Choose a move manager, see live availability and pick a time that suits you."
                     ],
                     "id": "6cde3340-b34e-474d-8bb9-40ea30f3b28f",
                     "ord": "a1"
@@ -1476,7 +1476,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Whiteglove Movers",
+      "seoTitle": "Book: Whiteglove Movers",
       "seoDescription": "See what Whiteglove Movers offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1600,7 +1600,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "e15472f1-8856-4ff7-ae49-c75328c7aa36",
                         "ord": "a1"
@@ -1707,7 +1707,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Whiteglove Movers",
+      "seoTitle": "About: Whiteglove Movers",
       "seoDescription": "Who Whiteglove Movers is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1766,7 +1766,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "From a cross-country relocation to a single fragile heirloom, we bring the same care — an honest estimate, a meticulous crew, and a calm hand on every detail from the first survey to the last piece placed."
+                          "From a cross-country relocation to a single fragile heirloom, we bring the same care: an honest estimate, a meticulous crew, and a calm hand on every detail from the first survey to the last piece placed."
                         ],
                         "id": "f9615c38-0366-4a90-a47c-31782e566872",
                         "ord": "a2"
@@ -1844,7 +1844,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’re never handed off. The manager who surveys your home is the one who runs the move — the plan, the crew and the timeline all in one pair of hands."
+                              "You’re never handed off. The manager who surveys your home is the one who runs the move: the plan, the crew and the timeline all in one pair of hands."
                             ],
                             "id": "8d143675-df2c-4fb2-a7cc-5cd8df265c6f",
                             "ord": "a1"
@@ -1871,7 +1871,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We survey thoroughly and quote precisely, then hold to it. No day-of surprises, no creeping numbers — just the figure we agreed on."
+                              "We survey thoroughly and quote precisely, then hold to it. No day-of surprises, no creeping numbers. Just the figure we agreed on."
                             ],
                             "id": "04c96d6b-b97b-4df1-8334-7fdc2585bef3",
                             "ord": "a1"
@@ -1898,7 +1898,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every move is fully insured and every item handled as if it were irreplaceable — because to the family it belongs to, it usually is."
+                              "Every move is fully insured and every item handled as if it were irreplaceable, because to the family it belongs to, it usually is."
                             ],
                             "id": "9ea35f8d-d622-4e4c-9199-ba66f118a9e7",
                             "ord": "a1"
@@ -1926,7 +1926,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Whiteglove Movers",
+      "seoTitle": "Visit: Whiteglove Movers",
       "seoDescription": "Where to find Whiteglove Movers, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1963,7 +1963,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Whiteglove Movers will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Whiteglove Movers will get back to you, usually the same day."
                         ],
                         "id": "9a506338-c6d8-4f08-8efd-6f2f75394caa",
                         "ord": "a1"
@@ -2390,7 +2390,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your complimentary consultation online — no phone tag."
+                      "See live availability and reserve your complimentary consultation online: no phone tag."
                     ],
                     "id": "687ac6fa-d65e-402b-822a-4e89126ba60b",
                     "ord": "a1"

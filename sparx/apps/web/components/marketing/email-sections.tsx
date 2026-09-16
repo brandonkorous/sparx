@@ -39,7 +39,7 @@ const E = getModuleColor('email');
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function EmailHero() {
   const lede =
-    'Transactional and marketing email, sent from your own domain and your reputation. Every message is triggered by a real platform event, rendered on-brand, and authenticated with SPF, DKIM, and DMARC the moment your domain verifies. No per-email markup — one flat price.';
+    'Transactional and marketing email, sent from your own domain and your reputation. Every message is triggered by a real platform event, rendered on-brand, and authenticated with SPF, DKIM, and DMARC the moment your domain verifies. No per-email markup. One flat price.';
   const chips = [
     'your own domain',
     'SPF · DKIM · DMARC',
@@ -146,7 +146,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
         </div>
         <Text className="mt-4 text-sm">{email.previewLine}</Text>
         <Text className="mt-2.5 text-sm">
-          Tap below for the details — questions? Just reply to this email.
+          Tap below for the details: questions? Just reply to this email.
         </Text>
         <span
           className={`${E.bg} mt-4 inline-block rounded-lg px-[18px] py-2.5 text-sm font-medium`}
@@ -180,15 +180,15 @@ export function EmailPipeline() {
   const stages = [
     {
       title: 'A platform event fires',
-      body: 'An order is paid, a cart is abandoned, a quote is sent — or you hit send on a broadcast.',
+      body: 'An order is paid, a cart is abandoned, a quote is sent, or you hit send on a broadcast.',
     },
     {
       title: 'email.send is published',
-      body: 'The event lands on a durable queue with retries — nothing is sent inline, nothing is lost.',
+      body: 'The event lands on a durable queue with retries. Nothing is sent inline, nothing is lost.',
     },
     {
       title: 'Your template renders',
-      body: 'A worker composes the message from atomic React Email components — HTML and plain text together.',
+      body: 'A worker composes the message from atomic React Email components: HTML and plain text together.',
     },
     {
       title: 'Sent from your domain',
@@ -200,7 +200,7 @@ export function EmailPipeline() {
       <SectionHeader
         accent={E.color}
         headline="Every email is an event, not a blast"
-        lede="Outbound mail is event-driven. A platform event publishes email.send; a worker renders your template and delivers it from your verified domain — the same path for an order receipt or a six-thousand-person broadcast."
+        lede="Outbound mail is event-driven. A platform event publishes email.send; a worker renders your template and delivers it from your verified domain: the same path for an order receipt or a six-thousand-person broadcast."
       />
       <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s) => (

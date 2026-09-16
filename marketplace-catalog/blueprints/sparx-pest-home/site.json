@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "ShieldGuard Pest Control — reliable, guaranteed protection",
-      "seoDescription": "ShieldGuard Pest Control keeps your home pest-free all year — free inspections, general, rodent and termite treatments, and recurring protection plans from licensed local techs. Book online.",
+      "seoTitle": "ShieldGuard Pest Control: reliable, guaranteed protection",
+      "seoDescription": "ShieldGuard Pest Control keeps your home pest-free all year: free inspections, general, rodent and termite treatments, and recurring protection plans from licensed local techs. Book online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -597,7 +597,7 @@
                     "kind": "element",
                     "tag": "h1",
                     "class": "max-w-3xl text-4xl font-bold leading-tight tracking-tight @2xl:text-5xl @3xl:text-6xl",
-                    "children": ["Your home, pest-free — guaranteed"],
+                    "children": ["Your home, pest-free: guaranteed"],
                     "id": "56e69580-6464-4184-84e2-de7a7b4057ed",
                     "ord": "a0"
                   },
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Reliable, friendly pest control for the whole year — general pests, ants, roaches, rodents and termites, handled by licensed local technicians who show up when they say they will."
+                      "Reliable, friendly pest control for the whole year: general pests, ants, roaches, rodents and termites, handled by licensed local technicians who show up when they say they will."
                     ],
                     "id": "110f8456-7657-4131-a20d-1523251bdc8a",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every technician is state-licensed, background-checked and trained on today’s pests and treatments — and tidy, friendly and respectful of your home."
+                              "Every technician is state-licensed, background-checked and trained on today’s pests and treatments, and tidy, friendly and respectful of your home."
                             ],
                             "id": "b4749878-1992-44a4-861e-4f1f27ba066f",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "If pests come back between visits, so do we — at no charge. That’s the whole point of a plan, and it’s in writing."
+                              "If pests come back between visits, so do we: at no charge. That’s the whole point of a plan, and it’s in writing."
                             ],
                             "id": "f4abc5bf-b1b0-46d7-886d-c528f46e3067",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Family- and pet-conscious products applied by people who know exactly where and how much — real results without dousing your home."
+                              "Family- and pet-conscious products applied by people who know exactly where and how much: real results without dousing your home."
                             ],
                             "id": "c7f1dc68-b716-4c9e-98e2-b2c19075ed7e",
                             "ord": "a1"
@@ -872,7 +872,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["We find the problem and give you an honest plan — free."],
+                            "children": ["We find the problem and give you an honest plan: free."],
                             "id": "9d6887bf-df67-48c2-9135-9790869d9b4c",
                             "ord": "a2"
                           }
@@ -1113,7 +1113,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Pests don’t show up on a schedule, and a one-time spray only buys a few weeks. Ants come back in spring, mosquitoes in summer, rodents when it turns cold — a home stays protected only when someone’s watching it all year."
+                          "Pests don’t show up on a schedule, and a one-time spray only buys a few weeks. Ants come back in spring, mosquitoes in summer, rodents when it turns cold: a home stays protected only when someone’s watching it all year."
                         ],
                         "id": "de715d53-02e1-4e00-9e1c-1cd2c419920c",
                         "ord": "a1"
@@ -1123,7 +1123,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Our Shield Plan members get scheduled seasonal visits, priority service the moment something turns up between them, and our re-treat-free guarantee — so your home stays protected without you having to think about it."
+                          "Our Shield Plan members get scheduled seasonal visits, priority service the moment something turns up between them, and our re-treat-free guarantee, so your home stays protected without you having to think about it."
                         ],
                         "id": "73f9a105-8a74-4a34-92b6-543c9503baa8",
                         "ord": "a2"
@@ -1188,7 +1188,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Real technicians from right here — friendly, tidy, and happy to explain exactly what they find."
+                          "Real technicians from right here: friendly, tidy, and happy to explain exactly what they find."
                         ],
                         "id": "ef24c6f7-96ba-4052-95f1-75f80c981600",
                         "ord": "a1"
@@ -1357,7 +1357,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "The friendly face on your seasonal visits — knows every home on his route and what keeps each one protected."
+                                  "The friendly face on your seasonal visits: knows every home on his route and what keeps each one protected."
                                 ],
                                 "id": "c453cb3e-e1c1-4ca1-8638-e1bbf459c6bc",
                                 "ord": "a2"
@@ -1472,7 +1472,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — ShieldGuard Pest Control",
+      "seoTitle": "Book: ShieldGuard Pest Control",
       "seoDescription": "See what ShieldGuard Pest Control offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1523,7 +1523,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose a visit to see prices and live openings, then pick a time that works — you’ll get a confirmation and a reminder before we arrive."
+                      "Choose a visit to see prices and live openings, then pick a time that works: you’ll get a confirmation and a reminder before we arrive."
                     ],
                     "id": "9cfc8d3d-e81e-4bf0-a9d0-4420a7ca63c4",
                     "ord": "a1"
@@ -1596,7 +1596,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "dad0cb9a-e009-4248-b270-41e694a38835",
                         "ord": "a1"
@@ -1703,7 +1703,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — ShieldGuard Pest Control",
+      "seoTitle": "About: ShieldGuard Pest Control",
       "seoDescription": "Who ShieldGuard Pest Control is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1752,7 +1752,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started ShieldGuard because keeping pests out of your home shouldn’t come with a hard sell, a mystery invoice, or a stranger you never see again. A pest-free home is a basic kind of peace of mind — and it should be handled by people who treat your home the way they’d treat their own."
+                          "We started ShieldGuard because keeping pests out of your home shouldn’t come with a hard sell, a mystery invoice, or a stranger you never see again. A pest-free home is a basic kind of peace of mind, and it should be handled by people who treat your home the way they’d treat their own."
                         ],
                         "id": "c8c84912-2458-4b4f-9e32-c91e23893584",
                         "ord": "a1"
@@ -1762,7 +1762,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So that’s how we run it: licensed technicians, upfront prices, tidy work, and an honest read on what your home actually needs. Your home, pest-free, guaranteed — and the same friendly face on every visit."
+                          "So that’s how we run it: licensed technicians, upfront prices, tidy work, and an honest read on what your home actually needs. Your home, pest-free, guaranteed, and the same friendly face on every visit."
                         ],
                         "id": "6ad4b91a-eff5-4d31-aab1-f3cfcfe8a6b0",
                         "ord": "a2"
@@ -1840,7 +1840,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every job starts with a real look inside and out to find where pests are getting in — because treating the symptom without the source just moves the problem around."
+                              "Every job starts with a real look inside and out to find where pests are getting in, because treating the symptom without the source just moves the problem around."
                             ],
                             "id": "d7cdcd13-5f52-4cca-a16c-5c8a2cf4f1fb",
                             "ord": "a1"
@@ -1867,7 +1867,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll always know what we found, what your options are, and what each one costs before any work starts. No pressure, no upsell — just an honest recommendation."
+                              "You’ll always know what we found, what your options are, and what each one costs before any work starts. No pressure, no upsell. Just an honest recommendation."
                             ],
                             "id": "dcafc4f0-1d80-4aaa-bae8-eb1b9db887c4",
                             "ord": "a1"
@@ -1894,7 +1894,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Our plans are backed by a re-treat-free guarantee, and a real person answers the phone when you call. If pests come back, so do we — at no charge."
+                              "Our plans are backed by a re-treat-free guarantee, and a real person answers the phone when you call. If pests come back, so do we: at no charge."
                             ],
                             "id": "b0e190a6-6cfb-4f13-b857-d88409affb12",
                             "ord": "a1"
@@ -1922,7 +1922,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — ShieldGuard Pest Control",
+      "seoTitle": "Visit: ShieldGuard Pest Control",
       "seoDescription": "Where to find ShieldGuard Pest Control, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1959,7 +1959,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and ShieldGuard Pest Control will get back to you — usually the same day."
+                          "Questions before you book? Send a note and ShieldGuard Pest Control will get back to you, usually the same day."
                         ],
                         "id": "d7750916-bfb4-435e-b576-074c9852511d",
                         "ord": "a1"
@@ -2411,7 +2411,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live openings and reserve your free inspection online — pick a time, get a confirmation, done."
+                      "See live openings and reserve your free inspection online. Pick a time, get a confirmation, done."
                     ],
                     "id": "da745258-5532-4ede-a731-44490a05a5ec",
                     "ord": "a1"

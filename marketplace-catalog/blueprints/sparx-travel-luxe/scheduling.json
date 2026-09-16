@@ -123,7 +123,7 @@
     {
       "handle": "discovery-call",
       "name": "Discovery call",
-      "description": "A relaxed 30-minute call to talk through where you dream of going, how you like to travel and how we can help — no fee, no obligation.",
+      "description": "A relaxed 30-minute call to talk through where you dream of going, how you like to travel and how we can help: no fee, no obligation.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -140,7 +140,7 @@
     {
       "handle": "custom-itinerary-consult",
       "name": "Custom itinerary consultation",
-      "description": "A full planning session to shape a bespoke, day-by-day itinerary — the flights, the stays, the tables and the moments that make it yours.",
+      "description": "A full planning session to shape a bespoke, day-by-day itinerary: the flights, the stays, the tables and the moments that make it yours.",
       "durationMinutes": 60,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -157,7 +157,7 @@
     {
       "handle": "honeymoon-consult",
       "name": "Honeymoon consultation",
-      "description": "Plan the trip of a lifetime for two — private villas, romantic escapes and the details handled, so all you do is arrive.",
+      "description": "Plan the trip of a lifetime for two: private villas, romantic escapes and the details handled, so all you do is arrive.",
       "durationMinutes": 60,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -174,7 +174,7 @@
     {
       "handle": "luxury-trip-consult",
       "name": "Luxury trip consultation",
-      "description": "For the once-in-a-decade journey — the finest suites, private guides and seamless logistics across every leg of the trip.",
+      "description": "For the once-in-a-decade journey: the finest suites, private guides and seamless logistics across every leg of the trip.",
       "durationMinutes": 60,
       "priceCents": 35000,
       "assignmentStrategy": "customer_choice",
@@ -191,7 +191,7 @@
     {
       "handle": "family-travel-consult",
       "name": "Family travel consultation",
-      "description": "Multi-generational trips that work for everyone — the right pace, the right rooms and experiences that delight all ages.",
+      "description": "Multi-generational trips that work for everyone: the right pace, the right rooms and experiences that delight all ages.",
       "durationMinutes": 60,
       "priceCents": 20000,
       "assignmentStrategy": "customer_choice",
@@ -208,7 +208,7 @@
     {
       "handle": "group-travel-consult",
       "name": "Group & celebration consultation",
-      "description": "Milestone birthdays, anniversaries and friends’ getaways — one advisor coordinating the whole party so no one is left planning.",
+      "description": "Milestone birthdays, anniversaries and friends’ getaways. One advisor coordinating the whole party so no one is left planning.",
       "durationMinutes": 45,
       "priceCents": 20000,
       "assignmentStrategy": "customer_choice",
@@ -225,7 +225,7 @@
     {
       "handle": "vip-experience-consult",
       "name": "VIP access & experiences consultation",
-      "description": "The doors most travelers never see — private access, hard-to-get reservations and once-in-a-lifetime experiences, arranged for you.",
+      "description": "The doors most travelers never see: private access, hard-to-get reservations and once-in-a-lifetime experiences, arranged for you.",
       "durationMinutes": 45,
       "priceCents": 50000,
       "assignmentStrategy": "customer_choice",

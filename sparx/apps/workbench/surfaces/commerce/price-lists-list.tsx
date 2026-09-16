@@ -92,7 +92,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto"
-            title="Add a price list — hold Shift to open alongside, Alt for a new window"
+            title="Add a price list: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('commerce.pricelist.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -132,7 +132,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Tag className="size-6" aria-hidden />}
             title="Could not load your price lists"
-            description="This is a problem reaching the server. Your price lists are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your price lists are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">
@@ -149,7 +149,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No price lists yet',
               description:
-                'A price list is a set of special prices for particular customers — a wholesale sheet for the businesses you supply, or a members’ rate. Add your first one to start giving certain customers their own prices.',
+                'A price list is a set of special prices for particular customers: a wholesale sheet for the businesses you supply, or a members’ rate. Add your first one to start giving certain customers their own prices.',
             }}
           />
         ) : (

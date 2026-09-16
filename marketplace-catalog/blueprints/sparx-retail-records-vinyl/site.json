@@ -322,7 +322,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -750,8 +750,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Third Side Records — an independent record shop for vinyl",
-      "seoDescription": "Third Side is an independent record shop — new pressings and hand-picked reissues across every genre, turntables and gear, and a monthly Wax Club subscription. Every record played before it’s shelved.",
+      "seoTitle": "Third Side Records: an independent record shop for vinyl",
+      "seoDescription": "Third Side is an independent record shop: new pressings and hand-picked reissues across every genre, turntables and gear, and a monthly Wax Club subscription. Every record played before it’s shelved.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1530,7 +1530,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Wax Club is a record in the mail every month — a new pressing or a reissue we think you should hear, matched to the genres you love. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing."
+                          "Wax Club is a record in the mail every month: a new pressing or a reissue we think you should hear, matched to the genres you love. Skip a month, change your taste, or cancel any time. The easiest way to keep the crate growing."
                         ],
                         "id": "709ab0a1-5aab-491d-9c28-478988aae11c",
                         "ord": "a1"
@@ -1565,7 +1565,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Third Side Records",
+      "seoTitle": "Shop: Third Side Records",
       "seoDescription": "Browse everything Third Side Records makes, with prices and options at a glance. Record shop.",
       "root": {
         "kind": "element",
@@ -1597,7 +1597,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything on the shelves right now — new pressings, hand-picked reissues, the turntables and gear to play them, and the odd bit of merch. Filter by genre or sort however you like; every record is checked and played before it’s filed."
+                      "Everything on the shelves right now: new pressings, hand-picked reissues, the turntables and gear to play them, and the odd bit of merch. Filter by genre or sort however you like; every record is checked and played before it’s filed."
                     ],
                     "id": "98e491d3-e5de-483c-8499-64849e852ba1",
                     "ord": "a1"
@@ -1625,7 +1625,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Third Side Records",
+      "seoTitle": "Collections: Third Side Records",
       "seoDescription": "Explore the collections at Third Side Records, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1657,7 +1657,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The bins grouped the way crate-diggers actually shop — this month’s new arrivals, the staff picks, the jazz and soul corner, the electronic wall, and a starter kit if you’re just getting the deck set up."
+                      "The bins grouped the way crate-diggers actually shop. This month’s new arrivals, the staff picks, the jazz and soul corner, the electronic wall, and a starter kit if you’re just getting the deck set up."
                     ],
                     "id": "65f9223c-c25c-4cce-815a-4b1b13f9ff22",
                     "ord": "a1"
@@ -1685,7 +1685,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Third Side Records",
+      "seoTitle": "Your cart: Third Side Records",
       "seoDescription": "Review what is in your cart and check out securely at Third Side Records.",
       "root": {
         "kind": "element",
@@ -1745,7 +1745,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Third Side Records",
+      "seoTitle": "Search: Third Side Records",
       "seoDescription": "Search Third Side Records for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1805,7 +1805,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Third Side Records",
+      "seoTitle": "Journal: Third Side Records",
       "seoDescription": "Stories, guides and notes from Third Side Records.",
       "root": {
         "kind": "element",
@@ -1837,7 +1837,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from behind the counter — what just landed, what we can’t stop playing, and how to keep your records sounding like the day you bought them. No gatekeeping, no snobbery."
+                      "Notes from behind the counter: what just landed, what we can’t stop playing, and how to keep your records sounding like the day you bought them. No gatekeeping, no snobbery."
                     ],
                     "id": "ba8dd02a-1652-4f84-90d2-6412ba1efa63",
                     "ord": "a1"
@@ -1971,7 +1971,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Third Side Records",
-      "seoDescription": "How Third Side buys, checks and files its records — every genre, new pressings and clean reissues, played before they go in the bin. The shop that still believes in the album.",
+      "seoDescription": "How Third Side buys, checks and files its records: every genre, new pressings and clean reissues, played before they go in the bin. The shop that still believes in the album.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2002,7 +2002,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Third Side started as a milk crate of records at a weekend market and a stubborn belief that an album is meant to be heard front to back. It grew the slow way — one regular, one recommendation, one trade-in at a time — into a shop with real racks and a turntable always spinning behind the counter."
+                      "Third Side started as a milk crate of records at a weekend market and a stubborn belief that an album is meant to be heard front to back. It grew the slow way (one regular, one recommendation, one trade-in at a time) into a shop with real racks and a turntable always spinning behind the counter."
                     ],
                     "id": "db73ef5c-2c13-4562-b5ac-47f299dcb38c",
                     "ord": "a1"
@@ -2012,7 +2012,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We stock across every genre because good music doesn’t care about your shelf labels. New pressings, clean reissues, the occasional rare copy that walks in the door — all of it checked for warps and splits, all of it played before it’s filed. If we wouldn’t take it home, it doesn’t go in the bin."
+                      "We stock across every genre because good music doesn’t care about your shelf labels. New pressings, clean reissues, the occasional rare copy that walks in the door. All of it checked for warps and splits, all of it played before it’s filed. If we wouldn’t take it home, it doesn’t go in the bin."
                     ],
                     "id": "8f6879e7-ce94-4a00-bf13-dddc7e941799",
                     "ord": "a2"
@@ -2042,8 +2042,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Third Side Records",
-      "seoDescription": "Get in touch with Third Side Records — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Third Side Records",
+      "seoDescription": "Get in touch with Third Side Records: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2350,8 +2350,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Third Side Records",
-      "seoDescription": "Product details at Third Side Records — record shop, with options and pricing.",
+      "seoTitle": "Product: Third Side Records",
+      "seoDescription": "Product details at Third Side Records: record shop, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2714,7 +2714,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every record ships in a rigid LP mailer with corner protection, checked for warps and seam splits before it leaves the counter. Local? Reserve online and collect from the shop — we’ll hold it behind the register for a week."
+                              "Every record ships in a rigid LP mailer with corner protection, checked for warps and seam splits before it leaves the counter. Local? Reserve online and collect from the shop: we’ll hold it behind the register for a week."
                             ],
                             "id": "de7352fd-5835-42b9-ad51-dfd2de75f2d5",
                             "ord": "a1"

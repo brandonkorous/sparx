@@ -48,7 +48,7 @@ export default function Error({
         This page didn&rsquo;t load
       </h1>
       <p className="text-base-content text-lg">
-        Something went wrong at our end, not yours. Trying again often works — and if it
+        Something went wrong at our end, not yours. Trying again often works, and if it
         doesn&rsquo;t, the rest of the site is still here.
       </p>
 

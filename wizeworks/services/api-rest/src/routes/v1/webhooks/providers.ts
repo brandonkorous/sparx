@@ -80,7 +80,7 @@ const providerWebhookRoutes: FastifyPluginAsync = async (app) => {
       if (!config.webhookSecretRef) {
         request.log.warn(
           { slug, installationId },
-          'provider webhook: install has no webhookSecretRef — acknowledged without processing'
+          'provider webhook: install has no webhookSecretRef, acknowledged without processing'
         );
         await reply.code(200).send({ received: true });
         return;
@@ -143,7 +143,7 @@ const providerWebhookRoutes: FastifyPluginAsync = async (app) => {
         isDuplicate = true;
         request.log.debug(
           { providerEventId: verified.providerEventId },
-          'provider webhook: duplicate event — already recorded'
+          'provider webhook: duplicate event, already recorded'
         );
       } else {
         throw err;

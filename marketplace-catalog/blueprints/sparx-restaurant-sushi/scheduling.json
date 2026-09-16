@@ -6,7 +6,7 @@
       "depositType": "card_hold",
       "cancellationWindowHours": 48,
       "reminderOffsetsMin": [2880, 1440, 180],
-      "policyText": "A counter seat places a card hold to secure it — nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead."
+      "policyText": "A counter seat places a card hold to secure it. Nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead."
     },
     {
       "handle": "table-standard",
@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 180],
-      "policyText": "Tables are held for 15 minutes past your seating. Plans change — just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead."
+      "policyText": "Tables are held for 15 minutes past your seating. Plans change. Just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead."
     }
   ],
   "resources": [
@@ -771,7 +771,7 @@
     {
       "handle": "omakase-counter",
       "name": "Omakase counter",
-      "description": "A seat at the bar for the chef’s omakase — twelve to sixteen courses, paced by the counter, about two hours. A card hold secures your seat.",
+      "description": "A seat at the bar for the chef’s omakase: twelve to sixteen courses, paced by the counter, about two hours. A card hold secures your seat.",
       "bookingType": "reservation",
       "durationMinutes": 120,
       "assignmentStrategy": "any_available",

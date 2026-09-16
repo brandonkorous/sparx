@@ -49,7 +49,7 @@ export function ViewerMenu({ userName, userEmail }: { userName: string; userEmai
     <DropdownMenu>
       <Tooltip content={userName}>
         <DropdownMenuTrigger>
-          <Button variant="ghost" size="sm" shape="square" aria-label={`Account — ${userName}`}>
+          <Button variant="ghost" size="sm" shape="square" aria-label={`Account: ${userName}`}>
             <Avatar size="xs" color="neutral" alt={userName}>
               {initials(userName)}
             </Avatar>

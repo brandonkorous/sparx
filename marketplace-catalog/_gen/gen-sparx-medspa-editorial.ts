@@ -210,7 +210,7 @@ const SCHEDULING = {
       handle: 'signature-facial',
       name: 'Signature facial',
       description:
-        'A tailored deep-cleanse, mask and lymphatic massage — calibrated to your skin for a lit-from-within finish.',
+        'A tailored deep-cleanse, mask and lymphatic massage: calibrated to your skin for a lit-from-within finish.',
       durationMinutes: 60,
       priceCents: 18500,
       bufferAfterMin: 10,
@@ -234,7 +234,7 @@ const SCHEDULING = {
       handle: 'microneedling',
       name: 'Microneedling',
       description:
-        'Collagen-boosting micro-channels for firmer, brighter, more even skin — with a serum infusion to finish.',
+        'Collagen-boosting micro-channels for firmer, brighter, more even skin, with a serum infusion to finish.',
       durationMinutes: 60,
       priceCents: 35000,
       bufferAfterMin: 15,
@@ -246,7 +246,7 @@ const SCHEDULING = {
       handle: 'injectables-consult',
       name: 'Injectables consultation',
       description:
-        'A private consult with our nurse injector to talk through options, expectations and a plan — booked with approval first.',
+        'A private consult with our nurse injector to talk through options, expectations and a plan: booked with approval first.',
       durationMinutes: 30,
       priceCents: 0,
       requiresApproval: true,
@@ -269,7 +269,7 @@ const SCHEDULING = {
       handle: 'laser-session',
       name: 'Laser session',
       description:
-        'Targeted laser for tone, pigment and clarity — a quick, considered session with real results over time.',
+        'Targeted laser for tone, pigment and clarity: a quick, considered session with real results over time.',
       durationMinutes: 30,
       priceCents: 27500,
       bufferAfterMin: 10,
@@ -286,7 +286,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, light-filled aesthetics studio in warm champagne tones',
     title: 'Skin you feel at home in',
-    sub: 'A calm, boutique studio for considered aesthetics — facials, peels, microneedling and more, planned with you and never rushed.',
+    sub: 'A calm, boutique studio for considered aesthetics: facials, peels, microneedling and more, planned with you and never rushed.',
     primary: { label: 'Book online', href: '/book' },
     secondary: { label: 'See treatments', href: '/book' },
     overlay: 'soft',
@@ -295,7 +295,7 @@ const HOME = [
     items: [
       {
         title: 'Consult first, always',
-        body: 'Every plan starts with a free, unhurried consultation — no pressure and no upselling, just an honest path to the results you want.',
+        body: 'Every plan starts with a free, unhurried consultation: no pressure and no upselling, just an honest path to the results you want.',
       },
       {
         title: 'Licensed and medical-grade',
@@ -327,13 +327,13 @@ const HOME = [
     heading: 'A clinic that feels like a retreat',
     body: [
       'Aésthète is a two-room studio, not a treatment mill. We keep the day unhurried so every appointment gets a real consultation, a proper treatment and time to breathe.',
-      'That’s the whole idea: fewer people, more attention, and results that come from a plan you understand — not a menu you were talked into.',
+      'That’s the whole idea: fewer people, more attention, and results that come from a plan you understand, not a menu you were talked into.',
     ],
     cta: { label: 'Book your visit', href: '/book' },
   }),
   teamRow({
     heading: 'Your providers',
-    intro: 'Book by name — your provider stays with you from the first consultation through your results.',
+    intro: 'Book by name. Your provider stays with you from the first consultation through your results.',
     members: [
       { name: 'Élise Marchetti', role: 'Lead aesthetician', image: url(IMG.elise), alt: 'Élise Marchetti, lead aesthetician', bio: 'Signature facials and laser. Élise leads the studio and its skin philosophy.' },
       { name: 'Nadia Okafor', role: 'Nurse injector', image: url(IMG.nadia), alt: 'Nadia Okafor, nurse injector', bio: 'Injectables and IV therapy, with a light, natural-looking hand.' },
@@ -351,7 +351,7 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'I came in nervous and left calmer than I’ve felt in months — and my skin has never looked better. It feels like being cared for, not sold to.',
+    quote: 'I came in nervous and left calmer than I’ve felt in months, and my skin has never looked better. It feels like being cared for, not sold to.',
     attribution: 'Renata, client since 2024',
   }),
   bookingCta({
@@ -379,7 +379,7 @@ const ABOUT = [
     alt: 'A calm, light-filled aesthetics studio in warm champagne tones',
     heading: 'About Aésthète',
     body: [
-      'We opened Aésthète to do aesthetics the way we always wished it were done — calmly, honestly, and around a plan you actually understand.',
+      'We opened Aésthète to do aesthetics the way we always wished it were done: calmly, honestly, and around a plan you actually understand.',
       'No pressure, no menu you get talked into, no leaving unsure what happened to your skin. Just licensed, medical-grade care in a room that feels like a retreat.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
@@ -389,7 +389,7 @@ const ABOUT = [
     heading: 'How we work',
     items: [
       { title: 'Consultation first', body: 'Every relationship starts with a free, unhurried conversation about your skin, your history and what you actually want.' },
-      { title: 'Evidence, not hype', body: 'Clinical-grade products and proven protocols — and honest advice on the short list of treatments worth your time and money.' },
+      { title: 'Evidence, not hype', body: 'Clinical-grade products and proven protocols, and honest advice on the short list of treatments worth your time and money.' },
       { title: 'Cared for, not sold to', body: 'We plan for results over time, at a pace that suits you, and we’ll always tell you when the answer is “not yet”.' },
     ],
   }),
@@ -409,7 +409,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your consultation or treatment online — no phone tag.',
+    sub: 'See live availability and reserve your consultation or treatment online: no phone tag.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -420,8 +420,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-medspa-editorial',
   name: 'Med Spa (Editorial)',
   summary:
-    'An editorial med-spa site — a champagne-and-gold palette, an antique-gold primary and a healing sage accent under a Fraunces serif, with soft-lit photography carrying calm, boutique-hotel pages. Installs a working booking flow: a real treatment menu (facial, peel, microneedling, IV drip, laser), a free consultation you request, providers you book by name, two treatment rooms and a deposit policy. Ships as "Aésthète", a calm aesthetics clinic.',
-  tagline: 'A warm, editorial template for med spas — book online from day one.',
+    'An editorial med-spa site: a champagne-and-gold palette, an antique-gold primary and a healing sage accent under a Fraunces serif, with soft-lit photography carrying calm, boutique-hotel pages. Installs a working booking flow: a real treatment menu (facial, peel, microneedling, IV drip, laser), a free consultation you request, providers you book by name, two treatment rooms and a deposit policy. Ships as "Aésthète", a calm aesthetics clinic.',
+  tagline: 'A warm, editorial template for med spas. Book online from day one.',
   industry: 'Med spa',
   sortWeight: 82,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -430,7 +430,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Aésthète — an editorial med spa',
+      title: 'Aésthète: an editorial med spa',
       description:
         'Aésthète is a calm two-room aesthetics studio for facials, peels, microneedling, IV therapy and laser. Start with a free consultation and book your provider online.',
     },

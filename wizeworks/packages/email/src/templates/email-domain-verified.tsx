@@ -32,7 +32,7 @@ export function EmailDomainVerifiedEmail({
     >
       <EmailDisplayHeading>Your sending domain is ready</EmailDisplayHeading>
       <EmailParagraph>
-        {domainName} passed verification. Your emails — broadcasts, automations, and receipts — now
+        {domainName} passed verification. Your emails (broadcasts, automations, and receipts) now
         send from your own domain, which helps them land in the inbox instead of the spam folder.
       </EmailParagraph>
 
@@ -41,7 +41,7 @@ export function EmailDomainVerifiedEmail({
       <EmailActionButton href={dashboardUrl}>Go to email settings</EmailActionButton>
 
       <EmailFinePrint>
-        Keep the DNS records we provided in place — removing them will stop your email from sending.
+        Keep the DNS records we provided in place: removing them will stop your email from sending.
       </EmailFinePrint>
     </PlatformEmailLayout>
   );

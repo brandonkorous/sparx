@@ -256,7 +256,7 @@ const HOME: Node[] = [
   categoryTiles(),
   editorialBand({
     heading: 'A card under every spine',
-    lead: 'A shelf-talker is a small handwritten card that says, in plain words, why a bookseller loved a book and who it’s for. We write one for everything we recommend — so a stranger’s taste becomes something you can actually use.',
+    lead: 'A shelf-talker is a small handwritten card that says, in plain words, why a bookseller loved a book and who it’s for. We write one for everything we recommend, so a stranger’s taste becomes something you can actually use.',
     assetId: 'marg-band-staff',
     cta: 'How we choose',
     href: '/blog/how-we-choose-staff-picks',
@@ -266,7 +266,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.category.nonfiction', layout: 'carousel', heading: 'New in nonfiction' }),
   editorialBand({
     heading: 'A book on your doorstep, monthly',
-    lead: 'The Marginalia Book Club is the easy way to keep reading widely: tell us what you like, and each month we choose a book we’d press into your hands ourselves, wrap it, and post it — with the card that says why. Skip or cancel any time.',
+    lead: 'The Marginalia Book Club is the easy way to keep reading widely: tell us what you like, and each month we choose a book we’d press into your hands ourselves, wrap it, and post it, with the card that says why. Skip or cancel any time.',
     assetId: 'marg-band-club',
     cta: 'Join the book club',
     href: '/shop/the-marginalia-book-club',
@@ -311,7 +311,7 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Why we love it' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'Everything we sell has been read by someone here, and everything we recommend gets a card. Ask us at the counter or in your order notes and we’ll tell you what to read next — a real bookseller, not an algorithm.',
+                    text: 'Everything we sell has been read by someone here, and everything we recommend gets a card. Ask us at the counter or in your order notes and we’ll tell you what to read next: a real bookseller, not an algorithm.',
                   }),
                 ],
               }),
@@ -350,14 +350,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The shelves',
-    'Everything on the tables right now — staff picks, new fiction and nonfiction, and gifts for the readers in your life. Filter by shelf, or sort however you like; if you can’t decide, that’s what the shelf-talkers are for.'
+    'Everything on the tables right now: staff picks, new fiction and nonfiction, and gifts for the readers in your life. Filter by shelf, or sort however you like; if you can’t decide, that’s what the shelf-talkers are for.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Tables', 'The books grouped the way we actually pile them on the tables — this month’s staff picks, what’s new this season, the fiction shelf, the nonfiction shelf, and gifts for readers.'),
+  pageMasthead('Tables', 'The books grouped the way we actually pile them on the tables. This month’s staff picks, what’s new this season, the fiction shelf, the nonfiction shelf, and gifts for readers.'),
 ];
 const SEARCH: Node[] = [
-  pageMasthead('Search Marginalia', 'Looking for a title, an author, or a subject? Search the whole shop and the journal below — and if we don’t have it, we can almost always order it in.'),
+  pageMasthead('Search Marginalia', 'Looking for a title, an author, or a subject? Search the whole shop and the journal below, and if we don’t have it, we can almost always order it in.'),
 ];
 const CART: Node[] = [
   el('section', 'bg-base-100 @container px-6 pt-16 pb-6', {
@@ -366,7 +366,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your basket' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Free shipping on orders over $40, and we’ll gift-wrap anything on request — just say so in the notes. Every order is packed by hand at the shop, usually the same day.',
+            text: 'Free shipping on orders over $40, and we’ll gift-wrap anything on request. Just say so in the notes. Every order is packed by hand at the shop, usually the same day.',
           }),
         ],
       }),
@@ -397,7 +397,7 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Marginalia' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Marginalia opened in a narrow shop with a wobbly front table and a hand-lettered sign, on the simple bet that people still want a bookseller who has actually read the thing. It grew the slow way — one recommendation, one regular, one book-club box at a time — and it still runs on the same idea: read widely, keep the good ones, and say honestly why.',
+            text: 'Marginalia opened in a narrow shop with a wobbly front table and a hand-lettered sign, on the simple bet that people still want a bookseller who has actually read the thing. It grew the slow way (one recommendation, one regular, one book-club box at a time) and it still runs on the same idea: read widely, keep the good ones, and say honestly why.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'We buy from small presses and big houses alike, because a good book is a good book whoever printed it. What we won’t do is pretend to like something to move a stack. Every shelf-talker in the shop is signed by whoever wrote it, and we stand behind all of them.',
@@ -418,7 +418,7 @@ const CONTACT: Node[] = [
   // `mailto:` to a placeholder domain, which was the only way to reach the business.
   contactSection({
     heading: 'Say hello',
-    intro: 'Chasing a title, planning an event, or want a recommendation for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back — we love this part.',
+    intro: 'Chasing a title, planning an event, or want a recommendation for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back. We love this part.',
     submitLabel: 'Email the shop',
   }),
 ];
@@ -503,7 +503,7 @@ const PRODUCTS: Product[] = [
     title: 'The Salt in Her Name',
     author: 'Marisol Vane',
     description:
-      'A debut novel about a woman who returns to a fishing town to bury a mother she barely knew, and stays to untangle a family that would rather she didn’t. Salt-scoured, quietly furious, and tender in the places you don’t expect — the book the whole shop pressed on each other first.',
+      'A debut novel about a woman who returns to a fishing town to bury a mother she barely knew, and stays to untangle a family that would rather she didn’t. Salt-scoured, quietly furious, and tender in the places you don’t expect: the book the whole shop pressed on each other first.',
     price: 18,
     sku: 'MARG-SALT',
     categories: ['fiction', 'staff-picks'],
@@ -518,7 +518,7 @@ const PRODUCTS: Product[] = [
     title: 'Tin Ceilings',
     author: 'Odell Frayne',
     description:
-      'Three decades in a shrinking mill town, told through the tenants of one crooked apartment block. Frayne writes ordinary lives with the patience of someone who has actually lived one — funny, unshowy, and by the last chapter, quietly devastating.',
+      'Three decades in a shrinking mill town, told through the tenants of one crooked apartment block. Frayne writes ordinary lives with the patience of someone who has actually lived one: funny, unshowy, and by the last chapter, quietly devastating.',
     price: 17,
     sku: 'MARG-TIN',
     categories: ['fiction'],
@@ -526,14 +526,14 @@ const PRODUCTS: Product[] = [
     tags: ['fiction', 'literary'],
     asset: 'prod-tin',
     seoTitle: 'Tin Ceilings by Odell Frayne | Marginalia Books',
-    seoDescription: 'Three decades of ordinary lives in one crooked apartment block — funny, patient and quietly devastating.',
+    seoDescription: 'Three decades of ordinary lives in one crooked apartment block: funny, patient and quietly devastating.',
   }),
   book({
     handle: 'small-hours',
     title: 'Small Hours',
     author: 'Junia Belec',
     description:
-      'Eleven short stories set between midnight and dawn — a night nurse, a locksmith, a woman who can’t stop driving. Belec is a miniaturist of the sleepless hours, and every one of these lands like a held breath. Perfect for readers who think they don’t like short stories.',
+      'Eleven short stories set between midnight and dawn: a night nurse, a locksmith, a woman who can’t stop driving. Belec is a miniaturist of the sleepless hours, and every one of these lands like a held breath. Perfect for readers who think they don’t like short stories.',
     price: 16,
     sku: 'MARG-HOURS',
     categories: ['fiction', 'staff-picks'],
@@ -548,7 +548,7 @@ const PRODUCTS: Product[] = [
     title: 'A Field Guide to Leaving',
     author: 'Perrin Yao',
     description:
-      'A memoir in the shape of a naturalist’s notebook: every chapter is a species — the swift, the eel, the monarch — and a way of departing. Yao braids migration science with the year they left a marriage and a country, and it is one of the most quietly hopeful books we’ve read in ages.',
+      'A memoir in the shape of a naturalist’s notebook: every chapter is a species (the swift, the eel, the monarch) and a way of departing. Yao braids migration science with the year they left a marriage and a country, and it is one of the most quietly hopeful books we’ve read in ages.',
     price: 19,
     sku: 'MARG-FIELD',
     categories: ['nonfiction', 'staff-picks'],
@@ -563,7 +563,7 @@ const PRODUCTS: Product[] = [
     title: 'How Cities Breathe',
     author: 'Tomas Ekhart',
     description:
-      'A clear-eyed, genuinely readable account of what makes a street feel alive — light, width, corners, the humble bench — from an urbanist who’d rather show you than lecture. You’ll never walk your own neighbourhood the same way again. The nonfiction we keep re-ordering.',
+      'A clear-eyed, genuinely readable account of what makes a street feel alive (light, width, corners, the humble bench) from an urbanist who’d rather show you than lecture. You’ll never walk your own neighbourhood the same way again. The nonfiction we keep re-ordering.',
     price: 24,
     sku: 'MARG-CITIES',
     categories: ['nonfiction'],
@@ -571,14 +571,14 @@ const PRODUCTS: Product[] = [
     tags: ['nonfiction', 'cities', 'design'],
     asset: 'prod-cities',
     seoTitle: 'How Cities Breathe by Tomas Ekhart | Marginalia Books',
-    seoDescription: 'A clear, readable account of what makes a street feel alive — light, width, corners, the humble bench.',
+    seoDescription: 'A clear, readable account of what makes a street feel alive: light, width, corners, the humble bench.',
   }),
   book({
     handle: 'root-and-branch',
     title: 'Root and Branch',
     author: 'Neave Calloway',
     description:
-      'A year in an old orchard, and a history of the apple that turns out to be a history of us — trade, empire, obsession, and one grafting knife. Calloway is the rare nature writer who is also very funny. Hand it to anyone who thinks they’re not a "nature person".',
+      'A year in an old orchard, and a history of the apple that turns out to be a history of us: trade, empire, obsession, and one grafting knife. Calloway is the rare nature writer who is also very funny. Hand it to anyone who thinks they’re not a "nature person".',
     price: 22,
     sku: 'MARG-ROOT',
     categories: ['nonfiction'],
@@ -599,7 +599,7 @@ const PRODUCTS: Product[] = [
     tags: ['gift', 'tote', 'accessory'],
     categoryHandles: ['gifts'],
     collectionHandles: ['gifts-for-readers'],
-    seoTitle: 'Marginalia Canvas Tote — a roomy book bag | Marginalia Books',
+    seoTitle: 'Marginalia Canvas Tote: a roomy book bag | Marginalia Books',
     seoDescription: 'A heavyweight natural-canvas tote, screen-printed and cut roomy enough for a stack of books.',
     variants: [{ sku: 'MARG-TOTE', priceCents: money(22), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-tote', isPrimary: true, alt: 'A natural canvas Marginalia tote' }],
@@ -615,7 +615,7 @@ const PRODUCTS: Product[] = [
     tags: ['gift', 'bookmark', 'accessory'],
     categoryHandles: ['gifts'],
     collectionHandles: ['gifts-for-readers'],
-    seoTitle: 'The Foxed Page Bookmark Set — five letterpress bookmarks | Marginalia Books',
+    seoTitle: 'The Foxed Page Bookmark Set: five letterpress bookmarks | Marginalia Books',
     seoDescription: 'Five letterpress bookmarks on thick cotton stock, each printed with a line we love about reading.',
     variants: [{ sku: 'MARG-BOOKMARK', priceCents: money(12), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-bookmark', isPrimary: true, alt: 'A set of five letterpress bookmarks' }],
@@ -624,14 +624,14 @@ const PRODUCTS: Product[] = [
     handle: 'marginalia-gift-card',
     title: 'Marginalia Gift Card',
     description:
-      'The safest possible gift for a reader: a Marginalia gift card, redeemable in the shop or online against anything on the shelves. Delivered by email with a note you write, or printed on card to slip into a book — your choice. Never expires, never the wrong size.',
+      'The safest possible gift for a reader: a Marginalia gift card, redeemable in the shop or online against anything on the shelves. Delivered by email with a note you write, or printed on card to slip into a book. Your choice. Never expires, never the wrong size.',
     status: 'active',
     productType: 'Gift card',
     vendor: 'Marginalia Books',
     tags: ['gift', 'gift-card'],
     categoryHandles: ['gifts'],
     collectionHandles: ['gifts-for-readers'],
-    seoTitle: 'Marginalia Gift Card — the safe gift for any reader | Marginalia Books',
+    seoTitle: 'Marginalia Gift Card: the safe gift for any reader | Marginalia Books',
     seoDescription: 'A Marginalia gift card redeemable in the shop or online. Delivered by email or printed on card.',
     options: [
       { name: 'Amount', displayType: 'dropdown', values: [{ value: '$25' }, { value: '$50' }, { value: '$100' }] },
@@ -647,14 +647,14 @@ const PRODUCTS: Product[] = [
     handle: 'the-marginalia-book-club',
     title: 'The Marginalia Book Club',
     description:
-      'A hand-picked book on your doorstep every month — tell us what you like, and we choose one we’d press into your hands ourselves, wrap it, and post it with the card that says why. Fiction, nonfiction, or a surprise mix; skip or cancel any time. The gift that keeps someone reading widely all year.',
+      'A hand-picked book on your doorstep every month. Tell us what you like, and we choose one we’d press into your hands ourselves, wrap it, and post it with the card that says why. Fiction, nonfiction, or a surprise mix; skip or cancel any time. The gift that keeps someone reading widely all year.',
     status: 'active',
     productType: 'Subscription',
     vendor: 'Marginalia Books',
     tags: ['subscription', 'gift', 'book-club'],
     categoryHandles: ['gifts'],
     collectionHandles: ['gifts-for-readers', 'staff-picks'],
-    seoTitle: 'The Marginalia Book Club — a hand-picked book, monthly | Marginalia Books',
+    seoTitle: 'The Marginalia Book Club: a hand-picked book, monthly | Marginalia Books',
     seoDescription: 'A hand-picked book on your doorstep every month, wrapped with the card that says why. Skip or cancel any time.',
     options: [
       { name: 'Reading', displayType: 'dropdown', values: [{ value: 'Fiction' }, { value: 'Nonfiction' }, { value: 'Surprise me' }] },
@@ -737,9 +737,9 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('A staff pick isn’t a bestseller list and it isn’t whatever the publisher paid to stack by the door. It’s one bookseller saying, in their own handwriting, "I read this, I loved it, and here’s who it’s for." That last part is the whole job — a recommendation you can’t act on is just enthusiasm.'),
+          para('A staff pick isn’t a bestseller list and it isn’t whatever the publisher paid to stack by the door. It’s one bookseller saying, in their own handwriting, "I read this, I loved it, and here’s who it’s for." That last part is the whole job: a recommendation you can’t act on is just enthusiasm.'),
           h2('It has to be read, all the way through'),
-          para('We don’t pick from the jacket copy or the first fifty pages. Somebody here finishes the book, sits with it for a day or two, and then decides whether they’d actually hand it to a stranger. Plenty of good books don’t make the table — not because they’re bad, but because none of us could honestly say who to give them to.'),
+          para('We don’t pick from the jacket copy or the first fifty pages. Somebody here finishes the book, sits with it for a day or two, and then decides whether they’d actually hand it to a stranger. Plenty of good books don’t make the table, not because they’re bad, but because none of us could honestly say who to give them to.'),
           h2('It has to say something true'),
           para('The card names the reader, not just the book: "for anyone who loved a quiet family novel," "for the friend who says they hate poetry." If we can’t finish that sentence, it isn’t a pick yet. And every card is signed, because a recommendation with a name on it is one someone will stand behind when you come back to tell us what you thought.'),
         ],
@@ -752,16 +752,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Ten books to carry you into autumn',
-      excerpt: 'Shorter days, longer reads. A seasonal list from the tables — a novel to sink into, a memoir to slow down with, and one for the friend who’s hard to buy for.',
+      excerpt: 'Shorter days, longer reads. A seasonal list from the tables: a novel to sink into, a memoir to slow down with, and one for the friend who’s hard to buy for.',
       featuredImage: { $asset: 'post-fall' },
       body: {
         type: 'doc',
         content: [
-          para('Autumn is the reading season, and every year the tables tell us so — the moment the light shifts, people stop asking for a beach read and start asking for something to sink into. Here’s where we’d start this year, drawn from the books we’ve been quietly pushing on regulars all month.'),
+          para('Autumn is the reading season, and every year the tables tell us so: the moment the light shifts, people stop asking for a beach read and start asking for something to sink into. Here’s where we’d start this year, drawn from the books we’ve been quietly pushing on regulars all month.'),
           h2('To sink into'),
-          para('If you want a novel to disappear inside, begin with The Salt in Her Name — a debut about grief and a town that keeps its secrets, salt-scoured and quietly furious. Follow it with Tin Ceilings, three decades of ordinary lives that sneaks up and breaks your heart on the last page. And if you swear you don’t like short stories, Small Hours will change your mind before the second one is done.'),
+          para('If you want a novel to disappear inside, begin with The Salt in Her Name: a debut about grief and a town that keeps its secrets, salt-scoured and quietly furious. Follow it with Tin Ceilings, three decades of ordinary lives that sneaks up and breaks your heart on the last page. And if you swear you don’t like short stories, Small Hours will change your mind before the second one is done.'),
           h2('To slow down with'),
-          para('For nonfiction, A Field Guide to Leaving is the one we can’t stop pressing on people — a memoir shaped like a naturalist’s notebook, hopeful in a way that sneaks up on you. Pair it with Root and Branch for a very funny year in an orchard, or How Cities Breathe if you’d like to never walk your own street the same way again. Wrap any of them with the book club and you’ve solved the hardest gift on your list.'),
+          para('For nonfiction, A Field Guide to Leaving is the one we can’t stop pressing on people: a memoir shaped like a naturalist’s notebook, hopeful in a way that sneaks up on you. Pair it with Root and Branch for a very funny year in an orchard, or How Cities Breathe if you’d like to never walk your own street the same way again. Wrap any of them with the book club and you’ve solved the hardest gift on your list.'),
         ],
       },
     },
@@ -772,16 +772,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Why shop an independent bookshop',
-      excerpt: 'The same book costs about the same everywhere. What changes is everything around it — the person, the room, and where your money goes after.',
+      excerpt: 'The same book costs about the same everywhere. What changes is everything around it: the person, the room, and where your money goes after.',
       featuredImage: { $asset: 'post-indie' },
       body: {
         type: 'doc',
         content: [
           para('Let’s be honest about the thing everyone’s thinking: yes, you can get most of these books cheaper, faster, and without leaving the couch. We’re not going to pretend otherwise. What we’ll argue is that the price on the back isn’t the whole cost, and the book isn’t the whole thing you’re buying.'),
           h2('You’re buying a person who read it'),
-          para('An algorithm can tell you what people who bought this also bought. It cannot finish a book, sit with it, and decide who in your life needs it. That’s what the shelf-talkers are — a stranger’s taste, made useful, with a name signed to it. Come in undecided and you’ll leave with something better than what you came for, more often than not.'),
+          para('An algorithm can tell you what people who bought this also bought. It cannot finish a book, sit with it, and decide who in your life needs it. That’s what the shelf-talkers are: a stranger’s taste, made useful, with a name signed to it. Come in undecided and you’ll leave with something better than what you came for, more often than not.'),
           h2('Where the money goes'),
-          para('A dollar spent here stays close to home for a lot longer than a dollar spent in a warehouse three states away. It pays the booksellers who read the books, keeps the lights on in a room you can actually stand in, and funds the author events, the school orders, and the kids’ story hour that no marketplace will ever run. A bookshop is infrastructure for a reading town — and it only exists if people use it.'),
+          para('A dollar spent here stays close to home for a lot longer than a dollar spent in a warehouse three states away. It pays the booksellers who read the books, keeps the lights on in a room you can actually stand in, and funds the author events, the school orders, and the kids’ story hour that no marketplace will ever run. A bookshop is infrastructure for a reading town, and it only exists if people use it.'),
         ],
       },
     },
@@ -796,7 +796,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Independent Bookshop',
   theme: THEME,
   summary:
-    'A complete, working shop for an independent bookshop: a real catalogue of staff-picked books, a canvas tote, a bookmark set, a gift card and a hand-picked book-club subscription, with categories, collections, a bespoke literary PDP and a full merchandised home page led by staff picks. Warm foxed-paper theme — cream ground, deep oxblood, an ink accent on rubrics and links. Shipped as Marginalia Books.',
+    'A complete, working shop for an independent bookshop: a real catalogue of staff-picked books, a canvas tote, a bookmark set, a gift card and a hand-picked book-club subscription, with categories, collections, a bespoke literary PDP and a full merchandised home page led by staff picks. Warm foxed-paper theme, cream ground, deep oxblood, an ink accent on rubrics and links. Shipped as Marginalia Books.',
   tagline: 'A warm, working storefront for an independent bookshop.',
   vertical: 'retail',
   industry: 'Independent bookshop',
@@ -809,14 +809,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'centerLinks', footer: 'newsletter', showCta: false },
   seo: {
     home: {
-      title: 'Marginalia Books — an independent bookshop, hand-selling the ones we loved',
+      title: 'Marginalia Books: an independent bookshop, hand-selling the ones we loved',
       description:
-        'Marginalia is a small independent bookshop — staff-picked fiction and nonfiction, gifts for readers, and a hand-picked book club. Every recommendation gets a card that says why.',
+        'Marginalia is a small independent bookshop: staff-picked fiction and nonfiction, gifts for readers, and a hand-picked book club. Every recommendation gets a card that says why.',
     },
     about: {
       title: 'About Marginalia Books',
       description:
-        'How Marginalia chooses, shelves and hand-sells books — small presses and big houses alike, a signed shelf-talker on everything we recommend, and nothing we couldn’t tell you something true about.',
+        'How Marginalia chooses, shelves and hand-sells books: small presses and big houses alike, a signed shelf-talker on everything we recommend, and nothing we couldn’t tell you something true about.',
     },
   },
   home: HOME,

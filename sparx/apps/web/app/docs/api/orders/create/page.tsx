@@ -6,7 +6,7 @@ import { CodeBlock } from '@/components/docs/code-block';
 export const metadata: Metadata = {
   title: 'Create an order',
   description:
-    'POST /v1/orders — create an order in sparx. Parameters, line items, computed totals, the response shape, and error codes.',
+    'POST /v1/orders: create an order in sparx. Parameters, line items, computed totals, the response shape, and error codes.',
   alternates: { canonical: '/docs/api/orders/create' },
 };
 
@@ -213,7 +213,7 @@ export default function CreateOrderPage() {
             The <code>customerId</code> doesn&rsquo;t resolve to a customer in this tenant.
           </ApiError>
           <ApiError label="422 · validation_error">
-            The body failed validation — e.g. an empty <code>items</code> array or a missing{' '}
+            The body failed validation: e.g. an empty <code>items</code> array or a missing{' '}
             <code>sku</code>.
           </ApiError>
         </>

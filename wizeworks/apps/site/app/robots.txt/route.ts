@@ -3,6 +3,7 @@
 // Sitemap reference points back at this same host.
 
 import { resolveSite } from '@/lib/site-context';
+import { suspendedRobotsTxt } from '@/lib/suspended';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -66,7 +67,7 @@ export async function GET(request: Request) {
     'User-agent: *',
     ...disallow,
     '',
-    '# AI / answer-engine crawlers are explicitly welcome — see llms.txt.',
+    '# AI / answer-engine crawlers are explicitly welcome: see llms.txt.',
     ...aiAgents.map((a) => `User-agent: ${a}`),
     'Allow: /',
     ...disallow,
@@ -81,6 +82,11 @@ export async function GET(request: Request) {
       headers: { 'content-type': 'text/plain; charset=utf-8' },
     });
   }
+
+  // A dark site has nothing worth crawling, and advertising its sitemap while
+  // every URL in it serves the overlay is how a shop loses its listings over an
+  // unpaid invoice (issue 503).
+  if (site.billingPhase === 'suspended') return suspendedRobotsTxt();
 
   return new Response(lines.join('\n'), {
     headers: {

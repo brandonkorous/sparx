@@ -2,12 +2,12 @@ import type { AppMarketing } from './types';
 
 export const SITE: AppMarketing = {
   heading: 'A website you can change yourself, on a Tuesday, without phoning anybody.',
-  lede: 'My Site is the website customers actually land on — built by dragging real sections into place, published in one click, and editable by you at four in the afternoon when the opening hours change.',
+  lede: 'My Site is the website customers actually land on: built by dragging real sections into place, published in one click, and editable by you at four in the afternoon when the opening hours change.',
   alsoKnownAs: ['website builder', 'CMS', 'landing page builder', 'ecommerce storefront'],
   does: [
     {
       title: 'Build it from real pieces',
-      body: 'A library of finished sections — headers, galleries, price lists, contact forms, product grids — that you arrange and fill in. Not a blank page and not a template you cannot escape.',
+      body: 'A library of finished sections (headers, galleries, price lists, contact forms, product grids) that you arrange and fill in. Not a blank page and not a template you cannot escape.',
     },
     {
       title: 'See the change as you make it',
@@ -48,7 +48,7 @@ export const SITE: AppMarketing = {
         },
         {
           title: 'The bits you keep repeating',
-          body: 'Save a section as a reusable piece — an opening-hours panel, a call-to-action, a staff card — and update it in one place afterwards.',
+          body: 'Save a section as a reusable piece (an opening-hours panel, a call-to-action, a staff card) and update it in one place afterwards.',
         },
         {
           title: 'Start from a finished site',
@@ -60,7 +60,7 @@ export const SITE: AppMarketing = {
         },
         {
           title: 'What people sent you',
-          body: 'Every form submission kept and readable, rather than an email you might have deleted — and the pages report which are actually getting visitors.',
+          body: 'Every form submission kept and readable, rather than an email you might have deleted, and the pages report which are actually getting visitors.',
         },
       ],
     },

@@ -142,7 +142,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('dropship.supplier.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Connect a supplier — hold Shift to open alongside, Alt for a new window',
+          title: 'Connect a supplier: hold Shift to open alongside, Alt for a new window',
         }}
         controls={
           <div className="w-44 shrink-0">
@@ -192,7 +192,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faLink} className="size-6" aria-hidden />}
             title="Could not load your suppliers"
-            description="Something went wrong reaching the server. Your suppliers are unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Your suppliers are unaffected. Try again in a moment."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading suppliers…" />

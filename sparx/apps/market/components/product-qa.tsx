@@ -199,7 +199,7 @@ export function ProductQA({ slug, questions }: { slug: string; questions: Produc
           size="sm"
           icon={<MessageCircleQuestion size={32} aria-hidden />}
           title="No questions yet"
-          description="Have a question about this product? Ask the seller — answers show up here."
+          description="Have a question about this product? Ask the seller: answers show up here."
         />
       ) : null}
     </section>

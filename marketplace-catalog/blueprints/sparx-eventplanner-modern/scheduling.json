@@ -118,7 +118,7 @@
     {
       "handle": "discovery-call",
       "name": "Discovery call",
-      "description": "A free 30-minute call to talk through your event, your goals and your timeline — no obligation.",
+      "description": "A free 30-minute call to talk through your event, your goals and your timeline: no obligation.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -135,7 +135,7 @@
     {
       "handle": "corporate-event-consult",
       "name": "Corporate event consultation",
-      "description": "A working session on your company event — offsites, summits, award nights and client experiences.",
+      "description": "A working session on your company event: offsites, summits, award nights and client experiences.",
       "durationMinutes": 45,
       "priceCents": 7500,
       "assignmentStrategy": "customer_choice",
@@ -169,7 +169,7 @@
     {
       "handle": "product-launch-consult",
       "name": "Product launch consultation",
-      "description": "Plan the reveal — venue, staging, press moment and the guest journey that makes it land.",
+      "description": "Plan the reveal: venue, staging, press moment and the guest journey that makes it land.",
       "durationMinutes": 60,
       "priceCents": 12500,
       "assignmentStrategy": "customer_choice",
@@ -186,7 +186,7 @@
     {
       "handle": "gala-consult",
       "name": "Gala & fundraiser consultation",
-      "description": "Shape a black-tie gala or benefit — program, catering, entertainment and the room that wows.",
+      "description": "Shape a black-tie gala or benefit: program, catering, entertainment and the room that wows.",
       "durationMinutes": 60,
       "priceCents": 12500,
       "assignmentStrategy": "customer_choice",

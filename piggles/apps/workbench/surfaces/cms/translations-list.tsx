@@ -155,7 +155,7 @@ export function TranslationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faLanguage} className="size-6" aria-hidden />}
             title="Could not load your products"
-            description="This is a problem reaching the server. Nothing you have written or translated is affected — none of it has been lost."
+            description="This is a problem reaching the server. Nothing you have written or translated is affected: none of it has been lost."
             onRetry={() => {
               void refetch();
             }}

@@ -177,7 +177,7 @@ function statusMeaning(status: string): { label: string; tone: Tone; detail: str
     label: 'Not live',
     tone: 'info',
     detail:
-      'Saved but not in use — shoppers buy this product the ordinary way until you make this build live.',
+      'Saved but not in use: shoppers buy this product the ordinary way until you make this build live.',
   };
 }
 
@@ -505,7 +505,7 @@ function QuestionCard({
           <FieldDescription>
             {canChangeKind
               ? 'Changing this keeps the answers you have already written.'
-              : 'This kind of question is set up elsewhere, so it cannot be changed here — everything else about it can.'}
+              : 'This kind of question is set up elsewhere, so it cannot be changed here. Everything else about it can.'}
           </FieldDescription>
         </Field>
 
@@ -661,7 +661,7 @@ function TryItPanel({
   return (
     <FormSection
       title="Try it yourself"
-      description="Answer the questions the way a customer would. Nothing is bought and nothing is saved — this just runs your rules and shows what they produce."
+      description="Answer the questions the way a customer would. Nothing is bought and nothing is saved. This just runs your rules and shows what they produce."
     >
       {stale ? (
         <Alert color="warning">
@@ -669,7 +669,7 @@ function TryItPanel({
             <AlertTitle>This tries the saved version</AlertTitle>
             <AlertDescription>
               You have changes you have not saved yet, so what you see here is the build as it
-              currently stands on your website — not the one on screen above.
+              currently stands on your website, not the one on screen above.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -845,7 +845,7 @@ function BundleSection({ bundles }: { bundles: Bundle[] }) {
         <FormSection
           key={bundle.id}
           title="Sold as a set"
-          description="This product is a bundle — buying it buys several other products together."
+          description="This product is a bundle: buying it buys several other products together."
         >
           <Text>
             {bundle.componentCount === 1
@@ -882,7 +882,7 @@ function BundleSection({ bundles }: { bundles: Bundle[] }) {
 function blockingReason(draft: TemplateDraft): string | null {
   if (draft.name.trim() === '') return 'Give this build a name before saving it.';
   if (draft.options.length === 0) {
-    return 'Add at least one question — a build with nothing to answer is not a build.';
+    return 'Add at least one question: a build with nothing to answer is not a build.';
   }
   if (draft.options.some((option) => option.label.trim() === '')) {
     return 'One of your questions has no wording yet, so a shopper would be asked a blank question.';
@@ -938,7 +938,7 @@ function TemplateEditor({
   const onDelete = async () => {
     const ok = await confirm({
       title: `Delete “${draft.name}”?`,
-      description: `Every question, answer and rule in this build goes with it, and ${productTitle} goes back to being bought the ordinary way. Orders already placed keep their record of what was chosen. This cannot be undone — make it not live instead if you might use it again.`,
+      description: `Every question, answer and rule in this build goes with it, and ${productTitle} goes back to being bought the ordinary way. Orders already placed keep their record of what was chosen. This cannot be undone. Make it not live instead if you might use it again.`,
       confirmLabel: 'Delete this build',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -991,7 +991,7 @@ function TemplateEditor({
             }
           />
           <FieldDescription>
-            For you, not for shoppers — it is how you tell one build from another.
+            For you, not for shoppers. It is how you tell one build from another.
           </FieldDescription>
         </Field>
 
@@ -1017,9 +1017,9 @@ function TemplateEditor({
             <Select
               color="module"
               items={{
-                draft: 'Not live — nobody is asked these questions',
-                active: 'Live — shoppers answer these when they buy',
-                archived: 'Retired — kept for the record only',
+                draft: 'Not live: nobody is asked these questions',
+                active: 'Live: shoppers answer these when they buy',
+                archived: 'Retired: kept for the record only',
               }}
               value={draft.status}
               aria-label="Is it in use?"
@@ -1068,8 +1068,8 @@ function TemplateEditor({
 
       {draft.options.length === 0 ? (
         <Text>
-          A build is a list of questions. Add the first one — “what size?”, “what finish?”, “do you
-          want it engraved?” — and the answers a customer can give.
+          A build is a list of questions. Add the first one (“what size?”, “what finish?”, “do you
+          want it engraved?”) and the answers a customer can give.
         </Text>
       ) : (
         draft.options.map((option, index) => (
@@ -1273,7 +1273,7 @@ function ConfiguratorBody({
           <AlertContent>
             <AlertTitle>Could not load this product’s builds</AlertTitle>
             <AlertDescription>
-              This is a problem reaching the server. Nothing about the product has changed — it just
+              This is a problem reaching the server. Nothing about the product has changed. It just
               could not be read just now.
             </AlertDescription>
           </AlertContent>
@@ -1306,7 +1306,7 @@ function ConfiguratorBody({
           <EmptyState
             icon={<Settings2 className="size-6" aria-hidden />}
             title="This product is bought as it comes"
-            description="Nobody is asked anything when they buy it. Set up a build if it is made to order — if a customer picks a size, a finish, an engraving, or anything else that changes what they get or what it costs."
+            description="Nobody is asked anything when they buy it. Set up a build if it is made to order: if a customer picks a size, a finish, an engraving, or anything else that changes what they get or what it costs."
             actions={
               <Button
                 size="sm"

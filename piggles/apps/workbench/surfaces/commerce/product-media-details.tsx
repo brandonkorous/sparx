@@ -156,7 +156,7 @@ export function ImageDetails({
                 setDraft((current) => ({ ...current, mode: next as ShowMode }));
               }}
             >
-              <RadioOption value="always">Always — whatever the shopper picks</RadioOption>
+              <RadioOption value="always">Always: whatever the shopper picks</RadioOption>
               <RadioOption value="variant" disabled={variants.length === 0}>
                 Only on one particular version
               </RadioOption>
@@ -172,7 +172,7 @@ export function ImageDetails({
             on a mug that comes in Cobalt does not. */}
         <FieldDescription>
           {hasOptions
-            ? `Use the last one to show this photo whenever someone picks a particular ${firstOptionName.toLowerCase()}${firstValueName ? ` — ${firstValueName}, say` : ''}, without tying it to one version.`
+            ? `Use the last one to show this photo whenever someone picks a particular ${firstOptionName.toLowerCase()}${firstValueName ? ` (${firstValueName}, say)` : ''}, without tying it to one version.`
             : 'This product has no size or color choices yet, so every photo shows for everyone. Add choices on the Options tab to pin a photo to one of them.'}
         </FieldDescription>
       </Field>

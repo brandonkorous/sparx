@@ -55,19 +55,19 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // gives the reassurance its own sentence, because that is the sentence people
   // are actually looking for: who is paying, and can it act without me.
   'ai.account.description':
-    'This is your own AI account — the one you already pay for. We use it to write and reply for you, and the cost goes to them, never to us. Without it connected, nothing here writes anything on your behalf.',
+    'This is your own AI account: the one you already pay for. We use it to write and reply for you, and the cost goes to them, never to us. Without it connected, nothing here writes anything on your behalf.',
 
   // "Voice, rules and facts" is precise and slightly abstract; a shop owner
   // recognizes "how it should sound" faster than "voice". The example is doing
   // the real work, so it earns the length.
   'ai.instructions.pointer':
-    'Tell it how you want it to sound and what it should always mention — your opening hours, how you like to sign off, the things you never want said.',
+    'Tell it how you want it to sound and what it should always mention. Your opening hours, how you like to sign off, the things you never want said.',
 
   // sparx's version says "Turn on the AI-assisted tools throughout sparx", which
   // is a feature description. The thing a business owner is deciding is whether
   // to let software write on their behalf, so that is what the sentence is about.
   'modules.ai.blurb':
-    'Let Piggles help you write — product descriptions, replies, the words on your pages. It runs on an AI account you connect yourself, so you are never charged for it here.',
+    'Let Piggles help you write: product descriptions, replies, the words on your pages. It runs on an AI account you connect yourself, so you are never charged for it here.',
 
   // ── Automations ──────────────────────────────────────────────────────────
   //
@@ -79,7 +79,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // sparx names the modules ("Online store, Invoicing or Email"); Piggles names
   // its apps, and says what the automations DO rather than that they exist.
   'automations.recipes.firstRun':
-    'These fill in as you start using more of Piggles. Turn on Sell, Invoices or Messages and the ready-made ones for each show up here — things like chasing a late invoice, or thanking someone for their first order.',
+    'These fill in as you start using more of Piggles. Turn on Sell, Invoices or Messages and the ready-made ones for each show up here: things like chasing a late invoice, or thanking someone for their first order.',
   'automations.recipes.noResults':
     'Try a different word, or set the filter back to “All recipes” to see the ready-made ones again.',
 
@@ -99,7 +99,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // The disconnect warning is a money-and-deletion moment, so the voice goes
   // plain and calm — no lightness, and the consequence first.
   'finance.accounting.disconnect':
-    'This signs you out and deletes the account codes you matched up, along with your books-closed date. Nothing already sent is taken back and none of your spending is deleted — but the setting up is gone, and you would have to do it again.',
+    'This signs you out and deletes the account codes you matched up, along with your books-closed date. Nothing already sent is taken back and none of your spending is deleted, but the setting up is gone, and you would have to do it again.',
   'finance.accounting.needsSignIn': 'Set up, but nothing can be sent until you sign in.',
   'finance.accounting.directSync':
     'Sent straight across means each cost is posted for you, instead of you moving a file yourself. Where that is not switched on yet, the download above already works with your bookkeeping today.',
@@ -121,16 +121,16 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // here — everything is included. The reason a Piggles app is off is that it
   // has not been added to the workspace yet, which is a different sentence.
   'link.unresolved.body':
-    'This link opens an app you have not added yet. Everything is included in your plan, so you can turn it on whenever you like — nothing extra to pay.',
+    'This link opens an app you have not added yet. Everything is included in your plan, so you can turn it on whenever you like. Nothing extra to pay.',
   'link.unresolved.action': 'See everything Piggles can do',
 
   // ── Apps ─────────────────────────────────────────────────────────────────
   'modules.builder.blurb':
-    'Build your website — your pages, how they are laid out, and your own look. We host it for you.',
+    'Build your website. Your pages, how they are laid out, and your own look. We host it for you.',
   // "Not payroll" has to survive, because getting that wrong costs someone real
   // money. It stays as its own short sentence for the same reason.
   'modules.staff.blurb':
-    'Keep hours, pay rates, shifts, time off and license renewals, so you know what an hour of work really costs. This is not payroll — we hand the hours to whoever runs yours.',
+    'Keep hours, pay rates, shifts, time off and license renewals, so you know what an hour of work really costs. This is not payroll. We hand the hours to whoever runs yours.',
 
   // ── Selling ──────────────────────────────────────────────────────────────
   'commerce.provider.retired':
@@ -142,7 +142,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // happens is the other direction: their AI gets to see their business.
   'ai.mcp.title': 'Let your AI app see your business',
   'ai.instructions.summary':
-    'How it should sound and what it should always say when it writes for you — including the personality of the chat on your site.',
+    'How it should sound and what it should always say when it writes for you, including the personality of the chat on your site.',
   'ai.instructions.firstRun':
     'Write your first one. Tell it how to sound and what to say when it writes for you.',
   'ai.instructions.noneForViewer':
@@ -155,9 +155,9 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // but nothing is softened or shortened, because a person deciding whether to
   // connect their own mailbox is entitled to the whole of it.
   'crm.mailbox.personal.privacy':
-    'This is your own mailbox, so we keep only the messages to and from people already on your customer list. Everything else is thrown away as it is read — never saved, never searchable, never shown to your team.',
+    'This is your own mailbox, so we keep only the messages to and from people already on your customer list. Everything else is thrown away as it is read, never saved, never searchable, never shown to your team.',
   'crm.mailbox.shared.privacy':
-    'A shared address is there to receive mail from people you have not met, so we keep everything that arrives — including messages from strangers. Do not connect a personal mailbox this way.',
+    'A shared address is there to receive mail from people you have not met, so we keep everything that arrives, including messages from strangers. Do not connect a personal mailbox this way.',
   'crm.objectType.key':
     'Used in web addresses, and by anything you connect to Piggles. It cannot be changed later.',
   'crm.objectType.customFields':
@@ -173,7 +173,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // A do-not-email list is a legal boundary as much as a preference, so this
   // one stays firm and specific. "Only do this if you are sure" survives.
   'email.suppressions.remove':
-    'Taking this address off your do-not-email list means we may email them again — newsletters, offers and account messages. Only do this if you are sure they want to hear from you.',
+    'Taking this address off your do-not-email list means we may email them again: newsletters, offers and account messages. Only do this if you are sure they want to hear from you.',
   'email.suppressions.firstRun':
     'When someone unsubscribes, or an address stops working, they land here on their own and we stop emailing them. You can add an address by hand too.',
 
@@ -191,7 +191,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
 
   // ── Things waiting on you ────────────────────────────────────────────────
   'pulse.needsYou.description':
-    'Anything waiting on you turns up here — a payment that failed, stock running low, a reply from us.',
+    'Anything waiting on you turns up here: a payment that failed, stock running low, a reply from us.',
   'pulse.needsYou.firstRun':
     'When we have something to tell you, it lands here and stays, so you can come back to it whenever you like.',
 
@@ -215,7 +215,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'partner.bootcamp.titleExample': 'Getting started with selling on Piggles',
   'partner.gate.title': 'This account is not a Piggles partner',
   'partner.pitch.platform':
-    'Most businesses end up paying for a website builder, something to keep customer details in, an email tool, an invoicing app, and a pile of add-ons to make them talk to each other. Piggles is one place where all of that already lives together. Your site, your customers, your orders and your invoices — one login, one bill.',
+    'Most businesses end up paying for a website builder, something to keep customer details in, an email tool, an invoicing app, and a pile of add-ons to make them talk to each other. Piggles is one place where all of that already lives together. Your site, your customers, your orders and your invoices. One login, one bill.',
 
   // THE ONE THAT WAS FACTUALLY WRONG, not merely off-voice. sparx's version says
   // pricing is "priced only on the modules they keep switched on" — that is
@@ -224,7 +224,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // sentence would be misselling. This is why brand copy cannot be a name swap:
   // the substituted sentence would have been grammatical, on-brand, and false.
   'partner.pitch.pricing':
-    'Every Piggles account starts with a free trial — long enough to build the whole thing and see it working before paying anything. After that it is one flat monthly price with every app included. No tiers, and nothing to switch on later for more money.',
+    'Every Piggles account starts with a free trial: long enough to build the whole thing and see it working before paying anything. After that it is one flat monthly price with every app included. No tiers, and nothing to switch on later for more money.',
 
   // ── Things that "come with" the product ──────────────────────────────────
   //
@@ -245,11 +245,11 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // ── Dashboards ───────────────────────────────────────────────────────────
   'analytics.dashboard.moduleOff': 'This one comes with an app you have not turned on yet.',
   'analytics.dashboards.firstRun':
-    'These arrive as you turn on more apps — turn on My Site, for example, and you get one showing who is visiting.',
+    'These arrive as you turn on more apps. Turn on My Site, for example, and you get one showing who is visiting.',
 
   // ── Chat ─────────────────────────────────────────────────────────────────
   'chat.assistant.description':
-    'Answers new messages the moment they arrive, using your own AI account. It only ever runs on a key you connect below — without one, it never replies for you.',
+    'Answers new messages the moment they arrive, using your own AI account. It only ever runs on a key you connect below. Without one, it never replies for you.',
 
   // ── Legal pages ──────────────────────────────────────────────────────────
   //
@@ -268,9 +268,9 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // ── Calls ────────────────────────────────────────────────────────────────
   'crm.call.bridgeHint': 'Pick up and we will dial them and put you through.',
   'crm.phoneSystems.description':
-    'Connect your phone account and a Call button appears on every customer. We ring you first, then dial them and put the two of you together — so the call is written down without anyone having to remember to do it.',
+    'Connect your phone account and a Call button appears on every customer. We ring you first, then dial them and put the two of you together, so the call is written down without anyone having to remember to do it.',
   'crm.templates.description':
-    'A saved subject and message your team can pick when they email a customer, so the fourth follow-up this week reads as well as the first. We then count how many were sent, opened and answered — which is how you find out which of your own words work.',
+    'A saved subject and message your team can pick when they email a customer, so the fourth follow-up this week reads as well as the first. We then count how many were sent, opened and answered, which is how you find out which of your own words work.',
   'crm.mailbox.zohoHint':
     'In Zoho Mail, open Settings → Security → App passwords and make one for us.',
 
@@ -279,7 +279,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'domains.emptyUnexpected':
     'Every site comes with a free address, so this list should not be empty. Try reloading.',
   'onboarding.domain.pitch':
-    'Your own web address makes people trust you — and it is yours to keep. Grab the one you want now, or start free on the address we give you and add your own whenever you like.',
+    'Your own web address makes people trust you, and it is yours to keep. Grab the one you want now, or start free on the address we give you and add your own whenever you like.',
 
   // ── Suppliers ────────────────────────────────────────────────────────────
   'dropship.supplier.keys':
@@ -297,14 +297,14 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
 
   // ── Stock, continued ─────────────────────────────────────────────────────
   'inventory.barcodes.description':
-    'A barcode lets someone scan a box instead of typing what is in it. Anything that arrived with a code from the maker can have it saved here, and anything without one can be given its own — we will print the labels.',
+    'A barcode lets someone scan a box instead of typing what is in it. Anything that arrived with a code from the maker can have it saved here, and anything without one can be given its own. We will print the labels.',
   'inventory.labels.needsBarcode':
-    'Things need a barcode before a label can be printed. We can make one for anything that arrived without a code from the maker — a real barcode any scanner reads, from the range set aside for your own use.',
+    'Things need a barcode before a label can be printed. We can make one for anything that arrived without a code from the maker: a real barcode any scanner reads, from the range set aside for your own use.',
   'inventory.gl.ourFigure': 'What we make it',
   'inventory.reportSchedule.recipients':
     'One address per line, or separated by commas. They do not need an account here.',
   'inventory.sources.description':
-    'Connect a stock source when the real count lives somewhere else — a spreadsheet you publish, another system, or something running on your own computers. Its numbers then come in and become what you sell against.',
+    'Connect a stock source when the real count lives somewhere else: a spreadsheet you publish, another system, or something running on your own computers. Its numbers then come in and become what you sell against.',
 
   // ── What is happening ────────────────────────────────────────────────────
   'pulse.activity.description':
@@ -316,7 +316,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // The selling point is buried in sparx's version. The reason anyone cares
   // about first-party counting is the cookie banner they never have to show.
   'sites.analytics.firstParty':
-    'We count visits ourselves, without cookies — so there is no banner for visitors to click through, and nothing for you to set up.',
+    'We count visits ourselves, without cookies, so there is no banner for visitors to click through, and nothing for you to set up.',
 
   // ── Social ───────────────────────────────────────────────────────────────
   'social.metrics.pending':
@@ -330,7 +330,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'staff.people.description':
     'Add the people who work for you and we can keep their hours, what those hours cost, and when their tickets and licenses run out.',
   'staff.certifications.description':
-    'If your people need licenses, tickets or certificates, record them here and we will warn you before any of them run out — with as much notice as you ask for.',
+    'If your people need licenses, tickets or certificates, record them here and we will warn you before any of them run out, with as much notice as you ask for.',
   'team.roles.unknown':
     'A job title this version does not recognize. It still works, and you can ask us what it covers.',
 
@@ -343,7 +343,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'link.unresolved.bodyNamed':
     'This link opens something in {name}, and you have not turned {name} on yet. Everything is included in your plan, so you can turn it on whenever you like.',
   'link.unknownAddress':
-    'There is nothing at “{detail}”. The link may have been cut short on its way to you — they sometimes break traveling through a chat or an email — so it is worth asking for it again.',
+    'There is nothing at “{detail}”. The link may have been cut short on its way to you (they sometimes break traveling through a chat or an email) so it is worth asking for it again.',
 
   // THE SECOND FACTUALLY WRONG ONE. sparx ends this with "and you stop being
   // billed for it", because sparx charges per module. Piggles is one flat price
@@ -351,7 +351,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // saying otherwise would be a false promise at the exact moment somebody is
   // deciding. The rest of the reassurance matters more here, not less.
   'modules.turnOff.confirm':
-    '{name} stops working straight away — it leaves your sidebar and everything in it switches off. Nothing you have already made is deleted; it is just hidden until you turn {name} back on. Your bill does not change either way.',
+    '{name} stops working straight away. It leaves your sidebar and everything in it switches off. Nothing you have already made is deleted; it is just hidden until you turn {name} back on. Your bill does not change either way.',
 
   'automations.recipe.alwaysOn':
     '{title} is always on. We look after this one, so it cannot be turned off.',
@@ -361,10 +361,10 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'inventory.gl.description':
     'As at {asOf}. Each line either raises what your books should show, or lowers it, to match what we make it.',
   'inventory.import.newCodes':
-    '{rows} we have never seen before. Add them as new items, or leave them out — either way, what you decide is recorded with the import.',
+    '{rows} we have never seen before. Add them as new items, or leave them out. Either way, what you decide is recorded with the import.',
   'migration.helpSubject': 'I cannot connect Piggles to {vendor}',
   'sampleData.loadConfirm':
-    'This fills {scope} with a full, realistic {pack} set — products, customers, orders and more — so you can see how everything works with records that look real. It is all clearly marked as samples and can be removed in one go.',
+    'This fills {scope} with a full, realistic {pack} set (products, customers, orders and more) so you can see how everything works with records that look real. It is all clearly marked as samples and can be removed in one go.',
   'sampleData.packSummary':
     'A {pack} set, built to show everything working with records that look real.',
   // The blank line matters: this is a FILE somebody opens months later, and
@@ -375,7 +375,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'partner.gate.description':
     '{section} is part of the partner program, for agencies and consultants who bring clients to Piggles. An owner or admin can apply from your account settings, and once we approve it this fills in.',
   'partner.tier.applyConfirm':
-    '{commission}. We review applications, usually within a few working days — nothing about your account changes until it is approved.',
+    '{commission}. We review applications, usually within a few working days. Nothing about your account changes until it is approved.',
 
   // ── Who is speaking ──────────────────────────────────────────────────────
   'feedback.staffByline': '{author} · Piggles',
@@ -397,7 +397,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // has no first-party gateway, so the sentence loses its recommendation rather
   // than pointing at a row that is no longer in the list.
   'commerce.payments.chooseIntro':
-    'Choose who takes your customers’ payments. Open any of these to set it up — you will need an account with them, and most take a few minutes.',
+    'Choose who takes your customers’ payments. Open any of these to set it up. You will need an account with them, and most take a few minutes.',
 
   // ══ THE SECOND SWEEP ══════════════════════════════════════════════════════
   //
@@ -447,9 +447,9 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
 
   // ── Customers ────────────────────────────────────────────────────────────
   'crm.mailbox.disconnect':
-    'Piggles stops reading new email from this mailbox and stops sending through it. Every conversation already on a customer’s record stays — disconnecting a mailbox has never deleted anybody’s history.',
+    'Piggles stops reading new email from this mailbox and stops sending through it. Every conversation already on a customer’s record stays: disconnecting a mailbox has never deleted anybody’s history.',
   'crm.phone.disconnect':
-    'Piggles stops making calls through this account. Every call already logged on a customer’s record stays — disconnecting has never deleted your call history.',
+    'Piggles stops making calls through this account. Every call already logged on a customer’s record stays: disconnecting has never deleted your call history.',
 
   // ── Money ────────────────────────────────────────────────────────────────
   //
@@ -458,7 +458,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // codes. This is the gentle one: sign out, keep everything. Two confirms that
   // differ on whether work is lost must never share a key.
   'finance.accounting.signOut':
-    'Piggles forgets the sign-in and stops sending anything on its own. Your account codes, your books-closed date and everything already sent stay exactly as they are — sign in again whenever you like and nothing needs doing twice.',
+    'Piggles forgets the sign-in and stops sending anything on its own. Your account codes, your books-closed date and everything already sent stay exactly as they are. Sign in again whenever you like and nothing needs doing twice.',
   // Marketplace and gateway names that belong to the other brand. A Piggles
   // business can never have a payout from either, so these only ever appear as
   // an empty filter option — and an option naming another company's product is
@@ -475,7 +475,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // reassurance that matters. sparx's is a list of four symptoms; Piggles says
   // the same thing shorter, because a person reading this is already worried.
   'social.beta.notice':
-    'The social networks are still reviewing our access to post on your behalf, so this part is bumpy for now — an account may refuse to connect, a post can sit waiting longer than you would expect, and the numbers can be slow to catch up. Nothing you write is ever lost.',
+    'The social networks are still reviewing our access to post on your behalf, so this part is bumpy for now: an account may refuse to connect, a post can sit waiting longer than you would expect, and the numbers can be slow to catch up. Nothing you write is ever lost.',
 
   // ── Your own AI, continued ───────────────────────────────────────────────
   //
@@ -486,17 +486,17 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'ai.moduleOff.connected':
     'Your account is connected, but nothing will use it until you add the AI app. It is in All apps, at the bottom of the menu down the side.',
   'ai.moduleOff.notConnected':
-    'You can connect your account now, but nothing will use it until you add the AI app — it is in All apps, at the bottom of the menu down the side.',
+    'You can connect your account now, but nothing will use it until you add the AI app. It is in All apps, at the bottom of the menu down the side.',
   'ai.mcp.empty':
     'Nothing is connected yet. Open your AI app, add Piggles using the address above, and say yes when it asks for access. It will show up here straight after.',
   'ai.prompt.newIntro':
-    'Tell Piggles something about your business to use when it writes for you — how you like to sound, what to always mention, what never to say. You can switch any of it off later.',
+    'Tell Piggles something about your business to use when it writes for you: how you like to sound, what to always mention, what never to say. You can switch any of it off later.',
   'ai.prompt.readOnly':
     'You can read this, but changing how Piggles writes needs an owner or an admin.',
   'ai.prompts.intro':
-    'The things Piggles keeps in mind whenever it writes for you — your tone, the details you always want in, the words you never want used, right down to how the chat on your site sounds. Only the ones switched on are followed.',
+    'The things Piggles keeps in mind whenever it writes for you. Your tone, the details you always want in, the words you never want used, right down to how the chat on your site sounds. Only the ones switched on are followed.',
   'ai.tools.notWriting':
-    'This is about an outside app reaching into your business and doing things. It is not the writing help Piggles gives you — that lives in',
+    'This is about an outside app reaching into your business and doing things. It is not the writing help Piggles gives you. That lives in',
   // The three fragments of one sentence. The emphasis is the argument: one AI
   // works FOR you, the other reaches INTO your business, and they point in
   // opposite directions. Keep the shape or the bold stops meaning anything.
@@ -510,13 +510,13 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
 
   // ── Automations ──────────────────────────────────────────────────────────
   'automations.managed.body':
-    'We look after this one, so it cannot be edited here. Use “Duplicate to edit” to get your own copy — change it however you like, and this one carries on running untouched.',
+    'We look after this one, so it cannot be edited here. Use “Duplicate to edit” to get your own copy. Change it however you like, and this one carries on running untouched.',
   'automations.recipes.intro':
-    'These are already set up and waiting. Each one quietly does a job for you — welcoming a new customer, chasing an invoice that is late, following up after a sale. Switch one on and it starts; use “Customize” to change how it behaves.',
+    'These are already set up and waiting. Each one quietly does a job for you: welcoming a new customer, chasing an invoice that is late, following up after a sale. Switch one on and it starts; use “Customize” to change how it behaves.',
   'automations.goal.explain':
-    'Say what you actually want to happen. When it happens for somebody, Piggles stops the rest of the steps for them — no point nudging a person who has already done it — and counts them as a win.',
+    'Say what you actually want to happen. When it happens for somebody, Piggles stops the rest of the steps for them (no point nudging a person who has already done it) and counts them as a win.',
   'automations.noGoal':
-    'This has run {runs} times. Whether any of that got you what you wanted is not something we can work out on our own — tell us what you were aiming for and this turns into a real number.',
+    'This has run {runs} times. Whether any of that got you what you wanted is not something we can work out on our own. Tell us what you were aiming for and this turns into a real number.',
 
   // ── My Site ──────────────────────────────────────────────────────────────
   'builder.pages.otherViews':
@@ -526,7 +526,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'cms.contentType.builtIn':
     'This one is ready-made and shared by every business, so its fields are fixed. You can still write as much of this kind of content as you like.',
   'commerce.productType.builtIn':
-    'This one is ready-made and shared by every business. Use it as it is, or change it here — the first time you do, you get your own copy and it only ever affects you.',
+    'This one is ready-made and shared by every business. Use it as it is, or change it here: the first time you do, you get your own copy and it only ever affects you.',
 
   // ── Customers ────────────────────────────────────────────────────────────
   'crm.mailbox.testSignIn': 'We sign in once now, just to be sure it works.',
@@ -535,14 +535,14 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'crm.mailbox.checkNote':
     'We look for new email every few minutes. The refresh button on a row checks that one right now, if you cannot wait.',
   'crm.phone.connectIntro':
-    'We ring your phone first. You pick up, and it dials the customer and puts you together — so the call happens on a real handset with a real signal, and who you called, when and for how long is written down without you doing anything.',
+    'We ring your phone first. You pick up, and it dials the customer and puts you together, so the call happens on a real handset with a real signal, and who you called, when and for how long is written down without you doing anything.',
   'crm.phone.ownAccount':
     'It is your phone account, so calls are billed to you at your rates and the number stays yours. We lock the token away and never show it again.',
   'crm.phone.tokenNote':
     'To change the token on a number, disconnect it and connect it again. We never show a token back, so there is nothing to edit in place.',
   'crm.call.ringsFirst': 'We ring this phone first, then dial them and put you together.',
   'crm.report.readOnly':
-    'This is one of the ready-made reports. Make a copy to change anything — the copy is yours entirely.',
+    'This is one of the ready-made reports. Make a copy to change anything: the copy is yours entirely.',
 
   // ── Your web address ─────────────────────────────────────────────────────
   //
@@ -551,74 +551,74 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   // <something>.piggles.site at signup, so the sparx sentence names a domain
   // they do not have and will never see.
   'domains.managedAddress':
-    'We look after this address, so there is nothing for you to set up and nothing that can break. Every site gets one free, it works from the minute you sign up, and it keeps working even after you connect your own domain — it can never be removed, because it is your site’s permanent back-up address.',
+    'We look after this address, so there is nothing for you to set up and nothing that can break. Every site gets one free, it works from the minute you sign up, and it keeps working even after you connect your own domain. It can never be removed, because it is your site’s permanent back-up address.',
 
   // ── Messages ─────────────────────────────────────────────────────────────
   'email.suppression.addNote':
-    'We will stop sending this address anything at all — newsletters, offers, account emails, the lot. You can take them off this list whenever you like.',
+    'We will stop sending this address anything at all: newsletters, offers, account emails, the lot. You can take them off this list whenever you like.',
   'email.domain.addIntro':
-    'Use a domain you own and your email goes out from your own address — hello@yourbakery.com rather than a shared one. Once you add it we give you a few records to paste in wherever you bought the domain, to prove it is yours.',
+    'Use a domain you own and your email goes out from your own address: hello@yourbakery.com rather than a shared one. Once you add it we give you a few records to paste in wherever you bought the domain, to prove it is yours.',
 
   // ── Money ────────────────────────────────────────────────────────────────
   'finance.accounting.mapCta': 'Tell us your accountant’s codes',
   'finance.accounting.notLedger': 'Piggles is not your accounting package',
   'finance.profit.footnote':
-    'These are rebuilt every night, and whenever you press Rebuild. This is your working picture of the business — your accountant’s books are still the record.',
+    'These are rebuilt every night, and whenever you press Rebuild. This is your working picture of the business. Your accountant’s books are still the record.',
 
   // ── What kind of business you are ────────────────────────────────────────
   'industry.intro':
-    'Tell us your trade and we change the wording you see and give you a head start built for it — example categories, sensible settings, a bit of content to work from. You can change it later, and choosing one never removes anything you have already made.',
+    'Tell us your trade and we change the wording you see and give you a head start built for it: example categories, sensible settings, a bit of content to work from. You can change it later, and choosing one never removes anything you have already made.',
   'industry.confirm.first':
-    'This changes the wording to suit {name}, and gives the apps you have added a tailored head start{apps}. It only fills in the empty spaces — nothing you have already made is touched.',
+    'This changes the wording to suit {name}, and gives the apps you have added a tailored head start{apps}. It only fills in the empty spaces. Nothing you have already made is touched.',
   'industry.confirm.reapply':
-    'This tops up the head start in the apps you have added{apps}. It only fills in the empty spaces — nothing you have already made is touched.',
+    'This tops up the head start in the apps you have added{apps}. It only fills in the empty spaces. Nothing you have already made is touched.',
   'industry.willSetUp':
-    'We will set up {trade} defaults across {apps}. Everything we add is new — your own work is left exactly where it is.',
+    'We will set up {trade} defaults across {apps}. Everything we add is new. Your own work is left exactly where it is.',
 
   // ── Stock ────────────────────────────────────────────────────────────────
   'inventory.bin.systemShelf':
-    'This shelf came with your setup. Rename it and put it wherever you like in the picking order — its kind is fixed, because other things go looking for it.',
+    'This shelf came with your setup. Rename it and put it wherever you like in the picking order. Its kind is fixed, because other things go looking for it.',
   'inventory.gl.intro':
     'What we think your stock is worth, next to what your accounts say, with every ordinary reason the two differ named and priced.',
   'inventory.gl.askTitle': 'Tell us what your books say',
   'inventory.gl.askBody':
-    'We do not keep your ledger, so we cannot know what your stock account holds. Put the balance in below — off your trial balance, or from whoever keeps the books — and we will work out the difference and explain it. Until then there is nothing to compare against, which is why it is blank rather than zero.',
+    'We do not keep your ledger, so we cannot know what your stock account holds. Put the balance in below (off your trial balance, or from whoever keeps the books) and we will work out the difference and explain it. Until then there is nothing to compare against, which is why it is blank rather than zero.',
   'inventory.gl.reconciles':
     'Once the timing differences below are allowed for, we agree with your books exactly. This is the answer you want when your accountant asks.',
   'inventory.integrity.noSources':
     'You are not pulling stock in from anywhere else, so every number here was recorded right here.',
-  'inventory.provenance.internalOnly': 'This number is kept here — nothing outside is feeding it.',
+  'inventory.provenance.internalOnly': 'This number is kept here. Nothing outside is feeding it.',
   'inventory.performance.unattributed':
     '{units} sold somewhere we never saw the order, so those sales are missing from the figures below.',
   'inventory.source.addIntro':
-    'Connect something outside Piggles that keeps its own count — a spreadsheet, another system. Its numbers come in and become the stock you sell against.',
+    'Connect something outside Piggles that keeps its own count: a spreadsheet, another system. Its numbers come in and become the stock you sell against.',
   'inventory.import.needsColumn': 'What we need',
   'inventory.import.ignored': 'Columns we have no use for and will skip:',
   'inventory.import.autoRecipe': 'Let us work it out',
   'inventory.import.recipeNote':
     'This only widens the list of headings we recognize. It never changes what the import actually does.',
   'inventory.barcode.none':
-    'Nothing scans as {item} yet, so somebody has to find it by name every time. We can make a real barcode for it — any scanner reads it, and it can never clash with a manufacturer’s.',
+    'Nothing scans as {item} yet, so somebody has to find it by name every time. We can make a real barcode for it: any scanner reads it, and it can never clash with a manufacturer’s.',
 
   // ── Invoices ─────────────────────────────────────────────────────────────
   'invoicing.stage.internalName':
-    'Only ever seen by you and your team. Usually the same as above — make it different when your word for the step is not the one you would say to a customer.',
+    'Only ever seen by you and your team. Usually the same as above. Make it different when your word for the step is not the one you would say to a customer.',
 
   // ── The console itself ───────────────────────────────────────────────────
   'notifications.intro':
-    'Choose what we tell you about, and whether it comes by email or just waits for you here. These are your own choices — nobody else on your team is affected.',
+    'Choose what we tell you about, and whether it comes by email or just waits for you here. These are your own choices. Nobody else on your team is affected.',
   'sampleData.nothingOn':
     'You have not added any of the apps this would fill, so a load would only add a little. Add something like Sell or Bookings first and you will get the full set.',
 
   // ── Signing in ───────────────────────────────────────────────────────────
   'security.twoFactor.needApp':
-    'You will need a free authenticator app on your phone — Google Authenticator, Microsoft Authenticator and 1Password all work. It shows a 6-digit code that changes every 30 seconds, and we ask for that code when you sign in.',
+    'You will need a free authenticator app on your phone: Google Authenticator, Microsoft Authenticator and 1Password all work. It shows a 6-digit code that changes every 30 seconds, and we ask for that code when you sign in.',
   'security.twoFactor.verifyStep':
     'Last step: type the 6-digit code your app is showing for Piggles right now. Nothing changes until this works, so a code that will not go through costs you nothing.',
 
   // ── Get Found ────────────────────────────────────────────────────────────
   'social.evergreen.explain':
-    'Mark the posts you are happy to run again. When a posting slot comes round with nothing planned, we can fill it from these — and you still say yes before anything goes out.',
+    'Mark the posts you are happy to run again. When a posting slot comes round with nothing planned, we can fill it from these, and you still say yes before anything goes out.',
 
   // ── My Team ──────────────────────────────────────────────────────────────
   //

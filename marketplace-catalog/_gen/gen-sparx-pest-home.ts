@@ -175,7 +175,7 @@ const SCHEDULING = {
       handle: 'free-inspection',
       name: 'Free inspection',
       description:
-        'A friendly, no-pressure home visit to check inside and out, find where pests are getting in, and give you a plain-language plan and quote — completely free.',
+        'A friendly, no-pressure home visit to check inside and out, find where pests are getting in, and give you a plain-language plan and quote: completely free.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -188,7 +188,7 @@ const SCHEDULING = {
       handle: 'general-pest-treatment',
       name: 'General pest treatment',
       description:
-        'A thorough interior-and-exterior treatment for the everyday intruders — spiders, silverfish, earwigs and the rest — with a barrier that keeps working for weeks.',
+        'A thorough interior-and-exterior treatment for the everyday intruders (spiders, silverfish, earwigs and the rest) with a barrier that keeps working for weeks.',
       durationMinutes: 60,
       priceCents: 12900,
       assignmentStrategy: 'any_available',
@@ -201,7 +201,7 @@ const SCHEDULING = {
       handle: 'ant-roach-treatment',
       name: 'Ant & roach treatment',
       description:
-        'A targeted knock-down of an active ant or cockroach problem — baiting the trails and colonies at the source, not just the ones you can see on the counter.',
+        'A targeted knock-down of an active ant or cockroach problem: baiting the trails and colonies at the source, not just the ones you can see on the counter.',
       durationMinutes: 60,
       priceCents: 14900,
       assignmentStrategy: 'any_available',
@@ -214,7 +214,7 @@ const SCHEDULING = {
       handle: 'rodent-control-visit',
       name: 'Rodent control visit',
       description:
-        'Mice or rats? A tech seals up entry points, sets a discreet control program, and comes back to check it — so the problem ends instead of moving room to room.',
+        'Mice or rats? A tech seals up entry points, sets a discreet control program, and comes back to check it, so the problem ends instead of moving room to room.',
       durationMinutes: 75,
       priceCents: 18900,
       bufferAfterMin: 15,
@@ -228,7 +228,7 @@ const SCHEDULING = {
       handle: 'termite-inspection',
       name: 'Termite inspection',
       description:
-        'A detailed, WDO-style inspection for termites and wood-destroying pests — with photos, an honest assessment of any risk, and a treatment plan only if you actually need one.',
+        'A detailed, WDO-style inspection for termites and wood-destroying pests, with photos, an honest assessment of any risk, and a treatment plan only if you actually need one.',
       durationMinutes: 90,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -241,7 +241,7 @@ const SCHEDULING = {
       handle: 'mosquito-treatment',
       name: 'Mosquito treatment',
       description:
-        'A yard treatment that knocks down biting mosquitoes and treats the shady, standing-water spots they breed in — so the backyard is usable again all season.',
+        'A yard treatment that knocks down biting mosquitoes and treats the shady, standing-water spots they breed in, so the backyard is usable again all season.',
       durationMinutes: 45,
       priceCents: 9900,
       assignmentStrategy: 'any_available',
@@ -254,7 +254,7 @@ const SCHEDULING = {
       handle: 'recurring-plan-setup',
       name: 'Protection plan setup',
       description:
-        'Set up your year-round Shield Plan — a first full treatment plus scheduled seasonal visits, priority service between them, and our re-treat-free guarantee.',
+        'Set up your year-round Shield Plan: a first full treatment plus scheduled seasonal visits, priority service between them, and our re-treat-free guarantee.',
       durationMinutes: 60,
       priceCents: 8900,
       assignmentStrategy: 'any_available',
@@ -271,8 +271,8 @@ const HOME = [
   photoHero({
     image: url(IMG.hero),
     alt: 'A tidy, sunlit family home with a well-kept front yard',
-    title: 'Your home, pest-free — guaranteed',
-    sub: 'Reliable, friendly pest control for the whole year — general pests, ants, roaches, rodents and termites, handled by licensed local technicians who show up when they say they will.',
+    title: 'Your home, pest-free: guaranteed',
+    sub: 'Reliable, friendly pest control for the whole year: general pests, ants, roaches, rodents and termites, handled by licensed local technicians who show up when they say they will.',
     primary: { label: 'Book a free inspection', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
     overlay: 'dark',
@@ -281,11 +281,11 @@ const HOME = [
     items: [
       {
         title: 'Licensed local technicians',
-        body: 'Every technician is state-licensed, background-checked and trained on today’s pests and treatments — and tidy, friendly and respectful of your home.',
+        body: 'Every technician is state-licensed, background-checked and trained on today’s pests and treatments, and tidy, friendly and respectful of your home.',
       },
       {
         title: 'Satisfaction guaranteed',
-        body: 'If pests come back between visits, so do we — at no charge. That’s the whole point of a plan, and it’s in writing.',
+        body: 'If pests come back between visits, so do we: at no charge. That’s the whole point of a plan, and it’s in writing.',
       },
       {
         title: 'Recurring protection plans',
@@ -293,7 +293,7 @@ const HOME = [
       },
       {
         title: 'Safe & effective',
-        body: 'Family- and pet-conscious products applied by people who know exactly where and how much — real results without dousing your home.',
+        body: 'Family- and pet-conscious products applied by people who know exactly where and how much: real results without dousing your home.',
       },
     ],
   }),
@@ -307,7 +307,7 @@ const HOME = [
         name: 'Free inspection',
         priceCents: 0,
         durationMin: 45,
-        desc: 'We find the problem and give you an honest plan — free.',
+        desc: 'We find the problem and give you an honest plan: free.',
       },
       {
         name: 'General pest treatment',
@@ -335,14 +335,14 @@ const HOME = [
     alt: 'A uniformed technician treating the exterior foundation of a home',
     heading: 'Protection that never takes a season off',
     body: [
-      'Pests don’t show up on a schedule, and a one-time spray only buys a few weeks. Ants come back in spring, mosquitoes in summer, rodents when it turns cold — a home stays protected only when someone’s watching it all year.',
-      'Our Shield Plan members get scheduled seasonal visits, priority service the moment something turns up between them, and our re-treat-free guarantee — so your home stays protected without you having to think about it.',
+      'Pests don’t show up on a schedule, and a one-time spray only buys a few weeks. Ants come back in spring, mosquitoes in summer, rodents when it turns cold: a home stays protected only when someone’s watching it all year.',
+      'Our Shield Plan members get scheduled seasonal visits, priority service the moment something turns up between them, and our re-treat-free guarantee, so your home stays protected without you having to think about it.',
     ],
     cta: { label: 'Start a protection plan', href: '/book' },
   }),
   teamRow({
     heading: 'The people who’ll come to your door',
-    intro: 'Real technicians from right here — friendly, tidy, and happy to explain exactly what they find.',
+    intro: 'Real technicians from right here: friendly, tidy, and happy to explain exactly what they find.',
     members: [
       {
         name: 'Marcus Reyes',
@@ -363,7 +363,7 @@ const HOME = [
         role: 'Recurring-service technician',
         image: url(IMG.devon),
         alt: 'Devon Clarke, recurring-service technician',
-        bio: 'The friendly face on your seasonal visits — knows every home on his route and what keeps each one protected.',
+        bio: 'The friendly face on your seasonal visits: knows every home on his route and what keeps each one protected.',
       },
     ],
   }),
@@ -383,7 +383,7 @@ const BOOK_INTRO = [
     image: url(IMG.plan),
     alt: 'A uniformed technician treating the exterior foundation of a home',
     title: 'Book your visit',
-    sub: 'Choose a visit to see prices and live openings, then pick a time that works — you’ll get a confirmation and a reminder before we arrive.',
+    sub: 'Choose a visit to see prices and live openings, then pick a time that works: you’ll get a confirmation and a reminder before we arrive.',
     primary: { label: 'See visits below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -396,8 +396,8 @@ const ABOUT = [
     alt: 'A tidy, sunlit family home with a well-kept front yard',
     heading: 'About ShieldGuard Pest Control',
     body: [
-      'We started ShieldGuard because keeping pests out of your home shouldn’t come with a hard sell, a mystery invoice, or a stranger you never see again. A pest-free home is a basic kind of peace of mind — and it should be handled by people who treat your home the way they’d treat their own.',
-      'So that’s how we run it: licensed technicians, upfront prices, tidy work, and an honest read on what your home actually needs. Your home, pest-free, guaranteed — and the same friendly face on every visit.',
+      'We started ShieldGuard because keeping pests out of your home shouldn’t come with a hard sell, a mystery invoice, or a stranger you never see again. A pest-free home is a basic kind of peace of mind, and it should be handled by people who treat your home the way they’d treat their own.',
+      'So that’s how we run it: licensed technicians, upfront prices, tidy work, and an honest read on what your home actually needs. Your home, pest-free, guaranteed, and the same friendly face on every visit.',
     ],
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
@@ -407,15 +407,15 @@ const ABOUT = [
     items: [
       {
         title: 'We inspect first',
-        body: 'Every job starts with a real look inside and out to find where pests are getting in — because treating the symptom without the source just moves the problem around.',
+        body: 'Every job starts with a real look inside and out to find where pests are getting in, because treating the symptom without the source just moves the problem around.',
       },
       {
         title: 'We explain before we treat',
-        body: 'You’ll always know what we found, what your options are, and what each one costs before any work starts. No pressure, no upsell — just an honest recommendation.',
+        body: 'You’ll always know what we found, what your options are, and what each one costs before any work starts. No pressure, no upsell. Just an honest recommendation.',
       },
       {
         title: 'We stand behind it',
-        body: 'Our plans are backed by a re-treat-free guarantee, and a real person answers the phone when you call. If pests come back, so do we — at no charge.',
+        body: 'Our plans are backed by a re-treat-free guarantee, and a real person answers the phone when you call. If pests come back, so do we: at no charge.',
       },
     ],
   }),
@@ -435,7 +435,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live openings and reserve your free inspection online — pick a time, get a confirmation, done.',
+    sub: 'See live openings and reserve your free inspection online. Pick a time, get a confirmation, done.',
     surface: 'muted',
     cta: { label: 'Book a free inspection', href: '/book' },
   }),
@@ -447,7 +447,7 @@ const SPEC: ServiceSiteSpec = {
   name: 'Pest Control (Home)',
   summary:
     'A friendly residential pest-control site built on a reliable teal-and-green palette over a clean near-white ground. Installs a working booking flow: free inspections plus general, ant/roach, rodent, termite and mosquito treatments and recurring protection plans, three licensed technicians dispatched by skill with their own hours, and a plan policy. Ships as "ShieldGuard Pest Control".',
-  tagline: 'A reliable, reassuring template for pest-control companies — book inspections from day one.',
+  tagline: 'A reliable, reassuring template for pest-control companies. Book inspections from day one.',
   industry: 'Pest control',
   sortWeight: 28,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -456,9 +456,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'ShieldGuard Pest Control — reliable, guaranteed protection',
+      title: 'ShieldGuard Pest Control: reliable, guaranteed protection',
       description:
-        'ShieldGuard Pest Control keeps your home pest-free all year — free inspections, general, rodent and termite treatments, and recurring protection plans from licensed local techs. Book online.',
+        'ShieldGuard Pest Control keeps your home pest-free all year: free inspections, general, rodent and termite treatments, and recurring protection plans from licensed local techs. Book online.',
     },
   },
   home: HOME,

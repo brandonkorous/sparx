@@ -151,7 +151,7 @@ function describeStatus(status: number, what: string, body: string): ConnectorEr
     return new ConnectorError(`Your old platform asked us to slow down while reading ${what}.`, {
       status,
       retryable: true,
-      hint: 'Wait a minute and pick up where it stopped — nothing already brought over is lost.',
+      hint: 'Wait a minute and pick up where it stopped. Nothing already brought over is lost.',
     });
   }
   if (status >= 500) {
@@ -208,7 +208,7 @@ export async function requestJson(
         retryable: true,
         hint:
           error instanceof Error && error.name === 'AbortError'
-            ? 'It took too long to answer. Try again — big catalogues sometimes need a second run.'
+            ? 'It took too long to answer. Try again: big catalogues sometimes need a second run.'
             : 'Check the web address, and that the site is up.',
       });
       if (attempt < MAX_ATTEMPTS - 1) {

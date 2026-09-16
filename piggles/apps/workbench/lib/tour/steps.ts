@@ -30,7 +30,7 @@ export const WELCOME_GUIDE: Guide = {
     {
       id: 'hello',
       title: 'This is where you run everything',
-      body: 'Your website, what you sell, who you sell it to, and what you get paid — all of it lives here. About a minute, and you can stop any time. Nothing on screen is locked while we do this.',
+      body: 'Your website, what you sell, who you sell it to, and what you get paid. All of it lives here. About a minute, and you can stop any time. Nothing on screen is locked while we do this.',
     },
     {
       id: 'business',
@@ -42,7 +42,7 @@ export const WELCOME_GUIDE: Guide = {
       id: 'app-rail',
       anchor: 'app-rail',
       title: 'Every one of these is yours',
-      body: 'These are your apps, and you have all of them — nothing here costs extra and nothing is a trial. They are grouped and colored by what they are for, so the orange ones are about selling and the green ones are about money.',
+      body: 'These are your apps, and you have all of them. Nothing here costs extra and nothing is a trial. They are grouped and colored by what they are for, so the orange ones are about selling and the green ones are about money.',
     },
     {
       id: 'app-panel',
@@ -52,24 +52,24 @@ export const WELCOME_GUIDE: Guide = {
       app: 'home',
       anchor: 'app-panel',
       title: 'Pick an app, get its screens',
-      body: 'Clicking an app on the rail opens its list of screens here — this is Home’s. If you are ever hunting for something, this column is the map, and the search box will get you there faster still.',
+      body: 'Clicking an app on the rail opens its list of screens here. This is Home’s. If you are ever hunting for something, this column is the map, and the search box will get you there faster still.',
     },
     {
       id: 'workspace',
       anchor: 'workspace',
       title: 'Your work opens in here',
-      body: 'Screens open side by side so you can keep an eye on two things at once — an order next to the customer who placed it. Drag one out and it becomes its own window. Everything stays exactly as you left it, per business.',
+      body: 'Screens open side by side so you can keep an eye on two things at once: an order next to the customer who placed it. Drag one out and it becomes its own window. Everything stays exactly as you left it, per business.',
     },
     {
       id: 'search',
       anchor: 'search',
       title: 'When you would rather just ask',
-      body: 'Type a customer, an order, a product or the name of a screen. Ctrl-K opens it from anywhere — ⌘K on a Mac — and it is almost always quicker than clicking.',
+      body: 'Type a customer, an order, a product or the name of a screen. Ctrl-K opens it from anywhere (⌘K on a Mac) and it is almost always quicker than clicking.',
     },
     {
       id: 'strip',
       title: 'That is the whole shape of it',
-      body: 'Down here we tell you when things saved, what is still running, and anything worth knowing. Open an app and we will offer you a quick walk through that one too — same deal, and you can always say no.',
+      body: 'Down here we tell you when things saved, what is still running, and anything worth knowing. Open an app and we will offer you a quick walk through that one too: same deal, and you can always say no.',
     },
   ],
 };

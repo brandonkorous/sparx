@@ -380,7 +380,7 @@ export function RuleGroupEditor({
 
       {node.children.length === 0 ? (
         <Text className="text-sm">
-          This group has no conditions yet — add one below, or it will match everyone.
+          This group has no conditions yet. Add one below, or it will match everyone.
         </Text>
       ) : (
         <div className="flex flex-col gap-2">

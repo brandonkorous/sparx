@@ -16,7 +16,7 @@ export const HOME: AppMarketing = {
   does: [
     {
       title: 'What happened while you were closed',
-      body: 'Orders, bookings, messages and payments since you last looked — in one list, newest first, not five badges on five tabs.',
+      body: 'Orders, bookings, messages and payments since you last looked: in one list, newest first, not five badges on five tabs.',
     },
     {
       title: 'What is waiting on you',
@@ -28,7 +28,7 @@ export const HOME: AppMarketing = {
     },
     {
       title: 'The numbers that matter this week',
-      body: 'What came in, what it cost you, and how that compares to the same stretch last month — without building a report to find out.',
+      body: 'What came in, what it cost you, and how that compares to the same stretch last month, without building a report to find out.',
     },
     {
       title: 'Pick up where you left off',
@@ -42,7 +42,7 @@ export const HOME: AppMarketing = {
   chapters: [
     {
       heading: 'And the settings that are about your business, not your website.',
-      body: 'Every product has a settings screen nobody can find. Home is where yours are, because they are not really settings — they are facts about your business that everything else reads. Your name and address on an invoice, which trade you are in, where you are told about things, and who is allowed in.',
+      body: 'Every product has a settings screen nobody can find. Home is where yours are, because they are not really settings. They are facts about your business that everything else reads. Your name and address on an invoice, which trade you are in, where you are told about things, and who is allowed in.',
       does: [
         {
           title: 'Your business details, used everywhere',
@@ -50,7 +50,7 @@ export const HOME: AppMarketing = {
         },
         {
           title: 'What kind of business you are',
-          body: 'Your trade, which decides the sensible defaults across every app — what a product looks like for a bakery is not what it looks like for a garage.',
+          body: 'Your trade, which decides the sensible defaults across every app: what a product looks like for a bakery is not what it looks like for a garage.',
         },
         {
           title: 'Every site you run',
@@ -66,13 +66,13 @@ export const HOME: AppMarketing = {
         },
         {
           title: 'Signing in, and who is signed in',
-          body: 'Your password, two-step sign-in with a code from your phone, backup codes, and every device currently signed in — with the ability to throw one off.',
+          body: 'Your password, two-step sign-in with a code from your phone, backup codes, and every device currently signed in, with the ability to throw one off.',
         },
       ],
     },
     {
       heading: 'The first hour, and what is happening when you are not looking.',
-      body: 'Two things almost nothing does well: the beginning, and the middle of a long job. A new account arrives already furnished so you can see what a working business looks like before you have typed anything — and every import, export and bulk job runs somewhere you can watch it, rather than behind a spinner that may or may not still be alive.',
+      body: 'Two things almost nothing does well: the beginning, and the middle of a long job. A new account arrives already furnished so you can see what a working business looks like before you have typed anything, and every import, export and bulk job runs somewhere you can watch it, rather than behind a spinner that may or may not still be alive.',
       does: [
         {
           title: 'Set up in the order that makes sense',
@@ -80,7 +80,7 @@ export const HOME: AppMarketing = {
         },
         {
           title: 'A shop that already has things in it',
-          body: 'Practice records for your trade — products, customers, orders, bookings — so you are learning the software on something that looks real.',
+          body: 'Practice records for your trade (products, customers, orders, bookings) so you are learning the software on something that looks real.',
         },
         {
           title: 'And one button to clear them out',

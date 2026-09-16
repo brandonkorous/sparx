@@ -128,7 +128,7 @@ function OtherLanguage({
       />
       <FieldDescription>
         {raw.trim() === ''
-          ? 'The short code for the language — two letters, optionally with a country. “es” is Spanish, “fr-CA” Canadian French.'
+          ? 'The short code for the language: two letters, optionally with a country. “es” is Spanish, “fr-CA” Canadian French.'
           : duplicate
             ? `You already have ${localeName(canonical)} below.`
             : isValidLocale(raw)

@@ -34,7 +34,7 @@ export const CHAT_NO_RESPONSE_ALERT: SystemAutomationSpec = {
       type: 'email.send_internal',
       config: {
         toField: 'conversation.assignedToEmail',
-        subject: 'Unresponded chat — {{customer.fullName ?? "Anonymous"}}',
+        subject: 'Unresponded chat: {{customer.fullName ?? "Anonymous"}}',
       },
     },
   ],

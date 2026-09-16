@@ -376,7 +376,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     //    only buying a NEW domain is gated here.
     if (!env.DOMAIN_PURCHASE_ENABLED) {
       throw forbidden(
-        "Domain checkout isn't open yet. Your site is live on its free address — you can buy a custom domain from Settings once checkout opens."
+        "Domain checkout isn't open yet. Your site is live on its free address. You can buy a custom domain from Settings once checkout opens."
       );
     }
 
@@ -418,7 +418,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     const avail = await registrar.checkAvailability(host);
     if (!avail.available) {
       throw conflict(
-        'That domain is no longer available — it was registered elsewhere. Try another.',
+        'That domain is no longer available. It was registered elsewhere. Try another.',
         { field: 'domain' }
       );
     }
@@ -663,8 +663,8 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     });
     if (!passed) {
       const hint = isSubdomainHost(row.host)
-        ? `We couldn't find a CNAME for ${row.host} pointing to ${CNAME_TARGET} yet. DNS propagation can take a few minutes — add the CNAME record and try again.`
-        : `We couldn't find the TXT record at _sparx-verify.${row.host} yet. DNS propagation can take a few minutes — add both the CNAME/ALIAS and the TXT record, then try again.`;
+        ? `We couldn't find a CNAME for ${row.host} pointing to ${CNAME_TARGET} yet. DNS propagation can take a few minutes. Add the CNAME record and try again.`
+        : `We couldn't find the TXT record at _sparx-verify.${row.host} yet. DNS propagation can take a few minutes. Add both the CNAME/ALIAS and the TXT record, then try again.`;
       throw validationError(hint, [{ field: 'host', message: 'Verification failed.' }]);
     }
     return ok(toView(updated, cnameTargetFor(await tenantZone(auth.tenantId))));
@@ -741,7 +741,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
     // Renewing bills the reseller account just like a new registration, so it's
     // gated behind the same checkout switch — renewals open when checkout does.
     if (!env.DOMAIN_PURCHASE_ENABLED) {
-      throw forbidden("Domain checkout isn't open yet — renewals open when checkout does.");
+      throw forbidden("Domain checkout isn't open yet: renewals open when checkout does.");
     }
 
     const { id } = IdParam.parse(request.params);

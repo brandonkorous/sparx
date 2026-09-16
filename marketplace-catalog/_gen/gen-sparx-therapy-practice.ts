@@ -149,7 +149,7 @@ const SCHEDULING = {
       cancellationWindowHours: 24,
       reminderOffsetsMin: [2880, 1440, 120],
       policyText:
-        'Life happens — just give us at least 24 hours’ notice to reschedule or cancel, and there’s no charge. We’ll send you a reminder two days before, the day before, and two hours ahead.',
+        'Life happens. Just give us at least 24 hours’ notice to reschedule or cancel, and there’s no charge. We’ll send you a reminder two days before, the day before, and two hours ahead.',
     },
     {
       handle: 'late-cancel',
@@ -227,7 +227,7 @@ const SCHEDULING = {
       handle: 'individual-therapy',
       name: 'Individual therapy',
       description:
-        'A standard 50-minute session, one-on-one — a steady, confidential space to work through whatever you’re carrying, at your pace.',
+        'A standard 50-minute session, one-on-one: a steady, confidential space to work through whatever you’re carrying, at your pace.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -241,7 +241,7 @@ const SCHEDULING = {
       handle: 'couples-therapy',
       name: 'Couples therapy',
       description:
-        'A 60-minute session for two — a calm, even-handed space to be heard, understand each other again, and rebuild the way you talk.',
+        'A 60-minute session for two: a calm, even-handed space to be heard, understand each other again, and rebuild the way you talk.',
       durationMinutes: 60,
       priceCents: 18000,
       bufferAfterMin: 10,
@@ -256,7 +256,7 @@ const SCHEDULING = {
       handle: 'teen-therapy',
       name: 'Teen therapy',
       description:
-        'A 50-minute session built for adolescents — a warm, judgment-free place for a teen to feel understood, with parents looped in as it helps.',
+        'A 50-minute session built for adolescents: a warm, judgment-free place for a teen to feel understood, with parents looped in as it helps.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -270,7 +270,7 @@ const SCHEDULING = {
       handle: 'anxiety-session',
       name: 'Anxiety & stress session',
       description:
-        'A focused 50-minute session for anxiety, worry and burnout — practical tools you can use between visits, alongside the deeper work.',
+        'A focused 50-minute session for anxiety, worry and burnout: practical tools you can use between visits, alongside the deeper work.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -284,7 +284,7 @@ const SCHEDULING = {
       handle: 'trauma-session',
       name: 'Trauma-focused session',
       description:
-        'A gentle, carefully paced 60-minute session for processing trauma — always on your terms, never faster than feels safe.',
+        'A gentle, carefully paced 60-minute session for processing trauma: always on your terms, never faster than feels safe.',
       durationMinutes: 60,
       priceCents: 17000,
       bufferAfterMin: 10,
@@ -299,7 +299,7 @@ const SCHEDULING = {
       handle: 'telehealth-session',
       name: 'Telehealth session',
       description:
-        'A 50-minute individual session over secure video — the same care as in the room, from wherever you feel most at ease.',
+        'A 50-minute individual session over secure video: the same care as in the room, from wherever you feel most at ease.',
       durationMinutes: 50,
       priceCents: 15000,
       assignmentStrategy: 'customer_choice',
@@ -318,7 +318,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, sunlit therapy room with a soft couch and warm wood',
     title: 'You don’t have to carry it alone',
-    sub: 'Warm, down-to-earth counseling for individuals, couples and teens — in a real room or over secure video. Start with a free consultation, no pressure to continue.',
+    sub: 'Warm, down-to-earth counseling for individuals, couples and teens: in a real room or over secure video. Start with a free consultation, no pressure to continue.',
     primary: { label: 'Book a free consultation', href: '/book' },
     secondary: { label: 'See how we help', href: '/book' },
     overlay: 'dark',
@@ -327,11 +327,11 @@ const HOME = [
     items: [
       {
         title: 'Licensed, genuinely kind therapists',
-        body: 'Every one of our clinicians is fully licensed and experienced — and, just as importantly, warm, patient and easy to talk to.',
+        body: 'Every one of our clinicians is fully licensed and experienced, and, just as importantly, warm, patient and easy to talk to.',
       },
       {
         title: 'In person or over video',
-        body: 'Come sit in one of our quiet offices, or meet from home over secure telehealth. Same care either way — you choose what feels right.',
+        body: 'Come sit in one of our quiet offices, or meet from home over secure telehealth. Same care either way. You choose what feels right.',
       },
       {
         title: 'Most insurance & a sliding scale',
@@ -339,13 +339,13 @@ const HOME = [
       },
       {
         title: 'A judgment-free space',
-        body: 'Whatever brought you here, you’ll be met with respect and zero judgment. This is your hour — you set the pace.',
+        body: 'Whatever brought you here, you’ll be met with respect and zero judgment. This is your hour. You set the pace.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Ways we can help',
-    intro: 'A place to start, not a diagnosis. Full details and real availability are on the booking page — and the first call is always free.',
+    intro: 'A place to start, not a diagnosis. Full details and real availability are on the booking page, and the first call is always free.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -394,13 +394,13 @@ const HOME = [
     heading: 'Therapy that meets you where you are',
     body: [
       'Anchor Counseling started with a simple belief: asking for help should feel human, not clinical. So we built a practice around long conversations, real relationships and the same familiar therapist each time.',
-      'You won’t be handed a worksheet and rushed out. We take the time to understand your story, and we work at a pace that feels safe — because that’s where change actually happens.',
+      'You won’t be handed a worksheet and rushed out. We take the time to understand your story, and we work at a pace that feels safe, because that’s where change actually happens.',
     ],
     cta: { label: 'Book a free consultation', href: '/book' },
   }),
   teamRow({
     heading: 'The people you’ll talk to',
-    intro: 'Book by name — you’ll see the same therapist each visit, someone who gets to know you and your story.',
+    intro: 'Book by name: you’ll see the same therapist each visit, someone who gets to know you and your story.',
     members: [
       {
         name: 'Claire Whitfield, LCSW',
@@ -426,12 +426,12 @@ const HOME = [
     ],
   }),
   testimonial({
-    quote: 'I put off calling for two years. I wish I’d done it sooner. My therapist made me feel like a person, not a problem — and for the first time in a long while, things feel lighter.',
+    quote: 'I put off calling for two years. I wish I’d done it sooner. My therapist made me feel like a person, not a problem, and for the first time in a long while, things feel lighter.',
     attribution: 'A client, in her own words',
   }),
   bookingCta({
     title: 'The hardest part is the first step',
-    sub: 'Book a free 20-minute consultation. We’ll listen, answer your questions, and help you find the right person — whether that’s here or somewhere else.',
+    sub: 'Book a free 20-minute consultation. We’ll listen, answer your questions, and help you find the right person: whether that’s here or somewhere else.',
     cta: { label: 'Book a free consultation', href: '/book' },
   }),
 ];
@@ -441,7 +441,7 @@ const BOOK_INTRO = [
     image: url(IMG.office),
     alt: 'A quiet counseling office with two comfortable chairs and a window',
     title: 'Let’s find a time that works',
-    sub: 'Start with a free consultation, or book a session directly. Choose what you need below to see real availability, then pick your therapist and time — in person or over video.',
+    sub: 'Start with a free consultation, or book a session directly. Choose what you need below to see real availability, then pick your therapist and time: in person or over video.',
     primary: { label: 'See sessions below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -454,7 +454,7 @@ const ABOUT = [
     alt: 'A calm, sunlit therapy room with a soft couch and warm wood',
     heading: 'About Anchor Counseling',
     body: [
-      'We’re a small, established counseling practice — the kind of place where the therapist remembers your name and your story, and where the waiting room feels more like a living room than a clinic.',
+      'We’re a small, established counseling practice: the kind of place where the therapist remembers your name and your story, and where the waiting room feels more like a living room than a clinic.',
       'Our name is the whole idea. An anchor doesn’t stop the storm; it keeps you steady through it. That’s what good therapy does, and it’s what we set out to offer: a steady, human place to do the work.',
     ],
     cta: { label: 'Book a free consultation', href: '/book' },
@@ -465,7 +465,7 @@ const ABOUT = [
     items: [
       {
         title: 'We start by listening',
-        body: 'Your first session is about your story — what brought you in, what you’re hoping for, and how you like to work. No script, no rush.',
+        body: 'Your first session is about your story: what brought you in, what you’re hoping for, and how you like to work. No script, no rush.',
       },
       {
         title: 'The same therapist, every time',
@@ -473,7 +473,7 @@ const ABOUT = [
       },
       {
         title: 'Confidential, always',
-        body: 'What you share stays between you and your therapist. This is a private, protected space — that’s the foundation everything else stands on.',
+        body: 'What you share stays between you and your therapist. This is a private, protected space: that’s the foundation everything else stands on.',
       },
     ],
   }),
@@ -493,7 +493,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Not sure where to start?',
-    sub: 'Book a free consultation online and we’ll take it from there — or reach out with any question first. There’s no wrong way to begin.',
+    sub: 'Book a free consultation online and we’ll take it from there, or reach out with any question first. There’s no wrong way to begin.',
     surface: 'muted',
     cta: { label: 'Book a free consultation', href: '/book' },
   }),
@@ -504,8 +504,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-therapy-practice',
   name: 'Therapy Practice',
   summary:
-    'A warm, grounded template for a private therapy & counseling practice — a soft-cream palette, a calm sage primary and a humanist serif, carried by gentle photography. Installs online booking for free consultations and sessions (individual, couples, teen, anxiety, trauma, telehealth), with therapists and private offices as bookable resources for in-person & telehealth counseling. Ships as "Anchor Counseling".',
-  tagline: 'A warm, human template for therapists — book consultations & sessions from day one.',
+    'A warm, grounded template for a private therapy & counseling practice: a soft-cream palette, a calm sage primary and a humanist serif, carried by gentle photography. Installs online booking for free consultations and sessions (individual, couples, teen, anxiety, trauma, telehealth), with therapists and private offices as bookable resources for in-person & telehealth counseling. Ships as "Anchor Counseling".',
+  tagline: 'A warm, human template for therapists. Book consultations & sessions from day one.',
   industry: 'Counseling',
   sortWeight: 34,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -514,9 +514,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Anchor Counseling — warm, private therapy',
+      title: 'Anchor Counseling: warm, private therapy',
       description:
-        'Anchor Counseling is a warm private practice for individual, couples and teen therapy — in person or over secure video. Book a free consultation online.',
+        'Anchor Counseling is a warm private practice for individual, couples and teen therapy: in person or over secure video. Book a free consultation online.',
     },
   },
   home: HOME,

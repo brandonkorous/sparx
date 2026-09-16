@@ -133,7 +133,7 @@ function heroBand(): Node {
                                             children: [
                                                 // Editorial rubric above the name — allowed here (tenant design freedom).
                                                 el('span', 'text-sm font-semibold uppercase tracking-wide text-primary', {
-                                                    text: 'New album — out now',
+                                                    text: 'New album: out now',
                                                 }),
                                                 el(
                                                     'h1',
@@ -141,7 +141,7 @@ function heroBand(): Node {
                                                     { text: 'Vela' },
                                                 ),
                                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                                    text: 'Music, tour, and everything in between. Songs for the small hours — the new record, Small Hours, is out everywhere tonight.',
+                                                    text: 'Music, tour, and everything in between. Songs for the small hours: the new record, Small Hours, is out everywhere tonight.',
                                                 }),
                                                 el('div', 'flex flex-wrap gap-3', {
                                                     children: [
@@ -292,7 +292,7 @@ function tourDatesBand(): Node {
                         text: 'On tour',
                     }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'The Small Hours tour — a room, a record, and a very late night. Dates below; more added as we route them.',
+                        text: 'The Small Hours tour: a room, a record, and a very late night. Dates below; more added as we route them.',
                     }),
                     el('ul', 'flex flex-col', {
                         children: [
@@ -330,7 +330,7 @@ const HOME: Node[] = [
     heroBand(),
     latestReleaseBand(),
     tourDatesBand(),
-    headingBand('From the band', 'Studio notes, single announcements and tour diary — newest first.'),
+    headingBand('From the band', 'Studio notes, single announcements and tour diary: newest first.'),
     blogPostGrid(),
     // The content→commerce bridge: the merch table, as a live carousel.
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Music & Merch' }),
@@ -433,7 +433,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Vela journal' },
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Studio notes, single releases and postcards from the road — written by the band, published as it happens.',
+                        text: 'Studio notes, single releases and postcards from the road: written by the band, published as it happens.',
                     }),
                 ],
             }),
@@ -452,13 +452,13 @@ const ABOUT: Node[] = [
                         text: 'About Vela',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Vela is a four-piece who write songs for the small hours — the ones you play on the drive home when the city has gone quiet. Formed in a shared flat over a winter of power cuts, the band built its sound the way it builds everything: live, in one room, with the lights low.',
+                        text: 'Vela is a four-piece who write songs for the small hours: the ones you play on the drive home when the city has gone quiet. Formed in a shared flat over a winter of power cuts, the band built its sound the way it builds everything: live, in one room, with the lights low.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Three records in, they still self-produce, still tour in a van they own, and still answer the fan mail themselves. Small Hours, the new album, was cut to tape in the same flat where the first demos were made — a full circle nobody planned and everybody noticed.',
+                        text: 'Three records in, they still self-produce, still tour in a van they own, and still answer the fan mail themselves. Small Hours, the new album, was cut to tape in the same flat where the first demos were made: a full circle nobody planned and everybody noticed.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'This site is where the band puts everything first — the releases, the dates, the notes from the studio floor, and the merch that keeps the van on the road. No label between you and them.',
+                        text: 'This site is where the band puts everything first: the releases, the dates, the notes from the studio floor, and the merch that keeps the van on the road. No label between you and them.',
                     }),
                 ],
             }),
@@ -473,7 +473,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Get in touch',
-        intro: 'Booking, press, sync licensing, or a note about a show — everything reaches the band. We read all of it, and we answer what we can.',
+        intro: 'Booking, press, sync licensing, or a note about a show. Everything reaches the band. We read all of it, and we answer what we can.',
         submitLabel: 'Email the band',
     }),
 ];
@@ -507,7 +507,7 @@ interface Product {
 const PRODUCTS: Product[] = [
     {
         handle: 'small-hours-vinyl',
-        title: 'Small Hours — Vinyl LP',
+        title: 'Small Hours: Vinyl LP',
         description:
             'The new album on heavyweight 180g black vinyl, cut loud from the tape masters, in a gatefold sleeve with the lyrics and a photo insert from the sessions. Includes a download of the full record.',
         status: 'active',
@@ -516,7 +516,7 @@ const PRODUCTS: Product[] = [
         tags: ['music', 'vinyl', 'album'],
         categoryHandles: ['music'],
         collectionHandles: ['featured'],
-        seoTitle: 'Small Hours — Vinyl LP | Vela',
+        seoTitle: 'Small Hours: Vinyl LP | Vela',
         seoDescription: 'The new Vela album on heavyweight 180g vinyl, gatefold sleeve, with a download.',
         variants: [
             { sku: 'VELA-LP-SMALLHOURS', priceCents: money(32), isDefault: true, inventoryPolicy: 'continue' },
@@ -525,16 +525,16 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'small-hours-digital',
-        title: 'Small Hours — Digital Album',
+        title: 'Small Hours: Digital Album',
         description:
-            'The full record as a lossless download the moment you buy it — ten tracks, plus two b-sides that did not fit the vinyl. Yours to keep, no subscription, no expiry.',
+            'The full record as a lossless download the moment you buy it: ten tracks, plus two b-sides that did not fit the vinyl. Yours to keep, no subscription, no expiry.',
         status: 'active',
         productType: 'Digital',
         vendor: 'Vela',
         tags: ['music', 'download', 'album'],
         categoryHandles: ['music'],
         collectionHandles: ['featured'],
-        seoTitle: 'Small Hours — Digital Album | Vela',
+        seoTitle: 'Small Hours: Digital Album | Vela',
         seoDescription: 'The new Vela album as a lossless download, ten tracks plus two b-sides.',
         variants: [
             { sku: 'VELA-DL-SMALLHOURS', priceCents: money(11), isDefault: true, inventoryPolicy: 'continue' },
@@ -545,7 +545,7 @@ const PRODUCTS: Product[] = [
         handle: 'nightshift-tour-tee',
         title: 'Nightshift Tour Tee',
         description:
-            'The Small Hours tour shirt — heavyweight black cotton with the routing printed small on the back and the band mark on the chest. Screen-printed in small runs; when a size is gone, it is gone.',
+            'The Small Hours tour shirt: heavyweight black cotton with the routing printed small on the back and the band mark on the chest. Screen-printed in small runs; when a size is gone, it is gone.',
         status: 'active',
         productType: 'Apparel',
         vendor: 'Vela',
@@ -553,7 +553,7 @@ const PRODUCTS: Product[] = [
         categoryHandles: ['apparel'],
         collectionHandles: ['featured'],
         seoTitle: 'Nightshift Tour Tee | Vela',
-        seoDescription: 'The Small Hours tour tee — heavyweight black cotton, routing on the back.',
+        seoDescription: 'The Small Hours tour tee: heavyweight black cotton, routing on the back.',
         variants: [
             { sku: 'VELA-TEE-NIGHTSHIFT', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' },
         ],
@@ -563,7 +563,7 @@ const PRODUCTS: Product[] = [
         handle: 'vela-logo-hoodie',
         title: 'Vela Logo Hoodie',
         description:
-            'A heavy brushed-back hoodie in charcoal with the Vela mark embroidered on the chest — the one you steal back off whoever you lend it to. Built to survive a winter of load-ins.',
+            'A heavy brushed-back hoodie in charcoal with the Vela mark embroidered on the chest: the one you steal back off whoever you lend it to. Built to survive a winter of load-ins.',
         status: 'active',
         productType: 'Apparel',
         vendor: 'Vela',
@@ -581,7 +581,7 @@ const PRODUCTS: Product[] = [
 
 const COMMERCE = {
     categories: [
-        { handle: 'music', name: 'Music', description: 'The records — vinyl and download.', featured: true },
+        { handle: 'music', name: 'Music', description: 'The records: vinyl and download.', featured: true },
         { handle: 'apparel', name: 'Apparel', description: 'Tour shirts and everyday wear.', featured: true },
     ],
     collections: [
@@ -643,12 +643,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('It is done. Small Hours — ten songs we have been living inside since a cold January — is out everywhere from midnight tonight. We are not sure we have ever been this nervous to give something away.'),
+                    para('It is done. Small Hours (ten songs we have been living inside since a cold January) is out everywhere from midnight tonight. We are not sure we have ever been this nervous to give something away.'),
                     h2('How it was made'),
                     para('We cut it live to tape in the flat where the first Vela demos were recorded, four of us in one room with the amps turned down enough not to lose the deposit. Nothing is quantised, nothing is fixed after the fact. The mistakes you can hear are the takes we liked best.'),
                     h2('What to play it on'),
-                    para('It is mixed loud and meant to be played that way — in a car, on headphones on a night bus, or off the vinyl at a volume your neighbours will remember. If you can, get the record. The download is in every copy.'),
-                    para('Thank you for waiting. Come find us on the road — the dates are up, and we would love to play these for you in a room.'),
+                    para('It is mixed loud and meant to be played that way: in a car, on headphones on a night bus, or off the vinyl at a volume your neighbours will remember. If you can, get the record. The download is in every copy.'),
+                    para('Thank you for waiting. Come find us on the road: the dates are up, and we would love to play these for you in a room.'),
                 ],
             },
         },
@@ -686,7 +686,7 @@ const CONTENT = [
         categories: ['Releases'],
         tags: ['Single', 'Nightshift'],
         body: {
-            title: '“Nightshift” — the first single, and the video',
+            title: '“Nightshift” the first single, and the video',
             excerpt:
                 'The song we nearly cut from the record is the one leading it. Here is why it stayed, and where the video came from.',
             featuredImage: { $asset: 'post-single' },
@@ -695,7 +695,7 @@ const CONTENT = [
                 content: [
                     para('“Nightshift” almost did not make the album. It was too long, too slow, and it took us a year to work out what it was about. Then one night it clicked, and now it opens the record.'),
                     h2('The song'),
-                    para('It is about the people who are awake when everyone else is asleep — the ones cleaning the offices, driving the last buses, sitting up with someone who is unwell. We wanted a song that kept them company.'),
+                    para('It is about the people who are awake when everyone else is asleep: the ones cleaning the offices, driving the last buses, sitting up with someone who is unwell. We wanted a song that kept them company.'),
                     h2('The video'),
                     para('We shot it in a single take on a night bus with a borrowed camera and no permit, which we do not recommend. The city you see through the windows is exactly the one we drive through going home from a show.'),
                     para('It is up now on the streaming links, and on the release page. Play it late.'),
@@ -722,7 +722,7 @@ const CONTENT = [
                     h2('The blown fuse'),
                     para('An old building, a lot of stage lights, and a fuse that had clearly been waiting for us. The house crew found a workaround, a neighbouring bar lent us an amp, and we went on twenty minutes late to a room that had been standing in the dark, patient, the whole time.'),
                     h2('The part that got us'),
-                    para('These are brand new songs — the record was only days old — and by the second chorus of “Nightshift” four hundred people were singing the words back. Nobody had had time to learn them. They just felt where they were going. I watched Mara turn around so the crowd would not see her face.'),
+                    para('These are brand new songs (the record was only days old) and by the second chorus of “Nightshift” four hundred people were singing the words back. Nobody had had time to learn them. They just felt where they were going. I watched Mara turn around so the crowd would not see her face.'),
                     para('Fifteen more of these to go. If you are coming to one, come early and say hello at the merch table.'),
                 ],
             },
@@ -745,7 +745,7 @@ const CONTENT = [
                 content: [
                     para('“Harbour” is the one song on Small Hours we could not make in the flat. It needed more people than the room could hold, so for one day we broke our own rule.'),
                     h2('The players'),
-                    para('We brought in a string quartet we have loved for years and a community choir from two streets over — twenty voices who had never heard the song before that morning. We taught them the part by singing it, and recorded the third time through, while it was still new to them.'),
+                    para('We brought in a string quartet we have loved for years and a community choir from two streets over: twenty voices who had never heard the song before that morning. We taught them the part by singing it, and recorded the third time through, while it was still new to them.'),
                     h2('Keeping it live'),
                     para('Even with thirty people in the room, we tracked it live, everyone at once, one take kept. You can hear a chair scrape and someone laugh at the end. We kept that too. The bigness is real people in a real room, not a plug-in.'),
                     para('It closes the record. Headphones, lights off, is how we hear it.'),
@@ -762,7 +762,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-artist-media',
     name: 'Artist Media',
     summary:
-        'A media-forward, stage-dark site for a recording artist or band — a poster-scale artist hero, a latest-release feature with streaming links, a tour-dates run, a live journal, and a bespoke article page, in a near-black theme with a vivid magenta accent. Modelled on the recording-artist archetype; shipped as Vela. Ships a light music + merch store (vinyl, a tee, a hoodie, a digital album) to demonstrate content + commerce together.',
+        'A media-forward, stage-dark site for a recording artist or band: a poster-scale artist hero, a latest-release feature with streaming links, a tour-dates run, a live journal, and a bespoke article page, in a near-black theme with a vivid magenta accent. Modelled on the recording-artist archetype; shipped as Vela. Ships a light music + merch store (vinyl, a tee, a hoodie, a digital album) to demonstrate content + commerce together.',
     tagline: 'A stage-dark artist-site template for a band that releases, tours and sells.',
     vertical: 'content',
     industry: 'Recording artist & band',
@@ -777,14 +777,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Vela — new album Small Hours, out now',
+            title: 'Vela: new album Small Hours, out now',
             description:
-                'Vela — a four-piece writing songs for the small hours. The new record Small Hours is out everywhere, and the tour is on the road. Music, tour, and everything in between.',
+                'Vela: a four-piece writing songs for the small hours. The new record Small Hours is out everywhere, and the tour is on the road. Music, tour, and everything in between.',
         },
         about: {
-            title: 'About Vela — the band, the record, the road',
+            title: 'About Vela: the band, the record, the road',
             description:
-                'Who Vela is and how they work — a self-produced, self-booked four-piece who record everything live in one room. No label between you and the band.',
+                'Who Vela is and how they work: a self-produced, self-booked four-piece who record everything live in one room. No label between you and the band.',
         },
     },
     home: HOME,

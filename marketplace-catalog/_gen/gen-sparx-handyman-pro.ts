@@ -163,7 +163,7 @@ const SCHEDULING = {
       handle: 'handyman-hour',
       name: 'Handyman hour',
       description:
-        'One hour with a skilled pro for the small stuff — a wobbly rail, a sticking door, a leaky faucet, that shelf that never went up.',
+        'One hour with a skilled pro for the small stuff: a wobbly rail, a sticking door, a leaky faucet, that shelf that never went up.',
       durationMinutes: 60,
       priceCents: 9500,
       assignmentStrategy: 'any_available',
@@ -174,7 +174,7 @@ const SCHEDULING = {
       handle: 'tv-mounting',
       name: 'TV mounting',
       description:
-        'We hang the TV level and solid, hide the cables and set it where you want it — bracket and hardware included.',
+        'We hang the TV level and solid, hide the cables and set it where you want it: bracket and hardware included.',
       durationMinutes: 90,
       priceCents: 14900,
       assignmentStrategy: 'any_available',
@@ -185,7 +185,7 @@ const SCHEDULING = {
       handle: 'furniture-assembly',
       name: 'Furniture assembly',
       description:
-        'Flat-pack, crib, desk or wardrobe — assembled right, squared up and anchored to the wall if it needs it.',
+        'Flat-pack, crib, desk or wardrobe: assembled right, squared up and anchored to the wall if it needs it.',
       durationMinutes: 60,
       priceCents: 8900,
       assignmentStrategy: 'any_available',
@@ -196,7 +196,7 @@ const SCHEDULING = {
       handle: 'drywall-repair',
       name: 'Drywall repair',
       description:
-        'Holes, dents and cracks patched, sanded smooth and blended in — ready to paint, or we can paint it to match.',
+        'Holes, dents and cracks patched, sanded smooth and blended in: ready to paint, or we can paint it to match.',
       durationMinutes: 120,
       priceCents: 19900,
       assignmentStrategy: 'any_available',
@@ -207,7 +207,7 @@ const SCHEDULING = {
       handle: 'home-repair-visit',
       name: 'Home repair visit',
       description:
-        'A booked visit for a specific fix — a repair, a swap, an install. Tell us what’s wrong and we bring the right tools.',
+        'A booked visit for a specific fix: a repair, a swap, an install. Tell us what’s wrong and we bring the right tools.',
       durationMinutes: 60,
       priceCents: 11900,
       assignmentStrategy: 'any_available',
@@ -218,7 +218,7 @@ const SCHEDULING = {
       handle: 'honey-do-half-day',
       name: 'Honey-do half day',
       description:
-        'Four hours to knock out the whole list in one go — hang, patch, tighten, mount, swap. Bring the list, we bring the van.',
+        'Four hours to knock out the whole list in one go: hang, patch, tighten, mount, swap. Bring the list, we bring the van.',
       durationMinutes: 240,
       priceCents: 34900,
       assignmentStrategy: 'any_available',
@@ -234,7 +234,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A handyman fitting a cabinet in a bright home kitchen',
     title: 'One call fixes it all',
-    sub: 'The repairs, installs and half-finished projects piling up around the house — handled by one skilled pro who shows up on time and does it right the first time.',
+    sub: 'The repairs, installs and half-finished projects piling up around the house: handled by one skilled pro who shows up on time and does it right the first time.',
     primary: { label: 'Book a visit', href: '/book' },
     secondary: { label: 'Get a free estimate', href: '/book' },
     overlay: 'dark',
@@ -251,7 +251,7 @@ const HOME = [
       },
       {
         title: 'Licensed & insured',
-        body: 'Fully licensed and insured, so the person working in your home is covered — and so are you.',
+        body: 'Fully licensed and insured, so the person working in your home is covered, and so are you.',
       },
       {
         title: 'Work guaranteed',
@@ -261,7 +261,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'What we come out for',
-    intro: 'The jobs we get called for most. Every price and live availability is on the booking page — and the first estimate is always free.',
+    intro: 'The jobs we get called for most. Every price and live availability is on the booking page, and the first estimate is always free.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -279,22 +279,22 @@ const HOME = [
     alt: 'A tidy van and tool wall ready for the day’s jobs',
     heading: 'No job too small',
     body: [
-      'A lot of pros won’t bother with a loose hinge or a single shelf. We will. The small stuff is exactly what piles up — and exactly what we’re here for.',
+      'A lot of pros won’t bother with a loose hinge or a single shelf. We will. The small stuff is exactly what piles up, and exactly what we’re here for.',
       'Ace & Able has been fixing homes in this town for years. Same faces, same trucks, same promise: we show up when we say we will, we clean up after ourselves, and we don’t leave until it’s done right.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
   }),
   teamRow({
     heading: 'The crew you’ll meet',
-    intro: 'Book the visit and one of these three shows up — every one of them a seasoned, background-checked pro.',
+    intro: 'Book the visit and one of these three shows up: every one of them a seasoned, background-checked pro.',
     members: [
       { name: 'Mike Alvarez', role: 'Lead handyman', image: url(IMG.mike), alt: 'Mike Alvarez, lead handyman', bio: 'Twenty years of repairs and carpentry. If it can be fixed, Mike’s fixed one before.' },
       { name: 'Carlos Reyes', role: 'Drywall & paint', image: url(IMG.carlos), alt: 'Carlos Reyes, drywall & paint specialist', bio: 'Patches you can’t find afterward and paint lines you could measure with a level.' },
-      { name: 'Dave Whitfield', role: 'Installs & mounting', image: url(IMG.dave), alt: 'Dave Whitfield, install & mounting specialist', bio: 'TVs, shelves, fixtures and flat-pack — mounted solid and dead level, every time.' },
+      { name: 'Dave Whitfield', role: 'Installs & mounting', image: url(IMG.dave), alt: 'Dave Whitfield, install & mounting specialist', bio: 'TVs, shelves, fixtures and flat-pack: mounted solid and dead level, every time.' },
     ],
   }),
   testimonial({
-    quote: 'They mounted our TV, fixed two doors and hung a gallery wall in one afternoon — and swept up before they left. First time in years the honey-do list is actually empty.',
+    quote: 'They mounted our TV, fixed two doors and hung a gallery wall in one afternoon, and swept up before they left. First time in years the honey-do list is actually empty.',
     attribution: 'Dana R., homeowner since 2022',
   }),
   bookingCta({
@@ -322,8 +322,8 @@ const ABOUT = [
     alt: 'A handyman fitting a cabinet in a bright home kitchen',
     heading: 'About Ace & Able',
     body: [
-      'We started Ace & Able Handyman on a simple idea: most people don’t need a specialist for every little thing — they need one reliable pro who can do a bit of everything and actually turns up.',
-      'That’s us. Repairs, installs, drywall, carpentry, mounting, the endless honey-do list — one call, one trusted crew, one price you agreed to up front. No run-around, no mess left behind.',
+      'We started Ace & Able Handyman on a simple idea: most people don’t need a specialist for every little thing. They need one reliable pro who can do a bit of everything and actually turns up.',
+      'That’s us. Repairs, installs, drywall, carpentry, mounting, the endless honey-do list. One call, one trusted crew, one price you agreed to up front. No run-around, no mess left behind.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
   }),
@@ -331,9 +331,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we work',
     items: [
-      { title: 'A real estimate first', body: 'We look at the job in person and give you a clear, written price before we pick up a tool — and the estimate is always free.' },
+      { title: 'A real estimate first', body: 'We look at the job in person and give you a clear, written price before we pick up a tool, and the estimate is always free.' },
       { title: 'The right pro for the job', body: 'Repairs, drywall or installs, we send the person who does that work every day. You always get a skilled hand, not a guess.' },
-      { title: 'Cleaned up and guaranteed', body: 'We tidy up before we go and stand behind the work. If something’s not right, we come back and fix it — no argument.' },
+      { title: 'Cleaned up and guaranteed', body: 'We tidy up before we go and stand behind the work. If something’s not right, we come back and fix it: no argument.' },
     ],
   }),
 ];
@@ -351,7 +351,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and lock in your visit online — no phone tag, no waiting on a callback.',
+    sub: 'See live availability and lock in your visit online: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Book a visit', href: '/book' },
   }),
@@ -362,8 +362,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-handyman-pro',
   name: 'Handyman (Pro)',
   summary:
-    'A dependable handyman site — a sturdy navy-and-amber palette on an off-white ground with a solid slab display, photo-led throughout. Installs a working booking flow: a real visit menu (free estimates, TV mounting, furniture assembly, drywall repair, half-day honey-do lists), three handymen dispatched by skill with their own hours, and a 24-hour reschedule policy. Ships as "Ace & Able Handyman", an all-around home-repair pro where one call fixes it all.',
-  tagline: 'A dependable template for handyman & home-repair pros — book visits online from day one.',
+    'A dependable handyman site: a sturdy navy-and-amber palette on an off-white ground with a solid slab display, photo-led throughout. Installs a working booking flow: a real visit menu (free estimates, TV mounting, furniture assembly, drywall repair, half-day honey-do lists), three handymen dispatched by skill with their own hours, and a 24-hour reschedule policy. Ships as "Ace & Able Handyman", an all-around home-repair pro where one call fixes it all.',
+  tagline: 'A dependable template for handyman & home-repair pros. Book visits online from day one.',
   industry: 'Handyman',
   sortWeight: 42,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -372,9 +372,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Ace & Able Handyman — home repairs & installs',
+      title: 'Ace & Able Handyman: home repairs & installs',
       description:
-        'Ace & Able Handyman handles repairs, installs, drywall, mounting and honey-do lists — one skilled, licensed pro who shows up on time. Book a visit or a free estimate online.',
+        'Ace & Able Handyman handles repairs, installs, drywall, mounting and honey-do lists. One skilled, licensed pro who shows up on time. Book a visit or a free estimate online.',
     },
   },
   home: HOME,

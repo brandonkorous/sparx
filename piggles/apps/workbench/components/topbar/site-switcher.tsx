@@ -63,7 +63,7 @@ export function SiteSwitcher({ siteKey }: { siteKey: string }) {
         /
       </span>
       <DropdownMenu>
-        <Tooltip content="Switch site — each one keeps its own arrangement">
+        <Tooltip content="Switch site: each one keeps its own arrangement">
           <DropdownMenuTrigger>
             {/* `text-sm` because silica bakes a font-size into every btn-<size>
                 (btn-sm is 12px), which would render the site name a size smaller

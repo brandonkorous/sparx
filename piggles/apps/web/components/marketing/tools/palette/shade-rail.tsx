@@ -36,7 +36,7 @@ export function ShadeRail({
             key={step}
             type="button"
             onClick={() => onPick(value)}
-            title={`${step} — ${value}`}
+            title={`${step}: ${value}`}
             className="flex flex-1 items-center justify-center text-xs font-bold transition-[flex] duration-150 hover:flex-[1.7] focus-visible:flex-[1.7] focus-visible:outline-none"
             style={{ backgroundColor: shown, color: ink }}
           >

@@ -50,7 +50,7 @@ export const CRM_NEW_LEAD_FOLLOW_UP_TASK: SystemAutomationSpec = {
     {
       type: 'crm.create_task',
       config: {
-        title: 'Follow up — {{deal.name}}',
+        title: 'Follow up: {{deal.name}}',
         assigneeField: 'deal.assignedRepId',
         dueInDays: 1,
       },
@@ -63,7 +63,8 @@ export const CRM_NEW_LEAD_FOLLOW_UP_TASK: SystemAutomationSpec = {
 /** When a deal moves to a won stage, open a task to create the invoice (the
  *  cross-module bridge to invoicing). Assigned to the deal's rep. */
 export const CRM_DEAL_WON_INVOICE_TASK: SystemAutomationSpec = {
-  name: 'Deal won — create invoice task',
+  name: 'Deal won: create invoice task',
+  previousNames: ['Deal won — create invoice task'],
   description: 'Opens a task to create the invoice when a deal is marked won.',
   trigger: { kind: 'event', eventType: 'crm.deal.stage_changed' },
   conditions: {
@@ -74,7 +75,7 @@ export const CRM_DEAL_WON_INVOICE_TASK: SystemAutomationSpec = {
     {
       type: 'crm.create_task',
       config: {
-        title: 'Create invoice — {{deal.name}}',
+        title: 'Create invoice: {{deal.name}}',
         assigneeField: 'deal.assignedRepId',
         dueInDays: 1,
       },
@@ -196,7 +197,7 @@ export const CRM_EMAIL_OPENS_REQUEST: SystemAutomationSpec = {
 export const CRM_CHAT_OPENS_REQUEST: SystemAutomationSpec = {
   name: 'Live chat opens a support request',
   description:
-    'When someone starts a live chat, opens a support request with a reply deadline and hands it to whoever is already on the conversation. One request per conversation, however many messages are sent. Off until you turn it on — most chats are answered on the spot and do not need to become requests.',
+    'When someone starts a live chat, opens a support request with a reply deadline and hands it to whoever is already on the conversation. One request per conversation, however many messages are sent. Off until you turn it on. Most chats are answered on the spot and do not need to become requests.',
   trigger: { kind: 'event', eventType: 'chat.message.received' },
   conditions: { logic: 'AND', conditions: [] },
   actions: [

@@ -124,7 +124,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Add a group — hold Shift to open alongside, Alt for a new window',
+          title: 'Add a group: hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
           {
@@ -165,7 +165,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             title="Could not load your groups"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isPending ? (
           <PaneWaiting />
@@ -181,7 +181,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No groups yet',
               description:
-                'A group is a set of products you show together — a sale, a gift guide, what is new this month. Add your first one to get started.',
+                'A group is a set of products you show together: a sale, a gift guide, what is new this month. Add your first one to get started.',
             }}
           />
         ) : (

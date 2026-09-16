@@ -144,7 +144,7 @@ export function automationState(status: AutomationStatus): State {
       return {
         label: 'On',
         tone: 'success',
-        detail: 'This rule is running — it acts every time its trigger happens.',
+        detail: 'This rule is running. It acts every time its trigger happens.',
       };
     case 'paused':
       return {
@@ -294,7 +294,7 @@ export function ConditionGroupView({
   if (group.conditions.length === 0) {
     return (
       <p className="text-sm">
-        {nested ? '(empty group)' : 'No conditions — this runs every time its trigger happens.'}
+        {nested ? '(empty group)' : 'No conditions. This runs every time its trigger happens.'}
       </p>
     );
   }
@@ -332,7 +332,7 @@ export function actionSummaryText(action: Action): string {
       return Number.isFinite(secs) ? `Wait ${secs.toLocaleString()} seconds` : 'Wait';
     }
     case 'platform.stop':
-      return typeof cfg.reason === 'string' && cfg.reason ? `Stop — ${cfg.reason}` : 'Stop here';
+      return typeof cfg.reason === 'string' && cfg.reason ? `Stop: ${cfg.reason}` : 'Stop here';
     case 'crm.add_tag':
     case 'crm.remove_tag': {
       const tags = cfg.tags;
@@ -485,7 +485,7 @@ export function conditionsHeadline(group: ConditionGroup): string {
 }
 
 export function conditionsDetail(group: ConditionGroup): string {
-  if (group.conditions.length === 0) return 'No conditions — runs on every trigger';
+  if (group.conditions.length === 0) return 'No conditions: runs on every trigger';
   const n = group.conditions.length;
   return n === 1 ? '1 condition' : `${String(n)} conditions`;
 }

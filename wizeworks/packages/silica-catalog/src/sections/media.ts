@@ -85,7 +85,7 @@ function embed(opts: {
 export function videoBlock(): Node {
   return embed({
     heading: 'Watch or listen',
-    lead: 'A few minutes of you talking does more than a page of copy — an introduction, a walkthrough, an episode, a customer telling their own story.',
+    lead: 'A few minutes of you talking does more than a page of copy: an introduction, a walkthrough, an episode, a customer telling their own story.',
     title: 'Video or audio',
   });
 }
@@ -121,7 +121,7 @@ export function embedBlock(): Node {
  *  of this and stays the right block for a site that wants no frame at all. */
 export function mapBlock(): Node {
   return section([
-    sectionHead('Where to find us', 'Come and see us — here is exactly where we are.'),
+    sectionHead('Where to find us', 'Come and see us. Here is exactly where we are.'),
     el('div', 'flex flex-col gap-8 @3xl:flex-row @3xl:items-start', {
       children: [
         el('address', 'flex flex-col gap-2 text-base not-italic text-base-content @3xl:w-64', {
@@ -159,7 +159,7 @@ export const MEDIA_CATALOG: CatalogGroup[] = [
         key: 'video_embed',
         label: 'Video or audio',
         icon: 'play',
-        hint: 'A video from YouTube or Vimeo, or music and podcasts from Spotify, SoundCloud or Apple. Paste the link from your browser’s address bar — the Share link works too.',
+        hint: 'A video from YouTube or Vimeo, or music and podcasts from Spotify, SoundCloud or Apple. Paste the link from your browser’s address bar: the Share link works too.',
         make: videoBlock,
       },
       {
@@ -169,14 +169,14 @@ export const MEDIA_CATALOG: CatalogGroup[] = [
         // as an empty span (silently invisible). `contact` is the registered one that
         // means this: a map is the contact page's "where we are".
         icon: 'contact',
-        hint: 'Your address on a map, next to it in words. Type the address — visitors can zoom it and get directions.',
+        hint: 'Your address on a map, next to it in words. Type the address: visitors can zoom it and get directions.',
         make: mapBlock,
       },
       {
         key: 'other_embed',
         label: 'Embed from another site',
         icon: 'code',
-        hint: 'A booking calendar, an order form, a donation page. Paste its link. Some sites don’t allow this — if nothing shows, that site has blocked it.',
+        hint: 'A booking calendar, an order form, a donation page. Paste its link. Some sites don’t allow this: if nothing shows, that site has blocked it.',
         make: embedBlock,
       },
     ],

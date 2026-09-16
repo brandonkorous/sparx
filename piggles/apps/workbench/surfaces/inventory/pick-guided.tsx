@@ -455,7 +455,7 @@ function FinishedPanel({
         <AlertContent>
           <AlertTitle>{plural(skipped.length, 'line', 'lines')} still to come back to</AlertTitle>
           <AlertDescription>
-            Everything else is done. Go back for {skipped.map((l) => l.sku).join(', ')} — the walk
+            Everything else is done. Go back for {skipped.map((l) => l.sku).join(', ')}: the walk
             finishes when they are picked or marked as not there.
           </AlertDescription>
         </AlertContent>
@@ -473,7 +473,7 @@ function FinishedPanel({
           </AlertTitle>
           <AlertDescription>
             {walk.shortCount > 0
-              ? `${plural(walk.shortCount, 'line', 'lines')} came up short — those shelves are on a count now. Everything else is on the trolley.`
+              ? `${plural(walk.shortCount, 'line', 'lines')} came up short. Those shelves are on a count now. Everything else is on the trolley.`
               : 'Everything was found. Take the trolley to the pack bench.'}
           </AlertDescription>
         </AlertContent>

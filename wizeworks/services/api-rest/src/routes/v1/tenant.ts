@@ -1013,7 +1013,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       {
         id: 'theme' as const,
         title: 'Choose a template',
-        description: 'Start from a complete, themed template — or design your own in the Builder.',
+        description: 'Start from a complete, themed template, or design your own in the Builder.',
         done: state.completed.template || blueprintInstalled > 0,
         cta: { label: 'Browse templates', href: '/marketplace/blueprints' },
       },
@@ -1077,7 +1077,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     } catch (err) {
       if (err instanceof PaymentsUnconfiguredError) {
         throw badRequest(
-          'Payments are not available yet — the platform is not configured to accept them.'
+          'Payments are not available yet: the platform is not configured to accept them.'
         );
       }
       throw err;

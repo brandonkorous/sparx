@@ -264,7 +264,7 @@ const BEATS: Beat[] = [
     // day and a visitor can count both numbers on screen — a claim the page
     // makes with its own furniture has to survive being checked.
     heading: 'Eight apps before six o’clock. You opened one.',
-    body: 'The other seven were there the whole time — content, suppliers, staff, automations, the rest. Not an upgrade. Not an add-on. Just not needed today.',
+    body: 'The other seven were there the whole time: content, suppliers, staff, automations, the rest. Not an upgrade. Not an add-on. Just not needed today.',
     place: 'left-[64%] top-[69%] w-[28%]',
     window: {
       title: 'Money',
@@ -685,7 +685,7 @@ export function TheDay() {
               </span>
               <span className="truncate text-sm font-semibold">
                 Wildroot Flowers{' '}
-                <span className="hidden font-normal sm:inline">— an example workspace</span>
+                <span className="hidden font-normal sm:inline">(an example workspace)</span>
               </span>
               <span className="ml-auto flex items-center gap-2 text-sm whitespace-nowrap">
                 <b className="text-base font-bold tabular-nums">{clockOf(mins)}</b>

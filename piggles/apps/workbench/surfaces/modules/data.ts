@@ -103,7 +103,7 @@ export const MODULE_META: ModuleMeta[] = [
     icon: faTableLayout,
     blurb: productCopy(
       'modules.builder.blurb',
-      'Build and host your website with sparx — its pages, layout and your own look, all served for you.'
+      'Build and host your website with sparx. Its pages, layout and your own look, all served for you.'
     ),
     price: 10,
     requires: [],
@@ -155,7 +155,7 @@ export const MODULE_META: ModuleMeta[] = [
     icon: faArrowProgress,
     blurb: productCopy(
       'modules.funnels.blurb',
-      'Give a promotion a name, and see how many people got from the first click to the sale — and where the rest stopped.'
+      'Give a promotion a name, and see how many people got from the first click to the sale, and where the rest stopped.'
     ),
     // Genuinely free, which is why it shows "Free" rather than a price: every
     // part a campaign measures is already paid for, and charging again to find
@@ -198,7 +198,7 @@ export const MODULE_META: ModuleMeta[] = [
     hue: 'finance',
     icon: faCreditCard,
     blurb:
-      'Track what you spend — parts, wages, rent, subscriptions — against what came in, and see which jobs actually made money.',
+      'Track what you spend (parts, wages, rent, subscriptions) against what came in, and see which jobs actually made money.',
     price: 29,
     // Free alongside the Online store or Wholesale (BUNDLED_FREE), which the
     // server reports as `source: 'bundled'` — the badge says so on its own.
@@ -213,7 +213,7 @@ export const MODULE_META: ModuleMeta[] = [
     // otherwise buy this expecting payroll and find out after they have paid.
     blurb: productCopy(
       'modules.staff.blurb',
-      'Keep hours, pay rates, shifts, time off and license renewals, so you know what an hour of work really costs. Not payroll — sparx hands the hours to whoever runs yours.'
+      'Keep hours, pay rates, shifts, time off and license renewals, so you know what an hour of work really costs. Not payroll: sparx hands the hours to whoever runs yours.'
     ),
     price: 29,
     requires: [],
@@ -266,7 +266,7 @@ export const MODULE_META: ModuleMeta[] = [
     hue: 'social',
     icon: faShareNodes,
     blurb:
-      'Connect your Facebook, Instagram, Google and other social accounts and post to all of them from one place — on a schedule, or automatically.',
+      'Connect your Facebook, Instagram, Google and other social accounts and post to all of them from one place: on a schedule, or automatically.',
     price: 0,
     requires: [],
   },

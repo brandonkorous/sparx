@@ -18,6 +18,7 @@ import { Prisma, withTenant } from '@wizeworks/db';
 import type { TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
+import { indexInventoryEntityOnCommit } from '../events';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -376,6 +377,12 @@ async function createOnce(
         after: { number: receipt.number, purchaseOrderId: po.id, lineCount: input.lines.length },
       },
     });
+    await indexInventoryEntityOnCommit(ctx, 'goods_receipt', receipt.id);
+    // The ORDER changed too: booking a delivery in moves it toward `partial` or
+    // `received`, and its search document carries that status. Re-projecting
+    // only the receipt would leave the order describing itself as still
+    // outstanding for as long as nobody edited it again.
+    await indexInventoryEntityOnCommit(ctx, 'purchase_order', po.id);
 
     return { receiptId: receipt.id, events, filled };
   });
@@ -712,7 +719,7 @@ function assertNoDuplicateLines(ids: string[]): void {
   for (const id of ids) {
     if (seen.has(id)) {
       throw new InventoryValidationError(
-        'A purchase-order line appears more than once — combine the quantities into one receipt line',
+        'A purchase-order line appears more than once: combine the quantities into one receipt line',
         [{ field: 'lines', message: `duplicate line ${id}` }]
       );
     }

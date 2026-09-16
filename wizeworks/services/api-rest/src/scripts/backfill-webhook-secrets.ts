@@ -32,7 +32,7 @@ import {
 async function main(): Promise<void> {
   if (!isWebhookSecretCryptoConfigured()) {
     console.error(
-      '[backfill-webhook-secrets] WEBHOOK_SIGNING_SECRET_KEY is not set — cannot encrypt. ' +
+      '[backfill-webhook-secrets] WEBHOOK_SIGNING_SECRET_KEY is not set: cannot encrypt. ' +
         'Set the 32-byte key and re-run.'
     );
     process.exit(1);
@@ -62,7 +62,7 @@ async function main(): Promise<void> {
   }
 
   console.log(
-    `[backfill-webhook-secrets] done — encrypted ${encrypted}, skipped ${skipped} already-encrypted ` +
+    `[backfill-webhook-secrets] done: encrypted ${encrypted}, skipped ${skipped} already-encrypted ` +
       `across ${tenants.length} tenant(s).`
   );
 }

@@ -144,7 +144,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('commerce.bundle.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Add a bundle — hold Shift to open alongside, Alt for a new window',
+          title: 'Add a bundle: hold Shift to open alongside, Alt for a new window',
         }}
         views={{
           target: '/commerce/bundles',
@@ -173,7 +173,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
         {isError ? (
           <EmptyState
             title="Could not load your bundles"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isLoading ? (
           <PaneWaiting />
@@ -189,7 +189,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No bundles yet',
               description:
-                'A bundle sells several products together as one item — a kit, a gift set, a package — usually for less than buying the parts separately. Add your first one to get started.',
+                'A bundle sells several products together as one item (a kit, a gift set, a package) usually for less than buying the parts separately. Add your first one to get started.',
             }}
           />
         ) : (

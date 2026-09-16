@@ -127,7 +127,7 @@ const rssRoutes: FastifyPluginAsync = (app) => {
         .join('');
     });
 
-    const channelTitle = `${tenant.name} — ${type.pluralName}`;
+    const channelTitle = `${tenant.name}: ${type.pluralName}`;
     const channelLink = baseUrl;
     const channelDesc = `Latest ${type.pluralName.toLowerCase()} from ${tenant.name}.`;
     const buildDate = rfc822(new Date());

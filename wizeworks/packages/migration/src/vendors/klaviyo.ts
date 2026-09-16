@@ -112,7 +112,7 @@ export const klaviyo: VendorAdapter = {
       entity: 'segments',
       label: 'The list itself',
       file: 'klaviyo-list-....csv',
-      where: 'The same profiles export — everyone in it becomes one segment',
+      where: 'The same profiles export: everyone in it becomes one segment',
       format: 'csv',
       required: ['Klaviyo ID', 'Email'],
       map: mapSegment,

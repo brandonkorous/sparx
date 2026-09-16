@@ -130,7 +130,7 @@ export async function startConsumer(opts: ConsumerOptions): Promise<RunningConsu
   if (transport.kind !== 'nats') {
     opts.logger.info(
       { transport: transport.kind, durable: opts.durable },
-      'events: not a broker transport — consuming over HTTP instead'
+      'events: not a broker transport, consuming over HTTP instead'
     );
     return null;
   }
@@ -196,7 +196,7 @@ export async function startConsumer(opts: ConsumerOptions): Promise<RunningConsu
     // will ask when a replay shows up.
     opts.logger.info(
       { durable: opts.durable, subjects: subjects.length, stream: transport.stream },
-      'events: durable exists with a different config — updating it in place, cursor kept'
+      'events: durable exists with a different config, updating it in place, cursor kept'
     );
     await jsm.consumers.update(transport.stream, opts.durable, desired);
   }
@@ -228,7 +228,7 @@ export async function startConsumer(opts: ConsumerOptions): Promise<RunningConsu
             attempt: m.info.redeliveryCount,
             err: err instanceof Error ? err.message : String(err),
           },
-          'events: handler failed — message nak-ed for redelivery'
+          'events: handler failed, message nak-ed for redelivery'
         );
       }
     }

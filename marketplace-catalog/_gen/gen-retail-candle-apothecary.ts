@@ -177,7 +177,7 @@ function hero(): Node {
                   text: 'A room, and then a mood.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Ember & Ash is a small apothecary of candles and home fragrance, hand-poured in coconut-soy wax and blended to smell like somewhere — a woodshop at dusk, a shoreline after rain, the last hour of a good evening.',
+                  text: 'Ember & Ash is a small apothecary of candles and home fragrance, hand-poured in coconut-soy wax and blended to smell like somewhere: a woodshop at dusk, a shoreline after rain, the last hour of a good evening.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -279,7 +279,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.category.candles', layout: 'carousel', heading: 'The candles' }),
   editorialBand({
     heading: 'Give a whole evening',
-    lead: 'A gift set is the easy yes — three of the signature scents boxed in kraft and tied in linen, ready to hand over. For someone new to candles, or someone who already knows exactly the mood they’re after.',
+    lead: 'A gift set is the easy yes: three of the signature scents boxed in kraft and tied in linen, ready to hand over. For someone new to candles, or someone who already knows exactly the mood they’re after.',
     assetId: 'ember-band-gift',
     cta: 'Shop gifts',
     href: '/shop',
@@ -324,7 +324,7 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'How it burns' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'Coconut-soy wax and a cotton wick, hand-poured and cured two weeks before it ships. Roughly a 50-hour burn. Trim the wick to a quarter inch before every light, and let the first burn reach the edge — that’s what keeps it even to the last hour.',
+                    text: 'Coconut-soy wax and a cotton wick, hand-poured and cured two weeks before it ships. Roughly a 50-hour burn. Trim the wick to a quarter inch before every light, and let the first burn reach the edge: that’s what keeps it even to the last hour.',
                   }),
                 ],
               }),
@@ -363,11 +363,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'The whole apothecary',
-    'Every candle, diffuser, mist and gift we’re making right now — hand-poured in small batches and cured before it ships. Filter by scent family or room, or sort however you like.'
+    'Every candle, diffuser, mist and gift we’re making right now: hand-poured in small batches and cured before it ships. Filter by scent family or room, or sort however you like.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The fragrances grouped the way people actually shop — what’s lit this season, the signature scents, the woodsmoke end of the shelf, and gift-ready sets.'),
+  pageMasthead('Collections', 'The fragrances grouped the way people actually shop: what’s lit this season, the signature scents, the woodsmoke end of the shelf, and gift-ready sets.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search Ember & Ash', 'Looking for a scent, a room, or a burning guide? Search the whole apothecary and the journal below.'),
@@ -379,7 +379,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Free shipping on orders over $60, and every candle is poured and cured before it leaves us — packed in recycled board that’s made to survive the post. Not the scent you hoped for? Tell us and we’ll make it right.',
+            text: 'Free shipping on orders over $60, and every candle is poured and cured before it leaves us: packed in recycled board that’s made to survive the post. Not the scent you hoped for? Tell us and we’ll make it right.',
           }),
         ],
       }),
@@ -393,7 +393,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Ember journal' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Notes from the bench — how we blend a scent, how we pour, and how to get every last even hour out of a candle. Plain, useful, no mystique.',
+            text: 'Notes from the bench: how we blend a scent, how we pour, and how to get every last even hour out of a candle. Plain, useful, no mystique.',
           }),
         ],
       }),
@@ -410,7 +410,7 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Ember & Ash' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Ember & Ash began on a kitchen stove with a thrift-store double boiler and a stubborn idea: that most candles smell like a name on a label and not like anything you could actually walk into. So we started blending the other way — toward places, hours and weather, and away from anything that smelled like a candle pretending to be food.',
+            text: 'Ember & Ash began on a kitchen stove with a thrift-store double boiler and a stubborn idea: that most candles smell like a name on a label and not like anything you could actually walk into. So we started blending the other way, toward places, hours and weather, and away from anything that smelled like a candle pretending to be food.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'Everything is poured by hand in coconut-soy wax, with cotton wicks and fragrance oils we blend ourselves and test for weeks before a scent earns a name. We pour in small batches because that’s the only way to keep a nose on every one, and we cure each candle before it ships so the scent has settled into the wax by the time you light it.',
@@ -515,63 +515,63 @@ const PRODUCTS: Product[] = [
     handle: 'cedar-smoke',
     title: 'Cedar & Smoke',
     description:
-      'The signature. A woodshop at the end of the day — dry cedar and sawdust over a low curl of woodsmoke, warmed with a little vetiver and clove. Grounding without going heavy, the one we light first when the evenings turn.',
+      'The signature. A woodshop at the end of the day: dry cedar and sawdust over a low curl of woodsmoke, warmed with a little vetiver and clove. Grounding without going heavy, the one we light first when the evenings turn.',
     price: 32,
     priceLarge: 44,
     sku: 'EMBER-CEDAR-SMOKE',
     collections: ['this-season', 'signatures', 'woodsmoke'],
     tags: ['candle', 'woody', 'smoky', 'signature'],
     asset: 'prod-cedar-smoke',
-    seoTitle: 'Cedar & Smoke — hand-poured candle | Ember & Ash',
+    seoTitle: 'Cedar & Smoke: hand-poured candle | Ember & Ash',
     seoDescription: 'Dry cedar, sawdust and a low curl of woodsmoke, warmed with vetiver and clove. Hand-poured coconut-soy.',
   }),
   candle({
     handle: 'fig-amber',
     title: 'Fig & Amber',
     description:
-      'Soft and golden — ripe fig and green fig leaf over a base of amber and warm musk, with a whisper of coconut. The room-filling one; sweet without being a dessert, and endlessly easy to live with.',
+      'Soft and golden: ripe fig and green fig leaf over a base of amber and warm musk, with a whisper of coconut. The room-filling one; sweet without being a dessert, and endlessly easy to live with.',
     price: 32,
     priceLarge: 44,
     sku: 'EMBER-FIG-AMBER',
     collections: ['this-season', 'signatures'],
     tags: ['candle', 'sweet', 'amber', 'signature'],
     asset: 'prod-fig-amber',
-    seoTitle: 'Fig & Amber — hand-poured candle | Ember & Ash',
+    seoTitle: 'Fig & Amber: hand-poured candle | Ember & Ash',
     seoDescription: 'Ripe fig and fig leaf over amber and warm musk with a whisper of coconut. Hand-poured coconut-soy.',
   }),
   candle({
     handle: 'sea-salt-driftwood',
     title: 'Sea Salt & Driftwood',
     description:
-      'A shoreline after rain — cool sea salt and mineral air over sun-bleached driftwood and a thread of sage. The bright one on the shelf; clean, open and a little melancholy, in the best way.',
+      'A shoreline after rain: cool sea salt and mineral air over sun-bleached driftwood and a thread of sage. The bright one on the shelf; clean, open and a little melancholy, in the best way.',
     price: 30,
     priceLarge: 42,
     sku: 'EMBER-SEA-SALT',
     collections: ['this-season', 'signatures'],
     tags: ['candle', 'fresh', 'marine', 'signature'],
     asset: 'prod-sea-salt',
-    seoTitle: 'Sea Salt & Driftwood — hand-poured candle | Ember & Ash',
+    seoTitle: 'Sea Salt & Driftwood: hand-poured candle | Ember & Ash',
     seoDescription: 'Cool sea salt and mineral air over sun-bleached driftwood and sage. Hand-poured coconut-soy.',
   }),
   candle({
     handle: 'black-fir-ash',
     title: 'Black Fir & Ash',
     description:
-      'The dark end of the shelf — black fir needles and cracked pepper over cooled embers and a dry, resinous smoke. Nearly a fireplace in a jar; the one for the coldest, quietest nights.',
+      'The dark end of the shelf: black fir needles and cracked pepper over cooled embers and a dry, resinous smoke. Nearly a fireplace in a jar; the one for the coldest, quietest nights.',
     price: 32,
     priceLarge: 44,
     sku: 'EMBER-BLACK-FIR',
     collections: ['signatures', 'woodsmoke'],
     tags: ['candle', 'woody', 'smoky', 'evergreen'],
     asset: 'prod-black-fir',
-    seoTitle: 'Black Fir & Ash — hand-poured candle | Ember & Ash',
+    seoTitle: 'Black Fir & Ash: hand-poured candle | Ember & Ash',
     seoDescription: 'Black fir and cracked pepper over cooled embers and dry resinous smoke. Hand-poured coconut-soy.',
   }),
   {
     handle: 'reed-diffuser',
     title: 'Cedar & Smoke Reed Diffuser',
     description:
-      'The signature scent, always on. Natural rattan reeds draw the Cedar & Smoke blend up into the room for a low, constant throw that lasts three to four months — no flame, no fuss, ideal for a hallway or a bathroom that never gets a candle lit in it.',
+      'The signature scent, always on. Natural rattan reeds draw the Cedar & Smoke blend up into the room for a low, constant throw that lasts three to four months: no flame, no fuss, ideal for a hallway or a bathroom that never gets a candle lit in it.',
     status: 'active',
     productType: 'Diffuser',
     vendor: 'Ember & Ash',
@@ -587,7 +587,7 @@ const PRODUCTS: Product[] = [
     handle: 'room-mist',
     title: 'Fig & Amber Room Mist',
     description:
-      'A quick change of atmosphere in a spritz — the Fig & Amber blend in a fine linen-and-air mist for the room, the sofa, or the moment a guest is at the door. Water-based and light, so it freshens without hanging heavy.',
+      'A quick change of atmosphere in a spritz: the Fig & Amber blend in a fine linen-and-air mist for the room, the sofa, or the moment a guest is at the door. Water-based and light, so it freshens without hanging heavy.',
     status: 'active',
     productType: 'Room mist',
     vendor: 'Ember & Ash',
@@ -603,14 +603,14 @@ const PRODUCTS: Product[] = [
     handle: 'wax-melts',
     title: 'Wax Melt Discovery Set',
     description:
-      'All four signature scents in flameless soy melts — one cube in a warmer fills a room, and the set is the low-commitment way to find the blend you’ll want as a full candle. Six cubes of each scent, in a recycled kraft tray.',
+      'All four signature scents in flameless soy melts. One cube in a warmer fills a room, and the set is the low-commitment way to find the blend you’ll want as a full candle. Six cubes of each scent, in a recycled kraft tray.',
     status: 'active',
     productType: 'Wax melts',
     vendor: 'Ember & Ash',
     tags: ['wax-melts', 'flameless', 'sampler'],
     categoryHandles: ['candles'],
     collectionHandles: ['flameless', 'gifts'],
-    seoTitle: 'Wax Melt Discovery Set — all four scents | Ember & Ash',
+    seoTitle: 'Wax Melt Discovery Set. All four scents | Ember & Ash',
     seoDescription: 'All four signature scents in flameless soy wax melts. Six cubes of each, in a kraft tray.',
     variants: [{ sku: 'EMBER-MELT-SET', priceCents: money(22), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-wax-melts', isPrimary: true, alt: 'A set of soy wax melts in a kraft tray' }],
@@ -626,7 +626,7 @@ const PRODUCTS: Product[] = [
     tags: ['accessory', 'brass', 'care'],
     categoryHandles: ['accessories'],
     collectionHandles: ['accessories'],
-    seoTitle: 'Brass Wick Trimmer — candle care | Ember & Ash',
+    seoTitle: 'Brass Wick Trimmer: candle care | Ember & Ash',
     seoDescription: 'A weighted brass wick trimmer that keeps every burn even and soot-free.',
     variants: [{ sku: 'EMBER-ACC-TRIMMER', priceCents: money(18), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-wick-trimmer', isPrimary: true, alt: 'A brass wick trimmer' }],
@@ -635,14 +635,14 @@ const PRODUCTS: Product[] = [
     handle: 'gift-set',
     title: 'The Signature Trio Gift Set',
     description:
-      'The easy yes — Cedar & Smoke, Fig & Amber and Sea Salt & Driftwood in 8 oz tumblers, boxed in recycled kraft and tied in linen ribbon, with a card you can write on. The whole range in miniature, ready to hand over.',
+      'The easy yes: Cedar & Smoke, Fig & Amber and Sea Salt & Driftwood in 8 oz tumblers, boxed in recycled kraft and tied in linen ribbon, with a card you can write on. The whole range in miniature, ready to hand over.',
     status: 'active',
     productType: 'Gift set',
     vendor: 'Ember & Ash',
     tags: ['gift', 'set', 'candle'],
     categoryHandles: ['gifts'],
     collectionHandles: ['this-season', 'gifts'],
-    seoTitle: 'The Signature Trio Gift Set — three candles | Ember & Ash',
+    seoTitle: 'The Signature Trio Gift Set: three candles | Ember & Ash',
     seoDescription: 'Cedar & Smoke, Fig & Amber and Sea Salt & Driftwood in 8 oz tumblers, boxed and ribboned.',
     variants: [{ sku: 'EMBER-GIFT-TRIO', priceCents: money(84), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-gift-set', isPrimary: true, alt: 'A three-candle gift set boxed in kraft' }],
@@ -684,7 +684,7 @@ const COMMERCE = {
     {
       handle: 'flameless',
       name: 'Flameless',
-      description: 'Fragrance without a flame — diffusers, mists and melts.',
+      description: 'Fragrance without a flame: diffusers, mists and melts.',
       type: 'manual',
       featured: false,
       productHandles: ['reed-diffuser', 'room-mist', 'wax-melts'],
@@ -726,11 +726,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('A candle looks like the simplest thing in the world — wax, a wick, a scent. It is not. Wax has a temperature at which it wants to accept fragrance and a different one at which it wants to be poured, and those two numbers fight each other. Pour too hot and the scent flashes off and the top sinks; pour too cool and the wax seizes and pulls away from the glass in ugly wet spots. The whole craft is in the few degrees between.'),
+          para('A candle looks like the simplest thing in the world: wax, a wick, a scent. It is not. Wax has a temperature at which it wants to accept fragrance and a different one at which it wants to be poured, and those two numbers fight each other. Pour too hot and the scent flashes off and the top sinks; pour too cool and the wax seizes and pulls away from the glass in ugly wet spots. The whole craft is in the few degrees between.'),
           h2('Coconut-soy, cotton wick, small batch'),
-          para('We pour in coconut-soy wax with cotton wicks, in batches of a few dozen. Coconut-soy holds fragrance better than straight soy and burns cleaner than paraffin, and a small batch is the only way to keep a nose on every pour — to catch the one jar that set wrong before it ever reaches a shelf. We hand-pour, wick by wick, and weigh the fragrance load to the gram so a scent is the same strength every time you buy it.'),
+          para('We pour in coconut-soy wax with cotton wicks, in batches of a few dozen. Coconut-soy holds fragrance better than straight soy and burns cleaner than paraffin, and a small batch is the only way to keep a nose on every pour: to catch the one jar that set wrong before it ever reaches a shelf. We hand-pour, wick by wick, and weigh the fragrance load to the gram so a scent is the same strength every time you buy it.'),
           h2('The two-week cure'),
-          para('Then we wait. A freshly poured candle hasn’t bonded its fragrance into the wax yet — light it the next day and it smells thin and burns rough. So every candle cures for two weeks before it ships, resting in the dark while the scent settles into the structure of the wax. It is the least glamorous part of the process and the one that matters most: it’s the difference between a candle that smells like itself and one that smells like an idea of itself.'),
+          para('Then we wait. A freshly poured candle hasn’t bonded its fragrance into the wax yet: light it the next day and it smells thin and burns rough. So every candle cures for two weeks before it ships, resting in the dark while the scent settles into the structure of the wax. It is the least glamorous part of the process and the one that matters most: it’s the difference between a candle that smells like itself and one that smells like an idea of itself.'),
         ],
       },
     },
@@ -741,16 +741,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'How to get a clean, even burn',
-      excerpt: 'Two habits — one before you ever light it, one every time after — and a candle lasts a third longer and never tunnels.',
+      excerpt: 'Two habits (one before you ever light it, one every time after) and a candle lasts a third longer and never tunnels.',
       featuredImage: { $asset: 'post-care' },
       body: {
         type: 'doc',
         content: [
           para('Most candles die badly not because they were made badly but because of two small things nobody tells you. Get these right and the same candle lasts noticeably longer, burns without soot, and gives you an even pool right down to the last hour.'),
           h2('The first burn sets the memory'),
-          para('Wax has a memory. The very first time you light a candle, let it burn long enough for the melted pool to reach the full edge of the glass — usually two to three hours for our tumblers. If you blow it out early, the wax remembers that smaller pool and tunnels down the middle from then on, leaving a ring of unused wax on the sides and drowning the wick. Give it that first full melt and it will burn edge-to-edge for the rest of its life.'),
+          para('Wax has a memory. The very first time you light a candle, let it burn long enough for the melted pool to reach the full edge of the glass, usually two to three hours for our tumblers. If you blow it out early, the wax remembers that smaller pool and tunnels down the middle from then on, leaving a ring of unused wax on the sides and drowning the wick. Give it that first full melt and it will burn edge-to-edge for the rest of its life.'),
           h2('Trim the wick, every time'),
-          para('Before every single light, trim the wick down to about a quarter inch — a trimmer is easiest, but nail scissors do it. A long wick burns too hot, flickers, mushrooms a little black ball of carbon on the tip, and throws soot up the glass. A short trimmed wick burns low, steady and clean. It takes five seconds and it’s the single biggest thing you can do for a candle. When there’s about a half-inch of wax left at the bottom, retire it — below that the flame is too close to the glass.'),
+          para('Before every single light, trim the wick down to about a quarter inch: a trimmer is easiest, but nail scissors do it. A long wick burns too hot, flickers, mushrooms a little black ball of carbon on the tip, and throws soot up the glass. A short trimmed wick burns low, steady and clean. It takes five seconds and it’s the single biggest thing you can do for a candle. When there’s about a half-inch of wax left at the bottom, retire it, below that the flame is too close to the glass.'),
         ],
       },
     },
@@ -761,16 +761,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'How a scent gets built',
-      excerpt: 'A fragrance isn’t one smell — it’s three layers that arrive in order. Here’s how we build one, and why Cedar & Smoke took a year.',
+      excerpt: 'A fragrance isn’t one smell: it’s three layers that arrive in order. Here’s how we build one, and why Cedar & Smoke took a year.',
       featuredImage: { $asset: 'post-scent' },
       body: {
         type: 'doc',
         content: [
           para('People talk about a candle’s scent as if it’s a single thing, but a good fragrance unfolds in time. There’s the top note that hits you first and burns off fast, the heart that fills the room for the middle of the evening, and the base that lingers low and long after everything else has faded. Build a scent that’s all top and it’s thrilling for ten minutes and gone; build it all base and it’s a heavy fog. The art is in the handoff between the three.'),
           h2('Top, heart, base'),
-          para('When we blend, we work backwards from the base. Cedar & Smoke is built on vetiver and a smoke accord — the part that has to still be there at the bottom of the jar. Onto that we layer the heart of dry cedar and sawdust, the note meant to actually fill a room. And only last do we add the top: a little clove and cracked pepper to give the first minute some lift. Change any one layer and the other two shift under it, which is why a blend is never really finished, only decided.'),
+          para('When we blend, we work backwards from the base. Cedar & Smoke is built on vetiver and a smoke accord: the part that has to still be there at the bottom of the jar. Onto that we layer the heart of dry cedar and sawdust, the note meant to actually fill a room. And only last do we add the top: a little clove and cracked pepper to give the first minute some lift. Change any one layer and the other two shift under it, which is why a blend is never really finished, only decided.'),
           h2('Why it takes so long'),
-          para('Cedar & Smoke took the better part of a year and something like forty test pours. A blend that smells right on a scent blotter can smell wrong in hot wax, and a blend that’s perfect cold can go flat once it’s throwing heat across a room. So we pour it, cure it, burn a whole candle down, adjust a note by a fraction of a percent, and pour it again. A scent earns its name only once it survives that — cold, hot, first hour and last.'),
+          para('Cedar & Smoke took the better part of a year and something like forty test pours. A blend that smells right on a scent blotter can smell wrong in hot wax, and a blend that’s perfect cold can go flat once it’s throwing heat across a room. So we pour it, cure it, burn a whole candle down, adjust a note by a fraction of a percent, and pour it again. A scent earns its name only once it survives that: cold, hot, first hour and last.'),
         ],
       },
     },
@@ -785,7 +785,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Candle Apothecary (Retail)',
   theme: THEME,
   summary:
-    'A complete, working shop for a candle & home-fragrance apothecary: a real catalogue of hand-poured signature candles, a reed diffuser, a room mist, a wax-melt set, candle-care accessories and a gift set, with categories, collections, a bespoke candlelit PDP and a full merchandised home page. Moody apothecary theme — warm charcoal ground, ember accent, a characterful serif. Shipped as Ember & Ash.',
+    'A complete, working shop for a candle & home-fragrance apothecary: a real catalogue of hand-poured signature candles, a reed diffuser, a room mist, a wax-melt set, candle-care accessories and a gift set, with categories, collections, a bespoke candlelit PDP and a full merchandised home page. Moody apothecary theme, warm charcoal ground, ember accent, a characterful serif. Shipped as Ember & Ash.',
   tagline: 'A moody, working storefront for a candle apothecary.',
   vertical: 'retail',
   industry: 'Candle & home fragrance',
@@ -798,14 +798,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'Ember & Ash — hand-poured candles & home fragrance',
+      title: 'Ember & Ash: hand-poured candles & home fragrance',
       description:
-        'Ember & Ash is a small apothecary of hand-poured candles, diffusers and home fragrance — blended to smell like somewhere, poured in small batches and cured before it ships.',
+        'Ember & Ash is a small apothecary of hand-poured candles, diffusers and home fragrance: blended to smell like somewhere, poured in small batches and cured before it ships.',
     },
     about: {
       title: 'About Ember & Ash',
       description:
-        'How Ember & Ash blends, pours and cures — coconut-soy wax, cotton wicks, scents built toward places and hours, and nothing out the door before it’s ready.',
+        'How Ember & Ash blends, pours and cures: coconut-soy wax, cotton wicks, scents built toward places and hours, and nothing out the door before it’s ready.',
     },
   },
   home: HOME,

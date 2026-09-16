@@ -108,7 +108,7 @@ export function PlanningShell({
               description:
                 failed.length === 0
                   ? `${plural(result.levelsPlanned, 'stock line', 'stock lines')} re-measured.`
-                  : `${plural(failed.length, 'step', 'steps')} could not finish — those figures are from the last good run.`,
+                  : `${plural(failed.length, 'step', 'steps')} could not finish. Those figures are from the last good run.`,
               type: failed.length === 0 ? 'success' : 'warning',
             });
           });
@@ -190,7 +190,7 @@ export function PlanningShell({
             <AlertTitle>Nothing has been measured yet</AlertTitle>
             <AlertDescription>
               Planning works from your own sales history and your own deliveries, so it needs one
-              pass over them before it can say anything. That happens overnight — or press “Work it
+              pass over them before it can say anything. That happens overnight, or press “Work it
               out now”.
             </AlertDescription>
           </AlertContent>

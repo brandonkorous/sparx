@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ember & Ash — hand-poured candles & home fragrance",
-      "seoDescription": "Ember & Ash is a small apothecary of hand-poured candles, diffusers and home fragrance — blended to smell like somewhere, poured in small batches and cured before it ships.",
+      "seoTitle": "Ember & Ash: hand-poured candles & home fragrance",
+      "seoDescription": "Ember & Ash is a small apothecary of hand-poured candles, diffusers and home fragrance: blended to smell like somewhere, poured in small batches and cured before it ships.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Ember & Ash is a small apothecary of candles and home fragrance, hand-poured in coconut-soy wax and blended to smell like somewhere — a woodshop at dusk, a shoreline after rain, the last hour of a good evening."
+                          "Ember & Ash is a small apothecary of candles and home fragrance, hand-poured in coconut-soy wax and blended to smell like somewhere: a woodshop at dusk, a shoreline after rain, the last hour of a good evening."
                         ],
                         "id": "54897dd9-a4bc-4a6c-b5db-5073302bbb4f",
                         "ord": "a1"
@@ -1539,7 +1539,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A gift set is the easy yes — three of the signature scents boxed in kraft and tied in linen, ready to hand over. For someone new to candles, or someone who already knows exactly the mood they’re after."
+                          "A gift set is the easy yes: three of the signature scents boxed in kraft and tied in linen, ready to hand over. For someone new to candles, or someone who already knows exactly the mood they’re after."
                         ],
                         "id": "dfe12864-19fc-4256-bb65-35783a92957f",
                         "ord": "a1"
@@ -1574,7 +1574,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Ember & Ash",
+      "seoTitle": "Shop: Ember & Ash",
       "seoDescription": "Browse everything Ember & Ash makes, with prices and options at a glance. Candle & home fragrance.",
       "root": {
         "kind": "element",
@@ -1606,7 +1606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every candle, diffuser, mist and gift we’re making right now — hand-poured in small batches and cured before it ships. Filter by scent family or room, or sort however you like."
+                      "Every candle, diffuser, mist and gift we’re making right now: hand-poured in small batches and cured before it ships. Filter by scent family or room, or sort however you like."
                     ],
                     "id": "c6af96fb-117a-4ce6-a722-62ecf56854fe",
                     "ord": "a1"
@@ -1634,7 +1634,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Ember & Ash",
+      "seoTitle": "Collections: Ember & Ash",
       "seoDescription": "Explore the collections at Ember & Ash, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1666,7 +1666,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The fragrances grouped the way people actually shop — what’s lit this season, the signature scents, the woodsmoke end of the shelf, and gift-ready sets."
+                      "The fragrances grouped the way people actually shop: what’s lit this season, the signature scents, the woodsmoke end of the shelf, and gift-ready sets."
                     ],
                     "id": "5a46b6a3-07c3-4067-83bc-c372ff6ccee4",
                     "ord": "a1"
@@ -1694,7 +1694,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Ember & Ash",
+      "seoTitle": "Your cart: Ember & Ash",
       "seoDescription": "Review what is in your cart and check out securely at Ember & Ash.",
       "root": {
         "kind": "element",
@@ -1726,7 +1726,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping on orders over $60, and every candle is poured and cured before it leaves us — packed in recycled board that’s made to survive the post. Not the scent you hoped for? Tell us and we’ll make it right."
+                      "Free shipping on orders over $60, and every candle is poured and cured before it leaves us: packed in recycled board that’s made to survive the post. Not the scent you hoped for? Tell us and we’ll make it right."
                     ],
                     "id": "46cfc199-f251-4683-a7cb-f6617178294e",
                     "ord": "a1"
@@ -1754,7 +1754,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Ember & Ash",
+      "seoTitle": "Search: Ember & Ash",
       "seoDescription": "Search Ember & Ash for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Ember & Ash",
+      "seoTitle": "Journal: Ember & Ash",
       "seoDescription": "Stories, guides and notes from Ember & Ash.",
       "root": {
         "kind": "element",
@@ -1846,7 +1846,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the bench — how we blend a scent, how we pour, and how to get every last even hour out of a candle. Plain, useful, no mystique."
+                      "Notes from the bench: how we blend a scent, how we pour, and how to get every last even hour out of a candle. Plain, useful, no mystique."
                     ],
                     "id": "ad0f7184-e22b-4ac2-9760-d1f65839aea2",
                     "ord": "a1"
@@ -1980,7 +1980,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Ember & Ash",
-      "seoDescription": "How Ember & Ash blends, pours and cures — coconut-soy wax, cotton wicks, scents built toward places and hours, and nothing out the door before it’s ready.",
+      "seoDescription": "How Ember & Ash blends, pours and cures: coconut-soy wax, cotton wicks, scents built toward places and hours, and nothing out the door before it’s ready.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2011,7 +2011,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Ember & Ash began on a kitchen stove with a thrift-store double boiler and a stubborn idea: that most candles smell like a name on a label and not like anything you could actually walk into. So we started blending the other way — toward places, hours and weather, and away from anything that smelled like a candle pretending to be food."
+                      "Ember & Ash began on a kitchen stove with a thrift-store double boiler and a stubborn idea: that most candles smell like a name on a label and not like anything you could actually walk into. So we started blending the other way, toward places, hours and weather, and away from anything that smelled like a candle pretending to be food."
                     ],
                     "id": "a48bef3a-48af-4219-b547-cce2c0db849b",
                     "ord": "a1"
@@ -2051,8 +2051,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Ember & Ash",
-      "seoDescription": "Get in touch with Ember & Ash — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Ember & Ash",
+      "seoDescription": "Get in touch with Ember & Ash: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2359,8 +2359,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Ember & Ash",
-      "seoDescription": "Product details at Ember & Ash — candle & home fragrance, with options and pricing.",
+      "seoTitle": "Product: Ember & Ash",
+      "seoDescription": "Product details at Ember & Ash: candle & home fragrance, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2723,7 +2723,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Coconut-soy wax and a cotton wick, hand-poured and cured two weeks before it ships. Roughly a 50-hour burn. Trim the wick to a quarter inch before every light, and let the first burn reach the edge — that’s what keeps it even to the last hour."
+                              "Coconut-soy wax and a cotton wick, hand-poured and cured two weeks before it ships. Roughly a 50-hour burn. Trim the wick to a quarter inch before every light, and let the first burn reach the edge: that’s what keeps it even to the last hour."
                             ],
                             "id": "0173e453-9664-4a56-bcf3-a588369e18ba",
                             "ord": "a1"

@@ -136,7 +136,7 @@ export default function RequestReturnPage() {
       </h1>
       <p className="text-base-content mb-6">
         Choose what you would like to return and tell us why. We will look at it and come back to
-        you — nothing is charged or refunded until we do.
+        you. Nothing is charged or refunded until we do.
       </p>
 
       <div className="flex flex-col gap-3">

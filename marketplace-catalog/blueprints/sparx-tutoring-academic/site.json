@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Summit Learning — K–12 tutoring center",
-      "seoDescription": "Summit Learning is a warm, caring tutoring center for grades K–12 — math, reading, writing, science and homework help. Book a free assessment online.",
+      "seoTitle": "Summit Learning: K–12 tutoring center",
+      "seoDescription": "Summit Learning is a warm, caring tutoring center for grades K–12: math, reading, writing, science and homework help. Book a free assessment online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Caring, one-to-one tutoring for grades K–12 — math, reading, writing, science and homework help, from tutors who make learning feel good again."
+                      "Caring, one-to-one tutoring for grades K–12: math, reading, writing, science and homework help, from tutors who make learning feel good again."
                     ],
                     "id": "45ee7feb-92ef-4381-9087-47fd3dc4a3d7",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every tutor is qualified, background-checked and — just as important — genuinely kind. Your child looks forward to coming back."
+                              "Every tutor is qualified, background-checked and (just as important) genuinely kind. Your child looks forward to coming back."
                             ],
                             "id": "f57a88f5-1577-4426-9dff-4f61f2160666",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll always know how it’s going — the wins, the next steps, and the growing confidence that shows up in schoolwork and at home."
+                              "You’ll always know how it’s going: the wins, the next steps, and the growing confidence that shows up in schoolwork and at home."
                             ],
                             "id": "47071e53-82d3-4635-9e19-e6c77656ffaa",
                             "ord": "a1"
@@ -1033,7 +1033,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["Get today’s homework done — and actually understood."],
+                            "children": ["Get today’s homework done, and actually understood."],
                             "id": "9babdf14-af31-4e1d-833c-f026ec93f99a",
                             "ord": "a2"
                           }
@@ -1113,7 +1113,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A child who believes they can do it is a child who will. So before we drill a single problem, we build the belief — celebrating small wins, taking the fear out of mistakes, and showing your child that hard things get easier."
+                          "A child who believes they can do it is a child who will. So before we drill a single problem, we build the belief: celebrating small wins, taking the fear out of mistakes, and showing your child that hard things get easier."
                         ],
                         "id": "af540275-0d92-4788-a304-6a1a86e1640d",
                         "ord": "a1"
@@ -1123,7 +1123,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The grades come, because the confidence comes first. Parents tell us the biggest change isn’t a report card — it’s a kid who now says “I’ve got this” at the kitchen table."
+                          "The grades come, because the confidence comes first. Parents tell us the biggest change isn’t a report card: it’s a kid who now says “I’ve got this” at the kitchen table."
                         ],
                         "id": "5e32bf93-09cf-4ebe-937e-b7a6fd51d11c",
                         "ord": "a2"
@@ -1188,7 +1188,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — your child sees the same friendly face each visit."
+                          "Book by name. Your child sees the same friendly face each visit."
                         ],
                         "id": "1721dab3-e47c-4c0d-b54e-38b69bff17ae",
                         "ord": "a1"
@@ -1245,7 +1245,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Makes the tricky stuff click — algebra, geometry and science, with endless patience."
+                                  "Makes the tricky stuff click: algebra, geometry and science, with endless patience."
                                 ],
                                 "id": "84d959ab-8c00-4be4-a1a1-e751c61e1023",
                                 "ord": "a2"
@@ -1357,7 +1357,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "The calm in a busy week — keeps homework on track and confidence growing."
+                                  "The calm in a busy week: keeps homework on track and confidence growing."
                                 ],
                                 "id": "d2ecfe2a-379e-4d5f-a571-1111e9765b05",
                                 "ord": "a2"
@@ -1472,7 +1472,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Summit Learning",
+      "seoTitle": "Book: Summit Learning",
       "seoDescription": "See what Summit Learning offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1596,7 +1596,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "6b40740b-ff18-418e-903c-94e476824bbb",
                         "ord": "a1"
@@ -1666,7 +1666,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Summit Learning",
+      "seoTitle": "About: Summit Learning",
       "seoDescription": "Who Summit Learning is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1715,7 +1715,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Summit Learning because we believe every child can learn — they just need the right person beside them, a little patience, and a place that feels safe to try, get it wrong, and try again."
+                          "We started Summit Learning because we believe every child can learn. They just need the right person beside them, a little patience, and a place that feels safe to try, get it wrong, and try again."
                         ],
                         "id": "bc8d257c-5692-4799-b427-0b41deb7b62c",
                         "ord": "a1"
@@ -1803,7 +1803,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every child starts with a relaxed assessment so we understand their strengths, their gaps and how they learn best — before a single session is booked."
+                              "Every child starts with a relaxed assessment so we understand their strengths, their gaps and how they learn best: before a single session is booked."
                             ],
                             "id": "35b58a0b-af53-444b-a9cc-8482ae9ccb49",
                             "ord": "a1"
@@ -1857,7 +1857,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll hear how each session went and what’s next. We’re a team — you, your child, and a tutor who’s genuinely in your corner."
+                              "You’ll hear how each session went and what’s next. We’re a team. You, your child, and a tutor who’s genuinely in your corner."
                             ],
                             "id": "ec488c39-2b10-4a0c-8277-b0de941e4a95",
                             "ord": "a1"
@@ -1885,7 +1885,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Summit Learning",
+      "seoTitle": "Visit: Summit Learning",
       "seoDescription": "Where to find Summit Learning, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1922,7 +1922,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Summit Learning will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Summit Learning will get back to you, usually the same day."
                         ],
                         "id": "31bf404b-da5c-4d72-a66f-11f9531b2d3d",
                         "ord": "a1"
@@ -2374,7 +2374,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Reach out any time — or skip the phone tag and reserve a free assessment online."
+                      "Reach out any time, or skip the phone tag and reserve a free assessment online."
                     ],
                     "id": "bdfba201-df98-47fe-982d-f5af5fb00570",
                     "ord": "a1"

@@ -54,7 +54,7 @@ function readyLine(madeToOrder: PublicMadeToOrder, locale?: string): string | nu
   if (!day) return null;
   const days = madeToOrder.orderAheadDays;
   if (days === null) return `Made to order. Ready from ${day}.`;
-  return `Made to order. Ready from ${day} — we need ${String(days)} day${days === 1 ? '' : 's'} to make it.`;
+  return `Made to order. Ready from ${day}: we need ${String(days)} day${days === 1 ? '' : 's'} to make it.`;
 }
 
 /**

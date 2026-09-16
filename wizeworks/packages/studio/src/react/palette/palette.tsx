@@ -194,7 +194,7 @@ export function Palette({ onInserted }: { onInserted?: () => void } = {}) {
         toast.add({
           title: `“${item.label}” can’t go there`,
           description:
-            'Pick a different spot on the page — a section or a container — and try again.',
+            'Pick a different spot on the page (a section or a container) and try again.',
           type: 'info',
         });
         return;
@@ -246,7 +246,7 @@ export function Palette({ onInserted }: { onInserted?: () => void } = {}) {
         )}
         {results?.length === 0 ? (
           <p className="text-base-content px-1 py-6 text-sm">
-            Nothing matches “{query}”. Try a plainer word — “photo”, “button”, “prices”.
+            Nothing matches “{query}”. Try a plainer word: “photo”, “button”, “prices”.
           </p>
         ) : null}
       </div>

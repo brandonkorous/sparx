@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Stillwater — a serene massage retreat",
+      "seoTitle": "Stillwater: a serene massage retreat",
       "seoDescription": "Stillwater is a quiet massage retreat for Swedish, warm stone and aromatherapy massage, a signature two-hour ritual and couples rooms. Book your therapist online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Stillwater is a quiet massage retreat built for one thing — letting you put everything down. Warm light, soft hands, and nowhere else to be."
+                      "Stillwater is a quiet massage retreat built for one thing: letting you put everything down. Warm light, soft hands, and nowhere else to be."
                     ],
                     "id": "ea2a0715-b94a-4398-877a-52571c3282cc",
                     "ord": "a1"
@@ -765,7 +765,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A short, considered list — nothing rushed, nothing clinical. Live availability and full prices are on the booking page."
+                          "A short, considered list. Nothing rushed, nothing clinical. Live availability and full prices are on the booking page."
                         ],
                         "id": "a3b4940e-ad81-4c61-bd6f-19c82da4235b",
                         "ord": "a1"
@@ -1064,7 +1064,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Sound-softened, candle-warm and yours alone. The phone stays in the locker — the hour belongs to you."
+                              "Sound-softened, candle-warm and yours alone. The phone stays in the locker: the hour belongs to you."
                             ],
                             "id": "fc659ec8-6dcf-4631-94cc-17186b7c7209",
                             "ord": "a1"
@@ -1269,7 +1269,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Choose a treatment, pick your therapist and room, and see live times. It takes about a minute — the rest is rest."
+                      "Choose a treatment, pick your therapist and room, and see live times. It takes about a minute: the rest is rest."
                     ],
                     "id": "adfd1592-7768-46ce-b0b9-aa21e24f9ab2",
                     "ord": "a1"
@@ -1300,7 +1300,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Stillwater",
+      "seoTitle": "Book: Stillwater",
       "seoDescription": "See what Stillwater offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1424,7 +1424,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "17843b2d-fe74-44d7-9e96-b0ad31551a93",
                         "ord": "a1"
@@ -1531,7 +1531,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Stillwater",
+      "seoTitle": "About: Stillwater",
       "seoDescription": "Who Stillwater is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1580,7 +1580,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We opened Stillwater because rest had started to feel like something you had to earn. We wanted a room where you didn’t — where the light was already low, the towels already warm, and no one was watching the clock but us."
+                          "We opened Stillwater because rest had started to feel like something you had to earn. We wanted a room where you didn’t: where the light was already low, the towels already warm, and no one was watching the clock but us."
                         ],
                         "id": "24a33ebf-ff8d-4bc6-b430-fc198538c67e",
                         "ord": "a1"
@@ -1695,7 +1695,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Warm oils and essential blends we’d use ourselves — nothing harsh, nothing you’ll smell all day unless you want to."
+                              "Warm oils and essential blends we’d use ourselves. Nothing harsh, nothing you’ll smell all day unless you want to."
                             ],
                             "id": "9da5c77d-281f-4be9-b5e1-0777f2f12956",
                             "ord": "a1"
@@ -1722,7 +1722,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Deep or feather-light, chatty or silent — you tell us at the start, and we follow it the whole way through."
+                              "Deep or feather-light, chatty or silent. You tell us at the start, and we follow it the whole way through."
                             ],
                             "id": "be8e7058-334b-41b9-9712-b66d7f6623f2",
                             "ord": "a1"
@@ -1750,7 +1750,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Stillwater",
+      "seoTitle": "Visit: Stillwater",
       "seoDescription": "Where to find Stillwater, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1787,7 +1787,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Stillwater will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Stillwater will get back to you, usually the same day."
                         ],
                         "id": "a42013ae-e7a7-472e-baa9-e86086772a07",
                         "ord": "a1"
@@ -2214,7 +2214,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your room online — no phone tag, no waiting on hold."
+                      "See live availability and reserve your room online: no phone tag, no waiting on hold."
                     ],
                     "id": "497f2412-fb5f-46fb-928d-90d51cc4094e",
                     "ord": "a1"

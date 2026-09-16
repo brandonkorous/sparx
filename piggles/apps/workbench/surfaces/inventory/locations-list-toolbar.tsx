@@ -108,7 +108,7 @@ export function LocationsListToolbar({
         label: 'New location',
         icon: faPlus,
         onClick: onNew,
-        title: 'New location — hold Shift to open alongside, Alt for a new window',
+        title: 'New location: hold Shift to open alongside, Alt for a new window',
       }}
       controls={
         <Filters

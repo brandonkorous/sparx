@@ -154,7 +154,7 @@ function ModuleCta({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
         </Display>
         <p className="m-0 max-w-[640px] text-lg">
           Activate {shortLabel(meta.label)} in one click. No migration, no consultant, no contract.
-          Turn it back off any time — your data stays.
+          Turn it back off any time. Your data stays.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Button size="xl" variant="solid">

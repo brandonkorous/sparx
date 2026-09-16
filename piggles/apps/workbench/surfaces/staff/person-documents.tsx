@@ -23,7 +23,7 @@ export function DocumentsSection({
   return (
     <FormSection
       title="Paperwork"
-      description="Signed contracts, handbooks and ID — the drawer in the back office."
+      description="Signed contracts, handbooks and ID: the drawer in the back office."
     >
       {docs.isPending ? (
         <Text className="text-sm">Loading…</Text>

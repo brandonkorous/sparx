@@ -85,7 +85,7 @@ const TYPE_KEY_RE = /^[a-z][a-z0-9_]*$/;
 
 /** Every field type, named for what it DOES rather than its schema word. */
 const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
-  text: { label: 'Short text', hint: 'A single line — a size, an origin, a short label.' },
+  text: { label: 'Short text', hint: 'A single line: a size, an origin, a short label.' },
   long_text: { label: 'Long text', hint: 'Several lines of plain writing, with no formatting.' },
   rich_text: {
     label: 'Formatted text',
@@ -95,7 +95,7 @@ const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
     label: 'Web address piece',
     hint: 'The end of a page address, in lowercase letters and dashes.',
   },
-  number: { label: 'Number', hint: 'A figure — a weight, a count, a percentage.' },
+  number: { label: 'Number', hint: 'A figure: a weight, a count, a percentage.' },
   boolean: { label: 'Yes or no', hint: 'A single on/off switch.' },
   date: { label: 'Date', hint: 'A day, with no time.' },
   datetime: { label: 'Date and time', hint: 'A day and a time together.' },
@@ -110,7 +110,7 @@ const FIELD_TYPE_META: Record<FieldType, { label: string; hint: string }> = {
   object: { label: 'Group', hint: 'A set of related details bundled under one heading.' },
   repeater: {
     label: 'Repeating group',
-    hint: 'A group filled over and over — spec rows, materials, ingredients.',
+    hint: 'A group filled over and over: spec rows, materials, ingredients.',
   },
 };
 
@@ -272,7 +272,7 @@ function CreateType({ ctx }: { ctx: SurfaceContext }) {
               Define a kind of product
             </Heading>
             <Text>
-              Name it, then list the extra details it carries beyond price and photos — fabric and
+              Name it, then list the extra details it carries beyond price and photos: fabric and
               care for clothing, ingredients for food, specs for a gadget. Once you save it, you can
               set those details on any product of this kind.
             </Text>
@@ -485,7 +485,7 @@ function EditType({
               <AlertContent>
                 <AlertTitle>This is a built-in type</AlertTitle>
                 <AlertDescription>
-                  It comes with sparx and is shared across every business. You can use it as-is — or
+                  It comes with sparx and is shared across every business. You can use it as-is, or
                   change its attributes here, and sparx will save your own copy the first time you
                   do. Your copy only affects your business.
                 </AlertDescription>
@@ -588,7 +588,7 @@ function MetaForm({
               />
             }
           />
-          <FieldDescription>What you call several — shown in menus. Optional.</FieldDescription>
+          <FieldDescription>What you call several: shown in menus. Optional.</FieldDescription>
         </Field>
       </div>
 
@@ -613,7 +613,7 @@ function MetaForm({
         />
         <FieldDescription>
           {editableKey
-            ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name — change it now if you like, it cannot be changed later.'
+            ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name. Change it now if you like, it cannot be changed later.'
             : 'The internal name for this type. It is fixed once the type is created.'}
         </FieldDescription>
       </Field>
@@ -1027,7 +1027,7 @@ function FieldConfig({ field, depth, siblingKeys, typeOptions, onChange }: Field
             }
           />
           <FieldDescription>
-            The internal name — lowercase to start, then letters, numbers or underscores.
+            The internal name: lowercase to start, then letters, numbers or underscores.
           </FieldDescription>
         </Field>
       </div>
@@ -1213,7 +1213,7 @@ function TypeSpecificConfig({
                 patch({ sourceField: event.target.value || undefined });
               }}
             >
-              <option value="">Nothing — type it in</option>
+              <option value="">Nothing. Type it in</option>
               {siblingKeys.map((key) => (
                 <option key={key} value={key}>
                   {key}
@@ -1281,7 +1281,7 @@ function TypeSpecificConfig({
                 patch({ integer: next });
               }}
             />
-            <Text as="span">Whole numbers only — no decimals</Text>
+            <Text as="span">Whole numbers only: no decimals</Text>
           </div>
         </>
       );
@@ -1449,7 +1449,7 @@ function TypeSpecificConfig({
               }
             />
             <FieldDescription>
-              The word for a single entry in the list — “Spec”, “Material”, “Ingredient”. Shows on
+              The word for a single entry in the list: “Spec”, “Material”, “Ingredient”. Shows on
               the Add button.
             </FieldDescription>
           </Field>

@@ -151,7 +151,7 @@ function hero(): Node {
                                     { text: 'Cut and composed in small numbers' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Fine jewellery and fragrance from the Vérane atelier — made a few pieces at a time, to be kept for a lifetime.',
+                                    text: 'Fine jewellery and fragrance from the Vérane atelier: made a few pieces at a time, to be kept for a lifetime.',
                                 }),
                                 el('a', 'text-base font-medium text-base-content underline underline-offset-4', {
                                     attrs: { href: '/shop' },
@@ -341,7 +341,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New this season' }),
     editorialBand({
         heading: 'Why we make so few',
-        lead: 'Every Vérane piece is cut, set and finished by hand in numbered runs. Small numbers are not a scarcity trick — they are what it takes to answer for every stone, every setting and every drop of scent that leaves the atelier.',
+        lead: 'Every Vérane piece is cut, set and finished by hand in numbered runs. Small numbers are not a scarcity trick. They are what it takes to answer for every stone, every setting and every drop of scent that leaves the atelier.',
         assetId: 'band-atelier',
         cta: 'Read our story',
         href: '/about',
@@ -368,7 +368,7 @@ const ABOUT: Node[] = [
                         text: 'About Vérane',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Vérane is a small maison of fine jewellery and fragrance. We work in gold, platinum and hand-selected stones, and in scent composed a few litres at a time — and we make in numbered runs, in our own atelier, by the people whose hands are on the work.',
+                        text: 'Vérane is a small maison of fine jewellery and fragrance. We work in gold, platinum and hand-selected stones, and in scent composed a few litres at a time, and we make in numbered runs, in our own atelier, by the people whose hands are on the work.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'Nothing here is bought in and re-badged. We can tell you where every stone came from, who set it, and how to keep a piece bright for a lifetime. That is the whole idea: cut and composed in small numbers, made to be kept.',
@@ -386,7 +386,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Visit the atelier',
-        intro: 'Our atelier and salon are open by appointment. Tell us what you are looking for — a single piece, a bespoke commission, or a fragrance to be layered to your own — and we will find a time.',
+        intro: 'Our atelier and salon are open by appointment. Tell us what you are looking for (a single piece, a bespoke commission, or a fragrance to be layered to your own) and we will find a time.',
         submitLabel: 'Email the atelier',
     }),
 ];
@@ -436,7 +436,7 @@ interface Product {
 // fragrance in the house, so it lives once (each jewellery piece keeps its own metal-specific
 // care, and per-product fabric/fit/materials/origin still differ everywhere).
 const SCENT_CARE =
-    'Keep it out of heat, direct sun and steam — a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.';
+    'Keep it out of heat, direct sun and steam: a closed drawer or its own box, never a bathroom shelf, which is the one place a fine fragrance turns. Composed from natural materials, it settles and deepens a little with age rather than fading.';
 
 const money = (dollars: number): number => Math.round(dollars * 100);
 
@@ -452,14 +452,14 @@ const PRODUCTS: Product[] = [
         tags: ['ring', 'signet', 'gold', 'fine-jewellery'],
         categoryHandles: ['rings'],
         collectionHandles: ['new-arrivals', 'high-jewellery'],
-        seoTitle: 'Astrid Signet Ring — solid 18k gold signet',
+        seoTitle: 'Astrid Signet Ring: solid 18k gold signet',
         seoDescription: 'A hand-finished solid 18k gold signet ring, plain or engraved to your mark.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Turned from a solid billet of 18k gold and finished entirely by hand — no plating, no hollow core. The face is left broad and flat to take a seal or a monogram, the shoulders rounded so it sits close to the finger without ever catching.',
+                'Turned from a solid billet of 18k gold and finished entirely by hand: no plating, no hollow core. The face is left broad and flat to take a seal or a monogram, the shoulders rounded so it sits close to the finger without ever catching.',
             fit: 'A substantial, weighted everyday ring, sized true to a standard band; the broad face wears equally on the little finger or the ring finger. Between sizes, size up so a signet turns freely.',
-            care: 'Gold takes a scratch and polishes straight back — a soft cloth keeps the face bright between wears, and the atelier will re-polish the piece and re-cut an engraving for as long as you own it.',
+            care: 'Gold takes a scratch and polishes straight back: a soft cloth keeps the face bright between wears, and the atelier will re-polish the piece and re-cut an engraving for as long as you own it.',
             materials: [
                 { name: '18k yellow gold', percent: '75%' },
                 { name: 'Fine alloy', percent: '25%' },
@@ -486,7 +486,7 @@ const PRODUCTS: Product[] = [
         tags: ['bracelet', 'diamond', 'gold', 'high-jewellery'],
         categoryHandles: ['bracelets'],
         collectionHandles: ['new-arrivals', 'high-jewellery'],
-        seoTitle: 'Colette Tennis Bracelet — white-diamond line bracelet',
+        seoTitle: 'Colette Tennis Bracelet: white-diamond line bracelet',
         seoDescription: 'An 18k gold tennis bracelet of hand-matched white diamonds with a flat, hidden clasp.',
         productTypeKey: 'apparel',
         attributes: {
@@ -509,14 +509,14 @@ const PRODUCTS: Product[] = [
         handle: 'vesper-drop-earrings',
         title: 'Vesper Drop Earrings',
         description:
-            'A pair of long drops pairing polished onyx with warm 18k gold — quiet by day, and exactly enough after dark. Weighted so they hang true and sit close to the jaw.',
+            'A pair of long drops pairing polished onyx with warm 18k gold: quiet by day, and exactly enough after dark. Weighted so they hang true and sit close to the jaw.',
         status: 'active',
         productType: 'Earrings',
         vendor: 'Vérane',
         tags: ['earrings', 'onyx', 'gold', 'fine-jewellery'],
         categoryHandles: ['earrings'],
         collectionHandles: ['high-jewellery'],
-        seoTitle: 'Vesper Drop Earrings — onyx and 18k gold drops',
+        seoTitle: 'Vesper Drop Earrings: onyx and 18k gold drops',
         seoDescription: 'A pair of onyx-and-gold drop earrings, weighted to hang true against the jaw.',
         productTypeKey: 'apparel',
         attributes: {
@@ -546,7 +546,7 @@ const PRODUCTS: Product[] = [
         tags: ['necklace', 'pendant', 'gold', 'everyday'],
         categoryHandles: ['necklaces'],
         collectionHandles: ['new-arrivals', 'everyday-fine'],
-        seoTitle: 'Lune Pendant Necklace — 18k gold disc pendant',
+        seoTitle: 'Lune Pendant Necklace: 18k gold disc pendant',
         seoDescription: 'A brushed-and-polished 18k gold disc pendant on a fine chain, in two lengths.',
         productTypeKey: 'apparel',
         attributes: {
@@ -577,14 +577,14 @@ const PRODUCTS: Product[] = [
         tags: ['ring', 'band', 'platinum', 'diamond', 'high-jewellery'],
         categoryHandles: ['rings'],
         collectionHandles: ['high-jewellery', 'the-gift-edit'],
-        seoTitle: 'Odette Pavé Band — platinum pavé-diamond band',
+        seoTitle: 'Odette Pavé Band: platinum pavé-diamond band',
         seoDescription: 'A slim platinum band grain-set edge to edge with pavé diamonds.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A slim platinum band grain-set edge to edge with pavé diamonds, each stone raised by hand so the line reads as one continuous ribbon of light. Platinum for its weight, and for the way it refuses to wear thin.',
-            fit: 'Low enough in profile to stack or to wear alone; sized true, and best sized precisely — a fully-set band cannot be resized without lifting and re-setting the stones.',
-            care: 'Warm water and a soft brush behind the stones keeps the pavé bright — hand cream and dust dull it faster than anything. The atelier checks every grain and re-tightens the setting for life.',
+            fit: 'Low enough in profile to stack or to wear alone; sized true, and best sized precisely: a fully-set band cannot be resized without lifting and re-setting the stones.',
+            care: 'Warm water and a soft brush behind the stones keeps the pavé bright: hand cream and dust dull it faster than anything. The atelier checks every grain and re-tightens the setting for life.',
             materials: [
                 { name: 'Platinum', percent: '85%' },
                 { name: 'Pavé diamonds', percent: '15%' },
@@ -604,21 +604,21 @@ const PRODUCTS: Product[] = [
         handle: 'margaux-hoop-earrings',
         title: 'Margaux Hoop Earrings',
         description:
-            'A pair of mid-weight hoops in brushed 18k gold, sized to clear the earlobe and turn without catching. The everyday hoop, made properly — solid, not hollow, and balanced to stay put.',
+            'A pair of mid-weight hoops in brushed 18k gold, sized to clear the earlobe and turn without catching. The everyday hoop, made properly: solid, not hollow, and balanced to stay put.',
         status: 'active',
         productType: 'Earrings',
         vendor: 'Vérane',
         tags: ['earrings', 'hoop', 'gold', 'everyday'],
         categoryHandles: ['earrings'],
         collectionHandles: ['everyday-fine'],
-        seoTitle: 'Margaux Hoop Earrings — brushed 18k gold hoops',
+        seoTitle: 'Margaux Hoop Earrings: brushed 18k gold hoops',
         seoDescription: 'A pair of solid brushed-gold hoop earrings, balanced to sit and turn cleanly.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Solid 18k gold hoops — not hollow tube — brushed to a soft matte that hides the marks of daily wear, on a hinged click closure that seats with a positive snap.',
+                'Solid 18k gold hoops (not hollow tube) brushed to a soft matte that hides the marks of daily wear, on a hinged click closure that seats with a positive snap.',
             fit: 'A mid-weight, mid-size hoop, sized to clear the lobe and turn without catching, and balanced so it hangs level rather than tipping forward. For pierced ears.',
-            care: 'The brushed finish is forgiving — a dry cloth is usually enough, and the atelier can re-brush or re-polish the surface to your preference. Store the pair clasped so the hinge stays true.',
+            care: 'The brushed finish is forgiving: a dry cloth is usually enough, and the atelier can re-brush or re-polish the surface to your preference. Store the pair clasped so the hinge stays true.',
             materials: [{ name: '18k gold', percent: '100%' }],
             origin: 'Made in France',
         },
@@ -638,14 +638,14 @@ const PRODUCTS: Product[] = [
         tags: ['bracelet', 'cuff', 'silver', 'everyday'],
         categoryHandles: ['bracelets'],
         collectionHandles: ['everyday-fine'],
-        seoTitle: 'Céleste Cuff — high-polished silver cuff',
+        seoTitle: 'Céleste Cuff: high-polished silver cuff',
         seoDescription: 'A single-piece high-polished silver cuff, formed to sit close and slip on.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'Formed from a single piece of high-polished sterling silver, shaped to sit close to the wrist with an opening just wide enough to slip on. Substantial in the hand without the dead weight of a solid bangle.',
             fit: 'An open cuff that eases on over the wrist bone and can be gently adjusted by hand; offered in three sizes to sit snug rather than loose. Wear it high on the forearm or low at the wrist.',
-            care: 'Silver lives — worn often it stays bright; left in a drawer it softens to a patina you can either keep or lift with a silver cloth. The atelier will re-polish it back to a mirror whenever you like.',
+            care: 'Silver lives: worn often it stays bright; left in a drawer it softens to a patina you can either keep or lift with a silver cloth. The atelier will re-polish it back to a mirror whenever you like.',
             materials: [
                 { name: 'Sterling silver', percent: '92.5%' },
                 { name: 'Fine copper', percent: '7.5%' },
@@ -666,19 +666,19 @@ const PRODUCTS: Product[] = [
         handle: 'no1-fig-neroli',
         title: 'Nº1 Fig & Neroli',
         description:
-            'The house’s opening scent — green fig softened by neroli and a warm cedar base. Bright at first, then quiet and skin-close for hours. An eau de parfum, composed in small batches.',
+            'The house’s opening scent: green fig softened by neroli and a warm cedar base. Bright at first, then quiet and skin-close for hours. An eau de parfum, composed in small batches.',
         status: 'active',
         productType: 'Fragrance',
         vendor: 'Vérane',
         tags: ['fragrance', 'eau-de-parfum', 'fig', 'neroli'],
         categoryHandles: ['fragrance'],
         collectionHandles: ['fragrance'],
-        seoTitle: 'Nº1 Fig & Neroli — eau de parfum',
+        seoTitle: 'Nº1 Fig & Neroli: eau de parfum',
         seoDescription: 'A green fig and neroli eau de parfum on a warm cedar base, in 50ml and 100ml.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'An eau de parfum built on green fig, softened with neroli and set on a warm cedar base — composed in small batches and left to marry before it is bottled. Bright at the top, quiet and skin-close as it settles.',
+                'An eau de parfum built on green fig, softened with neroli and set on a warm cedar base: composed in small batches and left to marry before it is bottled. Bright at the top, quiet and skin-close as it settles.',
             fit: 'Wears soft and close rather than loud; a pulse at the wrist and the throat carries through a day. Brightest in the first hour, then a warm second skin.',
             care: SCENT_CARE,
             materials: [
@@ -701,20 +701,20 @@ const PRODUCTS: Product[] = [
         handle: 'no2-iris-ambrette',
         title: 'Nº2 Iris & Ambrette',
         description:
-            'Powdery iris drawn out with ambrette seed and a breath of musk — soft, cool and quietly expensive. The house’s most-worn scent, and the hardest to name on someone else.',
+            'Powdery iris drawn out with ambrette seed and a breath of musk: soft, cool and quietly expensive. The house’s most-worn scent, and the hardest to name on someone else.',
         status: 'active',
         productType: 'Fragrance',
         vendor: 'Vérane',
         tags: ['fragrance', 'eau-de-parfum', 'iris', 'musk'],
         categoryHandles: ['fragrance'],
         collectionHandles: ['fragrance'],
-        seoTitle: 'Nº2 Iris & Ambrette — eau de parfum',
+        seoTitle: 'Nº2 Iris & Ambrette: eau de parfum',
         seoDescription: 'A powdery iris and ambrette-seed eau de parfum with a soft musk, in 50ml and 100ml.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'An eau de parfum that draws powdery iris out with ambrette seed and a breath of musk — cool, soft and quietly expensive. The most-worn scent in the house, and the hardest to place on someone else.',
-            fit: 'Sits close to the skin and stays soft all day — never a scent that fills a room. A single application at the pulse points lasts, and it layers well over Nº1.',
+                'An eau de parfum that draws powdery iris out with ambrette seed and a breath of musk: cool, soft and quietly expensive. The most-worn scent in the house, and the hardest to place on someone else.',
+            fit: 'Sits close to the skin and stays soft all day, never a scent that fills a room. A single application at the pulse points lasts, and it layers well over Nº1.',
             care: SCENT_CARE,
             materials: [
                 { name: 'Alcohol base', percent: '81%' },
@@ -736,19 +736,19 @@ const PRODUCTS: Product[] = [
         handle: 'no3-black-rose-oud',
         title: 'Nº3 Black Rose & Oud',
         description:
-            'The evening scent — dark rose over real oud and a resinous amber. Warm, dense and made to be noticed at close range. The one the atelier is asked about most.',
+            'The evening scent: dark rose over real oud and a resinous amber. Warm, dense and made to be noticed at close range. The one the atelier is asked about most.',
         status: 'active',
         productType: 'Fragrance',
         vendor: 'Vérane',
         tags: ['fragrance', 'eau-de-parfum', 'rose', 'oud'],
         categoryHandles: ['fragrance'],
         collectionHandles: ['fragrance', 'new-arrivals'],
-        seoTitle: 'Nº3 Black Rose & Oud — eau de parfum',
+        seoTitle: 'Nº3 Black Rose & Oud: eau de parfum',
         seoDescription: 'A dark-rose and oud eau de parfum on a resinous amber base, in 50ml and 100ml.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'The evening eau — a dark rose laid over real oud and a resinous amber, composed at a higher concentration so it holds warm and dense at close range. The scent the atelier is asked about most.',
+                'The evening eau: a dark rose laid over real oud and a resinous amber, composed at a higher concentration so it holds warm and dense at close range. The scent the atelier is asked about most.',
             fit: 'Made to be noticed at close range rather than across a room; a little carries a long way. One pulse at the throat is plenty for an evening.',
             care: SCENT_CARE,
             materials: [
@@ -771,20 +771,20 @@ const PRODUCTS: Product[] = [
         handle: 'no4-bergamot-vetiver',
         title: 'Nº4 Bergamot & Vetiver',
         description:
-            'Cool bergamot over smoky vetiver and a clean woody dry-down — the house’s sharpest, most unisex scent. Crisp in the morning, and still there, softened, by evening.',
+            'Cool bergamot over smoky vetiver and a clean woody dry-down: the house’s sharpest, most unisex scent. Crisp in the morning, and still there, softened, by evening.',
         status: 'active',
         productType: 'Fragrance',
         vendor: 'Vérane',
         tags: ['fragrance', 'eau-de-parfum', 'bergamot', 'vetiver'],
         categoryHandles: ['fragrance'],
         collectionHandles: ['fragrance'],
-        seoTitle: 'Nº4 Bergamot & Vetiver — eau de parfum',
+        seoTitle: 'Nº4 Bergamot & Vetiver: eau de parfum',
         seoDescription: 'A bergamot and smoky-vetiver eau de parfum with a clean woody dry-down, in 50ml and 100ml.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Cool bergamot over smoky vetiver on a clean woody dry-down — the sharpest and most unisex of the four. Crisp on application, and still there, softened, by evening.',
-            fit: 'The most versatile of the eaux — bright enough for the morning, settled enough for the night, and easy on close company. A pulse at each wrist carries the day.',
+                'Cool bergamot over smoky vetiver on a clean woody dry-down: the sharpest and most unisex of the four. Crisp on application, and still there, softened, by evening.',
+            fit: 'The most versatile of the eaux: bright enough for the morning, settled enough for the night, and easy on close company. A pulse at each wrist carries the day.',
             care: SCENT_CARE,
             materials: [
                 { name: 'Alcohol base', percent: '83%' },
@@ -804,21 +804,21 @@ const PRODUCTS: Product[] = [
     },
     {
         handle: 'the-four-eaux-discovery-set',
-        title: 'The Four Eaux — Discovery Set',
+        title: 'The Four Eaux: Discovery Set',
         description:
-            'All four house scents in 2ml travel vials, boxed together — the honest way to find yours before committing to a bottle. The set’s value is redeemable against any full-size eau.',
+            'All four house scents in 2ml travel vials, boxed together: the honest way to find yours before committing to a bottle. The set’s value is redeemable against any full-size eau.',
         status: 'active',
         productType: 'Fragrance',
         vendor: 'Vérane',
         tags: ['fragrance', 'discovery-set', 'gift', 'sampler'],
         categoryHandles: ['fragrance'],
         collectionHandles: ['fragrance', 'new-arrivals', 'the-gift-edit'],
-        seoTitle: 'The Four Eaux — Vérane fragrance discovery set',
+        seoTitle: 'The Four Eaux: Vérane fragrance discovery set',
         seoDescription: 'All four Vérane eaux de parfum in 2ml vials, redeemable against a full-size bottle.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'All four house eaux — Nº1 through Nº4 — decanted into 2ml travel vials and boxed together, drawn from the same small batches as the full bottles. The honest way to live with each scent before choosing.',
+                'All four house eaux (Nº1 through Nº4) decanted into 2ml travel vials and boxed together, drawn from the same small batches as the full bottles. The honest way to live with each scent before choosing.',
             fit: 'A week with a single vial tells you far more than any note list; wear one at a time, on skin, across a full day. Its value is redeemable against any full-size bottle.',
             care: SCENT_CARE,
             materials: [
@@ -912,17 +912,17 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The Winter High Jewellery',
-            excerpt: 'A first look at this winter’s numbered pieces — where the stones came from, and why there are so few of them.',
+            excerpt: 'A first look at this winter’s numbered pieces: where the stones came from, and why there are so few of them.',
             featuredImage: { $asset: 'post-winter-high-jewellery' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A high-jewellery run begins with the stones, not the drawings. We buy a small parcel, lay it out under a north light, and see what it wants to become — which is why we can never tell you in advance exactly how many pieces a season will hold.'),
+                    para('A high-jewellery run begins with the stones, not the drawings. We buy a small parcel, lay it out under a north light, and see what it wants to become, which is why we can never tell you in advance exactly how many pieces a season will hold.'),
                     h2('Matched by eye, set by hand'),
                     para('Every stone in a Colette bracelet is chosen against its neighbours for cut and color, then grain-set by one setter from end to end. A machine could set faster; it could not match the line the way an eye does, and the line is the whole point.'),
                     h2('Few by necessity'),
                     para('When one person answers for every setting, the numbers stay small on their own. We would rather make twelve pieces we can stand behind for a lifetime than a hundred we cannot, and the winter run is exactly that: few, and finished properly.'),
-                    para('Each piece leaves the atelier numbered, with a note of where its principal stone was cut. That note is not marketing — it is the reason to buy the real thing.'),
+                    para('Each piece leaves the atelier numbered, with a note of where its principal stone was cut. That note is not marketing. It is the reason to buy the real thing.'),
                 ],
             },
         },
@@ -933,12 +933,12 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The making of Nº3 Black Rose & Oud',
-            excerpt: 'How the house’s evening scent came together — real oud, a dark rose, and eighteen months of getting the balance wrong.',
+            excerpt: 'How the house’s evening scent came together: real oud, a dark rose, and eighteen months of getting the balance wrong.',
             featuredImage: { $asset: 'post-making-no3' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Nº3 took the longest of the four to settle. Oud is a difficult material — powerful, unpredictable, and expensive enough that every trial batch is a real decision — and pairing it with a rose dark enough to hold its own without turning to jam took most of two years.'),
+                    para('Nº3 took the longest of the four to settle. Oud is a difficult material: powerful, unpredictable, and expensive enough that every trial batch is a real decision, and pairing it with a rose dark enough to hold its own without turning to jam took most of two years.'),
                     h2('Composed in small litres'),
                     para('We compose in small quantities, let each version rest, and wear it for a week before changing a single note. A scent behaves differently on skin an hour in than it does on a blotter, and the only honest test is time.'),
                     h2('Why it costs what it costs'),
@@ -961,7 +961,7 @@ const CONTENT = [
                 content: [
                     para('People ask which piece to start with, and the honest answer is: the one you will actually wear. A signet worn every day is worth more than a necklace kept in a box for occasions that never quite arrive.'),
                     h2('One good thing at a time'),
-                    para('The house was built on a plain idea — buy less, choose better, and keep it for good. A collection assembled slowly, around a few pieces worth keeping, reads as yours in a way a whole set bought at once never will.'),
+                    para('The house was built on a plain idea: buy less, choose better, and keep it for good. A collection assembled slowly, around a few pieces worth keeping, reads as yours in a way a whole set bought at once never will.'),
                     h2('Made to be lived in'),
                     para('Fine jewellery is not fragile. Gold takes a scratch and polishes back; silver softens into a patina; a good stone has survived far worse than a dinner table. Wear it. That is what it is for.'),
                     para('When you are ready, come to the atelier. We would rather help you choose one piece you will keep than sell you three you will not.'),
@@ -1004,7 +1004,7 @@ function pdpBuyRegion(): Node {
                                     // maison name in the whisper sans register. A plain <p>, so the product title
                                     // stays the page's one <h1>.
                                     el('p', 'text-xs font-medium uppercase tracking-widest text-base-content', {
-                                        text: 'Vérane — the maison',
+                                        text: 'Vérane: the maison',
                                     }),
                                     pdpTitle(
                                         'h1',
@@ -1075,7 +1075,7 @@ const SHOP: Node[] = [
                         { text: 'The full collection' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Everything Vérane currently makes — fine jewellery in gold, platinum and hand-selected stones, and the four house eaux de parfum. Cut and composed in small numbers, and made to be kept.',
+                        text: 'Everything Vérane currently makes: fine jewellery in gold, platinum and hand-selected stones, and the four house eaux de parfum. Cut and composed in small numbers, and made to be kept.',
                     }),
                 ],
             }),
@@ -1112,21 +1112,21 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'The collections',
-        'The house in three registers — the numbered high jewellery we make a few of a year, the fine gold and silver made for every day, and the four house eaux de parfum. Begin wherever you are dressing.'
+        'The house in three registers: the numbered high jewellery we make a few of a year, the fine gold and silver made for every day, and the four house eaux de parfum. Begin wherever you are dressing.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Search the maison',
-        'Looking for a particular piece — a stone, a metal, a scent you were once given? Search the whole collection and the Journal below.'
+        'Looking for a particular piece: a stone, a metal, a scent you were once given? Search the whole collection and the Journal below.'
     ),
 ];
 
 const JOURNAL: Node[] = [
     pageMasthead(
         'The Vérane Journal',
-        'Notes from the atelier — where the stones are cut, how a fragrance is composed, and the plain idea behind the whole house: buy less, choose better, keep it for a lifetime.'
+        'Notes from the atelier: where the stones are cut, how a fragrance is composed, and the plain idea behind the whole house: buy less, choose better, keep it for a lifetime.'
     ),
 ];
 
@@ -1160,7 +1160,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-couture-serif',
     name: 'Couture Serif',
     summary:
-        'A high-fashion luxury-serif storefront where restraint is the premium — a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.',
+        'A high-fashion luxury-serif storefront where restraint is the premium: a centered-overlay campaign hero over collection tiles, a featured carousel and an editorial lookbook, all pure black on white in a classical serif. Modelled on the couture-serif archetype; shipped as Vérane, a fine-jewellery & fragrance maison.',
     tagline: 'A stark, serif-everything luxury template for jewellers, perfumers and fashion houses.',
     vertical: 'retail',
     industry: 'Fine jewellery & fragrance',
@@ -1177,14 +1177,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'centerLogo', footer: 'newsletter', showCta: false },
     seo: {
         home: {
-            title: 'Vérane — fine jewellery & fragrance',
+            title: 'Vérane: fine jewellery & fragrance',
             description:
-                'Vérane is a fine jewellery and fragrance maison — pieces cut and composed in small numbers, made to be worn every day and kept for a lifetime.',
+                'Vérane is a fine jewellery and fragrance maison: pieces cut and composed in small numbers, made to be worn every day and kept for a lifetime.',
         },
         about: {
-            title: 'About Vérane — the maison',
+            title: 'About Vérane: the maison',
             description:
-                'The maison behind Vérane — how each piece of jewellery and every fragrance is made in small numbers, by the hands that designed it.',
+                'The maison behind Vérane: how each piece of jewellery and every fragrance is made in small numbers, by the hands that designed it.',
         },
     },
     home: HOME,

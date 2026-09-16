@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "New-client and cosmetic sessions hold your practitioner and room for a full hour. A cancellation inside 24 hours, or a missed session, is charged in full — reschedule earlier and there’s no fee."
+      "policyText": "New-client and cosmetic sessions hold your practitioner and room for a full hour. A cancellation inside 24 hours, or a missed session, is charged in full: reschedule earlier and there’s no fee."
     }
   ],
   "resources": [
@@ -221,7 +221,7 @@
     {
       "handle": "acupuncture-session",
       "name": "Acupuncture session",
-      "description": "A focused, evidence-informed treatment for pain, tension, digestion or general balance — the studio’s core visit.",
+      "description": "A focused, evidence-informed treatment for pain, tension, digestion or general balance: the studio’s core visit.",
       "durationMinutes": 60,
       "priceCents": 9500,
       "assignmentStrategy": "customer_choice",
@@ -244,7 +244,7 @@
     {
       "handle": "facial-acupuncture",
       "name": "Facial & cosmetic acupuncture",
-      "description": "A gentle, needle-based facial that supports collagen and circulation — a calm, natural alternative to injectables.",
+      "description": "A gentle, needle-based facial that supports collagen and circulation: a calm, natural alternative to injectables.",
       "durationMinutes": 75,
       "priceCents": 15500,
       "bufferAfterMin": 10,
@@ -268,7 +268,7 @@
     {
       "handle": "dry-needling-session",
       "name": "Dry needling",
-      "description": "Targeted trigger-point work to release tight muscles and ease movement — ideal alongside training or recovery.",
+      "description": "Targeted trigger-point work to release tight muscles and ease movement: ideal alongside training or recovery.",
       "durationMinutes": 45,
       "priceCents": 8500,
       "assignmentStrategy": "any_available",
@@ -337,7 +337,7 @@
     {
       "handle": "follow-up-session",
       "name": "Follow-up session",
-      "description": "A shorter return visit to keep progress going once your plan is underway — booked between fuller treatments.",
+      "description": "A shorter return visit to keep progress going once your plan is underway: booked between fuller treatments.",
       "durationMinutes": 30,
       "priceCents": 6500,
       "assignmentStrategy": "any_available",

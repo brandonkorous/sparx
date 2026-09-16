@@ -118,7 +118,7 @@ export function InvoiceSummary({
             />
           }
         />
-        <FieldDescription>As a decimal — 0.0875 is 8.75%</FieldDescription>
+        <FieldDescription>As a decimal: 0.0875 is 8.75%</FieldDescription>
       </Field>
 
       <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
@@ -148,7 +148,7 @@ export function InvoiceSummary({
 
       {differs ? (
         <Text className="text-warning text-sm">
-          Not saved yet — {formatMoney(saved.total, currency)} is what the customer would see today.
+          Not saved yet: {formatMoney(saved.total, currency)} is what the customer would see today.
         </Text>
       ) : null}
 

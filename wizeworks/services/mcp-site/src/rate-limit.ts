@@ -33,7 +33,7 @@ export function enforceRateLimit(key: string): void {
   if (bucket.count >= MAX_PER_WINDOW) {
     throw new RateLimitError(
       Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)),
-      'Too many requests — slow down.'
+      'Too many requests: slow down.'
     );
   }
   bucket.count += 1;

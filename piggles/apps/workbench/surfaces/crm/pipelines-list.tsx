@@ -73,7 +73,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New pipeline — hold Shift to open alongside, Alt for a new window"
+            title="New pipeline: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -120,7 +120,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faDiagramProject} className="size-6" aria-hidden />}
             title="Could not load your pipelines"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -139,7 +139,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No pipelines yet',
               description:
-                'A pipeline is the set of stages a deal moves through — your own way of winning work. Create your first one to start tracking deals.',
+                'A pipeline is the set of stages a deal moves through. Your own way of winning work. Create your first one to start tracking deals.',
             }}
           />
         ) : (

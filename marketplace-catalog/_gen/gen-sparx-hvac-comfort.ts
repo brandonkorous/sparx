@@ -174,7 +174,7 @@ const SCHEDULING = {
       handle: 'free-install-estimate',
       name: 'Free install estimate',
       description:
-        'A no-pressure home visit to size up a new furnace, AC or heat pump and give you an honest, written quote — free, with financing options laid out plainly.',
+        'A no-pressure home visit to size up a new furnace, AC or heat pump and give you an honest, written quote: free, with financing options laid out plainly.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -187,7 +187,7 @@ const SCHEDULING = {
       handle: 'ac-tune-up',
       name: 'AC tune-up',
       description:
-        'A full spring check-up so your air conditioner runs cool and efficient all summer — coils, refrigerant, drain and airflow, all cleaned and tested.',
+        'A full spring check-up so your air conditioner runs cool and efficient all summer: coils, refrigerant, drain and airflow, all cleaned and tested.',
       durationMinutes: 60,
       priceCents: 8900,
       assignmentStrategy: 'any_available',
@@ -200,7 +200,7 @@ const SCHEDULING = {
       handle: 'furnace-tune-up',
       name: 'Furnace tune-up',
       description:
-        'A fall safety-and-comfort check on your furnace or heat pump — burners, heat exchanger, filter and thermostat — so winter starts warm and worry-free.',
+        'A fall safety-and-comfort check on your furnace or heat pump (burners, heat exchanger, filter and thermostat) so winter starts warm and worry-free.',
       durationMinutes: 60,
       priceCents: 9900,
       assignmentStrategy: 'any_available',
@@ -213,7 +213,7 @@ const SCHEDULING = {
       handle: 'system-diagnostic',
       name: 'System diagnostic',
       description:
-        'Something not right — weak airflow, odd noises, uneven rooms? A tech tracks down the cause and explains your options before any work begins.',
+        'Something not right: weak airflow, odd noises, uneven rooms? A tech tracks down the cause and explains your options before any work begins.',
       durationMinutes: 75,
       priceCents: 12900,
       bufferAfterMin: 15,
@@ -227,7 +227,7 @@ const SCHEDULING = {
       handle: 'install-consult',
       name: 'Install consultation',
       description:
-        'Ready to replace a system? A sit-down with our install lead to plan the right equipment, sizing and timeline for your home — no hard sell.',
+        'Ready to replace a system? A sit-down with our install lead to plan the right equipment, sizing and timeline for your home: no hard sell.',
       durationMinutes: 90,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -240,7 +240,7 @@ const SCHEDULING = {
       handle: 'air-quality-assessment',
       name: 'Indoor air-quality assessment',
       description:
-        'A walkthrough of what you’re breathing at home — filtration, humidity, ventilation and dust — with simple, honest fixes ranked by what actually helps.',
+        'A walkthrough of what you’re breathing at home (filtration, humidity, ventilation and dust) with simple, honest fixes ranked by what actually helps.',
       durationMinutes: 60,
       priceCents: 7900,
       assignmentStrategy: 'any_available',
@@ -273,7 +273,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A comfortable, sunlit family living room on a mild afternoon',
     title: 'Never too hot, never too cold',
-    sub: 'Friendly, year-round comfort for your home — heating in winter, cooling in summer, and honest people who show up when they say they will.',
+    sub: 'Friendly, year-round comfort for your home: heating in winter, cooling in summer, and honest people who show up when they say they will.',
     primary: { label: 'Book a visit', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
     overlay: 'dark',
@@ -282,7 +282,7 @@ const HOME = [
     items: [
       {
         title: 'Licensed & NATE-certified',
-        body: 'Every tech is licensed, background-checked and NATE-certified — trained on today’s furnaces, air conditioners and heat pumps.',
+        body: 'Every tech is licensed, background-checked and NATE-certified: trained on today’s furnaces, air conditioners and heat pumps.',
       },
       {
         title: 'Upfront, written quotes',
@@ -294,7 +294,7 @@ const HOME = [
       },
       {
         title: 'Financing on new systems',
-        body: 'A new furnace or AC shouldn’t wait for the perfect month — flexible financing lets you spread it out and stay comfortable now.',
+        body: 'A new furnace or AC shouldn’t wait for the perfect month: flexible financing lets you spread it out and stay comfortable now.',
       },
     ],
   }),
@@ -308,7 +308,7 @@ const HOME = [
         name: 'Free install estimate',
         priceCents: 0,
         durationMin: 60,
-        desc: 'An honest, written quote for a new system — free.',
+        desc: 'An honest, written quote for a new system: free.',
       },
       {
         name: 'AC tune-up',
@@ -337,13 +337,13 @@ const HOME = [
     heading: 'A tune-up now beats a breakdown later',
     body: [
       'Most no-heat calls in January and no-cool calls in July trace back to something a seasonal check-up would have caught. A tuned system runs quieter, lasts longer and costs less to run.',
-      'Our Comfort Plan members get a spring and a fall visit, priority scheduling when the weather turns, and a standing discount on any repair — so your home stays comfortable without you having to think about it.',
+      'Our Comfort Plan members get a spring and a fall visit, priority scheduling when the weather turns, and a standing discount on any repair, so your home stays comfortable without you having to think about it.',
     ],
     cta: { label: 'Start with a tune-up', href: '/book' },
   }),
   teamRow({
     heading: 'The people who’ll come to your door',
-    intro: 'Real techs from right here — friendly, tidy, and happy to explain what they find.',
+    intro: 'Real techs from right here: friendly, tidy, and happy to explain what they find.',
     members: [
       {
         name: 'Marcus Reyes',
@@ -364,7 +364,7 @@ const HOME = [
         role: 'Service technician',
         image: url(IMG.luis),
         alt: 'Luis Ferraro, service technician',
-        bio: 'The diagnostics whisperer — and the one you want on an emergency call when the heat’s out.',
+        bio: 'The diagnostics whisperer, and the one you want on an emergency call when the heat’s out.',
       },
     ],
   }),
@@ -384,7 +384,7 @@ const BOOK_INTRO = [
     image: url(IMG.install),
     alt: 'A technician checking a home heating and cooling system',
     title: 'Book your visit',
-    sub: 'Choose a visit to see prices and live openings, then pick a time that works — you’ll get a confirmation and a reminder before we arrive.',
+    sub: 'Choose a visit to see prices and live openings, then pick a time that works: you’ll get a confirmation and a reminder before we arrive.',
     primary: { label: 'See visits below', href: '/book' },
     overlay: 'darker',
     align: 'start',
@@ -397,7 +397,7 @@ const ABOUT = [
     alt: 'A comfortable, sunlit family living room on a mild afternoon',
     heading: 'About Evenair Heating & Cooling',
     body: [
-      'We started Evenair because comfort at home shouldn’t come with a hard sell or a mystery invoice. Heating and cooling is what keeps a house livable — and it should be handled by people who treat your home the way they’d treat their own.',
+      'We started Evenair because comfort at home shouldn’t come with a hard sell or a mystery invoice. Heating and cooling is what keeps a house livable, and it should be handled by people who treat your home the way they’d treat their own.',
       'So that’s how we run it: licensed techs, upfront prices, tidy work, and honest advice about what your system actually needs. Warm in winter, cool in summer, and no drama in between.',
     ],
     cta: { label: 'Book a visit', href: '/book' },
@@ -408,7 +408,7 @@ const ABOUT = [
     items: [
       {
         title: 'We size it right',
-        body: 'An oversized system short-cycles and an undersized one never keeps up. We measure your home and match the equipment to it — comfort you can feel, bills you’ll notice.',
+        body: 'An oversized system short-cycles and an undersized one never keeps up. We measure your home and match the equipment to it: comfort you can feel, bills you’ll notice.',
       },
       {
         title: 'We explain before we fix',
@@ -436,7 +436,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live openings and reserve your visit online — pick a time, get a confirmation, done.',
+    sub: 'See live openings and reserve your visit online. Pick a time, get a confirmation, done.',
     surface: 'muted',
     cta: { label: 'Book a visit', href: '/book' },
   }),
@@ -447,8 +447,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-hvac-comfort',
   name: 'HVAC (Comfort)',
   summary:
-    'A friendly residential HVAC site built on year-round comfort — a warm amber-heating and cool sky-blue palette on a clean warm-white ground. Installs a working booking flow: tune-ups, free install estimates, diagnostics and air-quality visits, three techs dispatched by skill with their own hours, and a maintenance-plan priority policy. Ships as "Evenair Heating & Cooling".',
-  tagline: 'A warm, friendly template for HVAC companies — book comfort visits from day one.',
+    'A friendly residential HVAC site built on year-round comfort: a warm amber-heating and cool sky-blue palette on a clean warm-white ground. Installs a working booking flow: tune-ups, free install estimates, diagnostics and air-quality visits, three techs dispatched by skill with their own hours, and a maintenance-plan priority policy. Ships as "Evenair Heating & Cooling".',
+  tagline: 'A warm, friendly template for HVAC companies. Book comfort visits from day one.',
   industry: 'HVAC',
   sortWeight: 76,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -457,9 +457,9 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Evenair Heating & Cooling — friendly year-round comfort',
+      title: 'Evenair Heating & Cooling: friendly year-round comfort',
       description:
-        'Evenair Heating & Cooling keeps your home comfortable all year — furnace and AC tune-ups, free install estimates, and honest, licensed techs. Book a visit online.',
+        'Evenair Heating & Cooling keeps your home comfortable all year: furnace and AC tune-ups, free install estimates, and honest, licensed techs. Book a visit online.',
     },
   },
   home: HOME,

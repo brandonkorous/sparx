@@ -587,8 +587,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Nori — a sushi & omakase counter",
-      "seoDescription": "Nori is a ten-seat sushi counter — omakase at six and eight-thirty, the day’s best fish handed to you a piece at a time, Tuesday through Sunday. See the menu and reserve a seat.",
+      "seoTitle": "Nori: a sushi & omakase counter",
+      "seoDescription": "Nori is a ten-seat sushi counter: omakase at six and eight-thirty, the day’s best fish handed to you a piece at a time, Tuesday through Sunday. See the menu and reserve a seat.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -759,7 +759,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "The full counter experience — twelve to sixteen courses, paced by the chef, ending on a hand roll and tamago."
+                              "The full counter experience: twelve to sixteen courses, paced by the chef, ending on a hand roll and tamago."
                             ],
                             "id": "1429995b-0265-4287-ace4-fa0f2feb9f10",
                             "ord": "a2"
@@ -930,7 +930,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Ten seats face the bar, and every piece is handed to you the moment it’s cut. Reserve online in under a minute — you’ll see live availability for both seatings, and a card hold secures your place at the counter."
+                          "Ten seats face the bar, and every piece is handed to you the moment it’s cut. Reserve online in under a minute: you’ll see live availability for both seatings, and a card hold secures your place at the counter."
                         ],
                         "id": "42a0572b-8569-440b-b546-897541fd14c6",
                         "ord": "a1"
@@ -1171,8 +1171,8 @@
       "name": "Menu",
       "kind": "singleton",
       "slug": "menu",
-      "seoTitle": "Menu — Nori",
-      "seoDescription": "See the full menu at Nori — dishes, drinks and prices — then reserve a table.",
+      "seoTitle": "Menu: Nori",
+      "seoDescription": "See the full menu at Nori (dishes, drinks and prices) then reserve a table.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1203,7 +1203,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The counter runs on omakase — the chef’s choice, in sequence. What follows is the shape of an evening and the à-la-carte pieces that fill it in. Fish changes daily; tell us about allergies and we’ll cut around them."
+                      "The counter runs on omakase: the chef’s choice, in sequence. What follows is the shape of an evening and the à-la-carte pieces that fill it in. Fish changes daily; tell us about allergies and we’ll cut around them."
                     ],
                     "id": "5663e99f-1bd6-46a3-88f4-1bf06c395afb",
                     "ord": "a1"
@@ -1263,7 +1263,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Omakase — twelve courses"],
+                                "children": ["Omakase: twelve courses"],
                                 "id": "c160a78a-fdb8-49d8-b601-7ab61d640383",
                                 "ord": "a0"
                               },
@@ -1307,7 +1307,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Omakase — sixteen courses"],
+                                "children": ["Omakase: sixteen courses"],
                                 "id": "471fc8d7-dad4-4ef9-9974-c190e8b07c09",
                                 "ord": "a0"
                               },
@@ -1328,7 +1328,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "The longer counter — more of the day’s fish, an extra sashimi course, and a second-cut of whatever’s at its peak."
+                              "The longer counter: more of the day’s fish, an extra sashimi course, and a second-cut of whatever’s at its peak."
                             ],
                             "id": "a7915422-9995-4f37-bb8b-b0fee67bd2ce",
                             "ord": "a1"
@@ -1438,7 +1438,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Akami — lean bluefin tuna"],
+                                "children": ["Akami: lean bluefin tuna"],
                                 "id": "aa100f41-af93-4895-887f-3312e7670578",
                                 "ord": "a0"
                               },
@@ -1480,7 +1480,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Chū-toro — medium fatty tuna"],
+                                "children": ["Chū-toro: medium fatty tuna"],
                                 "id": "6935be25-fee1-4065-9507-ba10b6ba3f16",
                                 "ord": "a0"
                               },
@@ -1522,7 +1522,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Hamachi — yellowtail"],
+                                "children": ["Hamachi: yellowtail"],
                                 "id": "72e2f8a8-786e-451c-b1dd-601e979bfeb7",
                                 "ord": "a0"
                               },
@@ -1564,7 +1564,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Hotate — hokkaido scallop"],
+                                "children": ["Hotate: hokkaido scallop"],
                                 "id": "42d9b74c-f201-4083-a5a5-7ccbfdd2a251",
                                 "ord": "a0"
                               },
@@ -1608,7 +1608,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Unagi — freshwater eel"],
+                                "children": ["Unagi: freshwater eel"],
                                 "id": "5eb43285-ea52-4e35-b33e-0cb73bd02072",
                                 "ord": "a0"
                               },
@@ -1652,7 +1652,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Ikura — salmon roe"],
+                                "children": ["Ikura: salmon roe"],
                                 "id": "9ed732bb-d479-4dfd-aea9-443b3d72bba2",
                                 "ord": "a0"
                               },
@@ -1715,7 +1715,7 @@
                     "tag": "p",
                     "class": "text-base leading-relaxed text-secondary",
                     "children": [
-                      "No rice, just the fish. Sold by the plate — five slices to a plate."
+                      "No rice, just the fish. Sold by the plate: five slices to a plate."
                     ],
                     "id": "129543ba-0e4a-4954-bf9c-b50270eb3629",
                     "ord": "a1"
@@ -1739,7 +1739,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Tai — sea bream"],
+                                "children": ["Tai: sea bream"],
                                 "id": "02cc57a2-ea3b-464c-8925-87ed13c4a757",
                                 "ord": "a0"
                               },
@@ -1783,7 +1783,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Saba — cured mackerel"],
+                                "children": ["Saba: cured mackerel"],
                                 "id": "49ec6d2b-859f-4247-92f3-bdeb4972d268",
                                 "ord": "a0"
                               },
@@ -1827,7 +1827,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Tako — poached octopus"],
+                                "children": ["Tako: poached octopus"],
                                 "id": "4442ad69-1def-41a5-b09e-4a6791236bbd",
                                 "ord": "a0"
                               },
@@ -1892,7 +1892,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A selection of the day, arranged by the chef — the fastest way to taste the range."
+                              "A selection of the day, arranged by the chef: the fastest way to taste the range."
                             ],
                             "id": "feed8426-64d1-49da-8759-fd9ab3812815",
                             "ord": "a1"
@@ -1979,7 +1979,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "Fatty tuna and negi, warm rice, nori kept crisp — eaten straight away."
+                              "Fatty tuna and negi, warm rice, nori kept crisp: eaten straight away."
                             ],
                             "id": "18f1482b-5fae-424e-9747-9cf6e0ec008d",
                             "ord": "a1"
@@ -2065,7 +2065,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-secondary",
                             "children": [
-                              "A rounder, familiar roll — salmon, avocado, a whisper of wasabi."
+                              "A rounder, familiar roll: salmon, avocado, a whisper of wasabi."
                             ],
                             "id": "64106680-f703-42e9-8624-443dd8f64f3d",
                             "ord": "a1"
@@ -2177,7 +2177,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Junmai — by the glass"],
+                                "children": ["Junmai: by the glass"],
                                 "id": "a97e109b-f0df-44a0-990f-4a9f25ef0f32",
                                 "ord": "a0"
                               },
@@ -2219,7 +2219,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-lg font-semibold text-base-content",
-                                "children": ["Ginjo — by the carafe"],
+                                "children": ["Ginjo: by the carafe"],
                                 "id": "4a16e405-7d30-488a-8c7a-9241371102a1",
                                 "ord": "a0"
                               },
@@ -2354,7 +2354,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Nori",
+      "seoTitle": "Book: Nori",
       "seoDescription": "See what Nori offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -2439,7 +2439,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "4b535566-b0b7-4ad5-b35d-db75bb26ce2c",
                         "ord": "a1"
@@ -2471,7 +2471,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A counter seat places a card hold to secure it — nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead."
+                              "A counter seat places a card hold to secure it. Nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead."
                             ],
                             "id": "e461b66e-5807-4483-a5ef-4b1cc2797669",
                             "ord": "a1"
@@ -2506,7 +2506,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Tables are held for 15 minutes past your seating. Plans change — just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead."
+                              "Tables are held for 15 minutes past your seating. Plans change. Just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead."
                             ],
                             "id": "17fd7a4b-48ac-4f66-861b-c2ccb5f688c2",
                             "ord": "a1"
@@ -2544,8 +2544,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Nori — the sushi counter",
-      "seoDescription": "A ten-seat omakase counter behind the old fish market — bought small and daily, rice seasoned by hand, wasabi grated to order, served at the pace it’s meant to be eaten.",
+      "seoTitle": "About Nori: the sushi counter",
+      "seoDescription": "A ten-seat omakase counter behind the old fish market: bought small and daily, rice seasoned by hand, wasabi grated to order, served at the pace it’s meant to be eaten.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2576,7 +2576,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Nori is a ten-seat sushi counter in a quiet room behind the old fish market. There is no long menu and no à-la-carte rush — you sit at the bar, the chef reads the day’s fish, and the meal comes to you a piece at a time, in the order it’s meant to be eaten."
+                      "Nori is a ten-seat sushi counter in a quiet room behind the old fish market. There is no long menu and no à-la-carte rush. You sit at the bar, the chef reads the day’s fish, and the meal comes to you a piece at a time, in the order it’s meant to be eaten."
                     ],
                     "id": "3dd2c1da-063b-4bac-a9f1-9ddd9c80be20",
                     "ord": "a1"
@@ -2586,7 +2586,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We buy small and buy daily, from a handful of suppliers we’ve worked with for years. The rice is seasoned by hand and served at body temperature; the wasabi is grated to order; the nori is kept dry until the moment it’s rolled. Little of that is visible on a plate — all of it is the point."
+                      "We buy small and buy daily, from a handful of suppliers we’ve worked with for years. The rice is seasoned by hand and served at body temperature; the wasabi is grated to order; the nori is kept dry until the moment it’s rolled. Little of that is visible on a plate. All of it is the point."
                     ],
                     "id": "ef79711a-ed26-4f65-aab6-b902cd81e049",
                     "ord": "a2"
@@ -2596,7 +2596,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The room is small on purpose, and the pace is deliberate. Book ahead — both seatings fill early at the weekend — and come a little hungry. A stool at the end of the bar is kept for walk-ins whenever one opens."
+                      "The room is small on purpose, and the pace is deliberate. Book ahead (both seatings fill early at the weekend) and come a little hungry. A stool at the end of the bar is kept for walk-ins whenever one opens."
                     ],
                     "id": "a5defe65-0296-4f63-8495-e0e037637e9b",
                     "ord": "a3"
@@ -2616,7 +2616,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Nori",
+      "seoTitle": "Visit: Nori",
       "seoDescription": "Where to find Nori, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2653,7 +2653,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Nori will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Nori will get back to you, usually the same day."
                         ],
                         "id": "af7ccd61-12e3-47c3-af3f-cf90b438e765",
                         "ord": "a1"
@@ -2934,7 +2934,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "4 Cedar Court, in the quiet room off the lane behind the old fish market. Two seatings a night, Tuesday through Sunday, at six and eight-thirty; closed Monday. The evening is by reservation — a stool at the bar is kept back for walk-ins."
+                      "4 Cedar Court, in the quiet room off the lane behind the old fish market. Two seatings a night, Tuesday through Sunday, at six and eight-thirty; closed Monday. The evening is by reservation: a stool at the bar is kept back for walk-ins."
                     ],
                     "id": "e0519ca7-c802-4795-9489-84a672cc1800",
                     "ord": "a1"

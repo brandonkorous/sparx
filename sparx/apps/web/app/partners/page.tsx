@@ -13,7 +13,7 @@ import { fetchPartners } from '@/lib/partners';
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: 'Partner Program — build your practice on sparx',
+  title: 'Partner Program: build your practice on sparx',
   description:
     'Refer clients to sparx and earn 20–30% of their first payment, plus 5% every month after on managed accounts. Your clients replace five subscriptions with one platform; your fee stays yours. No contract, no minimum. Apply in two minutes.',
   alternates: { canonical: '/partners' },
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Build your practice on sparx',
     description:
-      'Earn 20–30% of a referred client’s first payment and 5% of every month after. Informal, Registered and Certified tiers — no reseller contract, no minimum.',
+      'Earn 20–30% of a referred client’s first payment and 5% of every month after. Informal, Registered and Certified tiers: no reseller contract, no minimum.',
     url: 'https://sparx.works/partners',
     type: 'website',
   },

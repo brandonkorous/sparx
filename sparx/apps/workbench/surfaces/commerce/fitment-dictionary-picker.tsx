@@ -96,7 +96,7 @@ export function FitmentDictionaryPicker({
 
           <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-1 py-2">
             <Text className="text-sm">
-              Each of these is a full list you can use as-is or change afterwards — install one and
+              Each of these is a full list you can use as-is or change afterwards: install one and
               its entries are yours to add to, rename, or trim.
             </Text>
 
@@ -104,7 +104,7 @@ export function FitmentDictionaryPicker({
               <SearchInput
                 size="sm"
                 aria-label="Search ready-made lists"
-                placeholder="Search — vehicle, pet, phone…"
+                placeholder="Search: vehicle, pet, phone…"
                 value={search}
                 onValueChange={setSearch}
               />

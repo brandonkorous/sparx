@@ -228,7 +228,7 @@
     {
       "handle": "scheduled-maintenance",
       "name": "Scheduled maintenance",
-      "description": "Your factory service interval done to the book — fluids, filters, inspection points — with OEM-grade parts.",
+      "description": "Your factory service interval done to the book (fluids, filters, inspection points) with OEM-grade parts.",
       "durationMinutes": 90,
       "priceCents": 18000,
       "assignmentStrategy": "any_available",
@@ -251,7 +251,7 @@
     {
       "handle": "diagnostic-scan",
       "name": "Diagnostic scan",
-      "description": "Dealer-level fault-code read and live-data analysis on the factory interface — then a plain-English plan.",
+      "description": "Dealer-level fault-code read and live-data analysis on the factory interface, then a plain-English plan.",
       "durationMinutes": 60,
       "priceCents": 15000,
       "assignmentStrategy": "customer_choice",
@@ -274,7 +274,7 @@
     {
       "handle": "brake-service",
       "name": "Brake service",
-      "description": "Pads, rotors and sensors matched to your marque — measured, torqued to spec and bedded in properly.",
+      "description": "Pads, rotors and sensors matched to your marque: measured, torqued to spec and bedded in properly.",
       "durationMinutes": 120,
       "priceCents": 42000,
       "bufferAfterMin": 15,
@@ -298,7 +298,7 @@
     {
       "handle": "performance-upgrade-consult",
       "name": "Performance upgrade consult",
-      "description": "Tuning, suspension, intake or exhaust — sit down with a specialist and map a build that stays reliable. No charge.",
+      "description": "Tuning, suspension, intake or exhaust: sit down with a specialist and map a build that stays reliable. No charge.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -321,7 +321,7 @@
     {
       "handle": "oil-service",
       "name": "Oil & filter service",
-      "description": "Full-synthetic oil to your car’s exact specification and a genuine filter — reset service light included.",
+      "description": "Full-synthetic oil to your car’s exact specification and a genuine filter: reset service light included.",
       "durationMinutes": 45,
       "priceCents": 14000,
       "assignmentStrategy": "any_available",
@@ -344,7 +344,7 @@
     {
       "handle": "check-engine-diagnosis",
       "name": "Check-engine diagnosis",
-      "description": "Light on? We scan it, trace the real cause and quote the fix — the scan itself is on us.",
+      "description": "Light on? We scan it, trace the real cause and quote the fix: the scan itself is on us.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

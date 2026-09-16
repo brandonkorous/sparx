@@ -165,7 +165,7 @@ export function WholesaleOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<ShoppingCart className="size-6" aria-hidden />}
             title="Could not load your wholesale orders"
-            description="This is a problem reaching the server. Your orders are unaffected — nothing has been lost."
+            description="This is a problem reaching the server. Your orders are unaffected. Nothing has been lost."
           />
         ) : isPending ? (
           <p className="p-4 text-sm" role="status">

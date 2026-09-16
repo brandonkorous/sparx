@@ -127,7 +127,7 @@
     {
       "handle": "free-quote",
       "name": "Free quote",
-      "description": "We swing by, look at your pile and give you a flat, upfront price on the spot — no charge, no obligation, no pressure.",
+      "description": "We swing by, look at your pile and give you a flat, upfront price on the spot: no charge, no obligation, no pressure.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -144,7 +144,7 @@
     {
       "handle": "single-item-pickup",
       "name": "Single-item pickup",
-      "description": "One bulky item gone — a mattress, a couch, a treadmill or that fridge in the garage. We carry it out, you point.",
+      "description": "One bulky item gone: a mattress, a couch, a treadmill or that fridge in the garage. We carry it out, you point.",
       "durationMinutes": 30,
       "priceCents": 7900,
       "assignmentStrategy": "any_available",
@@ -161,7 +161,7 @@
     {
       "handle": "furniture-appliance-removal",
       "name": "Furniture & appliance removal",
-      "description": "Old sofas, dressers, washers, dryers and fridges hauled out of any room — up or down stairs, no scratched walls.",
+      "description": "Old sofas, dressers, washers, dryers and fridges hauled out of any room: up or down stairs, no scratched walls.",
       "durationMinutes": 60,
       "priceCents": 12900,
       "bufferAfterMin": 15,
@@ -179,7 +179,7 @@
     {
       "handle": "garage-cleanout",
       "name": "Garage cleanout",
-      "description": "A whole garage cleared in one visit — boxes, bikes, broken tools and the pile you’ve been stepping around for years.",
+      "description": "A whole garage cleared in one visit: boxes, bikes, broken tools and the pile you’ve been stepping around for years.",
       "durationMinutes": 120,
       "priceCents": 29900,
       "bufferAfterMin": 15,
@@ -197,7 +197,7 @@
     {
       "handle": "estate-cleanout-consult",
       "name": "Estate cleanout consult",
-      "description": "A full-property cleanout, handled with care. We come out, walk it with you and put together a plan and a flat price — free.",
+      "description": "A full-property cleanout, handled with care. We come out, walk it with you and put together a plan and a flat price: free.",
       "durationMinutes": 45,
       "priceCents": 0,
       "requiresApproval": true,
@@ -215,7 +215,7 @@
     {
       "handle": "construction-debris-removal",
       "name": "Construction debris removal",
-      "description": "Post-project cleanup — drywall, lumber, flooring, tile and remodel debris loaded up and hauled off so you can hand over a clean site.",
+      "description": "Post-project cleanup: drywall, lumber, flooring, tile and remodel debris loaded up and hauled off so you can hand over a clean site.",
       "durationMinutes": 120,
       "priceCents": 34900,
       "bufferAfterMin": 15,
@@ -233,7 +233,7 @@
     {
       "handle": "same-day-pickup",
       "name": "Same-day pickup",
-      "description": "Need it gone today? We dispatch the first available crew and text your arrival window — usually within a few hours.",
+      "description": "Need it gone today? We dispatch the first available crew and text your arrival window, usually within a few hours.",
       "durationMinutes": 60,
       "priceCents": 14900,
       "assignmentStrategy": "any_available",

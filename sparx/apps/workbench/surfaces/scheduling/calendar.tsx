@@ -165,7 +165,7 @@ export function CalendarSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<CalendarOff className="size-6" aria-hidden />}
           title="Could not load your diary"
-          description="This is a problem reaching the server. Nothing in your diary has changed — the bookings just could not be read just now."
+          description="This is a problem reaching the server. Nothing in your diary has changed: the bookings just could not be read just now."
           actions={
             <Button
               size="sm"

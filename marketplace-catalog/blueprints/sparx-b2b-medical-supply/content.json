@@ -5,7 +5,7 @@
     "status": "published",
     "body": {
       "title": "How to set up a clinical stockroom that never runs dry",
-      "excerpt": "An empty glove box mid-clinic stops a room cold. Here is a simple min/max system any practice can run to make sure the case is on the shelf before the last one is gone — and that every lot is traceable.",
+      "excerpt": "An empty glove box mid-clinic stops a room cold. Here is a simple min/max system any practice can run to make sure the case is on the shelf before the last one is gone, and that every lot is traceable.",
       "featuredImage": {
         "$asset": "post-stockroom"
       },
@@ -17,7 +17,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "A clinical stockroom exists to do one thing: make sure the supply is there the moment a clinician needs it. Get it wrong and a box of gloves that costs a few pounds holds up a fully booked clinic. The good news is that keeping it right does not take software or a full-time storekeeper — it takes a min/max system, labelled bins, and the discipline to follow them."
+                "text": "A clinical stockroom exists to do one thing: make sure the supply is there the moment a clinician needs it. Get it wrong and a box of gloves that costs a few pounds holds up a fully booked clinic. The good news is that keeping it right does not take software or a full-time storekeeper. It takes a min/max system, labelled bins, and the discipline to follow them."
               }
             ]
           },
@@ -38,7 +38,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "For each consumable, decide two numbers. The MIN is the reorder point — the quantity that should trigger a new order, set high enough to cover your usage over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full — enough to buy at a sensible case price without turning the shelf into dead stock or risking expiry. When stock drops to the min, you order back up to the max. That is the whole system."
+                "text": "For each consumable, decide two numbers. The MIN is the reorder point: the quantity that should trigger a new order, set high enough to cover your usage over the lead time so you never hit zero while a case is in transit. The MAX is how much you hold at full, enough to buy at a sensible case price without turning the shelf into dead stock or risking expiry. When stock drops to the min, you order back up to the max. That is the whole system."
               }
             ]
           },
@@ -59,7 +59,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Clinical stock expires, so first-in, first-out is not optional — put the newest cases at the back and pull from the front. Keep the lot number and expiry on every line you hold; if a product is ever recalled, you want to answer \"do we have any, and where is it?\" with a lookup, not an afternoon emptying cupboards. A supplier that lot-numbers its dispatch notes makes this almost automatic."
+                "text": "Clinical stock expires, so first-in, first-out is not optional. Put the newest cases at the back and pull from the front. Keep the lot number and expiry on every line you hold; if a product is ever recalled, you want to answer \"do we have any, and where is it?\" with a lookup, not an afternoon emptying cupboards. A supplier that lot-numbers its dispatch notes makes this almost automatic."
               }
             ]
           },
@@ -80,7 +80,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The lines you get through on a predictable schedule — gloves, masks, wipes, sanitiser — do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves."
+                "text": "The lines you get through on a predictable schedule (gloves, masks, wipes, sanitiser) do not need re-deciding every month. Put them on a standing order with your supplier and they arrive before you run out, priced for the volume. Reserve your attention for the exceptions, and let the boring reliable lines take care of themselves."
               }
             ]
           }
@@ -106,7 +106,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Infection control is a chain, and it is only as strong as its weakest, emptiest dispenser. A practice can have a spotless policy on paper and still slip if the sanitiser bottle by the door has been empty for a week. Getting the supplies right — the correct spec, in enough quantity, always within reach — is what turns a policy into practice."
+                "text": "Infection control is a chain, and it is only as strong as its weakest, emptiest dispenser. A practice can have a spotless policy on paper and still slip if the sanitiser bottle by the door has been empty for a week. Getting the supplies right (the correct spec, in enough quantity, always within reach) is what turns a policy into practice."
               }
             ]
           },
@@ -148,7 +148,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Not every wipe does every job. For clinical surfaces you want a wipe with a proven virucidal claim — EN 14476 against enveloped viruses is the one to look for — and a realistic contact time your team can actually keep to. Keep a canister in every room, and buy them by the case so the \"we are out of wipes\" note never appears on the whiteboard."
+                "text": "Not every wipe does every job. For clinical surfaces you want a wipe with a proven virucidal claim (EN 14476 against enveloped viruses is the one to look for) and a realistic contact time your team can actually keep to. Keep a canister in every room, and buy them by the case so the \"we are out of wipes\" note never appears on the whiteboard."
               }
             ]
           },
@@ -169,7 +169,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The quiet failure mode is running low and rationing — one canister guarded across three rooms, a sanitiser bottle nursed to the last drop. Buy infection-control consumables by the case at trade pricing and they are always there, always in date, and never the thing standing between a clinician and a clean, safe room."
+                "text": "The quiet failure mode is running low and rationing. One canister guarded across three rooms, a sanitiser bottle nursed to the last drop. Buy infection-control consumables by the case at trade pricing and they are always there, always in date, and never the thing standing between a clinician and a clean, safe room."
               }
             ]
           }
@@ -183,7 +183,7 @@
     "status": "published",
     "body": {
       "title": "Choosing gloves and PPE your team will actually wear",
-      "excerpt": "PPE only protects people if it fits, holds up, and is always in the drawer. Here is how to spec gloves and masks a clinical team keeps on — and buy them so you never have to ration.",
+      "excerpt": "PPE only protects people if it fits, holds up, and is always in the drawer. Here is how to spec gloves and masks a clinical team keeps on, and buy them so you never have to ration.",
       "featuredImage": {
         "$asset": "post-ppe"
       },
@@ -195,7 +195,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The best PPE is the set your team does not fight against. Plenty of practices buy protection so thin, so ill-fitting or so scarce that people work around it — and then wonder why compliance slips. Spec it right and buy it in volume, and the safe choice becomes the easy one."
+                "text": "The best PPE is the set your team does not fight against. Plenty of practices buy protection so thin, so ill-fitting or so scarce that people work around it, and then wonder why compliance slips. Spec it right and buy it in volume, and the safe choice becomes the easy one."
               }
             ]
           },
@@ -216,7 +216,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "For general examination and treatment, a 4-mil powder-free nitrile glove is the everyday standard — strong enough to resist tears and hold up to alcohol and fluids, thin enough to keep the tactile feel a clinician needs. Powder-free avoids contamination and reactions, and getting the SIZE right matters more than people admit: a glove too big snags and slips, one too small tears at the knuckle. Stock small through extra-large so nobody is stuck with the wrong fit."
+                "text": "For general examination and treatment, a 4-mil powder-free nitrile glove is the everyday standard: strong enough to resist tears and hold up to alcohol and fluids, thin enough to keep the tactile feel a clinician needs. Powder-free avoids contamination and reactions, and getting the SIZE right matters more than people admit: a glove too big snags and slips, one too small tears at the knuckle. Stock small through extra-large so nobody is stuck with the wrong fit."
               }
             ]
           },
@@ -237,7 +237,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "For clinical procedures where splash is a risk, a Type IIR fluid-resistant mask tested to EN 14683 is the benchmark — three-ply, with a nose wire that actually seals and ear loops that do not pinch through a shift. Keep the reception and treatment rooms stocked from the same box, and replace masks freely rather than stretching one across a morning."
+                "text": "For clinical procedures where splash is a risk, a Type IIR fluid-resistant mask tested to EN 14683 is the benchmark: three-ply, with a nose wire that actually seals and ear loops that do not pinch through a shift. Keep the reception and treatment rooms stocked from the same box, and replace masks freely rather than stretching one across a morning."
               }
             ]
           },
@@ -258,7 +258,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The failure mode is always the same — a single box guarded like gold, protection made scarce by the purchasing, not the policy. Buy gloves and masks by the case at trade pricing and they are always there, always fresh, and never the reason a corner gets cut on a busy day."
+                "text": "The failure mode is always the same: a single box guarded like gold, protection made scarce by the purchasing, not the policy. Buy gloves and masks by the case at trade pricing and they are always there, always fresh, and never the reason a corner gets cut on a busy day."
               }
             ]
           }

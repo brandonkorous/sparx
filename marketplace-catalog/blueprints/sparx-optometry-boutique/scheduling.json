@@ -240,7 +240,7 @@
     {
       "handle": "comprehensive-exam",
       "name": "Comprehensive eye exam",
-      "description": "A full vision and eye-health exam with digital retinal imaging — the one that keeps your prescription and your eyes in check.",
+      "description": "A full vision and eye-health exam with digital retinal imaging: the one that keeps your prescription and your eyes in check.",
       "durationMinutes": 45,
       "priceCents": 12000,
       "bufferAfterMin": 10,
@@ -264,7 +264,7 @@
     {
       "handle": "contact-lens-exam",
       "name": "Contact lens exam & fitting",
-      "description": "Everything in the eye exam, plus a fitting and trial lenses — for new wearers or a fresh contact prescription.",
+      "description": "Everything in the eye exam, plus a fitting and trial lenses, for new wearers or a fresh contact prescription.",
       "durationMinutes": 60,
       "priceCents": 15000,
       "bufferAfterMin": 10,
@@ -288,7 +288,7 @@
     {
       "handle": "eyewear-styling",
       "name": "Eyewear styling session",
-      "description": "Sit down with a stylist and try the studio — we’ll pull frames for your face, coloring and how you live, no pressure to buy.",
+      "description": "Sit down with a stylist and try the studio: we’ll pull frames for your face, coloring and how you live, no pressure to buy.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -305,7 +305,7 @@
     {
       "handle": "lens-consultation",
       "name": "Premium lens consultation",
-      "description": "A short sit-down on lenses — thinner high-index, anti-glare, blue-light and progressive options — so your pair works as hard as it looks.",
+      "description": "A short sit-down on lenses (thinner high-index, anti-glare, blue-light and progressive options) so your pair works as hard as it looks.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -322,7 +322,7 @@
     {
       "handle": "frame-trunk-show-appointment",
       "name": "Trunk show appointment",
-      "description": "A private slot during a visiting designer trunk show — first look at the new collection with a stylist to guide you.",
+      "description": "A private slot during a visiting designer trunk show: first look at the new collection with a stylist to guide you.",
       "durationMinutes": 60,
       "priceCents": 0,
       "requiresApproval": true,
@@ -340,7 +340,7 @@
     {
       "handle": "adjustment-repair",
       "name": "Adjustment & minor repair",
-      "description": "Frames feeling loose or crooked? Drop in for a professional adjustment, nose-pad swap or minor repair — quick and on us.",
+      "description": "Frames feeling loose or crooked? Drop in for a professional adjustment, nose-pad swap or minor repair: quick and on us.",
       "durationMinutes": 20,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -357,7 +357,7 @@
     {
       "handle": "second-pair-styling",
       "name": "Second-pair styling",
-      "description": "You’ve got the everyday pair — now the sunglasses, the reading pair or the bold one. A focused session for your next frame.",
+      "description": "You’ve got the everyday pair. Now the sunglasses, the reading pair or the bold one. A focused session for your next frame.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",

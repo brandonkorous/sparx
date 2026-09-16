@@ -252,7 +252,7 @@ export function InventorySetupSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Text className="text-sm">
                   What we aim for. {data?.timing.withinTarget === true ? 'You beat it.' : null}
                   {data?.timing.withinTarget === false
-                    ? 'This one took longer — tell us where it dragged.'
+                    ? 'This one took longer. Tell us where it dragged.'
                     : null}
                 </Text>
               </div>
@@ -265,7 +265,7 @@ export function InventorySetupSurface({ ctx }: { ctx: SurfaceContext }) {
                   <AlertDescription>
                     Every step is settled.{' '}
                     {data.skippedCount > 0
-                      ? `${plural(data.skippedCount, 'step was', 'steps were')} skipped — you can come back to ${data.skippedCount === 1 ? 'it' : 'them'} at any point.`
+                      ? `${plural(data.skippedCount, 'step was', 'steps were')} skipped: you can come back to ${data.skippedCount === 1 ? 'it' : 'them'} at any point.`
                       : 'Nothing was skipped.'}
                   </AlertDescription>
                 </AlertContent>

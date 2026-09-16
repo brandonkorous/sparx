@@ -30,7 +30,7 @@ function draftConfirm(itemCount: number, orderCount: number) {
       orderCount,
       'draft order',
       'draft orders'
-    )}, grouped by supplier and location. Nothing is ordered yet — a draft is yours to check, change, or discard before you send it to the supplier.`,
+    )}, grouped by supplier and location. Nothing is ordered yet: a draft is yours to check, change, or discard before you send it to the supplier.`,
     confirmLabel: 'Create drafts',
     cancelLabel: 'Not yet',
     color: 'module' as const,
@@ -52,7 +52,7 @@ function draftedToast(result: DraftReorderResult) {
   return {
     title: `${plural(result.count, 'draft order', 'draft orders')} created`,
     description: numbers
-      ? `${numbers} — find them under Purchase orders to review and send.`
+      ? `${numbers}. Find them under Purchase orders to review and send.`
       : 'Find them under Purchase orders to review and send.',
     type: 'success' as const,
   };

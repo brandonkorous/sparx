@@ -239,7 +239,7 @@ const getDropshipMarginReport: McpToolDefinition = {
 const getMargin: McpToolDefinition = {
   name: 'get_margin',
   description:
-    "Current cost, price, and margin breakdown for one variant — profit, margin % (profit/price) and markup % (profit/cost) as 0–1 fractions, plus the markup rule it's derived from, if any.",
+    "Current cost, price, and margin breakdown for one variant: profit, margin % (profit/price) and markup % (profit/cost) as 0–1 fractions, plus the markup rule it's derived from, if any.",
   scope: 'read:commerce',
   confirmation: false,
   input: z.object({ variantId: z.string().uuid() }),
@@ -292,7 +292,7 @@ const getChannelRevenue: McpToolDefinition = {
 const getChannelComparison: McpToolDefinition = {
   name: 'get_channel_comparison',
   description:
-    'Revenue compared across every sales channel for a date range — each native channel and each connected marketplace (TikTok Shop, Etsy, …) as its own line with gross, fees, net, orders, AOV, and share of total. Range defaults to the last 30 days.',
+    'Revenue compared across every sales channel for a date range. Each native channel and each connected marketplace (TikTok Shop, Etsy, …) as its own line with gross, fees, net, orders, AOV, and share of total. Range defaults to the last 30 days.',
   scope: 'read:commerce',
   confirmation: false,
   input: z.object({ range: OptionalDateRange }),
@@ -307,7 +307,7 @@ const getChannelComparison: McpToolDefinition = {
 const getSalesByTrafficSource: McpToolDefinition = {
   name: 'get_sales_by_traffic_source',
   description:
-    "Revenue and order count by the traffic source that produced each sale — search engines, social media, other websites, or direct — over a date range, each with its share of total. Includes an explicit 'unattributed' bucket for sales with no matching same-day web visit (staff, B2B, phone/POS, subscription renewal, or a visit on a different day), plus a count of orders in the window placed before attribution tracking existed. This is the answer to 'which of the things I do actually makes money'. Range defaults to the last 30 days.",
+    "Revenue and order count by the traffic source that produced each sale (search engines, social media, other websites, or direct) over a date range, each with its share of total. Includes an explicit 'unattributed' bucket for sales with no matching same-day web visit (staff, B2B, phone/POS, subscription renewal, or a visit on a different day), plus a count of orders in the window placed before attribution tracking existed. This is the answer to 'which of the things I do actually makes money'. Range defaults to the last 30 days.",
   scope: 'read:commerce',
   confirmation: false,
   input: z.object({ range: OptionalDateRange }),

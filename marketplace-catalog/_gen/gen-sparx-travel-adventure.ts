@@ -135,7 +135,7 @@ const SCHEDULING = {
       cancellationWindowHours: 48,
       reminderOffsetsMin: [2880, 120],
       policyText:
-        'Free to book, free to change — just give us at least 48 hours’ notice to reschedule or cancel your consultation. We’ll send a reminder two days before and again two hours ahead.',
+        'Free to book, free to change. Just give us at least 48 hours’ notice to reschedule or cancel your consultation. We’ll send a reminder two days before and again two hours ahead.',
     },
     {
       handle: 'planning-deposit',
@@ -187,7 +187,7 @@ const SCHEDULING = {
       handle: 'custom-adventure-consult',
       name: 'Custom adventure planning',
       description:
-        'A deep dive into a one-of-a-kind trip built around you — routing, timing, budget and the details that make it yours. For travelers who know roughly where, not exactly how.',
+        'A deep dive into a one-of-a-kind trip built around you: routing, timing, budget and the details that make it yours. For travelers who know roughly where, not exactly how.',
       durationMinutes: 60,
       priceCents: 7500,
       assignmentStrategy: 'customer_choice',
@@ -198,7 +198,7 @@ const SCHEDULING = {
       handle: 'trekking-trip-consult',
       name: 'Trekking & hiking consult',
       description:
-        'Plan a multi-day trek — Patagonia, the Alps, Nepal, the Andes. We’ll match the route to your fitness, sort permits and huts, and get the logistics off your plate.',
+        'Plan a multi-day trek: Patagonia, the Alps, Nepal, the Andes. We’ll match the route to your fitness, sort permits and huts, and get the logistics off your plate.',
       durationMinutes: 45,
       priceCents: 5000,
       assignmentStrategy: 'customer_choice',
@@ -220,7 +220,7 @@ const SCHEDULING = {
       handle: 'dive-trip-consult',
       name: 'Dive trip consult',
       description:
-        'From liveaboards to reef-side lodges — plan a dive trip matched to your certification and the marine life on your list, with the timing that gives you the best water.',
+        'From liveaboards to reef-side lodges: plan a dive trip matched to your certification and the marine life on your list, with the timing that gives you the best water.',
       durationMinutes: 45,
       priceCents: 5000,
       assignmentStrategy: 'customer_choice',
@@ -231,7 +231,7 @@ const SCHEDULING = {
       handle: 'expedition-cruise-consult',
       name: 'Expedition cruise consult',
       description:
-        'Antarctica, the Arctic, the Galápagos and beyond — choose the right ship, cabin and departure, and understand exactly what a small-ship expedition is really like.',
+        'Antarctica, the Arctic, the Galápagos and beyond. Choose the right ship, cabin and departure, and understand exactly what a small-ship expedition is really like.',
       durationMinutes: 60,
       priceCents: 7500,
       assignmentStrategy: 'customer_choice',
@@ -258,7 +258,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A hiker on a ridgeline above a wide mountain valley at sunrise',
     title: 'Go further than the guidebook',
-    sub: 'Trekking, safaris, dive trips and expedition cruises — planned one-to-one by people who’ve been there, so all you have to do is show up and go.',
+    sub: 'Trekking, safaris, dive trips and expedition cruises: planned one-to-one by people who’ve been there, so all you have to do is show up and go.',
     primary: { label: 'Plan your adventure', href: '/book' },
     secondary: { label: 'See how it works', href: '/book' },
     overlay: 'darker',
@@ -267,29 +267,29 @@ const HOME = [
     items: [
       {
         title: 'Real adventure specialists',
-        body: 'You plan with someone who has actually walked the pass, dived the reef or tracked the migration — not a call-center script reading from the same brochure.',
+        body: 'You plan with someone who has actually walked the pass, dived the reef or tracked the migration, not a call-center script reading from the same brochure.',
       },
       {
         title: 'Small groups & solo, both',
-        body: 'Travelling alone, as a couple or with a whole crew, we build the trip around your pace and your people — never a bus of forty strangers.',
+        body: 'Travelling alone, as a couple or with a whole crew, we build the trip around your pace and your people, never a bus of forty strangers.',
       },
       {
         title: 'Responsible & local',
-        body: 'We work with local guides, camps and operators who look after the places we send you — so your trip leaves them better, not busier.',
+        body: 'We work with local guides, camps and operators who look after the places we send you, so your trip leaves them better, not busier.',
       },
       {
         title: 'Logistics handled',
-        body: 'Permits, transfers, gear lists, altitude, timing the seasons — the hundred fiddly details are ours to sort. You get the adventure without the admin.',
+        body: 'Permits, transfers, gear lists, altitude, timing the seasons: the hundred fiddly details are ours to sort. You get the adventure without the admin.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Where do you want to go?',
-    intro: 'Every trip starts with a conversation. Book a consult below — the discovery call is on us — and we’ll take it from there. Full details and live times are on the booking page.',
+    intro: 'Every trip starts with a conversation. Book a consult below (the discovery call is on us) and we’ll take it from there. Full details and live times are on the booking page.',
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Discovery call', priceCents: 0, durationMin: 30, desc: 'Free — talk it through, find your next step.' },
+      { name: 'Discovery call', priceCents: 0, durationMin: 30, desc: 'Free: talk it through, find your next step.' },
       { name: 'Custom adventure planning', priceCents: 7500, durationMin: 60, desc: 'A one-of-a-kind trip built around you.' },
       { name: 'Trekking & hiking', priceCents: 5000, durationMin: 45, desc: 'Multi-day treks, permits and huts sorted.' },
       { name: 'Safari & wildlife', priceCents: 5000, durationMin: 45, desc: 'Camps and guides we know on the ground.' },
@@ -313,22 +313,22 @@ const HOME = [
     alt: 'A specialist marking a route on a map spread over a trailhead table',
     heading: 'How we plan an adventure',
     body: [
-      'It starts with a real conversation — where you’re dreaming of, when you can go, how hard you want to push and what would make the trip unforgettable for you.',
+      'It starts with a real conversation: where you’re dreaming of, when you can go, how hard you want to push and what would make the trip unforgettable for you.',
       'Then your specialist builds the route: the right season, the right guides, the logistics that make a big trip feel effortless. You review, we refine, and only when it’s exactly right do you book.',
     ],
     cta: { label: 'Start with a discovery call', href: '/book' },
   }),
   teamRow({
     heading: 'Meet your specialists',
-    intro: 'Book by name — you’ll plan with the person whose corner of the world you’re headed to.',
+    intro: 'Book by name: you’ll plan with the person whose corner of the world you’re headed to.',
     members: [
       { name: 'Marisol Vega', role: 'Trekking & safari', image: url(IMG.marisol), alt: 'Marisol Vega, trekking & safari specialist', bio: 'Twelve seasons across the Andes and East Africa. Marisol plans treks and safaris that push just far enough.' },
       { name: 'Desmond Okoye', role: 'Dive & expedition cruise', image: url(IMG.desmond), alt: 'Desmond Okoye, dive & expedition-cruise specialist', bio: 'A divemaster and polar-ship veteran who knows which reefs and which departures are actually worth it.' },
-      { name: 'Priya Anand', role: 'High-altitude & expedition', image: url(IMG.priya), alt: 'Priya Anand, high-altitude & expedition specialist', bio: 'Himalayan permits, acclimatisation and remote logistics — the higher and harder the trip, the more she’s in her element.' },
+      { name: 'Priya Anand', role: 'High-altitude & expedition', image: url(IMG.priya), alt: 'Priya Anand, high-altitude & expedition specialist', bio: 'Himalayan permits, acclimatisation and remote logistics: the higher and harder the trip, the more she’s in her element.' },
     ],
   }),
   testimonial({
-    quote: 'They planned the Kilimanjaro climb I’d been putting off for a decade — every permit, every campsite, the perfect week to go. I summited at sunrise and cried. Best trip of my life, zero stress getting there.',
+    quote: 'They planned the Kilimanjaro climb I’d been putting off for a decade: every permit, every campsite, the perfect week to go. I summited at sunrise and cried. Best trip of my life, zero stress getting there.',
     attribution: 'Daniel R., climbed with Trailhead in 2024',
     surface: 'primary',
   }),
@@ -357,8 +357,8 @@ const ABOUT = [
     alt: 'A hiker on a ridgeline above a wide mountain valley at sunrise',
     heading: 'About Trailhead Travel',
     body: [
-      'We started Trailhead because the best trips of our lives were never the ones we booked off a shelf — they were the ones someone who’d been there helped us build. So that’s what we do, all day: plan real adventures for people who want more than a package.',
-      'We’re travellers first. Between us we’ve trekked the big passes, dived the far reefs, tracked the migration and sailed to both poles. That first-hand knowledge is the whole point — it’s the difference between a trip that works and a trip you’ll never forget.',
+      'We started Trailhead because the best trips of our lives were never the ones we booked off a shelf. They were the ones someone who’d been there helped us build. So that’s what we do, all day: plan real adventures for people who want more than a package.',
+      'We’re travellers first. Between us we’ve trekked the big passes, dived the far reefs, tracked the migration and sailed to both poles. That first-hand knowledge is the whole point: it’s the difference between a trip that works and a trip you’ll never forget.',
     ],
     cta: { label: 'Book a discovery call', href: '/book' },
   }),
@@ -366,7 +366,7 @@ const ABOUT = [
     surface: 'muted',
     heading: 'What you can count on',
     items: [
-      { title: 'We’ve been there', body: 'Every specialist plans in the region they know first-hand — not from a brochure, from boots on the ground.' },
+      { title: 'We’ve been there', body: 'Every specialist plans in the region they know first-hand, not from a brochure, from boots on the ground.' },
       { title: 'Built around you', body: 'Your pace, your budget, your must-dos. We shape the trip to fit, then refine it until it’s exactly right.' },
       { title: 'Good for the places we love', body: 'Local guides and operators, sustainable choices, and travel that gives back to the destinations we send you to.' },
     ],
@@ -386,7 +386,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'Grab a free discovery call online and see live times — no phone tag, no waiting on a callback.',
+    sub: 'Grab a free discovery call online and see live times: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Plan your adventure', href: '/book' },
   }),
@@ -397,8 +397,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-travel-adventure',
   name: 'Travel (Adventure)',
   summary:
-    'A bold, outdoorsy travel-planning site — a deep-pine palette with a sunset-orange accent and sturdy type, built for adventure and experiential trips. Installs a working booking flow: consults from a free discovery call to trekking, safari, dive and expedition-cruise planning, three adventure specialists you book by name with their own hours, and a planning-deposit policy. Ships as "Trailhead Travel", for small-group, off-the-beaten-path adventures.',
-  tagline: 'A bold, outdoorsy template for adventure travel — book planning consults online from day one.',
+    'A bold, outdoorsy travel-planning site: a deep-pine palette with a sunset-orange accent and sturdy type, built for adventure and experiential trips. Installs a working booking flow: consults from a free discovery call to trekking, safari, dive and expedition-cruise planning, three adventure specialists you book by name with their own hours, and a planning-deposit policy. Ships as "Trailhead Travel", for small-group, off-the-beaten-path adventures.',
+  tagline: 'A bold, outdoorsy template for adventure travel. Book planning consults online from day one.',
   industry: 'Travel',
   sortWeight: 15,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -407,7 +407,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Trailhead Travel — adventure & experiential trip planning',
+      title: 'Trailhead Travel: adventure & experiential trip planning',
       description:
         'Trailhead Travel plans trekking, safaris, dive trips and expedition cruises one-to-one. Book a free discovery call with an adventure specialist online.',
     },

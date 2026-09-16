@@ -30,15 +30,15 @@ export const dynamic = 'force-dynamic';
 /** The role, said the way somebody hiring a bookkeeper would say it. The
  *  platform's role KEYS are not up for reinterpretation; how they read is. */
 const ROLE_WORDS: Record<string, string> = {
-  owner: 'Owner — full run of the business',
-  admin: 'Manager — everything except billing',
-  editor: 'Editor — can add and change things',
-  builder: 'Website — the site and its pages',
-  marketing: 'Marketing — messages and campaigns',
-  support: 'Support — customers and conversations',
-  partner: 'Partners — suppliers and orders',
-  scanner: 'Stockroom — scanning and stock counts',
-  viewer: 'Viewer — can look, cannot change',
+  owner: 'Owner: full run of the business',
+  admin: 'Manager: everything except billing',
+  editor: 'Editor: can add and change things',
+  builder: 'Website: the site and its pages',
+  marketing: 'Marketing: messages and campaigns',
+  support: 'Support: customers and conversations',
+  partner: 'Partners: suppliers and orders',
+  scanner: 'Stockroom: scanning and stock counts',
+  viewer: 'Viewer: can look, cannot change',
 };
 
 const roleWords = (role: string): string => ROLE_WORDS[role] ?? role;
@@ -71,7 +71,7 @@ export default async function AcceptInvitePage({
         body={
           invite?.status === 'accepted'
             ? 'This invitation was accepted already. Sign in and you will find the business waiting.'
-            : 'Invitations last a week, and this one is past it — or it was withdrawn. Ask whoever invited you for a fresh one.'
+            : 'Invitations last a week, and this one is past it, or it was withdrawn. Ask whoever invited you for a fresh one.'
         }
       />
     );
@@ -97,13 +97,13 @@ export default async function AcceptInvitePage({
             className="w-full"
             render={<Link href={`/signup?callbackURL=${encodeURIComponent(callbackURL)}`} />}
           >
-            I&rsquo;m new — create an account
+            I&rsquo;m new: create an account
           </Button>
           {/* The one instruction that prevents the most common dead end: joining
               with a different address silently creates a second account and the
               invitation stays unaccepted. */}
           <Text className="text-sm">
-            Use <strong>{invite.email}</strong> — the invitation is tied to that address.
+            Use <strong>{invite.email}</strong>: the invitation is tied to that address.
           </Text>
         </div>
       </InviteFrame>

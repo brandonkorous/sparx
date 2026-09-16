@@ -331,7 +331,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -759,8 +759,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Volume Books — a modern bookshop with the good stuff up front",
-      "seoDescription": "Volume is a bright, contemporary bookshop — new releases, fiction and nonfiction, books for young readers, and a monthly reading subscription. The best of what we read, faced out, with a note on why.",
+      "seoTitle": "Volume Books: a modern bookshop with the good stuff up front",
+      "seoDescription": "Volume is a bright, contemporary bookshop: new releases, fiction and nonfiction, books for young readers, and a monthly reading subscription. The best of what we read, faced out, with a note on why.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -808,7 +808,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Volume is a modern bookshop for people who love a great cover and an even better story. We read widely, put the best of it face-out, and make it dead simple to find your next favourite — no snobbery, no overwhelm."
+                          "Volume is a modern bookshop for people who love a great cover and an even better story. We read widely, put the best of it face-out, and make it dead simple to find your next favourite: no snobbery, no overwhelm."
                         ],
                         "id": "b0d442d7-094b-4e55-8d84-5a9ac6c1aa52",
                         "ord": "a1"
@@ -1265,7 +1265,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every book on our front table has been read by someone on the team, with a one-line note that tells you exactly who it’s for. It’s the modern version of asking a friend with great taste — quick, honest, and almost always right."
+                          "Every book on our front table has been read by someone on the team, with a one-line note that tells you exactly who it’s for. It’s the modern version of asking a friend with great taste: quick, honest, and almost always right."
                         ],
                         "id": "56220c51-ce27-40dd-8d9c-e79c78e84f32",
                         "ord": "a1"
@@ -1745,7 +1745,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tell us what you’re into and the Volume subscription does the rest: one hand-picked book on your doorstep each month, wrapped, with a note on why we chose it. Pause, swap or cancel whenever — no lock-in, ever."
+                          "Tell us what you’re into and the Volume subscription does the rest: one hand-picked book on your doorstep each month, wrapped, with a note on why we chose it. Pause, swap or cancel whenever, no lock-in, ever."
                         ],
                         "id": "9c7598ba-a86f-43b6-939b-5260d34ab509",
                         "ord": "a1"
@@ -1780,7 +1780,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Volume Books",
+      "seoTitle": "Shop: Volume Books",
       "seoDescription": "Browse everything Volume Books makes, with prices and options at a glance. Modern bookshop.",
       "root": {
         "kind": "element",
@@ -1812,7 +1812,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything on the shelves right now — new releases, fiction, nonfiction and books for young readers, plus a few good things for the readers in your life. Filter by shelf or sort however you like; the covers do a lot of the talking."
+                      "Everything on the shelves right now: new releases, fiction, nonfiction and books for young readers, plus a few good things for the readers in your life. Filter by shelf or sort however you like; the covers do a lot of the talking."
                     ],
                     "id": "4e6e7578-d59f-401a-8743-e43aa57ae275",
                     "ord": "a1"
@@ -1840,7 +1840,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Volume Books",
+      "seoTitle": "Collections: Volume Books",
       "seoDescription": "Explore the collections at Volume Books, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1872,7 +1872,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The books grouped the way we actually display them — just-landed new releases, the team’s current picks, the fiction and nonfiction shelves, the kids’ corner, and gifts for readers."
+                      "The books grouped the way we actually display them. Just-landed new releases, the team’s current picks, the fiction and nonfiction shelves, the kids’ corner, and gifts for readers."
                     ],
                     "id": "e2c74b39-b981-437e-bebf-be7ef8d6f08f",
                     "ord": "a1"
@@ -1900,7 +1900,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Volume Books",
+      "seoTitle": "Your cart: Volume Books",
       "seoDescription": "Review what is in your cart and check out securely at Volume Books.",
       "root": {
         "kind": "element",
@@ -1932,7 +1932,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free shipping over $40, and we’ll gift-wrap anything for free — just say so in the notes. Orders are packed by hand at the shop, usually the same day, and always with care."
+                      "Free shipping over $40, and we’ll gift-wrap anything for free. Just say so in the notes. Orders are packed by hand at the shop, usually the same day, and always with care."
                     ],
                     "id": "8ec9d5c3-ca46-4926-96ed-1d8615621660",
                     "ord": "a1"
@@ -1960,7 +1960,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Volume Books",
+      "seoTitle": "Search: Volume Books",
       "seoDescription": "Search Volume Books for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1992,7 +1992,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "After a specific title, author or subject? Search the whole shop and the journal below — and if we haven’t got it in, we can almost always order it for you."
+                      "After a specific title, author or subject? Search the whole shop and the journal below, and if we haven’t got it in, we can almost always order it for you."
                     ],
                     "id": "b7563e14-d262-412e-86e6-454aabf9dd08",
                     "ord": "a1"
@@ -2020,7 +2020,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Volume Books",
+      "seoTitle": "Journal: Volume Books",
       "seoDescription": "Stories, guides and notes from Volume Books.",
       "root": {
         "kind": "element",
@@ -2052,7 +2052,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "What we’re reading, reading lists worth keeping, and the odd honest take on the book world — written by the people who put the covers face-out. Short, useful, no homework."
+                      "What we’re reading, reading lists worth keeping, and the odd honest take on the book world: written by the people who put the covers face-out. Short, useful, no homework."
                     ],
                     "id": "852f90c5-1a32-4d5b-8d68-dcdf3875c2b9",
                     "ord": "a1"
@@ -2186,7 +2186,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Volume Books",
-      "seoDescription": "How Volume chooses and displays books — small presses and big houses alike, the best of what we read faced out, and a real recommendation on everything, with none of the overwhelm.",
+      "seoDescription": "How Volume chooses and displays books: small presses and big houses alike, the best of what we read faced out, and a real recommendation on everything, with none of the overwhelm.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2217,7 +2217,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Volume started with a simple frustration: brilliant books, buried spine-out on crowded shelves, impossible to find unless you already knew to look. So we built the opposite — a bright, uncluttered shop where the best of what we read faces out, with a plain note on who it’s for and why it’s worth your time."
+                      "Volume started with a simple frustration: brilliant books, buried spine-out on crowded shelves, impossible to find unless you already knew to look. So we built the opposite, a bright, uncluttered shop where the best of what we read faces out, with a plain note on who it’s for and why it’s worth your time."
                     ],
                     "id": "1b0e052f-fb36-4cdb-b4c5-368c90499457",
                     "ord": "a1"
@@ -2237,7 +2237,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "No overwhelm, no gatekeeping, no book we couldn’t tell you something true about. Just a well-lit room full of things worth reading — and someone on hand who’s read them."
+                      "No overwhelm, no gatekeeping, no book we couldn’t tell you something true about. Just a well-lit room full of things worth reading, and someone on hand who’s read them."
                     ],
                     "id": "9e33c3b1-e99a-4345-a1f4-d79539fc82a8",
                     "ord": "a3"
@@ -2257,8 +2257,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Volume Books",
-      "seoDescription": "Get in touch with Volume Books — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Volume Books",
+      "seoDescription": "Get in touch with Volume Books: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2294,7 +2294,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Chasing a title, planning an event, or stuck on a gift for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back — recommending books is genuinely our favourite part."
+                          "Chasing a title, planning an event, or stuck on a gift for someone impossible to buy for? Tell us what you’re after and a real bookseller will write back: recommending books is genuinely our favourite part."
                         ],
                         "id": "ce66a93a-0722-48e6-bee1-2bf41a2496cd",
                         "ord": "a1"
@@ -2565,8 +2565,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Volume Books",
-      "seoDescription": "Product details at Volume Books — modern bookshop, with options and pricing.",
+      "seoTitle": "Product: Volume Books",
+      "seoDescription": "Product details at Volume Books: modern bookshop, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2929,7 +2929,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Not sure it’s for you? Every book here comes with a real recommendation, and we’re happy to talk you into — or out of — anything. Drop a note with your order and we’ll tell you what to read next. A person, not an algorithm."
+                              "Not sure it’s for you? Every book here comes with a real recommendation, and we’re happy to talk you into (or out of) anything. Drop a note with your order and we’ll tell you what to read next. A person, not an algorithm."
                             ],
                             "id": "916e511a-7639-4ba2-b898-2f4a4f04ad04",
                             "ord": "a1"

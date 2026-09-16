@@ -7,12 +7,12 @@ import { AgenticPage } from '@/components/marketing/agentic-page';
 // metadata is hand-written rather than coming from makeMetadata('<slug>'),
 // which is keyed to ModulePageSlug.
 export const metadata: Metadata = {
-  title: 'Agentic access — your AI works your business | sparx',
+  title: 'Agentic access: your AI works your business | sparx',
   description:
-    'A first-class MCP server for your business data. Point Claude, ChatGPT, or Copilot at live orders, customers, and content — scoped, audited, and revocable. Your AI, your key, never ours.',
+    'A first-class MCP server for your business data. Point Claude, ChatGPT, or Copilot at live orders, customers, and content: scoped, audited, and revocable. Your AI, your key, never ours.',
   alternates: { canonical: 'https://sparx.works/agentic' },
   openGraph: {
-    title: 'Agentic access — your AI works your business',
+    title: 'Agentic access: your AI works your business',
     description: 'A first-class MCP server for your business data. Your AI, your key, never ours.',
     url: 'https://sparx.works/agentic',
     type: 'website',

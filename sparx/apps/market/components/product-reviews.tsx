@@ -193,7 +193,7 @@ export function ProductReviews({
               <Stars rating={summary.averageRating} reviewCount={summary.total} />
             </div>
           ) : (
-            <p className="mt-1 text-sm">No reviews yet — be the first to share your experience.</p>
+            <p className="mt-1 text-sm">No reviews yet: be the first to share your experience.</p>
           )}
         </div>
         {!writing && !submitted ? (

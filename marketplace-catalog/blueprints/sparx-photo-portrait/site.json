@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Frame & Field — a bright family & portrait studio",
+      "seoTitle": "Frame & Field: a bright family & portrait studio",
       "seoDescription": "Frame & Field is a light-filled studio for family, newborn, maternity, headshot and personal-branding photography. Book your photographer online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A light-filled studio for families, newborns, headshots and personal branding — easy to book, genuinely fun to sit for."
+                      "A light-filled studio for families, newborns, headshots and personal branding: easy to book, genuinely fun to sit for."
                     ],
                     "id": "1aab85fb-811f-4d1b-83e3-815423259127",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Sit in our airy studio or head out to the park, the beach or your own front room — whatever feels most like you."
+                              "Sit in our airy studio or head out to the park, the beach or your own front room: whatever feels most like you."
                             ],
                             "id": "019774fd-5cbe-4e01-b897-a17f893c841c",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Short, bright sittings a few times a year — an easy way to keep up with how fast everyone’s growing."
+                              "Short, bright sittings a few times a year: an easy way to keep up with how fast everyone’s growing."
                             ],
                             "id": "8369107a-6bc4-4856-b7ab-8b1bddf0be5e",
                             "ord": "a1"
@@ -1300,7 +1300,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Frame & Field is a bright, window-lit studio built to feel relaxed — space for kids to be kids, room to move, and no stiff “say cheese” energy."
+                          "Frame & Field is a bright, window-lit studio built to feel relaxed: space for kids to be kids, room to move, and no stiff “say cheese” energy."
                         ],
                         "id": "8a835b5e-e3ff-4ffe-96d8-8dac0edf27ca",
                         "ord": "a1"
@@ -1375,7 +1375,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with someone who loves exactly the kind of session you’re after."
+                          "Book by name: you’ll work with someone who loves exactly the kind of session you’re after."
                         ],
                         "id": "f788bce0-5720-4dd7-999a-838b9847c6d8",
                         "ord": "a1"
@@ -1659,7 +1659,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Frame & Field",
+      "seoTitle": "Book: Frame & Field",
       "seoDescription": "See what Frame & Field offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1783,7 +1783,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "ac3687f6-27b5-4f1a-898c-92e8411753aa",
                         "ord": "a1"
@@ -1890,7 +1890,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Frame & Field",
+      "seoTitle": "About: Frame & Field",
       "seoDescription": "Who Frame & Field is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1939,7 +1939,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Frame & Field to make portrait photography feel light — bright rooms, real laughter, and none of the stiff, awkward posing most people dread."
+                          "We started Frame & Field to make portrait photography feel light: bright rooms, real laughter, and none of the stiff, awkward posing most people dread."
                         ],
                         "id": "96aa4cc8-e275-46f9-995b-045a8e112978",
                         "ord": "a1"
@@ -2027,7 +2027,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Start with a quick consultation — we’ll talk outfits, timing, location and the feeling you want the photos to have."
+                              "Start with a quick consultation: we’ll talk outfits, timing, location and the feeling you want the photos to have."
                             ],
                             "id": "6a0e4513-b002-4658-b1df-70d7d40ecc47",
                             "ord": "a1"
@@ -2109,7 +2109,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Frame & Field",
+      "seoTitle": "Visit: Frame & Field",
       "seoDescription": "Where to find Frame & Field, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2146,7 +2146,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Frame & Field will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Frame & Field will get back to you, usually the same day."
                         ],
                         "id": "329b2ab9-1584-4936-93e8-78799f68ef6f",
                         "ord": "a1"
@@ -2571,7 +2571,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your session online — no phone tag."
+                      "See live availability and reserve your session online: no phone tag."
                     ],
                     "id": "529433fe-bdd8-4353-891f-9391775230f4",
                     "ord": "a1"

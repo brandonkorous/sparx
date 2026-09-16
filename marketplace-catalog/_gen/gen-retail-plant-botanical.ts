@@ -161,7 +161,7 @@ function hero(): Node {
                   text: 'Plants you can actually keep alive.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Fernwood is a small plant nursery for people who’ve killed a plant or two. We grow hardy, forgiving houseplants, match each one to the light you have, and send it with plain instructions — so the plant you order is the plant that thrives.',
+                  text: 'Fernwood is a small plant nursery for people who’ve killed a plant or two. We grow hardy, forgiving houseplants, match each one to the light you have, and send it with plain instructions, so the plant you order is the plant that thrives.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -254,7 +254,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New this week' }),
   editorialBand({
     heading: 'Matched to your light, not to a shelf',
-    lead: 'Most plants die from the wrong spot, not from neglect. Tell us whether your room is bright, medium or dim and we’ll steer you to plants that want exactly that — every listing spells out its light and how forgiving it is, in plain words.',
+    lead: 'Most plants die from the wrong spot, not from neglect. Tell us whether your room is bright, medium or dim and we’ll steer you to plants that want exactly that: every listing spells out its light and how forgiving it is, in plain words.',
     assetId: 'fern-band-care',
     cta: 'How we help you choose',
     href: '/blog/reading-the-light-in-your-home',
@@ -263,7 +263,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.category.easy-care', layout: 'carousel', heading: 'Hard to kill' }),
   editorialBand({
     heading: 'A new plant every month',
-    lead: 'The plant subscription is the easy way to slowly fill a room: pick how often, and a fresh, healthy plant arrives already matched to the light you told us about. Skip, swap or cancel any time — no lock-in, ever.',
+    lead: 'The plant subscription is the easy way to slowly fill a room: pick how often, and a fresh, healthy plant arrives already matched to the light you told us about. Skip, swap or cancel any time, no lock-in, ever.',
     assetId: 'fern-band-sub',
     cta: 'Start a subscription',
     href: '/shop/subscription',
@@ -308,7 +308,7 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Arrives ready to thrive' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'Every plant is grown on at our nursery, checked over by hand, and packed to travel — roots wrapped, leaves cushioned, and a plain-English care card in the box. Give it a week to settle into its new light before you worry about a droopy leaf.',
+                    text: 'Every plant is grown on at our nursery, checked over by hand, and packed to travel: roots wrapped, leaves cushioned, and a plain-English care card in the box. Give it a week to settle into its new light before you worry about a droopy leaf.',
                   }),
                 ],
               }),
@@ -347,11 +347,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'Shop plants',
-    'Every plant we’re growing right now — easy-care starters, bold statement plants, and the pots and tools to keep them happy. Filter by light or by how forgiving it is; every one ships potted, checked by hand, with a care card in the box.'
+    'Every plant we’re growing right now: easy-care starters, bold statement plants, and the pots and tools to keep them happy. Filter by light or by how forgiving it is; every one ships potted, checked by hand, with a care card in the box.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The plants grouped the way people actually shop — new arrivals, the beginner-proof favourites, the ones that shrug off a dim corner, and starter kits with everything a first plant needs.'),
+  pageMasthead('Collections', 'The plants grouped the way people actually shop: new arrivals, the beginner-proof favourites, the ones that shrug off a dim corner, and starter kits with everything a first plant needs.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search Fernwood', 'Looking for a particular plant, a pot size, or a care guide? Search the whole shop and the journal below.'),
@@ -363,7 +363,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Free shipping on orders over $60, and every plant travels in protective packaging with a care card inside. If it arrives unhappy, send us a photo within a week and we’ll make it right — a plant should be a joy, not a gamble.',
+            text: 'Free shipping on orders over $60, and every plant travels in protective packaging with a care card inside. If it arrives unhappy, send us a photo within a week and we’ll make it right: a plant should be a joy, not a gamble.',
           }),
         ],
       }),
@@ -377,7 +377,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Fernwood journal' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Notes from the nursery — how to water without guessing, how to read the light in your home, and when to repot. Plain, useful, no green-thumb gatekeeping.',
+            text: 'Notes from the nursery: how to water without guessing, how to read the light in your home, and when to repot. Plain, useful, no green-thumb gatekeeping.',
           }),
         ],
       }),
@@ -394,10 +394,10 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Fernwood' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Fernwood started on a windowsill and a stubborn refusal to accept that some people just “can’t keep plants alive.” Nobody is born with a green thumb — they just learn which plant suits which spot, and how little a healthy plant actually needs. We built the nursery to hand that head start to everyone else.',
+            text: 'Fernwood started on a windowsill and a stubborn refusal to accept that some people just “can’t keep plants alive.” Nobody is born with a green thumb. They just learn which plant suits which spot, and how little a healthy plant actually needs. We built the nursery to hand that head start to everyone else.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'We grow our plants on rather than drop-shipping them, so what leaves us is acclimatised, pest-checked and genuinely ready for a home. We favour the hardy and forgiving over the fussy and rare, and we tell you the truth about the light and water a plant wants — even when the honest answer is “this one isn’t for your dim hallway.”',
+            text: 'We grow our plants on rather than drop-shipping them, so what leaves us is acclimatised, pest-checked and genuinely ready for a home. We favour the hardy and forgiving over the fussy and rare, and we tell you the truth about the light and water a plant wants: even when the honest answer is “this one isn’t for your dim hallway.”',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'No jargon, no shaming, no plant older or sadder than it should be. Just healthy plants, matched to your space, with the plain guidance to keep them growing.',
@@ -415,7 +415,7 @@ const CONTACT: Node[] = [
   // `mailto:` to a placeholder domain, which was the only way to reach the business.
   contactSection({
     heading: 'Say hello',
-    intro: 'A droopy leaf you can’t diagnose, a question before you buy, or a big order for an office or a wedding? Send a photo or a note and a real person at the nursery will help — we love a plant-doctor puzzle.',
+    intro: 'A droopy leaf you can’t diagnose, a question before you buy, or a big order for an office or a wedding? Send a photo or a note and a real person at the nursery will help. We love a plant-doctor puzzle.',
     submitLabel: 'Email the nursery',
   }),
 ];
@@ -526,14 +526,14 @@ const PRODUCTS: Product[] = [
     handle: 'monstera-deliciosa',
     title: 'Monstera Deliciosa',
     description:
-      'The classic split-leaf that turns a corner into a jungle — big, glossy, dramatic leaves that fenestrate more as it grows. Fast enough to feel rewarding, tough enough to forgive a missed watering. Care level: easy. Light: bright, indirect. Water when the top inch of soil is dry.',
+      'The classic split-leaf that turns a corner into a jungle: big, glossy, dramatic leaves that fenestrate more as it grows. Fast enough to feel rewarding, tough enough to forgive a missed watering. Care level: easy. Light: bright, indirect. Water when the top inch of soil is dry.',
     price: 32,
     sku: 'FERN-MONSTERA',
     categories: ['statement'],
     collections: ['new-arrivals', 'statement-plants'],
     tags: ['statement', 'easy', 'bright-light', 'trailing'],
     asset: 'prod-monstera',
-    seoTitle: 'Monstera Deliciosa — split-leaf houseplant | Fernwood',
+    seoTitle: 'Monstera Deliciosa: split-leaf houseplant | Fernwood',
     seoDescription: 'A dramatic, easy-going monstera with big split leaves. Bright indirect light; water when the top inch is dry.',
   }),
   plant({
@@ -547,35 +547,35 @@ const PRODUCTS: Product[] = [
     collections: ['best-sellers', 'beginner-friendly', 'low-light'],
     tags: ['easy', 'low-light', 'air-purifying', 'drought-tolerant'],
     asset: 'prod-snake',
-    seoTitle: 'Snake Plant (Sansevieria) — hard-to-kill houseplant | Fernwood',
+    seoTitle: 'Snake Plant (Sansevieria): hard-to-kill houseplant | Fernwood',
     seoDescription: 'A near-indestructible snake plant that thrives on neglect. Low to bright light; water only when fully dry.',
   }),
   plant({
     handle: 'golden-pothos',
     title: 'Golden Pothos',
     description:
-      'A trailing vine that grows fast and asks for almost nothing — drape it off a shelf or train it up a wall and it just keeps going. The one that makes a beginner feel like a natural. Care level: very easy. Light: low to bright, indirect. Water when the top of the soil dries out.',
+      'A trailing vine that grows fast and asks for almost nothing: drape it off a shelf or train it up a wall and it just keeps going. The one that makes a beginner feel like a natural. Care level: very easy. Light: low to bright, indirect. Water when the top of the soil dries out.',
     price: 18,
     sku: 'FERN-POTHOS',
     categories: ['easy-care'],
     collections: ['best-sellers', 'beginner-friendly', 'low-light', 'starter-kit'],
     tags: ['easy', 'low-light', 'trailing', 'fast-growing'],
     asset: 'prod-pothos',
-    seoTitle: 'Golden Pothos — easy trailing houseplant | Fernwood',
+    seoTitle: 'Golden Pothos: easy trailing houseplant | Fernwood',
     seoDescription: 'A fast, forgiving trailing pothos that grows in almost any light. Perfect first plant.',
   }),
   plant({
     handle: 'fiddle-leaf-fig',
     title: 'Fiddle-Leaf Fig',
     description:
-      'The showpiece — tall, sculptural, with huge violin-shaped leaves that anchor a whole room. It has a reputation for drama, so we grow ours acclimatised and send it settled and steady. Care level: moderate. Light: bright, indirect, and consistent. Water when the top two inches are dry, and don’t move it around.',
+      'The showpiece: tall, sculptural, with huge violin-shaped leaves that anchor a whole room. It has a reputation for drama, so we grow ours acclimatised and send it settled and steady. Care level: moderate. Light: bright, indirect, and consistent. Water when the top two inches are dry, and don’t move it around.',
     price: 45,
     sku: 'FERN-FIDDLE',
     categories: ['statement'],
     collections: ['new-arrivals', 'statement-plants'],
     tags: ['statement', 'bright-light', 'tree', 'floor-plant'],
     asset: 'prod-fiddle',
-    seoTitle: 'Fiddle-Leaf Fig — statement floor plant | Fernwood',
+    seoTitle: 'Fiddle-Leaf Fig: statement floor plant | Fernwood',
     seoDescription: 'A tall, sculptural fiddle-leaf fig, grown acclimatised. Bright consistent light; steady watering.',
   }),
   plant({
@@ -589,21 +589,21 @@ const PRODUCTS: Product[] = [
     collections: ['beginner-friendly', 'low-light'],
     tags: ['easy', 'low-light', 'drought-tolerant', 'office'],
     asset: 'prod-zz',
-    seoTitle: 'ZZ Plant (Zamioculcas) — low-light houseplant | Fernwood',
+    seoTitle: 'ZZ Plant (Zamioculcas): low-light houseplant | Fernwood',
     seoDescription: 'A glossy, drought-tolerant ZZ plant that thrives in low light and shrugs off neglect.',
   }),
   {
     handle: 'terracotta-pot',
     title: 'Hand-Thrown Terracotta Pot',
     description:
-      'A breathable terracotta pot with a matching saucer, thrown in small runs by a local pottery. The unglazed clay wicks away excess water — the single easiest way to stop over-watering — and no two glazes on the rim are exactly alike. Fits a nursery pot straight inside, so re-potting can wait.',
+      'A breathable terracotta pot with a matching saucer, thrown in small runs by a local pottery. The unglazed clay wicks away excess water (the single easiest way to stop over-watering) and no two glazes on the rim are exactly alike. Fits a nursery pot straight inside, so re-potting can wait.',
     status: 'active',
     productType: 'Pot',
     vendor: 'Fernwood Plant Co.',
     tags: ['pots', 'terracotta', 'ceramics'],
     categoryHandles: ['pots-tools'],
     collectionHandles: ['pots-and-tools', 'starter-kit'],
-    seoTitle: 'Hand-Thrown Terracotta Pot — with saucer | Fernwood',
+    seoTitle: 'Hand-Thrown Terracotta Pot, with saucer | Fernwood',
     seoDescription: 'A breathable hand-thrown terracotta plant pot with saucer, made in small runs by a local pottery.',
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: 'Small · 4in' }, { value: 'Medium · 6in' }, { value: 'Large · 10in' }] },
@@ -619,14 +619,14 @@ const PRODUCTS: Product[] = [
     handle: 'watering-can',
     title: 'Long-Spout Watering Can',
     description:
-      'A slim brass can with a long, narrow spout that reaches under leaves and pours a slow, controlled stream — so water goes into the soil, not all over the leaves. Half a litre, the right size for a shelf of houseplants, and good-looking enough to leave out.',
+      'A slim brass can with a long, narrow spout that reaches under leaves and pours a slow, controlled stream, so water goes into the soil, not all over the leaves. Half a litre, the right size for a shelf of houseplants, and good-looking enough to leave out.',
     status: 'active',
     productType: 'Tool',
     vendor: 'Fernwood Plant Co.',
     tags: ['tools', 'watering', 'brass'],
     categoryHandles: ['pots-tools'],
     collectionHandles: ['pots-and-tools'],
-    seoTitle: 'Long-Spout Watering Can — brass, 0.5L | Fernwood',
+    seoTitle: 'Long-Spout Watering Can: brass, 0.5L | Fernwood',
     seoDescription: 'A slim brass watering can with a long narrow spout for controlled, mess-free indoor watering.',
     variants: [{ sku: 'FERN-CAN', priceCents: money(34), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-can', isPrimary: true, alt: 'A long-spout brass watering can' }],
@@ -635,14 +635,14 @@ const PRODUCTS: Product[] = [
     handle: 'plant-care-kit',
     title: 'Plant-Care Starter Kit',
     description:
-      'Everything a new plant parent actually needs and nothing they don’t — a pair of clean snips, a fine-mist sprayer, a gentle liquid plant food, and a simple soil moisture stick that ends the “is it time to water?” guesswork. Packed in a reusable box with a one-page cheat sheet.',
+      'Everything a new plant parent actually needs and nothing they don’t: a pair of clean snips, a fine-mist sprayer, a gentle liquid plant food, and a simple soil moisture stick that ends the “is it time to water?” guesswork. Packed in a reusable box with a one-page cheat sheet.',
     status: 'active',
     productType: 'Kit',
     vendor: 'Fernwood Plant Co.',
     tags: ['tools', 'kit', 'beginner', 'gift'],
     categoryHandles: ['pots-tools'],
     collectionHandles: ['pots-and-tools', 'starter-kit', 'best-sellers'],
-    seoTitle: 'Plant-Care Starter Kit — snips, mister, food & moisture stick | Fernwood',
+    seoTitle: 'Plant-Care Starter Kit: snips, mister, food & moisture stick | Fernwood',
     seoDescription: 'A beginner plant-care kit: snips, a mister, gentle plant food and a soil moisture stick, with a cheat sheet.',
     variants: [{ sku: 'FERN-KIT', priceCents: money(28), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'prod-kit', isPrimary: true, alt: 'A plant-care starter kit' }],
@@ -651,14 +651,14 @@ const PRODUCTS: Product[] = [
     handle: 'subscription',
     title: 'Monthly Plant Subscription',
     description:
-      'A healthy new plant on your doorstep every month, chosen to match the light you tell us about and to build a collection that actually works together. Pick one plant or two, tell us your room, and skip, swap or pause any time. The gentlest way to grow from one plant to a jungle. Care level: easy. Light: your choice — we match to it.',
+      'A healthy new plant on your doorstep every month, chosen to match the light you tell us about and to build a collection that actually works together. Pick one plant or two, tell us your room, and skip, swap or pause any time. The gentlest way to grow from one plant to a jungle. Care level: easy. Light: your choice. We match to it.',
     status: 'active',
     productType: 'Subscription',
     vendor: 'Fernwood Plant Co.',
     tags: ['subscription', 'gift'],
     categoryHandles: ['subscription'],
     collectionHandles: ['new-arrivals', 'best-sellers'],
-    seoTitle: 'Monthly Plant Subscription — a new plant, matched to your light | Fernwood',
+    seoTitle: 'Monthly Plant Subscription: a new plant, matched to your light | Fernwood',
     seoDescription: 'A flexible monthly plant subscription, each plant matched to your light. Skip, swap or pause any time.',
     options: [
       { name: 'Plan', displayType: 'dropdown', values: [{ value: 'One plant' }, { value: 'Two plants' }] },
@@ -756,11 +756,11 @@ const CONTENT = [
       body: {
         type: 'doc',
         content: [
-          para('If you’ve killed a plant before, we’d bet money on how it went: you loved it a little too much and watered it a little too often, the roots sat wet, and they quietly rotted while the leaves yellowed from the bottom up. Over-watering, not forgetfulness, is what kills most first houseplants — which is oddly good news, because it means doing less is usually the fix.'),
+          para('If you’ve killed a plant before, we’d bet money on how it went: you loved it a little too much and watered it a little too often, the roots sat wet, and they quietly rotted while the leaves yellowed from the bottom up. Over-watering, not forgetfulness, is what kills most first houseplants, which is oddly good news, because it means doing less is usually the fix.'),
           h2('Water the soil, not the calendar'),
           para('Throw away the idea of watering “once a week.” A plant in a bright, warm room drinks far faster than the same plant in a cool, dim one, so a fixed schedule is guaranteed to be wrong half the time. Instead, check the soil: push a finger an inch or two in. If it’s damp, wait. If it’s dry, water thoroughly until it runs out the bottom, then let it drain. That single habit prevents the great majority of plant deaths.'),
           h2('Start with a plant that forgives you'),
-          para('Skill comes with time, so stack the deck while you build it. A snake plant, a pothos or a ZZ plant will tolerate a missed watering, a dim corner and a beginner’s learning curve without complaint — and every one of them is on the shelf here, flagged “very easy.” Get one of those thriving first; the fussier plants are much easier once watering is second nature.'),
+          para('Skill comes with time, so stack the deck while you build it. A snake plant, a pothos or a ZZ plant will tolerate a missed watering, a dim corner and a beginner’s learning curve without complaint, and every one of them is on the shelf here, flagged “very easy.” Get one of those thriving first; the fussier plants are much easier once watering is second nature.'),
         ],
       },
     },
@@ -780,7 +780,7 @@ const CONTENT = [
           h2('The window test'),
           para('South-facing windows give the brightest, longest light; north-facing the softest and dimmest; east and west sit in between, one bright in the morning and the other in the afternoon. Now the shadow test: on a sunny day, hold your hand a foot above the spot you’re eyeing. A hard, crisp shadow means bright light; a soft, fuzzy one means medium; barely a shadow at all means low. That’s the reading that matters.'),
           h2('Match the plant to the spot, not the other way round'),
-          para('Don’t buy a sun-lover for a dim hallway and hope — hope is not a lighting plan. Every listing here states the light a plant actually wants in plain words, and our low-light collection is exactly the plants that genuinely cope with a north window or an interior corner. Pick for the spot you have, and the plant does the rest.'),
+          para('Don’t buy a sun-lover for a dim hallway and hope: hope is not a lighting plan. Every listing here states the light a plant actually wants in plain words, and our low-light collection is exactly the plants that genuinely cope with a north window or an interior corner. Pick for the spot you have, and the plant does the rest.'),
         ],
       },
     },
@@ -791,16 +791,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'When and how to repot a houseplant',
-      excerpt: 'Repotting isn’t a schedule — it’s a response to a plant that has outgrown its home. Here’s how to tell, and how to do it gently.',
+      excerpt: 'Repotting isn’t a schedule: it’s a response to a plant that has outgrown its home. Here’s how to tell, and how to do it gently.',
       featuredImage: { $asset: 'post-repot' },
       body: {
         type: 'doc',
         content: [
-          para('Plants don’t need repotting on a timetable, and doing it too often does more harm than good. You repot when a plant has genuinely outgrown its pot — and it will tell you, if you know the signs.'),
+          para('Plants don’t need repotting on a timetable, and doing it too often does more harm than good. You repot when a plant has genuinely outgrown its pot, and it will tell you, if you know the signs.'),
           h2('The signs it’s time'),
-          para('Roots creeping out of the drainage holes or circling the surface, water that runs straight through without soaking in, a plant that dries out a day after watering, or growth that has simply stalled in the warm months — any of these means the roots have run out of room. Most houseplants need it every year or two, in spring or summer when they’re actively growing, never in the depths of winter.'),
+          para('Roots creeping out of the drainage holes or circling the surface, water that runs straight through without soaking in, a plant that dries out a day after watering, or growth that has simply stalled in the warm months: any of these means the roots have run out of room. Most houseplants need it every year or two, in spring or summer when they’re actively growing, never in the depths of winter.'),
           h2('How to do it without stress'),
-          para('Go up just one pot size — a jump too big leaves too much wet soil around the roots, and you’re back to rot. Water the plant the day before so it slides out easily. Loosen the root ball gently, settle it into fresh potting mix at the same depth it sat before, firm it in, and water it through. Then leave it be: a repotted plant may sulk for a week while it settles, and that’s normal, not an emergency.'),
+          para('Go up just one pot size: a jump too big leaves too much wet soil around the roots, and you’re back to rot. Water the plant the day before so it slides out easily. Loosen the root ball gently, settle it into fresh potting mix at the same depth it sat before, firm it in, and water it through. Then leave it be: a repotted plant may sulk for a week while it settles, and that’s normal, not an emergency.'),
         ],
       },
     },
@@ -815,7 +815,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Plant Nursery (Botanical)',
   theme: THEME,
   summary:
-    'A complete, working shop for a houseplant nursery: a real catalogue of easy-care starters, statement plants, pots, tools and a monthly plant subscription, with categories, collections, a bespoke plant PDP and a merchandised home page. Botanical theme — soft sage ground, deep leaf green, a warm terracotta accent. A care-first, beginner-friendly voice. Shipped as Fernwood Plant Co.',
+    'A complete, working shop for a houseplant nursery: a real catalogue of easy-care starters, statement plants, pots, tools and a monthly plant subscription, with categories, collections, a bespoke plant PDP and a merchandised home page. Botanical theme, soft sage ground, deep leaf green, a warm terracotta accent. A care-first, beginner-friendly voice. Shipped as Fernwood Plant Co.',
   tagline: 'A warm, working storefront for a houseplant nursery.',
   vertical: 'retail',
   industry: 'Plant nursery',
@@ -828,14 +828,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'Fernwood Plant Co. — houseplants matched to your light',
+      title: 'Fernwood Plant Co. houseplants matched to your light',
       description:
-        'Fernwood is a plant nursery for people who’ve killed a plant or two — hardy, forgiving houseplants matched to your light, grown on and shipped with plain care instructions.',
+        'Fernwood is a plant nursery for people who’ve killed a plant or two: hardy, forgiving houseplants matched to your light, grown on and shipped with plain care instructions.',
     },
     about: {
       title: 'About Fernwood Plant Co.',
       description:
-        'How Fernwood grows, matches and ships houseplants — hardy over fussy, honest about light and water, and a plain-English care card in every box.',
+        'How Fernwood grows, matches and ships houseplants: hardy over fussy, honest about light and water, and a plain-English care card in every box.',
     },
   },
   home: HOME,

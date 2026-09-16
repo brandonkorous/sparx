@@ -155,7 +155,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
           onClick: (event) => {
             ctx.open('commerce.giftcard.detail', { id: 'new' }, { target: targetFor(event) });
           },
-          title: 'Issue a gift card — hold Shift to open alongside, Alt for a new window',
+          title: 'Issue a gift card: hold Shift to open alongside, Alt for a new window',
         }}
         views={{
           target: '/commerce/giftcards',
@@ -185,7 +185,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Icon glyph={faTicket} className="size-6" aria-hidden />}
             title="Could not load your gift cards"
-            description="Something went wrong reaching the server. It may be temporary — try again in a moment."
+            description="Something went wrong reaching the server. It may be temporary. Try again in a moment."
           />
         ) : isLoading ? (
           <PaneWaiting label="Loading gift cards…" />

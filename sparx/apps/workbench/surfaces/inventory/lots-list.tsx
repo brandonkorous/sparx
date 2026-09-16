@@ -82,7 +82,7 @@ function emptyAdvice(mode: Mode, search: string, locationName: string | null): s
     parts.push(mode === 'lots' ? 'Try part of a batch code.' : 'Try part of a serial number.');
   }
   if (locationName) {
-    parts.push(`You are only seeing what is kept at ${locationName} — switch to every location.`);
+    parts.push(`You are only seeing what is kept at ${locationName}. Switch to every location.`);
   }
   parts.push('Or widen the filters above.');
   return parts.join(' ');
@@ -181,7 +181,7 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Layers className="size-6" aria-hidden />}
           title={mode === 'lots' ? 'Could not load your batches' : 'Could not load your serials'}
-          description="This is a problem reaching the server. Your records are unaffected — they just could not be read just now."
+          description="This is a problem reaching the server. Your records are unaffected. They just could not be read just now."
         />
       );
     }
@@ -214,13 +214,13 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Layers className="size-6" aria-hidden />}
           title="No batches are being tracked yet"
-          description="A batch appears here when you book in a delivery and record its batch code — so you can later trace exactly which run a customer got, and find every unit if a run turns out to be bad."
+          description="A batch appears here when you book in a delivery and record its batch code, so you can later trace exactly which run a customer got, and find every unit if a run turns out to be bad."
         />
       ) : (
         <EmptyState
           icon={<ScanBarcode className="size-6" aria-hidden />}
           title="No serial numbers are being tracked yet"
-          description="A serial number appears here when a unit is booked in with its own number — so a single faulty unit can be traced back to the exact order it left on."
+          description="A serial number appears here when a unit is booked in with its own number, so a single faulty unit can be traced back to the exact order it left on."
         />
       );
     }

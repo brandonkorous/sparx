@@ -44,7 +44,7 @@ const emailWebhookRoutes: FastifyPluginAsync = (app) => {
       }
     } else {
       request.log.warn(
-        'MAILGUN_WEBHOOK_SIGNING_KEY unset — accepting webhook without verification (dev only)'
+        'MAILGUN_WEBHOOK_SIGNING_KEY unset: accepting webhook without verification (dev only)'
       );
     }
 

@@ -215,7 +215,7 @@ const feedbackRoutes: FastifyPluginAsync = async (app) => {
       if (recentCount >= RATE_LIMIT_MAX) {
         throw new ApiError(
           'RATE_LIMITED',
-          "You've sent a lot of feedback recently — thank you! Please try again in a little while."
+          "You've sent a lot of feedback recently, thank you! Please try again in a little while."
         );
       }
 

@@ -109,7 +109,7 @@ export function DocumentTool({ kind }: { kind: DocumentKind }) {
     documentHasContent(full)
       ? {
           lines: documentLines(full),
-          note: `Open the tool again to download the ${kind} as a PDF. Your own details are still saved in that browser, so it opens ready to go — the customer's are not, which is deliberate if you are on a shared computer.`,
+          note: `Open the tool again to download the ${kind} as a PDF. Your own details are still saved in that browser, so it opens ready to go: the customer's are not, which is deliberate if you are on a shared computer.`,
         }
       : null
   );
@@ -235,7 +235,7 @@ export function DocumentTool({ kind }: { kind: DocumentKind }) {
               label={words.number}
               hint={
                 kind === 'invoice'
-                  ? 'Unique, and never going backwards — most tax authorities expect a sequence with no gaps. Starting at 001 tells every customer you have never invoiced anybody before.'
+                  ? 'Unique, and never going backwards. Most tax authorities expect a sequence with no gaps. Starting at 001 tells every customer you have never invoiced anybody before.'
                   : 'Any format you like, as long as you can find it again when they accept.'
               }
               value={doc.number}
@@ -334,7 +334,7 @@ export function DocumentTool({ kind }: { kind: DocumentKind }) {
             </div>
             <TextField
               label="Discount %"
-              hint="Taken off before tax — tax is owed on what you actually charge."
+              hint="Taken off before tax: tax is owed on what you actually charge."
               value={String(doc.discountPercent)}
               onChange={(v) => set('discountPercent', Number(v) || 0)}
               inputMode="decimal"
@@ -491,7 +491,7 @@ export function DocumentTool({ kind }: { kind: DocumentKind }) {
               </div>
               <p className="mt-3 text-base">
                 The PDF is laid out properly with your logo, wrapped descriptions and the full
-                addresses — this is just the shape of it.
+                addresses. This is just the shape of it.
               </p>
             </CardBody>
           </Card>

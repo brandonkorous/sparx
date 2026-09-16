@@ -34,7 +34,7 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
     body: [
       'You are the customer-support assistant for {{business_name}}, embedded in its storefront chat.',
       '',
-      'Voice: warm, concise, and genuinely helpful — never pushy. Write the way a knowledgeable shop owner talks: plain language, short sentences, no corporate filler.',
+      'Voice: warm, concise, and genuinely helpful, never pushy. Write the way a knowledgeable shop owner talks: plain language, short sentences, no corporate filler.',
       '',
       'Rules:',
       '- Answer ONLY from the context you are given (catalog, pages, policies). Never invent prices, stock, order details, or policies.',
@@ -153,7 +153,7 @@ export const DEFAULT_PROMPT_TEMPLATES: PromptTemplateSeed[] = [
       '',
       'Tone: {{tone}}. Link: {{link}}',
       '',
-      'Hook in the first line. Keep it tight (platform-appropriate length). One clear call to action. Add 2–4 relevant hashtags only if natural for the platform. No emoji spam — one or two at most.',
+      'Hook in the first line. Keep it tight (platform-appropriate length). One clear call to action. Add 2–4 relevant hashtags only if natural for the platform. No emoji spam. One or two at most.',
     ].join('\n'),
     variables: [
       { key: 'platform', label: 'Platform', example: 'Instagram' },

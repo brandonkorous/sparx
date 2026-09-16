@@ -137,7 +137,7 @@ export async function createCustomField(
       throw new InventoryValidationError(
         clash.isActive
           ? `There is already a field called ${clash.label} here`
-          : `A removed field called ${clash.label} still uses that name — turn it back on instead`,
+          : `A removed field called ${clash.label} still uses that name: turn it back on instead`,
         [{ field: 'key', message: `duplicate ${key}` }]
       );
     }

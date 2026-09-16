@@ -268,7 +268,7 @@ export function startCalendarSyncLoop(
     try {
       await runCalendarSyncTick(logger);
     } catch (err) {
-      logger.error({ err }, 'calendar-sync: tick threw — will retry next interval');
+      logger.error({ err }, 'calendar-sync: tick threw, will retry next interval');
     }
     if (stopped) return;
     timer = setTimeout(() => void tick(), intervalMs);

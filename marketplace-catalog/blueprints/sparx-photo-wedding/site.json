@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Golden Hour Studio — film-inspired wedding photography",
+      "seoTitle": "Golden Hour Studio: film-inspired wedding photography",
       "seoDescription": "Golden Hour Studio is a warm, film-inspired wedding and engagement photographer. Book a free consultation with your photographer online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Warm, film-inspired wedding and engagement photography — the quiet in-between moments, the way the day actually felt, kept for good."
+                      "Warm, film-inspired wedding and engagement photography: the quiet in-between moments, the way the day actually felt, kept for good."
                     ],
                     "id": "2fbc1e2d-b857-42ea-8396-b90139d5400f",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We shoot both — the softness and grain of film for the moments that matter, digital for the light that won’t wait."
+                              "We shoot both: the softness and grain of film for the moments that matter, digital for the light that won’t wait."
                             ],
                             "id": "65429c41-3cab-4956-b205-7ceb43bb7f36",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Very little posing. We stay close, keep quiet, and let the day unfold — so what you get back is real, not arranged."
+                              "Very little posing. We stay close, keep quiet, and let the day unfold, so what you get back is real, not arranged."
                             ],
                             "id": "64f4680f-1add-4fd0-b834-5b91084dc129",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "From the first nervous morning look to the last song, we’re there for all of it — no clock-watching, no gaps."
+                              "From the first nervous morning look to the last song, we’re there for all of it: no clock-watching, no gaps."
                             ],
                             "id": "210cc636-c407-4a03-ac49-3cabfa14cee0",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every couple starts with a free consultation. Choose what fits, and we’ll take it from there — live availability is on the booking page."
+                          "Every couple starts with a free consultation. Choose what fits, and we’ll take it from there: live availability is on the booking page."
                         ],
                         "id": "0df749fd-71db-486e-8c67-88d6b5385a87",
                         "ord": "a1"
@@ -1228,7 +1228,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we work gently and stay close, following the day as it happens. You forget we’re there — and months later you open the gallery and feel it all again, exactly as it was."
+                          "So we work gently and stay close, following the day as it happens. You forget we’re there, and months later you open the gallery and feel it all again, exactly as it was."
                         ],
                         "id": "025df291-0807-49ac-9714-997f1f9eff30",
                         "ord": "a2"
@@ -1293,7 +1293,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll meet your photographer at the consultation and they’ll be with you on the day."
+                          "Book by name: you’ll meet your photographer at the consultation and they’ll be with you on the day."
                         ],
                         "id": "725db0f1-5935-4b6f-97c9-f950585092c7",
                         "ord": "a1"
@@ -1462,7 +1462,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Engagement shoots and the album room — he’ll help you turn a gallery into something you hold."
+                                  "Engagement shoots and the album room: he’ll help you turn a gallery into something you hold."
                                 ],
                                 "id": "b6047b7e-d47f-4d20-90fd-0c71df264501",
                                 "ord": "a2"
@@ -1502,7 +1502,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“We barely noticed the camera all day, and then the photos arrived and we both cried. It’s our whole wedding — the light, the nerves, the joy — exactly how it felt.”"
+                      "“We barely noticed the camera all day, and then the photos arrived and we both cried. It’s our whole wedding (the light, the nerves, the joy) exactly how it felt.”"
                     ],
                     "id": "2990f9f2-6ac3-4d1b-936f-f89fa0940ad6",
                     "ord": "a0"
@@ -1546,7 +1546,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a free consultation. Tell us about your day, meet your photographer, and see live availability — it takes about a minute."
+                      "Start with a free consultation. Tell us about your day, meet your photographer, and see live availability. It takes about a minute."
                     ],
                     "id": "1752bab4-faed-499c-8ebb-9b7142d0268d",
                     "ord": "a1"
@@ -1577,7 +1577,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Golden Hour Studio",
+      "seoTitle": "Book: Golden Hour Studio",
       "seoDescription": "See what Golden Hour Studio offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1701,7 +1701,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "79a69246-cab0-4bb0-b357-0732a7f56042",
                         "ord": "a1"
@@ -1808,7 +1808,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Golden Hour Studio",
+      "seoTitle": "About: Golden Hour Studio",
       "seoDescription": "Who Golden Hour Studio is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1857,7 +1857,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Golden Hour Studio because we believe a wedding deserves to be remembered the way it was lived — warm, a little imperfect, and full of feeling. Not stiff, not staged."
+                          "We started Golden Hour Studio because we believe a wedding deserves to be remembered the way it was lived: warm, a little imperfect, and full of feeling. Not stiff, not staged."
                         ],
                         "id": "f4f27b32-03cf-4906-98b6-e7b081f0cfa8",
                         "ord": "a1"
@@ -1867,7 +1867,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We shoot on film and digital both, work quietly, and chase the last good light of the day. What you get back isn’t a highlight reel — it’s your story, honestly told, made to outlast us all."
+                          "We shoot on film and digital both, work quietly, and chase the last good light of the day. What you get back isn’t a highlight reel: it’s your story, honestly told, made to outlast us all."
                         ],
                         "id": "47bb7a39-eb8f-49b0-963d-f80a1bc2d0c1",
                         "ord": "a2"
@@ -2098,7 +2098,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Golden Hour Studio",
+      "seoTitle": "Visit: Golden Hour Studio",
       "seoDescription": "Where to find Golden Hour Studio, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -2135,7 +2135,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Golden Hour Studio will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Golden Hour Studio will get back to you, usually the same day."
                         ],
                         "id": "9f9a29de-06fe-42cb-a70b-087d9279fb9c",
                         "ord": "a1"
@@ -2587,7 +2587,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Start with a free consultation online — pick a time that suits you and we’ll see you soon."
+                      "Start with a free consultation online. Pick a time that suits you and we’ll see you soon."
                     ],
                     "id": "bf4da85e-01b6-42f1-be4b-a836d5169977",
                     "ord": "a1"

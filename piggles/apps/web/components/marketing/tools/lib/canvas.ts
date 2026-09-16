@@ -36,14 +36,14 @@ const MAX_BYTES = 12 * 1024 * 1024;
 export async function loadImageFile(file: File): Promise<LoadedImage> {
   if (file.size > MAX_BYTES) {
     throw new ImageError(
-      `That file is ${(file.size / 1024 / 1024).toFixed(1)}MB, which is larger than this can handle. A logo is usually well under 1MB — if yours is a photograph, it is probably the wrong picture for this.`
+      `That file is ${(file.size / 1024 / 1024).toFixed(1)}MB, which is larger than this can handle. A logo is usually well under 1MB: if yours is a photograph, it is probably the wrong picture for this.`
     );
   }
 
   const isVector = file.type === 'image/svg+xml' || /\.svg$/i.test(file.name);
   if (!isVector && !/^image\/(png|jpeg|webp|gif|bmp|avif)$/.test(file.type)) {
     throw new ImageError(
-      'That does not look like an image. PNG, JPG, SVG and WebP all work — a PNG with a transparent background works best.'
+      'That does not look like an image. PNG, JPG, SVG and WebP all work: a PNG with a transparent background works best.'
     );
   }
 
@@ -64,7 +64,7 @@ export async function loadImageFile(file: File): Promise<LoadedImage> {
     const width = img.naturalWidth || (isVector ? 512 : 0);
     const height = img.naturalHeight || (isVector ? 512 : 0);
     if (width === 0 || height === 0) {
-      throw new ImageError('That image has no size to it — it may be empty or damaged.');
+      throw new ImageError('That image has no size to it. It may be empty or damaged.');
     }
 
     return {

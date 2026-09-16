@@ -48,7 +48,7 @@ export default async function BootcampsPage() {
     <Stack gap={6}>
       <PageHeader
         title="Bootcamps"
-        description="Published partner-hosted bootcamps across the platform — the live public catalog. Bootcamps are run by their host partner (registrations flow into that partner’s CRM); this is a read-only overview."
+        description="Published partner-hosted bootcamps across the platform: the live public catalog. Bootcamps are run by their host partner (registrations flow into that partner’s CRM); this is a read-only overview."
       />
 
       {error ? (

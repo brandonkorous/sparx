@@ -8,7 +8,7 @@
     "tags": ["Coast", "Film"],
     "body": {
       "title": "Tideline",
-      "excerpt": "One winter along a northern coast, photographed at the hour the light arrives — the line where water meets land, redrawn by every tide.",
+      "excerpt": "One winter along a northern coast, photographed at the hour the light arrives: the line where water meets land, redrawn by every tide.",
       "featuredImage": {
         "$asset": "silver-tideline"
       },
@@ -41,7 +41,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The same beach, walked at dawn through December, January and February. Nothing dramatic happens there — no cliffs, no surf. Just a wide, patient flat of sand and a grey sea that comes and goes twice a day, leaving a new drawing behind each time."
+                "text": "The same beach, walked at dawn through December, January and February. Nothing dramatic happens there: no cliffs, no surf. Just a wide, patient flat of sand and a grey sea that comes and goes twice a day, leaving a new drawing behind each time."
               }
             ]
           },
@@ -62,7 +62,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "It is about the tideline itself: the exact edge where the water has just been, marked in weed, foam and the small architecture of what the sea sorts and leaves. That line is never the same twice, and it never lasts — the next tide erases it and draws another. I wanted a record of a few of them, held still."
+                "text": "It is about the tideline itself: the exact edge where the water has just been, marked in weed, foam and the small architecture of what the sea sorts and leaves. That line is never the same twice, and it never lasts, the next tide erases it and draws another. I wanted a record of a few of them, held still."
               }
             ]
           },
@@ -92,7 +92,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Tideline prints as a set of six or as single plates, on cotton rag in an edition of fifteen. The tonal range is narrow by design — a coast this quiet has no place for a black or a bright white, only the long grey in between."
+                "text": "Tideline prints as a set of six or as single plates, on cotton rag in an edition of fifteen. The tonal range is narrow by design: a coast this quiet has no place for a black or a bright white, only the long grey in between."
               }
             ]
           }
@@ -109,7 +109,7 @@
     "tags": ["Interiors", "Domestic light"],
     "body": {
       "title": "Quiet Rooms",
-      "excerpt": "Still lifes made in borrowed houses, from the ordinary things people leave behind — a study of domestic light and the objects that hold a life.",
+      "excerpt": "Still lifes made in borrowed houses, from the ordinary things people leave behind: a study of domestic light and the objects that hold a life.",
       "featuredImage": {
         "$asset": "silver-quiet-rooms"
       },
@@ -121,7 +121,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "An ongoing series of still lifes, each made inside a house I did not live in — rentals, a friend’s empty flat, a family home between owners — using only what was already on the shelves."
+                "text": "An ongoing series of still lifes, each made inside a house I did not live in (rentals, a friend’s empty flat, a family home between owners) using only what was already on the shelves."
               }
             ]
           },
@@ -142,7 +142,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Wherever I was staying. The rule was simple: nothing brought in, nothing bought. A windowsill, an afternoon, and whatever the last person left — a glass, a folded cloth, three pears going soft, a comb. I moved things by inches and let the light do the rest."
+                "text": "Wherever I was staying. The rule was simple: nothing brought in, nothing bought. A windowsill, an afternoon, and whatever the last person left, a glass, a folded cloth, three pears going soft, a comb. I moved things by inches and let the light do the rest."
               }
             ]
           },
@@ -193,7 +193,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Quiet Rooms is printed small — the plates are close to life size, the way you would actually stand to look at the things themselves. An edition of twenty, on warm-toned rag."
+                "text": "Quiet Rooms is printed small: the plates are close to life size, the way you would actually stand to look at the things themselves. An edition of twenty, on warm-toned rag."
               }
             ]
           }
@@ -210,7 +210,7 @@
     "tags": ["People", "Editorial"],
     "body": {
       "title": "North Faces",
-      "excerpt": "Portraits of people who work outdoors, made where they work and in the weather they work in — a fisherman, a shepherd, a keeper of a light.",
+      "excerpt": "Portraits of people who work outdoors, made where they work and in the weather they work in: a fisherman, a shepherd, a keeper of a light.",
       "featuredImage": {
         "$asset": "silver-north-faces"
       },
@@ -222,7 +222,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "A set of eighteen portraits of people whose work keeps them outside — made on their ground, in their own light, with no studio and no retouching."
+                "text": "A set of eighteen portraits of people whose work keeps them outside: made on their ground, in their own light, with no studio and no retouching."
               }
             ]
           },
@@ -264,7 +264,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "It is about weather written into a face — the particular composure of people who have spent years reading the sky for a living. I did not want anyone smiling for me, and I did not want anyone braced. Just the ordinary, off-camera expression of someone thinking about the tide, or the ewe, or the walk home."
+                "text": "It is about weather written into a face: the particular composure of people who have spent years reading the sky for a living. I did not want anyone smiling for me, and I did not want anyone braced. Just the ordinary, off-camera expression of someone thinking about the tide, or the ewe, or the walk home."
               }
             ]
           },
@@ -311,7 +311,7 @@
     "tags": ["Abstract", "Field"],
     "body": {
       "title": "Salt",
-      "excerpt": "A near-white series made on the salt flats at harvest — texture, field and pale, with the horizon deliberately left out.",
+      "excerpt": "A near-white series made on the salt flats at harvest: texture, field and pale, with the horizon deliberately left out.",
       "featuredImage": {
         "$asset": "silver-salt"
       },
@@ -344,7 +344,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "A shallow coastal salt works, all straight lines and standing water. I photographed almost straight down, close in, so the pictures lose their scale — a cracked pan could be a foot across or a mile, and the eye cannot tell which."
+                "text": "A shallow coastal salt works, all straight lines and standing water. I photographed almost straight down, close in, so the pictures lose their scale: a cracked pan could be a foot across or a mile, and the eye cannot tell which."
               }
             ]
           },
@@ -365,7 +365,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "It is about the edge of a photograph becoming pure field. With the horizon removed there is nowhere for the eye to rest and no obvious subject — only texture, tone and the faint grid the workers leave. I was interested in how little a landscape can hold and still be a landscape."
+                "text": "It is about the edge of a photograph becoming pure field. With the horizon removed there is nowhere for the eye to rest and no obvious subject. Only texture, tone and the faint grid the workers leave. I was interested in how little a landscape can hold and still be a landscape."
               }
             ]
           },
@@ -374,7 +374,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The tonal range is almost gone by design: everything sits in the top of the scale, white on white, separated only by grain and the thinnest shadow. Printing it was the hard part — hold too much and it turns grey; hold too little and the surface disappears."
+                "text": "The tonal range is almost gone by design: everything sits in the top of the scale, white on white, separated only by grain and the thinnest shadow. Printing it was the hard part. Hold too much and it turns grey; hold too little and the surface disappears."
               }
             ]
           },

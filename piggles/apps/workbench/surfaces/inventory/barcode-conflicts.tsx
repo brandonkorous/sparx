@@ -104,7 +104,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
 
               <div className="grid gap-2 @lg:grid-cols-2">
                 <div className="flex flex-col gap-1">
-                  <Text className="text-sm">Not scannable — this item is the one waiting</Text>
+                  <Text className="text-sm">Not scannable. This item is the one waiting</Text>
                   <span className="font-medium">{row.productTitle}</span>
                   <span className="font-mono text-sm">{row.sku}</span>
                 </div>
@@ -116,7 +116,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
               </div>
 
               <span className="flex flex-wrap gap-2">
-                <Tooltip content="The code belongs to this item — move it here">
+                <Tooltip content="The code belongs to this item: move it here">
                   <Button
                     color="module-inventory"
                     size="sm"
@@ -129,7 +129,7 @@ export function BarcodeConflictsSurface({ ctx }: { ctx: SurfaceContext }) {
                     {row.productTitle} owns it
                   </Button>
                 </Tooltip>
-                <Tooltip content="This item never had this code — drop the claim">
+                <Tooltip content="This item never had this code: drop the claim">
                   <Button
                     variant="outline"
                     color="danger"

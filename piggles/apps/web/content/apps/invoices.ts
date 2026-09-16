@@ -2,7 +2,7 @@ import type { AppMarketing } from './types';
 
 export const INVOICES: AppMarketing = {
   heading: 'Send the bill. Find out who has paid.',
-  lede: 'Invoices produces the document, sends it, records the payment and tells you who is late — for a single job, a monthly account or a quote that turned into work.',
+  lede: 'Invoices produces the document, sends it, records the payment and tells you who is late, for a single job, a monthly account or a quote that turned into work.',
   alsoKnownAs: ['invoicing', 'billing', 'accounts receivable', 'quotes and estimates'],
   does: [
     {

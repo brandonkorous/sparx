@@ -40,12 +40,12 @@ const SAMPLE_TITLES = [
 ];
 const SAMPLE_LINES = [
   'A short, human sentence standing in for the real copy.',
-  'Placeholder text — the writer fills this in from the module form.',
+  'Placeholder text: the writer fills this in from the module form.',
   'Just enough preview copy to see the layout breathe.',
 ];
 const SAMPLE_PARAS = [
   'A longer passage would run here. The template decides how it looks; the writer supplies the words in the module.',
-  'Two or three sentences of body copy — enough to show measure and rhythm. Real content replaces this once the record is filled.',
+  'Two or three sentences of body copy: enough to show measure and rhythm. Real content replaces this once the record is filled.',
 ];
 
 /** The typed product attributes (docs/143), shaped exactly like the live site's

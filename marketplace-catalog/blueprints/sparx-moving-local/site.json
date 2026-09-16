@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Sure Hands Moving — friendly local movers",
+      "seoTitle": "Sure Hands Moving: friendly local movers",
       "seoDescription": "Sure Hands Moving is a local, family-run moving company with flat upfront quotes, careful insured crews and packing help. Book a free estimate online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Local, friendly and fully insured — with flat, upfront quotes and crews that treat your things like their own. Get a free estimate online and we’ll give you a real price before moving day."
+                      "Local, friendly and fully insured, with flat, upfront quotes and crews that treat your things like their own. Get a free estimate online and we’ll give you a real price before moving day."
                     ],
                     "id": "cd734ee4-decd-4040-a8d8-bacf775dd43d",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You get one clear, written price before we lift a box — no hourly meter creeping up, no surprise fees added on at the curb when the truck’s already full."
+                              "You get one clear, written price before we lift a box: no hourly meter creeping up, no surprise fees added on at the curb when the truck’s already full."
                             ],
                             "id": "147bffde-02b2-40d5-b417-ece617ebd406",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Boxes, tape, wrap and dish barrels — we can bring it all, or pack the whole place for you. Nothing loaded loose, nothing you have to figure out yourself."
+                              "Boxes, tape, wrap and dish barrels. We can bring it all, or pack the whole place for you. Nothing loaded loose, nothing you have to figure out yourself."
                             ],
                             "id": "d99a98d0-e7b6-4690-93e4-8249348ac47f",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We give you a real arrival window and text when we’re on the way. Moving day runs on your schedule, not ours — and we don’t leave until it’s done right."
+                              "We give you a real arrival window and text when we’re on the way. Moving day runs on your schedule, not ours, and we don’t leave until it’s done right."
                             ],
                             "id": "dae97074-3ea3-4b3a-b820-de9bd903b783",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every estimate is free. Pick the one that fits and see how long it takes and the next open time — then we come out and give you a flat, written price."
+                          "Every estimate is free. Pick the one that fits and see how long it takes and the next open time, then we come out and give you a flat, written price."
                         ],
                         "id": "c43560b9-769c-47db-98b7-426ecd8f157d",
                         "ord": "a1"
@@ -1113,7 +1113,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Anyone can carry a box. What sets Sure Hands apart is what happens to the things you actually care about — the dresser from your grandmother, the TV you just paid for, the corner of the wall on the way out the door."
+                          "Anyone can carry a box. What sets Sure Hands apart is what happens to the things you actually care about: the dresser from your grandmother, the TV you just paid for, the corner of the wall on the way out the door."
                         ],
                         "id": "63d2df09-a89c-4206-89cf-a41250ee1165",
                         "ord": "a1"
@@ -1123,7 +1123,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We wrap furniture in blankets, pad the sharp edges, lay runners on your floors and shrink-wrap the drawers so nothing shifts. Careful isn’t slower with us — it’s just how the job gets done."
+                          "We wrap furniture in blankets, pad the sharp edges, lay runners on your floors and shrink-wrap the drawers so nothing shifts. Careful isn’t slower with us: it’s just how the job gets done."
                         ],
                         "id": "f1a37045-044d-4cd8-9854-52b4e0e6ed35",
                         "ord": "a2"
@@ -1188,7 +1188,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Real people, not day-labor strangers — the same friendly faces who show up, wrap it up and get you moved."
+                          "Real people, not day-labor strangers: the same friendly faces who show up, wrap it up and get you moved."
                         ],
                         "id": "46d431bc-6019-4ca7-99e5-23a693cf7d14",
                         "ord": "a1"
@@ -1245,7 +1245,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Jordan plans your move end to end — the crew, the truck, the timing — and answers the phone when you call."
+                                  "Jordan plans your move end to end (the crew, the truck, the timing) and answers the phone when you call."
                                 ],
                                 "id": "3f320815-a582-4800-bf4e-edf765caf838",
                                 "ord": "a2"
@@ -1357,7 +1357,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Luis packs a truck like a puzzle so nothing moves in transit — and can box your whole kitchen faster than you’d believe."
+                                  "Luis packs a truck like a puzzle so nothing moves in transit, and can box your whole kitchen faster than you’d believe."
                                 ],
                                 "id": "97caeb6a-b085-42c1-bb01-bda8028b71c5",
                                 "ord": "a2"
@@ -1441,7 +1441,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a free estimate online in about a minute. Pick a day, and we’ll confirm your window and come take a look — no obligation."
+                      "Book a free estimate online in about a minute. Pick a day, and we’ll confirm your window and come take a look: no obligation."
                     ],
                     "id": "48c71154-505e-442b-996c-793fb678084d",
                     "ord": "a1"
@@ -1472,7 +1472,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Sure Hands Moving",
+      "seoTitle": "Book: Sure Hands Moving",
       "seoDescription": "See what Sure Hands Moving offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1523,7 +1523,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose the kind of move you’re planning to see how long the visit takes and the next open time — then pick your day and we’ll come give you a flat, written price."
+                      "Choose the kind of move you’re planning to see how long the visit takes and the next open time, then pick your day and we’ll come give you a flat, written price."
                     ],
                     "id": "5bb4fc99-ef6b-44c6-a51d-26c66c6202f5",
                     "ord": "a1"
@@ -1596,7 +1596,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "ac4da659-6c95-4b73-a0ea-ade48c769b71",
                         "ord": "a1"
@@ -1628,7 +1628,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Give us at least 24 hours’ notice to move or cancel your estimate. We text a reminder the day before and confirm your arrival window that morning — estimates are always free and no-obligation."
+                              "Give us at least 24 hours’ notice to move or cancel your estimate. We text a reminder the day before and confirm your arrival window that morning: estimates are always free and no-obligation."
                             ],
                             "id": "51fe09bb-9b01-463b-8ccc-a42bbbcf3f7e",
                             "ord": "a1"
@@ -1665,7 +1665,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A $50 deposit holds your moving day and comes straight off your final bill. Reschedule with 48 hours’ notice and it moves with you — no penalty, no lost deposit."
+                              "A $50 deposit holds your moving day and comes straight off your final bill. Reschedule with 48 hours’ notice and it moves with you: no penalty, no lost deposit."
                             ],
                             "id": "aae8f65c-12c7-491c-9eff-e806baf1702f",
                             "ord": "a1"
@@ -1703,7 +1703,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Sure Hands Moving",
+      "seoTitle": "About: Sure Hands Moving",
       "seoDescription": "Who Sure Hands Moving is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1752,7 +1752,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Sure Hands because moving shouldn’t be the horror story everyone warns you about — the crew that shows up late, the price that doubles at the end, the coffee table that comes off the truck with a fresh gouge."
+                          "We started Sure Hands because moving shouldn’t be the horror story everyone warns you about: the crew that shows up late, the price that doubles at the end, the coffee table that comes off the truck with a fresh gouge."
                         ],
                         "id": "6bf43b3a-6ae6-4b95-9927-9a25962850e9",
                         "ord": "a1"
@@ -1894,7 +1894,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We’re licensed and insured, and we stand behind every move. If something isn’t right, you call us and we fix it — we’re your neighbors, not a call center."
+                              "We’re licensed and insured, and we stand behind every move. If something isn’t right, you call us and we fix it: we’re your neighbors, not a call center."
                             ],
                             "id": "8b25ccfa-2534-4577-b39f-66c160217bc1",
                             "ord": "a1"
@@ -1922,7 +1922,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Sure Hands Moving",
+      "seoTitle": "Visit: Sure Hands Moving",
       "seoDescription": "Where to find Sure Hands Moving, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1959,7 +1959,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Sure Hands Moving will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Sure Hands Moving will get back to you, usually the same day."
                         ],
                         "id": "fc56aa94-c918-4441-80f8-2c23bed841ce",
                         "ord": "a1"
@@ -2411,7 +2411,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See the next open times and reserve your free estimate online — no phone tag, no waiting on hold."
+                      "See the next open times and reserve your free estimate online: no phone tag, no waiting on hold."
                     ],
                     "id": "ffea4e55-b3f7-47ed-8de3-4377e4cc004c",
                     "ord": "a1"

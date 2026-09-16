@@ -131,7 +131,7 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
           <>
             <ListChecks className="size-4 shrink-0" aria-hidden />
             <Heading level={2} className="min-w-0 truncate text-base font-semibold">
-              {automation ? `${automation.name} — runs` : 'Runs'}
+              {automation ? `${automation.name}: runs` : 'Runs'}
             </Heading>
             <div className="ml-auto flex shrink-0 items-center gap-1">
               <Button

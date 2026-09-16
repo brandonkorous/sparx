@@ -42,7 +42,7 @@ export function CrmSegments() {
         // the record can answer questions about itself. "Define the audience,
         // watch it fill" was product-manager framing for an owner audience.
         headline="Ask a question once, keep getting the answer"
-        lede="“Everyone who spent over $500 and hasn’t ordered since spring.” Ask it once and it stays asked — people join and leave on their own as they cross the line, and the answer is still right in March. Send to it straight from Email, so there is never a list to export, clean up and re-upload."
+        lede="“Everyone who spent over $500 and hasn’t ordered since spring.” Ask it once and it stays asked: people join and leave on their own as they cross the line, and the answer is still right in March. Send to it straight from Email, so there is never a list to export, clean up and re-upload."
       />
       <div className="mkt-seg-grid mt-[52px]">
         {/* The rule-builder panel. This was `${M.bg} bg-soft` — a cyan wash across
@@ -93,7 +93,7 @@ export function CrmSegments() {
                 accent edge and the dots. */}
             <div className="text-[52px] leading-none font-medium tracking-[-0.03em]">218</div>
             <p className="mt-2 text-sm">
-              customers match right now — auto-added the moment they cross the line, removed when
+              customers match right now: auto-added the moment they cross the line, removed when
               they reorder.
             </p>
           </div>
@@ -173,7 +173,7 @@ export function CrmPipeline() {
         // BEAT 5c — IT CONNECTS. Third link: the record now joins up the two
         // halves of a sale that normally live in different tools.
         headline="The deal already knows what they bought"
-        lede="Work deals across Lead, Qualified, Proposal, Negotiation and Closed — on a board you drag, a list you sort, or a forecast weighted by how likely each one is. Every deal is attached to that customer’s real quotes and orders, so the whole thread from “quote sent” to “invoice paid” sits on one card instead of across a CRM, an inbox and a spreadsheet."
+        lede="Work deals across Lead, Qualified, Proposal, Negotiation and Closed: on a board you drag, a list you sort, or a forecast weighted by how likely each one is. Every deal is attached to that customer’s real quotes and orders, so the whole thread from “quote sent” to “invoice paid” sits on one card instead of across a CRM, an inbox and a spreadsheet."
       />
       <div className="mkt-pipeline-5 mt-[52px]">
         {stages.map((s) => (

@@ -33,7 +33,7 @@ export function MascotSection() {
         <SectionHeader
           accent="var(--color-primary)"
           headline="Meet sparky"
-          lede="The mascot is the wordmark’s “x”, mutated into a spark and given a face. He carries a beat of personality where the product wants one — an empty state, a 404, a win — without ever competing with the work. One character, one Ember body, a handful of expressions."
+          lede="The mascot is the wordmark’s “x”, mutated into a spark and given a face. He carries a beat of personality where the product wants one (an empty state, a 404, a win) without ever competing with the work. One character, one Ember body, a handful of expressions."
         />
 
         {/* Stage + picker */}
@@ -57,7 +57,7 @@ export function MascotSection() {
                   Try his faces
                 </Text>
                 <Text size={13.5}>
-                  Pick an expression to pin it, or let him cycle. He blinks and bobs on his own —
+                  Pick an expression to pin it, or let him cycle. He blinks and bobs on his own:
                   motion honours reduced-motion.
                 </Text>
               </div>
@@ -75,7 +75,7 @@ export function MascotSection() {
 
               <div className="mt-auto flex flex-col gap-2.5">
                 <Text as="span" mono size={11} className="tracking-[0.02em]">
-                  Two tones — the face flips so it stays legible.
+                  Two tones: the face flips so it stays legible.
                 </Text>
                 <div className="flex flex-wrap items-center gap-3">
                   <TonePlate label="On light" bg="var(--color-base-200)" tone="light" border />

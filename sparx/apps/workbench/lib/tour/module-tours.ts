@@ -41,7 +41,7 @@ const MODULE_TOURS: ModuleTour[] = [
         id: 'builder-intro',
         module: 'builder',
         title: 'Build your website',
-        body: 'This is your site editor. You add pieces to the page — a heading, an image, a row of products — and arrange them by dragging. No code, and nothing you do here goes live until you say so.',
+        body: 'This is your site editor. You add pieces to the page (a heading, an image, a row of products) and arrange them by dragging. No code, and nothing you do here goes live until you say so.',
         phase: 2,
       },
       {
@@ -77,7 +77,7 @@ const MODULE_TOURS: ModuleTour[] = [
         id: 'commerce-intro',
         module: 'commerce',
         title: 'Sell your products',
-        body: 'Selling keeps your products, your orders, and your sales in one place. Orders arrive here on their own as customers buy — so your first move is simply giving them something to buy.',
+        body: 'Selling keeps your products, your orders, and your sales in one place. Orders arrive here on their own as customers buy, so your first move is simply giving them something to buy.',
         phase: 2,
       },
       {
@@ -89,7 +89,7 @@ const MODULE_TOURS: ModuleTour[] = [
         // Lives on Products, not the Orders landing — open it first.
         open: { surface: 'commerce.products.list' },
         title: 'Add your first product',
-        body: 'This is your product list. Add a product — its name, a photo, and a price — and it can be on your website within a minute, ready to sell.',
+        body: 'This is your product list. Add a product (its name, a photo, and a price) and it can be on your website within a minute, ready to sell.',
         phase: 2,
       },
     ],
@@ -101,7 +101,7 @@ const MODULE_TOURS: ModuleTour[] = [
         id: 'crm-intro',
         module: 'crm',
         title: 'Know your customers',
-        body: 'Everyone who buys from you or gets in touch shows up here, with their whole history — every order, message, and note — in one place.',
+        body: 'Everyone who buys from you or gets in touch shows up here, with their whole history (every order, message, and note) in one place.',
         phase: 2,
       },
       {
@@ -112,7 +112,7 @@ const MODULE_TOURS: ModuleTour[] = [
         align: 'end',
         open: { surface: 'crm.customers.list' },
         title: 'Add someone, or let them arrive',
-        body: 'You can add a customer yourself here — handy for someone you already know. Or do nothing: people are added automatically the first time they buy or reach out.',
+        body: 'You can add a customer yourself here: handy for someone you already know. Or do nothing: people are added automatically the first time they buy or reach out.',
         phase: 2,
       },
     ],
@@ -124,7 +124,7 @@ const MODULE_TOURS: ModuleTour[] = [
         id: 'cms-intro',
         module: 'cms',
         title: 'Publish your content',
-        body: 'Content is where you write anything you want the world to read — posts, pages, articles, news. Everything you publish is listed here, ready to edit any time.',
+        body: 'Content is where you write anything you want the world to read: posts, pages, articles, news. Everything you publish is listed here, ready to edit any time.',
         phase: 2,
       },
       {
@@ -135,7 +135,7 @@ const MODULE_TOURS: ModuleTour[] = [
         align: 'end',
         open: { surface: 'cms.content.list' },
         title: 'Write your first post',
-        body: 'Start something new here. Give it a title, write your words, and publish when you’re happy — or save it and come back to finish later.',
+        body: 'Start something new here. Give it a title, write your words, and publish when you’re happy, or save it and come back to finish later.',
         phase: 2,
       },
     ],
@@ -159,7 +159,7 @@ const MODULE_TOURS: ModuleTour[] = [
         // The create control lives on Bookings, not the Calendar landing.
         open: { surface: 'scheduling.bookings.list' },
         title: 'Add a booking yourself',
-        body: 'This is the full list of your bookings. Take a booking to add one by hand — for a phone or walk-in customer — and it lands on your calendar too. Customers can book themselves online once your site is live.',
+        body: 'This is the full list of your bookings. Take a booking to add one by hand (for a phone or walk-in customer) and it lands on your calendar too. Customers can book themselves online once your site is live.',
         phase: 2,
       },
     ],
@@ -171,7 +171,7 @@ const MODULE_TOURS: ModuleTour[] = [
         id: 'b2b-intro',
         module: 'b2b',
         title: 'Sell wholesale',
-        body: 'Wholesale is for selling to other businesses rather than the public — each gets its own account, its own login, and prices you set just for them.',
+        body: 'Wholesale is for selling to other businesses rather than the public. Each gets its own account, its own login, and prices you set just for them.',
         phase: 2,
       },
       {

@@ -21,7 +21,7 @@ export const HOME_GUIDE: Guide = {
       app: 'home',
       anchor: 'nav-piggles.home',
       title: 'Start here every morning',
-      body: 'Whatever needs you today — an order to send, an invoice nobody has paid, a booking tomorrow — is on this one screen. If you only ever open one thing in Piggles, make it this.',
+      body: 'Whatever needs you today (an order to send, an invoice nobody has paid, a booking tomorrow) is on this one screen. If you only ever open one thing in Piggles, make it this.',
     },
     {
       id: 'home.pulse',
@@ -35,14 +35,14 @@ export const HOME_GUIDE: Guide = {
       app: 'home',
       anchor: 'nav-workbench.welcome',
       title: 'The bits that are not finished yet',
-      body: 'A short list of what is still to do before your business is fully set up — a logo, a web address, a way to take payment. Anything you skipped when you signed up is waiting here rather than lost.',
+      body: 'A short list of what is still to do before your business is fully set up: a logo, a web address, a way to take payment. Anything you skipped when you signed up is waiting here rather than lost.',
     },
     {
       id: 'home.dashboards',
       app: 'home',
       anchor: 'nav-analytics.dashboards.list',
       title: 'Numbers, arranged the way you want them',
-      body: 'Build a screen of the figures you actually check — takings, bookings, stock, whatever matters in your trade — and keep it. Most people make one and never touch it again, which is the point.',
+      body: 'Build a screen of the figures you actually check (takings, bookings, stock, whatever matters in your trade) and keep it. Most people make one and never touch it again, which is the point.',
     },
     {
       id: 'home.migrate',
@@ -56,7 +56,7 @@ export const HOME_GUIDE: Guide = {
       app: 'home',
       anchor: 'nav-platform.feedback.list',
       title: 'What you told us',
-      body: 'Anything you have sent us, and what came of it. A real person reads every one, and this is where the reply lands — so asking for something is not the same as shouting into a void.',
+      body: 'Anything you have sent us, and what came of it. A real person reads every one, and this is where the reply lands, so asking for something is not the same as shouting into a void.',
     },
     {
       // Rings the first row of the settings groups rather than teaching it. The
@@ -66,7 +66,7 @@ export const HOME_GUIDE: Guide = {
       app: 'home',
       anchor: 'nav-platform.settings.general',
       title: 'And the rest of it is settings',
-      body: 'Everything below here is set once and forgotten — your details, who can sign in, what you have connected. Each group has a short walk of its own if you want it.',
+      body: 'Everything below here is set once and forgotten. Your details, who can sign in, what you have connected. Each group has a short walk of its own if you want it.',
     },
   ],
 };

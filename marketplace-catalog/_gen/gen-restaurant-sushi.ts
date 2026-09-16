@@ -106,7 +106,7 @@ const ASSETS: Asset[] = [
     { id: 'nori-sashimi', url: src('nori-sashimi'), alt: 'A minimal plate of sliced sashimi arranged on pale ceramic' },
     { id: 'nori-chef', url: src('nori-chef'), alt: 'The itamae slicing a loin of fish with a long yanagiba knife' },
     { id: 'nori-counter', url: src('nori-counter'), alt: 'A row of empty counter seats set before the sushi bar' },
-    { id: 'nori-room', url: src('nori-room'), alt: 'The dining room — pale wood, clean lines, a single hanging light' },
+    { id: 'nori-room', url: src('nori-room'), alt: 'The dining room: pale wood, clean lines, a single hanging light' },
     { id: 'nori-sake', url: src('nori-sake'), alt: 'A carafe and two small cups of sake poured at the counter' },
 ];
 
@@ -187,7 +187,7 @@ function todayBand(): Node {
                     }),
                     el('div', 'grid grid-cols-1 gap-6 @3xl:grid-cols-3', {
                         children: [
-                            card('nori-nigiri', 'Omakase', 'The full counter experience — twelve to sixteen courses, paced by the chef, ending on a hand roll and tamago.', 'A single piece of nigiri'),
+                            card('nori-nigiri', 'Omakase', 'The full counter experience: twelve to sixteen courses, paced by the chef, ending on a hand roll and tamago.', 'A single piece of nigiri'),
                             card('nori-sashimi', 'Sashimi & nigiri', 'Prefer to order your own? A short à-la-carte list of the same fish, cut to order, by the piece or the plate.', 'A minimal plate of sliced sashimi'),
                             card('nori-sake', 'Sake & tea', 'A tight, considered sake list poured cold, plus roasted hojicha and genmaicha for the table.', 'A carafe and two cups of sake'),
                         ],
@@ -217,7 +217,7 @@ function counterBand(): Node {
                                 text: 'The best seat is at the counter',
                             }),
                             el('p', 'text-lg leading-relaxed text-base-content', {
-                                text: 'Ten seats face the bar, and every piece is handed to you the moment it’s cut. Reserve online in under a minute — you’ll see live availability for both seatings, and a card hold secures your place at the counter.',
+                                text: 'Ten seats face the bar, and every piece is handed to you the moment it’s cut. Reserve online in under a minute: you’ll see live availability for both seatings, and a card hold secures your place at the counter.',
                             }),
                             el('div', 'flex flex-wrap gap-3', {
                                 children: [
@@ -321,40 +321,40 @@ const MENU: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The menu' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'The counter runs on omakase — the chef’s choice, in sequence. What follows is the shape of an evening and the à-la-carte pieces that fill it in. Fish changes daily; tell us about allergies and we’ll cut around them.',
+                        text: 'The counter runs on omakase: the chef’s choice, in sequence. What follows is the shape of an evening and the à-la-carte pieces that fill it in. Fish changes daily; tell us about allergies and we’ll cut around them.',
                     }),
                 ],
             }),
         ],
     }),
     menuSection('Omakase', 'Chef’s choice, at the counter. One card hold per seat secures your place.', [
-        { name: 'Omakase — twelve courses', desc: 'Nigiri and small bites in sequence, paced by the chef, closing on a hand roll, tamago and a cup of tea.', price: '145' },
-        { name: 'Omakase — sixteen courses', desc: 'The longer counter — more of the day’s fish, an extra sashimi course, and a second-cut of whatever’s at its peak.', price: '195' },
+        { name: 'Omakase: twelve courses', desc: 'Nigiri and small bites in sequence, paced by the chef, closing on a hand roll, tamago and a cup of tea.', price: '145' },
+        { name: 'Omakase: sixteen courses', desc: 'The longer counter: more of the day’s fish, an extra sashimi course, and a second-cut of whatever’s at its peak.', price: '195' },
         { name: 'Sake pairing', desc: 'Five small pours chosen to follow the courses, from dry and clean to rounder and rice-forward.', price: '75' },
     ]),
     menuSection('Nigiri', 'By the pair, cut to order. A short list of what’s in this week.', [
-        { name: 'Akami — lean bluefin tuna', desc: 'The lean loin, brushed with nikiri soy over warm rice.', price: '9' },
-        { name: 'Chū-toro — medium fatty tuna', desc: 'The marbled cut between lean and belly, meltingly soft.', price: '14' },
-        { name: 'Hamachi — yellowtail', desc: 'Clean and buttery, a touch of yuzu zest.', price: '9' },
-        { name: 'Hotate — hokkaido scallop', desc: 'Raw, sweet, dressed only with salt and a squeeze of lime.', price: '10' },
-        { name: 'Unagi — freshwater eel', desc: 'Grilled and lacquered with a house tare, warm off the pass.', price: '11' },
-        { name: 'Ikura — salmon roe', desc: 'Cured in dashi and soy, gunkan-wrapped in crisp nori.', price: '10' },
+        { name: 'Akami: lean bluefin tuna', desc: 'The lean loin, brushed with nikiri soy over warm rice.', price: '9' },
+        { name: 'Chū-toro: medium fatty tuna', desc: 'The marbled cut between lean and belly, meltingly soft.', price: '14' },
+        { name: 'Hamachi: yellowtail', desc: 'Clean and buttery, a touch of yuzu zest.', price: '9' },
+        { name: 'Hotate: hokkaido scallop', desc: 'Raw, sweet, dressed only with salt and a squeeze of lime.', price: '10' },
+        { name: 'Unagi: freshwater eel', desc: 'Grilled and lacquered with a house tare, warm off the pass.', price: '11' },
+        { name: 'Ikura: salmon roe', desc: 'Cured in dashi and soy, gunkan-wrapped in crisp nori.', price: '10' },
     ]),
-    menuSection('Sashimi', 'No rice, just the fish. Sold by the plate — five slices to a plate.', [
-        { name: 'Tai — sea bream', desc: 'Firm and delicate, cut thin, with a little sea salt and citrus.', price: '18' },
-        { name: 'Saba — cured mackerel', desc: 'Lightly pressed in salt and rice vinegar, a slice of ginger alongside.', price: '16' },
-        { name: 'Tako — poached octopus', desc: 'Slow-poached until tender, cut in ribbons, sesame and yuzu.', price: '17' },
-        { name: 'Chef’s sashimi plate', desc: 'A selection of the day, arranged by the chef — the fastest way to taste the range.', price: '32' },
+    menuSection('Sashimi', 'No rice, just the fish. Sold by the plate: five slices to a plate.', [
+        { name: 'Tai: sea bream', desc: 'Firm and delicate, cut thin, with a little sea salt and citrus.', price: '18' },
+        { name: 'Saba: cured mackerel', desc: 'Lightly pressed in salt and rice vinegar, a slice of ginger alongside.', price: '16' },
+        { name: 'Tako: poached octopus', desc: 'Slow-poached until tender, cut in ribbons, sesame and yuzu.', price: '17' },
+        { name: 'Chef’s sashimi plate', desc: 'A selection of the day, arranged by the chef: the fastest way to taste the range.', price: '32' },
     ]),
     menuSection('Maki & hand rolls', 'Rolled to order in crisp nori. Best eaten the moment they land.', [
-        { name: 'Toro & scallion hand roll', desc: 'Fatty tuna and negi, warm rice, nori kept crisp — eaten straight away.', price: '13' },
+        { name: 'Toro & scallion hand roll', desc: 'Fatty tuna and negi, warm rice, nori kept crisp: eaten straight away.', price: '13' },
         { name: 'Cucumber & shiso maki', desc: 'Cool and clean, a palate-reset between richer pieces.', price: '8' },
-        { name: 'Salmon & avocado roll', desc: 'A rounder, familiar roll — salmon, avocado, a whisper of wasabi.', price: '12' },
+        { name: 'Salmon & avocado roll', desc: 'A rounder, familiar roll: salmon, avocado, a whisper of wasabi.', price: '12' },
         { name: 'Negitoro hand roll', desc: 'Minced fatty tuna and scallion, the classic close to a meal.', price: '12' },
     ]),
     menuSection('Sake, beer & tea', 'A tight list, poured with intent. Ask what’s open and we’ll steer you.', [
-        { name: 'Junmai — by the glass', desc: 'Dry, clean, rice-forward. Poured cold in a small cup.', price: '12' },
-        { name: 'Ginjo — by the carafe', desc: 'Fragrant and delicate, for the table. Ask for the current pour.', price: '38' },
+        { name: 'Junmai: by the glass', desc: 'Dry, clean, rice-forward. Poured cold in a small cup.', price: '12' },
+        { name: 'Ginjo: by the carafe', desc: 'Fragrant and delicate, for the table. Ask for the current pour.', price: '38' },
         { name: 'Japanese lager', desc: 'Crisp and cold, from a nearby brewer.', price: '7' },
         { name: 'Hojicha / genmaicha', desc: 'Roasted or toasted-rice green tea, refilled through the meal.', price: '5' },
     ]),
@@ -386,13 +386,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Nori' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Nori is a ten-seat sushi counter in a quiet room behind the old fish market. There is no long menu and no à-la-carte rush — you sit at the bar, the chef reads the day’s fish, and the meal comes to you a piece at a time, in the order it’s meant to be eaten.',
+                        text: 'Nori is a ten-seat sushi counter in a quiet room behind the old fish market. There is no long menu and no à-la-carte rush. You sit at the bar, the chef reads the day’s fish, and the meal comes to you a piece at a time, in the order it’s meant to be eaten.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We buy small and buy daily, from a handful of suppliers we’ve worked with for years. The rice is seasoned by hand and served at body temperature; the wasabi is grated to order; the nori is kept dry until the moment it’s rolled. Little of that is visible on a plate — all of it is the point.',
+                        text: 'We buy small and buy daily, from a handful of suppliers we’ve worked with for years. The rice is seasoned by hand and served at body temperature; the wasabi is grated to order; the nori is kept dry until the moment it’s rolled. Little of that is visible on a plate. All of it is the point.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'The room is small on purpose, and the pace is deliberate. Book ahead — both seatings fill early at the weekend — and come a little hungry. A stool at the end of the bar is kept for walk-ins whenever one opens.',
+                        text: 'The room is small on purpose, and the pace is deliberate. Book ahead (both seatings fill early at the weekend) and come a little hungry. A stool at the end of the bar is kept for walk-ins whenever one opens.',
                     }),
                 ],
             }),
@@ -407,7 +407,7 @@ const CONTACT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'Visit Nori' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: '4 Cedar Court, in the quiet room off the lane behind the old fish market. Two seatings a night, Tuesday through Sunday, at six and eight-thirty; closed Monday. The evening is by reservation — a stool at the bar is kept back for walk-ins.',
+                        text: '4 Cedar Court, in the quiet room off the lane behind the old fish market. Two seatings a night, Tuesday through Sunday, at six and eight-thirty; closed Monday. The evening is by reservation: a stool at the bar is kept back for walk-ins.',
                     }),
                     el('div', 'flex flex-wrap gap-3', {
                         children: [
@@ -464,7 +464,7 @@ const SCHEDULING = {
             cancellationWindowHours: 48,
             reminderOffsetsMin: [2880, 1440, 180],
             policyText:
-                'A counter seat places a card hold to secure it — nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead.',
+                'A counter seat places a card hold to secure it. Nothing is charged unless you cancel inside 48 hours or don’t show. The chef buys for the seats booked, so the hold keeps the counter fair for everyone. We’ll remind you two days, one day, and a few hours ahead.',
         },
         {
             handle: 'table-standard',
@@ -473,7 +473,7 @@ const SCHEDULING = {
             cancellationWindowHours: 24,
             reminderOffsetsMin: [1440, 180],
             policyText:
-                'Tables are held for 15 minutes past your seating. Plans change — just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead.',
+                'Tables are held for 15 minutes past your seating. Plans change. Just let us know by the day before and we’ll free the table for someone else. We’ll remind you the day before and a few hours ahead.',
         },
     ],
     resources: [
@@ -494,7 +494,7 @@ const SCHEDULING = {
             handle: 'omakase-counter',
             name: 'Omakase counter',
             description:
-                'A seat at the bar for the chef’s omakase — twelve to sixteen courses, paced by the counter, about two hours. A card hold secures your seat.',
+                'A seat at the bar for the chef’s omakase: twelve to sixteen courses, paced by the counter, about two hours. A card hold secures your seat.',
             bookingType: 'reservation',
             durationMinutes: 120,
             assignmentStrategy: 'any_available',
@@ -557,14 +557,14 @@ const SPEC: ServiceSiteSpec = {
     },
     seo: {
         home: {
-            title: 'Nori — a sushi & omakase counter',
+            title: 'Nori: a sushi & omakase counter',
             description:
-                'Nori is a ten-seat sushi counter — omakase at six and eight-thirty, the day’s best fish handed to you a piece at a time, Tuesday through Sunday. See the menu and reserve a seat.',
+                'Nori is a ten-seat sushi counter: omakase at six and eight-thirty, the day’s best fish handed to you a piece at a time, Tuesday through Sunday. See the menu and reserve a seat.',
         },
         about: {
-            title: 'About Nori — the sushi counter',
+            title: 'About Nori: the sushi counter',
             description:
-                'A ten-seat omakase counter behind the old fish market — bought small and daily, rice seasoned by hand, wasabi grated to order, served at the pace it’s meant to be eaten.',
+                'A ten-seat omakase counter behind the old fish market: bought small and daily, rice seasoned by hand, wasabi grated to order, served at the pace it’s meant to be eaten.',
         },
     },
     home: HOME,

@@ -135,7 +135,7 @@
     {
       "handle": "blow-dry",
       "name": "Blow-dry & style",
-      "description": "A wash and a styled finish — smooth, soft or full-bodied, however you like it.",
+      "description": "A wash and a styled finish: smooth, soft or full-bodied, however you like it.",
       "durationMinutes": 45,
       "priceCents": 5000,
       "assignmentStrategy": "any_available",
@@ -188,7 +188,7 @@
     {
       "handle": "balayage",
       "name": "Balayage",
-      "description": "Hand-painted, lived-in lightness — soft grow-out, low upkeep.",
+      "description": "Hand-painted, lived-in lightness: soft grow-out, low upkeep.",
       "durationMinutes": 180,
       "priceCents": 24000,
       "bufferAfterMin": 15,
@@ -223,7 +223,7 @@
     {
       "handle": "bridal-styling",
       "name": "Bridal styling",
-      "description": "A trial and day-of styling for the wedding — booked with a consultation first.",
+      "description": "A trial and day-of styling for the wedding: booked with a consultation first.",
       "durationMinutes": 90,
       "priceCents": 15000,
       "requiresApproval": true,

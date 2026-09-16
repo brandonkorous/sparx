@@ -122,7 +122,7 @@ export const APP_SHOTS: Partial<Record<PigglesAppId, ProductShot[]>> = {
       label: 'What you have, and where',
       alt: 'Two windows side by side in the Piggles workspace. On the left, twelve stock lines across a shop cooler and a dry store, each with what is left to sell and a state; two read "Running low". On the right, the product list with prices.',
       caption:
-        'Wildroot Flowers on a Thursday — stock and the catalog open together, two lines running low before anybody had to go and look.',
+        'Wildroot Flowers on a Thursday: stock and the catalog open together, two lines running low before anybody had to go and look.',
       viewports: ['desktop', 'mobile'],
     },
     {
@@ -130,7 +130,7 @@ export const APP_SHOTS: Partial<Record<PigglesAppId, ProductShot[]>> = {
       label: 'Which batch, and how long it has',
       alt: 'A floating window listing four batches of cut stems in the shop cooler, each with how many remain and when it expires: one expired a day ago, the others in two, four and nine days. A second window sits behind it.',
       caption:
-        'Flowers have a clock on them. One batch of ranunculus went over yesterday, three more are inside a fortnight — and the shop knew without opening the cooler.',
+        'Flowers have a clock on them. One batch of ranunculus went over yesterday, three more are inside a fortnight, and the shop knew without opening the cooler.',
       viewports: ['desktop', 'mobile'],
     },
     {
@@ -138,13 +138,13 @@ export const APP_SHOTS: Partial<Record<PigglesAppId, ProductShot[]>> = {
       label: 'What to reorder, and why',
       alt: 'A list of three items to reorder, each showing its supplier, how much is available, how long delivery takes, how fast it sells, how many to order, how many are already on the way, and when it runs out.',
       caption:
-        'Not a low-stock alert — a quantity, with the working shown. Two of the three have no supplier on file yet, and it says so rather than guessing.',
+        'Not a low-stock alert: a quantity, with the working shown. Two of the three have no supplier on file yet, and it says so rather than guessing.',
       viewports: ['desktop', 'mobile'],
     },
     {
       surface: 'locations',
       label: 'Everywhere you keep things',
-      alt: 'Three locations listed — a shop cooler and a dry store in Asheville, North Carolina, and a main warehouse — each marked as somewhere the business owns and currently in use. A batches tab sits alongside.',
+      alt: 'Three locations listed (a shop cooler and a dry store in Asheville, North Carolina, and a main warehouse) each marked as somewhere the business owns and currently in use. A batches tab sits alongside.',
       caption:
         'A cooler and a dry store are two different places to a florist, and stock is counted per place rather than as one number.',
       viewports: ['desktop', 'mobile'],

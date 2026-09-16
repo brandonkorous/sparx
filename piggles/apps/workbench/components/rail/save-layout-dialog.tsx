@@ -46,7 +46,7 @@ export function SaveLayoutDialog({
       <DialogContent className="max-w-sm">
         <DialogTitle>Save this arrangement</DialogTitle>
         <DialogDescription>
-          Everything open right now — what is on screen, how it is split, the sizes — saved as a
+          Everything open right now (what is on screen, how it is split, the sizes) saved as a
           layout you can come back to.
         </DialogDescription>
         <Field className="py-2">

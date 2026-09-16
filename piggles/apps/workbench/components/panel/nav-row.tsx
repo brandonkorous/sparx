@@ -75,10 +75,10 @@ export function NavRow({
 }: NavRowProps) {
   const label = resolveTitle(surface, {});
   const hint = focused
-    ? `${label} — you are looking at this`
+    ? `${label}: you are looking at this`
     : open
-      ? `${label} — already open, this brings it forward`
-      : `${label} — Shift-click to open alongside, Alt-click for a new window`;
+      ? `${label}: already open, this brings it forward`
+      : `${label}: Shift-click to open alongside, Alt-click for a new window`;
 
   return (
     // `data-guide` on the ROW, not the button: the app guides point at rows, and

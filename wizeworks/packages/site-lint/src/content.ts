@@ -105,7 +105,7 @@ function checkImages(inventory: DocumentInventory): RawFinding[] {
         detail:
           'A short description of what the picture shows is read aloud to visitors who use a ' +
           'screen reader, shown if the image fails to load, and used by search engines to ' +
-          'understand the page. Describe it in a few words — or, if the picture is purely ' +
+          'understand the page. Describe it in a few words, or, if the picture is purely ' +
           'decorative and the text beside it already says the same thing, set the description to ' +
           'empty on purpose so it is skipped rather than left undecided.',
         ...(src ? { evidence: src } : {}),
@@ -201,7 +201,7 @@ function checkHeadings(inventory: DocumentInventory): RawFinding[] {
         title: 'A heading level was skipped here',
         detail:
           `This heading is a level ${String(level)}, but the heading before it was a level ` +
-          `${String(previous)} — so the page jumps a step. Headings work like an outline: a ` +
+          `${String(previous)}, so the page jumps a step. Headings work like an outline: a ` +
           'reader using a screen reader navigates by them, and a gap makes it sound as though a ' +
           'section is missing. Move this one up to level ' +
           `${String(previous + 1)}, or add the heading that belongs between them.`,
@@ -266,11 +266,11 @@ function checkDeadControls(inventory: DocumentInventory): RawFinding[] {
         detail:
           type === 'a'
             ? 'It is styled as a link, so visitors will try to click it, but no destination was ' +
-              'ever set — so it behaves like ordinary text. Give it a destination, or restyle it ' +
+              'ever set, so it behaves like ordinary text. Give it a destination, or restyle it ' +
               'so it does not invite a click.'
             : 'The button is on the page and looks ready to use, but nothing is connected to it: ' +
               'it has no destination, it is not part of a form, and it does not open or toggle ' +
-              'anything. Give it a destination, put it in a form, or remove it — a button that ' +
+              'anything. Give it a destination, put it in a form, or remove it: a button that ' +
               'does nothing costs more trust than a missing one.',
         ...(visibleText(node) ? { evidence: visibleText(node).slice(0, 80) } : {}),
       });
@@ -289,7 +289,7 @@ function checkDeadControls(inventory: DocumentInventory): RawFinding[] {
       title: type === 'a' ? 'This link has nothing in it' : 'This button has nothing in it',
       detail:
         'There are no words and no icon inside it, so on the live page it is an invisible or ' +
-        'blank target. Add the words that say what it does — or, if it is meant to be an ' +
+        'blank target. Add the words that say what it does, or, if it is meant to be an ' +
         'icon-only control, add the icon and a short description of what pressing it does.',
     });
   }
@@ -329,7 +329,7 @@ function checkPageEmpty(inventory: DocumentInventory): RawFinding[] {
       severity: 'error',
       title: 'This page is empty',
       detail:
-        'Apart from the header and footer there is nothing on it — a visitor who arrives here ' +
+        'Apart from the header and footer there is nothing on it: a visitor who arrives here ' +
         'sees a blank space. Add the content, or remove the page so nothing links to it.',
     },
   ];
@@ -354,15 +354,15 @@ const EMBED_ADVICE: Record<string, { title: string; detail: string }> = {
   empty: {
     title: 'This block has no link in it yet',
     detail:
-      'Nothing appears here at all — visitors just get a gap where the video or booking ' +
+      'Nothing appears here at all: visitors just get a gap where the video or booking ' +
       'calendar was meant to be, and nothing on the page says why. Open the block and paste ' +
       'the address of the thing you want to show, or remove the block.',
   },
   link: {
     title: 'This will show a link to click, not the thing itself',
     detail:
-      'Videos can play on the page when they come from YouTube or Vimeo. Anything else — and ' +
-      'any link that points at a channel or a search rather than one video — becomes a link ' +
+      'Videos can play on the page when they come from YouTube or Vimeo. Anything else, and ' +
+      'any link that points at a channel or a search rather than one video: becomes a link ' +
       'visitors have to click. That still works, so leave it if you meant it; if you wanted it ' +
       'to appear on the page, open the video itself and copy its address from your browser’s bar.',
   },
@@ -371,7 +371,7 @@ const EMBED_ADVICE: Record<string, { title: string; detail: string }> = {
     detail:
       'Google only lets one particular kind of map address appear inside another site, so this ' +
       'one becomes a link instead. Use the Map block rather than this one and simply type your ' +
-      'address — it builds the right kind of map for you.',
+      'address. It builds the right kind of map for you.',
   },
 };
 
@@ -381,14 +381,14 @@ const FRAME_ADVICE: Record<string, { title: string; detail: string }> = {
   empty: {
     title: 'This embed has no link in it yet',
     detail:
-      'Nothing appears here at all — visitors get a gap, and nothing on the page says why. ' +
+      'Nothing appears here at all: visitors get a gap, and nothing on the page says why. ' +
       'Open the block and paste the address of the thing you want to show, or remove the block.',
   },
   insecure: {
     title: 'That link isn’t secure, so browsers will block it',
     detail:
       'Your site is served securely, and a browser refuses to show insecure content inside a ' +
-      'secure page. Try the same address with https:// at the front — and if that site has no ' +
+      'secure page. Try the same address with https:// at the front, and if that site has no ' +
       'secure version, link to it in your words instead of showing it here.',
   },
   'not-a-link': {
@@ -401,7 +401,7 @@ const FRAME_ADVICE: Record<string, { title: string; detail: string }> = {
     title: 'Use the Video block for this one',
     detail:
       'YouTube and Vimeo don’t allow their ordinary pages to be shown inside another site, so ' +
-      'this would come out blank. The Video block knows how to play them properly — put the ' +
+      'this would come out blank. The Video block knows how to play them properly. Put the ' +
       'same link in there instead.',
   },
 };
@@ -410,20 +410,20 @@ const MAP_ADVICE: Record<string, { title: string; detail: string }> = {
   empty: {
     title: 'This map has no address in it yet',
     detail:
-      'Nothing will appear here. Open the block and type your address — the same one on your ' +
+      'Nothing will appear here. Open the block and type your address: the same one on your ' +
       'contact page is fine. A Google Maps link works too.',
   },
   'shortened-link': {
     title: 'That is a shortened map link',
     detail:
       'A short link hides the actual place, so there is nothing here to put on a map. Open it, ' +
-      'then copy the long address from your browser’s bar — or just type the address itself.',
+      'then copy the long address from your browser’s bar, or just type the address itself.',
   },
   'no-location-in-link': {
     title: 'We cannot find a place in that map link',
     detail:
       'The link has no address or coordinates in it. Search for your place on Google Maps, then ' +
-      'copy the address from your browser’s bar — or type the address here directly.',
+      'copy the address from your browser’s bar, or type the address here directly.',
   },
 };
 

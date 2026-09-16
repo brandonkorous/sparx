@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Life happens — just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets."
+      "policyText": "Life happens. Just give us 24 hours’ notice to change or cancel and there’s no charge. We’ll text a reminder the day before and two hours ahead so nobody forgets."
     },
     {
       "handle": "roadready-noshow",
@@ -224,7 +224,7 @@
     {
       "handle": "free-consultation",
       "name": "Free consultation",
-      "description": "A no-pressure chat to map out a plan — where you are, what you need for your license, and the schedule that fits. Great for nervous first-timers and their parents.",
+      "description": "A no-pressure chat to map out a plan: where you are, what you need for your license, and the schedule that fits. Great for nervous first-timers and their parents.",
       "durationMinutes": 45,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -241,7 +241,7 @@
     {
       "handle": "intro-lesson",
       "name": "Intro drive",
-      "description": "A gentle first time behind the wheel in an empty lot and quiet streets — seat, mirrors, brakes and your very first turns, all at your pace.",
+      "description": "A gentle first time behind the wheel in an empty lot and quiet streets: seat, mirrors, brakes and your very first turns, all at your pace.",
       "durationMinutes": 45,
       "priceCents": 4500,
       "assignmentStrategy": "customer_choice",
@@ -264,7 +264,7 @@
     {
       "handle": "behind-the-wheel-lesson",
       "name": "Behind-the-wheel lesson",
-      "description": "A full one-on-one driving lesson in a dual-brake car — real roads, real traffic, building confidence turn by turn with a patient instructor beside you.",
+      "description": "A full one-on-one driving lesson in a dual-brake car: real roads, real traffic, building confidence turn by turn with a patient instructor beside you.",
       "durationMinutes": 90,
       "priceCents": 9000,
       "assignmentStrategy": "customer_choice",
@@ -287,7 +287,7 @@
     {
       "handle": "drivers-ed-session",
       "name": "Driver’s-ed classroom session",
-      "description": "The classroom half of learning to drive — road signs, right-of-way, safe following distance and the rules of the road, taught in plain language for teens.",
+      "description": "The classroom half of learning to drive: road signs, right-of-way, safe following distance and the rules of the road, taught in plain language for teens.",
       "durationMinutes": 120,
       "priceCents": 7500,
       "assignmentStrategy": "customer_choice",
@@ -304,7 +304,7 @@
     {
       "handle": "permit-prep-session",
       "name": "Permit prep",
-      "description": "Everything you need to walk into the DMV ready for the written permit test — practice questions, the tricky signs, and the stuff that trips people up.",
+      "description": "Everything you need to walk into the DMV ready for the written permit test: practice questions, the tricky signs, and the stuff that trips people up.",
       "durationMinutes": 60,
       "priceCents": 5500,
       "assignmentStrategy": "customer_choice",
@@ -321,7 +321,7 @@
     {
       "handle": "road-test-prep",
       "name": "Road-test prep",
-      "description": "A dress-rehearsal for test day on the actual test route — parallel parking, three-point turns and the checklist examiners grade, so you show up calm and ready.",
+      "description": "A dress-rehearsal for test day on the actual test route: parallel parking, three-point turns and the checklist examiners grade, so you show up calm and ready.",
       "durationMinutes": 90,
       "priceCents": 9500,
       "assignmentStrategy": "customer_choice",
@@ -344,7 +344,7 @@
     {
       "handle": "refresher-lesson",
       "name": "Refresher lesson",
-      "description": "Back after a break, or just want to shake off the nerves? A focused hour to rebuild confidence on the skills that feel rusty — no judgment, just practice.",
+      "description": "Back after a break, or just want to shake off the nerves? A focused hour to rebuild confidence on the skills that feel rusty: no judgment, just practice.",
       "durationMinutes": 60,
       "priceCents": 6000,
       "assignmentStrategy": "customer_choice",

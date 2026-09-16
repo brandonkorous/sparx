@@ -27,8 +27,8 @@ export const getLegalChecklistTool: McpToolDefinition = {
   name: 'get_legal_checklist',
   description:
     "The tenant's legal-page checklist. For each platform legal template (privacy, terms, " +
-    'cookie-policy, returns, shipping, refund) it reports whether a page exists and its state — ' +
-    'missing / draft / stale / unplaced / complete — plus whether it is required (privacy always; ' +
+    'cookie-policy, returns, shipping, refund) it reports whether a page exists and its state: ' +
+    'missing / draft / stale / unplaced / complete: plus whether it is required (privacy always; ' +
     'returns/shipping/refund when the store is on), its slug, and whether it is placed in the footer. ' +
     'Call this before wiring or trusting a site footer’s legal links: a link resolves only once its ' +
     'page is PUBLISHED and placed. Read-only.',
@@ -43,7 +43,7 @@ export const createLegalPageTool: McpToolDefinition = {
   description:
     'Scaffold a missing legal page from the platform starter template. `legalKind` is one of ' +
     'privacy | terms | cookie-policy | returns | shipping | refund. It lands as a DRAFT with a ' +
-    'starter-text disclaimer and a footer placement. IMPORTANT: this does NOT publish or approve it — ' +
+    'starter-text disclaimer and a footer placement. IMPORTANT: this does NOT publish or approve it, ' +
     'the tenant must review the wording, acknowledge the disclaimer, and publish it from the workbench ' +
     '(Content → Legal pages). Run get_legal_checklist first to see what is missing; refuses if a page ' +
     'of that kind (or one already at the template’s slug) exists.',

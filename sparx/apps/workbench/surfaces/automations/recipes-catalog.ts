@@ -99,7 +99,7 @@ export const GOAL_GROUPS: readonly GoalGroup[] = [
     key: 'recover',
     title: 'Recover lost sales',
     blurb:
-      'Gently bring back a sale that nearly slipped away — a left-behind cart or a payment that did not go through.',
+      'Gently bring back a sale that nearly slipped away: a left-behind cart or a payment that did not go through.',
     icon: LifeBuoy,
   },
   {
@@ -125,14 +125,14 @@ export const GOAL_GROUPS: readonly GoalGroup[] = [
     key: 'aftersale',
     title: 'Keep customers in the loop',
     blurb:
-      'Send the routine updates people expect — deliveries, refunds, returns and subscription changes — without lifting a finger.',
+      'Send the routine updates people expect (deliveries, refunds, returns and subscription changes) without lifting a finger.',
     icon: Truck,
   },
   {
     key: 'stayontop',
     title: 'Stay on top of things',
     blurb:
-      'Get a heads-up when something needs you — a big order, low stock, a new lead or an unanswered chat.',
+      'Get a heads-up when something needs you: a big order, low stock, a new lead or an unanswered chat.',
     icon: Bell,
   },
   {
@@ -215,7 +215,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Payment failed — email',
+    name: 'Payment failed: email',
     goal: 'recover',
     title: 'Ask a shopper to retry a failed payment',
     blurb: 'Emails a customer when their payment does not go through, so they can try again.',
@@ -285,7 +285,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'invoicing',
   },
   {
-    name: 'Invoice overdue (14 days — second notice)',
+    name: 'Invoice overdue (14 days, second notice)',
     goal: 'getpaid',
     title: 'Send a second overdue notice',
     blurb: 'Emails a firmer reminder when an invoice is two weeks past due.',
@@ -293,7 +293,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'invoicing',
   },
   {
-    name: 'Invoice overdue (30 days — final notice)',
+    name: 'Invoice overdue (30 days, final notice)',
     goal: 'getpaid',
     title: 'Send a final overdue notice',
     blurb: 'Emails a final reminder when an invoice is a month past due.',
@@ -301,7 +301,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'invoicing',
   },
   {
-    name: 'Payment received — send receipt',
+    name: 'Payment received: send receipt',
     goal: 'getpaid',
     title: 'Send a receipt when you are paid',
     blurb: 'Emails the customer a receipt as soon as an invoice is paid in full.',
@@ -309,7 +309,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'invoicing',
   },
   {
-    name: 'Estimate approved — advance task',
+    name: 'Estimate approved: advance task',
     goal: 'getpaid',
     title: 'Follow up when a quote is approved',
     blurb: 'Opens a to-do to move things along once a customer approves a quote or estimate.',
@@ -335,7 +335,7 @@ export const RECIPES: readonly RecipeMeta[] = [
 
   /* ── Keep customers in the loop ─────────────────────────────────────────── */
   {
-    name: 'Order delivered — email',
+    name: 'Order delivered: email',
     goal: 'aftersale',
     title: 'Tell customers their order arrived',
     blurb: 'Emails the customer once their order is marked delivered.',
@@ -343,7 +343,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Order cancelled — email',
+    name: 'Order cancelled: email',
     goal: 'aftersale',
     title: 'Confirm a cancelled order',
     blurb: 'Emails the customer when their order is cancelled.',
@@ -351,7 +351,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Order refunded — email',
+    name: 'Order refunded: email',
     goal: 'aftersale',
     title: 'Confirm a refund by email',
     blurb: 'Emails the customer when you refund their order.',
@@ -359,7 +359,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Refund issued — CRM note',
+    name: 'Refund issued: CRM note',
     goal: 'aftersale',
     title: 'Note refunds on the customer',
     blurb: 'Adds a note to the customer’s history whenever an order is refunded.',
@@ -367,7 +367,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'crm',
   },
   {
-    name: 'Return approved — email',
+    name: 'Return approved: email',
     goal: 'aftersale',
     title: 'Confirm an approved return',
     blurb: 'Emails the customer with next steps when you approve their return.',
@@ -375,7 +375,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Return received — email',
+    name: 'Return received: email',
     goal: 'aftersale',
     title: 'Confirm returned items arrived',
     blurb: 'Emails the customer once their returned items reach you.',
@@ -383,7 +383,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Return refunded — email',
+    name: 'Return refunded: email',
     goal: 'aftersale',
     title: 'Confirm a return refund',
     blurb: 'Emails the customer when a refund for their return is issued.',
@@ -391,7 +391,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Subscription confirmed — email',
+    name: 'Subscription confirmed: email',
     goal: 'aftersale',
     title: 'Welcome new subscribers',
     blurb: 'Emails the customer when a new subscription starts.',
@@ -399,7 +399,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Subscription renewed — email',
+    name: 'Subscription renewed: email',
     goal: 'aftersale',
     title: 'Confirm a subscription renewal',
     blurb: 'Emails the customer each time their subscription renews and reorders.',
@@ -407,7 +407,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Subscription payment failed — email',
+    name: 'Subscription payment failed: email',
     goal: 'aftersale',
     title: 'Flag a failed subscription payment',
     blurb: 'Emails the customer when a subscription renewal payment fails, so they can fix it.',
@@ -415,7 +415,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Subscription paused — email',
+    name: 'Subscription paused: email',
     goal: 'aftersale',
     title: 'Confirm a paused subscription',
     blurb: 'Emails the customer when their subscription is paused.',
@@ -423,7 +423,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Subscription resumed — email',
+    name: 'Subscription resumed: email',
     goal: 'aftersale',
     title: 'Confirm a resumed subscription',
     blurb: 'Emails the customer when their subscription starts up again.',
@@ -431,7 +431,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Subscription cancelled — email',
+    name: 'Subscription cancelled: email',
     goal: 'aftersale',
     title: 'Confirm a cancelled subscription',
     blurb: 'Emails the customer when their subscription is cancelled.',
@@ -439,7 +439,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'B2B order approved — email',
+    name: 'B2B order approved: email',
     goal: 'aftersale',
     title: 'Tell buyers an order is approved',
     blurb: 'Emails a wholesale buyer when their pending order is approved.',
@@ -447,7 +447,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'b2b',
   },
   {
-    name: 'B2B order rejected — email',
+    name: 'B2B order rejected: email',
     goal: 'aftersale',
     title: 'Tell buyers an order was not approved',
     blurb: 'Emails a wholesale buyer when their pending order is not approved.',
@@ -485,7 +485,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     goal: 'stayontop',
     title: 'Auto-draft restock orders',
     blurb:
-      'Drafts a purchase order to your supplier when a product hits its reorder point — you review and send it.',
+      'Drafts a purchase order to your supplier when a product hits its reorder point. You review and send it.',
     icon: PackagePlus,
     module: 'inventory',
   },
@@ -498,7 +498,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'crm',
   },
   {
-    name: 'Deal won — create invoice task',
+    name: 'Deal won: create invoice task',
     goal: 'stayontop',
     title: 'Invoice a won deal',
     blurb: 'Opens a to-do to raise the invoice as soon as a deal is marked won.',
@@ -514,7 +514,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'chat',
   },
   {
-    name: 'Notify — payment failed',
+    name: 'Notify: payment failed',
     goal: 'stayontop',
     title: 'Notify me of failed payments',
     blurb: 'Shows you a notification when a customer’s payment fails.',
@@ -522,7 +522,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'commerce',
   },
   {
-    name: 'Notify — out of stock',
+    name: 'Notify: out of stock',
     goal: 'stayontop',
     title: 'Notify me when something sells out',
     blurb: 'Shows you a notification when a product runs out of stock.',
@@ -530,7 +530,7 @@ export const RECIPES: readonly RecipeMeta[] = [
     module: 'inventory',
   },
   {
-    name: 'Notify — subscription payment failed',
+    name: 'Notify: subscription payment failed',
     goal: 'stayontop',
     title: 'Notify me of failed subscription payments',
     blurb: 'Shows you a notification when a subscription renewal payment fails.',

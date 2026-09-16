@@ -152,7 +152,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<History className="size-6" aria-hidden />}
           title="Could not load the history"
-          description="This is a problem reaching the server. Your records are unaffected — they just could not be read just now."
+          description="This is a problem reaching the server. Your records are unaffected. They just could not be read just now."
         />
       );
     }
@@ -181,7 +181,7 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
               ? locationName
                 ? `No stock changes match those filters at ${locationName}. Widen the dates, clear the reason, or switch back to every location.`
                 : 'No stock changes match those filters. Try a different reason, a wider date range, or part of a product name.'
-              : 'Every change to a stock number shows up here — a sale, a delivery, a count being applied, a transfer. The first one appears the moment anything moves.'
+              : 'Every change to a stock number shows up here: a sale, a delivery, a count being applied, a transfer. The first one appears the moment anything moves.'
           }
         />
       );

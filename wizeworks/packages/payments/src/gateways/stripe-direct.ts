@@ -197,7 +197,7 @@ export class StripeDirectGateway implements PaymentGateway {
   }
 
   parseWebhook(): Promise<ParsedWebhookEvent> {
-    return Promise.reject(new Error('stripe_direct parses per-tenant — use parseWebhookForTenant'));
+    return Promise.reject(new Error('stripe_direct parses per-tenant: use parseWebhookForTenant'));
   }
 
   /** Tenant-scoped webhook parse (the stripe-direct route resolves the tenant from

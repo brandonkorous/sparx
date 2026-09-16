@@ -167,7 +167,7 @@ function hero(): Node {
                                     text: 'Wine made by people, not factories.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Sediment is a natural-wine shop. We buy from small growers who farm organically and let the wine make itself — nothing added, nothing stripped out. Bright, alive bottles, chosen by people who drink them.',
+                                    text: 'Sediment is a natural-wine shop. We buy from small growers who farm organically and let the wine make itself. Nothing added, nothing stripped out. Bright, alive bottles, chosen by people who drink them.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -260,7 +260,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Just landed' }),
     editorialBand({
         heading: 'Nothing added, nothing taken away',
-        lead: 'Natural wine is farmed organically, fermented with its own wild yeast, and bottled with little or no added sulphur — no lab yeasts, no color, no fining agents, no filtering the life out of it. What that gets you is wine that tastes like the year, the place and the person who grew it.',
+        lead: 'Natural wine is farmed organically, fermented with its own wild yeast, and bottled with little or no added sulphur: no lab yeasts, no color, no fining agents, no filtering the life out of it. What that gets you is wine that tastes like the year, the place and the person who grew it.',
         assetId: 'wine-band-cellar',
         cta: 'How we choose our wine',
         href: '/blog/what-natural-wine-actually-means',
@@ -269,7 +269,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.red', layout: 'carousel', heading: 'Chillable & juicy reds' }),
     editorialBand({
         heading: 'A case worth opening',
-        lead: 'Not sure where to start? The mixed six is our pick of the shelf right now — three reds, three whites and oranges, all low-intervention, all delicious, at a better price than buying them one at a time. We swap it every month.',
+        lead: 'Not sure where to start? The mixed six is our pick of the shelf right now: three reds, three whites and oranges, all low-intervention, all delicious, at a better price than buying them one at a time. We swap it every month.',
         assetId: 'wine-band-club',
         cta: 'See the mixed six',
         href: '/products/the-weeknight-six',
@@ -314,7 +314,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'How we drink it' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Serve it a touch cooler than you think — a light chill flatters almost everything on this shelf, reds included. Living wine can throw a little sediment or fizz; that is the wine, not a fault. Open it, give it a minute, and let it wake up.',
+                                        text: 'Serve it a touch cooler than you think: a light chill flatters almost everything on this shelf, reds included. Living wine can throw a little sediment or fizz; that is the wine, not a fault. Open it, give it a minute, and let it wake up.',
                                     }),
                                 ],
                             }),
@@ -353,13 +353,13 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'The whole shelf',
-        'Everything we are pouring right now — reds, whites, skin-contact oranges, pét-nats, rosé, a magnum or two and a low-intervention non-alc. Filter by color or sort however you like; every bottle here is farmed clean and made with a light hand.'
+        'Everything we are pouring right now: reds, whites, skin-contact oranges, pét-nats, rosé, a magnum or two and a low-intervention non-alc. Filter by color or sort however you like; every bottle here is farmed clean and made with a light hand.'
     ),
 ];
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Collections',
-        'The bottles grouped the way people actually shop — what just landed, the low-intervention core, the ones to chill hard, our staff picks and the bottles worth keeping.'
+        'The bottles grouped the way people actually shop: what just landed, the low-intervention core, the ones to chill hard, our staff picks and the bottles worth keeping.'
     ),
 ];
 const SEARCH: Node[] = [
@@ -372,7 +372,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free local delivery over $75, and every order is packed to travel safely. Not sure about a bottle? Tell us what you like and we will point you at the right one — buying wine should be fun, not a test.',
+                        text: 'Free local delivery over $75, and every order is packed to travel safely. Not sure about a bottle? Tell us what you like and we will point you at the right one: buying wine should be fun, not a test.',
                     }),
                 ],
             }),
@@ -386,7 +386,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Sediment journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Notes from behind the counter — what natural wine actually means, what to pour with dinner, and how to taste a bottle without the ceremony. Honest, useful, no snobbery.',
+                        text: 'Notes from behind the counter: what natural wine actually means, what to pour with dinner, and how to taste a bottle without the ceremony. Honest, useful, no snobbery.',
                     }),
                 ],
             }),
@@ -403,10 +403,10 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Sediment' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Sediment started as a corner of a wine bar and a stubborn belief: that the most interesting bottles were the ones the big shops would not stock — made by small growers, farmed without chemicals, and left alone in the cellar to become themselves.',
+                        text: 'Sediment started as a corner of a wine bar and a stubborn belief: that the most interesting bottles were the ones the big shops would not stock, made by small growers, farmed without chemicals, and left alone in the cellar to become themselves.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We buy from importers and growers we can name, and we taste everything before it hits the shelf. If a bottle is not honest, alive and worth the money, it does not make the cut — no matter how good the label looks or how fashionable the region has become.',
+                        text: 'We buy from importers and growers we can name, and we taste everything before it hits the shelf. If a bottle is not honest, alive and worth the money, it does not make the cut: no matter how good the label looks or how fashionable the region has become.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
                         text: 'No gatekeeping, no lecture, no wine that needs a diagram to enjoy. Just a well-kept shelf of living wine and someone who is happy to help you find your next favourite bottle.',
@@ -424,7 +424,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Come say hello',
-        intro: 'After a bottle for a dinner, a case for a party, or a hand picking something for a gift? Tell us what you are after and a real person from the shop will get back to you — recommendations always welcome.',
+        intro: 'After a bottle for a dinner, a case for a party, or a hand picking something for a gift? Tell us what you are after and a real person from the shop will get back to you: recommendations always welcome.',
         submitLabel: 'Email the shop',
     }),
 ];
@@ -499,7 +499,7 @@ const PRODUCTS: Product[] = [
         handle: 'frizzante-petnat',
         title: 'Frizzante Pét-Nat',
         description:
-            'A cloudy, crown-capped sparkler finished in the bottle the old way — one fermentation, no dosage, nothing added. Bone-dry and gently fizzy, with green apple, lemon pith and a little bready funk. The bottle we open first, every time.',
+            'A cloudy, crown-capped sparkler finished in the bottle the old way. One fermentation, no dosage, nothing added. Bone-dry and gently fizzy, with green apple, lemon pith and a little bready funk. The bottle we open first, every time.',
         price: 28,
         sku: 'SEDIMENT-PETNAT-01',
         productType: 'Sparkling wine',
@@ -508,14 +508,14 @@ const PRODUCTS: Product[] = [
         tags: ['pet-nat', 'sparkling', 'dry', 'chillable', 'natural'],
         asset: 'prod-petnat',
         alt: 'A crown-capped bottle of cloudy pét-nat sparkling wine',
-        seoTitle: 'Frizzante Pét-Nat — dry sparkling natural wine | Sediment',
-        seoDescription: 'A bone-dry, gently fizzy pét-nat finished in the bottle — green apple, lemon pith, a little bready funk.',
+        seoTitle: 'Frizzante Pét-Nat: dry sparkling natural wine | Sediment',
+        seoDescription: 'A bone-dry, gently fizzy pét-nat finished in the bottle: green apple, lemon pith, a little bready funk.',
     }),
     bottle({
         handle: 'amber-hours-skin-contact',
         title: 'Amber Hours Skin-Contact',
         description:
-            'White grapes left on their skins for two weeks, the way orange wine has been made for millennia. Deep amber, lightly tannic and properly savoury — dried apricot, orange peel, black tea and a grippy, moreish finish. Treat it like a light red.',
+            'White grapes left on their skins for two weeks, the way orange wine has been made for millennia. Deep amber, lightly tannic and properly savoury: dried apricot, orange peel, black tea and a grippy, moreish finish. Treat it like a light red.',
         price: 32,
         sku: 'SEDIMENT-ORANGE-01',
         productType: 'Orange wine',
@@ -524,14 +524,14 @@ const PRODUCTS: Product[] = [
         tags: ['orange', 'skin-contact', 'savoury', 'natural'],
         asset: 'prod-orange',
         alt: 'A bottle of amber skin-contact orange wine',
-        seoTitle: 'Amber Hours Skin-Contact — orange wine | Sediment',
-        seoDescription: 'A properly savoury skin-contact orange wine — dried apricot, orange peel, black tea and a grippy finish.',
+        seoTitle: 'Amber Hours Skin-Contact: orange wine | Sediment',
+        seoDescription: 'A properly savoury skin-contact orange wine: dried apricot, orange peel, black tea and a grippy finish.',
     }),
     bottle({
         handle: 'cold-press-chillable-red',
         title: 'Cold Press Chillable Red',
         description:
-            'A light, bright red built to go in the fridge — low tannin, high glee. Crunchy red cherry, cranberry and a peppery lift, with a whole-bunch juiciness that begs for a half-hour chill. Pizza wine, picnic wine, Tuesday wine.',
+            'A light, bright red built to go in the fridge: low tannin, high glee. Crunchy red cherry, cranberry and a peppery lift, with a whole-bunch juiciness that begs for a half-hour chill. Pizza wine, picnic wine, Tuesday wine.',
         price: 24,
         sku: 'SEDIMENT-RED-CHILL-01',
         productType: 'Red wine',
@@ -540,14 +540,14 @@ const PRODUCTS: Product[] = [
         tags: ['red', 'chillable', 'light-bodied', 'natural'],
         asset: 'prod-chill-red',
         alt: 'A bottle of bright, chillable red wine',
-        seoTitle: 'Cold Press Chillable Red — light natural red | Sediment',
-        seoDescription: 'A light, low-tannin red built for the fridge — crunchy red cherry, cranberry and a peppery lift.',
+        seoTitle: 'Cold Press Chillable Red: light natural red | Sediment',
+        seoDescription: 'A light, low-tannin red built for the fridge: crunchy red cherry, cranberry and a peppery lift.',
     }),
     bottle({
         handle: 'slate-and-stone-white',
         title: 'Slate & Stone White',
         description:
-            'A taut, mineral white from old vines on poor soil — the kind that gives more flavour and less crop. Bone-dry and saline, with green apple, white flowers and a wet-stone snap that runs right through the finish. Oysters would be thrilled.',
+            'A taut, mineral white from old vines on poor soil: the kind that gives more flavour and less crop. Bone-dry and saline, with green apple, white flowers and a wet-stone snap that runs right through the finish. Oysters would be thrilled.',
         price: 26,
         sku: 'SEDIMENT-WHITE-01',
         productType: 'White wine',
@@ -556,8 +556,8 @@ const PRODUCTS: Product[] = [
         tags: ['white', 'mineral', 'dry', 'natural'],
         asset: 'prod-mineral-white',
         alt: 'A bottle of pale mineral white wine',
-        seoTitle: 'Slate & Stone White — mineral natural white | Sediment',
-        seoDescription: 'A taut, saline mineral white — green apple, white flowers and a wet-stone snap. Bone-dry.',
+        seoTitle: 'Slate & Stone White: mineral natural white | Sediment',
+        seoDescription: 'A taut, saline mineral white: green apple, white flowers and a wet-stone snap. Bone-dry.',
     }),
     bottle({
         handle: 'blush-riot-rose',
@@ -572,8 +572,8 @@ const PRODUCTS: Product[] = [
         tags: ['rose', 'dry', 'chillable', 'natural'],
         asset: 'prod-rose',
         alt: 'A bottle of dry pale rosé',
-        seoTitle: 'Blush Riot Rosé — dry natural rosé | Sediment',
-        seoDescription: 'A dry, pale rosé with real texture — wild strawberry, pink grapefruit and a savoury, herbal edge.',
+        seoTitle: 'Blush Riot Rosé: dry natural rosé | Sediment',
+        seoDescription: 'A dry, pale rosé with real texture: wild strawberry, pink grapefruit and a savoury, herbal edge.',
     }),
     bottle({
         handle: 'house-pour-everyday-red',
@@ -588,14 +588,14 @@ const PRODUCTS: Product[] = [
         tags: ['red', 'medium-bodied', 'everyday', 'natural'],
         asset: 'prod-everyday-red',
         alt: 'A bottle of easy everyday red wine',
-        seoTitle: 'House Pour Everyday Red — natural red wine | Sediment',
-        seoDescription: 'A soft, structured everyday red — dark cherry, plum and a little wild herb. Great value, honestly farmed.',
+        seoTitle: 'House Pour Everyday Red: natural red wine | Sediment',
+        seoDescription: 'A soft, structured everyday red: dark cherry, plum and a little wild herb. Great value, honestly farmed.',
     }),
     bottle({
         handle: 'free-spirit-non-alc',
         title: 'Free Spirit Non-Alc Sparkling',
         description:
-            'A grown-up alcohol-free sparkling for the nights you are not drinking but still want something in the good glass. Gently fizzy and properly dry, with white peach, elderflower and a citrus snap — none of the cloying sweetness most non-alc falls into.',
+            'A grown-up alcohol-free sparkling for the nights you are not drinking but still want something in the good glass. Gently fizzy and properly dry, with white peach, elderflower and a citrus snap: none of the cloying sweetness most non-alc falls into.',
         price: 19,
         sku: 'SEDIMENT-NONALC-01',
         productType: 'Non-alcoholic',
@@ -604,22 +604,22 @@ const PRODUCTS: Product[] = [
         tags: ['non-alc', 'sparkling', 'dry', 'alcohol-free'],
         asset: 'prod-nonalc',
         alt: 'A bottle of non-alcoholic sparkling wine on ice',
-        seoTitle: 'Free Spirit Non-Alc Sparkling — alcohol-free wine | Sediment',
-        seoDescription: 'A grown-up alcohol-free sparkling — dry, gently fizzy, white peach and elderflower. No cloying sweetness.',
+        seoTitle: 'Free Spirit Non-Alc Sparkling: alcohol-free wine | Sediment',
+        seoDescription: 'A grown-up alcohol-free sparkling: dry, gently fizzy, white peach and elderflower. No cloying sweetness.',
     }),
     {
         handle: 'big-night-magnum',
         title: 'Big Night Magnum',
         description:
-            'A magnum of our juicy house red — the same honest bottle, at twice the size and built for a full table. There is something about pulling the cork on a big format that turns a dinner into an occasion; wine keeps better and ages slower in a magnum, too.',
+            'A magnum of our juicy house red: the same honest bottle, at twice the size and built for a full table. There is something about pulling the cork on a big format that turns a dinner into an occasion; wine keeps better and ages slower in a magnum, too.',
         status: 'active',
         productType: 'Red wine',
         vendor: 'Sediment',
         tags: ['red', 'magnum', 'large-format', 'gift', 'natural'],
         categoryHandles: ['red'],
         collectionHandles: ['gifts', 'cellar-worthy', 'staff-picks'],
-        seoTitle: 'Big Night Magnum — 1.5L natural red wine | Sediment',
-        seoDescription: 'A 1.5L magnum of our juicy house red — built for a full table and a real occasion.',
+        seoTitle: 'Big Night Magnum: 1.5L natural red wine | Sediment',
+        seoDescription: 'A 1.5L magnum of our juicy house red: built for a full table and a real occasion.',
         options: [{ name: 'Size', displayType: 'dropdown', values: [{ value: 'Magnum · 1.5L' }] }],
         variants: [
             { sku: 'SEDIMENT-MAGNUM-15L', priceCents: money(58), isDefault: true, inventoryPolicy: 'continue', optionValues: { Size: 'Magnum · 1.5L' } },
@@ -630,15 +630,15 @@ const PRODUCTS: Product[] = [
         handle: 'the-weeknight-six',
         title: 'The Weeknight Six',
         description:
-            'Six bottles, our pick, at a better price than buying them one by one — the easiest way to fill the rack with low-intervention wine you will actually finish. Choose a mix of colors, all reds, or all whites and oranges; we swap the line-up every month.',
+            'Six bottles, our pick, at a better price than buying them one by one: the easiest way to fill the rack with low-intervention wine you will actually finish. Choose a mix of colors, all reds, or all whites and oranges; we swap the line-up every month.',
         status: 'active',
         productType: 'Mixed case',
         vendor: 'Sediment',
         tags: ['mixed-case', 'value', 'gift', 'natural'],
         categoryHandles: ['mixed-packs'],
         collectionHandles: ['new-arrivals', 'staff-picks', 'gifts'],
-        seoTitle: 'The Weeknight Six — mixed natural wine case | Sediment',
-        seoDescription: 'A curated six-bottle case of low-intervention wine at a better price — mixed, all red, or all white and orange.',
+        seoTitle: 'The Weeknight Six: mixed natural wine case | Sediment',
+        seoDescription: 'A curated six-bottle case of low-intervention wine at a better price: mixed, all red, or all white and orange.',
         options: [
             { name: 'Selection', displayType: 'dropdown', values: [{ value: 'Mixed colors' }, { value: 'All reds' }, { value: 'Whites & oranges' }] },
         ],
@@ -738,10 +738,10 @@ const CONTENT = [
                 content: [
                     para('“Natural wine” gets used to sell a lot of things, and it has no legal definition, so it is worth saying plainly what we mean by it. For us it is a spectrum with two ends: how the grapes are farmed, and how little is done to the juice once it is picked. A bottle earns its place on our shelf by sitting well down both.'),
                     h2('In the vineyard'),
-                    para('It starts with organic or biodynamic farming — no synthetic herbicides, pesticides or fertilisers — and usually with a small grower who picks by hand and actually walks their own rows. Healthy fruit off living soil is the whole game; you cannot fix bad farming in the cellar, and the best natural winemakers barely try to.'),
+                    para('It starts with organic or biodynamic farming (no synthetic herbicides, pesticides or fertilisers) and usually with a small grower who picks by hand and actually walks their own rows. Healthy fruit off living soil is the whole game; you cannot fix bad farming in the cellar, and the best natural winemakers barely try to.'),
                     h2('In the cellar'),
-                    para('Then, as little intervention as the wine allows. Fermentation with the wild yeast that arrives on the grapes, rather than a packet of lab yeast chosen for a predictable flavour. No added acid, color, tannin or sugar. No fining or heavy filtering to strip it clear. And little or no added sulphur — a touch at bottling is fine and often sensible; drowning the wine in it is not.'),
-                    para('What you get for all that restraint is wine that tastes of a specific place and a specific year, and that moves in the glass as you drink it. It can be a little wilder than you are used to. That is not a fault to apologise for — it is the point.'),
+                    para('Then, as little intervention as the wine allows. Fermentation with the wild yeast that arrives on the grapes, rather than a packet of lab yeast chosen for a predictable flavour. No added acid, color, tannin or sugar. No fining or heavy filtering to strip it clear. And little or no added sulphur: a touch at bottling is fine and often sensible; drowning the wine in it is not.'),
+                    para('What you get for all that restraint is wine that tastes of a specific place and a specific year, and that moves in the glass as you drink it. It can be a little wilder than you are used to. That is not a fault to apologise for. It is the point.'),
                 ],
             },
         },
@@ -757,11 +757,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('Wine pairing has been made far more precious than it needs to be. The old rules — red with meat, white with fish — get you maybe half of the way and steer you wrong the rest. Here is how we actually think about it behind the counter.'),
+                    para('Wine pairing has been made far more precious than it needs to be. The old rules (red with meat, white with fish) get you maybe half of the way and steer you wrong the rest. Here is how we actually think about it behind the counter.'),
                     h2('Match the weight, then the mood'),
-                    para('The one trick that covers most of it: match the weight of the wine to the weight of the food. A delicate white flatters a delicate plate; a big magnum of red wants a roast. After that, look for a bridge — something acidic, herbal or savoury in the glass that echoes something on the plate. A saline mineral white next to oysters is not a coincidence, it is a rhyme.'),
+                    para('The one trick that covers most of it: match the weight of the wine to the weight of the food. A delicate white flatters a delicate plate; a big magnum of red wants a roast. After that, look for a bridge. Something acidic, herbal or savoury in the glass that echoes something on the plate. A saline mineral white next to oysters is not a coincidence, it is a rhyme.'),
                     h2('A few that never miss'),
-                    para('Skin-contact orange with anything spiced, roasted or full of umami — curry, roast chicken, a hard cheese. A chillable red with pizza, charcuterie or a tomato-heavy anything. Dry rosé with a summer salad or grilled fish. Pét-nat with fried food, full stop; the fizz and acidity cut straight through the fat. And when in doubt, a bright natural white does more work than any single bottle has a right to.'),
+                    para('Skin-contact orange with anything spiced, roasted or full of umami: curry, roast chicken, a hard cheese. A chillable red with pizza, charcuterie or a tomato-heavy anything. Dry rosé with a summer salad or grilled fish. Pét-nat with fried food, full stop; the fizz and acidity cut straight through the fat. And when in doubt, a bright natural white does more work than any single bottle has a right to.'),
                 ],
             },
         },
@@ -772,16 +772,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to taste a bottle, without the ceremony',
-            excerpt: 'Swirling and sniffing looks like a performance. It is actually just a quick way to figure out whether you like something — here is the whole method.',
+            excerpt: 'Swirling and sniffing looks like a performance. It is actually just a quick way to figure out whether you like something. Here is the whole method.',
             featuredImage: { $asset: 'post-tasting' },
             body: {
                 type: 'doc',
                 content: [
                     para('The swirling and sniffing can look like a performance, but stripped of the theatre it is just a fast, useful way to work out what a wine is doing and whether you like it. You can do the whole thing in twenty seconds and nobody has to know you are doing it.'),
                     h2('Look, smell, taste'),
-                    para('Look first — color tells you about age and style before you have tasted a thing; a red going brick at the rim has some age on it, a cloudy white is probably unfiltered and natural. Then smell: swirl once to wake it up and take a short sniff. You are not naming twelve fruits, just noticing whether it smells fresh and alive or tired and flat. Then taste, and let it sit on your tongue for a second before you swallow.'),
+                    para('Look first: color tells you about age and style before you have tasted a thing; a red going brick at the rim has some age on it, a cloudy white is probably unfiltered and natural. Then smell: swirl once to wake it up and take a short sniff. You are not naming twelve fruits, just noticing whether it smells fresh and alive or tired and flat. Then taste, and let it sit on your tongue for a second before you swallow.'),
                     h2('The three things worth noticing'),
-                    para('Acidity is what makes your mouth water — it is freshness, and natural wine usually has it in spades. Tannin is the grippy, drying feeling, mostly in reds and oranges; it is texture, not a flaw. And length is simply how long the flavour hangs around after you swallow — the longer, generally, the better the wine. That is genuinely most of it. Notice those three, decide if you would pour a second glass, and you are tasting like a pro.'),
+                    para('Acidity is what makes your mouth water. It is freshness, and natural wine usually has it in spades. Tannin is the grippy, drying feeling, mostly in reds and oranges; it is texture, not a flaw. And length is simply how long the flavour hangs around after you swallow: the longer, generally, the better the wine. That is genuinely most of it. Notice those three, decide if you would pour a second glass, and you are tasting like a pro.'),
                 ],
             },
         },
@@ -796,7 +796,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Natural Wine Shop',
     theme: THEME,
     summary:
-        'A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles — a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc — with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme — deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.',
+        'A complete, working shop for a natural-wine bottle shop: a real catalogue of low-intervention bottles, a pét-nat, a skin-contact orange, a chillable red, a mineral white, a dry rosé, a magnum, a mixed six and a non-alc, with categories, collections, a bespoke bottle-shop PDP and a fully merchandised home page. Low-lit cellar theme, deep plum-charcoal ground, warm cream ink, a wine-garnet primary and a brass accent. Shipped as Sediment.',
     tagline: 'A low-lit, working storefront for a natural-wine bottle shop.',
     vertical: 'retail',
     industry: 'Wine shop',
@@ -809,14 +809,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Sediment — a natural-wine bottle shop',
+            title: 'Sediment: a natural-wine bottle shop',
             description:
-                'Sediment is a natural-wine shop — low-intervention reds, whites, skin-contact oranges, pét-nats and rosé from small growers who farm clean. Nothing added, nothing taken away.',
+                'Sediment is a natural-wine shop: low-intervention reds, whites, skin-contact oranges, pét-nats and rosé from small growers who farm clean. Nothing added, nothing taken away.',
         },
         about: {
-            title: 'About Sediment — natural wine, honestly chosen',
+            title: 'About Sediment: natural wine, honestly chosen',
             description:
-                'How Sediment buys and keeps its wine — small growers, organic farming, a light hand in the cellar, and a well-kept shelf of living bottles worth the money.',
+                'How Sediment buys and keeps its wine: small growers, organic farming, a light hand in the cellar, and a well-kept shelf of living bottles worth the money.',
         },
     },
     home: HOME,

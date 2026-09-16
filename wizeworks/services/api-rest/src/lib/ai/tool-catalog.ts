@@ -61,7 +61,7 @@ const DOMAIN_TOOLS: RawMcpTool[] = [
   },
   {
     name: 'purchase_domain',
-    description: 'Register a new domain and connect it to this tenant. Irreversible — confirms.',
+    description: 'Register a new domain and connect it to this tenant. Irreversible: confirms.',
     scope: 'write:domains',
     confirmation: true,
   },

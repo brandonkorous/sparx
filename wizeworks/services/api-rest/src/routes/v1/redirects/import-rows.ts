@@ -99,7 +99,7 @@ export async function importRedirectRows(
       });
       if (existing) {
         throw conflict(
-          `A redirect from "${r.from_path}" already exists — it goes to "${existing.toPath}".`
+          `A redirect from "${r.from_path}" already exists: it goes to "${existing.toPath}".`
         );
       }
       const row = await tx.redirect.create({

@@ -127,7 +127,7 @@
     {
       "handle": "free-estimate",
       "name": "Free estimate",
-      "description": "We come out, look at the job and give you a flat, written price before any work starts — no charge, no pressure.",
+      "description": "We come out, look at the job and give you a flat, written price before any work starts: no charge, no pressure.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -161,7 +161,7 @@
     {
       "handle": "drain-cleaning",
       "name": "Drain cleaning",
-      "description": "A slow or backed-up drain cleared and tested — kitchen, bath, laundry or main line.",
+      "description": "A slow or backed-up drain cleared and tested: kitchen, bath, laundry or main line.",
       "durationMinutes": 90,
       "priceCents": 14900,
       "bufferAfterMin": 15,
@@ -196,7 +196,7 @@
     {
       "handle": "water-heater-service",
       "name": "Water heater service",
-      "description": "Flush, inspect and repair a tank or tankless heater — or a straight quote to replace one that’s had its day.",
+      "description": "Flush, inspect and repair a tank or tankless heater, or a straight quote to replace one that’s had its day.",
       "durationMinutes": 90,
       "priceCents": 21900,
       "bufferAfterMin": 15,
@@ -232,7 +232,7 @@
     {
       "handle": "emergency-callout",
       "name": "Emergency call-out",
-      "description": "A burst pipe, no water or a backed-up main — we dispatch the first available plumber and confirm your arrival window by text.",
+      "description": "A burst pipe, no water or a backed-up main. We dispatch the first available plumber and confirm your arrival window by text.",
       "durationMinutes": 120,
       "priceCents": 24900,
       "requiresApproval": true,

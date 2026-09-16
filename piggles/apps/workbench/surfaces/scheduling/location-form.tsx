@@ -151,7 +151,7 @@ function RemoveRow({
     <div className="flex flex-wrap items-center justify-between gap-3">
       <Text className="text-sm">
         {bookings > 0
-          ? `This place is on ${String(bookings)} booking${bookings === 1 ? '' : 's'}, so it cannot be removed — switch it off above instead.`
+          ? `This place is on ${String(bookings)} booking${bookings === 1 ? '' : 's'}, so it cannot be removed. Switch it off above instead.`
           : 'Removing takes this place off your list for good.'}
       </Text>
       <Button

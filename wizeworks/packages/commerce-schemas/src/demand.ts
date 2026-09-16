@@ -261,7 +261,7 @@ export const UpsertPreorderWindowInput = z
     note: z.string().max(2000).nullable().optional(),
   })
   .refine((v) => !v.isCapped || (v.maxQuantity ?? 0) > 0, {
-    message: 'A capped preorder needs a limit above zero — a cap of nothing is a closed shop.',
+    message: 'A capped preorder needs a limit above zero: a cap of nothing is a closed shop.',
     path: ['maxQuantity'],
   })
   .refine((v) => !v.startsAt || !v.endsAt || new Date(v.endsAt) > new Date(v.startsAt), {

@@ -54,7 +54,7 @@ export function LanguageForm({
         label="Name"
         source={product.title}
         sourceEmpty="This product has no name."
-        description="Required — a language with no name for the product cannot be saved."
+        description="Required: a language with no name for the product cannot be saved."
       >
         <Input
           color="module"

@@ -90,8 +90,8 @@
   "products": [
     {
       "handle": "cls-studwork-timber",
-      "title": "C16 CLS Studwork Timber, 63×38mm — Pack of 20",
-      "description": "Kiln-dried, planed C16 CLS studwork with eased edges — the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around $2.90 a length; take it by the pack and the pallet drops it further.",
+      "title": "C16 CLS Studwork Timber, 63×38mm: Pack of 20",
+      "description": "Kiln-dried, planed C16 CLS studwork with eased edges: the everyday stud for partitions, stud walls and carcassing. A banded pack of 20 lengths. MOQ 1 pack. In 2.4m that’s around $2.90 a length; take it by the pack and the pallet drops it further.",
       "status": "active",
       "productType": "Timber",
       "vendor": "Yardstock Trade Supplies",
@@ -143,8 +143,8 @@
     },
     {
       "handle": "osb3-sheathing-board",
-      "title": "OSB3 Sheathing Board, 2400×1200 — Pack of 10",
-      "description": "Load-bearing OSB3 for use in humid conditions — sheathing, flooring, hoarding and site boards. Full 2400×1200 sheets in a banded pack of 10. MOQ 1 pack. Pick 11mm for hoarding and lining or 18mm where it carries a load.",
+      "title": "OSB3 Sheathing Board, 2400×1200: Pack of 10",
+      "description": "Load-bearing OSB3 for use in humid conditions: sheathing, flooring, hoarding and site boards. Full 2400×1200 sheets in a banded pack of 10. MOQ 1 pack. Pick 11mm for hoarding and lining or 18mm where it carries a load.",
       "status": "active",
       "productType": "Sheet material",
       "vendor": "Yardstock Trade Supplies",
@@ -196,8 +196,8 @@
     },
     {
       "handle": "plasterboard-pallet",
-      "title": "Standard Plasterboard, 2400×1200 — Pallet of 50",
-      "description": "Tapered-edge standard wallboard for dry-lining walls and ceilings, 2400×1200 sheets on a shrink-wrapped pallet of 50. MOQ 1 pallet — the way a board job is bought. Choose 9.5mm for ceilings or 12.5mm for walls and better acoustics.",
+      "title": "Standard Plasterboard, 2400×1200: Pallet of 50",
+      "description": "Tapered-edge standard wallboard for dry-lining walls and ceilings, 2400×1200 sheets on a shrink-wrapped pallet of 50. MOQ 1 pallet: the way a board job is bought. Choose 9.5mm for ceilings or 12.5mm for walls and better acoustics.",
       "status": "active",
       "productType": "Plasterboard",
       "vendor": "Yardstock Trade Supplies",
@@ -249,8 +249,8 @@
     },
     {
       "handle": "general-purpose-cement",
-      "title": "General-Purpose Cement, 25kg — Pallet of 56",
-      "description": "CEM II general-purpose cement in 25kg bags for concrete, mortar and render — a shrink-wrapped, weather-hooded pallet of 56 bags. MOQ 1 pallet. Buy it by the pallet and keep the mixer fed for the whole pour without a second run to the yard.",
+      "title": "General-Purpose Cement, 25kg: Pallet of 56",
+      "description": "CEM II general-purpose cement in 25kg bags for concrete, mortar and render: a shrink-wrapped, weather-hooded pallet of 56 bags. MOQ 1 pallet. Buy it by the pallet and keep the mixer fed for the whole pour without a second run to the yard.",
       "status": "active",
       "productType": "Cement",
       "vendor": "Yardstock Trade Supplies",
@@ -271,14 +271,14 @@
         {
           "assetId": "prod-cement",
           "isPrimary": true,
-          "alt": "General-Purpose Cement, 25kg — Pallet of 56"
+          "alt": "General-Purpose Cement, 25kg: Pallet of 56"
         }
       ]
     },
     {
       "handle": "pir-insulation-board",
-      "title": "PIR Insulation Board, 2400×1200 — Pack of 8",
-      "description": "Foil-faced PIR rigid insulation for floors, walls and roofs — high performance for its thickness, easy to cut and fit. Full 2400×1200 boards in a pack of 8. MOQ 1 pack. Spec the thickness your U-value calls for; thicker boards ship in smaller packs.",
+      "title": "PIR Insulation Board, 2400×1200: Pack of 8",
+      "description": "Foil-faced PIR rigid insulation for floors, walls and roofs: high performance for its thickness, easy to cut and fit. Full 2400×1200 boards in a pack of 8. MOQ 1 pack. Spec the thickness your U-value calls for; thicker boards ship in smaller packs.",
       "status": "active",
       "productType": "Insulation",
       "vendor": "Yardstock Trade Supplies",
@@ -352,8 +352,8 @@
     },
     {
       "handle": "multipurpose-wood-screws",
-      "title": "Multi-Purpose Wood Screws — Tub of 200",
-      "description": "Yellow-zinc pozi countersunk wood screws with a cutting thread that drives fast and rarely splits — the tub that lives in every van. 200 to a resealable tub. MOQ 5 tubs (a box). Pick the gauge and length your first-fix runs on.",
+      "title": "Multi-Purpose Wood Screws: Tub of 200",
+      "description": "Yellow-zinc pozi countersunk wood screws with a cutting thread that drives fast and rarely splits: the tub that lives in every van. 200 to a resealable tub. MOQ 5 tubs (a box). Pick the gauge and length your first-fix runs on.",
       "status": "active",
       "productType": "Fixings",
       "vendor": "Yardstock Trade Supplies",
@@ -416,8 +416,8 @@
     },
     {
       "handle": "trade-silicone-sealant",
-      "title": "Trade Silicone Sealant, 300ml — Case of 24",
-      "description": "Low-modulus neutral-cure silicone for sanitary, glazing and general sealing — mould-resistant, over-paintable on the neutral grades, and it tools clean. A case of 24 standard cartridges. MOQ 1 case. Choose the color the job needs.",
+      "title": "Trade Silicone Sealant, 300ml: Case of 24",
+      "description": "Low-modulus neutral-cure silicone for sanitary, glazing and general sealing: mould-resistant, over-paintable on the neutral grades, and it tools clean. A case of 24 standard cartridges. MOQ 1 case. Choose the color the job needs.",
       "status": "active",
       "productType": "Sealant",
       "vendor": "Yardstock Trade Supplies",
@@ -491,8 +491,8 @@
     },
     {
       "handle": "mot-type-1-bulk-bag",
-      "title": "MOT Type 1 Sub-Base — Bulk Bag (850kg)",
-      "description": "Crushed limestone MOT Type 1 to the DfT specification — the go-to compactable sub-base under drives, paths, slabs and foundations. A handled bulk bag of roughly 850kg. MOQ 1 bag. Order by the bag and we’ll crane it off where you need it.",
+      "title": "MOT Type 1 Sub-Base: Bulk Bag (850kg)",
+      "description": "Crushed limestone MOT Type 1 to the DfT specification: the go-to compactable sub-base under drives, paths, slabs and foundations. A handled bulk bag of roughly 850kg. MOQ 1 bag. Order by the bag and we’ll crane it off where you need it.",
       "status": "active",
       "productType": "Aggregates",
       "vendor": "Yardstock Trade Supplies",
@@ -513,14 +513,14 @@
         {
           "assetId": "prod-aggregate",
           "isPrimary": true,
-          "alt": "MOT Type 1 Sub-Base — Bulk Bag (850kg)"
+          "alt": "MOT Type 1 Sub-Base: Bulk Bag (850kg)"
         }
       ]
     },
     {
       "handle": "hi-vis-vest-box",
-      "title": "Hi-Vis Safety Vest — Box of 10",
-      "description": "EN ISO 20471 Class 2 hi-vis waistcoats with a full-length hook-and-loop front and reflective banding — the site vest a visitor, a labourer and a subbie all need on day one. A box of 10. MOQ 2 boxes. Keep a size run on the rack by the gate.",
+      "title": "Hi-Vis Safety Vest: Box of 10",
+      "description": "EN ISO 20471 Class 2 hi-vis waistcoats with a full-length hook-and-loop front and reflective banding: the site vest a visitor, a labourer and a subbie all need on day one. A box of 10. MOQ 2 boxes. Keep a size run on the rack by the gate.",
       "status": "active",
       "productType": "Safety",
       "vendor": "Yardstock Trade Supplies",
@@ -584,7 +584,7 @@
     {
       "handle": "first-fix-bundle",
       "title": "First-Fix Timber & Fixings Bundle",
-      "description": "A curated bundle for starting a stud job from empty — a pack of CLS studwork, a tub of wood screws, a case of grab-and-fix sealant and a box of collated nails, packed together and priced below the sum of the packs. MOQ 1 bundle. The fastest way to load the van for a first-fix.",
+      "description": "A curated bundle for starting a stud job from empty: a pack of CLS studwork, a tub of wood screws, a case of grab-and-fix sealant and a box of collated nails, packed together and priced below the sum of the packs. MOQ 1 bundle. The fastest way to load the van for a first-fix.",
       "status": "active",
       "productType": "Bundle",
       "vendor": "Yardstock Trade Supplies",
@@ -592,7 +592,7 @@
       "categoryHandles": ["timber-sheet"],
       "collectionHandles": ["new-lines", "first-fix", "trade-favourites"],
       "seoTitle": "First-Fix Timber & Fixings Bundle | Yardstock",
-      "seoDescription": "A curated first-fix bundle — CLS studwork, wood screws, sealant and collated nails, priced below the sum.",
+      "seoDescription": "A curated first-fix bundle: CLS studwork, wood screws, sealant and collated nails, priced below the sum.",
       "variants": [
         {
           "sku": "YRD-KIT-FIRSTFIX",

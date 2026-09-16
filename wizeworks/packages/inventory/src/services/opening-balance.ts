@@ -134,7 +134,7 @@ export async function startOpeningBalance(
   );
   if (open) {
     throw new InventoryValidationError(
-      `Opening count ${open.number} is already open for this location — finish that one`,
+      `Opening count ${open.number} is already open for this location: finish that one`,
       [{ field: 'warehouseId', message: `count ${open.id} in progress` }]
     );
   }
@@ -144,7 +144,7 @@ export async function startOpeningBalance(
     type: 'opening',
     scope: 'location',
     isBlind: input.isBlind,
-    note: input.note ?? 'Opening balance — the quantities this business starts from',
+    note: input.note ?? 'Opening balance: the quantities this business starts from',
     // An opening count is expected to differ from what the system holds; that
     // difference is the whole point rather than a variance to sign off. A
     // threshold here would gate the setup's last step behind an approval from

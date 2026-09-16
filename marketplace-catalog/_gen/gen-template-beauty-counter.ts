@@ -160,7 +160,7 @@ function hero(): Node {
                                     { text: 'Find your shade' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Full-pigment color cosmetics made for every skin tone — foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call.',
+                                    text: 'Full-pigment color cosmetics made for every skin tone: foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-3', {
                                     children: [
@@ -248,7 +248,7 @@ function giftBand(): Node {
                                     text: 'A free blush, on us',
                                 }),
                                 el('p', 'text-lg leading-relaxed', {
-                                    text: 'Spend $75 and add our Sunlit Cream Blush to your bag for free — choose your shade at checkout. New wearers, this is the easiest way to meet the line.',
+                                    text: 'Spend $75 and add our Sunlit Cream Blush to your bag for free. Choose your shade at checkout. New wearers, this is the easiest way to meet the line.',
                                 }),
                                 el('p', 'text-sm', { text: 'While stocks last. One gift per order.' }),
                             ],
@@ -291,14 +291,14 @@ function communityStrip(): Node {
                                 text: 'The Maeve Edit',
                             }),
                             el('p', 'max-w-2xl text-lg text-base-content', {
-                                text: 'How real wearers are putting the line to work — three faces, three routines, all yours to borrow.',
+                                text: 'How real wearers are putting the line to work: three faces, three routines, all yours to borrow.',
                             }),
                         ],
                     }),
                     el('div', 'grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-3', {
                         children: [
-                            card('community-1', 'The five-minute face', 'Foundation, blush and a lip — the whole look, before the kettle boils.', 'the-5-minute-everyday-face'),
-                            card('community-2', 'Build a berry lip', 'Liner, lipstick, a press of gloss — a berry lip in three steps that stays put.', 'build-a-berry-lip-in-three-steps'),
+                            card('community-1', 'The five-minute face', 'Foundation, blush and a lip: the whole look, before the kettle boils.', 'the-5-minute-everyday-face'),
+                            card('community-2', 'Build a berry lip', 'Liner, lipstick, a press of gloss: a berry lip in three steps that stays put.', 'build-a-berry-lip-in-three-steps'),
                             card('community-3', 'Warm or cool?', 'Reading your undertone, and why it changes which shade actually disappears.', 'warm-vs-cool-reading-your-undertone'),
                         ],
                     }),
@@ -341,7 +341,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.face', layout: 'carousel', heading: 'Face' }),
     editorialBand({
         heading: 'A lip for every day',
-        lead: 'A velvet matte that lasts through lunch, a glass oil that just glosses, a liner that keeps it all in place — sixteen shades, from your-lips-but-better to a full berry.',
+        lead: 'A velvet matte that lasts through lunch, a glass oil that just glosses, a liner that keeps it all in place: sixteen shades, from your-lips-but-better to a full berry.',
         assetId: 'band-lip',
         cta: 'Shop lip',
         href: '/shop',
@@ -350,7 +350,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.lip', layout: 'carousel', heading: 'Lip' }),
     editorialBand({
         heading: 'Eyes, sculpted',
-        lead: 'Nine-pan palettes in warm, cool and rose, a mascara that lengthens without the clump, and a brow pomade that holds — everything you need for a soft eye or a sharp one.',
+        lead: 'Nine-pan palettes in warm, cool and rose, a mascara that lengthens without the clump, and a brow pomade that holds. Everything you need for a soft eye or a sharp one.',
         assetId: 'band-eye',
         cta: 'Shop eye',
         href: '/shop',
@@ -375,10 +375,10 @@ const ABOUT: Node[] = [
                         text: 'About Maeve',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Maeve is a full-pigment color-cosmetics house, built on one stubborn idea: everyone deserves a shade that actually suits them. We launched our foundation in twenty-four shades on day one — not as a follow-up, not as a promise, but because a base that stops at ten tones was never a base at all.',
+                        text: 'Maeve is a full-pigment color-cosmetics house, built on one stubborn idea: everyone deserves a shade that actually suits them. We launched our foundation in twenty-four shades on day one, not as a follow-up, not as a promise, but because a base that stops at ten tones was never a base at all.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'From there it is face, lip, eye and the tools to apply them — pigments rich enough to mean it, formulas kind enough to wear all day, and shade names you can actually find yourself in. Cruelty-free, vegan wherever the formula allows, and made to be worn, not saved for good. Full pigment. No apology.',
+                        text: 'From there it is face, lip, eye and the tools to apply them: pigments rich enough to mean it, formulas kind enough to wear all day, and shade names you can actually find yourself in. Cruelty-free, vegan wherever the formula allows, and made to be worn, not saved for good. Full pigment. No apology.',
                     }),
                 ],
             }),
@@ -393,7 +393,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Talk to us',
-        intro: 'Stuck between two shades, chasing an order, or after a recommendation for your undertone? Our team answers fast, usually the same day — tell us what you need and we will help you find it.',
+        intro: 'Stuck between two shades, chasing an order, or after a recommendation for your undertone? Our team answers fast, usually the same day. Tell us what you need and we will help you find it.',
         submitLabel: 'Email the team',
     }),
 ];
@@ -492,14 +492,14 @@ const PRODUCTS: Product[] = [
         handle: 'second-skin-luminous-foundation',
         title: 'Second Skin Luminous Foundation',
         description:
-            'A medium-buildable liquid foundation that reads like skin, not makeup — a soft luminous finish, breathable wear, and twenty-four shades built across every undertone so yours actually disappears. Swatch along the jaw and it vanishes.',
+            'A medium-buildable liquid foundation that reads like skin, not makeup: a soft luminous finish, breathable wear, and twenty-four shades built across every undertone so yours actually disappears. Swatch along the jaw and it vanishes.',
         status: 'active',
         productType: 'Foundation',
         vendor: 'Maeve',
         tags: ['face', 'foundation', 'luminous', 'vegan', 'bestseller'],
         categoryHandles: ['face'],
         collectionHandles: ['best-sellers', 'new-in', 'the-edit'],
-        seoTitle: 'Second Skin Luminous Foundation — 24-shade liquid foundation',
+        seoTitle: 'Second Skin Luminous Foundation: 24-shade liquid foundation',
         seoDescription: 'A luminous, medium-buildable liquid foundation in 24 inclusive shades across every undertone.',
         productTypeKey: 'cosmetics',
         attributes: {
@@ -519,21 +519,21 @@ const PRODUCTS: Product[] = [
         handle: 'under-eye-brightening-concealer',
         title: 'Under-Eye Brightening Concealer',
         description:
-            'A creamy, crease-resistant concealer that lifts the under-eye and covers where you need it, without cakeing into fine lines. Eight shades to match — or go one lighter to brighten.',
+            'A creamy, crease-resistant concealer that lifts the under-eye and covers where you need it, without cakeing into fine lines. Eight shades to match, or go one lighter to brighten.',
         status: 'active',
         productType: 'Concealer',
         vendor: 'Maeve',
         tags: ['face', 'concealer', 'vegan'],
         categoryHandles: ['face'],
         collectionHandles: ['best-sellers', 'the-edit'],
-        seoTitle: 'Under-Eye Brightening Concealer — crease-resistant concealer',
+        seoTitle: 'Under-Eye Brightening Concealer: crease-resistant concealer',
         seoDescription: 'A creamy, crease-resistant brightening concealer in eight matchable shades.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'Light-reflecting pigments lift shadow under the eye, caffeine helps de-puff, and a peptide plus vitamin E keep the creamy base from settling into fine lines through the day.',
             howToUse:
-                'Dot a little onto the under-eye and any spots you want to cover, then tap out with a fingertip or a small brush — never drag. Match your shade, or go one lighter under the eye to brighten. Press with Cloud Set powder to lock it.',
+                'Dot a little onto the under-eye and any spots you want to cover, then tap out with a fingertip or a small brush, never drag. Match your shade, or go one lighter under the eye to brighten. Press with Cloud Set powder to lock it.',
             skinType: ['all'],
             volume: '6 ml / 0.2 fl oz',
             fullIngredients:
@@ -553,14 +553,14 @@ const PRODUCTS: Product[] = [
         tags: ['face', 'powder', 'setting', 'vegan'],
         categoryHandles: ['face'],
         collectionHandles: ['new-in'],
-        seoTitle: 'Cloud Set Loose Powder — soft-matte setting powder',
+        seoTitle: 'Cloud Set Loose Powder: soft-matte setting powder',
         seoDescription: 'A finely milled loose setting powder that blurs and sets without flattening the glow.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'Micro-fine silica and rice starch soak up excess oil and soft-blur pores, while boron nitride scatters light so skin sets matte without going flat or chalky.',
             howToUse:
-                'Load a fluffy brush or the puff, tap off the excess, and press — do not sweep — into the under-eye and T-zone to lock concealer and foundation. A little is plenty; build only where you shine.',
+                'Load a fluffy brush or the puff, tap off the excess, and press (do not sweep) into the under-eye and T-zone to lock concealer and foundation. A little is plenty; build only where you shine.',
             skinType: ['combination', 'oily'],
             volume: '8 g / 0.28 oz',
             fullIngredients:
@@ -573,21 +573,21 @@ const PRODUCTS: Product[] = [
         handle: 'soft-focus-blurring-primer',
         title: 'Soft Focus Blurring Primer',
         description:
-            'A silky, weightless primer that grips makeup and softens the look of pores and texture, so your foundation goes on smoother and stays put longer. One universal formula — goes under everything.',
+            'A silky, weightless primer that grips makeup and softens the look of pores and texture, so your foundation goes on smoother and stays put longer. One universal formula: goes under everything.',
         status: 'active',
         productType: 'Primer',
         vendor: 'Maeve',
         tags: ['face', 'primer', 'vegan'],
         categoryHandles: ['face'],
         collectionHandles: ['new-in'],
-        seoTitle: 'Soft Focus Blurring Primer — pore-blurring makeup primer',
+        seoTitle: 'Soft Focus Blurring Primer: pore-blurring makeup primer',
         seoDescription: 'A weightless blurring primer that grips makeup and softens the look of pores and texture.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'A silky silica-and-blurring-polymer base fills the look of pores and fine texture so makeup sits smoother, while niacinamide works over time to refine the skin underneath.',
             howToUse:
-                'After moisturiser, smooth a pea-sized amount over clean skin — concentrating on the centre of the face where pores show most — and let it set for a moment before foundation. Wear it alone on a no-makeup day, too.',
+                'After moisturiser, smooth a pea-sized amount over clean skin (concentrating on the centre of the face where pores show most), and let it set for a moment before foundation. Wear it alone on a no-makeup day, too.',
             skinType: ['all'],
             volume: '30 ml / 1.0 fl oz',
             fullIngredients:
@@ -607,7 +607,7 @@ const PRODUCTS: Product[] = [
         tags: ['face', 'setting-spray', 'vegan'],
         categoryHandles: ['face'],
         collectionHandles: ['best-sellers'],
-        seoTitle: 'Lock-It Setting Spray — long-wear makeup setting spray',
+        seoTitle: 'Lock-It Setting Spray: long-wear makeup setting spray',
         seoDescription: 'A fine-mist setting spray that melts powder into skin and holds a full face all day.',
         productTypeKey: 'cosmetics',
         attributes: {
@@ -627,19 +627,19 @@ const PRODUCTS: Product[] = [
         handle: 'sunlit-cream-blush',
         title: 'Sunlit Cream Blush',
         description:
-            'A blendable cream blush that melts into skin for a lit-from-within flush — tap it high on the cheek with a fingertip and it looks like your own color, only better. Eight shades from soft peach to deep berry.',
+            'A blendable cream blush that melts into skin for a lit-from-within flush: tap it high on the cheek with a fingertip and it looks like your own color, only better. Eight shades from soft peach to deep berry.',
         status: 'active',
         productType: 'Blush',
         vendor: 'Maeve',
         tags: ['cheek', 'blush', 'cream', 'vegan', 'bestseller'],
         categoryHandles: ['cheek'],
         collectionHandles: ['best-sellers', 'new-in', 'the-edit', 'vegan-favourites'],
-        seoTitle: 'Sunlit Cream Blush — dewy cream blush in 8 shades',
+        seoTitle: 'Sunlit Cream Blush: dewy cream blush in 8 shades',
         seoDescription: 'A blendable cream blush for a lit-from-within flush, in eight shades from peach to berry.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'A jojoba-ester and vitamin-E balm carries buildable pigment that melts into skin for a dewy, lit-from-within flush — no powdery cake, no hard line where it lands.',
+                'A jojoba-ester and vitamin-E balm carries buildable pigment that melts into skin for a dewy, lit-from-within flush: no powdery cake, no hard line where it lands.',
             howToUse:
                 'Tap one or two dots high on the cheeks with a fingertip and blend up toward the temple while the balm is still slippery. Layer for more color; a touch on the lips ties the look together.',
             skinType: ['dry', 'normal'],
@@ -654,21 +654,21 @@ const PRODUCTS: Product[] = [
         handle: 'sculpt-contour-stick',
         title: 'Sculpt Contour Stick',
         description:
-            'A creamy contour stick with a soft, shadowy finish that defines without a muddy line — draw where the light would not reach, then blend with a finger or a brush. Six shades to suit fair to deep.',
+            'A creamy contour stick with a soft, shadowy finish that defines without a muddy line: draw where the light would not reach, then blend with a finger or a brush. Six shades to suit fair to deep.',
         status: 'active',
         productType: 'Contour',
         vendor: 'Maeve',
         tags: ['cheek', 'contour', 'cream', 'vegan'],
         categoryHandles: ['cheek'],
         collectionHandles: ['the-edit'],
-        seoTitle: 'Sculpt Contour Stick — cream contour stick in 6 shades',
+        seoTitle: 'Sculpt Contour Stick: cream contour stick in 6 shades',
         seoDescription: 'A creamy contour stick with a soft, shadowy finish that defines without a muddy line.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'Cool-toned pigments read like a real shadow rather than a stripe of bronzer, in a shea-and-jojoba stick that stays creamy enough to blend seamlessly before it sets.',
             howToUse:
-                'Draw a light line where the light would not naturally reach — under the cheekbone, along the hairline, either side of the nose — then blend up and back with a finger or a brush until the edge disappears.',
+                'Draw a light line where the light would not naturally reach (under the cheekbone, along the hairline, either side of the nose) then blend up and back with a finger or a brush until the edge disappears.',
             skinType: ['dry', 'normal'],
             volume: '6 g / 0.21 oz',
             fullIngredients:
@@ -688,14 +688,14 @@ const PRODUCTS: Product[] = [
         tags: ['lip', 'lipstick', 'matte', 'vegan', 'bestseller'],
         categoryHandles: ['lip'],
         collectionHandles: ['best-sellers', 'new-in', 'the-edit', 'vegan-favourites'],
-        seoTitle: 'Velvet Matte Liquid Lip — long-wear liquid lipstick in 16 shades',
+        seoTitle: 'Velvet Matte Liquid Lip: long-wear liquid lipstick in 16 shades',
         seoDescription: 'A full-pigment liquid lipstick that sets to a comfortable velvet matte, in 16 shades.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'Full-coverage pigments in a lightweight silicone base set to a transfer-resistant velvet matte, with vitamin E to keep it comfortable so it never feels like it is drying your lips out.',
             howToUse:
-                'Outline the cupid’s bow first, then fill from the centre out in one thin coat and press your lips together — it is full pigment, so a second coat only slides. Line first with Precision Lip Liner for the longest wear.',
+                'Outline the cupid’s bow first, then fill from the centre out in one thin coat and press your lips together. It is full pigment, so a second coat only slides. Line first with Precision Lip Liner for the longest wear.',
             skinType: ['all'],
             volume: '4 ml / 0.14 fl oz',
             fullIngredients:
@@ -708,21 +708,21 @@ const PRODUCTS: Product[] = [
         handle: 'glass-shine-lip-oil',
         title: 'Glass Shine Lip Oil',
         description:
-            'A cushiony lip oil that leaves a glass-clear shine and a wash of color while it conditions — no stickiness, no tightness, just a lip that looks like it means it. Wear it alone or over the matte.',
+            'A cushiony lip oil that leaves a glass-clear shine and a wash of color while it conditions: no stickiness, no tightness, just a lip that looks like it means it. Wear it alone or over the matte.',
         status: 'active',
         productType: 'Lip oil',
         vendor: 'Maeve',
         tags: ['lip', 'lip-oil', 'gloss', 'vegan'],
         categoryHandles: ['lip'],
         collectionHandles: ['new-in', 'gift-sets'],
-        seoTitle: 'Glass Shine Lip Oil — conditioning tinted lip oil',
+        seoTitle: 'Glass Shine Lip Oil: conditioning tinted lip oil',
         seoDescription: 'A cushiony lip oil with a glass-clear shine and a wash of color, in eight tints.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Jojoba oil and squalane cushion and condition while sodium hyaluronate draws in water, so lips look plumper and glass-shiny with a sheer wash of color — never tacky or sticky.',
+                'Jojoba oil and squalane cushion and condition while sodium hyaluronate draws in water, so lips look plumper and glass-shiny with a sheer wash of color, never tacky or sticky.',
             howToUse:
-                'Sweep the doe-foot wand across bare lips for everyday shine, or press a little over the centre of a matte lip to make it look fuller. Reapply whenever lips feel dry — it doubles as a treatment.',
+                'Sweep the doe-foot wand across bare lips for everyday shine, or press a little over the centre of a matte lip to make it look fuller. Reapply whenever lips feel dry. It doubles as a treatment.',
             skinType: ['all'],
             volume: '5 ml / 0.17 fl oz',
             fullIngredients:
@@ -742,14 +742,14 @@ const PRODUCTS: Product[] = [
         tags: ['lip', 'lip-liner', 'vegan'],
         categoryHandles: ['lip'],
         collectionHandles: ['the-edit'],
-        seoTitle: 'Precision Lip Liner — retractable creamy lip liner in 10 shades',
+        seoTitle: 'Precision Lip Liner: retractable creamy lip liner in 10 shades',
         seoDescription: 'A retractable lip liner with a fine, creamy tip, in ten shades to match the liquid lip.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
                 'A creamy wax-and-oil core glides without dragging and grips color in place, with vitamin E so the fine tip stays smooth to the last of the twist-up.',
             howToUse:
-                'Trace the natural lip line, then fill the whole lip in rather than just the border — a fully lined lip gives lipstick something to hold, so color fades evenly instead of leaving a ring. Wear alone for a soft stain.',
+                'Trace the natural lip line, then fill the whole lip in rather than just the border: a fully lined lip gives lipstick something to hold, so color fades evenly instead of leaving a ring. Wear alone for a soft stain.',
             skinType: ['all'],
             volume: '0.3 g / 0.01 oz',
             fullIngredients:
@@ -762,14 +762,14 @@ const PRODUCTS: Product[] = [
         handle: 'bloom-eyeshadow-palette',
         title: 'Bloom 9-Pan Eyeshadow Palette',
         description:
-            'A nine-pan palette that does a whole eye on its own — soft mattes, a satin wash and one true shimmer, blendable and low-fallout. Three edits: Warm, Cool and Rose, each a full look from day to night.',
+            'A nine-pan palette that does a whole eye on its own: soft mattes, a satin wash and one true shimmer, blendable and low-fallout. Three edits: Warm, Cool and Rose, each a full look from day to night.',
         status: 'active',
         productType: 'Eyeshadow palette',
         vendor: 'Maeve',
         tags: ['eye', 'eyeshadow', 'palette', 'vegan', 'bestseller'],
         categoryHandles: ['eye'],
         collectionHandles: ['best-sellers', 'new-in', 'the-edit', 'gift-sets'],
-        seoTitle: 'Bloom 9-Pan Eyeshadow Palette — Warm, Cool & Rose',
+        seoTitle: 'Bloom 9-Pan Eyeshadow Palette: Warm, Cool & Rose',
         seoDescription: 'A blendable nine-pan eyeshadow palette in three edits: Warm, Cool and Rose.',
         productTypeKey: 'cosmetics',
         attributes: {
@@ -796,19 +796,19 @@ const PRODUCTS: Product[] = [
         handle: 'featherweight-mascara',
         title: 'Featherweight Mascara',
         description:
-            'A lengthening mascara that separates and lifts every lash without the clump or the flake — a tapered brush reaches the corners, and it wears all day then washes off with warm water. Black or Brown.',
+            'A lengthening mascara that separates and lifts every lash without the clump or the flake: a tapered brush reaches the corners, and it wears all day then washes off with warm water. Black or Brown.',
         status: 'active',
         productType: 'Mascara',
         vendor: 'Maeve',
         tags: ['eye', 'mascara', 'vegan', 'bestseller'],
         categoryHandles: ['eye'],
         collectionHandles: ['best-sellers', 'vegan-favourites'],
-        seoTitle: 'Featherweight Mascara — lengthening clump-free mascara',
+        seoTitle: 'Featherweight Mascara: lengthening clump-free mascara',
         seoDescription: 'A lengthening mascara that separates and lifts without clumping, in Black or Brown.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Flexible film-forming polymers and carnauba wax coat and lengthen each lash without weighing it down, and provitamin B5 conditions — so it holds a curl all day, then slides off with warm water.',
+                'Flexible film-forming polymers and carnauba wax coat and lengthen each lash without weighing it down, and provitamin B5 conditions, so it holds a curl all day, then slides off with warm water.',
             howToUse:
                 'Wiggle the tapered brush from root to tip, rolling upward to separate and lift; a second coat while the first is still wet builds length without a clump. Reach the inner and outer corners with the brush tip.',
             skinType: ['all', 'sensitive'],
@@ -829,14 +829,14 @@ const PRODUCTS: Product[] = [
         handle: 'brow-sculpt-pomade',
         title: 'Brow Sculpt Pomade',
         description:
-            'A waterproof brow pomade that shapes, fills and holds a natural-looking brow all day — a little goes a long way, and the spoolie end blends out any hard edge. Six shades from soft blonde to ebony.',
+            'A waterproof brow pomade that shapes, fills and holds a natural-looking brow all day: a little goes a long way, and the spoolie end blends out any hard edge. Six shades from soft blonde to ebony.',
         status: 'active',
         productType: 'Brow',
         vendor: 'Maeve',
         tags: ['eye', 'brow', 'vegan'],
         categoryHandles: ['eye'],
         collectionHandles: ['the-edit'],
-        seoTitle: 'Brow Sculpt Pomade — waterproof brow pomade in 6 shades',
+        seoTitle: 'Brow Sculpt Pomade: waterproof brow pomade in 6 shades',
         seoDescription: 'A waterproof brow pomade that shapes, fills and holds a natural brow, in six shades.',
         productTypeKey: 'cosmetics',
         attributes: {
@@ -856,19 +856,19 @@ const PRODUCTS: Product[] = [
         handle: 'skinny-gel-eyeliner',
         title: 'Skinny Gel Eyeliner',
         description:
-            'A retractable gel liner with a fine tip that draws a crisp line or a soft smudge and sets waterproof in seconds. Six shades — a true black for the sharp days, and colors for when you want a little more.',
+            'A retractable gel liner with a fine tip that draws a crisp line or a soft smudge and sets waterproof in seconds. Six shades: a true black for the sharp days, and colors for when you want a little more.',
         status: 'active',
         productType: 'Eyeliner',
         vendor: 'Maeve',
         tags: ['eye', 'eyeliner', 'gel', 'vegan'],
         categoryHandles: ['eye'],
         collectionHandles: ['new-in'],
-        seoTitle: 'Skinny Gel Eyeliner — waterproof retractable gel liner',
+        seoTitle: 'Skinny Gel Eyeliner: waterproof retractable gel liner',
         seoDescription: 'A retractable waterproof gel eyeliner with a fine tip, in six shades.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'A creamy gel-wax core lays down opaque color in one pass and sets waterproof within seconds, so a line stays crisp — or a smoke stays soft — through a long day and warm weather.',
+                'A creamy gel-wax core lays down opaque color in one pass and sets waterproof within seconds, so a line stays crisp (or a smoke stays soft) through a long day and warm weather.',
             howToUse:
                 'For a clean line, draw along the upper lash line from inner to outer corner and flick the tail while the gel is still workable. For a smoky eye, trace it close to the lashes and smudge with a brush before it sets.',
             skinType: ['all', 'sensitive'],
@@ -890,12 +890,12 @@ const PRODUCTS: Product[] = [
         tags: ['tools', 'brush', 'vegan'],
         categoryHandles: ['tools'],
         collectionHandles: ['gift-sets', 'vegan-favourites'],
-        seoTitle: 'The Buffing Foundation Brush — dense synthetic foundation brush',
+        seoTitle: 'The Buffing Foundation Brush: dense synthetic foundation brush',
         seoDescription: 'A dense, domed synthetic brush that buffs liquid and cream foundation to a seamless finish.',
         productTypeKey: 'cosmetics',
         attributes: {
             keyIngredients:
-                'Dense, soft synthetic Taklon fibres — cruelty-free and non-absorbent, so they buff liquid and cream foundation into skin rather than drinking it up, for a streak-free, second-skin finish.',
+                'Dense, soft synthetic Taklon fibres: cruelty-free and non-absorbent, so they buff liquid and cream foundation into skin rather than drinking it up, for a streak-free, second-skin finish.',
             howToUse:
                 'Dot foundation onto the face, then buff in small circles with the domed head and finish with light downward strokes to lay the fibres flat. Wash weekly with a gentle soap, reshape the head, and dry bristles-down.',
             skinType: ['all'],
@@ -912,7 +912,7 @@ const COMMERCE = {
     categories: [
         { handle: 'face', name: 'Face', description: 'Foundation, concealer, powder, primer and setting spray.', featured: true },
         { handle: 'cheek', name: 'Cheek', description: 'Cream blush and contour for a lit, sculpted face.', featured: true },
-        { handle: 'lip', name: 'Lip', description: 'Liquid lipstick, lip oil and liner — a shade for every day.', featured: true },
+        { handle: 'lip', name: 'Lip', description: 'Liquid lipstick, lip oil and liner: a shade for every day.', featured: true },
         { handle: 'eye', name: 'Eye', description: 'Palettes, mascara, brow and liner.', featured: true },
         { handle: 'tools', name: 'Tools', description: 'The brushes to put it all on.', featured: false },
     ],
@@ -970,7 +970,7 @@ const COMMERCE = {
         {
             handle: 'gift-sets',
             name: 'Gift Sets',
-            description: 'The easy way in — curated together, ready to give.',
+            description: 'The easy way in: curated together, ready to give.',
             type: 'manual',
             featured: false,
             productHandles: ['glass-shine-lip-oil', 'bloom-eyeshadow-palette', 'buffing-foundation-brush'],
@@ -1004,17 +1004,17 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'How to find your foundation shade match',
-            excerpt: 'The five-minute way to land the right shade the first time — undertone, depth, and where to actually swatch.',
+            excerpt: 'The five-minute way to land the right shade the first time: undertone, depth, and where to actually swatch.',
             featuredImage: { $asset: 'post-shade-match' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Buying foundation online feels like a gamble, and it does not have to. There are only two things to get right — how deep your skin is, and which way it leans warm or cool — and once you know both, the shade grid stops being a wall of names and starts being a map.'),
+                    para('Buying foundation online feels like a gamble, and it does not have to. There are only two things to get right (how deep your skin is, and which way it leans warm or cool) and once you know both, the shade grid stops being a wall of names and starts being a map.'),
                     h2('Read your undertone first'),
                     para('Look at the veins on your inner wrist in daylight. Greenish leans warm, bluish-purple leans cool, and a mix of both is neutral. Gold jewellery tends to flatter warm skin, silver flatters cool. This one call narrows twenty-four shades down to a family of three or four.'),
                     h2('Match depth along the jaw'),
                     para('Skin on the back of your hand is rarely the same color as your face, so swatch two likely shades along the jaw, not the hand. The one that disappears is yours; the one you can still see is the wrong depth. Check it in daylight, near a window, not under a bathroom bulb.'),
-                    para('Still between two? Size up, not down — a foundation that is a touch deep warms up on the skin, while one that is too light turns grey by lunch. And when the gift blush lands in your bag, that is the flush that ties the whole base together.'),
+                    para('Still between two? Size up, not down: a foundation that is a touch deep warms up on the skin, while one that is too light turns grey by lunch. And when the gift blush lands in your bag, that is the flush that ties the whole base together.'),
                 ],
             },
         },
@@ -1025,17 +1025,17 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The 5-minute everyday face',
-            excerpt: 'Five products, five minutes, one face you can do half-asleep — the routine for the days you have no time and still want to look like you.',
+            excerpt: 'Five products, five minutes, one face you can do half-asleep: the routine for the days you have no time and still want to look like you.',
             featuredImage: { $asset: 'post-everyday-face' },
             body: {
                 type: 'doc',
                 content: [
-                    para('An everyday face is not a smaller version of a full glam — it is a different goal. You are not covering yourself up; you are turning the volume up a notch on what is already there, in the time it takes the coffee to brew.'),
+                    para('An everyday face is not a smaller version of a full glam. It is a different goal. You are not covering yourself up; you are turning the volume up a notch on what is already there, in the time it takes the coffee to brew.'),
                     h2('Base, but barely'),
-                    para('A pump of the Second Skin foundation pressed in with a finger where you want it, a dot of concealer under the eye, and a dust of Cloud Set powder only where you shine. Skip the full-face coverage — the point is skin that looks like skin.'),
+                    para('A pump of the Second Skin foundation pressed in with a finger where you want it, a dot of concealer under the eye, and a dust of Cloud Set powder only where you shine. Skip the full-face coverage: the point is skin that looks like skin.'),
                     h2('Color where it counts'),
                     para('Tap the Sunlit Cream Blush high on the cheeks, sweep the Featherweight Mascara through the lashes, and press on a Glass Shine lip oil. Three touches of color do more for a tired face than any amount of base ever will.'),
-                    para('That is the whole thing — five products, five minutes, and a face that reads awake. Learn this one and you will reach for it more than any look you own.'),
+                    para('That is the whole thing: five products, five minutes, and a face that reads awake. Learn this one and you will reach for it more than any look you own.'),
                 ],
             },
         },
@@ -1046,16 +1046,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Build a berry lip in three steps',
-            excerpt: 'Liner, lipstick, a press of gloss — how to build a berry lip that reads rich, stays put, and never bleeds past the edge.',
+            excerpt: 'Liner, lipstick, a press of gloss: how to build a berry lip that reads rich, stays put, and never bleeds past the edge.',
             featuredImage: { $asset: 'post-berry-lip' },
             body: {
                 type: 'doc',
                 content: [
                     para('A berry lip is the one that makes a whole face look finished, and the only reason it goes wrong is that most people do it in one step. Do it in three and it lasts through dinner without feathering, fading in the middle, or bleeding at the corners.'),
                     h2('Step one: line the whole lip'),
-                    para('Take the Precision Lip Liner in Berry and draw your edge — then fill the entire lip in, not just the border. A fully lined lip gives the color something to grip, so when the lipstick wears down through the day it fades evenly instead of leaving a ring.'),
+                    para('Take the Precision Lip Liner in Berry and draw your edge, then fill the entire lip in, not just the border. A fully lined lip gives the color something to grip, so when the lipstick wears down through the day it fades evenly instead of leaving a ring.'),
                     h2('Step two: press, do not swipe'),
-                    para('Apply the Velvet Matte Liquid Lip in Berry from the centre out and press your lips together to set it. One coat is enough — it is full pigment, so piling it on only makes it slide. Blot once on a tissue if you want it truly locked.'),
+                    para('Apply the Velvet Matte Liquid Lip in Berry from the centre out and press your lips together to set it. One coat is enough. It is full pigment, so piling it on only makes it slide. Blot once on a tissue if you want it truly locked.'),
                     para('Step three, if you want it juicy rather than flat: press a dab of Glass Shine lip oil in Berry Tint just onto the centre of the lower lip. It catches the light, gives the illusion of fullness, and turns a matte berry into something you cannot stop looking at.'),
                 ],
             },
@@ -1067,17 +1067,17 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Warm vs cool: reading your undertone',
-            excerpt: 'Undertone is the thing that decides whether a shade suits you — here is how to read yours, and why it matters for more than foundation.',
+            excerpt: 'Undertone is the thing that decides whether a shade suits you. Here is how to read yours, and why it matters for more than foundation.',
             featuredImage: { $asset: 'post-shade-match' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Two people with the same skin depth can suit completely different shades, and undertone is why. It is the quiet color underneath the surface — warm (golden, peachy), cool (pink, bluish) or neutral (a balance of both) — and once you can read yours, every shade choice gets easier, not just your base.'),
+                    para('Two people with the same skin depth can suit completely different shades, and undertone is why. It is the quiet color underneath the surface: warm (golden, peachy), cool (pink, bluish) or neutral (a balance of both), and once you can read yours, every shade choice gets easier, not just your base.'),
                     h2('The quick tests'),
                     para('Veins: green leans warm, blue-purple leans cool. Jewellery: gold flatters warm, silver flatters cool. White paper held to the face: warm skin looks yellow beside it, cool skin looks pink. Any two agreeing is usually your answer; if they split, you are likely neutral and can wear both.'),
                     h2('Why it matters past foundation'),
-                    para('Undertone is why a blush that glows on your friend can look muddy on you. Warm skin comes alive in peach, coral and terracotta; cool skin sings in rose, berry and plum. The same logic runs through lip and eye — the Bloom palette in Warm or Cool is that idea in a single pan.'),
-                    para('None of this is a rule you are stuck with — a bold lip can happily ignore your undertone. But for the shades meant to look like your own color, only better, matching your undertone is the difference between makeup that reads and makeup that disappears in the best way.'),
+                    para('Undertone is why a blush that glows on your friend can look muddy on you. Warm skin comes alive in peach, coral and terracotta; cool skin sings in rose, berry and plum. The same logic runs through lip and eye: the Bloom palette in Warm or Cool is that idea in a single pan.'),
+                    para('None of this is a rule you are stuck with: a bold lip can happily ignore your undertone. But for the shades meant to look like your own color, only better, matching your undertone is the difference between makeup that reads and makeup that disappears in the best way.'),
                 ],
             },
         },
@@ -1194,7 +1194,7 @@ const SHOP: Node[] = [
                         { text: 'Shop the full range' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Face, lip, eye and the tools to put it all on — every Maeve shade and formula, filtered and sorted however you like. Full pigment, built for every skin tone, no apology.',
+                        text: 'Face, lip, eye and the tools to put it all on: every Maeve shade and formula, filtered and sorted however you like. Full pigment, built for every skin tone, no apology.',
                     }),
                 ],
             }),
@@ -1231,14 +1231,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Shop the collections',
-        'Face, cheek, lip, eye and the tools to put it all on — plus the edits we curate ourselves: the best-sellers that keep selling out, what has just landed, and the full face the team is wearing right now. Start wherever you are getting dressed.'
+        'Face, cheek, lip, eye and the tools to put it all on: plus the edits we curate ourselves: the best-sellers that keep selling out, what has just landed, and the full face the team is wearing right now. Start wherever you are getting dressed.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Search Maeve',
-        'After a shade, a formula or a how-to? Search the whole range and The Maeve Edit — try a color, a category or a concern, and we will pull up everything that matches.'
+        'After a shade, a formula or a how-to? Search the whole range and The Maeve Edit. Try a color, a category or a concern, and we will pull up everything that matches.'
     ),
 ];
 
@@ -1253,7 +1253,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Maeve Edit' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Shade-matching, five-minute faces and step-by-steps for the looks worth learning — how to actually wear the line, written by the people who make it.',
+                        text: 'Shade-matching, five-minute faces and step-by-steps for the looks worth learning: how to actually wear the line, written by the people who make it.',
                     }),
                 ],
             }),
@@ -1276,7 +1276,7 @@ const CART: Node[] = [
                         { text: 'Your bag' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Every order ships with a free sample so you can try before you commit, and returns are easy — send anything back within thirty days, even opened, for a full refund or a swap. Checkout is secure, and your shade is one tap away.',
+                        text: 'Every order ships with a free sample so you can try before you commit, and returns are easy. Send anything back within thirty days, even opened, for a full refund or a swap. Checkout is secure, and your shade is one tap away.',
                     }),
                 ],
             }),
@@ -1291,7 +1291,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-beauty-counter',
     name: 'Beauty Counter',
     summary:
-        'A shade-forward storefront for an own-brand color-cosmetics house — a full-bleed lifestyle hero over a "find your perfect match" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.',
+        'A shade-forward storefront for an own-brand color-cosmetics house: a full-bleed lifestyle hero over a "find your perfect match" funnel of best-sellers, shade-matching editorial bands, face/lip/eye carousels and a gift-with-purchase reward, in a blush-tinted theme with a bold hot-magenta primary. Modelled on the beauty-counter archetype; shipped as Maeve.',
     tagline: 'A glossy, shade-forward template for own-brand color cosmetics and beauty counters.',
     vertical: 'retail',
     industry: 'Color cosmetics',
@@ -1310,14 +1310,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Maeve — full-pigment color cosmetics for every skin tone',
+            title: 'Maeve: full-pigment color cosmetics for every skin tone',
             description:
-                'Maeve makes full-pigment color cosmetics for every skin tone — foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call.',
+                'Maeve makes full-pigment color cosmetics for every skin tone: foundation in a shade that actually disappears, a lip for every mood, and a face that lasts from first coffee to last call.',
         },
         about: {
             title: 'About Maeve',
             description:
-                'Who Maeve is, and how we build full-pigment color for every skin tone — the shade range, the formulas and the people behind them.',
+                'Who Maeve is, and how we build full-pigment color for every skin tone: the shade range, the formulas and the people behind them.',
         },
     },
     home: HOME,

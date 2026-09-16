@@ -38,7 +38,7 @@ export default async function AnnouncementsPage() {
     <Stack gap={6}>
       <PageHeader
         title="Header notices"
-        description="The one line that sits above every page of a product — an offer, a price change, planned work. Written here, live in about a minute, and taken down the same way. Only one notice shows in a place at a time."
+        description="The one line that sits above every page of a product: an offer, a price change, planned work. Written here, live in about a minute, and taken down the same way. Only one notice shows in a place at a time."
       />
 
       <Stack direction="row" justify="end">

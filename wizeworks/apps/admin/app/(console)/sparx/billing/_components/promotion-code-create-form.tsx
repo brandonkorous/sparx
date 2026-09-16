@@ -76,7 +76,7 @@ export function PromotionCodeCreateForm({
   if (coupons.length === 0) {
     return (
       <Text size="sm" variant="muted">
-        Create a coupon first — a promotion code is the typeable string layered on top of one.
+        Create a coupon first: a promotion code is the typeable string layered on top of one.
       </Text>
     );
   }

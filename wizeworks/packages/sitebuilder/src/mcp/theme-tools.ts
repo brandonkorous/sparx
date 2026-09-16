@@ -21,7 +21,7 @@ const propertyIdArg = z
   .optional()
   .describe(
     'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
-      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target that specific site.'
+      'MULTIPLE sites. Call list_sites first to get each site’s id, then pass it here to target that specific site.'
   );
 
 export const themeTools: AnyMcpTool[] = [
@@ -29,7 +29,7 @@ export const themeTools: AnyMcpTool[] = [
     name: 'list_saved_themes',
     description:
       'List the tenant’s SAVED custom themes (the "My themes" library): id, name, base preset, and the captured ' +
-      'brand snapshot. These are named, reusable themes — distinct from the read-only platform presets (list_themes).',
+      'brand snapshot. These are named, reusable themes: distinct from the read-only platform presets (list_themes).',
     scope: 'read:builder',
     input: z.object({}),
     confirmation: false,
@@ -50,7 +50,7 @@ export const themeTools: AnyMcpTool[] = [
   {
     name: 'update_saved_theme',
     description:
-      'Update a saved custom theme (by `id`) — its name, presentation overlay, and/or brand snapshot. Does not ' +
+      'Update a saved custom theme (by `id`). Its name, presentation overlay, and/or brand snapshot. Does not ' +
       're-apply it to any site; apply_saved_theme (then publish_site) does that.',
     scope: 'write:builder',
     input: UpdateSavedThemeInput.extend({ id: Uuid }),
@@ -63,7 +63,7 @@ export const themeTools: AnyMcpTool[] = [
   {
     name: 'apply_saved_theme',
     description:
-      'Apply a saved custom theme to a SITE — loads its base preset + presentation into the site’s DRAFT config ' +
+      'Apply a saved custom theme to a SITE: loads its base preset + presentation into the site’s DRAFT config ' +
       '(and points activeSavedThemeId at it). Draft only; call publish_site to take it live. Targets the tenant’s ' +
       'primary site unless propertyId is given.',
     scope: 'write:builder',

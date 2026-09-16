@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Please give us at least 24 hours’ notice if you need to change or cancel — it lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
+      "policyText": "Please give us at least 24 hours’ notice if you need to change or cancel. It lets us offer the time to another family. We’ll text and email a friendly reminder the day before and two hours ahead."
     },
     {
       "handle": "optometry-no-show",
@@ -14,7 +14,7 @@
       "depositType": "card_hold",
       "cancellationWindowHours": 48,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Longer visits reserve an exam room and a doctor just for you, so we hold a card on file — nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
+      "policyText": "Longer visits reserve an exam room and a doctor just for you, so we hold a card on file. Nothing is charged unless the appointment is missed without 48 hours’ notice. Reschedule in time and the hold simply releases."
     }
   ],
   "resources": [
@@ -203,7 +203,7 @@
     {
       "handle": "comprehensive-eye-exam",
       "name": "Comprehensive eye exam",
-      "description": "A thorough, unhurried check of your vision and eye health — sharpness, prescription, pressure and a look at the health of your eyes, with plenty of time for questions. The right first step for anyone new to us, at any age.",
+      "description": "A thorough, unhurried check of your vision and eye health: sharpness, prescription, pressure and a look at the health of your eyes, with plenty of time for questions. The right first step for anyone new to us, at any age.",
       "durationMinutes": 40,
       "priceCents": 12900,
       "bufferAfterMin": 10,
@@ -227,7 +227,7 @@
     {
       "handle": "contact-lens-exam",
       "name": "Contact lens exam & fitting",
-      "description": "Everything a comprehensive exam covers, plus a proper contact-lens fitting — measurements, a trial pair and a hands-on lesson if you’re new to lenses. We’ll find the fit that feels comfortable all day.",
+      "description": "Everything a comprehensive exam covers, plus a proper contact-lens fitting: measurements, a trial pair and a hands-on lesson if you’re new to lenses. We’ll find the fit that feels comfortable all day.",
       "durationMinutes": 50,
       "priceCents": 15900,
       "bufferAfterMin": 10,
@@ -251,7 +251,7 @@
     {
       "handle": "kids-eye-exam",
       "name": "Kids’ eye exam",
-      "description": "A friendly, playful eye check made just for little ones — no reading required for the youngest, lots of encouragement, and gentle screening for the vision problems that matter most as kids grow. First visits are our favourite.",
+      "description": "A friendly, playful eye check made just for little ones: no reading required for the youngest, lots of encouragement, and gentle screening for the vision problems that matter most as kids grow. First visits are our favourite.",
       "durationMinutes": 30,
       "priceCents": 9900,
       "bufferAfterMin": 10,
@@ -299,7 +299,7 @@
     {
       "handle": "medical-eye-visit",
       "name": "Medical eye visit",
-      "description": "Red, painful, or suddenly blurry? Got something in your eye, or an infection that won’t settle? Request a focused medical visit and we’ll examine what’s going on, ease it, and sort out the next step — often the same day.",
+      "description": "Red, painful, or suddenly blurry? Got something in your eye, or an infection that won’t settle? Request a focused medical visit and we’ll examine what’s going on, ease it, and sort out the next step, often the same day.",
       "durationMinutes": 30,
       "priceCents": 11900,
       "bufferAfterMin": 10,
@@ -324,7 +324,7 @@
     {
       "handle": "frame-styling",
       "name": "Frame styling session",
-      "description": "Bring your prescription (or your last pair) and let our optician help you find frames you’ll love — shapes that suit your face, lenses that suit your day, and honest advice on what’s worth it. No exam needed, and it’s free.",
+      "description": "Bring your prescription (or your last pair) and let our optician help you find frames you’ll love: shapes that suit your face, lenses that suit your day, and honest advice on what’s worth it. No exam needed, and it’s free.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -341,7 +341,7 @@
     {
       "handle": "annual-checkup",
       "name": "Annual eye checkup",
-      "description": "Your regular yearly visit — a quick, friendly update of your prescription and a health check to keep everything on track. The easy way to stay ahead of changes before they become a problem.",
+      "description": "Your regular yearly visit: a quick, friendly update of your prescription and a health check to keep everything on track. The easy way to stay ahead of changes before they become a problem.",
       "durationMinutes": 30,
       "priceCents": 10900,
       "bufferAfterMin": 10,

@@ -185,7 +185,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
       {view.status === 'signed' ? (
         <Alert color="success" variant="soft">
           <AlertContent>
-            <AlertTitle>Signed — thank you</AlertTitle>
+            <AlertTitle>Signed: thank you</AlertTitle>
             <AlertDescription>
               {view.signerName} accepted this on {view.signedAt ? longDate(view.signedAt) : 'today'}
               . {view.business.name} has been told, and a copy of exactly what you agreed to has
@@ -214,7 +214,7 @@ export function SigningPanel({ tenantSlug, token }: { tenantSlug: string; token:
             <AlertTitle>This link has run out</AlertTitle>
             <AlertDescription>
               It was good until {longDate(view.expiresAt)}. Reply to the email you received and ask
-              for a fresh one — the {noun} itself is still here.
+              for a fresh one: the {noun} itself is still here.
             </AlertDescription>
           </AlertContent>
         </Alert>

@@ -182,7 +182,7 @@ const SCHEDULING = {
       handle: 'movement-assessment',
       name: 'Movement assessment',
       description:
-        'A full-body movement screen — we find what’s limiting you, then build the plan to fix it and get you back to training.',
+        'A full-body movement screen. We find what’s limiting you, then build the plan to fix it and get you back to training.',
       durationMinutes: 45,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -196,7 +196,7 @@ const SCHEDULING = {
       handle: 'sports-injury-visit',
       name: 'Sports injury visit',
       description:
-        'Acute or nagging — a focused visit to diagnose the injury, calm it down and start you moving again.',
+        'Acute or nagging: a focused visit to diagnose the injury, calm it down and start you moving again.',
       durationMinutes: 40,
       priceCents: 12000,
       assignmentStrategy: 'customer_choice',
@@ -209,7 +209,7 @@ const SCHEDULING = {
     {
       handle: 'adjustment',
       name: 'Chiropractic adjustment',
-      description: 'A targeted adjustment to restore motion and take pressure off the joints — in and out, back to your day.',
+      description: 'A targeted adjustment to restore motion and take pressure off the joints: in and out, back to your day.',
       durationMinutes: 20,
       priceCents: 6500,
       assignmentStrategy: 'any_available',
@@ -250,7 +250,7 @@ const SCHEDULING = {
     {
       handle: 'rehab-session',
       name: 'Rehab session',
-      description: 'Loaded, progressive rehab — the strength and control work that keeps the injury from coming back.',
+      description: 'Loaded, progressive rehab: the strength and control work that keeps the injury from coming back.',
       durationMinutes: 60,
       priceCents: 11000,
       assignmentStrategy: 'customer_choice',
@@ -264,7 +264,7 @@ const SCHEDULING = {
       handle: 'performance-consult',
       name: 'Performance consult',
       description:
-        'A free sit-down to map your training goals and see whether we’re the right team to get you there — no pressure.',
+        'A free sit-down to map your training goals and see whether we’re the right team to get you there: no pressure.',
       durationMinutes: 45,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -282,7 +282,7 @@ const HOME = [
   photoHero({
     image: url(IMG.hero),
     alt: 'A runner mid-stride during a rehab session on the clinic floor',
-    title: 'Get back to training — stronger than the injury',
+    title: 'Get back to training: stronger than the injury',
     sub: 'Sports chiropractic, active-release, dry needling and progressive rehab for athletes and active people. We find the cause, fix it, and build you back to full speed.',
     primary: { label: 'Book an assessment', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
@@ -292,7 +292,7 @@ const HOME = [
     items: [
       {
         title: 'Sports-injury specialists',
-        body: 'We treat athletes every day — from weekend runners to competitive lifters. You get someone who understands the demand you’re training back toward.',
+        body: 'We treat athletes every day: from weekend runners to competitive lifters. You get someone who understands the demand you’re training back toward.',
       },
       {
         title: 'Active-release & dry needling',
@@ -304,17 +304,17 @@ const HOME = [
       },
       {
         title: 'Movement screening',
-        body: 'We assess how you actually move under load and find the weak link — then load it, so the injury doesn’t come back.',
+        body: 'We assess how you actually move under load and find the weak link, then load it, so the injury doesn’t come back.',
       },
     ],
   }),
   serviceMenu({
     heading: 'What you can book',
-    intro: 'Straight-talking visits with clear times and prices. Full availability is on the booking page — pick a provider and a slot that works.',
+    intro: 'Straight-talking visits with clear times and prices. Full availability is on the booking page. Pick a provider and a slot that works.',
     surface: 'muted',
     columns: 2,
     items: [
-      { name: 'Movement assessment', priceCents: 9500, durationMin: 45, desc: 'The full screen — find the limit, build the plan.' },
+      { name: 'Movement assessment', priceCents: 9500, durationMin: 45, desc: 'The full screen: find the limit, build the plan.' },
       { name: 'Sports injury visit', priceCents: 12000, durationMin: 40, desc: 'Diagnose it, calm it, start moving again.' },
       { name: 'Active-release session', priceCents: 8500, durationMin: 30, desc: 'Soft-tissue work to free up restriction.' },
       { name: 'Rehab session', priceCents: 11000, durationMin: 60, desc: 'Loaded rehab that keeps it from returning.' },
@@ -324,24 +324,24 @@ const HOME = [
   splitFeature({
     image: url(IMG.method),
     alt: 'A provider guiding an athlete through a loaded movement screen',
-    heading: 'Assess, treat, rebuild — the Kinetic method',
+    heading: 'Assess, treat, rebuild: the Kinetic method',
     body: [
-      'Most clinics chase the pain. We chase the cause. Every athlete starts with a movement assessment, so we treat the reason the tissue failed — not just the spot that hurts.',
+      'Most clinics chase the pain. We chase the cause. Every athlete starts with a movement assessment, so we treat the reason the tissue failed, not just the spot that hurts.',
       'From there it’s hands-on treatment to settle things down, then loaded, progressive rehab to build capacity back. That last step is what keeps you off the table and on the field.',
     ],
     cta: { label: 'Book your assessment', href: '/book' },
   }),
   teamRow({
     heading: 'Your providers',
-    intro: 'Book by name — you’ll work with someone who knows your history and your goals.',
+    intro: 'Book by name: you’ll work with someone who knows your history and your goals.',
     members: [
       { name: 'Dr. Marcus Vela', role: 'Sports chiropractor', image: url(IMG.marcus), alt: 'Dr. Marcus Vela, sports chiropractor', bio: 'Adjustments and active-release for competitive and everyday athletes. Marcus leads the clinic.' },
-      { name: 'Dr. Dana Okafor', role: 'Rehab & dry-needling lead', image: url(IMG.dana), alt: 'Dr. Dana Okafor, rehab & dry-needling lead', bio: 'Dry needling and progressive rehab — the strength work that makes the fix stick.' },
+      { name: 'Dr. Dana Okafor', role: 'Rehab & dry-needling lead', image: url(IMG.dana), alt: 'Dr. Dana Okafor, rehab & dry-needling lead', bio: 'Dry needling and progressive rehab: the strength work that makes the fix stick.' },
       { name: 'Theo Reyes', role: 'Performance & movement specialist', image: url(IMG.theo), alt: 'Theo Reyes, performance & movement specialist', bio: 'Movement screening and return-to-sport plans for people chasing a number.' },
     ],
   }),
   testimonial({
-    quote: 'Tore my calf eight weeks out from my marathon and thought I was done. Kinetic had me back on the start line — and I ran a PR. They didn’t just patch me up, they rebuilt me.',
+    quote: 'Tore my calf eight weeks out from my marathon and thought I was done. Kinetic had me back on the start line, and I ran a PR. They didn’t just patch me up, they rebuilt me.',
     attribution: 'Renata M., marathon runner',
     surface: 'primary',
   }),
@@ -370,8 +370,8 @@ const ABOUT = [
     alt: 'An open rehab floor with treatment tables and training space',
     heading: 'About Kinetic Spine & Sport',
     body: [
-      'We built Kinetic for the people other clinics send home with a heat pack and a shrug. Athletes, lifters, runners, weekend warriors — anyone whose life doesn’t stop when something tweaks.',
-      'It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity — because getting out of pain and getting back to performance are two different jobs, and we do both.',
+      'We built Kinetic for the people other clinics send home with a heat pack and a shrug. Athletes, lifters, runners, weekend warriors. Anyone whose life doesn’t stop when something tweaks.',
+      'It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity, because getting out of pain and getting back to performance are two different jobs, and we do both.',
     ],
     cta: { label: 'Book an assessment', href: '/book' },
   }),
@@ -381,7 +381,7 @@ const ABOUT = [
     items: [
       { title: 'Assessment first', body: 'Every plan starts with how you move. We find the weak link before we touch the pain, so we fix the cause, not the symptom.' },
       { title: 'Hands-on, then loaded', body: 'Active-release and dry needling to settle things down, then progressive rehab to build real capacity back.' },
-      { title: 'Back to your sport', body: 'We work to a target — a return-to-sport date, a lift, a race — not an open-ended schedule of maintenance visits.' },
+      { title: 'Back to your sport', body: 'We work to a target (a return-to-sport date, a lift, a race) not an open-ended schedule of maintenance visits.' },
     ],
   }),
 ];
@@ -400,7 +400,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your time online — no phone tag, no waiting room hold music.',
+    sub: 'See live availability and reserve your time online: no phone tag, no waiting room hold music.',
     surface: 'muted',
     cta: { label: 'Book an assessment', href: '/book' },
   }),
@@ -411,8 +411,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-chiro-sports',
   name: 'Chiropractic (Sports & Rehab)',
   summary:
-    'A bold, athletic chiropractic & performance site — electric-blue palette, sturdy condensed type, built for athletes and active people. Installs a working booking flow: sports-injury visits, active-release, dry needling, rehab and a free performance consult, with providers AND treatment rooms as multi-requirement resources. Ships as "Kinetic Spine & Sport", a sports/rehab clinic that books online from day one.',
-  tagline: 'An athletic template for sports & rehab chiropractic — book assessments online from day one.',
+    'A bold, athletic chiropractic & performance site: electric-blue palette, sturdy condensed type, built for athletes and active people. Installs a working booking flow: sports-injury visits, active-release, dry needling, rehab and a free performance consult, with providers AND treatment rooms as multi-requirement resources. Ships as "Kinetic Spine & Sport", a sports/rehab clinic that books online from day one.',
+  tagline: 'An athletic template for sports & rehab chiropractic. Book assessments online from day one.',
   industry: 'Chiropractic',
   sortWeight: 55,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -421,7 +421,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Kinetic Spine & Sport — sports chiropractic & rehab',
+      title: 'Kinetic Spine & Sport: sports chiropractic & rehab',
       description:
         'Sports chiropractic, active-release, dry needling and progressive rehab for athletes and active people. Book a movement assessment online.',
     },

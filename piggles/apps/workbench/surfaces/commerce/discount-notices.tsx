@@ -37,7 +37,7 @@ export function DiscountNotices({
             <AlertTitle>This is a {TYPE_LABELS[type].toLowerCase()}</AlertTitle>
             <AlertDescription>
               That kind of offer is set up with product choices this screen does not show. You can
-              still edit its name, code, schedule and limits here — the offer itself is kept exactly
+              still edit its name, code, schedule and limits here: the offer itself is kept exactly
               as it is.
             </AlertDescription>
           </AlertContent>

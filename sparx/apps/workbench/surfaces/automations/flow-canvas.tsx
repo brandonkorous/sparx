@@ -611,7 +611,7 @@ function AddStepRow({ onClick, hasActions }: { onClick: () => void; hasActions: 
       >
         <Glyph className={`size-4 shrink-0 ${hasActions ? '' : 'mt-0.5'}`} aria-hidden />
         {hasActions ? (
-          <span className="text-sm font-medium">Add a step — an action or a wait</span>
+          <span className="text-sm font-medium">Add a step: an action or a wait</span>
         ) : (
           <span className="flex flex-col gap-0.5">
             <span className="text-sm font-medium">Add the first thing to do</span>

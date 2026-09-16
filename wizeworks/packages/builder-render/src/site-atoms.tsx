@@ -441,7 +441,7 @@ export function renderSiteAtom(node: BuilderNode, ctx: AtomRenderCtx): React.Rea
     }
     case 'ChatBubble': {
       const author = str(node, 'author');
-      const message = boundOr(ctx, node, 'message', 'Hey — thanks for reaching out!');
+      const message = boundOr(ctx, node, 'message', 'Hey: thanks for reaching out!');
       const side = str(node, 'placement') === 'end' ? 'chat-end' : 'chat-start';
       return (
         <div className={cx(rootClass('chat', cls), side)}>

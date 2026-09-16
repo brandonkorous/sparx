@@ -57,13 +57,13 @@ export default async function ConsoleHome() {
                 title="Tenants"
                 href="/sparx/tenants"
                 cta="View tenants →"
-                body="Browse every account on the platform and open one to see its subscription, active modules, storage, domains, and recent activity — read-only."
+                body="Browse every account on the platform and open one to see its subscription, active modules, storage, domains, and recent activity. Read-only."
               />
               <ConsoleEntry
                 title="Metrics"
                 href="/sparx/metrics"
                 cta="View metrics →"
-                body="Cross-tenant platform health — lifecycle, recurring revenue, module adoption, signups, and churn across every account."
+                body="Cross-tenant platform health: lifecycle, recurring revenue, module adoption, signups, and churn across every account."
               />
               <ConsoleEntry
                 title="Support"
@@ -86,7 +86,7 @@ export default async function ConsoleHome() {
               title="Domains"
               href="/sparx/domains"
               cta="View domains →"
-              body="Every custom and sparx-purchased domain across the platform — routing status, SSL readiness, live DNS diagnostics, registration history, and a force re-verify."
+              body="Every custom and sparx-purchased domain across the platform: routing status, SSL readiness, live DNS diagnostics, registration history, and a force re-verify."
             />
           ) : null}
           {hasCapability(operator, 'feedback:respond') ? (
@@ -94,7 +94,7 @@ export default async function ConsoleHome() {
               title="Feedback"
               href="/sparx/feedback"
               cta="Open feedback →"
-              body="The cross-tenant inbox of ideas, problems, questions, and praise. Triage, assign, tag, and reply — the response closes the loop back to the submitter."
+              body="The cross-tenant inbox of ideas, problems, questions, and praise. Triage, assign, tag, and reply: the response closes the loop back to the submitter."
             />
           ) : null}
           {hasCapability(operator, 'partner:read') ? (
@@ -103,13 +103,13 @@ export default async function ConsoleHome() {
                 title="Partners"
                 href="/sparx/partners"
                 cta="Open partners →"
-                body="The Partner Program — review applications, manage the partner roster and tiers, approve commissions, and run the monthly Stripe Connect payout batch."
+                body="The Partner Program. Review applications, manage the partner roster and tiers, approve commissions, and run the monthly Stripe Connect payout batch."
               />
               <ConsoleEntry
                 title="Bootcamps"
                 href="/sparx/bootcamps"
                 cta="View bootcamps →"
-                body="The live public catalog of partner-hosted bootcamps across the platform — host, tier, format, seats, and dates. Read-only."
+                body="The live public catalog of partner-hosted bootcamps across the platform: host, tier, format, seats, and dates. Read-only."
               />
             </>
           ) : null}
@@ -121,7 +121,7 @@ export default async function ConsoleHome() {
           <Heading level={3}>Your capabilities</Heading>
           {operator.capabilities.length === 0 ? (
             <Text variant="muted">
-              No capabilities granted yet — ask a super admin to grant access.
+              No capabilities granted yet. Ask a super admin to grant access.
             </Text>
           ) : (
             <div className="flex flex-wrap gap-2">
@@ -147,7 +147,7 @@ export default async function ConsoleHome() {
             {apiDetail}
           </Text>
           <Text size="xs" variant="muted">
-            All cross-tenant data flows through this internal seam — the console holds no tenant
+            All cross-tenant data flows through this internal seam: the console holds no tenant
             database access of its own.
           </Text>
         </Stack>

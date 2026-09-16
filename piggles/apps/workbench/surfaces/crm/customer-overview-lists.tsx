@@ -207,7 +207,7 @@ export function RecentActivity({ activity }: { activity: CustomerActivity[] }) {
                 </Text>
                 {item.description ? (
                   <Text as="span" className="text-sm">
-                    {' — '}
+                    {': '}
                     {item.description}
                   </Text>
                 ) : null}

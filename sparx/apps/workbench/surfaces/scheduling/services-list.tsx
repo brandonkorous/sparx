@@ -56,8 +56,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 function emptyAdvice(search: string, typeLabel: string | null, activeOnly: boolean): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of a service’s name.');
-  if (typeLabel) parts.push(`You are only seeing “${typeLabel}” bookings — switch to every kind.`);
-  if (activeOnly) parts.push('Switched-off services are hidden — include those to see them.');
+  if (typeLabel) parts.push(`You are only seeing “${typeLabel}” bookings. Switch to every kind.`);
+  if (activeOnly) parts.push('Switched-off services are hidden: include those to see them.');
   return parts.join(' ');
 }
 
@@ -104,7 +104,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Briefcase className="size-6" aria-hidden />}
           title="Could not load your services"
-          description="This is a problem reaching the server. Your services are unaffected — the list just could not be read just now."
+          description="This is a problem reaching the server. Your services are unaffected: the list just could not be read just now."
           actions={
             <Button
               size="sm"
@@ -140,7 +140,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
           firstRun={{
             title: 'No services yet',
             description:
-              'A service is anything a customer can book — a haircut, a class, a table, a hire. Set up your first and people can start booking it.',
+              'A service is anything a customer can book: a haircut, a class, a table, a hire. Set up your first and people can start booking it.',
             actions: (
               <Button
                 size="sm"
@@ -246,7 +246,7 @@ export function ServicesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="New service — hold Shift to open alongside, Alt for a new window"
+            title="New service: hold Shift to open alongside, Alt for a new window"
             onClick={openNew}
           >
             <Plus className="size-4" aria-hidden />

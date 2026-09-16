@@ -13,7 +13,7 @@ import {
 } from '@sparx/brand';
 
 export const runtime = 'edge';
-export const alt = 'sparx.market — Shop independent sellers';
+export const alt = 'sparx.market: Shop independent sellers';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -139,7 +139,7 @@ export default function Image() {
           </div>
         </div>
         <span style={{ fontSize: 28, lineHeight: 1.4, color: '#A1A1AA', maxWidth: 920 }}>
-          One destination for thousands of independent shops and makers — real products, shipped
+          One destination for thousands of independent shops and makers: real products, shipped
           direct, you won’t find on the big marketplaces.
         </span>
       </div>

@@ -87,7 +87,7 @@ const channelRoutes: FastifyPluginAsync = async (app) => {
     const adapter = getChannel(slug);
     if (!adapter) {
       throw conflict(
-        `${descriptor.name} is not available to connect yet — it ships in ${descriptor.phase}.`,
+        `${descriptor.name} is not available to connect yet: it ships in ${descriptor.phase}.`,
         { slug, phase: descriptor.phase }
       );
     }

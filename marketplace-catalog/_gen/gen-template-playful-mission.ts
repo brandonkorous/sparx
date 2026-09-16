@@ -156,7 +156,7 @@ function hero(): Node {
                                     { text: 'Every wag does some good' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Rally makes the good stuff for dogs and cats — beds, collars, toys and treats built to last. And for every item you buy, we give one to an animal still waiting for a home. Shop for your pet, and a shelter pet gets looked after too.',
+                                    text: 'Rally makes the good stuff for dogs and cats: beds, collars, toys and treats built to last. And for every item you buy, we give one to an animal still waiting for a home. Shop for your pet, and a shelter pet gets looked after too.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-3', {
                                     children: [
@@ -238,7 +238,7 @@ function missionBand(): Node {
                         text: 'Buy one, give one',
                     }),
                     el('p', 'max-w-xl text-lg leading-relaxed', {
-                        text: 'It is the simplest promise we could make. Every bed, collar, toy and bag of treats you buy is matched with one we give to a shelter — a warm bed, a full bowl, a toy for a dog or cat still waiting to be someone\u2019s. You shop; they get looked after. No fine print.',
+                        text: 'It is the simplest promise we could make. Every bed, collar, toy and bag of treats you buy is matched with one we give to a shelter: a warm bed, a full bowl, a toy for a dog or cat still waiting to be someone\u2019s. You shop; they get looked after. No fine print.',
                     }),
                 ],
             }),
@@ -301,7 +301,7 @@ function impactBand(): Node {
                         text: '512,000',
                     }),
                     el('h2', 'text-2xl font-bold tracking-tight @3xl:text-3xl', {
-                        text: 'beds, bowls and meals given — and counting',
+                        text: 'beds, bowls and meals given, and counting',
                     }),
                     el('p', 'max-w-xl text-lg leading-relaxed', {
                         text: 'Every one of those started with someone buying something for their own pet. That is not our number. It is yours. Thank you for making a shelter animal\u2019s day better without doing anything more than treating your own.',
@@ -340,7 +340,7 @@ function beyondBand(): Node {
                                 text: 'Everything else the good life needs',
                             }),
                             el('p', 'max-w-2xl text-lg leading-relaxed', {
-                                text: 'Mealtime, playtime and the road in between — the small things that turn a house into their home.',
+                                text: 'Mealtime, playtime and the road in between: the small things that turn a house into their home.',
                             }),
                         ],
                     }),
@@ -382,7 +382,7 @@ function howItWorks(): Node {
                     gridThree([
                         card(CARD, [
                             cardTitle('You buy something for your pet'),
-                            body('A bed, a collar, a toy, a bag of treats — whatever your dog or cat needs. Nothing extra to opt into.'),
+                            body('A bed, a collar, a toy, a bag of treats: whatever your dog or cat needs. Nothing extra to opt into.'),
                         ]),
                         card(CARD, [
                             cardTitle('We give one to a shelter'),
@@ -390,7 +390,7 @@ function howItWorks(): Node {
                         ]),
                         card(CARD, [
                             cardTitle('An animal in need gets it'),
-                            body('A dog or cat still waiting for a home gets a warm bed, a full bowl or a toy of their own — because of your order.'),
+                            body('A dog or cat still waiting for a home gets a warm bed, a full bowl or a toy of their own, because of your order.'),
                         ]),
                     ]),
                 ],
@@ -406,7 +406,7 @@ const HOME: Node[] = [
     missionBand(),
     editorialBand({
         heading: 'Comfort worth wagging for',
-        lead: 'A good bed is where most of a dog\u2019s day actually happens. Ours use orthopedic foam and bolstered sides for the ones who like to lean, in covers that unzip and go straight in the wash — because real life is muddy.',
+        lead: 'A good bed is where most of a dog\u2019s day actually happens. Ours use orthopedic foam and bolstered sides for the ones who like to lean, in covers that unzip and go straight in the wash, because real life is muddy.',
         assetId: 'band-comfort',
         alt: 'A golden puppy sitting patiently holding a flower',
         cta: 'Shop beds & blankets',
@@ -416,7 +416,7 @@ const HOME: Node[] = [
     impactBand(),
     editorialBand({
         heading: 'Built for the zoomies',
-        lead: 'Tough rope tugs, catnip kickers and the toys that survive the third round of fetch. Made to be chased, thrown, wrestled and — eventually — replaced, because a well-loved toy is the whole point.',
+        lead: 'Tough rope tugs, catnip kickers and the toys that survive the third round of fetch. Made to be chased, thrown, wrestled and (eventually) replaced, because a well-loved toy is the whole point.',
         assetId: 'band-play',
         alt: 'A chocolate labrador mid-lick, full of energy',
         cta: 'Shop toys',
@@ -441,13 +441,13 @@ const ABOUT: Node[] = [
                         text: 'About Rally',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Rally started with a shelter visit and a simple, uncomfortable thought: the aisle of a pet shop is full of good things, and a few miles away a room full of dogs and cats has almost none. So we built a pet brand around closing that gap — make the products people already want to buy, and give one away for every one we sell.',
+                        text: 'Rally started with a shelter visit and a simple, uncomfortable thought: the aisle of a pet shop is full of good things, and a few miles away a room full of dogs and cats has almost none. So we built a pet brand around closing that gap. Make the products people already want to buy, and give one away for every one we sell.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'The giveback is not a marketing add-on we bolt onto a sale. It is the reason the company exists, and it is baked into the price of everything on the site. Buy a bed, and a shelter dog gets a bed. Buy a bag of treats, and a rescue cat eats. There is no round-up box to tick and no upsell — the good is already done by the time your order ships.',
+                        text: 'The giveback is not a marketing add-on we bolt onto a sale. It is the reason the company exists, and it is baked into the price of everything on the site. Buy a bed, and a shelter dog gets a bed. Buy a bag of treats, and a rescue cat eats. There is no round-up box to tick and no upsell: the good is already done by the time your order ships.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We are a small team of people who could not walk past. We make gear we would put our own animals on — durable, washable, honestly made — and we partner with shelters and rescues across the country to get the matched half where it is needed most. Every wag, on both ends, does some good.',
+                        text: 'We are a small team of people who could not walk past. We make gear we would put our own animals on (durable, washable, honestly made) and we partner with shelters and rescues across the country to get the matched half where it is needed most. Every wag, on both ends, does some good.',
                     }),
                 ],
             }),
@@ -462,7 +462,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Say hello',
-        intro: 'A sizing question, an order, or a shelter that could use a hand? A real person on the Rally team reads every message and writes back — usually the same day, always like a fellow pet person, never from a script.',
+        intro: 'A sizing question, an order, or a shelter that could use a hand? A real person on the Rally team reads every message and writes back, usually the same day, always like a fellow pet person, never from a script.',
         submitLabel: 'Email the team',
     }),
 ];
@@ -522,12 +522,12 @@ const PRODUCTS: Product[] = [
         tags: ['bed', 'orthopedic', 'dog', 'washable', 'giveback'],
         categoryHandles: ['beds-blankets'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'beds-blankets', 'giveback'],
-        seoTitle: 'Orthopedic Bolster Dog Bed — washable memory-foam dog bed',
+        seoTitle: 'Orthopedic Bolster Dog Bed: washable memory-foam dog bed',
         seoDescription: 'A supportive orthopedic foam dog bed with bolstered sides and a fully machine-washable cover.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'A thick orthopedic foam base that takes the pressure off older hips and hard floors, walled by raised bolster sides for a chin-rester to lean into. The whole cover unzips from the foam and goes in the machine — because a bed you cannot clean is a bed you throw away.',
+                'A thick orthopedic foam base that takes the pressure off older hips and hard floors, walled by raised bolster sides for a chin-rester to lean into. The whole cover unzips from the foam and goes in the machine, because a bed you cannot clean is a bed you throw away.',
             fit: 'Small, medium and large, sized for the dog who sprawls as much as the one who curls; measure nose to tail and size up between. Roomy enough to stretch out, walled enough to feel safe.',
             care: 'Unzip the cover and machine-wash warm, tumble low; the foam wipes clean and should never go in the machine. Wash the cover monthly, or the week after a muddy season, whichever comes first.',
             materials: [
@@ -559,14 +559,14 @@ const PRODUCTS: Product[] = [
         tags: ['bed', 'cat', 'calming', 'plush', 'giveback'],
         categoryHandles: ['beds-blankets'],
         collectionHandles: ['best-sellers', 'beds-blankets', 'giveback'],
-        seoTitle: 'Calming Donut Cat Bed — plush anti-anxiety pet bed',
+        seoTitle: 'Calming Donut Cat Bed: plush anti-anxiety pet bed',
         seoDescription: 'A deep, plush faux-fur donut bed that helps anxious cats and small dogs settle and sleep.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A deep, plush faux-fur ring a cat or small dog can burrow into and disappear. The high sides feel like a curled-up litter-mate, which is why anxious pets settle so fast; a non-slip base keeps it from skating across the floor.',
             fit: 'One size, for cats and small dogs up to about ten kilos; the ring gives so a bigger sprawler can flatten it into a mat. Deep enough to sink into, low enough to climb into.',
-            care: 'Machine-wash the whole bed cold on a gentle cycle and tumble low to fluff the pile back up — a dryer ball helps. Brush out loose fur between washes to keep the plush lofty.',
+            care: 'Machine-wash the whole bed cold on a gentle cycle and tumble low to fluff the pile back up: a dryer ball helps. Brush out loose fur between washes to keep the plush lofty.',
             materials: [
                 { name: 'Recycled faux-fur plush', percent: '70%' },
                 { name: 'Recycled poly fill', percent: '28%' },
@@ -588,14 +588,14 @@ const PRODUCTS: Product[] = [
         handle: 'cozy-fleece-pet-blanket',
         title: 'Cozy Fleece Pet Blanket',
         description:
-            'The blanket that saves your sofa and your sanity. A double-sided sherpa fleece that pets love to nest in and hair brushes straight off, sized to drape a bed, a crate or the good armchair they have already claimed. Warm, washable and quietly indestructible. Buy one, give one — a shelter animal gets a blanket that finally smells like theirs.',
+            'The blanket that saves your sofa and your sanity. A double-sided sherpa fleece that pets love to nest in and hair brushes straight off, sized to drape a bed, a crate or the good armchair they have already claimed. Warm, washable and quietly indestructible. Buy one, give one: a shelter animal gets a blanket that finally smells like theirs.',
         status: 'active',
         productType: 'Blankets',
         vendor: 'Rally',
         tags: ['blanket', 'fleece', 'washable', 'giveback'],
         categoryHandles: ['beds-blankets'],
         collectionHandles: ['beds-blankets'],
-        seoTitle: 'Cozy Fleece Pet Blanket — double-sided sherpa pet blanket',
+        seoTitle: 'Cozy Fleece Pet Blanket: double-sided sherpa pet blanket',
         seoDescription: 'A warm, washable double-sided sherpa fleece blanket for beds, crates and sofas.',
         productTypeKey: 'apparel',
         attributes: {
@@ -628,7 +628,7 @@ const PRODUCTS: Product[] = [
         tags: ['collar', 'dog', 'recycled', 'multipack', 'giveback'],
         categoryHandles: ['collars-leads'],
         collectionHandles: ['collars-leads', 'giveback'],
-        seoTitle: 'Everyday Webbing Collar 3-Pack — recycled dog collars',
+        seoTitle: 'Everyday Webbing Collar 3-Pack: recycled dog collars',
         seoDescription: 'A three-pack of soft recycled-webbing dog collars with quick-release buckles and welded D-rings.',
         productTypeKey: 'apparel',
         attributes: {
@@ -657,14 +657,14 @@ const PRODUCTS: Product[] = [
         handle: 'no-pull-adjustable-harness',
         title: 'No-Pull Adjustable Harness',
         description:
-            'Walks that stop being a tug-of-war. A front-clip design gently turns a lunging dog back toward you instead of letting them haul, and five points of adjustment mean it actually fits the dog you have — deep-chested, barrel-bodied or somewhere in between. Padded where it presses, breathable where it counts, reflective for the dark mornings. One sold, one given to a rescue dog learning to walk on a lead for the first time.',
+            'Walks that stop being a tug-of-war. A front-clip design gently turns a lunging dog back toward you instead of letting them haul, and five points of adjustment mean it actually fits the dog you have: deep-chested, barrel-bodied or somewhere in between. Padded where it presses, breathable where it counts, reflective for the dark mornings. One sold, one given to a rescue dog learning to walk on a lead for the first time.',
         status: 'active',
         productType: 'Harnesses',
         vendor: 'Rally',
         tags: ['harness', 'no-pull', 'dog', 'reflective', 'giveback'],
         categoryHandles: ['collars-leads'],
         collectionHandles: ['new-arrivals', 'best-sellers', 'collars-leads'],
-        seoTitle: 'No-Pull Adjustable Harness — front-clip dog harness',
+        seoTitle: 'No-Pull Adjustable Harness: front-clip dog harness',
         seoDescription: 'A padded front-clip no-pull dog harness with five-point adjustment and reflective trim.',
         productTypeKey: 'apparel',
         attributes: {
@@ -702,13 +702,13 @@ const PRODUCTS: Product[] = [
         tags: ['lead', 'leash', 'reflective', 'dog', 'giveback'],
         categoryHandles: ['collars-leads'],
         collectionHandles: ['new-arrivals', 'collars-leads'],
-        seoTitle: 'Reflective City Lead — padded reflective dog leash',
+        seoTitle: 'Reflective City Lead: padded reflective dog leash',
         seoDescription: 'A fully reflective dog lead with a padded handle and a low traffic handle for busy streets.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
                 'A full reflective weave that lights up in headlights the whole length, a padded neoprene handle that saves your hand on the pullier days, and an extra traffic handle down low to pull a dog in close at a crossing. Rated well past the weight of the dog on the end of it.',
-            fit: 'A standard walking length with two handles — one at the end, one at the collar — for street control; the trigger clip suits any collar or harness ring. Long enough to relax, short enough to hold.',
+            fit: 'A standard walking length with two handles (one at the end, one at the collar) for street control; the trigger clip suits any collar or harness ring. Long enough to relax, short enough to hold.',
             care: 'Machine-wash in a bag or scrub by hand and hang to dry; the reflective weave keeps its shine through years of walks. Wipe the clip and check the stitching at the handle from time to time.',
             materials: [
                 { name: 'Reflective nylon webbing', percent: '82%' },
@@ -733,21 +733,21 @@ const PRODUCTS: Product[] = [
         handle: 'stainless-slow-feed-bowl',
         title: 'Stainless Slow-Feed Bowl',
         description:
-            'For the dog who inhales dinner in nine seconds flat. A maze of stainless ridges turns a gulped meal into a ten-minute puzzle, which is easier on the stomach and a lot easier on your carpet afterwards. One piece of food-grade steel — no plastic to scratch and harbour, no dishwasher it cannot handle. Every one bought feeds a shelter animal from a matching bowl.',
+            'For the dog who inhales dinner in nine seconds flat. A maze of stainless ridges turns a gulped meal into a ten-minute puzzle, which is easier on the stomach and a lot easier on your carpet afterwards. One piece of food-grade steel: no plastic to scratch and harbour, no dishwasher it cannot handle. Every one bought feeds a shelter animal from a matching bowl.',
         status: 'active',
         productType: 'Bowls',
         vendor: 'Rally',
         tags: ['bowl', 'slow-feed', 'stainless', 'giveback'],
         categoryHandles: ['bowls-feeding'],
         collectionHandles: ['giveback'],
-        seoTitle: 'Stainless Slow-Feed Bowl — anti-gulp dog bowl',
+        seoTitle: 'Stainless Slow-Feed Bowl: anti-gulp dog bowl',
         seoDescription: 'A one-piece stainless steel slow-feed bowl that turns a gulped meal into a ten-minute puzzle.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'One piece of food-grade stainless steel pressed into a maze of ridges that turns a gulped meal into a ten-minute puzzle — easier on the stomach and a lot easier on your carpet. No plastic to scratch and harbour, no coating to wear off.',
+                'One piece of food-grade stainless steel pressed into a maze of ridges that turns a gulped meal into a ten-minute puzzle: easier on the stomach and a lot easier on your carpet. No plastic to scratch and harbour, no coating to wear off.',
             fit: 'A single bowl sized for a medium dog and a full meal; the ridges suit dry food best. Sits low and wide so it does not tip when an eager eater goes at it.',
-            care: 'Top-rack dishwasher-safe, or a quick scrub in hot soapy water; stainless will not stain, hold odour or leach. Dry it after washing to keep it spot-free — that is the only upkeep it asks.',
+            care: 'Top-rack dishwasher-safe, or a quick scrub in hot soapy water; stainless will not stain, hold odour or leach. Dry it after washing to keep it spot-free. That is the only upkeep it asks.',
             materials: [{ name: 'Food-grade stainless steel', percent: '100%' }],
             origin: 'Made in China',
         },
@@ -758,19 +758,19 @@ const PRODUCTS: Product[] = [
         handle: 'ceramic-bowl-set',
         title: 'Stoneware Bowl Set (2)',
         description:
-            'The bowls you would actually leave out on the kitchen floor. A pair of hand-glazed stoneware dishes — one for food, one for water — heavy enough that a determined eater cannot skate them across the tiles, with a reactive glaze that means no two sets are quite the same. Dishwasher-safe and built to outlast a few enthusiastic dinners a day. One set bought, one given to a rescue.',
+            'The bowls you would actually leave out on the kitchen floor. A pair of hand-glazed stoneware dishes (one for food, one for water) heavy enough that a determined eater cannot skate them across the tiles, with a reactive glaze that means no two sets are quite the same. Dishwasher-safe and built to outlast a few enthusiastic dinners a day. One set bought, one given to a rescue.',
         status: 'active',
         productType: 'Bowls',
         vendor: 'Rally',
         tags: ['bowl', 'ceramic', 'stoneware', 'set', 'giveback'],
         categoryHandles: ['bowls-feeding'],
         collectionHandles: ['giveback'],
-        seoTitle: 'Stoneware Bowl Set — hand-glazed ceramic pet bowls',
-        seoDescription: 'A weighted, hand-glazed stoneware pet bowl set — one for food, one for water — dishwasher-safe.',
+        seoTitle: 'Stoneware Bowl Set: hand-glazed ceramic pet bowls',
+        seoDescription: 'A weighted, hand-glazed stoneware pet bowl set (one for food, one for water) dishwasher-safe.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'A pair of hand-glazed stoneware dishes — one for food, one for water — heavy enough that a determined eater cannot skate them across the tiles, with a reactive glaze that means no two sets are quite the same.',
+                'A pair of hand-glazed stoneware dishes (one for food, one for water) heavy enough that a determined eater cannot skate them across the tiles, with a reactive glaze that means no two sets are quite the same.',
             fit: 'Two matching bowls sized for everyday feeding of a small-to-medium pet; the weight is the point, so they stay put. Wide and shallow, kind to a flat-faced breed.',
             care: 'Dishwasher-safe and built to outlast a few enthusiastic dinners a day; a hand-wash keeps the reactive glaze at its brightest. Check the rim for chips over the years, as with any ceramic.',
             materials: [
@@ -793,19 +793,19 @@ const PRODUCTS: Product[] = [
         handle: 'rope-tug-toy',
         title: 'Rope Tug Toy (3-Pack)',
         description:
-            'The toy that survives the game it was made for. Thick, tightly-braided cotton rope in three shapes for three moods — a straight tug, a knotted ball, a ring for two dogs to argue over — and the loose fibres actually help floss teeth as they chew. Washable, and when one finally gives up there are two more in the pack. Buy one, give one to a shelter dog with nothing to play with.',
+            'The toy that survives the game it was made for. Thick, tightly-braided cotton rope in three shapes for three moods (a straight tug, a knotted ball, a ring for two dogs to argue over) and the loose fibres actually help floss teeth as they chew. Washable, and when one finally gives up there are two more in the pack. Buy one, give one to a shelter dog with nothing to play with.',
         status: 'active',
         productType: 'Toys',
         vendor: 'Rally',
         tags: ['toy', 'rope', 'tug', 'dog', 'multipack', 'giveback'],
         categoryHandles: ['toys'],
         collectionHandles: ['toys', 'giveback'],
-        seoTitle: 'Rope Tug Toy 3-Pack — braided cotton dog rope toys',
+        seoTitle: 'Rope Tug Toy 3-Pack: braided cotton dog rope toys',
         seoDescription: 'A three-pack of tough braided cotton rope tug toys that help floss teeth as dogs chew.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Thick, tightly-braided cotton rope in three shapes for three moods — a straight tug, a knotted ball, a ring for two dogs to argue over — and the loose fibres actually help floss teeth as they chew. Washable, with two more in the pack when one gives up.',
+                'Thick, tightly-braided cotton rope in three shapes for three moods (a straight tug, a knotted ball, a ring for two dogs to argue over) and the loose fibres actually help floss teeth as they chew. Washable, with two more in the pack when one gives up.',
             fit: 'A three-pack sized for medium-to-large dogs and proper tug-of-war; supervise a heavy chewer, as no rope is truly indestructible. Long enough for two-handed tug, chunky enough to grip.',
             care: 'Machine-wash the rope in a bag and air-dry, or wet it and freeze it for a teething puppy; trim any long frays before they get swallowed. Retire a toy once it is chewed down to a nub.',
             materials: [{ name: 'Cotton rope', percent: '100%' }],
@@ -825,7 +825,7 @@ const PRODUCTS: Product[] = [
         tags: ['toy', 'cat', 'catnip', 'kicker', 'multipack', 'giveback'],
         categoryHandles: ['toys'],
         collectionHandles: ['new-arrivals', 'toys'],
-        seoTitle: 'Catnip Kicker Toy 2-Pack — cat kicker toys with catnip',
+        seoTitle: 'Catnip Kicker Toy 2-Pack: cat kicker toys with catnip',
         seoDescription: 'A two-pack of double-stitched catnip kicker toys built for serious bunny-kicking cats.',
         productTypeKey: 'apparel',
         attributes: {
@@ -847,19 +847,19 @@ const PRODUCTS: Product[] = [
         handle: 'grain-free-training-treats',
         title: 'Grain-Free Training Treats',
         description:
-            'The treats you can hand out all session without a second thought. Small, soft, low-calorie morsels a dog will work hard for, made from a short list of real ingredients — a named meat first, no grain, no fillers you cannot pronounce. Sized for fast, repeatable rewards so a training session stays a training session. Every bag bought feeds a shelter animal too.',
+            'The treats you can hand out all session without a second thought. Small, soft, low-calorie morsels a dog will work hard for, made from a short list of real ingredients: a named meat first, no grain, no fillers you cannot pronounce. Sized for fast, repeatable rewards so a training session stays a training session. Every bag bought feeds a shelter animal too.',
         status: 'active',
         productType: 'Treats',
         vendor: 'Rally',
         tags: ['treats', 'training', 'grain-free', 'dog', 'giveback'],
         categoryHandles: ['treats'],
         collectionHandles: ['new-arrivals', 'giveback'],
-        seoTitle: 'Grain-Free Training Treats — soft low-calorie dog treats',
+        seoTitle: 'Grain-Free Training Treats: soft low-calorie dog treats',
         seoDescription: 'Small, soft, grain-free training treats made from a short real-ingredient list, meat first.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'Small, soft, low-calorie morsels a dog will work hard for, made from a short list of real ingredients — a named meat first, no grain, no fillers you cannot pronounce. Sized for fast, repeatable rewards so a session stays a session.',
+                'Small, soft, low-calorie morsels a dog will work hard for, made from a short list of real ingredients: a named meat first, no grain, no fillers you cannot pronounce. Sized for fast, repeatable rewards so a session stays a session.',
             fit: 'Bite-sized and soft enough to tear smaller for a puppy; suits all life stages as a training reward rather than a meal. Feed as part of the daily ration, not on top of it.',
             care: 'Reseal the bag after each session and store somewhere cool and dry; use within the date on the pack once opened. Keep out of a hot car, where any soft treat sweats and spoils.',
             materials: [
@@ -883,21 +883,21 @@ const PRODUCTS: Product[] = [
         handle: 'peanut-butter-biscuit-bites',
         title: 'Peanut Butter Biscuit Bites',
         description:
-            'A proper baked biscuit for the big moments — coming when called, sitting for a stranger, surviving a bath. Oven-baked in small batches with real peanut butter and pumpkin, no xylitol, no mystery. Crunchy enough to be a treat a dog takes seriously, and honestly good enough that you will want to know what is in them (it is on the bag). One bag bought, one given to a rescue.',
+            'A proper baked biscuit for the big moments: coming when called, sitting for a stranger, surviving a bath. Oven-baked in small batches with real peanut butter and pumpkin, no xylitol, no mystery. Crunchy enough to be a treat a dog takes seriously, and honestly good enough that you will want to know what is in them (it is on the bag). One bag bought, one given to a rescue.',
         status: 'active',
         productType: 'Treats',
         vendor: 'Rally',
         tags: ['treats', 'biscuit', 'baked', 'dog', 'giveback'],
         categoryHandles: ['treats'],
         collectionHandles: ['giveback'],
-        seoTitle: 'Peanut Butter Biscuit Bites — baked peanut butter dog biscuits',
+        seoTitle: 'Peanut Butter Biscuit Bites: baked peanut butter dog biscuits',
         seoDescription: 'Small-batch oven-baked peanut butter and pumpkin dog biscuits, no xylitol, no fillers.',
         productTypeKey: 'apparel',
         attributes: {
             fabric:
-                'A proper baked biscuit for the big moments — oven-baked in small batches with real peanut butter and pumpkin, no xylitol, no mystery. Crunchy enough that a dog takes it seriously, and honestly good enough that you will want to read the label (it is on the bag).',
+                'A proper baked biscuit for the big moments: oven-baked in small batches with real peanut butter and pumpkin, no xylitol, no mystery. Crunchy enough that a dog takes it seriously, and honestly good enough that you will want to read the label (it is on the bag).',
             fit: 'A crunchy bite for a real reward rather than rapid-fire training; snappable in half for a small dog. An occasional treat, fed within the daily calorie budget.',
-            care: 'Keep the bag sealed in a cool, dry cupboard so the biscuits stay crisp — they soften if left open. Use within the best-before date, and toss any that lose their snap.',
+            care: 'Keep the bag sealed in a cool, dry cupboard so the biscuits stay crisp. They soften if left open. Use within the best-before date, and toss any that lose their snap.',
             materials: [
                 { name: 'Wholegrain oats & flour', percent: '60%' },
                 { name: 'Peanut butter', percent: '26%' },
@@ -988,11 +988,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('When you buy something from Rally, a second, identical item is set aside that same day. Not a donation to a fund, not a percentage of profit that gets calculated at the end of the quarter — the actual product, matched one for one, ready to go where it is needed.'),
+                    para('When you buy something from Rally, a second, identical item is set aside that same day. Not a donation to a fund, not a percentage of profit that gets calculated at the end of the quarter: the actual product, matched one for one, ready to go where it is needed.'),
                     h2('The match leaves with the delivery'),
-                    para('We batch the given half by region and send it out on the same freight runs that restock the shops and shelters near you. A bed you buy in March is a bed a shelter dog is sleeping on by April — the giveback moves at the speed of the business, not on a once-a-year cheque presentation.'),
+                    para('We batch the given half by region and send it out on the same freight runs that restock the shops and shelters near you. A bed you buy in March is a bed a shelter dog is sleeping on by April: the giveback moves at the speed of the business, not on a once-a-year cheque presentation.'),
                     h2('Shelters tell us what they need'),
-                    para('We do not guess. Our partner shelters and rescues send us their actual shortlists — more medium beds this month, always more blankets, kitten toys before the spring litters arrive — and we match the giving to the need instead of dumping whatever we have spare. It is less tidy for us and far more useful for them.'),
+                    para('We do not guess. Our partner shelters and rescues send us their actual shortlists: more medium beds this month, always more blankets, kitten toys before the spring litters arrive, and we match the giving to the need instead of dumping whatever we have spare. It is less tidy for us and far more useful for them.'),
                     para('So the next time you order a collar for your own dog, know that the story does not end at your door. It ends at a kennel a few counties over, where a dog waiting to be adopted just got a collar of their own.'),
                 ],
             },
@@ -1009,11 +1009,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('The single most common reason a dog snubs a perfectly good bed is that it does not fit the way they actually sleep — and dogs are surprisingly particular about it. A minute of watching your dog nap tells you almost everything you need to know before you buy.'),
+                    para('The single most common reason a dog snubs a perfectly good bed is that it does not fit the way they actually sleep, and dogs are surprisingly particular about it. A minute of watching your dog nap tells you almost everything you need to know before you buy.'),
                     h2('Measure the sleep, not just the dog'),
-                    para('Watch how your dog settles. A curler — nose to tail in a tight spiral — wants a round donut bed with high sides to lean into. A sprawler who flops out flat needs a rectangular mat with room to stretch a leg off every edge. Measure them nose to tail-base while they lie in their favourite position, then add about a foot for a bed that fits the shape they make, not the dog standing up.'),
+                    para('Watch how your dog settles. A curler (nose to tail in a tight spiral) wants a round donut bed with high sides to lean into. A sprawler who flops out flat needs a rectangular mat with room to stretch a leg off every edge. Measure them nose to tail-base while they lie in their favourite position, then add about a foot for a bed that fits the shape they make, not the dog standing up.'),
                     h2('When in doubt, size up'),
-                    para('A bed a size too big is a minor waste of floor space. A bed a size too small is a bed your dog quietly decides is not for them, and no amount of coaxing changes their mind. If your dog is between sizes, or still a growing puppy, take the larger one — they will grow into it and settle into it either way.'),
+                    para('A bed a size too big is a minor waste of floor space. A bed a size too small is a bed your dog quietly decides is not for them, and no amount of coaxing changes their mind. If your dog is between sizes, or still a growing puppy, take the larger one. They will grow into it and settle into it either way.'),
                     para('Get the fit right and a bed stops being decor you tripped over and becomes the place your dog chooses to spend half their life. That is the whole point of buying a good one.'),
                 ],
             },
@@ -1030,11 +1030,11 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('It is easy to talk about "shelters" as one big abstract cause. In reality the giveback lands with a specific, hard-working handful of them — small municipal pounds, breed-specific rescues, a foster network run out of somebody\u2019s spare room — and every one of them is why the promise is more than a slogan.'),
+                    para('It is easy to talk about "shelters" as one big abstract cause. In reality the giveback lands with a specific, hard-working handful of them: small municipal pounds, breed-specific rescues, a foster network run out of somebody\u2019s spare room, and every one of them is why the promise is more than a slogan.'),
                     h2('We choose partners who need the help, not the ones who look good'),
                     para('The shelters we work with are rarely the ones with the slick websites and the big donor lists. They are the underfunded county facilities and the volunteer rescues doing enormous work on almost nothing. That is deliberate: a donated bed matters far more in a kennel that could not otherwise afford one.'),
                     h2('Every partner is a real, named place'),
-                    para('We publish who they are and, roughly, what has gone to each — so many beds, so many bags of food, so many toys — because a giveback you cannot audit is just marketing. Our partners hold us to the promise, and we would rather you could too.'),
+                    para('We publish who they are and, roughly, what has gone to each (so many beds, so many bags of food, so many toys) because a giveback you cannot audit is just marketing. Our partners hold us to the promise, and we would rather you could too.'),
                     para('When you shop, you are not giving to Rally. You are giving through us, to them. They do the hard part; your order just makes it possible.'),
                 ],
             },
@@ -1066,7 +1066,7 @@ function givebackMicroline(): Node {
         children: [
             el('p', 'text-lg font-bold tracking-tight', { text: '1 bought = 1 given' }),
             el('p', 'text-base leading-relaxed', {
-                text: 'Add this to your cart and its match is already on its way to a shelter — a warm bed, a full bowl, a toy of their own for an animal still waiting for a home. No box to tick, no round-up at checkout. The good is done the moment you buy.',
+                text: 'Add this to your cart and its match is already on its way to a shelter: a warm bed, a full bowl, a toy of their own for an animal still waiting for a home. No box to tick, no round-up at checkout. The good is done the moment you buy.',
             }),
         ],
     });
@@ -1164,13 +1164,13 @@ const SHOP: Node[] = [
                         { text: 'Shop the whole pack' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Beds, collars, harnesses, toys, bowls and treats — the good stuff for dogs and cats, filtered and sorted however you like. Made to last, made to be used, and matched one-for-one to a shelter animal with every order.',
+                        text: 'Beds, collars, harnesses, toys, bowls and treats: the good stuff for dogs and cats, filtered and sorted however you like. Made to last, made to be used, and matched one-for-one to a shelter animal with every order.',
                     }),
                     el('div', 'flex w-fit flex-col gap-1 rounded-box bg-primary px-5 py-4 text-primary-content', {
                         children: [
                             el('p', 'text-lg font-bold tracking-tight', { text: '1 bought = 1 given' }),
                             el('p', 'text-base leading-relaxed', {
-                                text: 'Every single thing on this page sends its match to a shelter — no fine print, no upsell.',
+                                text: 'Every single thing on this page sends its match to a shelter: no fine print, no upsell.',
                             }),
                         ],
                     }),
@@ -1210,14 +1210,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'Shop the pack',
-        'Every corner of the shop, grouped the way you actually shop for a pet — beds and blankets, collars and leads, toys, and the giveback edit that puts the most into a shelter with every order. Pick a pack and dive in.'
+        'Every corner of the shop, grouped the way you actually shop for a pet: beds and blankets, collars and leads, toys, and the giveback edit that puts the most into a shelter with every order. Pick a pack and dive in.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Find it fast',
-        'After a specific size, a color, a treat your dog goes daft for? Search the whole shop and the Journal below — and remember, whatever you turn up, buying it sends a match to a shelter animal too.'
+        'After a specific size, a color, a treat your dog goes daft for? Search the whole shop and the Journal below, and remember, whatever you turn up, buying it sends a match to a shelter animal too.'
     ),
 ];
 
@@ -1232,7 +1232,7 @@ const JOURNAL: Node[] = [
                         { text: 'Tails & tips' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'The Rally Journal — how the giveback actually reaches a shelter, honest advice for living with a dog or a cat, and the rescue partners who turn your orders into warm beds and full bowls.',
+                        text: 'The Rally Journal: how the giveback actually reaches a shelter, honest advice for living with a dog or a cat, and the rescue partners who turn your orders into warm beds and full bowls.',
                     }),
                 ],
             }),
@@ -1255,7 +1255,7 @@ const CART: Node[] = [
                         { text: 'Your cart' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free carbon-neutral shipping over $50 and 60 days to change your mind — take your time. Everything here is made to be used hard and washed often, and we would put every piece on our own animals.',
+                        text: 'Free carbon-neutral shipping over $50 and 60 days to change your mind: take your time. Everything here is made to be used hard and washed often, and we would put every piece on our own animals.',
                     }),
                     el('div', 'flex w-fit flex-col gap-1 rounded-box bg-primary px-5 py-4 text-primary-content', {
                         children: [
@@ -1263,7 +1263,7 @@ const CART: Node[] = [
                                 text: 'Every item here gives one to a shelter',
                             }),
                             el('p', 'text-base leading-relaxed', {
-                                text: 'The moment you check out, a matching bed, bowl, collar or toy is on its way to an animal still waiting for a home. No box to tick, no round-up — the good is already done.',
+                                text: 'The moment you check out, a matching bed, bowl, collar or toy is on its way to an animal still waiting for a home. No box to tick, no round-up: the good is already done.',
                             }),
                         ],
                     }),
@@ -1280,7 +1280,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-playful-mission',
     name: 'Playful Mission',
     summary:
-        'A playful, colorful, mission-driven DTC storefront for a give-back brand — a warm-cream page broken up by saturated color bands (a marigold buy-one-give-one band, a navy impact stat, a sage "the rest" band) over a rhythm of shoppable carousels, in a bright `romp` theme. Modelled on the playful give-back DTC archetype; shipped as Rally, a pet-supplies brand that gives one item to a shelter for every one sold.',
+        'A playful, colorful, mission-driven DTC storefront for a give-back brand: a warm-cream page broken up by saturated color bands (a marigold buy-one-give-one band, a navy impact stat, a sage "the rest" band) over a rhythm of shoppable carousels, in a bright `romp` theme. Modelled on the playful give-back DTC archetype; shipped as Rally, a pet-supplies brand that gives one item to a shelter for every one sold.',
     tagline: 'A bright, warm template for playful, mission-driven brands with a give-back at their heart.',
     vertical: 'retail',
     industry: 'Pet supplies with giveback',
@@ -1297,9 +1297,9 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Rally — pet supplies that give back, one for one',
+            title: 'Rally: pet supplies that give back, one for one',
             description:
-                'Rally makes the good stuff for dogs and cats — beds, collars, toys and treats — and for every item you buy, one is given to a shelter animal still waiting for a home.',
+                'Rally makes the good stuff for dogs and cats (beds, collars, toys and treats) and for every item you buy, one is given to a shelter animal still waiting for a home.',
         },
         about: {
             title: 'About Rally',

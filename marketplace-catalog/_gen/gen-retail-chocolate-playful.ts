@@ -173,7 +173,7 @@ function hero(): Node {
                                     text: 'Chocolate, but make it fun.',
                                 }),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Sweet Tooth Co. makes bright, colorful chocolate for people who like a bit of joy with their cocoa — jewel-colored bonbons, hot-cocoa bombs, dipped treats and gift boxes packed to make someone’s day. Treats, gifts, and a little everyday happy.',
+                                    text: 'Sweet Tooth Co. makes bright, colorful chocolate for people who like a bit of joy with their cocoa: jewel-colored bonbons, hot-cocoa bombs, dipped treats and gift boxes packed to make someone’s day. Treats, gifts, and a little everyday happy.',
                                 }),
                                 el('div', 'flex flex-wrap items-center gap-4', {
                                     children: [
@@ -274,7 +274,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Treats trending now' }),
     editorialBand({
         heading: 'Made bright, made by hand',
-        lead: 'Every bonbon is hand-shelled, hand-filled and hand-decorated in small colorful batches — because the fun is in the color, and the color is in the care. We use proper chocolate and real fillings, then make it look like a party.',
+        lead: 'Every bonbon is hand-shelled, hand-filled and hand-decorated in small colorful batches, because the fun is in the color, and the color is in the care. We use proper chocolate and real fillings, then make it look like a party.',
         assetId: 'band-make',
         cta: 'How we make them',
         href: '/blog/whats-in-a-bonbon',
@@ -283,7 +283,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.boxes', layout: 'carousel', heading: 'Bonbon boxes' }),
     editorialBand({
         heading: 'A little treat, every month',
-        lead: 'A subscription is the good kind of habit: a fresh box of bright, seasonal treats lands on your doorstep on your schedule. Skip, swap or cancel any time — no lock-in, just something to look forward to (and yes, you can send it to someone else).',
+        lead: 'A subscription is the good kind of habit: a fresh box of bright, seasonal treats lands on your doorstep on your schedule. Skip, swap or cancel any time, no lock-in, just something to look forward to (and yes, you can send it to someone else).',
         assetId: 'band-gift',
         cta: 'Start a subscription',
         href: '/products/subscription',
@@ -328,7 +328,7 @@ function pdpBuyRegion(): Node {
                                 children: [
                                     el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Made fresh, packed to delight' }),
                                     el('p', 'text-base leading-relaxed text-base-content', {
-                                        text: 'Everything is made the week it ships and packed to arrive looking as good as it tastes — nestled, cushioned and travel-cool. Add a gift note at checkout and we’ll tuck in a hand-written card. Keep it somewhere cool (not the fridge) and enjoy within a month.',
+                                        text: 'Everything is made the week it ships and packed to arrive looking as good as it tastes: nestled, cushioned and travel-cool. Add a gift note at checkout and we’ll tuck in a hand-written card. Keep it somewhere cool (not the fridge) and enjoy within a month.',
                                     }),
                                 ],
                             }),
@@ -367,11 +367,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
     pageMasthead(
         'Shop the treats',
-        'Everything we’re making right now — bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, gift boxes and the subscription. Filter by occasion or price, or sort however you like; it’s all made fresh and packed to travel.'
+        'Everything we’re making right now: bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, gift boxes and the subscription. Filter by occasion or price, or sort however you like; it’s all made fresh and packed to travel.'
     ),
 ];
 const COLLECTIONS: Node[] = [
-    pageMasthead('Collections', 'The treats grouped the way people actually shop — what’s new, the boxes everyone comes back for, gifts ready to send, and the little treats that make a Tuesday better.'),
+    pageMasthead('Collections', 'The treats grouped the way people actually shop: what’s new, the boxes everyone comes back for, gifts ready to send, and the little treats that make a Tuesday better.'),
 ];
 const SEARCH: Node[] = [
     pageMasthead('Search Sweet Tooth Co.', 'Looking for a flavour, a gift under $25, or a birthday box? Search the whole shop and the journal below.'),
@@ -383,7 +383,7 @@ const CART: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free shipping on orders over $40, and everything is made fresh and packed to arrive looking its best. Sending it as a gift? Add a note at checkout. Something not quite right? Tell us and we’ll make it good — treats should be pure joy, start to finish.',
+                        text: 'Free shipping on orders over $40, and everything is made fresh and packed to arrive looking its best. Sending it as a gift? Add a note at checkout. Something not quite right? Tell us and we’ll make it good: treats should be pure joy, start to finish.',
                     }),
                 ],
             }),
@@ -397,7 +397,7 @@ const JOURNAL: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The Sweet Tooth journal' }),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Fun from the kitchen — how to build the perfect gift box, the right way to melt a cocoa bomb, and how a bonbon actually gets its color. Sweet, useful, no snobbery.',
+                        text: 'Fun from the kitchen: how to build the perfect gift box, the right way to melt a cocoa bomb, and how a bonbon actually gets its color. Sweet, useful, no snobbery.',
                     }),
                 ],
             }),
@@ -414,13 +414,13 @@ const ABOUT: Node[] = [
                 children: [
                     el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Sweet Tooth Co.' }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Sweet Tooth Co. started at a market stall with a folding table, a tray of hand-piped bonbons, and a simple idea: chocolate is a treat, so it should feel like one. Not precious, not stuffy — bright, generous and a little bit silly, the kind of thing that makes a grown adult grin.',
+                        text: 'Sweet Tooth Co. started at a market stall with a folding table, a tray of hand-piped bonbons, and a simple idea: chocolate is a treat, so it should feel like one. Not precious, not stuffy, bright, generous and a little bit silly, the kind of thing that makes a grown adult grin.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We use proper chocolate and real fillings — slow-cooked caramels, fresh fruit purées, actual vanilla — then we make it look like a party. Everything is hand-shelled, hand-filled and hand-decorated in small colorful batches, made the week it ships so it reaches you at its best.',
+                        text: 'We use proper chocolate and real fillings (slow-cooked caramels, fresh fruit purées, actual vanilla) then we make it look like a party. Everything is hand-shelled, hand-filled and hand-decorated in small colorful batches, made the week it ships so it reaches you at its best.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Most of what we make is a gift for someone — a birthday, a thank-you, a “thinking of you.” So we pack every box to arrive looking as good as it tastes, and we’ll write the card for you. Treats, gifts, and a little everyday joy: that’s the whole job.',
+                        text: 'Most of what we make is a gift for someone: a birthday, a thank-you, a “thinking of you.” So we pack every box to arrive looking as good as it tastes, and we’ll write the card for you. Treats, gifts, and a little everyday joy: that’s the whole job.',
                     }),
                 ],
             }),
@@ -520,53 +520,53 @@ const PRODUCTS: Product[] = [
         handle: 'rainbow-bonbon-box',
         title: 'Rainbow Bonbon Box',
         description:
-            'Our signature box and the one everyone photographs before they eat it — a jewel-bright assortment of hand-painted bonbons, every color a different filling. Passionfruit yellow, raspberry pink, blueberry blue, salted-caramel gold, mint green and a dark-chocolate ganache. Proper chocolate, real fruit, and a lot of joy in a small box.',
+            'Our signature box and the one everyone photographs before they eat it: a jewel-bright assortment of hand-painted bonbons, every color a different filling. Passionfruit yellow, raspberry pink, blueberry blue, salted-caramel gold, mint green and a dark-chocolate ganache. Proper chocolate, real fruit, and a lot of joy in a small box.',
         nine: 22,
         sku: 'STC-BON-RBW',
         collections: ['bestsellers', 'new-arrivals', 'bonbon-boxes'],
         tags: ['bonbons', 'colorful', 'assortment', 'best-seller'],
         asset: 'prod-rainbow',
-        seoTitle: 'Rainbow Bonbon Box — hand-painted filled chocolates | Sweet Tooth Co.',
+        seoTitle: 'Rainbow Bonbon Box: hand-painted filled chocolates | Sweet Tooth Co.',
         seoDescription: 'A jewel-bright box of hand-painted bonbons, every color a different filling. Boxes of 9, 16 or 24.',
     }),
     box({
         handle: 'salted-caramel-bonbons',
         title: 'Salted Caramel Bonbons',
         description:
-            'For the caramel devotees. Slow-cooked salted caramel — properly dark, buttery and barely sweet — in a thin, snappy milk-chocolate shell with a flake of sea salt on top. The one flavour we can never make enough of, in a box of its own.',
+            'For the caramel devotees. Slow-cooked salted caramel (properly dark, buttery and barely sweet) in a thin, snappy milk-chocolate shell with a flake of sea salt on top. The one flavour we can never make enough of, in a box of its own.',
         nine: 23,
         sku: 'STC-BON-CAR',
         collections: ['bestsellers', 'bonbon-boxes'],
         tags: ['bonbons', 'caramel', 'sea-salt'],
         asset: 'prod-caramel',
-        seoTitle: 'Salted Caramel Bonbons — a box of the classic | Sweet Tooth Co.',
+        seoTitle: 'Salted Caramel Bonbons: a box of the classic | Sweet Tooth Co.',
         seoDescription: 'Slow-cooked salted caramel in a snappy milk-chocolate shell with flaked sea salt. Boxes of 9, 16 or 24.',
     }),
     box({
         handle: 'dark-and-milk-mix',
         title: 'Dark & Milk Mix Box',
         description:
-            'The crowd-pleaser for a room full of different tastes. Half rich dark-chocolate bonbons, half creamy milk — a mix of ganaches, pralines and caramels so everyone finds their favourite. The safe bet that still feels special: perfect for an office, a dinner party, or a “bring something” Sunday.',
+            'The crowd-pleaser for a room full of different tastes. Half rich dark-chocolate bonbons, half creamy milk: a mix of ganaches, pralines and caramels so everyone finds their favourite. The safe bet that still feels special: perfect for an office, a dinner party, or a “bring something” Sunday.',
         nine: 21,
         sku: 'STC-BON-MIX',
         collections: ['bonbon-boxes', 'party-pleasers'],
         tags: ['bonbons', 'assortment', 'crowd-pleaser'],
         asset: 'prod-darkmilk',
-        seoTitle: 'Dark & Milk Mix Box — an assortment for everyone | Sweet Tooth Co.',
-        seoDescription: 'Half dark, half milk — ganaches, pralines and caramels so everyone finds a favourite. Boxes of 9, 16 or 24.',
+        seoTitle: 'Dark & Milk Mix Box: an assortment for everyone | Sweet Tooth Co.',
+        seoDescription: 'Half dark, half milk: ganaches, pralines and caramels so everyone finds a favourite. Boxes of 9, 16 or 24.',
     }),
     {
         handle: 'build-your-own-box',
         title: 'Build-Your-Own Box',
         description:
-            'Pick the size, we make it your box. Choose from the full flavour list at checkout — or leave it to us for a “maker’s choice” of what’s tasting best — and we hand-fill it, box it, and add a card if it’s a gift. The most fun you can have without licking the tray, and the surest way to get exactly what you love.',
+            'Pick the size, we make it your box. Choose from the full flavour list at checkout (or leave it to us for a “maker’s choice” of what’s tasting best) and we hand-fill it, box it, and add a card if it’s a gift. The most fun you can have without licking the tray, and the surest way to get exactly what you love.',
         status: 'active',
         productType: 'Chocolate box',
         vendor: 'Sweet Tooth Co.',
         tags: ['build-your-own', 'custom', 'gift'],
         categoryHandles: ['build-your-own'],
         collectionHandles: ['new-arrivals', 'gifts-ready'],
-        seoTitle: 'Build-Your-Own Box — pick your chocolates | Sweet Tooth Co.',
+        seoTitle: 'Build-Your-Own Box. Pick your chocolates | Sweet Tooth Co.',
         seoDescription: 'Choose your size and your flavours and we hand-fill your box. Boxes of 9, 16 or 24, gift-ready.',
         options: [BOX],
         variants: boxSizes('STC-BYO', 24),
@@ -576,15 +576,15 @@ const PRODUCTS: Product[] = [
         handle: 'hot-cocoa-bombs',
         title: 'Hot Cocoa Bombs',
         description:
-            'The best bit of a winter evening: drop a bomb into a mug, pour over hot milk, and watch the shell melt open to spill cocoa and marshmallows into the cup. Each one is a hollow chocolate sphere packed with real drinking-chocolate and mini marshmallows. Comes as a set of three — Classic, Peppermint or Salted Caramel.',
+            'The best bit of a winter evening: drop a bomb into a mug, pour over hot milk, and watch the shell melt open to spill cocoa and marshmallows into the cup. Each one is a hollow chocolate sphere packed with real drinking-chocolate and mini marshmallows. Comes as a set of three, Classic, Peppermint or Salted Caramel.',
         status: 'active',
         productType: 'Hot chocolate',
         vendor: 'Sweet Tooth Co.',
         tags: ['cocoa-bombs', 'hot-chocolate', 'fun', 'best-seller'],
         categoryHandles: ['gifts'],
         collectionHandles: ['bestsellers', 'new-arrivals', 'little-treats'],
-        seoTitle: 'Hot Cocoa Bombs — melt-open hot chocolate spheres | Sweet Tooth Co.',
-        seoDescription: 'Hollow chocolate spheres packed with drinking chocolate and marshmallows. Classic, Peppermint or Salted Caramel — set of three.',
+        seoTitle: 'Hot Cocoa Bombs: melt-open hot chocolate spheres | Sweet Tooth Co.',
+        seoDescription: 'Hollow chocolate spheres packed with drinking chocolate and marshmallows. Classic, Peppermint or Salted Caramel. Set of three.',
         options: [
             { name: 'Flavour', displayType: 'dropdown', values: [{ value: 'Classic' }, { value: 'Peppermint' }, { value: 'Salted caramel' }] },
         ],
@@ -599,14 +599,14 @@ const PRODUCTS: Product[] = [
         handle: 'chocolate-dipped-pretzels',
         title: 'Chocolate-Dipped Pretzels',
         description:
-            'Sweet, salty and impossible to stop at one. Crunchy pretzel rods dipped in thick chocolate and finished with a bright, playful drizzle and a scatter of sprinkles. A bag of ten, made to be shared (or not) — the snack that disappears fastest at every party we cater.',
+            'Sweet, salty and impossible to stop at one. Crunchy pretzel rods dipped in thick chocolate and finished with a bright, playful drizzle and a scatter of sprinkles. A bag of ten, made to be shared (or not): the snack that disappears fastest at every party we cater.',
         status: 'active',
         productType: 'Dipped treats',
         vendor: 'Sweet Tooth Co.',
         tags: ['dipped', 'pretzels', 'snack', 'sweet-and-salty'],
         categoryHandles: ['gifts'],
         collectionHandles: ['little-treats', 'party-pleasers'],
-        seoTitle: 'Chocolate-Dipped Pretzels — sweet and salty | Sweet Tooth Co.',
+        seoTitle: 'Chocolate-Dipped Pretzels: sweet and salty | Sweet Tooth Co.',
         seoDescription: 'Crunchy pretzel rods dipped in thick chocolate with a playful drizzle and sprinkles. A bag of ten.',
         options: [
             { name: 'Chocolate', displayType: 'dropdown', values: [{ value: 'Milk' }, { value: 'Dark' }, { value: 'White drizzle' }] },
@@ -622,14 +622,14 @@ const PRODUCTS: Product[] = [
         handle: 'marshmallow-pops',
         title: 'Chocolate Marshmallow Pops',
         description:
-            'Big fluffy marshmallows on a stick, dunked in chocolate and rolled in colorful sprinkles — the treat that turns any table into a party and keeps small hands very happy. A set of six, each a different sprinkle. Fun to hand out, fun to hand over, gone in about a minute.',
+            'Big fluffy marshmallows on a stick, dunked in chocolate and rolled in colorful sprinkles: the treat that turns any table into a party and keeps small hands very happy. A set of six, each a different sprinkle. Fun to hand out, fun to hand over, gone in about a minute.',
         status: 'active',
         productType: 'Dipped treats',
         vendor: 'Sweet Tooth Co.',
         tags: ['dipped', 'marshmallow', 'party', 'kids'],
         categoryHandles: ['gifts'],
         collectionHandles: ['little-treats', 'party-pleasers'],
-        seoTitle: 'Chocolate Marshmallow Pops — party treats on a stick | Sweet Tooth Co.',
+        seoTitle: 'Chocolate Marshmallow Pops: party treats on a stick | Sweet Tooth Co.',
         seoDescription: 'Fluffy marshmallows dipped in chocolate and rolled in colorful sprinkles. A set of six.',
         variants: [{ sku: 'STC-MSH-POP', priceCents: money(16), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-marshmallow', isPrimary: true, alt: 'Chocolate-dipped marshmallow pops with sprinkles' }],
@@ -645,7 +645,7 @@ const PRODUCTS: Product[] = [
         tags: ['gift', 'birthday', 'set'],
         categoryHandles: ['gifts'],
         collectionHandles: ['gifts-ready', 'bestsellers'],
-        seoTitle: 'The Birthday Box — a birthday of chocolate, ready to send | Sweet Tooth Co.',
+        seoTitle: 'The Birthday Box: a birthday of chocolate, ready to send | Sweet Tooth Co.',
         seoDescription: 'Bonbons, marshmallow pops and a chocolate plaque in a confetti-lined box with a candle and a card.',
         variants: [{ sku: 'STC-GFT-BDY', priceCents: money(38), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-birthday', isPrimary: true, alt: 'A birthday gift box of chocolates with a candle' }],
@@ -654,14 +654,14 @@ const PRODUCTS: Product[] = [
         handle: 'kids-treat-bundle',
         title: 'Kids’ Treat Bundle',
         description:
-            'Made for smaller sweet tooths (and the grown-ups who remember being one). Fun-shaped milk-chocolate treats, a couple of marshmallow pops and a mini hot-cocoa bomb, all in a colorful lunchbox-style tin they’ll keep afterwards. Nut-free and made to be shared — the after-school win or the party-bag upgrade.',
+            'Made for smaller sweet tooths (and the grown-ups who remember being one). Fun-shaped milk-chocolate treats, a couple of marshmallow pops and a mini hot-cocoa bomb, all in a colorful lunchbox-style tin they’ll keep afterwards. Nut-free and made to be shared: the after-school win or the party-bag upgrade.',
         status: 'active',
         productType: 'Gift box',
         vendor: 'Sweet Tooth Co.',
         tags: ['gift', 'kids', 'nut-free', 'bundle'],
         categoryHandles: ['gifts'],
         collectionHandles: ['gifts-ready', 'little-treats'],
-        seoTitle: 'Kids’ Treat Bundle — fun-shaped chocolate in a keepsake tin | Sweet Tooth Co.',
+        seoTitle: 'Kids’ Treat Bundle: fun-shaped chocolate in a keepsake tin | Sweet Tooth Co.',
         seoDescription: 'Fun-shaped chocolates, marshmallow pops and a mini cocoa bomb in a colorful tin. Nut-free.',
         variants: [{ sku: 'STC-GFT-KIDS', priceCents: money(26), isDefault: true, inventoryPolicy: 'continue' }],
         images: [{ assetId: 'prod-kids', isPrimary: true, alt: 'A kids treat bundle of fun-shaped chocolates' }],
@@ -670,15 +670,15 @@ const PRODUCTS: Product[] = [
         handle: 'subscription',
         title: 'Treat Subscription',
         description:
-            'A fresh box of bright, seasonal treats on your doorstep every month — a new mix each time, chosen from what’s tasting (and looking) best, with a note on what’s inside. Pick one box or two, and skip, swap or cancel any time. The easiest present to keep giving, including to yourself.',
+            'A fresh box of bright, seasonal treats on your doorstep every month: a new mix each time, chosen from what’s tasting (and looking) best, with a note on what’s inside. Pick one box or two, and skip, swap or cancel any time. The easiest present to keep giving, including to yourself.',
         status: 'active',
         productType: 'Subscription',
         vendor: 'Sweet Tooth Co.',
         tags: ['subscription', 'gift'],
         categoryHandles: ['subscription'],
         collectionHandles: ['new-arrivals', 'gifts-ready', 'bestsellers'],
-        seoTitle: 'Treat Subscription — a fresh box of chocolate every month | Sweet Tooth Co.',
-        seoDescription: 'A flexible monthly treat subscription — a new seasonal mix each time; skip, swap or cancel any time.',
+        seoTitle: 'Treat Subscription: a fresh box of chocolate every month | Sweet Tooth Co.',
+        seoDescription: 'A flexible monthly treat subscription: a new seasonal mix each time; skip, swap or cancel any time.',
         options: [
             { name: 'Plan', displayType: 'dropdown', values: [{ value: 'One box' }, { value: 'Two boxes' }] },
         ],
@@ -767,13 +767,13 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('A box of chocolate is one of the easiest gifts to get right and one of the easiest to make special. The chocolate does most of the work — but a little thought about who it’s for, and how it’s packed, turns a nice present into one they remember. Here’s how we think about it when we build a box for you.'),
+                    para('A box of chocolate is one of the easiest gifts to get right and one of the easiest to make special. The chocolate does most of the work, but a little thought about who it’s for, and how it’s packed, turns a nice present into one they remember. Here’s how we think about it when we build a box for you.'),
                     h2('Start with the person, not the chocolate'),
-                    para('Before you pick a single flavour, picture the person. A caramel obsessive wants a box that leans caramel, not a polite one of everything. A first-time chocolate gift for someone whose tastes you don’t know is the moment for a bright, mixed assortment — the Rainbow Box exists precisely so you can’t get it wrong. Kids want fun shapes and sprinkles far more than they want a 70% single origin. Match the box to the mouth and you’re already most of the way there.'),
+                    para('Before you pick a single flavour, picture the person. A caramel obsessive wants a box that leans caramel, not a polite one of everything. A first-time chocolate gift for someone whose tastes you don’t know is the moment for a bright, mixed assortment: the Rainbow Box exists precisely so you can’t get it wrong. Kids want fun shapes and sprinkles far more than they want a 70% single origin. Match the box to the mouth and you’re already most of the way there.'),
                     h2('Mix textures, not just flavours'),
-                    para('The best boxes have contrast built in. A soft ganache next to a snappy caramel next to a crunchy dipped pretzel keeps every bite interesting — a box of nine identical truffles, however good, gets samey by the fifth. When you build your own, we’ll nudge you toward a spread of textures on purpose. It’s the difference between “these are lovely” and “I couldn’t stop.”'),
+                    para('The best boxes have contrast built in. A soft ganache next to a snappy caramel next to a crunchy dipped pretzel keeps every bite interesting: a box of nine identical truffles, however good, gets samey by the fifth. When you build your own, we’ll nudge you toward a spread of textures on purpose. It’s the difference between “these are lovely” and “I couldn’t stop.”'),
                     h2('Let us do the wrapping'),
-                    para('Half the gift is the moment the lid comes off. We nestle every piece, line the box, tie the ribbon and — if you add a note at checkout — tuck in a hand-written card. You don’t have to do a thing except decide who’s lucky enough to get it. Add the gift note, and it arrives looking like you tried much harder than pressing “buy.”'),
+                    para('Half the gift is the moment the lid comes off. We nestle every piece, line the box, tie the ribbon and (if you add a note at checkout) tuck in a hand-written card. You don’t have to do a thing except decide who’s lucky enough to get it. Add the gift note, and it arrives looking like you tried much harder than pressing “buy.”'),
                 ],
             },
         },
@@ -784,16 +784,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'The right way to melt a hot-cocoa bomb',
-            excerpt: 'It’s the best thirty seconds in a mug — if you do it in the right order. A tiny, fun how-to.',
+            excerpt: 'It’s the best thirty seconds in a mug, if you do it in the right order. A tiny, fun how-to.',
             featuredImage: { $asset: 'post-cocoa' },
             body: {
                 type: 'doc',
                 content: [
-                    para('A hot-cocoa bomb is equal parts drink and magic trick: a hollow chocolate sphere that melts open when hot milk hits it, releasing the cocoa and marshmallows hiding inside. It’s genuinely delightful — and it works far better if you don’t rush it. Here’s the order of operations for the full show.'),
+                    para('A hot-cocoa bomb is equal parts drink and magic trick: a hollow chocolate sphere that melts open when hot milk hits it, releasing the cocoa and marshmallows hiding inside. It’s genuinely delightful, and it works far better if you don’t rush it. Here’s the order of operations for the full show.'),
                     h2('Hot milk, not boiling'),
-                    para('Heat your milk until it’s steaming and hot to the touch, but pull it before a rolling boil — boiling milk can scorch and go skinny, and you want it silky. Whole milk or a barista-style oat milk gives the richest cup; the fat is what makes it feel like a treat rather than a hot drink.'),
+                    para('Heat your milk until it’s steaming and hot to the touch, but pull it before a rolling boil: boiling milk can scorch and go skinny, and you want it silky. Whole milk or a barista-style oat milk gives the richest cup; the fat is what makes it feel like a treat rather than a hot drink.'),
                     h2('Bomb in the mug first, then pour'),
-                    para('This is the whole secret: put the cocoa bomb in the mug before the milk, not after. Pour the hot milk slowly straight over the top, and give it a few seconds — you’ll see the shell soften, crack and open, and the marshmallows bob up. Pouring the milk first and dropping the bomb in after just makes it float sadly. Order matters.'),
+                    para('This is the whole secret: put the cocoa bomb in the mug before the milk, not after. Pour the hot milk slowly straight over the top, and give it a few seconds, you’ll see the shell soften, crack and open, and the marshmallows bob up. Pouring the milk first and dropping the bomb in after just makes it float sadly. Order matters.'),
                     h2('Stir, and make it yours'),
                     para('Once it’s opened, stir well to bring all that drinking chocolate up off the bottom into a glossy, even cup. Then dress it up if you like: a swirl of whipped cream, a dusting of cocoa, a candy cane in the Peppermint one. Two minutes of work, one very good mug, and a small crowd every single time you make one in front of someone.'),
                 ],
@@ -806,18 +806,18 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'What’s actually in a bonbon (and where the color comes from)',
-            excerpt: 'Those bright, glossy shells aren’t painted with anything weird. Here’s how a bonbon really gets made — and colored.',
+            excerpt: 'Those bright, glossy shells aren’t painted with anything weird. Here’s how a bonbon really gets made, and colored.',
             featuredImage: { $asset: 'post-makers' },
             body: {
                 type: 'doc',
                 content: [
-                    para('People often assume our jewel-bright bonbons are airbrushed with something artificial. They’re not — the color is colored cocoa butter, the same cocoa butter that’s already in the chocolate, just tinted. Here’s what actually goes into one of those little shells, start to finish.'),
+                    para('People often assume our jewel-bright bonbons are airbrushed with something artificial. They’re not: the color is colored cocoa butter, the same cocoa butter that’s already in the chocolate, just tinted. Here’s what actually goes into one of those little shells, start to finish.'),
                     h2('The shell, and the color'),
-                    para('We start with a polished mould and flick or brush tinted cocoa butter into each cavity — that’s where the color and the pattern come from, painted in before any chocolate goes near it. Then we fill the mould with tempered chocolate, tip most of it back out, and let a thin shell set against the sides. The color ends up on the outside of the shell, which is why it looks painted: because, in a sense, it is.'),
+                    para('We start with a polished mould and flick or brush tinted cocoa butter into each cavity: that’s where the color and the pattern come from, painted in before any chocolate goes near it. Then we fill the mould with tempered chocolate, tip most of it back out, and let a thin shell set against the sides. The color ends up on the outside of the shell, which is why it looks painted: because, in a sense, it is.'),
                     h2('The filling is the flavour'),
-                    para('Into each set shell goes the good bit: a ganache, a caramel, a fruit purée, a praline. This is where a bonbon actually tastes of something — passionfruit, raspberry, salted caramel, mint. We make the fillings in small batches with real ingredients, because a beautiful shell around a dull centre is just decoration. Then we cap each one with a final layer of chocolate to seal it.'),
+                    para('Into each set shell goes the good bit: a ganache, a caramel, a fruit purée, a praline. This is where a bonbon actually tastes of something, passionfruit, raspberry, salted caramel, mint. We make the fillings in small batches with real ingredients, because a beautiful shell around a dull centre is just decoration. Then we cap each one with a final layer of chocolate to seal it.'),
                     h2('The snap you can hear'),
-                    para('Finally it’s all about temper. Well-tempered chocolate sets hard and glossy, releases cleanly from the mould, and snaps with a click when you bite it. That snap isn’t just satisfying — it’s the sign the chocolate was handled properly. So a good bonbon is three things at once: a pretty shell, a real filling, and a clean snap. Get all three and you’ve got the thing people photograph before they eat it.'),
+                    para('Finally it’s all about temper. Well-tempered chocolate sets hard and glossy, releases cleanly from the mould, and snaps with a click when you bite it. That snap isn’t just satisfying: it’s the sign the chocolate was handled properly. So a good bonbon is three things at once: a pretty shell, a real filling, and a clean snap. Get all three and you’ve got the thing people photograph before they eat it.'),
                 ],
             },
         },
@@ -832,7 +832,7 @@ const SPEC: TemplateSiteSpec = {
     name: 'Chocolate & Sweets (Playful)',
     theme: THEME,
     summary:
-        'A complete, working shop for a bright, gift-forward chocolate & sweets maker: colorful bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, a birthday box, a kids’ bundle and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Joyful sweet-shop theme — vanilla cream, a raspberry candy primary, a berry-grape pop accent, a rounded display and playful hovers. Shipped as Sweet Tooth Co.',
+        'A complete, working shop for a bright, gift-forward chocolate & sweets maker: colorful bonbon boxes, a build-your-own selection, hot-cocoa bombs, dipped treats, a birthday box, a kids’ bundle and a flexible subscription, with categories, collections, a bespoke PDP and a fully merchandised home page. Joyful sweet-shop theme, vanilla cream, a raspberry candy primary, a berry-grape pop accent, a rounded display and playful hovers. Shipped as Sweet Tooth Co.',
     tagline: 'A bright, working storefront for a playful chocolate & sweets shop.',
     vertical: 'retail',
     industry: 'Chocolate & sweet shop',
@@ -845,14 +845,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
     seo: {
         home: {
-            title: 'Sweet Tooth Co. — bright, gift-forward chocolate & sweets',
+            title: 'Sweet Tooth Co. bright, gift-forward chocolate & sweets',
             description:
-                'Sweet Tooth Co. makes colorful chocolate for people who like a bit of joy — hand-painted bonbons, hot-cocoa bombs, dipped treats, gift boxes and a monthly subscription. Treats, gifts, and a little everyday joy.',
+                'Sweet Tooth Co. makes colorful chocolate for people who like a bit of joy: hand-painted bonbons, hot-cocoa bombs, dipped treats, gift boxes and a monthly subscription. Treats, gifts, and a little everyday joy.',
         },
         about: {
             title: 'About Sweet Tooth Co.',
             description:
-                'How Sweet Tooth Co. makes it — proper chocolate, real fillings, hand-shelled and hand-decorated in small colorful batches, packed to arrive looking as good as it tastes.',
+                'How Sweet Tooth Co. makes it: proper chocolate, real fillings, hand-shelled and hand-decorated in small colorful batches, packed to arrive looking as good as it tastes.',
         },
     },
     home: HOME,

@@ -79,7 +79,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   if (isOffline()) {
     return {
       message:
-        "You're not connected to the internet, so that didn't save. Check your connection and try again — what you typed is still here.",
+        "You're not connected to the internet, so that didn't save. Check your connection and try again: what you typed is still here.",
       showReference: false,
       code: 'offline',
     };
@@ -88,7 +88,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   if (isUnreachable(error)) {
     return {
       message:
-        "We couldn't reach the server just then, so that didn't save. Your connection looks fine, so this is probably us — wait a moment and save again. What you typed is still here.",
+        "We couldn't reach the server just then, so that didn't save. Your connection looks fine, so this is probably us: wait a moment and save again. What you typed is still here.",
       showReference: false,
       code: 'unreachable',
     };
@@ -128,7 +128,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   if (error.status === 404) {
     return {
       message:
-        'That no longer exists — someone may have deleted it while you had it open. Nothing was changed.',
+        'That no longer exists. Someone may have deleted it while you had it open. Nothing was changed.',
       showReference: false,
       code: 'gone',
     };
@@ -226,7 +226,7 @@ export function describeWriteFailure(error: unknown): WriteFailure {
   // through their own data for a mistake that was never there.
   return {
     message:
-      "Something went wrong on our end, so that didn't save. Nothing you typed was lost — try again in a moment.",
+      "Something went wrong on our end, so that didn't save. Nothing you typed was lost. Try again in a moment.",
     reference,
     showReference: Boolean(reference),
     code: error.code || 'server-error',

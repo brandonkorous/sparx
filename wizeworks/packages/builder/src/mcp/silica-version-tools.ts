@@ -24,7 +24,7 @@ const propertyIdArg = z
 export const listDraftVersions: McpToolDefinition = {
   name: 'list_draft_versions',
   description:
-    'List the site’s DRAFT save history, newest first — every save (yours and the owner’s) is a ' +
+    'List the site’s DRAFT save history, newest first: every save (yours and the owner’s) is a ' +
     'restorable version. Use it to find a point to roll back to before calling restore_draft_version. ' +
     'Each entry has an `id`, when it was saved, who saved it (`source`: save = the owner, agent = you, ' +
     'restore = a prior rollback), and how many pages it held. Draft-only; publish history is separate.',
@@ -44,7 +44,7 @@ export const restoreDraftVersion: McpToolDefinition = {
   description:
     'Roll the site’s DRAFT back to an earlier version (from list_draft_versions). NON-DESTRUCTIVE: it ' +
     'brings back that version’s page content, keeps any pages added since, and seals itself as a new ' +
-    'version so it can be undone in turn. Saves to DRAFT — the live site is unchanged until publish. ' +
+    'version so it can be undone in turn. Saves to DRAFT: the live site is unchanged until publish. ' +
     'Confirmation-gated.',
   scope: 'write:builder',
   confirmation: true,

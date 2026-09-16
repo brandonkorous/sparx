@@ -161,7 +161,7 @@ function marginLine(
   const profit = price - cost;
   const share = Math.round((profit / price) * 100);
   return {
-    text: `You keep ${formatCents(profit)} on each one — ${String(share)}% of the price.`,
+    text: `You keep ${formatCents(profit)} on each one, ${String(share)}% of the price.`,
     tone: profit < 0 ? 'error' : share < 15 ? 'warning' : 'success',
   };
 }
@@ -318,7 +318,7 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
       onSuccess: () => {
         toast.add({
           title: `You set the price of ${variantLabel(variant, options)} again`,
-          description: 'The price it has now was kept — nothing was reset.',
+          description: 'The price it has now was kept. Nothing was reset.',
           type: 'success',
         });
       },
@@ -336,7 +336,7 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
         <AlertContent>
           <AlertTitle>Could not load this product&apos;s prices</AlertTitle>
           <AlertDescription>
-            This is a problem reaching the server. Nothing about your prices has changed — they just
+            This is a problem reaching the server. Nothing about your prices has changed. They just
             could not be read just now.
           </AlertDescription>
         </AlertContent>
@@ -521,7 +521,7 @@ function TradePriceLists({
   return (
     <FormSection
       title="Prices for your trade customers"
-      description="A price list is a set of prices for particular customers — a wholesale sheet, a distributor's rates. These are set up on the price list itself, and shown here so you can see what this product costs on each. Anything on a list overrides the prices above for the customers it covers."
+      description="A price list is a set of prices for particular customers: a wholesale sheet, a distributor's rates. These are set up on the price list itself, and shown here so you can see what this product costs on each. Anything on a list overrides the prices above for the customers it covers."
     >
       {query.isError ? (
         <div className="flex flex-wrap items-center justify-between gap-3">
@@ -673,7 +673,7 @@ function VariantPricing({
             }
           />
           <FieldDescription>
-            {byRule ? 'Worked out for you — see below.' : 'What a shopper pays.'}
+            {byRule ? 'Worked out for you: see below.' : 'What a shopper pays.'}
           </FieldDescription>
         </Field>
 
@@ -712,7 +712,7 @@ function VariantPricing({
             }
           />
           <FieldDescription>
-            Only you see this. It is what your profit — and any pricing rule — is worked out from.
+            Only you see this. It is what your profit (and any pricing rule) is worked out from.
           </FieldDescription>
         </Field>
       </div>
@@ -776,7 +776,7 @@ function VariantPricing({
           </div>
         ) : availableRules.length === 0 ? (
           <Text className="text-sm">
-            You can have prices worked out for you from what you paid — add a pricing rule and it
+            You can have prices worked out for you from what you paid. Add a pricing rule and it
             will be offered here.
           </Text>
         ) : (
@@ -943,7 +943,7 @@ function BulkTiers({
                       className="border-base-300 flex flex-wrap items-center gap-2 border-b pb-2 last:border-b-0"
                     >
                       <Text as="span" className="min-w-0 flex-1 text-sm">
-                        Buy {tier.minQuantity} or more —{' '}
+                        Buy {tier.minQuantity} or more:{' '}
                         <span className="font-semibold tabular-nums">
                           {formatCents(tier.unitPriceCents, variant.currency)}
                         </span>{' '}
@@ -1044,7 +1044,7 @@ function BulkTiers({
                 : unitPrice <= 0
                   ? 'Set what each one costs at that quantity.'
                   : cents(unitPrice) >= target.priceCents
-                    ? `That is not cheaper than the normal price of ${formatCents(target.priceCents, target.currency)} — shoppers would be better off buying fewer.`
+                    ? `That is not cheaper than the normal price of ${formatCents(target.priceCents, target.currency)}: shoppers would be better off buying fewer.`
                     : `Buying ${String(quantity)} or more brings each one down to ${formatCents(cents(unitPrice), target.currency)}.`}
           </Text>
           <Button

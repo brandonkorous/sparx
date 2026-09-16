@@ -48,7 +48,7 @@ export function StatusFigure({
           <span className="text-3xl font-bold"> of {total}</span>
         </p>
         <p className="mt-3 text-xl font-bold">
-          {allWell ? 'answering right now' : 'answering — something is down'}
+          {allWell ? 'answering right now' : 'answering: something is down'}
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export function StatusFigure({
         </div>
         <p className="text-base">
           Checked at {checkedAt.toUTCString()}. A surface that is answering has replied to a request
-          just now — it is not a promise that every feature inside it works.
+          just now. It is not a promise that every feature inside it works.
         </p>
       </div>
     </HeroPanel>

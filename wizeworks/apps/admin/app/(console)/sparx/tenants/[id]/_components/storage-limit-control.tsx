@@ -74,7 +74,7 @@ export function StorageLimitControl({
           <Heading level={3}>Storage limit</Heading>
           <Text size="sm" variant="muted">
             An operator override for this tenant’s storage cap. Saved and shown now; not yet
-            enforced at upload time — that enforcement is an upcoming step.
+            enforced at upload time. That enforcement is an upcoming step.
           </Text>
         </Stack>
         <div className="flex flex-wrap items-end gap-2">

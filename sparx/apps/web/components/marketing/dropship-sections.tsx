@@ -38,7 +38,7 @@ export function DropshipConnect() {
       <SectionHeader
         accent={M.color}
         headline="Connect a supplier, import the catalog"
-        lede="Pick a supplier from the catalog, paste a token, and sparx validates the connection before it saves. Its products, costs, images, and stock sync in — then you import the ones you want, priced automatically. Only suppliers with a real, self-serve API are offered; the rest are honestly left off."
+        lede="Pick a supplier from the catalog, paste a token, and sparx validates the connection before it saves. Its products, costs, images, and stock sync in, then you import the ones you want, priced automatically. Only suppliers with a real, self-serve API are offered; the rest are honestly left off."
       />
       <div className="mkt-ds-split mt-13">
         <VendorPicker />
@@ -136,7 +136,7 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
         <div className="flex items-center gap-2.5 pt-3.5">
           <Dot color={M.color} size={6} />
           <Text as="span" className="font-mono text-sm">
-            review &amp; publish — price tracks the supplier&rsquo;s cost
+            review &amp; publish: price tracks the supplier&rsquo;s cost
           </Text>
         </div>
       </div>
@@ -150,8 +150,8 @@ export function DropshipMargin() {
     <Section padding="lg">
       <SectionHeader
         accent={M.color}
-        headline="Cost in, margin out — automatically"
-        lede="Set a pricing rule per supplier — a percentage markup, a multiplier, a flat markup, or a target margin — and every imported product prices itself off the supplier cost. When the supplier raises a cost on sync, your sell price and margin recompute. The dashboard reports profit and margin per product, per supplier, and per order."
+        headline="Cost in, margin out: automatically"
+        lede="Set a pricing rule per supplier (a percentage markup, a multiplier, a flat markup, or a target margin) and every imported product prices itself off the supplier cost. When the supplier raises a cost on sync, your sell price and margin recompute. The dashboard reports profit and margin per product, per supplier, and per order."
       />
       <div className="bg-base-100 border-base-300 mt-13 overflow-hidden rounded-[14px] border">
         {/* Ledger column headers — table chrome, sentence case. */}

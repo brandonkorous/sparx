@@ -167,7 +167,7 @@ function hero(): Node {
                                     { text: 'Sound, engineered' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Reference headphones, earbuds and speakers built the way instruments are — measured, tuned, and finished by the people who designed them. Nothing added to the recording, and nothing taken away.',
+                                    text: 'Reference headphones, earbuds and speakers built the way instruments are: measured, tuned, and finished by the people who designed them. Nothing added to the recording, and nothing taken away.',
                                 }),
                                 actions([
                                     primaryAction('Shop all audio', '/shop'),
@@ -236,7 +236,7 @@ function specHighlights(): Node {
     return sectionAlt([
         sectionHead(
             'Measured, not marketed',
-            'Every number here is one we publish because we test for it — on our own gear, in our own room, the same way you will hear it.'
+            'Every number here is one we publish because we test for it: on our own gear, in our own room, the same way you will hear it.'
         ),
         gridFour([
             stat(
@@ -247,7 +247,7 @@ function specHighlights(): Node {
             stat(
                 '−42 dB',
                 'Active noise cancelling',
-                'The plane, the train and the open office, turned down to a hush — so the music, not the world, sets the volume.'
+                'The plane, the train and the open office, turned down to a hush, so the music, not the world, sets the volume.'
             ),
             stat(
                 '38 hours',
@@ -280,7 +280,7 @@ function scenarioStrip(): Node {
     return section([
         sectionHead(
             'Made for where you listen',
-            'One signature, tuned for the room you are actually in — the studio, the street, the desk, the departure lounge.'
+            'One signature, tuned for the room you are actually in: the studio, the street, the desk, the departure lounge.'
         ),
         el('div', 'flex snap-x gap-6 overflow-x-auto pb-4', {
             children: [
@@ -319,7 +319,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New from Aphelion' }),
     capabilityBand({
         heading: 'The sound comes first',
-        lead: 'We start from the recording and work backwards — a signature that adds no color of its own, so a voice sounds like the person and a room sounds like the room. What the artist meant, and not a hair more.',
+        lead: 'We start from the recording and work backwards: a signature that adds no color of its own, so a voice sounds like the person and a room sounds like the room. What the artist meant, and not a hair more.',
         assetId: 'band-sound',
         alt: 'A dim room lit only by the glow of a stereo',
         cta: 'How we tune',
@@ -328,7 +328,7 @@ const HOME: Node[] = [
     productsBlock({ source: 'commerce.category.headphones', layout: 'carousel', heading: 'Headphones' }),
     capabilityBand({
         heading: 'Engineered to disappear',
-        lead: 'A planar-magnetic driver moves the whole surface of the diaphragm at once, so detail arrives without the ring or the lag a cone leaves behind. Cancelling reads the noise around you a thousand times a second and answers it — quietly, without the pressure that tires your ears.',
+        lead: 'A planar-magnetic driver moves the whole surface of the diaphragm at once, so detail arrives without the ring or the lag a cone leaves behind. Cancelling reads the noise around you a thousand times a second and answers it: quietly, without the pressure that tires your ears.',
         assetId: 'band-engineered',
         alt: 'A detailed view of a pair of headphones',
         cta: 'Inside the driver',
@@ -364,10 +364,10 @@ const ABOUT: Node[] = [
                         text: 'About Aphelion',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'Aphelion is a small audio company that builds reference gear — headphones, earbuds and speakers designed to get out of the way of the recording. We are engineers who happen to love music, which is the right way round: the measurements come first, and they are honest, because the ear catches what a spec sheet flatters over.',
+                        text: 'Aphelion is a small audio company that builds reference gear: headphones, earbuds and speakers designed to get out of the way of the recording. We are engineers who happen to love music, which is the right way round: the measurements come first, and they are honest, because the ear catches what a spec sheet flatters over.',
                     }),
                     el('p', 'text-lg leading-relaxed text-base-content', {
-                        text: 'We design and tune everything ourselves, publish the numbers we test for, and put every piece through a sixty-day home audition — because the only room that matters is the one you actually listen in. Nothing here is re-badged. We can tell you which driver is inside, why it was chosen, and how to keep it running for years.',
+                        text: 'We design and tune everything ourselves, publish the numbers we test for, and put every piece through a sixty-day home audition, because the only room that matters is the one you actually listen in. Nothing here is re-badged. We can tell you which driver is inside, why it was chosen, and how to keep it running for years.',
                     }),
                 ],
             }),
@@ -382,7 +382,7 @@ const CONTACT: Node[] = [
     // `mailto:` to a placeholder domain, which was the only way to reach the business.
     contactSection({
         heading: 'Talk to us',
-        intro: 'A question about which pair suits your music, a room you want to fill, or a piece that needs a part after a few good years — a real person who knows the gear reads every message and replies, usually the same day.',
+        intro: 'A question about which pair suits your music, a room you want to fill, or a piece that needs a part after a few good years: a real person who knows the gear reads every message and replies, usually the same day.',
         submitLabel: 'Email Aphelion',
     }),
 ];
@@ -435,14 +435,14 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-one',
         title: 'Aphelion One',
         description:
-            'Our flagship open-back over-ear headphones, built around a hand-matched planar-magnetic driver. Open-back means the sound breathes rather than pressing on your ears — a wide, natural stage that puts each instrument in its own place. Machined aluminium, real leather, and a cable and earpads you can replace instead of a headphone you have to.',
+            'Our flagship open-back over-ear headphones, built around a hand-matched planar-magnetic driver. Open-back means the sound breathes rather than pressing on your ears: a wide, natural stage that puts each instrument in its own place. Machined aluminium, real leather, and a cable and earpads you can replace instead of a headphone you have to.',
         status: 'active',
         productType: 'Headphones',
         vendor: 'Aphelion',
         tags: ['headphones', 'over-ear', 'open-back', 'planar', 'reference'],
         categoryHandles: ['headphones'],
         collectionHandles: ['new-arrivals', 'headphones'],
-        seoTitle: 'Aphelion One — open-back planar-magnetic headphones',
+        seoTitle: 'Aphelion One. Open-back planar-magnetic headphones',
         seoDescription: 'Flagship open-back over-ear headphones with a hand-matched planar-magnetic driver and replaceable parts.',
         productTypeKey: 'electronics',
         attributes: {
@@ -455,11 +455,11 @@ const PRODUCTS: Product[] = [
                 { label: 'Weight', value: '385 g' },
             ],
             connectivity:
-                'Wired only, on a detachable 1.5 m cable terminated in 3.5 mm, with a 6.35 mm screw-on adapter in the box and an optional balanced cable for a blacker background. Open-backs are made to sit still and be driven properly — there is no battery to age and no wireless to compress the signal.',
+                'Wired only, on a detachable 1.5 m cable terminated in 3.5 mm, with a 6.35 mm screw-on adapter in the box and an optional balanced cable for a blacker background. Open-backs are made to sit still and be driven properly. There is no battery to age and no wireless to compress the signal.',
             inTheBox:
                 'The Aphelion One, a detachable 1.5 m single-ended cable, a 6.35 mm adapter, a spare set of protein-leather earpads and a hard storage case.',
             warranty:
-                'Three years, with a sixty-day home audition. Every wear part — earpads, cable, headband — is a stocked replaceable spare, so a tired pair is repaired, never retired.',
+                'Three years, with a sixty-day home audition. Every wear part (earpads, cable, headband) is a stocked replaceable spare, so a tired pair is repaired, never retired.',
         },
         options: [
             { name: 'Finish', displayType: 'swatch', values: [{ value: 'Onyx' }, { value: 'Titanium' }] },
@@ -481,7 +481,7 @@ const PRODUCTS: Product[] = [
         tags: ['headphones', 'over-ear', 'wireless', 'anc'],
         categoryHandles: ['headphones'],
         collectionHandles: ['headphones'],
-        seoTitle: 'Aphelion One Wireless — adaptive-ANC over-ear headphones',
+        seoTitle: 'Aphelion One Wireless: adaptive-ANC over-ear headphones',
         seoDescription: 'Wireless over-ear headphones with adaptive noise cancelling, 38-hour battery, and the reference One tuning.',
         productTypeKey: 'electronics',
         attributes: {
@@ -520,7 +520,7 @@ const PRODUCTS: Product[] = [
         tags: ['earbuds', 'true-wireless', 'anc', 'ldac'],
         categoryHandles: ['earbuds'],
         collectionHandles: ['new-arrivals', 'earbuds'],
-        seoTitle: 'Aphelion Buds Pro — ANC true-wireless earbuds with LDAC',
+        seoTitle: 'Aphelion Buds Pro: ANC true-wireless earbuds with LDAC',
         seoDescription: 'True-wireless earbuds with high-resolution LDAC, deep active noise cancelling, and a sealed four-size fit.',
         productTypeKey: 'electronics',
         attributes: {
@@ -552,20 +552,20 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-buds-air',
         title: 'Aphelion Buds Air',
         description:
-            'The everyday earbud — the Aphelion signature, the long battery and the easy pairing, without the active cancelling. A light, comfortable fit for a run or a call, with clear voice pickup so the person on the other end hears you, not the wind.',
+            'The everyday earbud: the Aphelion signature, the long battery and the easy pairing, without the active cancelling. A light, comfortable fit for a run or a call, with clear voice pickup so the person on the other end hears you, not the wind.',
         status: 'active',
         productType: 'Earbuds',
         vendor: 'Aphelion',
         tags: ['earbuds', 'true-wireless', 'everyday'],
         categoryHandles: ['earbuds'],
         collectionHandles: ['earbuds'],
-        seoTitle: 'Aphelion Buds Air — everyday true-wireless earbuds',
+        seoTitle: 'Aphelion Buds Air: everyday true-wireless earbuds',
         seoDescription: 'Light, comfortable true-wireless earbuds with the Aphelion signature, long battery, and clear call pickup.',
         productTypeKey: 'electronics',
         attributes: {
             specs: [
                 { label: 'Driver', value: '10 mm dynamic' },
-                { label: 'Noise cancelling', value: 'None — light open fit' },
+                { label: 'Noise cancelling', value: 'None: light open fit' },
                 { label: 'Battery', value: '7 h buds, 28 h with case' },
                 { label: 'Water resistance', value: 'IPX4 (buds)' },
                 { label: 'Codecs', value: 'AAC, SBC' },
@@ -591,14 +591,14 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-monolith',
         title: 'Aphelion Monolith',
         description:
-            'A reference active bookshelf speaker, sold as a matched pair. The amplifier lives inside, tuned to the exact driver it drives, so you plug in a source and you are done — no separate box, no guesswork, no mismatch. Measured to the millimetre and voiced by ear, a pair on a shelf throws a stage you can point to with your eyes shut.',
+            'A reference active bookshelf speaker, sold as a matched pair. The amplifier lives inside, tuned to the exact driver it drives, so you plug in a source and you are done: no separate box, no guesswork, no mismatch. Measured to the millimetre and voiced by ear, a pair on a shelf throws a stage you can point to with your eyes shut.',
         status: 'active',
         productType: 'Speakers',
         vendor: 'Aphelion',
         tags: ['speakers', 'bookshelf', 'active', 'reference', 'pair'],
         categoryHandles: ['speakers'],
         collectionHandles: ['new-arrivals', 'speakers'],
-        seoTitle: 'Aphelion Monolith — reference active bookshelf speakers (pair)',
+        seoTitle: 'Aphelion Monolith: reference active bookshelf speakers (pair)',
         seoDescription: 'A matched pair of reference active bookshelf speakers with the amplifier built in and tuned to the driver.',
         productTypeKey: 'electronics',
         attributes: {
@@ -611,7 +611,7 @@ const PRODUCTS: Product[] = [
                 { label: 'Weight', value: '6.2 kg each' },
             ],
             connectivity:
-                'Balanced XLR and RCA analogue in, plus optical, coaxial and USB digital in — the amplifier and DAC live inside, tuned to the exact driver, so you plug a source straight in with no separate box and no mismatch. The two speakers link over a single supplied cable.',
+                'Balanced XLR and RCA analogue in, plus optical, coaxial and USB digital in: the amplifier and DAC live inside, tuned to the exact driver, so you plug a source straight in with no separate box and no mismatch. The two speakers link over a single supplied cable.',
             inTheBox:
                 'A matched pair of Aphelion Monolith speakers, the inter-speaker link cable, a power lead for each, magnetic grilles and two sets of isolation feet.',
             warranty:
@@ -630,14 +630,14 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-field',
         title: 'Aphelion Field',
         description:
-            'A portable speaker that does not apologise for its size. Sealed against dust and water to IP67 — it survives a beach, a shower and a spilled drink — with a battery that runs a whole afternoon and a tuning that stays honest instead of turning everything into thud. Pairs two together for real stereo.',
+            'A portable speaker that does not apologise for its size. Sealed against dust and water to IP67 (it survives a beach, a shower and a spilled drink) with a battery that runs a whole afternoon and a tuning that stays honest instead of turning everything into thud. Pairs two together for real stereo.',
         status: 'active',
         productType: 'Speakers',
         vendor: 'Aphelion',
         tags: ['speakers', 'portable', 'bluetooth', 'ip67'],
         categoryHandles: ['speakers'],
         collectionHandles: ['speakers'],
-        seoTitle: 'Aphelion Field — IP67 portable Bluetooth speaker',
+        seoTitle: 'Aphelion Field: IP67 portable Bluetooth speaker',
         seoDescription: 'A rugged IP67 portable Bluetooth speaker with an all-afternoon battery and an honest, un-boomy tuning.',
         productTypeKey: 'electronics',
         attributes: {
@@ -669,14 +669,14 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-pulse',
         title: 'Aphelion Pulse',
         description:
-            'A pocket-sized USB-C headphone amplifier and DAC — the small box that makes a laptop or a phone drive a real pair of headphones properly. It gives demanding open-backs the power they need to open up, and cleans up the thin, quiet output most devices ship with. One cable in, your headphones out, and everything gets louder, clearer and more alive.',
+            'A pocket-sized USB-C headphone amplifier and DAC: the small box that makes a laptop or a phone drive a real pair of headphones properly. It gives demanding open-backs the power they need to open up, and cleans up the thin, quiet output most devices ship with. One cable in, your headphones out, and everything gets louder, clearer and more alive.',
         status: 'active',
         productType: 'Amps & DACs',
         vendor: 'Aphelion',
         tags: ['dac', 'amplifier', 'usb-c', 'portable'],
         categoryHandles: ['amps-dacs'],
         collectionHandles: ['new-arrivals'],
-        seoTitle: 'Aphelion Pulse — portable USB-C DAC and headphone amplifier',
+        seoTitle: 'Aphelion Pulse: portable USB-C DAC and headphone amplifier',
         seoDescription: 'A pocket USB-C DAC and headphone amplifier that drives demanding headphones from a laptop or phone.',
         productTypeKey: 'electronics',
         attributes: {
@@ -689,7 +689,7 @@ const PRODUCTS: Product[] = [
                 { label: 'Weight', value: '95 g' },
             ],
             connectivity:
-                'One USB-C in from a laptop or phone, one 3.5 mm and one 4.4 mm balanced headphone out. Bus-powered, so there is no battery and no wall wart — one cable in, your headphones out, everything louder and cleaner.',
+                'One USB-C in from a laptop or phone, one 3.5 mm and one 4.4 mm balanced headphone out. Bus-powered, so there is no battery and no wall wart. One cable in, your headphones out, everything louder and cleaner.',
             inTheBox:
                 'The Aphelion Pulse, a USB-C to USB-C cable, a USB-C to USB-A adapter and a silicone band for stacking it to a phone.',
             warranty:
@@ -702,14 +702,14 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-ridgeline',
         title: 'Aphelion Ridgeline',
         description:
-            'A slim soundbar that treats a film the way we treat a record — dialogue you never have to rewind, and an effects track with real weight, from one bar under the screen. No rack of boxes, no calibration ritual: it measures your room on setup and tunes itself to it.',
+            'A slim soundbar that treats a film the way we treat a record: dialogue you never have to rewind, and an effects track with real weight, from one bar under the screen. No rack of boxes, no calibration ritual: it measures your room on setup and tunes itself to it.',
         status: 'active',
         productType: 'Speakers',
         vendor: 'Aphelion',
         tags: ['speakers', 'soundbar', 'home-cinema'],
         categoryHandles: ['speakers'],
         collectionHandles: ['speakers'],
-        seoTitle: 'Aphelion Ridgeline — self-calibrating soundbar',
+        seoTitle: 'Aphelion Ridgeline: self-calibrating soundbar',
         seoDescription: 'A slim soundbar with clear dialogue and real weight that measures your room and tunes itself to it.',
         productTypeKey: 'electronics',
         attributes: {
@@ -722,7 +722,7 @@ const PRODUCTS: Product[] = [
                 { label: 'Width', value: '98 cm' },
             ],
             connectivity:
-                'HDMI eARC to the television, plus optical in and Bluetooth for music. It measures your room on setup and tunes itself — no rack of boxes, no calibration mic to fuss with.',
+                'HDMI eARC to the television, plus optical in and Bluetooth for music. It measures your room on setup and tunes itself: no rack of boxes, no calibration mic to fuss with.',
             inTheBox:
                 'The Aphelion Ridgeline, an HDMI eARC cable, a wall-mount template and bracket, and a power lead.',
             warranty:
@@ -735,14 +735,14 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-cable',
         title: 'Aphelion Balanced Cable',
         description:
-            'A braided replacement cable for the One and One Wireless, in a balanced connection that keeps the left and right channels fully apart for a cleaner, blacker background. Oxygen-free copper, a machined connector, and a length you choose — so a worn cable is a small part, never a reason to retire the headphones.',
+            'A braided replacement cable for the One and One Wireless, in a balanced connection that keeps the left and right channels fully apart for a cleaner, blacker background. Oxygen-free copper, a machined connector, and a length you choose, so a worn cable is a small part, never a reason to retire the headphones.',
         status: 'active',
         productType: 'Accessories',
         vendor: 'Aphelion',
         tags: ['accessories', 'cable', 'balanced'],
         categoryHandles: ['accessories'],
         collectionHandles: ['accessories'],
-        seoTitle: 'Aphelion Balanced Cable — braided replacement headphone cable',
+        seoTitle: 'Aphelion Balanced Cable: braided replacement headphone cable',
         seoDescription: 'A braided balanced replacement cable in oxygen-free copper for the Aphelion One headphones.',
         productTypeKey: 'electronics',
         attributes: {
@@ -755,7 +755,7 @@ const PRODUCTS: Product[] = [
                 { label: 'Sleeve', value: 'Braided, low-microphonic' },
             ],
             connectivity:
-                'A passive analogue cable — a balanced 4.4 mm at the amplifier end and dual locking connectors at the earcups, keeping the left and right channels fully apart for a cleaner, blacker background.',
+                'A passive analogue cable: a balanced 4.4 mm at the amplifier end and dual locking connectors at the earcups, keeping the left and right channels fully apart for a cleaner, blacker background.',
             inTheBox: 'The Aphelion Balanced Cable in your chosen length, and a reusable cable tie.',
             warranty:
                 'Two years. A replaceable wear part by design, so a worn cable is a small part to swap, never a reason to retire the headphones.',
@@ -780,7 +780,7 @@ const PRODUCTS: Product[] = [
         tags: ['accessories', 'stand', 'desk'],
         categoryHandles: ['accessories'],
         collectionHandles: ['accessories'],
-        seoTitle: 'Aphelion Stand — machined aluminium headphone stand',
+        seoTitle: 'Aphelion Stand: machined aluminium headphone stand',
         seoDescription: 'A weighted machined-aluminium headphone stand with a soft yoke and a cable channel.',
         productTypeKey: 'electronics',
         attributes: {
@@ -793,7 +793,7 @@ const PRODUCTS: Product[] = [
                 { label: 'Weight', value: '640 g' },
             ],
             connectivity:
-                'None — a passive desk stand. The channel down the back keeps the cable off your keyboard rather than routing any signal.',
+                'None: a passive desk stand. The channel down the back keeps the cable off your keyboard rather than routing any signal.',
             inTheBox:
                 'The Aphelion Stand, assembled, with felt base pads and a hex key for the yoke.',
             warranty:
@@ -813,7 +813,7 @@ const PRODUCTS: Product[] = [
         tags: ['accessories', 'case', 'travel'],
         categoryHandles: ['accessories'],
         collectionHandles: ['accessories'],
-        seoTitle: 'Aphelion Travel Case — hard case for earbuds and the Pulse',
+        seoTitle: 'Aphelion Travel Case: hard case for earbuds and the Pulse',
         seoDescription: 'A crush-proof hard travel case with a moulded tray for the Aphelion Buds Pro and Pulse.',
         productTypeKey: 'electronics',
         attributes: {
@@ -826,7 +826,7 @@ const PRODUCTS: Product[] = [
                 { label: 'Weight', value: '140 g' },
             ],
             connectivity:
-                'None — protection, not electronics. The moulded tray holds each piece and its tips in place so nothing rattles loose in a bag.',
+                'None: protection, not electronics. The moulded tray holds each piece and its tips in place so nothing rattles loose in a bag.',
             inTheBox:
                 'The Aphelion Travel Case with its moulded tray, and a clip-in mesh pocket for cables and tips.',
             warranty:
@@ -839,14 +839,14 @@ const PRODUCTS: Product[] = [
         handle: 'aphelion-pads',
         title: 'Aphelion Earpads',
         description:
-            'Replacement earpads for the One and One Wireless, in the same protein leather and memory foam we fit at the factory. Pads are the one part that wears, and swapping them brings back the seal, the comfort and the bass a tired pair loses — a five-minute job, no tools, in a couple of years when you need it.',
+            'Replacement earpads for the One and One Wireless, in the same protein leather and memory foam we fit at the factory. Pads are the one part that wears, and swapping them brings back the seal, the comfort and the bass a tired pair loses: a five-minute job, no tools, in a couple of years when you need it.',
         status: 'active',
         productType: 'Accessories',
         vendor: 'Aphelion',
         tags: ['accessories', 'earpads', 'replacement'],
         categoryHandles: ['accessories'],
         collectionHandles: ['accessories'],
-        seoTitle: 'Aphelion Earpads — replacement earpads for the One',
+        seoTitle: 'Aphelion Earpads: replacement earpads for the One',
         seoDescription: 'Factory-grade replacement earpads in protein leather and memory foam for the Aphelion One.',
         productTypeKey: 'electronics',
         attributes: {
@@ -859,7 +859,7 @@ const PRODUCTS: Product[] = [
                 { label: 'Swap time', value: 'About five minutes' },
             ],
             connectivity:
-                'None — a factory-grade wear part. Swapping the pads restores the seal, the comfort and the bass a tired pair slowly loses.',
+                'None: a factory-grade wear part. Swapping the pads restores the seal, the comfort and the bass a tired pair slowly loses.',
             inTheBox: 'A matched pair of Aphelion Earpads, and a quick-fit card.',
             warranty:
                 'One year. Pads are the part that wears, so we price them to be replaced every couple of years without a second thought.',
@@ -934,16 +934,16 @@ const CONTENT = [
         status: 'published',
         body: {
             title: 'Inside the One: how a planar driver moves air',
-            excerpt: 'Most headphones push air with a cone. The One uses a flat sheet — and the difference is why it sounds the way it does.',
+            excerpt: 'Most headphones push air with a cone. The One uses a flat sheet, and the difference is why it sounds the way it does.',
             featuredImage: { $asset: 'post-planar' },
             body: {
                 type: 'doc',
                 content: [
-                    para('Open almost any headphone and you find a small paper or plastic cone, driven from a single point at its centre by a coil of wire. It works, and it is cheap, but a cone pushed from the middle flexes at its edges — and that flexing is distortion you can hear as a faint ring or a smear on fast, complex music.'),
+                    para('Open almost any headphone and you find a small paper or plastic cone, driven from a single point at its centre by a coil of wire. It works, and it is cheap, but a cone pushed from the middle flexes at its edges, and that flexing is distortion you can hear as a faint ring or a smear on fast, complex music.'),
                     h2('A whole surface, moving at once'),
                     para('A planar-magnetic driver does it differently. Instead of a cone, it uses a thin, flat film with a circuit printed across its entire face, suspended between two arrays of magnets. The whole sheet moves together, evenly, from edge to edge. There is nothing to flex, so a struck cymbal or a plucked string starts and stops cleanly, exactly when the recording says it should.'),
                     h2('Why it needs a little more push'),
-                    para('The trade is that a planar film is harder to drive than a cone — which is why the One opens up so much more from a proper amplifier than from a phone, and why we make the Pulse. Give it the power it wants and the stage widens, the bass firms up, and the quiet details step forward out of the black.'),
+                    para('The trade is that a planar film is harder to drive than a cone, which is why the One opens up so much more from a proper amplifier than from a phone, and why we make the Pulse. Give it the power it wants and the stage widens, the bass firms up, and the quiet details step forward out of the black.'),
                     para('None of this is exotic for its own sake. It is the most honest way we know to turn an electrical signal back into the air pressure that was in the room when the recording was made.'),
                 ],
             },
@@ -962,10 +962,10 @@ const CONTENT = [
                 content: [
                     para('Every pair of cancelling headphones quotes a decibel figure, and shoppers are told bigger is better. It is not that simple. That single number is measured at one pitch, in a lab, and it says nothing about the pitches it does not cover or the side effects of reaching for a record-breaking figure.'),
                     h2('Noise is not one sound'),
-                    para('The drone of a plane is low and steady, and cancelling handles it well. A crying child, a closing door, a colleague two desks away — these are higher and sudden, and no cancelling touches them much. A pair that crushes the low drone while ignoring everything else can measure beautifully and still leave you reaching for the volume.'),
+                    para('The drone of a plane is low and steady, and cancelling handles it well. A crying child, a closing door, a colleague two desks away. These are higher and sudden, and no cancelling touches them much. A pair that crushes the low drone while ignoring everything else can measure beautifully and still leave you reaching for the volume.'),
                     h2('The cost of chasing the number'),
-                    para('Push cancelling hard and it introduces its own pressure — that faint, ears-blocked feeling that turns a long flight into a headache. We tune for the point where the world drops away but your ears stay relaxed, then we publish the figure that point produces, not the biggest one we could force.'),
-                    para('So read the number, but trust your ears. The right question is never "how many decibels" — it is "can I wear this for six hours and forget I have it on."'),
+                    para('Push cancelling hard and it introduces its own pressure. That faint, ears-blocked feeling that turns a long flight into a headache. We tune for the point where the world drops away but your ears stay relaxed, then we publish the figure that point produces, not the biggest one we could force.'),
+                    para('So read the number, but trust your ears. The right question is never "how many decibels". It is "can I wear this for six hours and forget I have it on."'),
                 ],
             },
         },
@@ -981,12 +981,12 @@ const CONTENT = [
             body: {
                 type: 'doc',
                 content: [
-                    para('There are two schools. One says a speaker should be a flat, honest window — it plays exactly what was recorded and adds nothing. The other says a little extra bass and a little extra sparkle make music more fun, and fun is the point. Both are right, which is precisely the problem.'),
+                    para('There are two schools. One says a speaker should be a flat, honest window. It plays exactly what was recorded and adds nothing. The other says a little extra bass and a little extra sparkle make music more fun, and fun is the point. Both are right, which is precisely the problem.'),
                     h2('Honest, with the lights on'),
-                    para('We voice the Monolith flat, because a colored speaker flatters some records and wrecks others — and once the color is baked in you cannot take it back out. Flat means a well-made recording sounds thrilling and a badly-made one sounds honest about it, which is the speaker telling you the truth rather than a lie you happen to like.'),
+                    para('We voice the Monolith flat, because a colored speaker flatters some records and wrecks others, and once the color is baked in you cannot take it back out. Flat means a well-made recording sounds thrilling and a badly-made one sounds honest about it, which is the speaker telling you the truth rather than a lie you happen to like.'),
                     h2('Where the room comes in'),
-                    para('Flat at the speaker is not flat at your chair — walls, glass and furniture bend the sound on its way to you. That is why the Monolith measures its own placement and corrects for the room, and why the excitement, when you want it, belongs on a tone control you can turn back, not in a driver you cannot.'),
-                    para('Reference or fun is a false choice. Build it honest, hand the shaping to the listener, and you get both — on the nights you want each one.'),
+                    para('Flat at the speaker is not flat at your chair: walls, glass and furniture bend the sound on its way to you. That is why the Monolith measures its own placement and corrects for the room, and why the excitement, when you want it, belongs on a tone control you can turn back, not in a driver you cannot.'),
+                    para('Reference or fun is a false choice. Build it honest, hand the shaping to the listener, and you get both: on the nights you want each one.'),
                 ],
             },
         },
@@ -1028,7 +1028,7 @@ function pdpBuyRegion(): Node {
                                     // Breadcrumb/label above the title — a plain <p>, so the product title
                                     // stays the page's one <h1>.
                                     el('p', 'text-sm font-medium uppercase tracking-widest text-base-content', {
-                                        text: 'Aphelion — Reference audio',
+                                        text: 'Aphelion: Reference audio',
                                     }),
                                     pdpTitle(
                                         'h1',
@@ -1106,7 +1106,7 @@ const SHOP: Node[] = [
                                     { text: 'The full range' }
                                 ),
                                 el('p', 'text-lg leading-relaxed text-base-content', {
-                                    text: 'Every Aphelion piece — headphones, earbuds, speakers and the parts that keep them running — filtered and sorted however you like. One reference signature, engineered for wherever you listen.',
+                                    text: 'Every Aphelion piece (headphones, earbuds, speakers and the parts that keep them running) filtered and sorted however you like. One reference signature, engineered for wherever you listen.',
                                 }),
                             ],
                         }),
@@ -1148,14 +1148,14 @@ function pageMasthead(heading: string, lead: string): Node {
 const COLLECTIONS: Node[] = [
     pageMasthead(
         'The range, by room',
-        'Headphones, earbuds, speakers and the parts that keep them running — grouped the way you actually listen, so you can start from the desk, the commute or the living room and work out from there. One reference signature across all of it.'
+        'Headphones, earbuds, speakers and the parts that keep them running: grouped the way you actually listen, so you can start from the desk, the commute or the living room and work out from there. One reference signature across all of it.'
     ),
 ];
 
 const SEARCH: Node[] = [
     pageMasthead(
         'Find your sound',
-        'Looking for something specific — a driver type, a price, a piece you read about in The Signal Path? Search the whole range and the journal below.'
+        'Looking for something specific: a driver type, a price, a piece you read about in The Signal Path? Search the whole range and the journal below.'
     ),
 ];
 
@@ -1170,7 +1170,7 @@ const JOURNAL: Node[] = [
                         { text: 'The Signal Path' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Engineering notes from the people who tune the gear — inside the drivers, how we measure what we publish, and the choices behind the way an Aphelion piece sounds.',
+                        text: 'Engineering notes from the people who tune the gear: inside the drivers, how we measure what we publish, and the choices behind the way an Aphelion piece sounds.',
                     }),
                 ],
             }),
@@ -1193,7 +1193,7 @@ const CART: Node[] = [
                         { text: 'Your cart' }
                     ),
                     el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-                        text: 'Free insured shipping, dispatched within two business days and tracked to your door. Every piece is covered for three years and ships with a sixty-day home audition — listen on your own music, in your own room, and send it back for a full refund if it does not earn its place.',
+                        text: 'Free insured shipping, dispatched within two business days and tracked to your door. Every piece is covered for three years and ships with a sixty-day home audition: listen on your own music, in your own room, and send it back for a full refund if it does not earn its place.',
                     }),
                 ],
             }),
@@ -1208,7 +1208,7 @@ const SPEC: TemplateSiteSpec = {
     key: 'sparx-tech-cinematic',
     name: 'Tech Cinematic',
     summary:
-        'A dark, spec-forward storefront for engineered hardware — a full-bleed cinematic hero over a repeating capability-band and shoppable-carousel rhythm, on a genuinely dark page with one electric-blue signal. Modelled on the tech/cinematic product archetype; shipped as Aphelion, a premium-audio brand.',
+        'A dark, spec-forward storefront for engineered hardware: a full-bleed cinematic hero over a repeating capability-band and shoppable-carousel rhythm, on a genuinely dark page with one electric-blue signal. Modelled on the tech/cinematic product archetype; shipped as Aphelion, a premium-audio brand.',
     tagline: 'A dark, cinematic, spec-forward template for makers of premium engineered hardware.',
     vertical: 'retail',
     industry: 'Premium audio',
@@ -1226,14 +1226,14 @@ const SPEC: TemplateSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Aphelion — reference headphones, earbuds & speakers',
+            title: 'Aphelion: reference headphones, earbuds & speakers',
             description:
-                'Aphelion builds reference headphones, earbuds and speakers the way instruments are made — measured, tuned and finished so nothing is added to the recording and nothing taken away.',
+                'Aphelion builds reference headphones, earbuds and speakers the way instruments are made: measured, tuned and finished so nothing is added to the recording and nothing taken away.',
         },
         about: {
             title: 'About Aphelion',
             description:
-                'The people and engineering behind Aphelion — how every driver is measured, tuned and finished before it ships.',
+                'The people and engineering behind Aphelion: how every driver is measured, tuned and finished before it ships.',
         },
     },
     home: HOME,

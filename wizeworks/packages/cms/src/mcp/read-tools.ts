@@ -57,7 +57,7 @@ export const listContentEntriesTool: McpToolDefinition = {
 export const getContentEntryTool: McpToolDefinition = {
   name: 'get_content_entry',
   description:
-    'Fetch one content entry by id — its full body, SEO, status, and the sites it is scoped to. Use before update_content_entry / publish_content_entry.',
+    'Fetch one content entry by id. Its full body, SEO, status, and the sites it is scoped to. Use before update_content_entry / publish_content_entry.',
   scope: 'read:cms',
   confirmation: false,
   input: z.object({ id: z.string().uuid() }),

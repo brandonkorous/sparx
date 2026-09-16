@@ -66,7 +66,7 @@ export async function applyQuotes(ctx: ApplyCtx, pack: SampleDataPack): Promise<
       return {
         productId: v.productId,
         variantId: v.id,
-        description: v.title ? `${v.productTitle} — ${v.title}` : v.productTitle,
+        description: v.title ? `${v.productTitle}: ${v.title}` : v.productTitle,
         quantity,
         unitPrice,
         lineSubtotal,
@@ -123,7 +123,7 @@ export async function applyQuotes(ctx: ApplyCtx, pack: SampleDataPack): Promise<
 // one lost on those stage types when present.
 const DEAL_TITLES = [
   'Initial order',
-  'Repeat order — quarterly',
+  'Repeat order: quarterly',
   'Fleet contract',
   'Expansion opportunity',
   'Renewal',
@@ -165,7 +165,7 @@ export async function applyDeals(ctx: ApplyCtx, pack: SampleDataPack): Promise<v
         pipelineId: pipeline.id,
         stageId: stage.id,
         customerId,
-        title: `${persona.company ?? persona.name} — ${DEAL_TITLES[i % DEAL_TITLES.length]!}`,
+        title: `${persona.company ?? persona.name}: ${DEAL_TITLES[i % DEAL_TITLES.length]!}`,
         value,
         currency: 'USD',
         probability: stage.probability,

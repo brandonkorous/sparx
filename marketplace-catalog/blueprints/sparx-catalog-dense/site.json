@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Voltage — new-season fashion, new drops daily",
-      "seoDescription": "Voltage drops new-season dresses, denim, tops and sets every week at prices built to move — the trend-fast fashion edit, restocked before it sells out.",
+      "seoTitle": "Voltage: new-season fashion, new drops daily",
+      "seoDescription": "Voltage drops new-season dresses, denim, tops and sets every week at prices built to move: the trend-fast fashion edit, restocked before it sells out.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Hundreds of fresh styles every week — dresses, denim, sets and swim — and up to 70% off the sale rail while it lasts. Trend-fast fashion, priced to move."
+                          "Hundreds of fresh styles every week (dresses, denim, sets and swim) and up to 70% off the sale rail while it lasts. Trend-fast fashion, priced to move."
                         ],
                         "id": "66403eb0-8044-4847-a14d-056baf18add9",
                         "ord": "a1"
@@ -842,7 +842,7 @@
                       {
                         "kind": "element",
                         "tag": "span",
-                        "children": ["everything in the Sale — no code needed"],
+                        "children": ["everything in the Sale: no code needed"],
                         "id": "416e58ac-7b67-4de1-9754-74be15ede2d1",
                         "ord": "a1"
                       }
@@ -1036,7 +1036,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed",
                         "children": [
-                          "Half off the new-season rail through Sunday — dresses, sets and the going-out shapes everyone is asking for."
+                          "Half off the new-season rail through Sunday: dresses, sets and the going-out shapes everyone is asking for."
                         ],
                         "id": "8a33e2a3-5a5c-450c-880c-66dc7036596d",
                         "ord": "a1"
@@ -1358,7 +1358,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed",
                         "children": [
-                          "The going-out edit — satin, cutouts and sets built for the good light and the late night."
+                          "The going-out edit: satin, cutouts and sets built for the good light and the late night."
                         ],
                         "id": "afe0019e-754a-4dee-a3ee-70c8e06f2610",
                         "ord": "a1"
@@ -1668,7 +1668,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "How the team is wearing the new drops — three looks to steal this week."
+                          "How the team is wearing the new drops: three looks to steal this week."
                         ],
                         "id": "5fe61423-d937-42ad-ac31-8395e7a1f46c",
                         "ord": "a1"
@@ -1887,7 +1887,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed",
                         "children": [
-                          "The final rail — hundreds of styles at their lowest, while sizes last. No code needed, prices as marked."
+                          "The final rail: hundreds of styles at their lowest, while sizes last. No code needed, prices as marked."
                         ],
                         "id": "89e6edca-8f3e-47db-838d-af6ee538ec05",
                         "ord": "a1"
@@ -2171,7 +2171,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Voltage",
+      "seoTitle": "Shop: Voltage",
       "seoDescription": "Browse everything Voltage makes, with prices and options at a glance. Fast-fashion apparel.",
       "root": {
         "kind": "element",
@@ -2228,7 +2228,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed",
                     "children": [
-                      "Every style Voltage is dropping right now — dresses, denim, tops, sets and swim — filtered and sorted however you like. Prices as marked, restocked before they sell out, and priced to move."
+                      "Every style Voltage is dropping right now (dresses, denim, tops, sets and swim) filtered and sorted however you like. Prices as marked, restocked before they sell out, and priced to move."
                     ],
                     "id": "9ed54215-512c-4d04-920c-237efad7b8f2",
                     "ord": "a2"
@@ -2256,7 +2256,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Voltage",
+      "seoTitle": "Collections: Voltage",
       "seoDescription": "Explore the collections at Voltage, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2313,7 +2313,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed",
                     "children": [
-                      "New arrivals, best-sellers, the going-out edit and the 60–80% off sale rail — every collection Voltage is dropping right now, grouped so you can shop straight to the vibe. Fresh styles land every week, restocked before they sell out."
+                      "New arrivals, best-sellers, the going-out edit and the 60–80% off sale rail: every collection Voltage is dropping right now, grouped so you can shop straight to the vibe. Fresh styles land every week, restocked before they sell out."
                     ],
                     "id": "3ee573f3-db4b-4ca7-95e8-f0cb6a5b9a2a",
                     "ord": "a2"
@@ -2341,7 +2341,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Voltage",
+      "seoTitle": "Your cart: Voltage",
       "seoDescription": "Review what is in your cart and check out securely at Voltage.",
       "root": {
         "kind": "element",
@@ -2378,7 +2378,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Almost yours. Free 1-day shipping over $75, easy 30-day returns and a secure checkout — no surprises at the till. Bag your styles before they sell out."
+                          "Almost yours. Free 1-day shipping over $75, easy 30-day returns and a secure checkout: no surprises at the till. Bag your styles before they sell out."
                         ],
                         "id": "2857f8f5-c0e6-43d2-af63-0677f774c13b",
                         "ord": "a1"
@@ -2494,7 +2494,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Voltage",
+      "seoTitle": "Search: Voltage",
       "seoDescription": "Search Voltage for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2526,7 +2526,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Hunting a specific style, size or steal? Search the whole catalogue and the Edit below — thousands of pieces, new drops every week, all priced to move."
+                      "Hunting a specific style, size or steal? Search the whole catalogue and the Edit below: thousands of pieces, new drops every week, all priced to move."
                     ],
                     "id": "d0fe2248-977d-4fac-bcbd-4fcbce32ac47",
                     "ord": "a1"
@@ -2554,7 +2554,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Voltage",
+      "seoTitle": "Journal: Voltage",
       "seoDescription": "Stories, guides and notes from Voltage.",
       "root": {
         "kind": "element",
@@ -2586,7 +2586,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "How the team is actually wearing the new drops — trend reports, styling tricks and vacation packing lists, each one built to shop straight from the story."
+                      "How the team is actually wearing the new drops: trend reports, styling tricks and vacation packing lists, each one built to shop straight from the story."
                     ],
                     "id": "e4bcc38b-bf31-4e0b-b1a8-09b2e8f063c2",
                     "ord": "a1"
@@ -2751,7 +2751,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Voltage is fast fashion done right — hundreds of new styles every week, across dresses, denim, tops, sets and swim, at prices built to move. We watch what the street is actually wearing, make it quickly, and pass the speed straight on to you."
+                      "Voltage is fast fashion done right: hundreds of new styles every week, across dresses, denim, tops, sets and swim, at prices built to move. We watch what the street is actually wearing, make it quickly, and pass the speed straight on to you."
                     ],
                     "id": "63eaef94-8397-4c4d-b9c9-e8a34a79cc26",
                     "ord": "a1"
@@ -2781,8 +2781,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Voltage",
-      "seoDescription": "Get in touch with Voltage — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Voltage",
+      "seoDescription": "Get in touch with Voltage: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2818,7 +2818,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Order questions, sizing help, or a style you cannot find — our team answers fast, usually the same day. Tell us what you need and we will sort it."
+                          "Order questions, sizing help, or a style you cannot find. Our team answers fast, usually the same day. Tell us what you need and we will sort it."
                         ],
                         "id": "1f5b1f96-745f-47a9-8081-0e04dc68d2fa",
                         "ord": "a1"
@@ -3089,8 +3089,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Voltage",
-      "seoDescription": "Product details at Voltage — fast-fashion apparel, with options and pricing.",
+      "seoTitle": "Product: Voltage",
+      "seoDescription": "Product details at Voltage: fast-fashion apparel, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -3234,7 +3234,7 @@
                                 "kind": "element",
                                 "tag": "span",
                                 "class": "badge badge-accent font-semibold",
-                                "children": ["Prices as marked — no code needed"],
+                                "children": ["Prices as marked: no code needed"],
                                 "id": "8bdc2fac-301a-4c43-99e2-2fb0434b192d",
                                 "ord": "a0"
                               }

@@ -95,7 +95,7 @@ export function resolveTransport(env: NodeJS.ProcessEnv = process.env): Transpor
       throw new BrokerConfigError(
         'EVENT_BROKER is unset and NODE_ENV=production. Set it to `nats` (in-cluster ' +
           'JetStream) or `pubsub` (Google Cloud). Refusing to start rather than fall back ' +
-          'to a non-durable transport — that fallback silently dropped events for weeks ' +
+          'to a non-durable transport. That fallback silently dropped events for weeks ' +
           'after the GCP→Azure migration and reported success on every publish.'
       );
     }

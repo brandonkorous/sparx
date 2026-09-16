@@ -173,7 +173,7 @@ function ListingRow({ listing, productId }: { listing: ChannelListing; productId
             void (async () => {
               const ok = await confirm({
                 title: `Forget the ${listing.channelName} listing?`,
-                description: `This does NOT take the listing down — it stays on ${listing.channelName} and people can still buy it there. What stops is us keeping it up to date and matching orders from it back to ${listing.variantSku}, so stock will drift. To actually remove it, delist it in ${listing.channelName}'s own seller tools first.`,
+                description: `This does NOT take the listing down: it stays on ${listing.channelName} and people can still buy it there. What stops is us keeping it up to date and matching orders from it back to ${listing.variantSku}, so stock will drift. To actually remove it, delist it in ${listing.channelName}'s own seller tools first.`,
                 confirmLabel: 'Forget it anyway',
                 cancelLabel: 'Keep it linked',
                 color: 'danger',

@@ -55,7 +55,7 @@ export function CrmAutomation() {
         // waiting to be looked at. The lede's job is to make clear this runs on
         // the SAME events beat 5a described, which is why the order matters.
         headline="And then it does the next thing without being asked"
-        lede="Pick something that happens and pick what should follow it — send an email, hand the customer to someone, put a task on their list. It runs on the same events already landing on the timeline, so there is nothing extra to wire up and no code to write."
+        lede="Pick something that happens and pick what should follow it. Send an email, hand the customer to someone, put a task on their list. It runs on the same events already landing on the timeline, so there is nothing extra to wire up and no code to write."
       />
       <div className="mt-[52px] flex flex-col gap-3.5">
         {rows.map((r) => (
@@ -112,11 +112,11 @@ export function CrmCapabilities() {
   const caps: { title: string; body: string; module?: MarketingModule }[] = [
     {
       title: 'Tasks & reminders',
-      body: 'Title, due date, priority, assignee — surfaced on the record, the deal, and a personal task list. Overdue tasks email the rep.',
+      body: 'Title, due date, priority, assignee: surfaced on the record, the deal, and a personal task list. Overdue tasks email the rep.',
     },
     {
       title: 'Contact roles',
-      body: 'One person can be a retail customer, a B2B buyer, and a sales prospect at once — with tags, addresses, and a preferred contact method.',
+      body: 'One person can be a retail customer, a B2B buyer, and a sales prospect at once, with tags, addresses, and a preferred contact method.',
     },
     {
       title: 'Dedupe & merge',
@@ -124,7 +124,7 @@ export function CrmCapabilities() {
     },
     {
       title: 'Reports that reconcile',
-      body: 'Pipeline value by stage, win/loss by rep, deal cycle length, lifetime-value distribution, churn risk — off live data, not an export.',
+      body: 'Pipeline value by stage, win/loss by rep, deal cycle length, lifetime-value distribution, churn risk: off live data, not an export.',
     },
     {
       title: 'B2B on the same record',
@@ -132,7 +132,7 @@ export function CrmCapabilities() {
     },
     {
       title: 'Ask it in plain English',
-      body: '“Top 10 customers by lifetime value,” “deals closing this month,” “assign all at-risk to Sarah” — over MCP, from the chat you already use.',
+      body: '“Top 10 customers by lifetime value,” “deals closing this month,” “assign all at-risk to Sarah”: over MCP, from the chat you already use.',
       module: 'ai',
     },
   ];

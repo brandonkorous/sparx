@@ -29,7 +29,7 @@ export const COMMERCE_CATALOG: CatalogGroup[] = [
         key: 'products',
         label: 'Products',
         icon: 'grid',
-        hint: 'A product listing — pick the source (all, featured, new, related, a category) and grid or rail.',
+        hint: 'A product listing. Pick the source (all, featured, new, related, a category) and grid or rail.',
         make: () => productsBlock(),
       },
       {
@@ -48,7 +48,7 @@ export const COMMERCE_CATALOG: CatalogGroup[] = [
         key: 'product_card',
         label: 'Product card',
         icon: 'image',
-        hint: 'A single product — image, name, price. Pin it to one product.',
+        hint: 'A single product: image, name, price. Pin it to one product.',
         make: productCard,
       },
       {

@@ -324,7 +324,7 @@ function SupplierEditor({
       ? credentialFields.find((f) => f.required && (draft.credentials[f.key] ?? '').trim() === '')
       : undefined;
   const credentialError = missingCredential
-    ? `Enter the ${missingCredential.label.toLowerCase()} — it is needed to connect.`
+    ? `Enter the ${missingCredential.label.toLowerCase()}: it is needed to connect.`
     : null;
   const scopeError =
     !draft.allSites && draft.siteScope.length === 0
@@ -369,7 +369,7 @@ function SupplierEditor({
                 description:
                   created.status === 'active'
                     ? 'Now sync its catalog to bring its products in.'
-                    : 'Check its credentials — the connection did not come up healthy.',
+                    : 'Check its credentials: the connection did not come up healthy.',
                 type: created.status === 'active' ? 'success' : 'warning',
               });
             });
@@ -413,7 +413,7 @@ function SupplierEditor({
           description:
             result.publishesConfirmed > 0
               ? `Its catalog is refreshing and ${String(result.publishesConfirmed)} pending listings were confirmed.`
-              : 'Its catalog is refreshing — new products appear shortly.',
+              : 'Its catalog is refreshing: new products appear shortly.',
           type: 'success',
         });
       },
@@ -584,7 +584,7 @@ function SupplierEditor({
                     <FieldStatus status="error">{nameError}</FieldStatus>
                   ) : (
                     <FieldDescription>
-                      For you — how you tell this supplier apart from your others.
+                      For you: how you tell this supplier apart from your others.
                       {!isNew && supplier ? ` This is a ${supplier.vendorLabel} connection.` : ''}
                     </FieldDescription>
                   )}
@@ -746,7 +746,7 @@ function SupplierEditor({
 
               <FormSection
                 title="Which sites use this supplier"
-                description="Turn this off to limit the supplier to particular sites — for example if only one of your sites sells its products."
+                description="Turn this off to limit the supplier to particular sites, for example if only one of your sites sells its products."
               >
                 <Field>
                   <FieldLabel>Available on every site</FieldLabel>
@@ -796,7 +796,7 @@ function SupplierEditor({
                         color="module"
                         rows={3}
                         value={draft.notes}
-                        placeholder="Anything worth remembering — contact details, minimums, quirks."
+                        placeholder="Anything worth remembering: contact details, minimums, quirks."
                         onChange={(event) => {
                           set('notes', event.target.value);
                         }}

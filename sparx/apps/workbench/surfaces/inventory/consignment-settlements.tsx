@@ -115,7 +115,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
             </AlertTitle>
             <AlertDescription>
               They are counted below and left out of the money, because a line reading nothing would
-              say the owner gave them to you. A period containing them cannot be closed — put a cost
+              say the owner gave them to you. A period containing them cannot be closed. Put a cost
               on those items and rebuild the draft.
             </AlertDescription>
           </AlertContent>

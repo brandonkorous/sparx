@@ -175,7 +175,7 @@ const SCHEDULING = {
     {
       handle: 'discovery-call',
       name: 'Discovery call',
-      description: 'A free 30-minute call to talk through your event, your goals and your timeline — no obligation.',
+      description: 'A free 30-minute call to talk through your event, your goals and your timeline: no obligation.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'customer_choice',
@@ -185,7 +185,7 @@ const SCHEDULING = {
     {
       handle: 'corporate-event-consult',
       name: 'Corporate event consultation',
-      description: 'A working session on your company event — offsites, summits, award nights and client experiences.',
+      description: 'A working session on your company event: offsites, summits, award nights and client experiences.',
       durationMinutes: 45,
       priceCents: 7500,
       assignmentStrategy: 'customer_choice',
@@ -205,7 +205,7 @@ const SCHEDULING = {
     {
       handle: 'product-launch-consult',
       name: 'Product launch consultation',
-      description: 'Plan the reveal — venue, staging, press moment and the guest journey that makes it land.',
+      description: 'Plan the reveal: venue, staging, press moment and the guest journey that makes it land.',
       durationMinutes: 60,
       priceCents: 12500,
       assignmentStrategy: 'customer_choice',
@@ -215,7 +215,7 @@ const SCHEDULING = {
     {
       handle: 'gala-consult',
       name: 'Gala & fundraiser consultation',
-      description: 'Shape a black-tie gala or benefit — program, catering, entertainment and the room that wows.',
+      description: 'Shape a black-tie gala or benefit: program, catering, entertainment and the room that wows.',
       durationMinutes: 60,
       priceCents: 12500,
       assignmentStrategy: 'customer_choice',
@@ -251,7 +251,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A packed conference stage under bold event lighting',
     title: 'Events that mean business',
-    sub: 'We plan and produce corporate and social events end to end — conferences, launches, galas and activations that hit every mark, on time and on budget.',
+    sub: 'We plan and produce corporate and social events end to end: conferences, launches, galas and activations that hit every mark, on time and on budget.',
     primary: { label: 'Book a consultation', href: '/book' },
     secondary: { label: 'See what we do', href: '/book' },
     overlay: 'darker',
@@ -260,15 +260,15 @@ const HOME = [
     items: [
       {
         title: 'Full production & logistics',
-        body: 'Venue, staging, AV, catering, run-of-show and the hundred details in between — one team owning all of it, so nothing falls through the gaps.',
+        body: 'Venue, staging, AV, catering, run-of-show and the hundred details in between. One team owning all of it, so nothing falls through the gaps.',
       },
       {
         title: 'On-brand experiences',
-        body: 'Every touchpoint, from the invite to the after-film, designed to look and feel unmistakably like you — not a template with your logo dropped on top.',
+        body: 'Every touchpoint, from the invite to the after-film, designed to look and feel unmistakably like you, not a template with your logo dropped on top.',
       },
       {
         title: 'A trusted vendor network',
-        body: 'Years of vetted partners — AV crews, caterers, entertainers, fabricators — booked at the right price and held to our standard, not just theirs.',
+        body: 'Years of vetted partners (AV crews, caterers, entertainers, fabricators) booked at the right price and held to our standard, not just theirs.',
       },
       {
         title: 'On time, on budget',
@@ -278,7 +278,7 @@ const HOME = [
   }),
   serviceMenu({
     heading: 'Ways we work with you',
-    intro: 'Every engagement starts with a consultation. Pick the one that fits, see live availability and book a time — the discovery call is free.',
+    intro: 'Every engagement starts with a consultation. Pick the one that fits, see live availability and book a time: the discovery call is free.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -313,16 +313,16 @@ const HOME = [
   }),
   teamRow({
     heading: 'The producers you’ll work with',
-    intro: 'Book by name — the producer you meet in the consultation is the one who runs your event.',
+    intro: 'Book by name: the producer you meet in the consultation is the one who runs your event.',
     surface: 'muted',
     members: [
       { name: 'Jordan Reyes', role: 'Executive producer', image: url(IMG.jordan), alt: 'Jordan Reyes, executive producer', bio: 'Fifteen years of conferences and corporate summits. Jordan owns the run-of-show and the budget.' },
-      { name: 'Sana Okafor', role: 'Experience producer', image: url(IMG.sana), alt: 'Sana Okafor, experience producer', bio: 'Design-led social events and galas — the room, the flow and the moments people remember.' },
+      { name: 'Sana Okafor', role: 'Experience producer', image: url(IMG.sana), alt: 'Sana Okafor, experience producer', bio: 'Design-led social events and galas: the room, the flow and the moments people remember.' },
       { name: 'Marcus Vale', role: 'Brand activation producer', image: url(IMG.marcus), alt: 'Marcus Vale, brand activation producer', bio: 'Launches, pop-ups and experiential builds that turn a brand brief into a crowd.' },
     ],
   }),
   testimonial({
-    quote: 'Our annual summit went from a logistical scramble to the smoothest event we’ve run. 600 attendees, three stages, zero surprises — and it came in under budget.',
+    quote: 'Our annual summit went from a logistical scramble to the smoothest event we’ve run. 600 attendees, three stages, zero surprises, and it came in under budget.',
     attribution: 'Dana Whitfield, VP Marketing, Northwind Software',
     surface: 'primary',
   }),
@@ -351,7 +351,7 @@ const ABOUT = [
     alt: 'A packed conference stage under bold event lighting',
     heading: 'About Assembly Events',
     body: [
-      'We started Assembly Events because too many events are planned by one company and produced by another — and the seams always show. We do both, so they don’t.',
+      'We started Assembly Events because too many events are planned by one company and produced by another, and the seams always show. We do both, so they don’t.',
       'From a 20-person leadership offsite to a 2,000-guest product launch, we bring the same thing: a sharp creative concept, ruthless logistics, and a producer who treats your budget and your reputation like their own.',
     ],
     cta: { label: 'Book a consultation', href: '/book' },
@@ -360,9 +360,9 @@ const ABOUT = [
     surface: 'muted',
     heading: 'How we run an event',
     items: [
-      { title: 'Discovery & concept', body: 'We start with your goals — not a package — then shape a concept, a budget and a timeline you can actually stand behind.' },
+      { title: 'Discovery & concept', body: 'We start with your goals (not a package) then shape a concept, a budget and a timeline you can actually stand behind.' },
       { title: 'Production & vendors', body: 'We book and manage every partner, build the run-of-show, and keep a live budget so there are no surprises the week of.' },
-      { title: 'Show day & wrap', body: 'A producer runs the room to the minute, handles the load-out, and delivers a wrap report — what worked, what it cost, what’s next.' },
+      { title: 'Show day & wrap', body: 'A producer runs the room to the minute, handles the load-out, and delivers a wrap report: what worked, what it cost, what’s next.' },
     ],
   }),
 ];
@@ -380,7 +380,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve a consultation online — no phone tag, no waiting on a callback.',
+    sub: 'See live availability and reserve a consultation online: no phone tag, no waiting on a callback.',
     surface: 'muted',
     cta: { label: 'Book a consultation', href: '/book' },
   }),
@@ -391,8 +391,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-eventplanner-modern',
   name: 'Event Planner (Modern)',
   summary:
-    'A bold, modern site for corporate & social event planners — a crisp near-white palette, a confident navy primary and a punchy coral accent, with a clean modern sans. Installs online booking for consultations: a real consult menu (discovery call through gala and brand-activation), three producers you book by name with their own hours, and a planning-deposit policy. Ships as "Assembly Events", a full-service event production studio.',
-  tagline: 'A bold, modern template for event planners — book consultations online from day one.',
+    'A bold, modern site for corporate & social event planners: a crisp near-white palette, a confident navy primary and a punchy coral accent, with a clean modern sans. Installs online booking for consultations: a real consult menu (discovery call through gala and brand-activation), three producers you book by name with their own hours, and a planning-deposit policy. Ships as "Assembly Events", a full-service event production studio.',
+  tagline: 'A bold, modern template for event planners. Book consultations online from day one.',
   industry: 'Event planning',
   sortWeight: 39,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -401,7 +401,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Assembly Events — corporate & social event production',
+      title: 'Assembly Events: corporate & social event production',
       description:
         'Assembly Events plans and produces conferences, product launches, galas and brand activations end to end. Book a consultation with a producer online.',
     },

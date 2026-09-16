@@ -150,7 +150,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'crm',
         title: 'Every client, remembered',
-        body: 'Color formula, allergies, what they had last time, what they bought, what they said. It is on the client’s record before they sit down — and it is there for whoever is covering.',
+        body: 'Color formula, allergies, what they had last time, what they bought, what they said. It is on the client’s record before they sit down, and it is there for whoever is covering.',
       },
       {
         module: 'email',
@@ -165,7 +165,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'builder',
         title: 'Change it yourself, in a minute',
-        body: 'Prices went up, someone new joined, the hours changed for a holiday. Edit it in your browser and it is live — no email to a web designer, no waiting a week.',
+        body: 'Prices went up, someone new joined, the hours changed for a holiday. Edit it in your browser and it is live: no email to a web designer, no waiting a week.',
       },
     ],
     blueprint: { id: 'sparx-salon', name: 'Salon', tuned: 'hair, beauty, nails and spa' },
@@ -180,7 +180,7 @@ export const VERTICALS: Vertical[] = [
         id: 'salons-deposit',
         question: 'Can I take a deposit when someone books?',
         answer:
-          'Yes. You choose the amount — a flat fee or a percentage — and it is collected at the time of booking. It applies to the final bill automatically. You also set your own cancellation window, so a late cancellation keeps the deposit if that is your policy.',
+          'Yes. You choose the amount (a flat fee or a percentage) and it is collected at the time of booking. It applies to the final bill automatically. You also set your own cancellation window, so a late cancellation keeps the deposit if that is your policy.',
       },
       {
         id: 'salons-retail',
@@ -192,10 +192,10 @@ export const VERTICALS: Vertical[] = [
         id: 'salons-existing-site',
         question: 'What if I already have a website?',
         answer:
-          'You can keep it and use sparx for bookings and clients, or move the site across and have everything in one place. Moving is the more common choice — your domain points at sparx, the secure certificate is issued for you, and the old links keep working.',
+          'You can keep it and use sparx for bookings and clients, or move the site across and have everything in one place. Moving is the more common choice. Your domain points at sparx, the secure certificate is issued for you, and the old links keep working.',
       },
     ],
-    seoTitle: 'Salon booking, website and client records — all in one',
+    seoTitle: 'Salon booking, website and client records: all in one',
     seoDescription:
       'Online booking, deposits, client history, retail and reminders for hair, beauty, nail and spa businesses. One system instead of five subscriptions. See what a salon actually pays.',
     keywords: [
@@ -232,14 +232,14 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'b2b',
         because:
-          'you serve trade or fleet accounts that buy on account — agreed pricing, purchase orders, and payment on terms rather than card at the counter',
+          'you serve trade or fleet accounts that buy on account: agreed pricing, purchase orders, and payment on terms rather than card at the counter',
       },
     ],
     jobs: [
       {
         module: 'invoicing',
         title: 'Quote it, then turn it into the invoice',
-        body: 'Send the estimate from the workshop. When they say go, it becomes an invoice with a pay-by-card link on it — the same lines, no re-typing, and you can see what has been paid without opening a spreadsheet.',
+        body: 'Send the estimate from the workshop. When they say go, it becomes an invoice with a pay-by-card link on it: the same lines, no re-typing, and you can see what has been paid without opening a spreadsheet.',
       },
       {
         module: 'scheduling',
@@ -264,7 +264,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'builder',
         title: 'A site that says what you do',
-        body: 'Services, hours, the makes you specialize in, and a booking button. Edit it yourself when any of that changes — it is live the moment you save.',
+        body: 'Services, hours, the makes you specialize in, and a booking button. Edit it yourself when any of that changes. It is live the moment you save.',
       },
     ],
     blueprint: { id: 'sparx-garage', name: 'Garage', tuned: 'vehicle service, repair and parts' },
@@ -273,7 +273,7 @@ export const VERTICALS: Vertical[] = [
         id: 'auto-fleet',
         question: 'Can I take fleet or trade accounts on terms?',
         answer:
-          'Yes, by adding the B2B module. That gives each account its own agreed pricing, a credit limit, purchase-order checkout and payment on terms rather than card up front, plus vehicles tracked by VIN and cost center. It is a separate module because most shops do not need it — if you do, it switches on without changing anything else.',
+          'Yes, by adding the B2B module. That gives each account its own agreed pricing, a credit limit, purchase-order checkout and payment on terms rather than card up front, plus vehicles tracked by VIN and cost center. It is a separate module because most shops do not need it: if you do, it switches on without changing anything else.',
       },
       {
         id: 'auto-parts-online',
@@ -291,10 +291,10 @@ export const VERTICALS: Vertical[] = [
         id: 'auto-phone',
         question: 'Does it work on a phone in the workshop?',
         answer:
-          'Yes. Everything — the diary, the estimate, the invoice, the vehicle history — works in a phone browser. There is nothing to install and no per-person charge, so every technician can have it.',
+          'Yes. Everything (the diary, the estimate, the invoice, the vehicle history) works in a phone browser. There is nothing to install and no per-person charge, so every technician can have it.',
       },
     ],
-    seoTitle: 'Auto repair shop software — booking, invoicing and parts',
+    seoTitle: 'Auto repair shop software: booking, invoicing and parts',
     seoDescription:
       'Online booking, estimates that become invoices, vehicle history, parts and stock for repair shops, service centers and mobile mechanics. One system instead of five. See what an auto shop actually pays.',
     keywords: [
@@ -345,7 +345,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'crm',
         title: 'References, notes and forms in one place',
-        body: 'The reference images they sent, the placement and sizing you agreed, aftercare notes, and the signed consent form — all on one client record, so the second session starts where the first one ended.',
+        body: 'The reference images they sent, the placement and sizing you agreed, aftercare notes, and the signed consent form. All on one client record, so the second session starts where the first one ended.',
       },
       {
         module: 'commerce',
@@ -364,7 +364,7 @@ export const VERTICALS: Vertical[] = [
         id: 'tattoo-artists',
         question: 'Can each artist have their own portfolio and calendar?',
         answer:
-          'Yes. Each artist gets their own gallery and their own availability, and clients can browse by artist or by style before they enquire. Guest artists work the same way — add them, give them dates, and take them off the calendar when the spot ends.',
+          'Yes. Each artist gets their own gallery and their own availability, and clients can browse by artist or by style before they enquire. Guest artists work the same way. Add them, give them dates, and take them off the calendar when the spot ends.',
       },
       {
         id: 'tattoo-deposit',
@@ -382,12 +382,12 @@ export const VERTICALS: Vertical[] = [
         id: 'tattoo-enquiry',
         question: 'Can I take enquiries instead of straight bookings?',
         answer:
-          'Yes — that is the usual setup. Most studios take a described enquiry with reference images first, then convert it into a booked session once the artist has seen it. You can mix the two: consultations bookable online, sessions by approval.',
+          'Yes. That is the usual setup. Most studios take a described enquiry with reference images first, then convert it into a booked session once the artist has seen it. You can mix the two: consultations bookable online, sessions by approval.',
       },
     ],
     seoTitle: 'Tattoo studio website, portfolio and booking system',
     seoDescription:
-      'Per-artist portfolios, enquiries and consultations, deposits before you hold a date, and consent forms on the client record — for tattoo and piercing studios. See what a studio actually pays.',
+      'Per-artist portfolios, enquiries and consultations, deposits before you hold a date, and consent forms on the client record, for tattoo and piercing studios. See what a studio actually pays.',
     keywords: [
       'tattoo studio website',
       'tattoo booking software',
@@ -427,7 +427,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'builder',
         title: 'A menu you change yourself',
-        body: 'Sold out of the special, put the prices up, added a Sunday roast. Change it in the browser and it is live before the next order comes in — no agency, no ticket, no PDF menu from 2023.',
+        body: 'Sold out of the special, put the prices up, added a Sunday roast. Change it in the browser and it is live before the next order comes in: no agency, no ticket, no PDF menu from 2023.',
       },
       {
         module: 'scheduling',
@@ -437,7 +437,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'email',
         title: 'The regulars hear it first',
-        body: 'A list you actually own, from your own address. New menu, a supper club, closed for remodeling — one message rather than hoping the algorithm shows it to the people who already come in.',
+        body: 'A list you actually own, from your own address. New menu, a supper club, closed for remodeling. One message rather than hoping the algorithm shows it to the people who already come in.',
       },
       {
         module: 'inventory',
@@ -474,12 +474,12 @@ export const VERTICALS: Vertical[] = [
         id: 'restaurants-devices',
         question: 'Does it work on the tablet by the pass?',
         answer:
-          'Yes — orders, menu edits and bookings all work in a browser on any device, and there is no charge per person, so front of house and the kitchen can both have it open.',
+          'Yes: orders, menu edits and bookings all work in a browser on any device, and there is no charge per person, so front of house and the kitchen can both have it open.',
       },
     ],
-    seoTitle: 'Restaurant website and online ordering — no commission',
+    seoTitle: 'Restaurant website and online ordering: no commission',
     seoDescription:
-      'Your own collection and delivery ordering, a menu you edit yourself, table bookings, and email to your regulars — for restaurants, cafés and bakeries. See what a restaurant actually pays.',
+      'Your own collection and delivery ordering, a menu you edit yourself, table bookings, and email to your regulars, for restaurants, cafés and bakeries. See what a restaurant actually pays.',
     keywords: [
       'restaurant website builder',
       'online ordering system for restaurants',
@@ -515,7 +515,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'crm',
         title: 'Every job against the address',
-        body: 'What you fitted, which part, what it cost, what you told them, and the photo you took before you closed the wall up. On the property record — so the callout in two years takes ten minutes rather than an afternoon.',
+        body: 'What you fitted, which part, what it cost, what you told them, and the photo you took before you closed the wall up. On the property record, so the callout in two years takes ten minutes rather than an afternoon.',
       },
       {
         module: 'invoicing',
@@ -540,7 +540,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'builder',
         title: 'A site that proves you are real',
-        body: 'What you do, where you work, your registration numbers, photos of finished jobs, and a way to get in touch. This is what someone checks before they let you into their house — and you can change it yourself.',
+        body: 'What you do, where you work, your registration numbers, photos of finished jobs, and a way to get in touch. This is what someone checks before they let you into their house, and you can change it yourself.',
       },
     ],
     blueprint: {
@@ -559,7 +559,7 @@ export const VERTICALS: Vertical[] = [
         id: 'trades-payment',
         question: 'Can I take payment on site?',
         answer:
-          'Yes. An invoice carries a pay-by-card link, so you can hand them your phone or send it while you are packing up. Card and bank payment both come in through Stripe at their standard rates — sparx does not add a percentage of its own.',
+          'Yes. An invoice carries a pay-by-card link, so you can hand them your phone or send it while you are packing up. Card and bank payment both come in through Stripe at their standard rates: sparx does not add a percentage of its own.',
       },
       {
         id: 'trades-team',
@@ -571,12 +571,12 @@ export const VERTICALS: Vertical[] = [
         id: 'trades-products',
         question: 'Do I need to sell anything to use this?',
         answer:
-          'No. Most trades never turn Commerce on — a site, a calendar, customer records and invoicing is the whole job. If you do start selling parts or maintenance plans, that is a module you add later without disturbing the rest.',
+          'No. Most trades never turn Commerce on: a site, a calendar, customer records and invoicing is the whole job. If you do start selling parts or maintenance plans, that is a module you add later without disturbing the rest.',
       },
     ],
-    seoTitle: 'Software for trades — quotes, jobs, invoices and a website',
+    seoTitle: 'Software for trades: quotes, jobs, invoices and a website',
     seoDescription:
-      'Quotes that become invoices, online booking, job history against the property, and a website you can edit — for plumbers, electricians, heating engineers, landscapers and cleaners. See what it actually costs.',
+      'Quotes that become invoices, online booking, job history against the property, and a website you can edit, for plumbers, electricians, heating engineers, landscapers and cleaners. See what it actually costs.',
     keywords: [
       'software for tradesmen',
       'plumber invoicing software',
@@ -612,14 +612,14 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'dropship',
         because:
-          'you want to list ranges you do not hold — the supplier ships direct, and your margin is set by a rule rather than by hand',
+          'you want to list ranges you do not hold: the supplier ships direct, and your margin is set by a rule rather than by hand',
       },
     ],
     jobs: [
       {
         module: 'inventory',
         title: 'One stock count, not two',
-        body: 'The shelf and the website read from the same number. Sell the last one in the shop and it comes off the site by itself — no oversold order, no apology email, no keeping a spreadsheet in step by hand.',
+        body: 'The shelf and the website read from the same number. Sell the last one in the shop and it comes off the site by itself: no oversold order, no apology email, no keeping a spreadsheet in step by hand.',
       },
       {
         module: 'commerce',
@@ -644,7 +644,7 @@ export const VERTICALS: Vertical[] = [
       {
         module: 'builder',
         title: 'Change it yourself, any day',
-        body: 'A window display changes weekly; a website should be no harder. Swap the front page, add the Christmas hours, put the new range up — in the browser, live when you save it.',
+        body: 'A window display changes weekly; a website should be no harder. Swap the front page, add the Christmas hours, put the new range up: in the browser, live when you save it.',
       },
     ],
     blueprint: {
@@ -657,7 +657,7 @@ export const VERTICALS: Vertical[] = [
         id: 'boutiques-stock',
         question: 'Do I have to keep two stock lists?',
         answer:
-          'No — that is the point of running Inventory alongside Commerce. There is one count, and the shop and the website both read from it. It also comes free with Commerce, so it is not a separate bill.',
+          'No. That is the point of running Inventory alongside Commerce. There is one count, and the shop and the website both read from it. It also comes free with Commerce, so it is not a separate bill.',
       },
       {
         id: 'boutiques-collect',
@@ -680,7 +680,7 @@ export const VERTICALS: Vertical[] = [
     ],
     seoTitle: 'Website and online shop for boutiques and local retail',
     seoDescription:
-      'One stock count across the shop and the website, one customer record however they bought, click-and-collect, local delivery and email — for boutiques, gift shops and independent retail.',
+      'One stock count across the shop and the website, one customer record however they bought, click-and-collect, local delivery and email, for boutiques, gift shops and independent retail.',
     keywords: [
       'boutique website builder',
       'online shop for small retail',

@@ -26,7 +26,7 @@
   "products": [
     {
       "handle": "commons-membership",
-      "title": "The Commons Membership — annual",
+      "title": "The Commons Membership: annual",
       "description": "The membership that keeps the stage free. Members fund the recordings and the archive, get the members-only salons, and hear about new talks first. The single most useful thing you can do to keep ideas in the open.",
       "status": "active",
       "productType": "Membership",
@@ -34,7 +34,7 @@
       "tags": ["membership", "subscription", "support"],
       "categoryHandles": ["membership"],
       "collectionHandles": ["featured"],
-      "seoTitle": "The Commons Membership — annual support",
+      "seoTitle": "The Commons Membership: annual support",
       "seoDescription": "Annual membership that keeps every talk free: the archive, the salons, and early access.",
       "variants": [
         {
@@ -54,7 +54,7 @@
     },
     {
       "handle": "ideas-worth-the-room",
-      "title": "Ideas Worth the Room — the anthology",
+      "title": "Ideas Worth the Room: the anthology",
       "description": "Twenty of the talks that defined our first years, transcribed and set in print with the speakers’ own notes in the margins. A hardback you can read in an afternoon and argue with for a year.",
       "status": "active",
       "productType": "Book",
@@ -62,7 +62,7 @@
       "tags": ["book", "anthology"],
       "categoryHandles": ["books"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Ideas Worth the Room — the anthology | The Commons",
+      "seoTitle": "Ideas Worth the Room: the anthology | The Commons",
       "seoDescription": "A hardback anthology of twenty defining talks, transcribed with the speakers’ own notes.",
       "variants": [
         {
@@ -90,7 +90,7 @@
       "tags": ["notebook", "stationery"],
       "categoryHandles": ["books"],
       "collectionHandles": ["featured"],
-      "seoTitle": "The Commons Notebook — cloth-bound, 160 pages",
+      "seoTitle": "The Commons Notebook: cloth-bound, 160 pages",
       "seoDescription": "A cloth-bound notebook with 160 numbered pages, a ribbon, and a small masthead.",
       "variants": [
         {

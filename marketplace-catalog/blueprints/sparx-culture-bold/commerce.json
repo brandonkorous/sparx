@@ -26,7 +26,7 @@
   "products": [
     {
       "handle": "static-vol-1-vinyl",
-      "title": "Static Vol. 1 — Vinyl LP",
+      "title": "Static Vol. 1: Vinyl LP",
       "description": "Our first compilation, pressed on 180-gram black vinyl: twelve tracks from the bands the desk spent the year chasing across basement rooms and festival tents. Gatefold sleeve, liner notes, and a download code inside.",
       "status": "active",
       "productType": "Vinyl",
@@ -34,7 +34,7 @@
       "tags": ["vinyl", "lp", "compilation"],
       "categoryHandles": ["vinyl"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Static Vol. 1 — Vinyl LP",
+      "seoTitle": "Static Vol. 1: Vinyl LP",
       "seoDescription": "The Static Vol. 1 compilation on 180-gram vinyl, twelve tracks with liner notes.",
       "variants": [
         {
@@ -62,7 +62,7 @@
       "tags": ["merch", "tee", "apparel"],
       "categoryHandles": ["merch"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Static Logo Tee — heavyweight black t-shirt",
+      "seoTitle": "Static Logo Tee: heavyweight black t-shirt",
       "seoDescription": "A heavyweight black tee with the Static masthead screen-printed on the back.",
       "variants": [
         {
@@ -83,14 +83,14 @@
     {
       "handle": "static-tour-poster",
       "title": "Static Tour Poster",
-      "description": "An 18×24 screen print in hot crimson on uncoated black stock — the poster from our Vol. 1 launch run. Numbered edition, shipped flat in a rigid tube.",
+      "description": "An 18×24 screen print in hot crimson on uncoated black stock: the poster from our Vol. 1 launch run. Numbered edition, shipped flat in a rigid tube.",
       "status": "active",
       "productType": "Print",
       "vendor": "Static",
       "tags": ["merch", "poster", "print"],
       "categoryHandles": ["merch"],
       "collectionHandles": ["featured"],
-      "seoTitle": "Static Tour Poster — 18×24 screen print",
+      "seoTitle": "Static Tour Poster: 18×24 screen print",
       "seoDescription": "A numbered 18×24 screen-printed Static tour poster on black stock.",
       "variants": [
         {
@@ -118,7 +118,7 @@
       "tags": ["merch", "tote"],
       "categoryHandles": ["merch"],
       "collectionHandles": [],
-      "seoTitle": "Static Tote — heavyweight canvas tote",
+      "seoTitle": "Static Tote: heavyweight canvas tote",
       "seoDescription": "A heavyweight canvas tote with the Static masthead, sized for a stack of records.",
       "variants": [
         {

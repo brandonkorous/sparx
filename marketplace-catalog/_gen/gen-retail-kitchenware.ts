@@ -130,10 +130,10 @@ const ASSETS: Asset[] = [
   { id: 'kw-prod-saucepan', url: src('kw-prod-saucepan'), alt: 'A tri-ply stainless saucepan with a long handle' },
   { id: 'kw-prod-bowl-set', url: src('kw-prod-bowl-set'), alt: 'A nesting set of stainless mixing bowls' },
   { id: 'kw-prod-pepper-mill', url: src('kw-prod-pepper-mill'), alt: 'A tall turned-walnut pepper mill' },
-  { id: 'kw-prod-starter-set', url: src('kw-prod-starter-set'), alt: 'A starter cookware set — skillet, saucepan and Dutch oven' },
+  { id: 'kw-prod-starter-set', url: src('kw-prod-starter-set'), alt: 'A starter cookware set: skillet, saucepan and Dutch oven' },
   { id: 'kw-post-season', url: src('kw-post-season'), alt: 'A carbon-steel pan building a dark, glossy seasoning' },
   { id: 'kw-post-knife', url: src('kw-post-knife'), alt: 'Honing a knife edge on a whetstone' },
-  { id: 'kw-post-cookware', url: src('kw-post-cookware'), alt: 'Three pans — carbon steel, cast iron and stainless — side by side' },
+  { id: 'kw-post-cookware', url: src('kw-post-cookware'), alt: 'Three pans (carbon steel, cast iron and stainless) side by side' },
 ];
 
 const assetUrl = (id: string): string => {
@@ -163,7 +163,7 @@ function hero(): Node {
                   text: 'Tools that outlast you, and cook better food.',
                 }),
                 el('p', 'text-lg leading-relaxed text-base-content', {
-                  text: 'Copper & Cast is a small kitchenware shop with a short list and a long view. Carbon steel, cast iron, forged knives and honest wood — the things a cook keeps for thirty years and hands down, chosen because they work, not because they’re new.',
+                  text: 'Copper & Cast is a small kitchenware shop with a short list and a long view. Carbon steel, cast iron, forged knives and honest wood: the things a cook keeps for thirty years and hands down, chosen because they work, not because they’re new.',
                 }),
                 el('div', 'flex flex-wrap items-center gap-4', {
                   children: [
@@ -256,7 +256,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'New in the kitchen' }),
   editorialBand({
     heading: 'Forged, not stamped',
-    lead: 'Our knives are forged from high-carbon steel and ground by hand — a fuller, heavier blade that takes a keener edge and holds it, with a bolster you can feel balance on. Learn to sharpen it and it outlives the block it came in.',
+    lead: 'Our knives are forged from high-carbon steel and ground by hand: a fuller, heavier blade that takes a keener edge and holds it, with a bolster you can feel balance on. Learn to sharpen it and it outlives the block it came in.',
     assetId: 'kw-band-forge',
     cta: 'How our knives are made',
     href: '/blog/choosing-your-first-good-knife',
@@ -265,7 +265,7 @@ const HOME: Node[] = [
   productsBlock({ source: 'commerce.category.cookware', layout: 'carousel', heading: 'Cookware' }),
   editorialBand({
     heading: 'Buy it once',
-    lead: 'A seasoned carbon-steel pan gets better every year you cook in it; a cast-iron pot goes from stovetop to oven to table and never wears out. Care for these and they’re the last of their kind you’ll ever buy — which is the whole point.',
+    lead: 'A seasoned carbon-steel pan gets better every year you cook in it; a cast-iron pot goes from stovetop to oven to table and never wears out. Care for these and they’re the last of their kind you’ll ever buy, which is the whole point.',
     assetId: 'kw-band-care',
     cta: 'Season & care guide',
     href: '/blog/season-and-keep-a-carbon-steel-pan',
@@ -310,7 +310,7 @@ function pdpBuyRegion(): Node {
                 children: [
                   el('h2', 'text-sm font-semibold uppercase tracking-widest text-secondary', { text: 'Made to be kept' }),
                   el('p', 'text-base leading-relaxed text-base-content', {
-                    text: 'Every piece is chosen to last a lifetime of real cooking, backed by a lifetime guarantee against defects. Cared for the way our guides show, it only gets better — season a pan, hone a blade, oil the wood, and hand it down.',
+                    text: 'Every piece is chosen to last a lifetime of real cooking, backed by a lifetime guarantee against defects. Cared for the way our guides show, it only gets better: season a pan, hone a blade, oil the wood, and hand it down.',
                   }),
                 ],
               }),
@@ -349,11 +349,11 @@ function pageMasthead(heading: string, lead: string): Node {
 const SHOP: Node[] = [
   pageMasthead(
     'Shop the kitchen',
-    'Everything we make and stock — carbon-steel and cast-iron cookware, forged knives, and the honest tools around them. Filter by category or material, or sort however you like; all of it is built to be used hard and kept for years.'
+    'Everything we make and stock: carbon-steel and cast-iron cookware, forged knives, and the honest tools around them. Filter by category or material, or sort however you like; all of it is built to be used hard and kept for years.'
   ),
 ];
 const COLLECTIONS: Node[] = [
-  pageMasthead('Collections', 'The kitchen grouped the way cooks actually shop — what’s new, the pieces people come back for, the cookware and knife edits, gifts, and starter kits to build a kitchen from scratch.'),
+  pageMasthead('Collections', 'The kitchen grouped the way cooks actually shop: what’s new, the pieces people come back for, the cookware and knife edits, gifts, and starter kits to build a kitchen from scratch.'),
 ];
 const SEARCH: Node[] = [
   pageMasthead('Search Copper & Cast', 'Looking for a pan, a knife, or a care guide? Search the whole shop and the journal below.'),
@@ -365,7 +365,7 @@ const CART: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'Your cart' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Free shipping on orders over $75, and every piece carries a lifetime guarantee against defects. Not the right fit for your kitchen? Send it back within 60 days — we want the tool to earn its place on your bench.',
+            text: 'Free shipping on orders over $75, and every piece carries a lifetime guarantee against defects. Not the right fit for your kitchen? Send it back within 60 days. We want the tool to earn its place on your bench.',
           }),
         ],
       }),
@@ -379,7 +379,7 @@ const JOURNAL: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold leading-none tracking-tight text-base-content @3xl:text-6xl', { text: 'The workbench' }),
           el('p', 'max-w-2xl text-lg leading-relaxed text-base-content', {
-            text: 'Notes from the shop — how to season and keep a pan, how to choose and sharpen a knife, and how to build a kitchen that lasts. Plain, useful, no gatekeeping.',
+            text: 'Notes from the shop: how to season and keep a pan, how to choose and sharpen a knife, and how to build a kitchen that lasts. Plain, useful, no gatekeeping.',
           }),
         ],
       }),
@@ -396,10 +396,10 @@ const ABOUT: Node[] = [
         children: [
           el('h1', 'text-5xl font-bold tracking-tight text-base-content @2xl:text-6xl', { text: 'About Copper & Cast' }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'Copper & Cast started at a market stall with one carbon-steel pan and a stubborn belief: most kitchen gear is sold to be replaced, and it doesn’t have to be. We wanted the opposite — a short shelf of things a cook keeps for decades, chosen because they get better with use, not worse.',
+            text: 'Copper & Cast started at a market stall with one carbon-steel pan and a stubborn belief: most kitchen gear is sold to be replaced, and it doesn’t have to be. We wanted the opposite, a short shelf of things a cook keeps for decades, chosen because they get better with use, not worse.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
-            text: 'We work with a handful of foundries, forges and small workshops we can name, and we pay fairly for good work. Carbon steel and cast iron for pans, high-carbon steel forged for knives, olive and walnut for the wood — materials that reward care and outlast trends, because the best kitchen tool is the one you never have to buy twice.',
+            text: 'We work with a handful of foundries, forges and small workshops we can name, and we pay fairly for good work. Carbon steel and cast iron for pans, high-carbon steel forged for knives, olive and walnut for the wood: materials that reward care and outlast trends, because the best kitchen tool is the one you never have to buy twice.',
           }),
           el('p', 'text-lg leading-relaxed text-base-content', {
             text: 'No mystery non-stick that flakes in a year, no gadget you’ll use once. Every piece comes with a lifetime guarantee and a plain-English guide to keeping it that way. Buy it once, use it hard, hand it down.',
@@ -417,7 +417,7 @@ const CONTACT: Node[] = [
   // `mailto:` to a placeholder domain, which was the only way to reach the business.
   contactSection({
     heading: 'Say hello',
-    intro: 'Questions about a pan, help choosing a knife, or a wedding-registry order? Tell us what you’re cooking toward and a real person at the shop will help you get the right tool — not the most expensive one.',
+    intro: 'Questions about a pan, help choosing a knife, or a wedding-registry order? Tell us what you’re cooking toward and a real person at the shop will help you get the right tool, not the most expensive one.',
     submitLabel: 'Email the shop',
   }),
 ];
@@ -469,7 +469,7 @@ const PRODUCTS: Product[] = [
     tags: ['cookware', 'carbon-steel', 'skillet', 'frying-pan'],
     categoryHandles: ['cookware'],
     collectionHandles: ['new-season', 'best-sellers', 'cookware-edit', 'starter-kits'],
-    seoTitle: 'Carbon-Steel Skillet — everyday frying pan | Copper & Cast',
+    seoTitle: 'Carbon-Steel Skillet: everyday frying pan | Copper & Cast',
     seoDescription: 'A heavy carbon-steel skillet with a forged handle that seasons to a natural non-stick and lasts a lifetime.',
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '10-inch' }, { value: '12-inch' }] },
@@ -484,7 +484,7 @@ const PRODUCTS: Product[] = [
     handle: 'enamel-dutch-oven',
     title: 'Enamelled Cast-Iron Dutch Oven',
     description:
-      'A 5.5-quart cast-iron pot under a smooth enamel glaze — the workhorse for braises, bread, stews and Sunday sauce. Heavy walls hold a low, even heat for hours; goes stovetop to oven to table and comes clean with a wipe. One pot that does the work of five.',
+      'A 5.5-quart cast-iron pot under a smooth enamel glaze: the workhorse for braises, bread, stews and Sunday sauce. Heavy walls hold a low, even heat for hours; goes stovetop to oven to table and comes clean with a wipe. One pot that does the work of five.',
     status: 'active',
     productType: 'Cookware',
     vendor: VENDOR,
@@ -492,7 +492,7 @@ const PRODUCTS: Product[] = [
     categoryHandles: ['cookware'],
     collectionHandles: ['new-season', 'cookware-edit', 'gifts'],
     seoTitle: 'Enamelled Cast-Iron Dutch Oven, 5.5 qt | Copper & Cast',
-    seoDescription: 'A 5.5-quart enamelled cast-iron Dutch oven for braises, bread and stews — stovetop to oven to table.',
+    seoDescription: 'A 5.5-quart enamelled cast-iron Dutch oven for braises, bread and stews: stovetop to oven to table.',
     options: [
       {
         name: 'Color',
@@ -512,14 +512,14 @@ const PRODUCTS: Product[] = [
     handle: 'chefs-knife',
     title: 'Forged Chef’s Knife',
     description:
-      'The one knife that does ninety percent of the work. Forged from high-carbon steel and ground by hand to a keen, lasting edge, with a full tang and a bolster that puts the balance right at your grip. Rock-chop, slice, or dice all day — sharpen it now and then and it’ll outlast the block.',
+      'The one knife that does ninety percent of the work. Forged from high-carbon steel and ground by hand to a keen, lasting edge, with a full tang and a bolster that puts the balance right at your grip. Rock-chop, slice, or dice all day: sharpen it now and then and it’ll outlast the block.',
     status: 'active',
     productType: 'Knife',
     vendor: VENDOR,
     tags: ['knives', 'chef-knife', 'forged', 'high-carbon-steel'],
     categoryHandles: ['knives'],
     collectionHandles: ['new-season', 'best-sellers', 'knives-edit', 'gifts', 'starter-kits'],
-    seoTitle: 'Forged Chef’s Knife — high-carbon steel | Copper & Cast',
+    seoTitle: 'Forged Chef’s Knife: high-carbon steel | Copper & Cast',
     seoDescription: 'A hand-forged high-carbon chef’s knife with a full tang and balanced bolster that holds a keen edge.',
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '8-inch' }, { value: '10-inch' }] },
@@ -534,14 +534,14 @@ const PRODUCTS: Product[] = [
     handle: 'paring-knife',
     title: 'Forged Paring Knife',
     description:
-      'The little knife you use more than you’d think — peeling, trimming, coring, deveining, and any close work the chef’s knife is too big for. Same forged high-carbon steel and full tang, sized to sit in your hand and steer with your fingertips. Buy it with the chef’s knife and skip the rest of the block.',
+      'The little knife you use more than you’d think: peeling, trimming, coring, deveining, and any close work the chef’s knife is too big for. Same forged high-carbon steel and full tang, sized to sit in your hand and steer with your fingertips. Buy it with the chef’s knife and skip the rest of the block.',
     status: 'active',
     productType: 'Knife',
     vendor: VENDOR,
     tags: ['knives', 'paring-knife', 'forged', 'high-carbon-steel'],
     categoryHandles: ['knives'],
     collectionHandles: ['knives-edit', 'gifts'],
-    seoTitle: 'Forged Paring Knife — high-carbon steel | Copper & Cast',
+    seoTitle: 'Forged Paring Knife: high-carbon steel | Copper & Cast',
     seoDescription: 'A hand-forged high-carbon paring knife with a full tang for peeling, trimming and close work.',
     variants: [{ sku: 'CC-PARING', priceCents: money(59), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'kw-prod-paring-knife', isPrimary: true, alt: 'A small forged paring knife beside cut herbs' }],
@@ -550,15 +550,15 @@ const PRODUCTS: Product[] = [
     handle: 'olive-wood-spoon-set',
     title: 'Olive-Wood Spoon Set',
     description:
-      'A set of three utensils turned from a single piece of olive wood — a deep cooking spoon, a slotted spoon, and a flat-edged spatula for scraping a fond. Kind to seasoned pans and non-stick alike, warm in the hand, and beautiful enough to leave in the crock by the stove. Oil now and then; they last for years.',
+      'A set of three utensils turned from a single piece of olive wood: a deep cooking spoon, a slotted spoon, and a flat-edged spatula for scraping a fond. Kind to seasoned pans and non-stick alike, warm in the hand, and beautiful enough to leave in the crock by the stove. Oil now and then; they last for years.',
     status: 'active',
     productType: 'Tool',
     vendor: VENDOR,
     tags: ['tools', 'utensils', 'olive-wood', 'spoons'],
     categoryHandles: ['tools'],
     collectionHandles: ['gifts'],
-    seoTitle: 'Olive-Wood Spoon Set — 3 piece | Copper & Cast',
-    seoDescription: 'A three-piece olive-wood utensil set — cooking spoon, slotted spoon and spatula, kind to every pan.',
+    seoTitle: 'Olive-Wood Spoon Set: 3 piece | Copper & Cast',
+    seoDescription: 'A three-piece olive-wood utensil set: cooking spoon, slotted spoon and spatula, kind to every pan.',
     variants: [{ sku: 'CC-SPOONSET', priceCents: money(38), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'kw-prod-spoon-set', isPrimary: true, alt: 'A set of olive-wood cooking spoons and a spatula' }],
   },
@@ -566,7 +566,7 @@ const PRODUCTS: Product[] = [
     handle: 'stainless-saucepan',
     title: 'Tri-Ply Stainless Saucepan',
     description:
-      'A tri-ply saucepan with an aluminium core clad in stainless, so it heats evenly edge to edge with no hot spots — the pan for sauces, grains, blanching and reductions. A long stay-cool handle, a pouring lip, and a mirror interior that shows you exactly what your sauce is doing. Dishwasher-safe and induction-ready.',
+      'A tri-ply saucepan with an aluminium core clad in stainless, so it heats evenly edge to edge with no hot spots: the pan for sauces, grains, blanching and reductions. A long stay-cool handle, a pouring lip, and a mirror interior that shows you exactly what your sauce is doing. Dishwasher-safe and induction-ready.',
     status: 'active',
     productType: 'Cookware',
     vendor: VENDOR,
@@ -574,7 +574,7 @@ const PRODUCTS: Product[] = [
     categoryHandles: ['cookware'],
     collectionHandles: ['best-sellers', 'cookware-edit'],
     seoTitle: 'Tri-Ply Stainless Saucepan | Copper & Cast',
-    seoDescription: 'A tri-ply stainless saucepan with an aluminium core for even heat — sauces, grains and reductions.',
+    seoDescription: 'A tri-ply stainless saucepan with an aluminium core for even heat: sauces, grains and reductions.',
     options: [
       { name: 'Size', displayType: 'dropdown', values: [{ value: '2 qt' }, { value: '3 qt' }] },
     ],
@@ -588,15 +588,15 @@ const PRODUCTS: Product[] = [
     handle: 'mixing-bowl-set',
     title: 'Stainless Mixing-Bowl Set',
     description:
-      'A nesting set of five stainless bowls, from a tiny prep bowl to a big-batch mixing bowl — light, unbreakable, and the ones that get used every single day. Deep enough to whisk without a mess, flat-bottomed so they sit still, and they stack down to almost nothing in the cupboard.',
+      'A nesting set of five stainless bowls, from a tiny prep bowl to a big-batch mixing bowl: light, unbreakable, and the ones that get used every single day. Deep enough to whisk without a mess, flat-bottomed so they sit still, and they stack down to almost nothing in the cupboard.',
     status: 'active',
     productType: 'Tool',
     vendor: VENDOR,
     tags: ['tools', 'bowls', 'stainless', 'prep'],
     categoryHandles: ['tools'],
     collectionHandles: ['gifts', 'starter-kits'],
-    seoTitle: 'Stainless Mixing-Bowl Set — 5 piece | Copper & Cast',
-    seoDescription: 'A nesting five-piece stainless mixing-bowl set — light, unbreakable and used every day.',
+    seoTitle: 'Stainless Mixing-Bowl Set: 5 piece | Copper & Cast',
+    seoDescription: 'A nesting five-piece stainless mixing-bowl set: light, unbreakable and used every day.',
     variants: [{ sku: 'CC-BOWLSET', priceCents: money(49), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'kw-prod-bowl-set', isPrimary: true, alt: 'A nesting set of stainless mixing bowls' }],
   },
@@ -604,14 +604,14 @@ const PRODUCTS: Product[] = [
     handle: 'walnut-pepper-mill',
     title: 'Walnut Pepper Mill',
     description:
-      'A tall pepper mill turned from solid walnut over a hardened steel burr that grinds from a fine dust to a coarse crack and holds its setting. Freshly cracked pepper is a different ingredient than the pre-ground stuff — this is the small upgrade that makes everything you cook taste better.',
+      'A tall pepper mill turned from solid walnut over a hardened steel burr that grinds from a fine dust to a coarse crack and holds its setting. Freshly cracked pepper is a different ingredient than the pre-ground stuff. This is the small upgrade that makes everything you cook taste better.',
     status: 'active',
     productType: 'Tool',
     vendor: VENDOR,
     tags: ['tools', 'pepper-mill', 'walnut', 'grinder'],
     categoryHandles: ['tools'],
     collectionHandles: ['gifts'],
-    seoTitle: 'Walnut Pepper Mill — steel-burr grinder | Copper & Cast',
+    seoTitle: 'Walnut Pepper Mill: steel-burr grinder | Copper & Cast',
     seoDescription: 'A tall solid-walnut pepper mill with a hardened steel burr, adjustable from fine dust to a coarse crack.',
     variants: [{ sku: 'CC-PEPPERMILL', priceCents: money(45), isDefault: true, inventoryPolicy: 'continue' }],
     images: [{ assetId: 'kw-prod-pepper-mill', isPrimary: true, alt: 'A tall turned-walnut pepper mill' }],
@@ -620,23 +620,23 @@ const PRODUCTS: Product[] = [
     handle: 'starter-cookware-set',
     title: 'Starter Cookware Set',
     description:
-      'Everything a real kitchen needs and nothing it doesn’t: the carbon-steel skillet, the tri-ply saucepan, and the enamelled Dutch oven, bundled to build a kitchen from scratch. Three pans that cover searing, sauce and slow cooking — the set we’d hand someone moving into their first place. Priced below buying them apart.',
+      'Everything a real kitchen needs and nothing it doesn’t: the carbon-steel skillet, the tri-ply saucepan, and the enamelled Dutch oven, bundled to build a kitchen from scratch. Three pans that cover searing, sauce and slow cooking, the set we’d hand someone moving into their first place. Priced below buying them apart.',
     status: 'active',
     productType: 'Cookware set',
     vendor: VENDOR,
     tags: ['sets', 'cookware', 'starter', 'bundle'],
     categoryHandles: ['sets'],
     collectionHandles: ['new-season', 'best-sellers', 'starter-kits', 'gifts'],
-    seoTitle: 'Starter Cookware Set — skillet, saucepan & Dutch oven | Copper & Cast',
-    seoDescription: 'A three-pan starter set — carbon-steel skillet, tri-ply saucepan and cast-iron Dutch oven — to build a kitchen from scratch.',
+    seoTitle: 'Starter Cookware Set: skillet, saucepan & Dutch oven | Copper & Cast',
+    seoDescription: 'A three-pan starter set (carbon-steel skillet, tri-ply saucepan and cast-iron Dutch oven) to build a kitchen from scratch.',
     variants: [{ sku: 'CC-STARTERSET', priceCents: money(315), isDefault: true, inventoryPolicy: 'continue' }],
-    images: [{ assetId: 'kw-prod-starter-set', isPrimary: true, alt: 'A starter cookware set — skillet, saucepan and Dutch oven' }],
+    images: [{ assetId: 'kw-prod-starter-set', isPrimary: true, alt: 'A starter cookware set: skillet, saucepan and Dutch oven' }],
   },
 ];
 
 const COMMERCE = {
   categories: [
-    { handle: 'cookware', name: 'Cookware', description: 'Pans and pots — carbon steel, cast iron and stainless.', featured: true },
+    { handle: 'cookware', name: 'Cookware', description: 'Pans and pots: carbon steel, cast iron and stainless.', featured: true },
     { handle: 'knives', name: 'Knives', description: 'Forged high-carbon knives for real work.', featured: true },
     { handle: 'tools', name: 'Tools', description: 'Utensils, bowls and the small upgrades.', featured: true },
     { handle: 'sets', name: 'Sets', description: 'Bundles to build a kitchen.', featured: true },
@@ -661,7 +661,7 @@ const COMMERCE = {
     {
       handle: 'gifts',
       name: 'Gifts',
-      description: 'The ones worth wrapping — for weddings, new homes and good cooks.',
+      description: 'The ones worth wrapping, for weddings, new homes and good cooks.',
       type: 'manual',
       featured: true,
       productHandles: ['enamel-dutch-oven', 'chefs-knife', 'olive-wood-spoon-set', 'mixing-bowl-set', 'walnut-pepper-mill'],
@@ -706,16 +706,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'How to season and keep a carbon-steel pan',
-      excerpt: 'A raw carbon-steel pan is a blank slate. Here’s how to build the slick, near-non-stick seasoning that makes it a joy — and how to keep it that way.',
+      excerpt: 'A raw carbon-steel pan is a blank slate. Here’s how to build the slick, near-non-stick seasoning that makes it a joy, and how to keep it that way.',
       featuredImage: { $asset: 'kw-post-season' },
       body: {
         type: 'doc',
         content: [
           para('A carbon-steel pan arrives raw and a little grey, and that’s the point: you’re going to build its surface yourself, and it’ll be better than anything that comes out of a factory. Seasoning is just thin layers of oil baked onto the steel until they turn to a hard, slick, dark polymer. Do it once properly, then keep it up by cooking, and the pan becomes the most non-stick thing in your kitchen.'),
           h2('The first seasoning'),
-          para('Scrub off the factory wax with hot soapy water and dry the pan completely — carbon steel will flash-rust if you leave it wet. Set it over medium heat until it darkens and any bluing appears, then take it off, add half a teaspoon of a high-smoke-point oil (grapeseed or flax), and wipe it around with a paper towel until the pan looks almost dry. Almost dry is the whole trick — a puddle of oil bakes to a sticky mess, a whisper of it bakes to glass. Return it to the heat until it stops smoking, let it cool, and repeat two or three times. You’ll watch it go from grey to bronze to black.'),
+          para('Scrub off the factory wax with hot soapy water and dry the pan completely: carbon steel will flash-rust if you leave it wet. Set it over medium heat until it darkens and any bluing appears, then take it off, add half a teaspoon of a high-smoke-point oil (grapeseed or flax), and wipe it around with a paper towel until the pan looks almost dry. Almost dry is the whole trick, a puddle of oil bakes to a sticky mess, a whisper of it bakes to glass. Return it to the heat until it stops smoking, let it cool, and repeat two or three times. You’ll watch it go from grey to bronze to black.'),
           h2('Keeping it'),
-          para('Cook fatty things early on — bacon, sausages, a steak — and the seasoning deepens with every use. To clean it, wipe it out hot, or use a splash of water and a soft brush; skip long soaks and the dishwasher. Dry it on the heat and wipe a trace of oil over the inside before it goes away. If a patch ever sticks or shows rust, don’t panic — scrub it back, re-season that spot, and carry on. A carbon-steel pan isn’t fragile; it’s just alive, and it rewards a little attention with decades of service.'),
+          para('Cook fatty things early on: bacon, sausages, a steak, and the seasoning deepens with every use. To clean it, wipe it out hot, or use a splash of water and a soft brush; skip long soaks and the dishwasher. Dry it on the heat and wipe a trace of oil over the inside before it goes away. If a patch ever sticks or shows rust, don’t panic, scrub it back, re-season that spot, and carry on. A carbon-steel pan isn’t fragile; it’s just alive, and it rewards a little attention with decades of service.'),
         ],
       },
     },
@@ -726,16 +726,16 @@ const CONTENT = [
     status: 'published',
     body: {
       title: 'Choosing your first good knife',
-      excerpt: 'You don’t need a block of fifteen. You need one knife that fits your hand and holds an edge — here’s how to pick it, and why forged beats stamped.',
+      excerpt: 'You don’t need a block of fifteen. You need one knife that fits your hand and holds an edge: here’s how to pick it, and why forged beats stamped.',
       featuredImage: { $asset: 'kw-post-knife' },
       body: {
         type: 'doc',
         content: [
-          para('The knife block is a marketing invention. Most cooks do almost everything with one chef’s knife and reach for a paring knife for the small stuff — two knives, not fifteen. Spend the block money on one knife you’ll actually enjoy using, and the difference in your cooking is immediate: less effort, cleaner cuts, and a lot more pleasure at the board.'),
+          para('The knife block is a marketing invention. Most cooks do almost everything with one chef’s knife and reach for a paring knife for the small stuff: two knives, not fifteen. Spend the block money on one knife you’ll actually enjoy using, and the difference in your cooking is immediate: less effort, cleaner cuts, and a lot more pleasure at the board.'),
           h2('Forged versus stamped'),
-          para('A stamped knife is punched from a sheet of steel like a cookie cutter — light, cheap, and fine for a while. A forged knife is heated and hammered into shape, which aligns the steel’s grain and lets it carry a full tang and a bolster. The result is heavier, better balanced, and it takes and holds a keener edge. You feel the difference in the first ten seconds of use, and you keep feeling it for twenty years.'),
+          para('A stamped knife is punched from a sheet of steel like a cookie cutter: light, cheap, and fine for a while. A forged knife is heated and hammered into shape, which aligns the steel’s grain and lets it carry a full tang and a bolster. The result is heavier, better balanced, and it takes and holds a keener edge. You feel the difference in the first ten seconds of use, and you keep feeling it for twenty years.'),
           h2('What to check in your hand'),
-          para('Weight and balance are personal, so if you can, hold it: the knife should feel like an extension of your arm, balanced right where your fingers pinch the blade, not nose-heavy or handle-heavy. Look for a full tang running the length of the handle and high-carbon steel for the edge. Then commit to learning to sharpen — a cheap knife kept sharp cuts better than an expensive one gone dull. A good knife and a whetstone will outlast every gadget in the drawer.'),
+          para('Weight and balance are personal, so if you can, hold it: the knife should feel like an extension of your arm, balanced right where your fingers pinch the blade, not nose-heavy or handle-heavy. Look for a full tang running the length of the handle and high-carbon steel for the edge. Then commit to learning to sharpen, a cheap knife kept sharp cuts better than an expensive one gone dull. A good knife and a whetstone will outlast every gadget in the drawer.'),
         ],
       },
     },
@@ -752,11 +752,11 @@ const CONTENT = [
         type: 'doc',
         content: [
           para('Walk into a cookware shop and the choices blur together, but the three materials that matter each have a clear job. Buy for the cooking you actually do and a small collection covers everything; buy by the brochure and you end up with a cupboard of pans you never reach for.'),
-          h2('Carbon steel — the everyday searer'),
-          para('Light enough to flip, it heats fast and gets screaming hot, which makes it the best pan for searing, sautéing, eggs and stir-fries. It seasons like cast iron but responds quickly to the burner, so you have real control. If you buy one pan, buy this — it becomes the one on the stove every night.'),
-          h2('Cast iron — the heat reservoir'),
-          para('Heavy and slow to change temperature, cast iron holds heat like nothing else, which is exactly what you want for a deep sear, cornbread, or anything that goes into the oven. An enamelled Dutch oven adds a non-reactive interior, so it also does braises, stews, bread and Sunday sauce. Slow to heat, slow to let go — its weight is the feature.'),
-          h2('Stainless — the precise one'),
+          h2('Carbon steel: the everyday searer'),
+          para('Light enough to flip, it heats fast and gets screaming hot, which makes it the best pan for searing, sautéing, eggs and stir-fries. It seasons like cast iron but responds quickly to the burner, so you have real control. If you buy one pan, buy this. It becomes the one on the stove every night.'),
+          h2('Cast iron: the heat reservoir'),
+          para('Heavy and slow to change temperature, cast iron holds heat like nothing else, which is exactly what you want for a deep sear, cornbread, or anything that goes into the oven. An enamelled Dutch oven adds a non-reactive interior, so it also does braises, stews, bread and Sunday sauce. Slow to heat, slow to let go. Its weight is the feature.'),
+          h2('Stainless: the precise one'),
           para('Non-reactive and easy to read, tri-ply stainless is the pan for sauces, reductions, blanching and anything acidic that would strip a seasoning. It won’t build a non-stick surface, but it browns beautifully and deglazes into a proper pan sauce. Between a carbon-steel skillet, a stainless saucepan and a cast-iron pot, there’s almost nothing you can’t cook.'),
         ],
       },
@@ -772,7 +772,7 @@ const SPEC: TemplateSiteSpec = {
   name: 'Kitchenware & Cookware',
   theme: THEME,
   summary:
-    'A complete, working shop for a chef-grade kitchenware store: a real catalogue of carbon-steel pans, cast-iron Dutch ovens, forged knives, and honest tools, with categories, collections, a bespoke cookware PDP and a full merchandised home page. Warm kitchen theme — slate-cream ground, deep copper, a verdigris accent. Shipped as Copper & Cast.',
+    'A complete, working shop for a chef-grade kitchenware store: a real catalogue of carbon-steel pans, cast-iron Dutch ovens, forged knives, and honest tools, with categories, collections, a bespoke cookware PDP and a full merchandised home page. Warm kitchen theme, slate-cream ground, deep copper, a verdigris accent. Shipped as Copper & Cast.',
   tagline: 'A warm, working storefront for a chef-grade kitchenware shop.',
   vertical: 'retail',
   industry: 'Kitchenware & cookware',
@@ -785,14 +785,14 @@ const SPEC: TemplateSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'newsletter', showCta: true },
   seo: {
     home: {
-      title: 'Copper & Cast — chef-grade cookware, built to last',
+      title: 'Copper & Cast: chef-grade cookware, built to last',
       description:
-        'Copper & Cast is a kitchenware shop with a short list and a long view — carbon-steel pans, cast-iron Dutch ovens and forged knives, all built to be used hard and handed down.',
+        'Copper & Cast is a kitchenware shop with a short list and a long view: carbon-steel pans, cast-iron Dutch ovens and forged knives, all built to be used hard and handed down.',
     },
     about: {
       title: 'About Copper & Cast',
       description:
-        'Why Copper & Cast sells fewer, better things — named foundries and forges, materials that reward care, and a lifetime guarantee on every piece.',
+        'Why Copper & Cast sells fewer, better things: named foundries and forges, materials that reward care, and a lifetime guarantee on every piece.',
     },
   },
   home: HOME,

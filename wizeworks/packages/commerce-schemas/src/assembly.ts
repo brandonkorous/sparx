@@ -58,7 +58,7 @@ export const BomComponentInput = z.object({
   /** Base units the WHOLE BATCH needs. See the header. */
   quantityPer: z
     .number()
-    .int('Whole units — the ledger cannot hold part of one')
+    .int('Whole units: the ledger cannot hold part of one')
     .min(1, 'A component the batch needs none of is not a component'),
   scrapPercent: ScrapPercent.optional(),
   notes: z.string().trim().max(500).optional(),

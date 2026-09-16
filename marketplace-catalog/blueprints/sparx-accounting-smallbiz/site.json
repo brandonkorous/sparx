@@ -555,8 +555,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Ledger & Co. — friendly bookkeeping & taxes for small business",
-      "seoDescription": "Ledger & Co. handles the bookkeeping, payroll and taxes for freelancers and small businesses — in plain English, at one flat monthly price. Book a free consult online.",
+      "seoTitle": "Ledger & Co. friendly bookkeeping & taxes for small business",
+      "seoDescription": "Ledger & Co. handles the bookkeeping, payroll and taxes for freelancers and small businesses: in plain English, at one flat monthly price. Book a free consult online.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Friendly bookkeeping, payroll and taxes for freelancers and small businesses — so you can get back to running the thing you actually love."
+                      "Friendly bookkeeping, payroll and taxes for freelancers and small businesses, so you can get back to running the thing you actually love."
                     ],
                     "id": "c5116ed0-a1f4-44f9-8288-1a32501ac233",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "No surprise invoices, no hourly meter running. You’ll know exactly what you pay every month — and it won’t change because you asked a question."
+                              "No surprise invoices, no hourly meter running. You’ll know exactly what you pay every month, and it won’t change because you asked a question."
                             ],
                             "id": "af12f77a-54e6-48cd-a91e-d08e8b56e1d0",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "No jargon, no lecture. We explain your numbers the way we’d explain them to a friend — clearly, honestly, and without making you feel behind."
+                              "No jargon, no lecture. We explain your numbers the way we’d explain them to a friend: clearly, honestly, and without making you feel behind."
                             ],
                             "id": "0365be88-15a9-4fea-b667-23c55f8c40c0",
                             "ord": "a1"
@@ -737,7 +737,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Quarterly taxes, payroll filings, year-end — we track every date so you don’t have to. No late fees, no last-minute scramble, ever."
+                              "Quarterly taxes, payroll filings, year-end. We track every date so you don’t have to. No late fees, no last-minute scramble, ever."
                             ],
                             "id": "52a708f3-4f68-403b-87da-1c0a76eb3b37",
                             "ord": "a1"
@@ -786,7 +786,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Pick a service to see how long it takes and what it costs. Not sure where to start? Book the free consult — that’s what it’s for."
+                          "Pick a service to see how long it takes and what it costs. Not sure where to start? Book the free consult: that’s what it’s for."
                         ],
                         "id": "53e657f6-55fa-46ed-99cf-5b04d94648bb",
                         "ord": "a1"
@@ -1090,7 +1090,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most small-business owners didn’t start out to become part-time accountants — but somehow the spreadsheets, the receipts and the quarterly taxes landed on their desk anyway."
+                          "Most small-business owners didn’t start out to become part-time accountants, but somehow the spreadsheets, the receipts and the quarterly taxes landed on their desk anyway."
                         ],
                         "id": "21d82b09-91fb-4d2f-9ade-3f43916bc56d",
                         "ord": "a1"
@@ -1165,7 +1165,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A small, friendly team that actually gets to know your business. Book with whoever fits — we’ll point you to the right person."
+                          "A small, friendly team that actually gets to know your business. Book with whoever fits: we’ll point you to the right person."
                         ],
                         "id": "688fb967-ca25-47e8-a0bf-c37896302289",
                         "ord": "a1"
@@ -1278,7 +1278,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Keeps your books clean and your team paid — on time, every time."
+                                  "Keeps your books clean and your team paid: on time, every time."
                                 ],
                                 "id": "4f3e3e0d-971f-4d27-bfb6-476a1bd6328a",
                                 "ord": "a2"
@@ -1374,7 +1374,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I used to dread every tax season and lose whole weekends to my books. Now I honestly don’t think about it — they just handle it, and I finally feel on top of my money.”"
+                      "“I used to dread every tax season and lose whole weekends to my books. Now I honestly don’t think about it. They just handle it, and I finally feel on top of my money.”"
                     ],
                     "id": "79a49f30-9b03-4aca-b542-2665d0a97952",
                     "ord": "a0"
@@ -1418,7 +1418,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Book a free 30-minute consult. We’ll talk through where you are and how we can help — no cost, no commitment."
+                      "Book a free 30-minute consult. We’ll talk through where you are and how we can help: no cost, no commitment."
                     ],
                     "id": "27f0d9eb-01f7-4f5f-8632-d77014dc56ff",
                     "ord": "a1"
@@ -1449,7 +1449,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Ledger & Co.",
+      "seoTitle": "Book: Ledger & Co.",
       "seoDescription": "See what Ledger & Co. offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1573,7 +1573,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "c2de570c-1bb2-4836-8afa-ef79931b4c0d",
                         "ord": "a1"
@@ -1643,7 +1643,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Ledger & Co.",
+      "seoTitle": "About: Ledger & Co.",
       "seoDescription": "Who Ledger & Co. is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1692,7 +1692,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We started Ledger & Co. because we kept meeting small-business owners who were brilliant at their craft and completely underwater on their books — not because they weren’t smart, but because nobody ever made the money side feel human."
+                          "We started Ledger & Co. because we kept meeting small-business owners who were brilliant at their craft and completely underwater on their books, not because they weren’t smart, but because nobody ever made the money side feel human."
                         ],
                         "id": "8ecc2b03-f8be-4bf3-83cf-a6507d039724",
                         "ord": "a1"
@@ -1780,7 +1780,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "You’ll work with the same friendly team who knows your business — not a call center and never a different stranger each month."
+                              "You’ll work with the same friendly team who knows your business, not a call center and never a different stranger each month."
                             ],
                             "id": "8993803e-628e-48a7-ad4b-97166b6b51f2",
                             "ord": "a1"
@@ -1807,7 +1807,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Your books live online, always current, always accessible. Check in whenever you like, or leave it to us — either way it’s handled."
+                              "Your books live online, always current, always accessible. Check in whenever you like, or leave it to us. Either way it’s handled."
                             ],
                             "id": "906b6151-9e68-47a1-95ed-ac3799fbe61d",
                             "ord": "a1"
@@ -1834,7 +1834,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Flat monthly plans, spelled out before you commit. Ask us anything without watching a clock — questions are part of the service."
+                              "Flat monthly plans, spelled out before you commit. Ask us anything without watching a clock: questions are part of the service."
                             ],
                             "id": "ece23486-9c82-40fa-aae0-88fab491e259",
                             "ord": "a1"
@@ -1862,7 +1862,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Ledger & Co.",
+      "seoTitle": "Visit: Ledger & Co.",
       "seoDescription": "Where to find Ledger & Co., our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1899,7 +1899,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Ledger & Co. will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Ledger & Co. will get back to you, usually the same day."
                         ],
                         "id": "8245e787-0c77-488a-8318-8f4539686dc4",
                         "ord": "a1"
@@ -2351,7 +2351,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "Grab a free consult online and pick a slot that suits you — no phone tag, no waiting on a callback."
+                      "Grab a free consult online and pick a slot that suits you: no phone tag, no waiting on a callback."
                     ],
                     "id": "9a6461c2-b8f2-42fa-a99a-8a3054397266",
                     "ord": "a1"

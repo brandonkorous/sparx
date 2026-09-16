@@ -174,7 +174,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
         : '';
     const ok = await confirm({
       title: `Delete ${node.name}?`,
-      description: `This removes ${node.name}${under} from ${domain.displayName}. Any product marked as fitting ${node.name}${node.childCount > 0 ? ' or anything under it' : ''} loses that mark — the products themselves are kept. This cannot be undone.`,
+      description: `This removes ${node.name}${under} from ${domain.displayName}. Any product marked as fitting ${node.name}${node.childCount > 0 ? ' or anything under it' : ''} loses that mark: the products themselves are kept. This cannot be undone.`,
       confirmLabel: `Delete ${node.name}`,
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -204,7 +204,7 @@ export function FitmentNodeManager({ domain }: { domain: FitmentDomain }) {
           The entries in this list
         </Heading>
         <Text className="text-sm">
-          {`This is what a shopper picks from — the ${firstLevelLower}s you support, each narrowing down through ${dimensionSummary(domain).toLowerCase()}.`}
+          {`This is what a shopper picks from: the ${firstLevelLower}s you support, each narrowing down through ${dimensionSummary(domain).toLowerCase()}.`}
         </Text>
       </div>
 

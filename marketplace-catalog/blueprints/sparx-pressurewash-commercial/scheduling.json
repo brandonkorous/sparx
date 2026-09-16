@@ -142,7 +142,7 @@
     {
       "handle": "site-assessment",
       "name": "On-site assessment",
-      "description": "A crew lead walks your property, sizes up every surface — facade, glass, walkways, lot — and flags what needs attention and how often. You leave with a clear scope and a plan. Always free, no obligation.",
+      "description": "A crew lead walks your property, sizes up every surface (facade, glass, walkways, lot) and flags what needs attention and how often. You leave with a clear scope and a plan. Always free, no obligation.",
       "durationMinutes": 45,
       "priceCents": 0,
       "bufferAfterMin": 15,
@@ -160,7 +160,7 @@
     {
       "handle": "free-quote",
       "name": "Free quote",
-      "description": "Already know what you need cleaned? We measure the job, confirm access and timing, and send a written, itemized quote — one-time or on a schedule. No pressure, and always free.",
+      "description": "Already know what you need cleaned? We measure the job, confirm access and timing, and send a written, itemized quote. One-time or on a schedule. No pressure, and always free.",
       "durationMinutes": 30,
       "priceCents": 0,
       "assignmentStrategy": "any_available",

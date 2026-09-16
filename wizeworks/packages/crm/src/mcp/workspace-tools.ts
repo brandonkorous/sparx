@@ -36,7 +36,7 @@ import type { McpToolDefinition } from './registry';
 export const matchCompanyByEmail: McpToolDefinition = {
   name: 'match_company_by_email',
   description:
-    'Which company an email address belongs to, worked out from its domain. Returns the company, or nothing plus the reason — the address is a personal one (gmail, outlook and the like), no company claims that domain, or the business has this turned off. This is a SUGGESTION: it never links anybody to anything. Use it before creating a contact so you can ask "should this person go under Acme?" rather than guessing.',
+    'Which company an email address belongs to, worked out from its domain. Returns the company, or nothing plus the reason: the address is a personal one (gmail, outlook and the like), no company claims that domain, or the business has this turned off. This is a SUGGESTION: it never links anybody to anything. Use it before creating a contact so you can ask "should this person go under Acme?" rather than guessing.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -54,7 +54,7 @@ export const matchCompanyByEmail: McpToolDefinition = {
 export const getCrmSettings: McpToolDefinition = {
   name: 'get_crm_settings',
   description:
-    'How this business has told the CRM to behave: whether it offers a company when a new contact’s email domain matches one, what counts as the same person when looking for duplicates, and whether duplicates may ever be merged automatically. Read this before doing anything with duplicates — the answer changes what "duplicate" means here.',
+    'How this business has told the CRM to behave: whether it offers a company when a new contact’s email domain matches one, what counts as the same person when looking for duplicates, and whether duplicates may ever be merged automatically. Read this before doing anything with duplicates, the answer changes what "duplicate" means here.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({ propertyId: z.string().uuid().nullable().optional() }),
@@ -68,7 +68,7 @@ export const getCrmSettings: McpToolDefinition = {
 export const updateCrmSettings: McpToolDefinition = {
   name: 'update_crm_settings',
   description:
-    'Change how the CRM behaves. `domainAssociation` turns the company suggestion on or off. `duplicateMatchRules` picks which signals mean the same person — email, phone, or last name plus employer. `autoMergeThreshold` is how sure the platform must be before merging two records WITHOUT anybody looking; leave it null to always require a person, which is the safe answer and the default. Merging cannot be undone.',
+    'Change how the CRM behaves. `domainAssociation` turns the company suggestion on or off. `duplicateMatchRules` picks which signals mean the same person: email, phone, or last name plus employer. `autoMergeThreshold` is how sure the platform must be before merging two records WITHOUT anybody looking; leave it null to always require a person, which is the safe answer and the default. Merging cannot be undone.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({
@@ -94,7 +94,7 @@ export const updateCrmSettings: McpToolDefinition = {
 export const findDuplicates: McpToolDefinition = {
   name: 'find_crm_duplicates',
   description:
-    'Groups of contact records that look like the same person, most certain first. Each group says WHY it was grouped and how sure that is out of 100 — an identical email is certain, a shared phone number is likely, and a matching last name and employer is a guess that could easily be two colleagues. Report the confidence when you report the group; a business deciding whether to merge needs it.',
+    'Groups of contact records that look like the same person, most certain first. Each group says WHY it was grouped and how sure that is out of 100: an identical email is certain, a shared phone number is likely, and a matching last name and employer is a guess that could easily be two colleagues. Report the confidence when you report the group; a business deciding whether to merge needs it.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
@@ -108,7 +108,7 @@ export const findDuplicates: McpToolDefinition = {
 export const bulkMergeDuplicates: McpToolDefinition = {
   name: 'bulk_merge_crm_duplicates',
   description:
-    'Merge every duplicate group the platform is at least `minConfidence` sure about. THIS CANNOT BE UNDONE. The most recently updated record in each group survives and absorbs the others — their orders, spend, deals, tasks and addresses move onto it, and any field the survivor was missing is filled in from the ones being merged. Say `minConfidence: 100` to touch only groups matched on an identical email address; lower numbers reach guesses. Always show the person what `find_crm_duplicates` returned before calling this.',
+    'Merge every duplicate group the platform is at least `minConfidence` sure about. THIS CANNOT BE UNDONE. The most recently updated record in each group survives and absorbs the others. Their orders, spend, deals, tasks and addresses move onto it, and any field the survivor was missing is filled in from the ones being merged. Say `minConfidence: 100` to touch only groups matched on an identical email address; lower numbers reach guesses. Always show the person what `find_crm_duplicates` returned before calling this.',
   scope: 'write:crm_bulk',
   confirmation: true,
   input: z.object({
@@ -128,7 +128,7 @@ export const bulkMergeDuplicates: McpToolDefinition = {
 export const listSavedViews: McpToolDefinition = {
   name: 'list_crm_saved_views',
   description:
-    'The saved ways of looking at a list — "my open deals", "requests waiting on us" — both this person’s own and any the team has shared. Each carries the filter, the columns and the order it uses.',
+    'The saved ways of looking at a list ("my open deals", "requests waiting on us") both this person’s own and any the team has shared. Each carries the filter, the columns and the order it uses.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({ objectKey: z.string().max(63).optional() }),
@@ -159,7 +159,7 @@ export const createSavedView: McpToolDefinition = {
 export const deleteSavedView: McpToolDefinition = {
   name: 'delete_crm_saved_view',
   description:
-    'Delete a saved view. Only the person who made it can — a shared view somebody else built is not yours to remove.',
+    'Delete a saved view. Only the person who made it can: a shared view somebody else built is not yours to remove.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({ viewId: z.string().uuid() }),
@@ -174,7 +174,7 @@ export const deleteSavedView: McpToolDefinition = {
 export const listMeetingLinks: McpToolDefinition = {
   name: 'list_crm_meeting_links',
   description:
-    'The team’s personal booking links — the ones a rep puts in an email so a customer can pick a time. Each says whose it is, what gets booked, and how many times it has been used.',
+    'The team’s personal booking links: the ones a rep puts in an email so a customer can pick a time. Each says whose it is, what gets booked, and how many times it has been used.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({ userId: z.string().uuid().optional() }),
@@ -184,7 +184,7 @@ export const listMeetingLinks: McpToolDefinition = {
 export const createMeetingLink: McpToolDefinition = {
   name: 'create_crm_meeting_link',
   description:
-    'Create a personal booking link at /meet/<slug>. It points at one bookable service, which is where the length, the availability and the cancellation rules all come from — this only adds the memorable address and whose calendar it fills. Use `list_scheduling_services` to find the service first; a service that is not offered for online booking will be refused, because a link to it would not work.',
+    'Create a personal booking link at /meet/<slug>. It points at one bookable service, which is where the length, the availability and the cancellation rules all come from. This only adds the memorable address and whose calendar it fills. Use `list_scheduling_services` to find the service first; a service that is not offered for online booking will be refused, because a link to it would not work.',
   scope: 'write:crm',
   confirmation: false,
   input: z.object({
@@ -202,7 +202,7 @@ export const createMeetingLink: McpToolDefinition = {
 export const requestSignature: McpToolDefinition = {
   name: 'request_document_signature',
   description:
-    'Ask a customer to sign an estimate, quote or work order. Returns a one-time signing link — it is shown ONCE and cannot be looked up again, so give it to the person now. Asking a second time for the same document replaces the first link rather than adding one, so only ever one is live. When they sign, the document is frozen exactly as they saw it and moves to the approved stage on its own.',
+    'Ask a customer to sign an estimate, quote or work order. Returns a one-time signing link. It is shown ONCE and cannot be looked up again, so give it to the person now. Asking a second time for the same document replaces the first link rather than adding one, so only ever one is live. When they sign, the document is frozen exactly as they saw it and moves to the approved stage on its own.',
   scope: 'write:crm',
   confirmation: true,
   input: z.object({

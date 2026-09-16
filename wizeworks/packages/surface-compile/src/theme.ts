@@ -81,37 +81,37 @@ export const SURFACE_THEME_CSS = `
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 @theme {
-  /* ── Color — every bg-/text-/border- utility resolves to a silica --color-* var,
+  /* ── Color: every bg-/text-/border- utility resolves to a silica --color-* var,
         the same one the storefront's injected per-tenant theme sets. ── */
 ${baseThemeDecls(COLOR_KEYS)}
 
-  /* ── Type — font-heading / font-body. --font-heading is the sparx residual
+  /* ── Type: font-heading / font-body. --font-heading is the sparx residual
         (silica's own heading token is --font-head); body copy rides --font-sans. ── */
   --font-heading: ${BASE_SILICA_THEME.tokens['--font-heading']};
   --font-body: ${BASE_SILICA_THEME.tokens['--font-sans']};
 
-  /* ── Shape — rounded-box / rounded-field / rounded-selector ── */
+  /* ── Shape: rounded-box / rounded-field / rounded-selector ── */
 ${baseThemeDecls(SHAPE_KEYS)}
 
-  /* ── Effect — shadow-sm / shadow-md / shadow-lg. Shadow INTENSITY rides silica's
+  /* ── Effect: shadow-sm / shadow-md / shadow-lg. Shadow INTENSITY rides silica's
         \`--depth\` rather than a bespoke pre-derived shadow set, so a theme that
         flattens depth flattens these too. ── */
   --shadow-sm: 0 1px 2px rgb(0 0 0 / calc(0.04 * var(--depth, 1))), 0 1px 3px rgb(0 0 0 / calc(0.06 * var(--depth, 1)));
   --shadow-md: 0 4px 12px -2px rgb(0 0 0 / calc(0.08 * var(--depth, 1))), 0 2px 6px -2px rgb(0 0 0 / calc(0.05 * var(--depth, 1)));
   --shadow-lg: 0 18px 40px -12px rgb(0 0 0 / calc(0.18 * var(--depth, 1)));
 
-  /* ── Rhythm — the whole numeric spacing scale (p-*, gap-*, m-*, w-*, h-*). The
+  /* ── Rhythm: the whole numeric spacing scale (p-*, gap-*, m-*, w-*, h-*). The
         legacy model let a tenant rescale this off \`--st-space-base\`; silica has no
         counterpart (spacing is Tailwind's own fixed scale, docs/118), so it anchors
         to the standard unit. ── */
   --spacing: 0.25rem;
 
-  /* ── Layout — max-w-site off the tenant container width. The container-query
+  /* ── Layout: max-w-site off the tenant container width. The container-query
         breakpoint scale (@sm … @7xl) ships from the default theme; container
         queries key off the node's OWN width, not the viewport (docs/61 §7). ── */
   --container-site: var(--container-max, ${BASE_SILICA_THEME.tokens['--container-max']});
 
-  /* ── Motion — animate-spin/ping/pulse/bounce ship from the default theme;
+  /* ── Motion: animate-spin/ping/pulse/bounce ship from the default theme;
         these are Surface's custom entrance animations (docs/61 §9): animate-fade-in,
         animate-fade-up, animate-scale-in, … . The reduced-motion baseline
         (REDUCED_MOTION_CSS, motion.ts) neutralizes them under the OS "reduce
@@ -123,7 +123,7 @@ ${baseThemeDecls(SHAPE_KEYS)}
   --animate-slide-in-left: slide-in-left 0.5s ease-out both;
   --animate-slide-in-right: slide-in-right 0.5s ease-out both;
 
-  /* ── Motion library (docs/98 Pillar 4) — the platform-owned CONTINUOUS
+  /* ── Motion library (docs/98 Pillar 4): the platform-owned CONTINUOUS
         animations a tenant reaches from the Motion card, instead of authoring raw
         \`@keyframes\` (denied). Each bakes a sensible default tempo; the Motion card
         can retune duration via the allowlisted \`[animation-duration:_s]\` utility.
@@ -164,17 +164,17 @@ ${baseThemeDecls(SHAPE_KEYS)}
 @keyframes wiggle { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
 @keyframes shimmer { from { background-position: -150% 0; } to { background-position: 250% 0; } }
 
-/* ── Navbar — a real component: a div with the \`navbar\` class that HAS three
+/* ── Navbar: a real component: a div with the \`navbar\` class that HAS three
       zones, navbar-start / navbar-center / navbar-end (docs/98 §5). Verbatim
       from daisyUI's navbar.css (our breadth reference): the two SIDE zones are
-      \`width: 50%\` — start justifies its content to the left, end to the right —
+      \`width: 50%\`, so start justifies its content to the left, end to the right, 
       and the center is \`flex-shrink: 0\` BETWEEN them, so center content lands
       dead-center regardless of how much sits on either side. There is no
       "centered brand" variant: centering the wordmark is just putting it in
       \`.navbar-center\`.
 
       Authored in the \`components\` layer (declared before \`utilities\`), so author
-      utilities always win — \`bg-base-100\`/\`border-b\` skin it, \`hidden @3xl:flex\`
+      utilities always win:  \`bg-base-100\`/\`border-b\` skin it, \`hidden @3xl:flex\`
       collapses a zone responsively, \`px-*\`/\`gap-*\` retune spacing. Content
       spacing (gap) lives on the composed tree, not here, exactly like daisyUI. ── */
 @layer components {
@@ -208,7 +208,7 @@ ${baseThemeDecls(SHAPE_KEYS)}
 /* ── Extended bounded z-scale (docs/98 Pillar 4d). Tailwind ships z-0…z-50;
       these add a few higher NAMED rungs for sanctioned stacking (a sticky nav over
       content, a guarded-fixed bar over that). Arbitrary \`z-[9999]\` stays denied by
-      the allowlist — the scale is bounded on purpose. \`@utility\` so they tree-shake
+      the allowlist:  the scale is bounded on purpose. \`@utility\` so they tree-shake
       on use. ── */
 @utility z-60 { z-index: 60; }
 @utility z-70 { z-index: 70; }
@@ -218,7 +218,7 @@ ${baseThemeDecls(SHAPE_KEYS)}
       allowlist (clickjacking); these platform classes are the ONLY sanctioned
       \`position: fixed\` emitter, chosen by the Position control. Each pins to ONE
       edge or corner with a capped cross-axis, so NONE can become a full-viewport
-      \`inset: 0\` overlay over the app/site chrome — the anti-clickjacking invariant
+      \`inset: 0\` overlay over the app/site chrome: the anti-clickjacking invariant
       (docs/98 §3.1). Edge bars span their axis but are height/width-capped;
       corners are anchored + size-capped (FAB / cookie card / toast). ── */
 @layer components {

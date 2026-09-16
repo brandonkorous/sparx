@@ -73,7 +73,7 @@ export function CommercePage() {
             <Spark color={C.color} />
           </>
         }
-        lede="Pricing, fees, payments, and how it fits your stack — answered straight. Still deciding? Read the commerce docs or start the 14-day trial."
+        lede="Pricing, fees, payments, and how it fits your stack: answered straight. Still deciding? Read the commerce docs or start the 14-day trial."
       />
       <CommerceCta />
     </>
@@ -91,13 +91,13 @@ const COMMERCE_FAQ: FaqItem[] = [
     id: 'commerce-pricing',
     question: 'How much does sparx Commerce cost?',
     answer:
-      'A flat $49/mo, with Invoicing and Inventory included free. No tiers and no setup fee — turn Commerce on, add any other modules à la carte, and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
+      'A flat $49/mo, with Invoicing and Inventory included free. No tiers and no setup fee. Turn Commerce on, add any other modules à la carte, and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'commerce-fees',
     question: 'Is there a per-transaction fee?',
     answer:
-      'Only if you take card payments through sparx Pay, where it is a flat 0.5% and sparx handles chargebacks and card-security compliance for you. Connect your own Stripe, PayPal, or Square account instead and sparx charges nothing — we are not in the payment, so there is nothing to charge for. Payments you take by check, cash, or bank transfer are free too. There is no tiered or plan-based fee.',
+      'Only if you take card payments through sparx Pay, where it is a flat 0.5% and sparx handles chargebacks and card-security compliance for you. Connect your own Stripe, PayPal, or Square account instead and sparx charges nothing. We are not in the payment, so there is nothing to charge for. Payments you take by check, cash, or bank transfer are free too. There is no tiered or plan-based fee.',
   },
   {
     id: 'commerce-headless',
@@ -121,7 +121,7 @@ const COMMERCE_FAQ: FaqItem[] = [
     id: 'commerce-b2b',
     question: 'Can the same store sell wholesale and B2B?',
     answer:
-      'Yes — D2C and B2B run on one engine. Add the B2B module for account-specific pricing, net terms, and RFQs; those orders move through the same checkout, inventory, and fulfillment as your retail orders, all on one customer record.',
+      'Yes: D2C and B2B run on one engine. Add the B2B module for account-specific pricing, net terms, and RFQs; those orders move through the same checkout, inventory, and fulfillment as your retail orders, all on one customer record.',
   },
 ];
 
@@ -133,7 +133,7 @@ function CommerceHero() {
   // to the audience the platform is actually for. Every claim below is the same
   // claim, said in words an owner would use themselves.
   const lede =
-    'Everything you need to sell: your products and what you have in stock, a checkout people actually finish, card payments through Stripe, and the day-to-day work after the order — picking, shipping, refunds. Build your own site on top of it, or turn on Builder and get one.';
+    'Everything you need to sell: your products and what you have in stock, a checkout people actually finish, card payments through Stripe, and the day-to-day work after the order: picking, shipping, refunds. Build your own site on top of it, or turn on Builder and get one.';
   // Four claims, four hues — each the color of the thing it names, so the row
   // reads as four different promises instead of four copies of one. They were
   // four identical lowercase mono pills each led by the same orange dot.
@@ -334,7 +334,7 @@ function PaymentsRail() {
     },
     {
       nm: 'Apple Pay',
-      ds: 'One-tap on iPhone and Safari — no card entry, higher conversion.',
+      ds: 'One-tap on iPhone and Safari: no card entry, higher conversion.',
       icon: Smartphone,
     },
     {
@@ -344,7 +344,7 @@ function PaymentsRail() {
     },
     {
       nm: 'Link',
-      ds: 'Stripe’s one-click checkout — saved details across every Stripe store.',
+      ds: 'Stripe’s one-click checkout: saved details across every Stripe store.',
       icon: Zap,
     },
   ];
@@ -445,7 +445,7 @@ function FeeLadder() {
       pctInk: 'text-info',
       barFill: 'bg-info',
       barW: '100%',
-      body: 'Card payments handled end to end. sparx is the merchant of record, which means we take the chargebacks, the card-security paperwork, and the setup — you take the money.',
+      body: 'Card payments handled end to end. sparx is the merchant of record, which means we take the chargebacks, the card-security paperwork, and the setup. You take the money.',
     },
     {
       when: 'You bring your own',
@@ -463,7 +463,7 @@ function FeeLadder() {
       pctInk: 'text-success',
       barFill: 'bg-success',
       barW: '4%',
-      body: 'Check, cash, bank transfer. Mark the invoice paid and that is the end of it — there is no card, no processor, and nothing for us to take a share of.',
+      body: 'Check, cash, bank transfer. Mark the invoice paid and that is the end of it. There is no card, no processor, and nothing for us to take a share of.',
     },
   ];
   return (
@@ -515,7 +515,7 @@ function FeeLadder() {
       <p className="text-md mt-5 max-w-[680px] font-sans">
         On sparx Pay the half percent comes out automatically before the money reaches your account,
         and it is separate from what the card networks charge to process the payment. Nothing extra
-        per staff member, nothing extra per product, and no minimum — see{' '}
+        per staff member, nothing extra per product, and no minimum: see{' '}
         <a href="/pricing" className="font-medium underline underline-offset-2">
           full pricing
         </a>
@@ -595,7 +595,7 @@ function Operations() {
     <Section surface="surface" padding="lg">
       <SectionHeader
         headline={<>Everything after &ldquo;paid&rdquo;</>}
-        lede="Taking the money is the easy part. The work that decides whether selling is worth it happens afterwards — keeping stock straight, running a promotion, handling the return, and knowing at the end of the month what actually made you money."
+        lede="Taking the money is the easy part. The work that decides whether selling is worth it happens afterwards: keeping stock straight, running a promotion, handling the return, and knowing at the end of the month what actually made you money."
       />
       {/* One CONTINUOUS ledger, not six floating boxes. Six equal bordered
           cards was the page's most generic object and the third copy of the
@@ -663,7 +663,7 @@ function HeadlessOrHosted() {
       title: 'Run it headless',
       body: 'Every capability is an API endpoint first; the dashboard is one consumer among many. Build your own front end, or let an AI assistant work the catalog and orders over MCP.',
       points: [
-        'Full REST + GraphQL surface — catalog, cart, checkout, orders.',
+        'Full REST + GraphQL surface: catalog, cart, checkout, orders.',
         'SSR-ready with CDN caching for sub-200ms TTFB.',
         'Read and write live commerce data from Claude, ChatGPT, or Copilot.',
       ],
@@ -675,11 +675,11 @@ function HeadlessOrHosted() {
     },
     {
       title: 'Get a hosted site',
-      body: 'Pair Commerce with Builder and the site renders for you — product pages, collections, cart, and the converting checkout — on your custom domain, SSL and CDN handled.',
+      body: 'Pair Commerce with Builder and the site renders for you (product pages, collections, cart, and the converting checkout) on your custom domain, SSL and CDN handled.',
       points: [
         'Product, collection, cart, and account pages out of the box.',
         'Full-text product search with filters and sort.',
-        'Your theme and brand — selling shares one design system with the rest of the site.',
+        'Your theme and brand: selling shares one design system with the rest of the site.',
       ],
       dotFill: BUILDER.bg,
       runs: [
@@ -692,7 +692,7 @@ function HeadlessOrHosted() {
     <Section padding="lg">
       <SectionHeader
         headline="Headless, hosted, or both"
-        lede="Commerce is the engine, not the front end. Drive it entirely through the API and MCP, or switch on Builder and get a hosted site on your own domain — same data either way."
+        lede="Commerce is the engine, not the front end. Drive it entirely through the API and MCP, or switch on Builder and get a hosted site on your own domain: same data either way."
       />
       {/* A FORK, drawn as one. Two detached cards side by side is the same
           bordered-box object as every other section, and it reads as "here are
@@ -754,7 +754,7 @@ function CommerceProof() {
   const stats: { n: ReactNode; l: string; ink: string }[] = [
     {
       n: <>1{<Spark color={C.color} />}</>,
-      l: 'place your products, orders and customers live — nothing to keep in step',
+      l: 'place your products, orders and customers live. Nothing to keep in step',
       ink: C.ink,
     },
     {
@@ -768,12 +768,12 @@ function CommerceProof() {
       // DESIGN.md calls it "the second voice — a supporting action, an alternate
       // path," and selling to trade customers off the same engine is exactly an
       // alternate path. Measured 11.11:1 here.
-      l: 'on one engine — turn trade pricing on for the accounts that get it',
+      l: 'on one engine: turn trade pricing on for the accounts that get it',
       ink: 'text-secondary',
     },
     {
       n: '$0',
-      l: 'extra for Invoicing — quotes, work orders, and chasing what you are owed come with Commerce',
+      l: 'extra for Invoicing: quotes, work orders, and chasing what you are owed come with Commerce',
       ink: 'text-success',
     },
     { n: '<200ms', l: 'typical page load, so shoppers are not left waiting', ink: 'text-info' },
@@ -789,7 +789,7 @@ function CommerceProof() {
         </Display>
         <p className="mt-5 max-w-[640px] font-sans text-lg">
           Because orders, customers, and content share one database, the numbers reconcile by
-          default — no exports, no two systems disagreeing about what happened.
+          default: no exports, no two systems disagreeing about what happened.
         </p>
       </div>
       <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
@@ -961,7 +961,7 @@ function CommerceCta() {
           <Spark color={C.color} />
         </Display>
         <p className="m-0 max-w-[640px] font-sans text-lg">
-          Add products, connect Stripe, and take your first order — no contract, no migration
+          Add products, connect Stripe, and take your first order: no contract, no migration
           weekend. Turn Commerce off the day you stop selling; your data stays, and you keep your
           processor relationships.
         </p>

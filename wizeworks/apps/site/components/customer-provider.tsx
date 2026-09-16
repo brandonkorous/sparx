@@ -167,7 +167,7 @@ export function CustomerProvider({
         >
           <span>
             Welcome back! We recognized your email from another of our sites and created a separate
-            account for you here — your orders and preferences on this site stay private to it.
+            account for you here. Your orders and preferences on this site stay private to it.
           </span>
           <button
             type="button"

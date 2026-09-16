@@ -138,7 +138,7 @@
     {
       "handle": "bookkeeping-setup",
       "name": "Bookkeeping setup",
-      "description": "We’ll get your books set up right from the start — connected accounts, clean categories, and a simple monthly rhythm you can actually keep up with.",
+      "description": "We’ll get your books set up right from the start: connected accounts, clean categories, and a simple monthly rhythm you can actually keep up with.",
       "durationMinutes": 60,
       "priceCents": 20000,
       "assignmentStrategy": "customer_choice",
@@ -206,7 +206,7 @@
     {
       "handle": "small-business-advisory",
       "name": "Small business advisory",
-      "description": "A sit-down to look at the bigger picture — cash flow, pricing, what the numbers are telling you, and the next smart move for your business.",
+      "description": "A sit-down to look at the bigger picture: cash flow, pricing, what the numbers are telling you, and the next smart move for your business.",
       "durationMinutes": 60,
       "priceCents": 22000,
       "assignmentStrategy": "customer_choice",

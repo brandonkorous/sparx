@@ -130,7 +130,7 @@ export async function runPlanningSweep(
       return {
         summary:
           r.observations === 0
-            ? 'No deliveries to measure yet — lead times are still whatever suppliers stated.'
+            ? 'No deliveries to measure yet: lead times are still whatever suppliers stated.'
             : `Measured ${r.observations} deliveries across ${r.suppliersMeasured} suppliers.`,
         detail: { ...r },
       };
@@ -153,7 +153,7 @@ export async function runPlanningSweep(
     await stage('classification', async () => {
       const r = await recomputeClassifications(ctx);
       return {
-        summary: `Ranked ${r.levelsClassified} stock lines — ${r.counts.A} A, ${r.counts.B} B, ${r.counts.C} C. ${r.changed} changed class.`,
+        summary: `Ranked ${r.levelsClassified} stock lines: ${r.counts.A} A, ${r.counts.B} B, ${r.counts.C} C. ${r.changed} changed class.`,
         detail: { ...r },
       };
     })
@@ -176,7 +176,7 @@ export async function runPlanningSweep(
     stages.push({
       stage: 'count_schedules',
       ok: true,
-      summary: 'Skipped — this run was asked for the numbers only.',
+      summary: 'Skipped. This run was asked for the numbers only.',
       detail: { skipped: true },
       durationMs: 0,
     });
@@ -240,7 +240,7 @@ export async function runPlanningSweep(
           r.considered === 0
             ? 'Nobody is waiting on stock.'
             : r.stillUndated > 0
-              ? `${r.newlyDated} newly dated, ${r.redated} moved — ${r.stillUndated} still have no date anybody can give.`
+              ? `${r.newlyDated} newly dated, ${r.redated} moved: ${r.stillUndated} still have no date anybody can give.`
               : `${r.newlyDated} newly dated, ${r.redated} moved; every commitment has a date.`,
         detail: { ...r },
       };

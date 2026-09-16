@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Momentum Physical Therapy — ortho & sports rehab",
+      "seoTitle": "Momentum Physical Therapy: ortho & sports rehab",
       "seoDescription": "Orthopedic & sports physical therapy for injury recovery, post-op rehab and getting back to full strength. Book an evaluation online.",
       "root": {
         "kind": "element",
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A full session with your therapist — not passed off to an aide or a machine. Real hands-on treatment and coaching, every visit."
+                              "A full session with your therapist, not passed off to an aide or a machine. Real hands-on treatment and coaching, every visit."
                             ],
                             "id": "ca377e0c-445d-4ff8-bdb3-15d3ed2464e8",
                             "ord": "a1"
@@ -764,7 +764,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A clear diagnosis, a real plan, and a target to be back to your sport, your job or your routine — not an open-ended schedule of visits."
+                              "A clear diagnosis, a real plan, and a target to be back to your sport, your job or your routine, not an open-ended schedule of visits."
                             ],
                             "id": "56ab26cd-e200-4834-ae0c-701fba8f9f44",
                             "ord": "a1"
@@ -813,7 +813,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Straight-talking visits with clear times and prices. Full availability is on the booking page — pick a therapist and a slot that works for you."
+                          "Straight-talking visits with clear times and prices. Full availability is on the booking page. Pick a therapist and a slot that works for you."
                         ],
                         "id": "2b9f52c4-4f57-45b9-a5c9-54a394ee889e",
                         "ord": "a1"
@@ -872,7 +872,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
-                            "children": ["The full assessment — find the cause, build the plan."],
+                            "children": ["The full assessment: find the cause, build the plan."],
                             "id": "8336eeda-f58a-490e-a585-adb03367c7bc",
                             "ord": "a2"
                           }
@@ -1106,7 +1106,7 @@
                         "kind": "element",
                         "tag": "h2",
                         "class": "text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl",
-                        "children": ["Evaluate, treat, rebuild — the Momentum method"],
+                        "children": ["Evaluate, treat, rebuild: the Momentum method"],
                         "id": "b7e75a50-d06b-423a-8050-a8a1ed5d95ec",
                         "ord": "a0"
                       },
@@ -1115,7 +1115,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Most rehab chases the pain. We chase the cause. Every patient starts with a full evaluation, so we treat the reason the tissue failed — not just the spot that hurts."
+                          "Most rehab chases the pain. We chase the cause. Every patient starts with a full evaluation, so we treat the reason the tissue failed, not just the spot that hurts."
                         ],
                         "id": "7107c653-50a0-401a-b4b1-c107c19d6d91",
                         "ord": "a1"
@@ -1125,7 +1125,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "From there it’s hands-on treatment to settle things down, then loaded, progressive rehab to build real capacity back. That last step is what keeps the injury from coming back — and gets you doing more than you did before."
+                          "From there it’s hands-on treatment to settle things down, then loaded, progressive rehab to build real capacity back. That last step is what keeps the injury from coming back, and gets you doing more than you did before."
                         ],
                         "id": "ba382c62-9211-4c70-9aa0-8cc95c40f663",
                         "ord": "a2"
@@ -1190,7 +1190,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll work with a doctor of physical therapy who knows your history and your goals."
+                          "Book by name: you’ll work with a doctor of physical therapy who knows your history and your goals."
                         ],
                         "id": "679bd38f-186c-49eb-afcf-9c6b5d80aa7a",
                         "ord": "a1"
@@ -1303,7 +1303,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Return-to-sport rehab and dry needling — the work that gets athletes back to full speed."
+                                  "Return-to-sport rehab and dry needling: the work that gets athletes back to full speed."
                                 ],
                                 "id": "9e3923b2-4427-4d58-a87e-3d49b66781f8",
                                 "ord": "a2"
@@ -1359,7 +1359,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Post-surgical recovery and manual therapy — careful, progressive rebuilding that lasts."
+                                  "Post-surgical recovery and manual therapy: careful, progressive rebuilding that lasts."
                                 ],
                                 "id": "941fa594-52b7-4f86-9074-5f8cc18e9b49",
                                 "ord": "a2"
@@ -1399,7 +1399,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“Blew out my knee skiing and the surgeon said six months. Momentum had me hiking again in four — and stronger than before I got hurt. They didn’t just rehab me, they rebuilt me.”"
+                      "“Blew out my knee skiing and the surgeon said six months. Momentum had me hiking again in four, and stronger than before I got hurt. They didn’t just rehab me, they rebuilt me.”"
                     ],
                     "id": "6cca07bf-3565-43f1-a714-1620096c5f0c",
                     "ord": "a0"
@@ -1474,7 +1474,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Momentum Physical Therapy",
+      "seoTitle": "Book: Momentum Physical Therapy",
       "seoDescription": "See what Momentum Physical Therapy offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1598,7 +1598,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "0d60c109-525e-4c69-83c2-3f91f14e87cf",
                         "ord": "a1"
@@ -1667,7 +1667,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Evaluations and post-op sessions hold a full slot with a therapist and a room, so we keep a card on file — nothing is charged unless you miss the visit or cancel with less than 24 hours’ notice."
+                              "Evaluations and post-op sessions hold a full slot with a therapist and a room, so we keep a card on file. Nothing is charged unless you miss the visit or cancel with less than 24 hours’ notice."
                             ],
                             "id": "5d034c4d-5630-4343-953d-4249c754a166",
                             "ord": "a1"
@@ -1703,7 +1703,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Momentum Physical Therapy",
+      "seoTitle": "About: Momentum Physical Therapy",
       "seoDescription": "Who Momentum Physical Therapy is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1762,7 +1762,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity — because getting out of pain and getting back to what you love are two different jobs, and we do both."
+                          "It’s part treatment room, part training floor. We diagnose hard, treat hands-on, and load you back to full capacity, because getting out of pain and getting back to what you love are two different jobs, and we do both."
                         ],
                         "id": "f1c58ede-f659-48fb-9e31-d8a6d430c714",
                         "ord": "a2"
@@ -1894,7 +1894,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We work to a target — a return-to-sport date, a lift, a job task — not an open-ended schedule of maintenance visits."
+                              "We work to a target (a return-to-sport date, a lift, a job task) not an open-ended schedule of maintenance visits."
                             ],
                             "id": "9238c81d-a408-4b46-81c8-6a05ad2f07c2",
                             "ord": "a1"
@@ -1922,7 +1922,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Momentum Physical Therapy",
+      "seoTitle": "Visit: Momentum Physical Therapy",
       "seoDescription": "Where to find Momentum Physical Therapy, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1959,7 +1959,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Momentum Physical Therapy will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Momentum Physical Therapy will get back to you, usually the same day."
                         ],
                         "id": "ab639673-a377-4b59-ad74-24c6c556707f",
                         "ord": "a1"
@@ -2411,7 +2411,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your time online — no phone tag, no waiting-room hold music."
+                      "See live availability and reserve your time online: no phone tag, no waiting-room hold music."
                     ],
                     "id": "9611f758-be0c-499d-8b44-68bb0d8004fc",
                     "ord": "a1"

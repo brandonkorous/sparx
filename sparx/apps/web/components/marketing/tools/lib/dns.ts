@@ -34,7 +34,7 @@ export async function lookupTxt(name: string): Promise<TxtLookup> {
     const records = (json.Answer ?? []).map((a) => cleanTxt(a.data ?? '')).filter(Boolean);
     return { name, records };
   } catch {
-    return { name, records: [], error: 'Network error — could not reach the DNS resolver.' };
+    return { name, records: [], error: 'Network error: could not reach the DNS resolver.' };
   }
 }
 

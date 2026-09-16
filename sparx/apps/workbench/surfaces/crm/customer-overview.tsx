@@ -295,7 +295,7 @@ function RecentActivity({ activity }: { activity: CustomerActivity[] }) {
                 </Text>
                 {item.description ? (
                   <Text as="span" className="text-sm">
-                    {' — '}
+                    {': '}
                     {item.description}
                   </Text>
                 ) : null}
@@ -480,7 +480,7 @@ export function CustomerOverviewTab({
           <EmptyState
             icon={<AlertTriangle className="size-6" aria-hidden />}
             title="Some of this couldn't load"
-            description="There was a problem reaching the server, so this customer's deals, tasks, orders and activity aren't showing. Nothing is wrong with the customer — try again in a moment."
+            description="There was a problem reaching the server, so this customer's deals, tasks, orders and activity aren't showing. Nothing is wrong with the customer. Try again in a moment."
           />
         </Card>
       ) : (
@@ -489,7 +489,7 @@ export function CustomerOverviewTab({
           <EmptyState
             icon={<Inbox className="size-6" aria-hidden />}
             title="Nothing here yet"
-            description={`${customerName(customer)} has no deals, tasks, orders or logged activity so far. As soon as any of that happens — or you log a note — it will show up here.`}
+            description={`${customerName(customer)} has no deals, tasks, orders or logged activity so far. As soon as any of that happens (or you log a note), it will show up here.`}
           />
         </Card>
       )}

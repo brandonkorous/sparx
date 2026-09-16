@@ -220,21 +220,21 @@ function RunProgress({ runId }: { runId: string }) {
                 it was not true. */}
             {running
               ? run.dryRun
-                ? 'Trying it out — nothing is being saved…'
+                ? 'Trying it out: nothing is being saved…'
                 : 'Bringing your business over…'
               : run.status === 'failed'
                 ? 'Some of this did not land'
                 : run.dryRun
-                  ? 'Practice run finished — nothing was saved'
+                  ? 'Practice run finished: nothing was saved'
                   : 'Your business is here'}
           </AlertTitle>
           <AlertDescription>
             {running
               ? run.dryRun
                 ? 'We are checking every row against what you already have. Nothing is being written to your business.'
-                : 'You can close this and come back — it keeps going without you.'
+                : 'You can close this and come back. It keeps going without you.'
               : run.status === 'failed'
-                ? 'The rest did come across. Nothing below has to be done again — bringing the same file in a second time updates what is here rather than duplicating it.'
+                ? 'The rest did come across. Nothing below has to be done again: bringing the same file in a second time updates what is here rather than duplicating it.'
                 : run.dryRun
                   ? 'This is exactly what a real import would do. Run it for real when you are ready.'
                   : 'Everything below is now in your account.'}
@@ -251,7 +251,7 @@ function RunProgress({ runId }: { runId: string }) {
                 `Moving from: ${run.vendor ?? 'not recorded'}`,
                 `Started: ${run.startedAt ?? 'unknown'}`,
                 `Reference: ${runId}`,
-                run.dryRun ? 'This was a practice run — nothing was being saved.' : '',
+                run.dryRun ? 'This was a practice run. Nothing was being saved.' : '',
                 '',
                 'What happened per kind of record:',
                 ...run.entities.map(
@@ -267,7 +267,7 @@ function RunProgress({ runId }: { runId: string }) {
                         .slice(0, 5)
                         .map(
                           (problem) =>
-                            `  ${problem.naturalKey ?? `row ${problem.rowIndex + 2}`} — ${problem.message ?? 'no reason given'}`
+                            `  ${problem.naturalKey ?? `row ${problem.rowIndex + 2}`} (${problem.message ?? 'no reason given'})`
                         ),
                     ]),
               ]
@@ -339,7 +339,7 @@ function RunProgress({ runId }: { runId: string }) {
                 </Badge>
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <Text className="text-sm">
-                    {problem.naturalKey !== null ? `${problem.naturalKey} — ` : ''}
+                    {problem.naturalKey !== null ? `${problem.naturalKey}: ` : ''}
                     {problem.message}
                   </Text>
                   <Text className="text-sm">
@@ -453,7 +453,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
             description: result.skipped
               .map(
                 (skip) =>
-                  `${entityLabel(skip.entity, skip.rows)} — the ${skip.module} module is switched off.`
+                  `${entityLabel(skip.entity, skip.rows)}: the ${skip.module} module is switched off.`
               )
               .join(' '),
             type: 'info',
@@ -546,7 +546,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
               </Heading>
               <Text>
                 {vendor?.connector == null
-                  ? 'Drop the export your current platform made. We read it right here on your own machine and tell you what is in it — nothing is sent anywhere until you say so.'
+                  ? 'Drop the export your current platform made. We read it right here on your own machine and tell you what is in it. Nothing is sent anywhere until you say so.'
                   : `Two ways in, and they end up in the same place. Connect to ${vendor.name} and we fetch it for you, or drop an export in if you would rather. Either way you see exactly what will happen before anything is saved.`}
               </Text>
             </div>
@@ -587,7 +587,7 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
               <FileUp className="size-8" aria-hidden />
               <span className="flex flex-col gap-1">
                 <Text className="font-medium">Choose a file, or drop one here</Text>
-                <Text className="text-sm">CSV, XML or JSON — whatever your platform gave you.</Text>
+                <Text className="text-sm">CSV, XML or JSON: whatever your platform gave you.</Text>
               </span>
               <input
                 ref={inputRef}

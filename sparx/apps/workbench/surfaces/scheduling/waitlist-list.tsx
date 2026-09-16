@@ -408,7 +408,7 @@ function WaitlistRow({ ctx, entry }: { ctx: SurfaceContext; entry: WaitlistEntry
   const bookError = accept.isError
     ? schedulingErrorMessage(
         accept.error,
-        'Could not book that time. It may have just been taken — try another within their window.'
+        'Could not book that time. It may have just been taken. Try another within their window.'
       )
     : null;
 

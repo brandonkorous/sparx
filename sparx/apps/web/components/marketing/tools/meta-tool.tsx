@@ -18,7 +18,7 @@ function counter(len: number, max: number): React.ReactNode {
 }
 
 export function MetaTool() {
-  const [title, setTitle] = React.useState('sparx — the modular content & commerce OS');
+  const [title, setTitle] = React.useState('sparx: the modular content & commerce OS');
   const [description, setDescription] = React.useState(
     'One platform for sites, CRM, CMS, email, and B2B. Activate only what you need, on one data layer and one bill.'
   );

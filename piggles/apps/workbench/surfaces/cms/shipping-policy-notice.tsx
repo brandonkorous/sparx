@@ -29,7 +29,7 @@ export function ShippingPolicyNotice({ because }: { because: ShippingEvidence | 
         <AlertDescription>
           People buying from you will want to know how long delivery takes and what it costs, and
           there is no shipping policy on your site yet. It is under <strong>Optional pages</strong>{' '}
-          below — add it, make the wording fit how you actually deliver, then publish it.
+          below. Add it, make the wording fit how you actually deliver, then publish it.
         </AlertDescription>
       </AlertContent>
     </Alert>

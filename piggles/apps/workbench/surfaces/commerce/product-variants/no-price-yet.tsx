@@ -76,7 +76,7 @@ export function NoPriceYet({
           <FieldStatus status="error">{problem}</FieldStatus>
         ) : (
           <FieldDescription>
-            Your own reference for this version — on labels, on invoices, in your records.
+            Your own reference for this version: on labels, on invoices, in your records.
           </FieldDescription>
         )}
       </Field>

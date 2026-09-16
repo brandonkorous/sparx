@@ -155,7 +155,7 @@ describe('engagementService — sending and logging', () => {
     expect(activities.filter((row) => row.type === 'call.missed')).toHaveLength(1);
     // A call with no note still reads as a sentence, not a log line.
     const missed = activities.find((row) => row.type === 'call.missed');
-    expect(missed?.description).toBe('Called them — no answer');
+    expect(missed?.description).toBe('Called them: no answer');
   });
 
   it('writes a note onto the same timeline as everything else', async () => {

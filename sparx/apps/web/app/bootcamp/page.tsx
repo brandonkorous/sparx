@@ -24,12 +24,12 @@ export const revalidate = 300;
 type SearchParams = Record<string, string | string[] | undefined>;
 
 export const metadata: Metadata = {
-  title: 'Business OS Bootcamp — build your business, launch on sparx',
+  title: 'Business OS Bootcamp: build your business, launch on sparx',
   description:
-    'Find a Business OS Bootcamp near you or online. Certified sparx partners guide you through building a real business — site, CRM, email, and automation — and graduating the day you publish.',
+    'Find a Business OS Bootcamp near you or online. Certified sparx partners guide you through building a real business (site, CRM, email, and automation) and graduating the day you publish.',
   alternates: { canonical: '/bootcamp' },
   openGraph: {
-    title: 'Business OS Bootcamp — build your business. Launch on sparx.',
+    title: 'Business OS Bootcamp: build your business. Launch on sparx.',
     description:
       'In-person and virtual bootcamps led by certified sparx partners. Start with a 14-day free trial and graduate the day you launch.',
     url: '/bootcamp',
@@ -96,7 +96,7 @@ export default async function BootcampPage({
             <Spark color="var(--color-primary)" />
           </>
         }
-        lede="What you'll build, what it costs, and how registration works — before you sign up."
+        lede="What you'll build, what it costs, and how registration works: before you sign up."
       />
     </>
   );

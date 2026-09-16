@@ -186,7 +186,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0 whitespace-nowrap"
-            title="Add an author — hold Shift to open alongside, Alt for a new window"
+            title="Add an author: hold Shift to open alongside, Alt for a new window"
             onClick={create}
           >
             <Plus className="size-4" aria-hidden />
@@ -220,7 +220,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No authors yet',
               description:
-                'Authors are the names that appear on what you publish — a photo and a short biography each. Add your first one and you can pick it on any post.',
+                'Authors are the names that appear on what you publish: a photo and a short biography each. Add your first one and you can pick it on any post.',
               actions: (
                 <Button
                   size="sm"

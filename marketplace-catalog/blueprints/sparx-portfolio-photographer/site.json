@@ -508,8 +508,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Mara Ilić — photographer",
-      "seoDescription": "Mara Ilić is a photographer working in portrait, landscape and still life — selected series, a photographer’s statement, and how to commission work or buy a print.",
+      "seoTitle": "Mara Ilić: photographer",
+      "seoDescription": "Mara Ilić is a photographer working in portrait, landscape and still life: selected series, a photographer’s statement, and how to commission work or buy a print.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -533,7 +533,7 @@
                     "class": "aspect-video w-full object-cover",
                     "attrs": {
                       "src": "https://images.unsplash.com/photo-1534568292380-49954e6859e8?ixid=M3wxMjA3fDB8MXxzZWFyY2h8Mnx8bWluaW1hbCUyMGxhbmRzY2FwZSUyMGhvcml6b24lMjBmb2clMjBmaXJzdCUyMGxpZ2h0fGVufDB8MHx8fDE3ODYzOTk3NTR8MA&ixlib=rb-4.1.0&w=1600&q=80&fit=crop",
-                      "alt": "A wide, still landscape at first light — a low horizon and pale, even sky",
+                      "alt": "A wide, still landscape at first light: a low horizon and pale, even sky",
                       "loading": "eager"
                     },
                     "id": "0e8de17d-d1a6-406a-a2a8-9f92b20f9e83",
@@ -566,7 +566,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content @2xl:text-xl",
                         "children": [
-                          "Mara Ilić — portrait, landscape and still-life photography, made slowly and in natural light. Selected series below; the rest are on the work page."
+                          "Mara Ilić: portrait, landscape and still-life photography, made slowly and in natural light. Selected series below; the rest are on the work page."
                         ],
                         "id": "056b4f55-cef8-4fea-909c-a5cea677fe60",
                         "ord": "a1"
@@ -670,7 +670,7 @@
                             "tag": "p",
                             "class": "max-w-2xl text-2xl font-normal leading-snug tracking-tight text-base-content @2xl:text-3xl",
                             "children": [
-                              "Three bodies of work made over the last few years — the coast, the rooms, and the people who live by them."
+                              "Three bodies of work made over the last few years: the coast, the rooms, and the people who live by them."
                             ],
                             "id": "05e0e996-507c-435e-99bc-72431f685ea4",
                             "ord": "a1"
@@ -1018,7 +1018,7 @@
                     "tag": "p",
                     "class": "text-2xl font-normal leading-snug tracking-tight text-base-content @2xl:text-4xl",
                     "children": [
-                      "I photograph slowly, in the light that is already there — and I wait for the moment a thing goes quiet enough to hold still."
+                      "I photograph slowly, in the light that is already there, and I wait for the moment a thing goes quiet enough to hold still."
                     ],
                     "id": "e40588d1-a317-4018-a8a1-1f4d8268b8b0",
                     "ord": "a0"
@@ -1046,7 +1046,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content @2xl:text-xl",
                     "children": [
-                      "Commissions and print sales by request — portraits, editorial, and a small edition of archival prints from each series."
+                      "Commissions and print sales by request: portraits, editorial, and a small edition of archival prints from each series."
                     ],
                     "id": "046025f0-b2f3-4055-a3fa-46b637ec996f",
                     "ord": "a0"
@@ -1092,8 +1092,8 @@
       "name": "Work",
       "kind": "singleton",
       "slug": "work",
-      "seoTitle": "Work — Mara Ilić",
-      "seoDescription": "Selected projects and case studies by Mara Ilić — the work, the thinking, and the outcome.",
+      "seoTitle": "Work: Mara Ilić",
+      "seoDescription": "Selected projects and case studies by Mara Ilić: the work, the thinking, and the outcome.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1124,7 +1124,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-secondary",
                     "children": [
-                      "Complete bodies of work — landscape, still life and portrait. Each opens to the full series and a short note on where it was made."
+                      "Complete bodies of work: landscape, still life and portrait. Each opens to the full series and a short note on where it was made."
                     ],
                     "id": "0e807aa9-4e48-4885-b658-ae9489124a83",
                     "ord": "a1"
@@ -1257,8 +1257,8 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About Mara Ilić — photographer",
-      "seoDescription": "A photographer working slowly and in natural light, between the coast and the studio — portraiture, landscape and still life, printed in small editions.",
+      "seoTitle": "About Mara Ilić: photographer",
+      "seoDescription": "A photographer working slowly and in natural light, between the coast and the studio: portraiture, landscape and still life, printed in small editions.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1294,7 +1294,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I am a photographer working in portrait, landscape and still life. I make pictures slowly and in the light that is already there — I would rather wait an hour for the weather than change it afterwards."
+                          "I am a photographer working in portrait, landscape and still life. I make pictures slowly and in the light that is already there: I would rather wait an hour for the weather than change it afterwards."
                         ],
                         "id": "1726db1c-9824-4c69-be3d-97f74fe50104",
                         "ord": "a1"
@@ -1304,7 +1304,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "My work moves between the coast and the studio: long series made outdoors over a season, and quieter still lifes built from ordinary things on a windowsill. Whatever the subject, I am after the same moment — when a scene settles and goes still enough to hold."
+                          "My work moves between the coast and the studio: long series made outdoors over a season, and quieter still lifes built from ordinary things on a windowsill. Whatever the subject, I am after the same moment, when a scene settles and goes still enough to hold."
                         ],
                         "id": "ed72c56c-9bc5-4966-9bb7-93987b3bd9f6",
                         "ord": "a2"
@@ -1358,7 +1358,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Portraiture, landscape and still life — on film and digital, in natural light. Archival pigment prints in small editions."
+                              "Portraiture, landscape and still life: on film and digital, in natural light. Archival pigment prints in small editions."
                             ],
                             "id": "83758651-9031-4207-94c5-1bfe0a4cefe3",
                             "ord": "a1"
@@ -1386,8 +1386,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Mara Ilić",
-      "seoDescription": "Start a project with Mara Ilić — availability, what a good brief looks like, and where to reach them.",
+      "seoTitle": "Contact: Mara Ilić",
+      "seoDescription": "Start a project with Mara Ilić: availability, what a good brief looks like, and where to reach them.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1423,7 +1423,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind — the subject, roughly when, and where — and I will write back."
+                          "I take on a few portrait and editorial commissions a year, and sell a small edition of archival prints from each series. Tell me a little about what you have in mind (the subject, roughly when, and where) and I will write back."
                         ],
                         "id": "0603d0ea-f86b-4277-84d4-03eac711de02",
                         "ord": "a1"
@@ -1715,8 +1715,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Project — Mara Ilić",
-      "seoDescription": "A project by Mara Ilić — the brief, the process, and the result, in one case study.",
+      "seoTitle": "Project: Mara Ilić",
+      "seoDescription": "A project by Mara Ilić: the brief, the process, and the result, in one case study.",
       "root": {
         "kind": "element",
         "tag": "div",

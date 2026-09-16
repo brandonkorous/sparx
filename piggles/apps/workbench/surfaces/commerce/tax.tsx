@@ -197,7 +197,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
 
               <FormSection
                 title="Places you collect tax"
-                description="A place is somewhere you are registered to collect tax — usually because you have a shop, an office, staff, or enough sales there."
+                description="A place is somewhere you are registered to collect tax, usually because you have a shop, an office, staff, or enough sales there."
                 action={
                   <Button
                     size="sm"
@@ -218,7 +218,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                     size="sm"
                     icon={<Icon glyph={faMoneyBill} className="size-6" aria-hidden />}
                     title="No places set up yet"
-                    description="Add the first place you collect tax — usually your own country or state — then set its rate and switch it on."
+                    description="Add the first place you collect tax (usually your own country or state) then set its rate and switch it on."
                   />
                 ) : (
                   <div className="flex flex-col">
@@ -230,7 +230,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
               </FormSection>
 
               <Text className="px-1 text-sm">
-                Customers who don&apos;t pay tax — resellers, charities, wholesale accounts — are
+                Customers who don&apos;t pay tax (resellers, charities, wholesale accounts) are
                 handled on their own customer record, not here, so their certificate stays with
                 them.
               </Text>

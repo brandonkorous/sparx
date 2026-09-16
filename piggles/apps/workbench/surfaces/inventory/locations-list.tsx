@@ -54,8 +54,8 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 function emptyAdvice(search: string, typeLabel: string | null, includeClosed: boolean): string {
   const parts: string[] = [];
   if (search) parts.push('Try part of a location’s name or its code.');
-  if (typeLabel) parts.push(`You are only seeing “${typeLabel}” places — switch to every kind.`);
-  if (!includeClosed) parts.push('Closed locations are hidden — turn them on to include those.');
+  if (typeLabel) parts.push(`You are only seeing “${typeLabel}” places. Switch to every kind.`);
+  if (!includeClosed) parts.push('Closed locations are hidden. Turn them on to include those.');
   return parts.join(' ');
 }
 

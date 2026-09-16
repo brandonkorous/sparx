@@ -166,7 +166,7 @@
     {
       "handle": "consultation",
       "name": "Session consultation",
-      "description": "A free, no-pressure call to plan your session — outfits, timing, the look you’re after.",
+      "description": "A free, no-pressure call to plan your session: outfits, timing, the look you’re after.",
       "durationMinutes": 20,
       "priceCents": 0,
       "assignmentStrategy": "customer_choice",
@@ -183,7 +183,7 @@
     {
       "handle": "mini-session",
       "name": "Mini session",
-      "description": "A quick, bright studio sitting — perfect for a seasonal update or a single great portrait.",
+      "description": "A quick, bright studio sitting: perfect for a seasonal update or a single great portrait.",
       "durationMinutes": 20,
       "priceCents": 12500,
       "assignmentStrategy": "customer_choice",
@@ -206,7 +206,7 @@
     {
       "handle": "family-session",
       "name": "Family session",
-      "description": "A relaxed, playful session on location — the park, the beach or your own home.",
+      "description": "A relaxed, playful session on location: the park, the beach or your own home.",
       "durationMinutes": 90,
       "priceCents": 32500,
       "bufferAfterMin": 15,
@@ -224,7 +224,7 @@
     {
       "handle": "newborn-session",
       "name": "Newborn session",
-      "description": "A gentle, unhurried studio session in the first few weeks — soft light, lots of cuddles.",
+      "description": "A gentle, unhurried studio session in the first few weeks: soft light, lots of cuddles.",
       "durationMinutes": 90,
       "priceCents": 38500,
       "bufferAfterMin": 15,
@@ -248,7 +248,7 @@
     {
       "handle": "branding-session",
       "name": "Personal branding session",
-      "description": "On-brand portraits for your website, socials and press — planned around your business.",
+      "description": "On-brand portraits for your website, socials and press: planned around your business.",
       "durationMinutes": 75,
       "priceCents": 45000,
       "bufferAfterMin": 10,
@@ -272,7 +272,7 @@
     {
       "handle": "headshot-session",
       "name": "Headshot session",
-      "description": "A crisp, confident studio headshot — quick, easy and ready for LinkedIn the same week.",
+      "description": "A crisp, confident studio headshot: quick, easy and ready for LinkedIn the same week.",
       "durationMinutes": 30,
       "priceCents": 18500,
       "assignmentStrategy": "customer_choice",

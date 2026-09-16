@@ -73,7 +73,7 @@ export function CollectionBasics({
           }
         />
         <FieldDescription>
-          The end of this group&apos;s page address — yoursite.com/collections/
+          The end of this group&apos;s page address: yoursite.com/collections/
           {effectiveHandle || '…'}.
         </FieldDescription>
       </Field>

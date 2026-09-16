@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Kald — a Nordic day spa & bathhouse",
+      "seoTitle": "Kald: a Nordic day spa & bathhouse",
       "seoDescription": "Kald is a mineral bathhouse and day spa for thermal soaks, a sauna and cold-plunge circuit, massage and facials. Book your session online.",
       "root": {
         "kind": "element",
@@ -587,7 +587,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Kald is a mineral bathhouse and day spa — a spare, elemental place to soak, sweat, plunge and slow all the way down. Book an hour that’s genuinely yours."
+                      "Kald is a mineral bathhouse and day spa: a spare, elemental place to soak, sweat, plunge and slow all the way down. Book an hour that’s genuinely yours."
                     ],
                     "id": "91f42f34-0748-4e5f-8294-9ba174d58ef6",
                     "ord": "a1"
@@ -867,7 +867,7 @@
                                 "kind": "element",
                                 "tag": "h3",
                                 "class": "text-xl font-semibold text-base-content",
-                                "children": ["Massage — 60 minutes"],
+                                "children": ["Massage: 60 minutes"],
                                 "id": "efb55fe8-0449-4a62-8bff-f5992eb66b29",
                                 "ord": "a0"
                               },
@@ -1028,7 +1028,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Warm, then cold, then rest — again. It’s an old idea and a simple one: the contrast is what settles the body and clears the head. There’s nothing to master, and no wrong way to do it."
+                          "Warm, then cold, then rest: again. It’s an old idea and a simple one: the contrast is what settles the body and clears the head. There’s nothing to master, and no wrong way to do it."
                         ],
                         "id": "916231af-7b7d-4e10-b1fb-bab932dba792",
                         "ord": "a1"
@@ -1108,7 +1108,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "A geothermal soaking pool, a timber sauna and a cold plunge — the whole elemental circuit, kept spotless and calm."
+                              "A geothermal soaking pool, a timber sauna and a cold plunge: the whole elemental circuit, kept spotless and calm."
                             ],
                             "id": "ea4a7f26-4fea-4255-99ff-05b9d8b02e4a",
                             "ord": "a1"
@@ -1162,7 +1162,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Massage, mineral facials and body treatments from therapists you book by name — quiet, skilled, unrushed."
+                              "Massage, mineral facials and body treatments from therapists you book by name: quiet, skilled, unrushed."
                             ],
                             "id": "300f929c-bef2-4690-9781-12565394b128",
                             "ord": "a1"
@@ -1211,7 +1211,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book a therapist by name — you’ll see the same person each visit."
+                          "Book a therapist by name: you’ll see the same person each visit."
                         ],
                         "id": "9b44afb2-4a4c-4bb1-98ed-c416efbf5b07",
                         "ord": "a1"
@@ -1459,7 +1459,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Kald",
+      "seoTitle": "Book: Kald",
       "seoDescription": "See what Kald offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1510,7 +1510,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose a session to see prices and live availability, then pick your time — or your therapist."
+                      "Choose a session to see prices and live availability, then pick your time, or your therapist."
                     ],
                     "id": "e49eeebb-967c-4bdd-94c7-5136aa1d6348",
                     "ord": "a1"
@@ -1583,7 +1583,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "02e03cfe-25eb-409b-815f-c4f1d613dc7a",
                         "ord": "a1"
@@ -1690,7 +1690,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Kald",
+      "seoTitle": "About: Kald",
       "seoDescription": "Who Kald is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1739,7 +1739,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We built Kald around one thing: warm water, cold air, and the quiet in between. No noise, no upsell, no rush — just the old ritual of soaking and plunging, done well."
+                          "We built Kald around one thing: warm water, cold air, and the quiet in between. No noise, no upsell, no rush. Just the old ritual of soaking and plunging, done well."
                         ],
                         "id": "da5e91df-a138-4ffd-848e-9354184af883",
                         "ord": "a1"
@@ -1827,7 +1827,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Come ten minutes early. We’ll show you the circuit and let you set your own pace — warm, cold, rest, repeat."
+                              "Come ten minutes early. We’ll show you the circuit and let you set your own pace: warm, cold, rest, repeat."
                             ],
                             "id": "627173c0-cdca-4187-995f-f76ad0dd4c56",
                             "ord": "a1"
@@ -1909,7 +1909,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Kald",
+      "seoTitle": "Visit: Kald",
       "seoDescription": "Where to find Kald, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1946,7 +1946,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Kald will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Kald will get back to you, usually the same day."
                         ],
                         "id": "c21fe80e-34ce-4753-897e-04d3ab664325",
                         "ord": "a1"
@@ -2396,7 +2396,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your session online — no phone tag."
+                      "See live availability and reserve your session online: no phone tag."
                     ],
                     "id": "d0a266e5-5563-4b53-bbe4-1f1882146682",
                     "ord": "a1"

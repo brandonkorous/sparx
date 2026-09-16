@@ -111,7 +111,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="Add a company — hold Shift to open alongside, Alt for a new window"
+            title="Add a company: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open('crm.account.detail', { id: 'new' }, { target: targetFor(event) });
             }}
@@ -160,7 +160,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <PaneLoadError
             icon={<Icon glyph={faBuilding} className="size-6" aria-hidden />}
             title="Could not load your companies"
-            description="Something went wrong reaching the server. It may be a temporary problem — try again in a moment."
+            description="Something went wrong reaching the server. It may be a temporary problem. Try again in a moment."
             onRetry={() => {
               void refetch();
             }}
@@ -179,7 +179,7 @@ export function CompaniesListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No companies yet',
               description: tradeEnabled
-                ? 'The businesses you work with live here — each one holding its own credit limit, discount and payment terms, and the people you deal with there.'
+                ? 'The businesses you work with live here, each one holding its own credit limit, discount and payment terms, and the people you deal with there.'
                 : 'The businesses your contacts work for live here. Add one and you can see everyone you know there in a single place, and let new contacts from their email domain be recognized automatically.',
             }}
           />

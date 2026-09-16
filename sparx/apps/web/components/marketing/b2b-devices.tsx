@@ -24,7 +24,7 @@ export function B2bTerms() {
       <SectionHeader
         accent={M.color}
         headline="Net terms, credit, and what’s outstanding"
-        lede="Sell on terms without selling blind. Set Net 15 to 60 and a credit limit per account; orders on terms invoice automatically with the buyer’s PO number and count against the limit. When an account would run over, the order holds for your approval — and A/R aging shows what’s outstanding by age."
+        lede="Sell on terms without selling blind. Set Net 15 to 60 and a credit limit per account; orders on terms invoice automatically with the buyer’s PO number and count against the limit. When an account would run over, the order holds for your approval, and A/R aging shows what’s outstanding by age."
       />
       <div className="mkt-b2b-split mt-12">
         <Cycle
@@ -137,15 +137,15 @@ export function B2bBulkPo() {
     },
     {
       title: 'Saved carts & one-click reorder',
-      body: 'Accounts keep named saved carts and reorder a past order in a click — the routine wholesale buy that doesn’t need a fresh quote every time.',
+      body: 'Accounts keep named saved carts and reorder a past order in a click: the routine wholesale buy that doesn’t need a fresh quote every time.',
     },
     {
       title: 'Quantity rules per account',
-      body: 'Set minimum and maximum order quantities, case packs, and minimum order values per product per account — the rules that make wholesale wholesale.',
+      body: 'Set minimum and maximum order quantities, case packs, and minimum order values per product per account: the rules that make wholesale wholesale.',
     },
     {
       title: 'Approval holds over a threshold',
-      body: 'Orders above a configured amount hold for staff approval before they’re placed — and so do orders that would push an account over its credit limit.',
+      body: 'Orders above a configured amount hold for staff approval before they’re placed, and so do orders that would push an account over its credit limit.',
     },
   ];
   return (
@@ -153,7 +153,7 @@ export function B2bBulkPo() {
       <SectionHeader
         accent={M.color}
         headline="Ordering the way buyers actually order"
-        lede="Wholesale isn’t a retail cart with a bigger total. POs, saved carts, case quantities, and approval thresholds are built into the same checkout — so a routine reorder is one click and a big first order routes for sign-off."
+        lede="Wholesale isn’t a retail cart with a bigger total. POs, saved carts, case quantities, and approval thresholds are built into the same checkout, so a routine reorder is one click and a big first order routes for sign-off."
       />
       <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2">
         {rows.map((r) => (

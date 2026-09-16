@@ -97,7 +97,7 @@ export function EarlyAccessForm() {
       <SubmitButton pending={pending} />
 
       <p className="m-0 text-sm">
-        No spam. One email when your invite is ready — and the occasional note on what shipped.
+        No spam. One email when your invite is ready, and the occasional note on what shipped.
       </p>
     </form>
   );

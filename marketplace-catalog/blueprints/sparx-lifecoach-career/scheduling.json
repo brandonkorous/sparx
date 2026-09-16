@@ -6,7 +6,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [1440, 120],
-      "policyText": "Please give at least 24 hours’ notice to reschedule or cancel — no charge when you let us know in time. We send a reminder the day before and two hours ahead."
+      "policyText": "Please give at least 24 hours’ notice to reschedule or cancel: no charge when you let us know in time. We send a reminder the day before and two hours ahead."
     },
     {
       "handle": "coaching-no-show",
@@ -149,7 +149,7 @@
     {
       "handle": "career-strategy-session",
       "name": "Career strategy session",
-      "description": "A focused working session to name your next move and reverse-engineer the plan — the conversations, the visibility and the skills that get you there.",
+      "description": "A focused working session to name your next move and reverse-engineer the plan: the conversations, the visibility and the skills that get you there.",
       "durationMinutes": 60,
       "priceCents": 20000,
       "assignmentStrategy": "customer_choice",
@@ -166,7 +166,7 @@
     {
       "handle": "executive-coaching-session",
       "name": "Executive coaching session",
-      "description": "One-to-one coaching for senior leaders — executive presence, influence and high-stakes decision-making, with a coach who’s led at the top.",
+      "description": "One-to-one coaching for senior leaders: executive presence, influence and high-stakes decision-making, with a coach who’s led at the top.",
       "durationMinutes": 60,
       "priceCents": 25000,
       "assignmentStrategy": "customer_choice",
@@ -183,7 +183,7 @@
     {
       "handle": "leadership-coaching-session",
       "name": "Leadership coaching session",
-      "description": "Grow into the leader the role needs — managing up, leading a team for the first time, and building the confidence to make the call.",
+      "description": "Grow into the leader the role needs: managing up, leading a team for the first time, and building the confidence to make the call.",
       "durationMinutes": 60,
       "priceCents": 22000,
       "assignmentStrategy": "customer_choice",
@@ -200,7 +200,7 @@
     {
       "handle": "interview-prep-session",
       "name": "Interview prep session",
-      "description": "Walk in ready — sharpen your positioning, rehearse the hard questions and turn your story into answers that land.",
+      "description": "Walk in ready: sharpen your positioning, rehearse the hard questions and turn your story into answers that land.",
       "durationMinutes": 45,
       "priceCents": 18000,
       "assignmentStrategy": "customer_choice",
@@ -217,7 +217,7 @@
     {
       "handle": "promotion-strategy-session",
       "name": "Promotion strategy session",
-      "description": "Build the case for your promotion — the results to surface, the stakeholders to win over and the ask that makes it obvious.",
+      "description": "Build the case for your promotion: the results to surface, the stakeholders to win over and the ask that makes it obvious.",
       "durationMinutes": 45,
       "priceCents": 19000,
       "assignmentStrategy": "customer_choice",

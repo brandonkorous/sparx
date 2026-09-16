@@ -103,7 +103,7 @@ function Identity({ isNew, draft, set, codeError }: Omit<FieldsProps, 'showAddrW
           <FieldStatus status="error">{codeError}</FieldStatus>
         ) : (
           <FieldDescription>
-            A short label for this place, printed on shelf tickets and paperwork — letters, numbers
+            A short label for this place, printed on shelf tickets and paperwork: letters, numbers
             and dashes, up to fifteen. It must be different from your other locations.
           </FieldDescription>
         )}

@@ -170,7 +170,7 @@ export function SaleLines({
   return (
     <FormSection
       title="What they had"
-      description="Everything on this sale. Pick it off your list, or write it in — a one-off is just as real as something you sell every day."
+      description="Everything on this sale. Pick it off your list, or write it in: a one-off is just as real as something you sell every day."
     >
       {lines.length > 0 ? (
         <div className="flex flex-col gap-3">

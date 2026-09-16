@@ -509,13 +509,13 @@ export function describeCall(direction: string, outcome: string | null): string 
     case 'connected':
       return who;
     case 'no_answer':
-      return `${who} — no answer`;
+      return `${who}: no answer`;
     case 'voicemail':
-      return `${who} — left a voicemail`;
+      return `${who}: left a voicemail`;
     case 'busy':
-      return `${who} — line was busy`;
+      return `${who}: line was busy`;
     case 'wrong_number':
-      return `${who} — wrong number`;
+      return `${who}: wrong number`;
     default:
       return who;
   }

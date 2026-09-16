@@ -97,7 +97,7 @@ export function AddSuppressionModal({ open, onClose }: { open: boolean; onClose:
             title: 'Could not add that address',
             description: suppressionErrorMessage(
               err,
-              'Something went wrong reaching the server. Nothing was changed — try again in a moment.'
+              'Something went wrong reaching the server. Nothing was changed. Try again in a moment.'
             ),
             type: 'error',
           });
@@ -173,7 +173,7 @@ export function AddSuppressionModal({ open, onClose }: { open: boolean; onClose:
             <Text className="text-sm">
               {productCopy(
                 'email.suppression.addNote',
-                'Piggles will stop sending this address every kind of email — newsletters, offers and account messages alike. You can take them off this list at any time.'
+                'Piggles will stop sending this address every kind of email: newsletters, offers and account messages alike. You can take them off this list at any time.'
               )}
             </Text>
           </form>

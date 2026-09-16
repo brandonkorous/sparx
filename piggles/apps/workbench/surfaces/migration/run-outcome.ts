@@ -41,8 +41,8 @@ export function landedBreakdown(landed: Landed, dryRun: boolean): string | null 
   if (landed.updated === 0) return null;
   if (landed.imported === 0) {
     return dryRun
-      ? 'none of them new — every one is somebody you already have'
-      : 'none of them new — every one was somebody you already had';
+      ? 'none of them new: every one is somebody you already have'
+      : 'none of them new: every one was somebody you already had';
   }
   return `${landed.imported.toLocaleString()} new · ${landed.updated.toLocaleString()} already here`;
 }
@@ -67,14 +67,14 @@ export function runHeadline(run: { status: string; dryRun: boolean }, landed: La
     return run.dryRun
       ? {
           tone: 'info',
-          title: 'Trying it out — nothing is being saved…',
+          title: 'Trying it out: nothing is being saved…',
           description:
             'We are checking every row against what you already have. Nothing is being written to your business.',
         }
       : {
           tone: 'info',
           title: 'Bringing your business over…',
-          description: 'You can close this and come back — it keeps going without you.',
+          description: 'You can close this and come back. It keeps going without you.',
         };
   }
 
@@ -83,7 +83,7 @@ export function runHeadline(run: { status: string; dryRun: boolean }, landed: La
       tone: 'danger',
       title: 'Some of this did not land',
       description:
-        'The rest did come across. Nothing below has to be done again — bringing the same file in a second time updates what is here rather than duplicating it.',
+        'The rest did come across. Nothing below has to be done again: bringing the same file in a second time updates what is here rather than duplicating it.',
     };
   }
 
@@ -93,7 +93,7 @@ export function runHeadline(run: { status: string; dryRun: boolean }, landed: La
       ? {
           tone: 'warning',
           title: 'Nobody in this file is new',
-          description: `All ${count} are people you already have. Doing this for real replaces their name, phone, tags and address with whatever this file says — including anything you have changed here since the file was made. Anyone who has been taken off marketing stays off it.`,
+          description: `All ${count} are people you already have. Doing this for real replaces their name, phone, tags and address with whatever this file says, including anything you have changed here since the file was made. Anyone who has been taken off marketing stays off it.`,
         }
       : {
           tone: 'warning',
@@ -105,7 +105,7 @@ export function runHeadline(run: { status: string; dryRun: boolean }, landed: La
   return run.dryRun
     ? {
         tone: 'success',
-        title: 'Practice run finished — nothing was saved',
+        title: 'Practice run finished: nothing was saved',
         description:
           'This is exactly what a real import would do. Run it for real when you are ready.',
       }

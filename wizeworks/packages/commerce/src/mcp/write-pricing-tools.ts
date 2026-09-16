@@ -33,7 +33,7 @@ const uuid = () => z.string().uuid();
 const createDiscount: McpToolDefinition = {
   name: 'create_discount',
   description:
-    'Create a discount — a code or automatic promotion (percentage / fixed amount / free shipping) with its conditions and limits. New discounts start inactive unless the input says otherwise; activate_discount puts it live.',
+    'Create a discount: a code or automatic promotion (percentage / fixed amount / free shipping) with its conditions and limits. New discounts start inactive unless the input says otherwise; activate_discount puts it live.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateDiscountInput,
@@ -43,7 +43,7 @@ const createDiscount: McpToolDefinition = {
 const updateDiscount: McpToolDefinition = {
   name: 'update_discount',
   description:
-    'Edit a discount — value, conditions, limits, schedule, or code. Send only the fields to change.',
+    'Edit a discount: value, conditions, limits, schedule, or code. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdateDiscountInput.extend({ discountId: uuid() }),
@@ -76,7 +76,7 @@ const archiveDiscount: McpToolDefinition = {
 const adjustGiftCard: McpToolDefinition = {
   name: 'adjust_gift_card',
   description:
-    'Adjust a gift card’s balance — add funds or deduct (e.g. a goodwill top-up or a correction). To create a new gift card use issue_gift_card.',
+    'Adjust a gift card’s balance. Add funds or deduct (e.g. a goodwill top-up or a correction). To create a new gift card use issue_gift_card.',
   scope: 'write:commerce',
   confirmation: true,
   input: AdjustGiftCardInput,
@@ -88,7 +88,7 @@ const adjustGiftCard: McpToolDefinition = {
 const createPriceList: McpToolDefinition = {
   name: 'create_price_list',
   description:
-    'Create a price list — a named set of per-variant prices used for wholesale/tiered pricing, assigned to accounts or customer groups. Add prices with set_price_list_entry or set_price_list_entries.',
+    'Create a price list: a named set of per-variant prices used for wholesale/tiered pricing, assigned to accounts or customer groups. Add prices with set_price_list_entry or set_price_list_entries.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreatePriceListInput,
@@ -98,7 +98,7 @@ const createPriceList: McpToolDefinition = {
 const updatePriceList: McpToolDefinition = {
   name: 'update_price_list',
   description:
-    'Edit a price list — name, currency, assignment, or scheduling. Send only the fields to change. Entry prices are managed with the entry tools.',
+    'Edit a price list. Name, currency, assignment, or scheduling. Send only the fields to change. Entry prices are managed with the entry tools.',
   scope: 'write:commerce',
   confirmation: true,
   input: UpdatePriceListInput.extend({ priceListId: uuid() }),
@@ -153,7 +153,7 @@ const deletePriceListEntry: McpToolDefinition = {
 const createBulkPriceTier: McpToolDefinition = {
   name: 'create_bulk_price_tier',
   description:
-    'Create a bulk (quantity-break) price tier — "buy 10+, price drops to X" — for a variant or across a scope.',
+    'Create a bulk (quantity-break) price tier ("buy 10+, price drops to X") for a variant or across a scope.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateBulkPriceTierInput,
@@ -174,7 +174,7 @@ const deleteBulkPriceTier: McpToolDefinition = {
 const createContractPrice: McpToolDefinition = {
   name: 'create_contract_price',
   description:
-    'Create a contract price — a negotiated price for a specific variant tied to a specific B2B account, overriding list/price-list pricing for that account.',
+    'Create a contract price: a negotiated price for a specific variant tied to a specific B2B account, overriding list/price-list pricing for that account.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateContractPriceInput,
@@ -196,7 +196,7 @@ const deleteContractPrice: McpToolDefinition = {
 const createMarkupRule: McpToolDefinition = {
   name: 'create_markup_rule',
   description:
-    'Create a markup rule — how a dropship/supplier cost is marked up to a sell price across a scope (percentage or flat, with rounding). Preview the effect with preview_markup, then push prices with apply_markup.',
+    'Create a markup rule: how a dropship/supplier cost is marked up to a sell price across a scope (percentage or flat, with rounding). Preview the effect with preview_markup, then push prices with apply_markup.',
   scope: 'write:commerce',
   confirmation: true,
   input: CreateMarkupRuleInput,
@@ -206,7 +206,7 @@ const createMarkupRule: McpToolDefinition = {
 const updateMarkupRule: McpToolDefinition = {
   name: 'update_markup_rule',
   description:
-    'Edit a markup rule — its formula, rounding, or scope. Send only the fields to change. Re-apply with apply_markup to push the new prices.',
+    'Edit a markup rule. Its formula, rounding, or scope. Send only the fields to change. Re-apply with apply_markup to push the new prices.',
   scope: 'write:commerce',
   confirmation: true,
   // UpdateMarkupRuleInput is a refined (ZodEffects) schema, so it can't be
@@ -234,7 +234,7 @@ const deleteMarkupRule: McpToolDefinition = {
 const updateSurchargeRule: McpToolDefinition = {
   name: 'update_surcharge_rule',
   description:
-    'Edit a surcharge rule — type, value, applicable payment methods, or label. Send only the fields to change.',
+    'Edit a surcharge rule. Type, value, applicable payment methods, or label. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
   // Refined (ZodEffects) schema — intersect the id in, service strips it.

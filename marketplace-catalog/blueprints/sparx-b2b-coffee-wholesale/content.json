@@ -5,7 +5,7 @@
     "status": "published",
     "body": {
       "title": "Dialling in a house espresso for a busy bar",
-      "excerpt": "A repeatable way to set up an espresso and keep it there through service — the version we run when we install a new account.",
+      "excerpt": "A repeatable way to set up an espresso and keep it there through service: the version we run when we install a new account.",
       "featuredImage": {
         "$asset": "post-dialling"
       },
@@ -38,7 +38,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Pick a dose your basket is built for — say 18 grams in, 36 out — and a shot time in the high twenties of seconds. Those are starting points, not laws. Pull a shot, taste it in milk (because that is what you sell), and adjust ONE thing: grind finer if it is sour and thin, coarser if it is bitter and dry. Change grind, not dose, until the flavour lands; a bar that chases three variables at once never holds any of them."
+                "text": "Pick a dose your basket is built for (say 18 grams in, 36 out) and a shot time in the high twenties of seconds. Those are starting points, not laws. Pull a shot, taste it in milk (because that is what you sell), and adjust ONE thing: grind finer if it is sour and thin, coarser if it is bitter and dry. Change grind, not dose, until the flavour lands; a bar that chases three variables at once never holds any of them."
               }
             ]
           },
@@ -59,7 +59,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Coffee grinds differently as the room warms and the beans age off roast, so the setting that was right at 7am drifts by lunch. Re-check at the two obvious inflection points — mid-morning and after the lunch rush — and nudge the grind a notch if the shot time has wandered. Log the setting each morning. Fresh, consistent beans roasted to order do most of the work here; a stable coffee is the difference between two grind tweaks a day and twenty."
+                "text": "Coffee grinds differently as the room warms and the beans age off roast, so the setting that was right at 7am drifts by lunch. Re-check at the two obvious inflection points (mid-morning and after the lunch rush) and nudge the grind a notch if the shot time has wandered. Log the setting each morning. Fresh, consistent beans roasted to order do most of the work here; a stable coffee is the difference between two grind tweaks a day and twenty."
               }
             ]
           },
@@ -82,7 +82,7 @@
     "status": "published",
     "body": {
       "title": "Getting the most from a standing order",
-      "excerpt": "A standing order is the quietest way to keep a bar stocked — here is how to set one that fits your real trade and never leaves you short.",
+      "excerpt": "A standing order is the quietest way to keep a bar stocked. Here is how to set one that fits your real trade and never leaves you short.",
       "featuredImage": {
         "$asset": "post-standing"
       },
@@ -94,7 +94,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The most common supply problem we see is not price — it is running out mid-service on a Saturday, or a storeroom full of coffee going stale because someone over-ordered to be safe. A standing order fixes both when it is set to your real numbers, and it takes ten minutes to get right."
+                "text": "The most common supply problem we see is not price. It is running out mid-service on a Saturday, or a storeroom full of coffee going stale because someone over-ordered to be safe. A standing order fixes both when it is set to your real numbers, and it takes ten minutes to get right."
               }
             ]
           },
@@ -136,7 +136,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Trade is not flat, so your delivery should not be either. Going quiet for a public holiday or a slow January? Skip a cycle or drop the quantity from your account in a couple of taps — the schedule bends around your calendar instead of the other way round. Catering a big event? Add the extra to the next delivery so it arrives freshly roasted, not pulled from a back-room hoard."
+                "text": "Trade is not flat, so your delivery should not be either. Going quiet for a public holiday or a slow January? Skip a cycle or drop the quantity from your account in a couple of taps: the schedule bends around your calendar instead of the other way round. Catering a big event? Add the extra to the next delivery so it arrives freshly roasted, not pulled from a back-room hoard."
               }
             ]
           },
@@ -145,7 +145,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Because every cycle is roasted to order, what turns up is always fresh — the standing order is a schedule, not a stockpile. Your account manager can rebuild it any time your trade shifts; that is what it is there for."
+                "text": "Because every cycle is roasted to order, what turns up is always fresh: the standing order is a schedule, not a stockpile. Your account manager can rebuild it any time your trade shifts; that is what it is there for."
               }
             ]
           }
@@ -171,7 +171,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Great beans cannot rescue a dirty machine, and the fastest way to make a café’s coffee worse is to skip the cleaning. None of this is hard — it is a routine, and once it is a habit the equipment stops being a source of surprises."
+                "text": "Great beans cannot rescue a dirty machine, and the fastest way to make a café’s coffee worse is to skip the cleaning. None of this is hard. It is a routine, and once it is a habit the equipment stops being a source of surprises."
               }
             ]
           },
@@ -213,7 +213,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Burrs wear. When your grind setting keeps creeping finer to hold the same shot time, or the grind looks uneven and dusty, the burrs are near the end of their life and it is time for a service — not a bag of blame on the beans. On a wholesale account that service is booked through us, and if a machine has to come out we cover you with loan gear so the bar never goes dark."
+                "text": "Burrs wear. When your grind setting keeps creeping finer to hold the same shot time, or the grind looks uneven and dusty, the burrs are near the end of their life and it is time for a service, not a bag of blame on the beans. On a wholesale account that service is booked through us, and if a machine has to come out we cover you with loan gear so the bar never goes dark."
               }
             ]
           },

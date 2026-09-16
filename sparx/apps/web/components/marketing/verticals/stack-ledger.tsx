@@ -45,7 +45,7 @@ export function StackLedger({ vertical }: { vertical: Vertical }) {
             <span className="text-primary">.</span>
           </Heading>
           <Text variant="lead" className="text-xl">
-            {`Not a starting price with the useful parts sold separately — this is the whole bill for ` +
+            {`Not a starting price with the useful parts sold separately. This is the whole bill for ` +
               `${vertical.plural}, every month, with the tools it replaces priced beside it.`}
           </Text>
         </div>
@@ -135,7 +135,7 @@ export function StackLedger({ vertical }: { vertical: Vertical }) {
           <Text className="text-lg">
             {`Every module is billed on its own and can be switched off at the end of any month. ` +
               `There is no per-person charge, so the whole team can have an account, and sparx takes ` +
-              `no percentage of what you sell — your card processor's normal fee is the only other cost.`}
+              `no percentage of what you sell. Your card processor's normal fee is the only other cost.`}
           </Text>
           {/* Deliberately prose below the table rather than a row inside it. An
               add-on nobody in this trade needs would inflate the headline total,

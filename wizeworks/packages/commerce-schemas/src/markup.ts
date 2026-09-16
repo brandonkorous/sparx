@@ -179,7 +179,7 @@ function refineMarkupRule(
       code: z.ZodIssueCode.custom,
       path: ['costBasis'],
       message:
-        'average_cost / last_po_cost bases require the inventory cost dimension (docs/28) — not available yet',
+        'average_cost / last_po_cost bases require the inventory cost dimension (docs/28), not available yet',
     });
   }
   if (v.ceilingSrc === 'fixed' && v.ceilingValueCents == null) {

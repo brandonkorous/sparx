@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Boxwell Supply — wholesale packaging & shipping supplies",
-      "seoDescription": "Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses — boxes, mailers, tape, fill and labels by the case, at real trade pricing with next-day dispatch and net-30 terms.",
+      "seoTitle": "Boxwell Supply: wholesale packaging & shipping supplies",
+      "seoDescription": "Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses: boxes, mailers, tape, fill and labels by the case, at real trade pricing with next-day dispatch and net-30 terms.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -768,7 +768,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses. Boxes, mailers, tape, fill and labels by the case — real trade pricing, deep stock, and next-day dispatch on everything you see."
+                          "Boxwell Supply is a wholesale packaging distributor for e-commerce sellers and warehouses. Boxes, mailers, tape, fill and labels by the case: real trade pricing, deep stock, and next-day dispatch on everything you see."
                         ],
                         "id": "c2f8c53d-7aae-4dc6-8472-9c343792c6a4",
                         "ord": "a1"
@@ -1245,7 +1245,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every line drops in price as the quantity climbs — case, half-pallet, pallet. The break shows on the product page, so you always know the next threshold worth hitting."
+                              "Every line drops in price as the quantity climbs: case, half-pallet, pallet. The break shows on the product page, so you always know the next threshold worth hitting."
                             ],
                             "id": "ccbf966b-bf33-418b-97dc-cc049dfe3eeb",
                             "ord": "a1"
@@ -1299,7 +1299,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Approved accounts order on net-30 and settle monthly against a single statement — no card at the checkout, no reconciling a dozen small receipts."
+                              "Approved accounts order on net-30 and settle monthly against a single statement: no card at the checkout, no reconciling a dozen small receipts."
                             ],
                             "id": "1d42f67b-0141-402b-b1ba-ac5542c9cb10",
                             "ord": "a1"
@@ -1353,7 +1353,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "One person who knows your SKUs, your sizes and your peak season — reachable by direct line, not a ticket queue. They flag a better-fitting box before you reorder the wrong one."
+                              "One person who knows your SKUs, your sizes and your peak season: reachable by direct line, not a ticket queue. They flag a better-fitting box before you reorder the wrong one."
                             ],
                             "id": "f3914d8b-1e21-4322-8544-013cdbb2ded6",
                             "ord": "a1"
@@ -1658,7 +1658,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We hold deep stock of every line so an order is picked, banded and on a next-day pallet the same afternoon — not back-ordered from a supplier three steps away. The catalogue is what is actually on the shelf."
+                          "We hold deep stock of every line so an order is picked, banded and on a next-day pallet the same afternoon, not back-ordered from a supplier three steps away. The catalogue is what is actually on the shelf."
                         ],
                         "id": "8ace1034-5ad7-4a30-aa44-133788bc9a30",
                         "ord": "a1"
@@ -1693,7 +1693,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Boxwell Supply",
+      "seoTitle": "Shop: Boxwell Supply",
       "seoDescription": "Browse everything Boxwell Supply makes, with prices and options at a glance. Packaging & shipping supplies.",
       "root": {
         "kind": "element",
@@ -1725,7 +1725,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything we stock, priced by the case with pack quantities and minimum orders on every line. Filter by aisle or sort however you like — all of it ships next-day from one warehouse, and every price drops again on a trade account."
+                      "Everything we stock, priced by the case with pack quantities and minimum orders on every line. Filter by aisle or sort however you like. All of it ships next-day from one warehouse, and every price drops again on a trade account."
                     ],
                     "id": "a178c6e8-4261-48f7-be1f-475df1ea707b",
                     "ord": "a1"
@@ -1753,7 +1753,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Boxwell Supply",
+      "seoTitle": "Collections: Boxwell Supply",
       "seoDescription": "Explore the collections at Boxwell Supply, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1785,7 +1785,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The catalogue grouped the way a packing bench actually orders — the fast movers, what is new this quarter, the box range, protective fill, the mailer range, and a starter kit for a new operation."
+                      "The catalogue grouped the way a packing bench actually orders: the fast movers, what is new this quarter, the box range, protective fill, the mailer range, and a starter kit for a new operation."
                     ],
                     "id": "d2cd7b2b-dac6-4432-8ec6-5af24abcdebe",
                     "ord": "a1"
@@ -1813,7 +1813,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Boxwell Supply",
+      "seoTitle": "Your cart: Boxwell Supply",
       "seoDescription": "Review what is in your cart and check out securely at Boxwell Supply.",
       "root": {
         "kind": "element",
@@ -1845,7 +1845,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Order by 3pm for same-day dispatch, next-day across the mainland. Approved trade accounts check out on net-30 against a single monthly statement — no card, no per-order receipts to reconcile."
+                      "Order by 3pm for same-day dispatch, next-day across the mainland. Approved trade accounts check out on net-30 against a single monthly statement: no card, no per-order receipts to reconcile."
                     ],
                     "id": "7ef01a2d-2501-43a9-9d90-c4d2414b72da",
                     "ord": "a1"
@@ -1873,7 +1873,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Boxwell Supply",
+      "seoTitle": "Search: Boxwell Supply",
       "seoDescription": "Search Boxwell Supply for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1933,7 +1933,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Boxwell Supply",
+      "seoTitle": "Journal: Boxwell Supply",
       "seoDescription": "Stories, guides and notes from Boxwell Supply.",
       "root": {
         "kind": "element",
@@ -1965,7 +1965,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Plain, useful notes from the warehouse — right-sizing your cartons, the greener materials worth switching to, and the shipping-cost levers that actually move the invoice."
+                      "Plain, useful notes from the warehouse: right-sizing your cartons, the greener materials worth switching to, and the shipping-cost levers that actually move the invoice."
                     ],
                     "id": "3c74d1cd-dddc-4dbc-9125-a4169de9ebe5",
                     "ord": "a1"
@@ -2099,7 +2099,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Boxwell Supply",
-      "seoDescription": "How Boxwell buys, stocks and ships — direct from the mills, deep stock, honest trade pricing, and packaging that arrives the day you need it.",
+      "seoDescription": "How Boxwell buys, stocks and ships: direct from the mills, deep stock, honest trade pricing, and packaging that arrives the day you need it.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2130,7 +2130,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Boxwell started on one loading dock, supplying packaging to the growing e-commerce sellers next door who were tired of paying retail prices for the boxes they shipped in every day. We grew the plain way — deeper stock, better trade pricing, faster dispatch — and it still runs on the same idea: hold the material, price it fairly, and get it out the door today."
+                      "Boxwell started on one loading dock, supplying packaging to the growing e-commerce sellers next door who were tired of paying retail prices for the boxes they shipped in every day. We grew the plain way (deeper stock, better trade pricing, faster dispatch) and it still runs on the same idea: hold the material, price it fairly, and get it out the door today."
                     ],
                     "id": "b56063c2-d462-44ef-ba98-55a5dd309d52",
                     "ord": "a1"
@@ -2140,7 +2140,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We buy direct from the mills and converters, in pallet volumes, and pass the volume through to accounts of every size — a two-person studio and a national 3PL buy the same line at a price that reflects what they take. No opaque list price, no chasing a rep for a quote on a stock box."
+                      "We buy direct from the mills and converters, in pallet volumes, and pass the volume through to accounts of every size: a two-person studio and a national 3PL buy the same line at a price that reflects what they take. No opaque list price, no chasing a rep for a quote on a stock box."
                     ],
                     "id": "11000f9e-f2c7-48fc-8320-4481efdecca5",
                     "ord": "a2"
@@ -2170,8 +2170,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Boxwell Supply",
-      "seoDescription": "Get in touch with Boxwell Supply — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Boxwell Supply",
+      "seoDescription": "Get in touch with Boxwell Supply: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2207,7 +2207,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Tell us what you ship and roughly how much, and we will set up an account with your trade pricing, net-30 terms and a named account manager — usually within a day. Existing customers, reach your manager on the direct line on your statement."
+                          "Tell us what you ship and roughly how much, and we will set up an account with your trade pricing, net-30 terms and a named account manager, usually within a day. Existing customers, reach your manager on the direct line on your statement."
                         ],
                         "id": "317f9d9d-982d-43c9-878a-4de1b009cf85",
                         "ord": "a1"
@@ -2478,8 +2478,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Boxwell Supply",
-      "seoDescription": "Product details at Boxwell Supply — packaging & shipping supplies, with options and pricing.",
+      "seoTitle": "Product: Boxwell Supply",
+      "seoDescription": "Product details at Boxwell Supply: packaging & shipping supplies, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2842,7 +2842,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "The price shown is per case at the standard trade rate. It steps down again at half-pallet and pallet quantities — open a trade account to see your tier and net-30 terms. Order by 3pm and it ships from stock the same day."
+                              "The price shown is per case at the standard trade rate. It steps down again at half-pallet and pallet quantities. Open a trade account to see your tier and net-30 terms. Order by 3pm and it ships from stock the same day."
                             ],
                             "id": "edca5339-3ffb-4b5b-ac3d-a643b5ba5deb",
                             "ord": "a1"

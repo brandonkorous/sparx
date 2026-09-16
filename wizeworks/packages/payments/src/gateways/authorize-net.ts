@@ -487,7 +487,7 @@ export class AuthorizeNetGateway implements PaymentGateway {
     return false;
   }
   parseWebhook(): Promise<ParsedWebhookEvent> {
-    return Promise.reject(new Error('authorize_net parses per-tenant — use parseWebhookForTenant'));
+    return Promise.reject(new Error('authorize_net parses per-tenant: use parseWebhookForTenant'));
   }
 
   // Authorize.net signs webhooks `X-ANET-Signature: sha512=HEX` (HMAC-SHA512 of the raw

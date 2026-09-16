@@ -231,7 +231,7 @@ const SCHEDULING = {
         {
             handle: 'builder-gel',
             name: 'Builder-gel set',
-            description: 'A sculpted overlay for length and strength on your own nails — subtle, natural, sturdy.',
+            description: 'A sculpted overlay for length and strength on your own nails: subtle, natural, sturdy.',
             durationMinutes: 75,
             priceCents: 7500,
             bufferAfterMin: 10,
@@ -266,7 +266,7 @@ const SCHEDULING = {
         {
             handle: 'nail-art',
             name: 'Nail art (per nail)',
-            description: 'Hand-painted, per-nail detail — fine lines, negative space or a chrome accent, added to any set.',
+            description: 'Hand-painted, per-nail detail: fine lines, negative space or a chrome accent, added to any set.',
             durationMinutes: 30,
             priceCents: 1500,
             assignmentStrategy: 'customer_choice',
@@ -298,7 +298,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A calm, gallery-white nail studio with a single coral chair',
         title: 'Nails as a small work of art',
-        sub: 'A quiet, gallery-clean studio for precise manicures, long-wear gel and hand-painted art — color that does the talking.',
+        sub: 'A quiet, gallery-clean studio for precise manicures, long-wear gel and hand-painted art: color that does the talking.',
         primary: { label: 'Book online', href: '/book' },
         secondary: { label: 'See the work', href: '/book' },
         overlay: 'dark',
@@ -337,15 +337,15 @@ const HOME = [
         items: [
             {
                 title: 'Clean beauty, by default',
-                body: 'Fresh files and buffers every time, thorough tool sterilisation, and gentle, better-for-you formulas — care you don’t have to ask for.',
+                body: 'Fresh files and buffers every time, thorough tool sterilisation, and gentle, better-for-you formulas: care you don’t have to ask for.',
             },
             {
                 title: 'Precision over speed',
-                body: 'We book realistic slots so nothing is rushed. Straight lines, clean cuticles and an even finish — the details that read as “done well”.',
+                body: 'We book realistic slots so nothing is rushed. Straight lines, clean cuticles and an even finish: the details that read as “done well”.',
             },
             {
                 title: 'Art, not a template',
-                body: 'Bring a reference or a vague idea. Our artists design to your hands, not a pre-set sheet — one nail or a full editorial set.',
+                body: 'Bring a reference or a vague idea. Our artists design to your hands, not a pre-set sheet. One nail or a full editorial set.',
             },
         ],
     }),
@@ -361,11 +361,11 @@ const HOME = [
     }),
     teamRow({
         heading: 'The artists',
-        intro: 'Book by name — you’ll sit with the same hands each visit.',
+        intro: 'Book by name: you’ll sit with the same hands each visit.',
         members: [
             { name: 'Lena Ohno', role: 'Lead nail artist', image: url(IMG.lena), alt: 'Lena Ohno, lead nail artist', bio: 'Fine-line art and sculpted builder-gel. Lena leads the studio.' },
             { name: 'Cai Fontaine', role: 'Nail technician', image: url(IMG.cai), alt: 'Cai Fontaine, nail technician', bio: 'Flawless gel and the cleanest classic manicure in the room.' },
-            { name: 'Rosa Márquez', role: 'Nail artist', image: url(IMG.rosa), alt: 'Rosa Márquez, nail artist', bio: 'Negative space, chrome and modern french — quiet, precise art.' },
+            { name: 'Rosa Márquez', role: 'Nail artist', image: url(IMG.rosa), alt: 'Rosa Márquez, nail artist', bio: 'Negative space, chrome and modern french: quiet, precise art.' },
         ],
     }),
     testimonial({
@@ -398,7 +398,7 @@ const ABOUT = [
         alt: 'A calm, gallery-white nail studio with a single coral chair',
         heading: 'About Lacquer',
         body: [
-            'We opened Lacquer to do nails the way a gallery hangs a picture — on a clean, quiet wall, with nothing competing for the eye but the work itself.',
+            'We opened Lacquer to do nails the way a gallery hangs a picture: on a clean, quiet wall, with nothing competing for the eye but the work itself.',
             'That means realistic booking times, genuinely clean beauty practices, and artists who design to your hands. No rushing, no template sheet, no set you can’t live in.',
         ],
         cta: { label: 'Book a chair', href: '/book' },
@@ -408,7 +408,7 @@ const ABOUT = [
         heading: 'How we work',
         items: [
             { title: 'Consultation first', body: 'Every appointment starts with a real look at your nails, your routine and what you actually want to leave with.' },
-            { title: 'Hygiene you can see', body: 'Single-use files and buffers, hospital-grade tool sterilisation, and gentle formulas — the standard, not an upgrade.' },
+            { title: 'Hygiene you can see', body: 'Single-use files and buffers, hospital-grade tool sterilisation, and gentle formulas: the standard, not an upgrade.' },
             { title: 'Made to last', body: 'We finish with aftercare that keeps a set looking new for weeks, and honest advice on when to come back.' },
         ],
     }),
@@ -428,7 +428,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and reserve your time online — no phone tag.',
+        sub: 'See live availability and reserve your time online: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -439,8 +439,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-nail-gallery',
     name: 'Nail Studio (Gallery)',
     summary:
-        'A gallery-chic nail-studio site — a clean gallery-cream palette, a coral-rose primary and a deep-teal accent under a crisp grotesque display, with the nail-art photography carrying the page. Installs a working booking flow: a real menu (manicures, gel, builder-gel, pedicures, art, removal), three artists you book by name, and two shared nail stations a manicure consumes alongside its artist. Ships as "Lacquer", a calm daylight studio.',
-    tagline: 'A gallery-chic template for nail studios — book online from day one.',
+        'A gallery-chic nail-studio site: a clean gallery-cream palette, a coral-rose primary and a deep-teal accent under a crisp grotesque display, with the nail-art photography carrying the page. Installs a working booking flow: a real menu (manicures, gel, builder-gel, pedicures, art, removal), three artists you book by name, and two shared nail stations a manicure consumes alongside its artist. Ships as "Lacquer", a calm daylight studio.',
+    tagline: 'A gallery-chic template for nail studios. Book online from day one.',
     industry: 'Nail studio',
     sortWeight: 84,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -449,7 +449,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Lacquer — a modern nail studio',
+            title: 'Lacquer: a modern nail studio',
             description:
                 'Lacquer is a calm, gallery-clean nail studio for precise manicures, long-wear gel and hand-painted art. Book your artist online.',
         },

@@ -54,7 +54,7 @@ export function ResourcesBody(props: ResourcesBodyProps) {
       <EmptyState
         icon={<Icon glyph={faUsers} className="size-6" aria-hidden />}
         title="Could not load your people & equipment"
-        description="This is a problem reaching the server. Nothing is affected — the list just could not be read just now."
+        description="This is a problem reaching the server. Nothing is affected: the list just could not be read just now."
         actions={
           <Button size="sm" color="module" onClick={props.onRetry}>
             Try again
@@ -74,12 +74,12 @@ export function ResourcesBody(props: ResourcesBodyProps) {
         noResults={{
           icon: <Icon glyph={faUsers} className="size-6" aria-hidden />,
           title: 'Nothing matches that',
-          description: `You are only seeing “${kind ? resourceKindLabel(kind) : ''}” — switch to every kind to see the rest.`,
+          description: `You are only seeing “${kind ? resourceKindLabel(kind) : ''}”. Switch to every kind to see the rest.`,
         }}
         firstRun={{
           title: 'Nothing set up yet',
           description:
-            'Add the people and things a booking uses up — your staff, your rooms, your equipment. Once they exist, you can set the hours each one is free.',
+            'Add the people and things a booking uses up. Your staff, your rooms, your equipment. Once they exist, you can set the hours each one is free.',
           actions: (
             <Button size="sm" color="module" onClick={props.onAdd}>
               <Icon glyph={faPlus} className="size-4" aria-hidden />

@@ -72,6 +72,6 @@ export { OG_SIZE };
 export function toolOgAlt(slug: string): string {
   const tool = getTool(slug);
   return tool
-    ? `${searchTitleFor(tool)} — free, in your browser, no sign-up`
+    ? `${searchTitleFor(tool)} · free, in your browser, no sign-up`
     : 'Free tools for small businesses';
 }

@@ -117,7 +117,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             size="sm"
             className="ml-auto shrink-0"
-            title="New broadcast — hold Shift to open alongside, Alt for a new window"
+            title="New broadcast: hold Shift to open alongside, Alt for a new window"
             onClick={(event) => {
               ctx.open(DETAIL_KEY, { id: 'new' }, { target: targetFor(event) });
             }}
@@ -163,7 +163,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<Send className="size-6" aria-hidden />}
             title="Could not load your broadcasts"
-            description="Something went wrong reaching the server. Anything already sent is unaffected — try again in a moment."
+            description="Something went wrong reaching the server. Anything already sent is unaffected. Try again in a moment."
             actions={
               <Button
                 size="sm"
@@ -191,7 +191,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
             firstRun={{
               title: 'No broadcasts yet',
               description:
-                'A broadcast is one email sent to a group of people at once — a newsletter, an offer, an announcement. Write your first to reach your audience.',
+                'A broadcast is one email sent to a group of people at once: a newsletter, an offer, an announcement. Write your first to reach your audience.',
               actions: (
                 <Button
                   size="sm"

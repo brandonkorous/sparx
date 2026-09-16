@@ -126,7 +126,7 @@ export function BookingNotes({
               color="module"
               rows={3}
               value={staffNotes}
-              placeholder="Regular — prefers the bay by the window."
+              placeholder="Regular: prefers the bay by the window."
               onChange={(event) => {
                 setStaffNotes(event.target.value);
               }}

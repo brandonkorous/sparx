@@ -19,7 +19,7 @@ const propertyIdArg = z
   .optional()
   .describe(
     'Target site (web property) id. Omit to target the tenant’s PRIMARY site. A tenant can have ' +
-      'MULTIPLE sites — call list_sites first to get each site’s id, then pass it here to target ' +
+      'MULTIPLE sites. Call list_sites first to get each site’s id, then pass it here to target ' +
       'that specific site.'
   );
 const PropertyArg = z.object({ propertyId: propertyIdArg });
@@ -56,7 +56,7 @@ export const readTools: AnyMcpTool[] = [
     name: 'list_sites',
     description:
       'List every SITE (web property) this tenant owns: id, name, slug, whether it is the primary, ' +
-      'status, and its hostnames. CALL THIS FIRST when the tenant may have more than one site — take a ' +
+      'status, and its hostnames. CALL THIS FIRST when the tenant may have more than one site: take a ' +
       'site’s `id` and pass it as the `propertyId` argument to any site or page tool (get_site_config, ' +
       'list_builder_pages, create_builder_page, publish_site, …) to target that specific site. Omitting ' +
       'propertyId always falls back to the tenant’s primary site.',
@@ -68,10 +68,10 @@ export const readTools: AnyMcpTool[] = [
   {
     name: 'list_themes',
     description:
-      'List every theme this software ships — forty of them, in two shelves: `sparx` themes named for the ' +
+      'List every theme this software ships: forty of them, in two shelves: `sparx` themes named for the ' +
       'BUSINESS they suit (clinic, workshop, kitchen, …) and `silica` themes named for the LOOK ' +
       '(quartz, midnight, neon, …). Each entry carries its tagline, description and browse facets ' +
-      '(industry, mood, colorFamily, density) — enough to choose one. Pass a `slug` to select_theme ' +
+      '(industry, mood, colorFamily, density): enough to choose one. Pass a `slug` to select_theme ' +
       'to apply it; use get_silica_theme for a theme’s actual color tokens.',
     scope: 'read:builder',
     input: NoArgs,
@@ -137,7 +137,7 @@ export const readTools: AnyMcpTool[] = [
   {
     name: 'get_custom_section',
     description:
-      'Get one custom section definition by slug — its field spec, render template, binding, and version.',
+      'Get one custom section definition by slug. Its field spec, render template, binding, and version.',
     scope: 'read:builder',
     input: SlugArg,
     confirmation: false,

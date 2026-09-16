@@ -110,7 +110,7 @@ export function accountStatusMeta(status: string): {
       return {
         label: 'Inactive',
         tone: 'neutral',
-        description: 'This account is dormant — kept on file but not trading.',
+        description: 'This account is dormant: kept on file but not trading.',
       };
   }
 }

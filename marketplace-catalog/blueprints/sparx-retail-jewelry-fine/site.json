@@ -299,7 +299,7 @@
                           "tag": "p",
                           "class": "max-w-sm text-sm text-base-content",
                           "children": [
-                            "Join the list — we’ll email when there’s something worth knowing."
+                            "Join the list: we’ll email when there’s something worth knowing."
                           ],
                           "slot": {
                             "name": "blurb",
@@ -727,8 +727,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Aurelia — fine jewelry in solid gold and silver",
-      "seoDescription": "Aurelia is a small jewelry house working only in solid 14k gold and sterling silver — rings, necklaces, earrings and bracelets, hand-finished and made to be worn every day.",
+      "seoTitle": "Aurelia: fine jewelry in solid gold and silver",
+      "seoDescription": "Aurelia is a small jewelry house working only in solid 14k gold and sterling silver: rings, necklaces, earrings and bracelets, hand-finished and made to be worn every day.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -776,7 +776,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Aurelia is a small jewelry house working in solid 14k gold and sterling silver — pieces designed to be layered, kept, and passed on. No plating, no fillers, no fast-fashion metal that greens your skin by summer."
+                          "Aurelia is a small jewelry house working in solid 14k gold and sterling silver: pieces designed to be layered, kept, and passed on. No plating, no fillers, no fast-fashion metal that greens your skin by summer."
                         ],
                         "id": "0ac2ccbc-8524-4f5d-a8ea-2741996f82f9",
                         "ord": "a1"
@@ -1507,7 +1507,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every order arrives in a linen-lined box with a card you can write yourself — no printed price in sight. Free engraving on rings and pendants, and a lifetime of complimentary cleaning and re-polishing, always."
+                          "Every order arrives in a linen-lined box with a card you can write yourself: no printed price in sight. Free engraving on rings and pendants, and a lifetime of complimentary cleaning and re-polishing, always."
                         ],
                         "id": "1b38ae41-0050-4073-b103-7382ac5b7d0c",
                         "ord": "a1"
@@ -1542,7 +1542,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Aurelia",
+      "seoTitle": "Shop: Aurelia",
       "seoDescription": "Browse everything Aurelia makes, with prices and options at a glance. Fine jeweler.",
       "root": {
         "kind": "element",
@@ -1574,7 +1574,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Every piece we make, in solid 14k gold and sterling silver — rings, necklaces, earrings and bracelets. Filter by metal or category, or sort however you like; all of it is hallmarked, hand-finished, and made to be worn every day."
+                      "Every piece we make, in solid 14k gold and sterling silver: rings, necklaces, earrings and bracelets. Filter by metal or category, or sort however you like; all of it is hallmarked, hand-finished, and made to be worn every day."
                     ],
                     "id": "14e63313-3e85-43e9-9300-f65eda234446",
                     "ord": "a1"
@@ -1602,7 +1602,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Aurelia",
+      "seoTitle": "Collections: Aurelia",
       "seoDescription": "Explore the collections at Aurelia, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1634,7 +1634,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "The pieces grouped the way people actually shop — this season’s new arrivals, the everyday gold you’ll reach for daily, the signature statement pieces, and rings made to mark a moment."
+                      "The pieces grouped the way people actually shop. This season’s new arrivals, the everyday gold you’ll reach for daily, the signature statement pieces, and rings made to mark a moment."
                     ],
                     "id": "7661e916-a66e-4758-a101-f67c87baea8a",
                     "ord": "a1"
@@ -1662,7 +1662,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Aurelia",
+      "seoTitle": "Your cart: Aurelia",
       "seoDescription": "Review what is in your cart and check out securely at Aurelia.",
       "root": {
         "kind": "element",
@@ -1694,7 +1694,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free insured shipping over $100, a linen gift box with every order, and 30-day returns on anything unworn. Every piece is solid metal and hallmarked — a keepsake, not a fast-fashion buy."
+                      "Free insured shipping over $100, a linen gift box with every order, and 30-day returns on anything unworn. Every piece is solid metal and hallmarked: a keepsake, not a fast-fashion buy."
                     ],
                     "id": "0611183d-3dfc-465b-b4cb-b061bdc5d60b",
                     "ord": "a1"
@@ -1722,7 +1722,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Aurelia",
+      "seoTitle": "Search: Aurelia",
       "seoDescription": "Search Aurelia for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -1782,7 +1782,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Aurelia",
+      "seoTitle": "Journal: Aurelia",
       "seoDescription": "Stories, guides and notes from Aurelia.",
       "root": {
         "kind": "element",
@@ -1814,7 +1814,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Notes from the bench — how to choose between gold and silver, how to care for solid metal, and how to find your ring size at home. Plain, honest, no jargon."
+                      "Notes from the bench: how to choose between gold and silver, how to care for solid metal, and how to find your ring size at home. Plain, honest, no jargon."
                     ],
                     "id": "7b633047-0595-49c3-87d1-0f637211b3d4",
                     "ord": "a1"
@@ -1948,7 +1948,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Aurelia",
-      "seoDescription": "How Aurelia designs, casts and finishes solid-metal jewelry — recycled gold and silver, traceable stones, hand-set and hallmarked, repaired for life.",
+      "seoDescription": "How Aurelia designs, casts and finishes solid-metal jewelry: recycled gold and silver, traceable stones, hand-set and hallmarked, repaired for life.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -1989,7 +1989,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Everything is made in small runs in our own workshop — cast, filed, set and polished by hand, then hallmarked. We buy recycled gold and silver, source stones we can trace, and repair anything we’ve made for as long as you own it."
+                      "Everything is made in small runs in our own workshop: cast, filed, set and polished by hand, then hallmarked. We buy recycled gold and silver, source stones we can trace, and repair anything we’ve made for as long as you own it."
                     ],
                     "id": "f21cf06e-671a-4812-b88b-e9829092b7dd",
                     "ord": "a2"
@@ -2019,8 +2019,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Aurelia",
-      "seoDescription": "Get in touch with Aurelia — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Aurelia",
+      "seoDescription": "Get in touch with Aurelia: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2056,7 +2056,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A question about a piece, a custom commission, sizing, or a repair? Tell us what you’re after and a real jeweler — not a bot — will write you back."
+                          "A question about a piece, a custom commission, sizing, or a repair? Tell us what you’re after and a real jeweler (not a bot) will write you back."
                         ],
                         "id": "43afa56c-a54a-4aa0-b3f6-19bdc901f183",
                         "ord": "a1"
@@ -2327,8 +2327,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Aurelia",
-      "seoDescription": "Product details at Aurelia — fine jeweler, with options and pricing.",
+      "seoTitle": "Product: Aurelia",
+      "seoDescription": "Product details at Aurelia: fine jeweler, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",

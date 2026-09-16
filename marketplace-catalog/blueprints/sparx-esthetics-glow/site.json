@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Dewy Skin Bar — express facials & glow bar",
+      "seoTitle": "Dewy Skin Bar: express facials & glow bar",
       "seoDescription": "Dewy Skin Bar is a fun, feel-good glow bar for quick express facials, LED and gua sha add-ons, and glow memberships. Book your glow online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Quick, feel-good express facials at the glow bar — walk in dull, walk out dewy. No downtime, all glow."
+                      "Quick, feel-good express facials at the glow bar: walk in dull, walk out dewy. No downtime, all glow."
                     ],
                     "id": "21c09012-4e6d-4ee2-b79b-a0b400d71e2e",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Thirty happy minutes, in and out on your break. Book ahead or pop in — a fresh glow fits any day."
+                              "Thirty happy minutes, in and out on your break. Book ahead or pop in: a fresh glow fits any day."
                             ],
                             "id": "aac8c84b-4960-4d8f-ba89-a5ede7f91e4e",
                             "ord": "a1"
@@ -786,7 +786,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Express facials and fun add-ons — pick your glow. Live times and full prices are on the booking page."
+                          "Express facials and fun add-ons. Pick your glow. Live times and full prices are on the booking page."
                         ],
                         "id": "2723c409-6178-441a-beca-ef164e32c644",
                         "ord": "a1"
@@ -1094,7 +1094,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "No lock-in, no fine print you need a magnifying glass for. Pause it, share it, or cancel any time — it’s your glow, your call."
+                          "No lock-in, no fine print you need a magnifying glass for. Pause it, share it, or cancel any time: it’s your glow, your call."
                         ],
                         "id": "4b6f25b3-06a4-43e8-8eee-12bed35afe98",
                         "ord": "a2"
@@ -1159,7 +1159,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — a friendly esthetician who learns your skin and roots for your glow."
+                          "Book by name: a friendly esthetician who learns your skin and roots for your glow."
                         ],
                         "id": "748f9461-6ffd-49cd-9055-9cf4d9c9b9c8",
                         "ord": "a1"
@@ -1325,7 +1325,7 @@
                                 "kind": "element",
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
-                                "children": ["The add-on queen — she’ll send you out extra dewy."],
+                                "children": ["The add-on queen: she’ll send you out extra dewy."],
                                 "id": "88902f86-6357-4341-a75e-c5c713e0aa5d",
                                 "ord": "a2"
                               }
@@ -1364,7 +1364,7 @@
                     "tag": "p",
                     "class": "text-2xl font-medium leading-snug @3xl:text-3xl",
                     "children": [
-                      "“I pop in on my lunch break and leave actually glowing. It’s become my favourite little treat — fast, fun, zero fuss.”"
+                      "“I pop in on my lunch break and leave actually glowing. It’s become my favourite little treat: fast, fun, zero fuss.”"
                     ],
                     "id": "f45e40b9-b7b2-417f-b1c1-472d9ea2c8df",
                     "ord": "a0"
@@ -1439,7 +1439,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Dewy Skin Bar",
+      "seoTitle": "Book: Dewy Skin Bar",
       "seoDescription": "See what Dewy Skin Bar offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1563,7 +1563,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "be38b865-f258-4e2a-8394-c43824afac12",
                         "ord": "a1"
@@ -1595,7 +1595,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Life happens — just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you."
+                              "Life happens. Just give us 24 hours to reschedule or cancel. We’ll text a reminder the day before and two hours ahead so a glow never sneaks up on you."
                             ],
                             "id": "a75ebf1a-ed2d-4b89-89bd-aaa7c1b9117a",
                             "ord": "a1"
@@ -1632,7 +1632,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service — a heads-up text keeps you in the clear."
+                              "Booked facials hold your chair. A no-show or a cancel inside 24 hours may be charged 50% of the service: a heads-up text keeps you in the clear."
                             ],
                             "id": "b1c6b913-a1ca-4525-b560-a318e6b4022f",
                             "ord": "a1"
@@ -1670,7 +1670,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Dewy Skin Bar",
+      "seoTitle": "About: Dewy Skin Bar",
       "seoDescription": "Who Dewy Skin Bar is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1729,7 +1729,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "So we built a glow bar: express facials you can fit on a lunch break, playful add-ons, and memberships that keep the glow going — all in a bright, easy space where nobody makes you feel bad about your pores."
+                          "So we built a glow bar: express facials you can fit on a lunch break, playful add-ons, and memberships that keep the glow going. All in a bright, easy space where nobody makes you feel bad about your pores."
                         ],
                         "id": "e64cfeb2-5122-43a1-9486-21039d9f19da",
                         "ord": "a2"
@@ -1807,7 +1807,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Express facials are built for real life — 30 dewy minutes, no downtime, back to your day."
+                              "Express facials are built for real life: 30 dewy minutes, no downtime, back to your day."
                             ],
                             "id": "3f1bc6dd-e751-4dd2-b324-058507786767",
                             "ord": "a1"
@@ -1834,7 +1834,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Gentle, feel-good treatments that leave you plump, bright and glowing — not red and raw."
+                              "Gentle, feel-good treatments that leave you plump, bright and glowing, not red and raw."
                             ],
                             "id": "8c04bd2f-006c-48aa-8511-96c2eb21b0eb",
                             "ord": "a1"
@@ -1889,7 +1889,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Dewy Skin Bar",
+      "seoTitle": "Visit: Dewy Skin Bar",
       "seoDescription": "Where to find Dewy Skin Bar, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1926,7 +1926,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Dewy Skin Bar will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Dewy Skin Bar will get back to you, usually the same day."
                         ],
                         "id": "d0b95124-b34d-454b-b637-9d32bdd3da48",
                         "ord": "a1"
@@ -2351,7 +2351,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live times and grab your glow online — no phone tag, no hold music."
+                      "See live times and grab your glow online: no phone tag, no hold music."
                     ],
                     "id": "ae65b2ca-1524-4b9a-9d9d-4a8567a1b5de",
                     "ord": "a1"

@@ -226,7 +226,7 @@
     {
       "handle": "cleaning",
       "name": "Cleaning & polish",
-      "description": "A gentle professional clean with one of our hygienists — plaque and stain removed, teeth polished, gums cared for.",
+      "description": "A gentle professional clean with one of our hygienists: plaque and stain removed, teeth polished, gums cared for.",
       "durationMinutes": 60,
       "priceCents": 14900,
       "assignmentStrategy": "customer_choice",
@@ -249,7 +249,7 @@
     {
       "handle": "whitening",
       "name": "Professional whitening",
-      "description": "In-studio whitening that lifts everyday stains several shades in a single visit — brighter, but still natural.",
+      "description": "In-studio whitening that lifts everyday stains several shades in a single visit: brighter, but still natural.",
       "durationMinutes": 90,
       "priceCents": 39900,
       "bufferAfterMin": 10,

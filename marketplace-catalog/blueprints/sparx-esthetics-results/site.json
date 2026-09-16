@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Lumière Skin Studio — results-driven skincare",
+      "seoTitle": "Lumière Skin Studio: results-driven skincare",
       "seoDescription": "Lumière Skin Studio is a results-driven esthetics studio for advanced facials, chemical peels, dermaplaning and microneedling. Book your esthetician online.",
       "root": {
         "kind": "element",
@@ -606,7 +606,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "A results-driven skincare studio — advanced facials, peels and treatments planned around your skin, not a one-size menu."
+                      "A results-driven skincare studio: advanced facials, peels and treatments planned around your skin, not a one-size menu."
                     ],
                     "id": "492e8efb-3544-4022-a4fc-84d788ad880c",
                     "ord": "a1"
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every treatment is done by a licensed esthetician who reads your skin first — advanced training, not a quick add-on."
+                              "Every treatment is done by a licensed esthetician who reads your skin first: advanced training, not a quick add-on."
                             ],
                             "id": "a9857a6e-f51e-4618-be15-d2465404d266",
                             "ord": "a1"
@@ -710,7 +710,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "We use professional, medical-grade products and treatments chosen to actually change your skin — not just feel nice for an hour."
+                              "We use professional, medical-grade products and treatments chosen to actually change your skin, not just feel nice for an hour."
                             ],
                             "id": "7caf0ee2-eb32-4411-af3d-266fd30a2081",
                             "ord": "a1"
@@ -1084,7 +1084,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "No two faces are the same, so we never treat them that way. Every visit starts by reading your skin — its history, your routine and what you actually want to change."
+                          "No two faces are the same, so we never treat them that way. Every visit starts by reading your skin. Its history, your routine and what you actually want to change."
                         ],
                         "id": "ee1c4df3-d568-41d5-849a-4188ff005424",
                         "ord": "a1"
@@ -1159,7 +1159,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Book by name — you’ll see the same expert who knows your skin and your plan."
+                          "Book by name: you’ll see the same expert who knows your skin and your plan."
                         ],
                         "id": "11e9ffd8-5726-4171-ae07-dd537be8fba9",
                         "ord": "a1"
@@ -1443,7 +1443,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Lumière Skin Studio",
+      "seoTitle": "Book: Lumière Skin Studio",
       "seoDescription": "See what Lumière Skin Studio offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1567,7 +1567,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "fd77e622-2efb-4c3e-b951-9fa4c8c42d92",
                         "ord": "a1"
@@ -1674,7 +1674,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Lumière Skin Studio",
+      "seoTitle": "About: Lumière Skin Studio",
       "seoDescription": "Who Lumière Skin Studio is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1723,7 +1723,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Lumière is a results-driven skincare studio for people who want their skin to actually change — clearer, brighter, firmer — not just a pampering hour."
+                          "Lumière is a results-driven skincare studio for people who want their skin to actually change (clearer, brighter, firmer) not just a pampering hour."
                         ],
                         "id": "299c84f6-e69a-40a5-9ed3-4c508a1612f8",
                         "ord": "a1"
@@ -1733,7 +1733,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We’re licensed estheticians who believe great skin comes from a plan, honest advice and consistency. No upselling, no gimmicks — just expert treatments and real progress you can see."
+                          "We’re licensed estheticians who believe great skin comes from a plan, honest advice and consistency. No upselling, no gimmicks. Just expert treatments and real progress you can see."
                         ],
                         "id": "5ec7a02b-1a3c-41de-85d5-77e5bdfb6be5",
                         "ord": "a2"
@@ -1811,7 +1811,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Every plan begins with reading your skin — its history, your routine and the results you’re after."
+                              "Every plan begins with reading your skin. Its history, your routine and the results you’re after."
                             ],
                             "id": "73eb16d6-16a3-4fe1-bc0a-06fce6c48ac2",
                             "ord": "a1"
@@ -1893,7 +1893,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Lumière Skin Studio",
+      "seoTitle": "Visit: Lumière Skin Studio",
       "seoDescription": "Where to find Lumière Skin Studio, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1930,7 +1930,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Lumière Skin Studio will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Lumière Skin Studio will get back to you, usually the same day."
                         ],
                         "id": "186eb398-17a1-409e-bb1a-5bb46ac46974",
                         "ord": "a1"
@@ -2382,7 +2382,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See live availability and reserve your treatment online — no phone tag."
+                      "See live availability and reserve your treatment online: no phone tag."
                     ],
                     "id": "050569a1-4004-4b53-b5a5-5ea7ec83bfbf",
                     "ord": "a1"

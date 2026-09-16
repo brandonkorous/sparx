@@ -244,7 +244,7 @@ export function LiveConnection({
 
           if (total > MAX_LIVE_ROWS) {
             throw new Error(
-              `That is more than ${MAX_LIVE_ROWS.toLocaleString()} rows in one go, which is more than we move at once. Bring fewer kinds of data across at a time — your products first, then your orders.`
+              `That is more than ${MAX_LIVE_ROWS.toLocaleString()} rows in one go, which is more than we move at once. Bring fewer kinds of data across at a time. Your products first, then your orders.`
             );
           }
         } while (cursor !== null && pages < MAX_LIVE_PAGES);
@@ -283,7 +283,7 @@ export function LiveConnection({
         <Heading level={2}>Reading your {vendor.name} account</Heading>
         {pullError === null ? (
           <Text>
-            This can take a few minutes on a big account. Leave this open — it is reading, not
+            This can take a few minutes on a big account. Leave this open. It is reading, not
             saving, and nothing has been written to your business yet.
           </Text>
         ) : null}
@@ -439,7 +439,7 @@ export function LiveConnection({
               </AlertTitle>
               <AlertDescription>
                 Switch on {[...new Set(locked.map((resource) => resource.module))].join(' and ')}{' '}
-                and connect again — they will come across then.
+                and connect again. They will come across then.
               </AlertDescription>
             </AlertContent>
           </Alert>
@@ -489,7 +489,7 @@ export function LiveConnection({
         <Heading level={2}>Connect to {vendor.name}</Heading>
         <Text>
           We read your account directly, so there is nothing to export and no files to find.
-          Everything we ask for is read-only — nothing here can change anything on {vendor.name}.
+          Everything we ask for is read-only. Nothing here can change anything on {vendor.name}.
         </Text>
       </div>
 

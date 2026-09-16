@@ -230,8 +230,8 @@ function evidence(c: Candidate): string {
 async function main(): Promise<void> {
   console.log(
     APPLY
-      ? 'APPLYING — scoping global blueprint categories/collections to their proven sites.\n'
-      : 'DRY RUN — nothing written.\n'
+      ? 'APPLYING: scoping global blueprint categories/collections to their proven sites.\n'
+      : 'DRY RUN. Nothing written.\n'
   );
   if (ONLY_TENANT) console.log(`filtered to tenant: ${ONLY_TENANT}\n`);
 
@@ -273,16 +273,16 @@ async function main(): Promise<void> {
   }
 
   if (unclaimed.length > 0) {
-    console.log(`${unclaimed.length} row(s) left GLOBAL — no evidence of an owning site:`);
+    console.log(`${unclaimed.length} row(s) left GLOBAL: no evidence of an owning site:`);
     for (const c of unclaimed)
       console.log(
-        `    ${c.tenantSlug} / ${c.kind} ${c.name} (${c.handle}) — no install, no products`
+        `    ${c.tenantSlug} / ${c.kind} ${c.name} (${c.handle}): no install, no products`
       );
     console.log('');
   }
   if (globalContents.length > 0) {
     console.log(
-      `${globalContents.length} row(s) left GLOBAL — they hold a product that is itself global:`
+      `${globalContents.length} row(s) left GLOBAL: they hold a product that is itself global:`
     );
     for (const c of globalContents) console.log(`    ${c.tenantSlug} / ${c.kind} ${c.name}`);
     console.log('');
@@ -290,7 +290,7 @@ async function main(): Promise<void> {
 
   console.log(
     `${scopable.length} scopable · ${unclaimed.length} unclaimed · ${globalContents.length} global-by-contents · ` +
-      `${singleSite.length} on single-site tenants (skipped — nothing to leak into)\n`
+      `${singleSite.length} on single-site tenants (skipped: nothing to leak into)\n`
   );
 
   if (!APPLY) {

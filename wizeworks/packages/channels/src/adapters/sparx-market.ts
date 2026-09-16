@@ -34,7 +34,7 @@ import type {
 class FirstPartyOAuthError extends Error {
   constructor(method: string) {
     super(
-      `sparx.market is a first-party channel — ${method} has no OAuth flow. ` +
+      `sparx.market is a first-party channel: ${method} has no OAuth flow. ` +
         'Enable it via the merchant profile (POST /v1/channels/sparx_market/connect), not the OAuth path.'
     );
     this.name = 'FirstPartyOAuthError';

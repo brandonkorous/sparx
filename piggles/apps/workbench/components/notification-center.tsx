@@ -56,7 +56,7 @@ export function NotificationCenter() {
             variant="ghost"
             shape="square"
             aria-label={
-              unreadCount > 0 ? `Notifications — ${String(unreadCount)} unread` : 'Notifications'
+              unreadCount > 0 ? `Notifications (${String(unreadCount)} unread)` : 'Notifications'
             }
             // Relative so the count can sit on the icon's corner. Layout only —
             // the button's own appearance still comes entirely from its variant.
@@ -103,7 +103,7 @@ export function NotificationCenter() {
             // product, to someone running their own business, on the screen they
             // see most often.
             title="You're all caught up"
-            description="Anything waiting on you — a payment that failed, stock running low — turns up here."
+            description="Anything waiting on you (a payment that failed, stock running low) turns up here."
           />
         ) : (
           // `-mx-2` against the rows' `px-2` nets to zero, so a row's text starts
@@ -142,7 +142,7 @@ export function NotificationCenter() {
             place. When there IS more, it says how much rather than hinting. */}
         <div className="border-base-300 -mx-4 mt-1 -mb-1 border-t px-2 pt-2">
           <Button size="sm" className="w-full justify-start" onClick={openInbox}>
-            {overflow > 0 ? `See all — ${String(overflow)} more unread` : 'See all in Pulse'}
+            {overflow > 0 ? `See all (${String(overflow)} more unread)` : 'See all in Pulse'}
           </Button>
         </div>
       </PopoverContent>

@@ -6,7 +6,7 @@ export const cosmeticsType: ProductTypeDefinition = {
   key: 'cosmetics',
   name: 'Beauty & Personal Care',
   pluralName: 'Beauty & Personal Care',
-  description: 'Skincare, cosmetics, and personal care — ingredients, usage, and skin type.',
+  description: 'Skincare, cosmetics, and personal care: ingredients, usage, and skin type.',
   icon: '💄',
   attributeSchema: {
     fields: [

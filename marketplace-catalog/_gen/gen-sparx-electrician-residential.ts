@@ -177,7 +177,7 @@ const SCHEDULING = {
       cancellationWindowHours: 2,
       reminderOffsetsMin: [60],
       policyText:
-        'Emergency callouts are booked as soon as an electrician is free — often same day. We confirm by phone before we head out so you always know who is coming and when.',
+        'Emergency callouts are booked as soon as an electrician is free, often same day. We confirm by phone before we head out so you always know who is coming and when.',
     },
   ],
   resources: [
@@ -221,7 +221,7 @@ const SCHEDULING = {
       handle: 'diagnostic-visit',
       name: 'Diagnostic visit',
       description:
-        'Something not working right — a dead outlet, a tripping breaker, flickering lights? We find the cause and explain the fix in plain language. Fee credited toward the repair.',
+        'Something not working right: a dead outlet, a tripping breaker, flickering lights? We find the cause and explain the fix in plain language. Fee credited toward the repair.',
       durationMinutes: 60,
       priceCents: 9900,
       assignmentStrategy: 'any_available',
@@ -234,7 +234,7 @@ const SCHEDULING = {
       handle: 'outlet-lighting-install',
       name: 'Outlets & lighting install',
       description:
-        'New outlets, USB receptacles, dimmers, under-cabinet or recessed lighting — installed cleanly and safely, tested before we leave.',
+        'New outlets, USB receptacles, dimmers, under-cabinet or recessed lighting: installed cleanly and safely, tested before we leave.',
       durationMinutes: 120,
       priceCents: 18500,
       bufferAfterMin: 15,
@@ -248,7 +248,7 @@ const SCHEDULING = {
       handle: 'ceiling-fan-install',
       name: 'Ceiling fan install',
       description:
-        'Replacing an old fixture or wiring a fan where there wasn’t one — mounted solid, balanced, and wired to code.',
+        'Replacing an old fixture or wiring a fan where there wasn’t one: mounted solid, balanced, and wired to code.',
       durationMinutes: 90,
       priceCents: 14500,
       bufferAfterMin: 15,
@@ -262,7 +262,7 @@ const SCHEDULING = {
       handle: 'panel-upgrade-consult',
       name: 'Panel upgrade consult',
       description:
-        'Thinking about a service upgrade or a new breaker panel? We assess your current setup, talk through permits, and give you a fixed quote — free.',
+        'Thinking about a service upgrade or a new breaker panel? We assess your current setup, talk through permits, and give you a fixed quote: free.',
       durationMinutes: 60,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -289,7 +289,7 @@ const SCHEDULING = {
       handle: 'emergency-callout',
       name: 'Emergency callout',
       description:
-        'No power, a burning smell, sparking or a scorched outlet — we prioritize it and confirm by phone before heading out. Booked to the next available electrician.',
+        'No power, a burning smell, sparking or a scorched outlet. We prioritize it and confirm by phone before heading out. Booked to the next available electrician.',
       durationMinutes: 60,
       priceCents: 19900,
       requiresApproval: true,
@@ -308,7 +308,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A licensed electrician neatly wiring a home electrical panel',
     title: 'Home electrical, done right and to code',
-    sub: 'Licensed, insured, and tidy about it. Panel upgrades, outlets and lighting, ceiling fans, troubleshooting and whole-home safety — booked online in about a minute.',
+    sub: 'Licensed, insured, and tidy about it. Panel upgrades, outlets and lighting, ceiling fans, troubleshooting and whole-home safety: booked online in about a minute.',
     primary: { label: 'Book a free estimate', href: '/book' },
     secondary: { label: 'See our services', href: '/book' },
     overlay: 'darker',
@@ -317,7 +317,7 @@ const HOME = [
     items: [
       {
         title: 'Licensed & insured',
-        body: 'Every job runs under a licensed electrician and full insurance — so the work is safe, warrantied and yours to trust.',
+        body: 'Every job runs under a licensed electrician and full insurance, so the work is safe, warrantied and yours to trust.',
       },
       {
         title: 'Up-front pricing',
@@ -329,7 +329,7 @@ const HOME = [
       },
       {
         title: 'Clean & tidy',
-        body: 'We use drop cloths, wipe down, and haul off the old parts. You’d never know we were there — except that it finally works.',
+        body: 'We use drop cloths, wipe down, and haul off the old parts. You’d never know we were there, except that it finally works.',
       },
     ],
   }),
@@ -343,7 +343,7 @@ const HOME = [
         name: 'Free in-home estimate',
         priceCents: 0,
         durationMin: 45,
-        desc: 'We look at the job and give you a written price — no charge.',
+        desc: 'We look at the job and give you a written price: no charge.',
       },
       {
         name: 'Whole-home safety inspection',
@@ -361,7 +361,7 @@ const HOME = [
         name: 'Panel upgrade consult',
         priceCents: 0,
         durationMin: 60,
-        desc: 'Service upgrades and new panels, with a fixed quote — free.',
+        desc: 'Service upgrades and new panels, with a fixed quote: free.',
       },
     ],
     cta: { label: 'See everything & book', href: '/book' },
@@ -369,10 +369,10 @@ const HOME = [
   splitFeature({
     image: url(IMG.inspection),
     alt: 'An electrician checking outlets with a tester during a home safety inspection',
-    heading: 'Safety first — every visit, every time',
+    heading: 'Safety first: every visit, every time',
     body: [
       'Before we touch a thing, we check what’s already there: the panel, the grounding, the outlets on the circuit we’re working. Old wiring and quiet problems are how small jobs turn into big ones, so we find them early.',
-      'You get a straight answer about what’s safe, what can wait, and what shouldn’t — and a written note of anything we spot. No scare tactics, no upsell. Just the facts and a fair price.',
+      'You get a straight answer about what’s safe, what can wait, and what shouldn’t, and a written note of anything we spot. No scare tactics, no upsell. Just the facts and a fair price.',
     ],
     cta: { label: 'Book a safety inspection', href: '/book' },
   }),
@@ -392,7 +392,7 @@ const HOME = [
         role: 'Panel & install specialist',
         image: url(IMG.diego),
         alt: 'Diego Ramirez, panel and install specialist',
-        bio: 'Service upgrades, breaker panels and EV chargers — clean work, labeled and to code.',
+        bio: 'Service upgrades, breaker panels and EV chargers: clean work, labeled and to code.',
       },
       {
         name: 'Ray Whitfield',
@@ -418,7 +418,7 @@ const HOME = [
     attribution: 'Dana R., homeowner in Maple Grove',
   }),
   bookingCta({
-    title: 'Get it looked at — free',
+    title: 'Get it looked at: free',
     sub: 'Pick a visit, choose a time that works, and we’ll be there. Estimates are always free and there’s never any pressure.',
     cta: { label: 'Book a free estimate', href: '/book' },
   }),
@@ -453,7 +453,7 @@ const ABOUT = [
     items: [
       {
         title: 'We explain, not lecture',
-        body: 'You’ll always know what’s wrong, what we’re doing about it, and why — in plain language, before we start.',
+        body: 'You’ll always know what’s wrong, what we’re doing about it, and why: in plain language, before we start.',
       },
       {
         title: 'Fixed prices, in writing',
@@ -461,7 +461,7 @@ const ABOUT = [
       },
       {
         title: 'Safe and to code',
-        body: 'Grounding, GFCI/AFCI protection, permits and inspections — the parts you can’t see are the ones we care about most.',
+        body: 'Grounding, GFCI/AFCI protection, permits and inspections: the parts you can’t see are the ones we care about most.',
       },
     ],
   }),
@@ -481,7 +481,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live availability and reserve your electrician online — no phone tag, no waiting on hold.',
+    sub: 'See live availability and reserve your electrician online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book online', href: '/book' },
   }),
@@ -492,8 +492,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-electrician-residential',
   name: 'Electrician (Residential)',
   summary:
-    'A trustworthy residential-electrician site — a warm-white ground, a charcoal primary and a safety-yellow accent, with photo-led, code-to-safety copy. Installs a working booking flow: free estimates, diagnostics, outlet & lighting installs, panel consults, safety inspections and an emergency callout, with three electricians you book by name and their own weekly hours. Ships as "Brightwire Electric".',
-  tagline: 'A warm, safety-first template for home electricians — book visits online from day one.',
+    'A trustworthy residential-electrician site: a warm-white ground, a charcoal primary and a safety-yellow accent, with photo-led, code-to-safety copy. Installs a working booking flow: free estimates, diagnostics, outlet & lighting installs, panel consults, safety inspections and an emergency callout, with three electricians you book by name and their own weekly hours. Ships as "Brightwire Electric".',
+  tagline: 'A warm, safety-first template for home electricians. Book visits online from day one.',
   industry: 'Electrician',
   sortWeight: 74,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -502,7 +502,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Brightwire Electric — licensed residential electrician',
+      title: 'Brightwire Electric: licensed residential electrician',
       description:
         'Brightwire Electric is a licensed, insured home electrician: panel upgrades, outlets and lighting, ceiling fans, troubleshooting and whole-home safety inspections. Book a free estimate online.',
     },

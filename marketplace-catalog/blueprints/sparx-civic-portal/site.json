@@ -687,8 +687,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "City of Rivermark — services, news, and notices",
-      "seoDescription": "The official portal for the City of Rivermark: pay a bill, apply for a permit, find a meeting, report an issue, and read city news and public notices — all in one place.",
+      "seoTitle": "City of Rivermark: services, news, and notices",
+      "seoDescription": "The official portal for the City of Rivermark: pay a bill, apply for a permit, find a meeting, report an issue, and read city news and public notices. All in one place.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -724,7 +724,7 @@
                         "tag": "p",
                         "class": "max-w-xl text-lg leading-relaxed text-base-content @2xl:text-xl",
                         "children": [
-                          "Your city, online. Pay a bill, apply for a permit, find a meeting, or report a problem — the things residents do most, all in one clear place."
+                          "Your city, online. Pay a bill, apply for a permit, find a meeting, or report a problem: the things residents do most, all in one clear place."
                         ],
                         "id": "817d1c57-9318-4658-91d7-67e182f2f466",
                         "ord": "a1"
@@ -1248,7 +1248,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Hearings, agendas, and bid postings, published as the public record — newest first."
+                          "Hearings, agendas, and bid postings, published as the public record: newest first."
                         ],
                         "id": "b3c5f746-681d-4d5e-90c0-b281077b3602",
                         "ord": "a1"
@@ -1425,7 +1425,7 @@
                                     "tag": "span",
                                     "class": "flex-1 text-lg font-semibold leading-snug text-base-content",
                                     "children": [
-                                      "City Council regular meeting agenda — 12 August, 6:00pm"
+                                      "City Council regular meeting agenda: 12 August, 6:00pm"
                                     ],
                                     "id": "5abf1bf9-1928-4a6f-9b07-28e7057b0d9b",
                                     "ord": "a1"
@@ -1822,7 +1822,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — City of Rivermark",
+      "seoTitle": "Shop: City of Rivermark",
       "seoDescription": "Browse everything City of Rivermark makes, with prices and options at a glance. City & public services.",
       "root": {
         "kind": "element",
@@ -1880,7 +1880,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — City of Rivermark",
+      "seoTitle": "Collections: City of Rivermark",
       "seoDescription": "Explore the collections at City of Rivermark, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -1921,7 +1921,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — City of Rivermark",
+      "seoTitle": "Your cart: City of Rivermark",
       "seoDescription": "Review what is in your cart and check out securely at City of Rivermark.",
       "root": {
         "kind": "element",
@@ -1962,7 +1962,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — City of Rivermark",
+      "seoTitle": "Search: City of Rivermark",
       "seoDescription": "Search City of Rivermark for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2003,7 +2003,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — City of Rivermark",
+      "seoTitle": "Journal: City of Rivermark",
       "seoDescription": "Stories, guides and notes from City of Rivermark.",
       "root": {
         "kind": "element",
@@ -2169,7 +2169,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About the City of Rivermark",
-      "seoDescription": "Who the City of Rivermark serves and how this portal is organized — plain-language, accessibility-first city government built around the tasks residents actually do.",
+      "seoDescription": "Who the City of Rivermark serves and how this portal is organized: plain-language, accessibility-first city government built around the tasks residents actually do.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2210,7 +2210,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We built this portal around one idea — that finding a city service should not require knowing which department owns it. Everything here is written in plain language, tested against accessibility standards, and organized around the tasks residents actually come to do."
+                      "We built this portal around one idea. That finding a city service should not require knowing which department owns it. Everything here is written in plain language, tested against accessibility standards, and organized around the tasks residents actually come to do."
                     ],
                     "id": "9275bb8e-7e4a-460c-836e-69a3af3045da",
                     "ord": "a2"
@@ -2240,8 +2240,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — City of Rivermark",
-      "seoDescription": "Get in touch with City of Rivermark — questions, orders and anything else you need.",
+      "seoTitle": "Contact: City of Rivermark",
+      "seoDescription": "Get in touch with City of Rivermark: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2277,7 +2277,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Reach City Hall at 200 Riverside Plaza, Monday through Friday, 8:00am to 5:00pm. For a non-emergency issue — a pothole, a streetlight, a missed pickup — the fastest route is the online service request, staffed during business hours. In an emergency, always call 911."
+                          "Reach City Hall at 200 Riverside Plaza, Monday through Friday, 8:00am to 5:00pm. For a non-emergency issue (a pothole, a streetlight, a missed pickup) the fastest route is the online service request, staffed during business hours. In an emergency, always call 911."
                         ],
                         "id": "4ca586ff-b782-4e1c-8192-93009fba8b7e",
                         "ord": "a1"
@@ -2548,8 +2548,8 @@
       "kind": "collection",
       "recordType": "cms.blog_post",
       "isDefault": true,
-      "seoTitle": "Article — City of Rivermark",
-      "seoDescription": "A story from City of Rivermark — the writing, the reporting and the notes behind it.",
+      "seoTitle": "Article: City of Rivermark",
+      "seoDescription": "A story from City of Rivermark: the writing, the reporting and the notes behind it.",
       "root": {
         "kind": "element",
         "tag": "div",

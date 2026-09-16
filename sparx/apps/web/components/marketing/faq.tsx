@@ -26,28 +26,28 @@ const FAQ_ITEMS: FaqItem[] = [
     order: 10,
     question: 'Can I really get a live site in five minutes?',
     answer:
-      'Yes — that’s the design target the entire platform is built around. Sign up, pick a theme, activate the modules you need, add a product, take an order. We measure new-tenant time-to-first-order and that number is the north star metric. If it takes longer for you, something is broken and we want to know.',
+      'Yes: that’s the design target the entire platform is built around. Sign up, pick a theme, activate the modules you need, add a product, take an order. We measure new-tenant time-to-first-order and that number is the north star metric. If it takes longer for you, something is broken and we want to know.',
   },
   {
     id: 'static-2',
     order: 20,
     question: 'What happens if I turn a module off?',
     answer:
-      'Billing stops on the next cycle. Your data stays exactly where it was. The module’s UI becomes inactive — but if you turn it back on a year later, every order, customer, and configuration is still there. We never charge for storage on inactive modules and we never delete your data without your explicit request.',
+      'Billing stops on the next cycle. Your data stays exactly where it was. The module’s UI becomes inactive, but if you turn it back on a year later, every order, customer, and configuration is still there. We never charge for storage on inactive modules and we never delete your data without your explicit request.',
   },
   {
     id: 'static-3',
     order: 30,
     question: 'How does the MCP integration actually work?',
     answer:
-      'You enable the AI module, copy your MCP endpoint URL and a scoped API key, and paste them into Claude Desktop, ChatGPT, Cursor, or any MCP-compatible client. The client now sees your tenant’s tools — read products, search customers, draft emails, create orders, etc. Every call is scoped to your tenant, signed with your key, and logged. Revoke the key in one click.',
+      'You enable the AI module, copy your MCP endpoint URL and a scoped API key, and paste them into Claude Desktop, ChatGPT, Cursor, or any MCP-compatible client. The client now sees your tenant’s tools. Read products, search customers, draft emails, create orders, etc. Every call is scoped to your tenant, signed with your key, and logged. Revoke the key in one click.',
   },
   {
     id: 'static-4',
     order: 40,
     question: 'Where does my data live? Who owns it?',
     answer:
-      'You own your data. sparx runs on Google Kubernetes Engine in us-central1 with Postgres backed up nightly. Multi-tenancy is enforced at the database level with row-level security — your data is isolated from every other tenant. Full export to JSON or SQL is available in the dashboard at any time, no support ticket required.',
+      'You own your data. sparx runs on Google Kubernetes Engine in us-central1 with Postgres backed up nightly. Multi-tenancy is enforced at the database level with row-level security. Your data is isolated from every other tenant. Full export to JSON or SQL is available in the dashboard at any time, no support ticket required.',
   },
   {
     id: 'static-5',
@@ -61,7 +61,7 @@ const FAQ_ITEMS: FaqItem[] = [
     order: 60,
     question: 'Can I migrate from another platform?',
     answer:
-      'Yes. We ship native importers for the common stacks — products, customers, and orders from store platforms; contacts, deals, and lists from CRMs; audiences and automations from email tools; posts, media, and redirects from CMSs. Most SMB migrations take under a week; a complex B2B move with custom checkout work runs about two.',
+      'Yes. We ship native importers for the common stacks: products, customers, and orders from store platforms; contacts, deals, and lists from CRMs; audiences and automations from email tools; posts, media, and redirects from CMSs. Most SMB migrations take under a week; a complex B2B move with custom checkout work runs about two.',
   },
   {
     id: 'static-7',

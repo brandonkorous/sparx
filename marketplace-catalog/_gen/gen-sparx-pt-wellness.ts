@@ -182,7 +182,7 @@ const SCHEDULING = {
       handle: 'initial-evaluation',
       name: 'Initial evaluation',
       description:
-        'An unhurried first visit — we listen to your whole history, assess gently, and build a plan together. Where the care begins.',
+        'An unhurried first visit. We listen to your whole history, assess gently, and build a plan together. Where the care begins.',
       durationMinutes: 60,
       priceCents: 14000,
       bufferAfterMin: 10,
@@ -196,7 +196,7 @@ const SCHEDULING = {
     {
       handle: 'follow-up-session',
       name: 'Follow-up session',
-      description: 'A one-on-one treatment visit as your plan progresses — hands-on work, guided movement, small steady wins.',
+      description: 'A one-on-one treatment visit as your plan progresses: hands-on work, guided movement, small steady wins.',
       durationMinutes: 45,
       priceCents: 9500,
       assignmentStrategy: 'customer_choice',
@@ -209,7 +209,7 @@ const SCHEDULING = {
     {
       handle: 'pelvic-health-visit',
       name: 'Pelvic & women’s-health visit',
-      description: 'Private, respectful care for pelvic health, pregnancy and postpartum recovery — with a therapist who specializes in it.',
+      description: 'Private, respectful care for pelvic health, pregnancy and postpartum recovery, with a therapist who specializes in it.',
       durationMinutes: 60,
       priceCents: 13500,
       bufferAfterMin: 10,
@@ -223,7 +223,7 @@ const SCHEDULING = {
     {
       handle: 'balance-fall-prevention',
       name: 'Balance & fall prevention',
-      description: 'Gentle, confidence-building work for steadier standing and safer walking — thoughtfully paced for all ages and abilities.',
+      description: 'Gentle, confidence-building work for steadier standing and safer walking: thoughtfully paced for all ages and abilities.',
       durationMinutes: 45,
       priceCents: 10000,
       assignmentStrategy: 'customer_choice',
@@ -236,7 +236,7 @@ const SCHEDULING = {
     {
       handle: 'chronic-pain-session',
       name: 'Chronic-pain session',
-      description: 'A calm, whole-person approach to persistent pain — pacing, hands-on care and movement that meets you where you are.',
+      description: 'A calm, whole-person approach to persistent pain: pacing, hands-on care and movement that meets you where you are.',
       durationMinutes: 60,
       priceCents: 12500,
       assignmentStrategy: 'customer_choice',
@@ -262,7 +262,7 @@ const SCHEDULING = {
     {
       handle: 'wellness-consult',
       name: 'Wellness consult',
-      description: 'A friendly, no-cost conversation about your goals — the easiest way to see if we’re the right fit before you book care.',
+      description: 'A friendly, no-cost conversation about your goals: the easiest way to see if we’re the right fit before you book care.',
       durationMinutes: 30,
       priceCents: 0,
       assignmentStrategy: 'any_available',
@@ -281,7 +281,7 @@ const HOME = [
     image: url(IMG.hero),
     alt: 'A calm, sunlit physical-therapy studio with soft neutral tones',
     title: 'Gentle care that helps you feel like yourself again',
-    sub: 'A calm, whole-person physical-therapy clinic for pelvic and women’s health, balance, chronic pain and wellness — one unhurried hour at a time.',
+    sub: 'A calm, whole-person physical-therapy clinic for pelvic and women’s health, balance, chronic pain and wellness. One unhurried hour at a time.',
     primary: { label: 'Book an evaluation', href: '/book' },
     secondary: { label: 'See our visits', href: '/book' },
     overlay: 'dark',
@@ -290,11 +290,11 @@ const HOME = [
     items: [
       {
         title: 'Unhurried, one-on-one visits',
-        body: 'You get your therapist’s full attention for the whole visit — no double-booking, no handing you off to an aide. Just steady, personal care.',
+        body: 'You get your therapist’s full attention for the whole visit: no double-booking, no handing you off to an aide. Just steady, personal care.',
       },
       {
         title: 'Pelvic & women’s health',
-        body: 'Private, respectful care for pregnancy, postpartum recovery and pelvic-floor concerns — with a therapist who truly specializes in it.',
+        body: 'Private, respectful care for pregnancy, postpartum recovery and pelvic-floor concerns, with a therapist who truly specializes in it.',
       },
       {
         title: 'All ages and abilities',
@@ -302,13 +302,13 @@ const HOME = [
       },
       {
         title: 'Most insurance accepted',
-        body: 'We accept most major plans and will check your benefits before your first visit, so there are no surprises — just care.',
+        body: 'We accept most major plans and will check your benefits before your first visit, so there are no surprises. Just care.',
       },
     ],
   }),
   serviceMenu({
     heading: 'Ways we can help',
-    intro: 'A few of the visits we offer most. Full pricing and live openings are on the booking page — most people start with an evaluation.',
+    intro: 'A few of the visits we offer most. Full pricing and live openings are on the booking page. Most people start with an evaluation.',
     surface: 'muted',
     columns: 2,
     items: [
@@ -324,14 +324,14 @@ const HOME = [
     alt: 'A therapist guiding a patient through a gentle, hands-on movement',
     heading: 'We treat the whole person, not just the part that hurts',
     body: [
-      'Pain and stiffness rarely live in one place. So we take time to understand your whole story — how you move, sleep, work and worry — before we ever lay hands on the problem.',
+      'Pain and stiffness rarely live in one place. So we take time to understand your whole story (how you move, sleep, work and worry) before we ever lay hands on the problem.',
       'From there it’s gentle, hands-on care paired with movement you can actually keep up at home. No rushing, no one-size plan. Just steady progress you can feel, and a therapist who stays with you the whole way.',
     ],
     cta: { label: 'Book an evaluation', href: '/book' },
   }),
   teamRow({
     heading: 'The therapists you’ll work with',
-    intro: 'Book by name — you’ll see the same person each visit, someone who learns your body and your goals.',
+    intro: 'Book by name: you’ll see the same person each visit, someone who learns your body and your goals.',
     members: [
       {
         name: 'Elena Marsh, PT, DPT',
@@ -345,7 +345,7 @@ const HOME = [
         role: 'Geriatric & balance',
         image: url(IMG.ruth),
         alt: 'Ruth Okafor, geriatric & balance physical therapist',
-        bio: 'Helps older adults move with confidence again — steadier balance, safer walking, fewer falls.',
+        bio: 'Helps older adults move with confidence again: steadier balance, safer walking, fewer falls.',
       },
       {
         name: 'Dana Feldman, PT, DPT',
@@ -362,7 +362,7 @@ const HOME = [
   }),
   bookingCta({
     title: 'Let’s start with a gentle evaluation',
-    sub: 'Choose a time that suits you and pick your therapist — booking online takes about a minute, and there’s no rush.',
+    sub: 'Choose a time that suits you and pick your therapist: booking online takes about a minute, and there’s no rush.',
     cta: { label: 'Book an evaluation', href: '/book' },
   }),
 ];
@@ -385,7 +385,7 @@ const ABOUT = [
     alt: 'Two therapists talking softly in a bright, plant-filled reception',
     heading: 'About Restore',
     body: [
-      'We started Restore Physical Therapy & Wellness because so much of healthcare feels rushed — fifteen minutes, a printout, and out the door. We wanted to do the opposite: slow down, listen fully, and treat the whole person in front of us.',
+      'We started Restore Physical Therapy & Wellness because so much of healthcare feels rushed: fifteen minutes, a printout, and out the door. We wanted to do the opposite: slow down, listen fully, and treat the whole person in front of us.',
       'That means real one-on-one time, a therapist who stays with you visit to visit, and care that fits your life rather than the clock. Whether you’re recovering, in pain, or simply want to move and feel better, you’re welcome here.',
     ],
     cta: { label: 'Book an evaluation', href: '/book' },
@@ -404,7 +404,7 @@ const ABOUT = [
       },
       {
         title: 'We hand you the tools',
-        body: 'You leave each visit knowing exactly what to do at home — simple, doable movement that keeps your progress going between sessions.',
+        body: 'You leave each visit knowing exactly what to do at home: simple, doable movement that keeps your progress going between sessions.',
       },
     ],
   }),
@@ -424,7 +424,7 @@ const CONTACT = [
   }),
   bookingCta({
     title: 'Rather book than call?',
-    sub: 'See live openings and reserve your evaluation online — no phone tag, no waiting on hold.',
+    sub: 'See live openings and reserve your evaluation online: no phone tag, no waiting on hold.',
     surface: 'muted',
     cta: { label: 'Book an evaluation', href: '/book' },
   }),
@@ -435,8 +435,8 @@ const SPEC: ServiceSiteSpec = {
   key: 'sparx-pt-wellness',
   name: 'Physical Therapy & Wellness',
   summary:
-    'A calm, whole-person physical-therapy site — a soft-sage palette, a warm-clay accent and a gentle serif display. Installs online booking from day one: evaluations and one-on-one sessions for pelvic health, balance, chronic pain and wellness, three therapists you book by name plus two private treatment rooms as resources, and reminder + evaluation-hold policies. Ships as "Restore Physical Therapy & Wellness".',
-  tagline: 'A gentle, restorative template for physical-therapy clinics — book evaluations online from day one.',
+    'A calm, whole-person physical-therapy site: a soft-sage palette, a warm-clay accent and a gentle serif display. Installs online booking from day one: evaluations and one-on-one sessions for pelvic health, balance, chronic pain and wellness, three therapists you book by name plus two private treatment rooms as resources, and reminder + evaluation-hold policies. Ships as "Restore Physical Therapy & Wellness".',
+  tagline: 'A gentle, restorative template for physical-therapy clinics. Book evaluations online from day one.',
   industry: 'Physical therapy',
   sortWeight: 47,
   requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -445,7 +445,7 @@ const SPEC: ServiceSiteSpec = {
   chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
   seo: {
     home: {
-      title: 'Restore Physical Therapy & Wellness — gentle, whole-person care',
+      title: 'Restore Physical Therapy & Wellness: gentle, whole-person care',
       description:
         'Restore is a calm physical-therapy clinic for pelvic and women’s health, balance, chronic pain and wellness. Unhurried one-on-one care. Book your evaluation online.',
     },

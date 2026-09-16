@@ -87,7 +87,7 @@ export async function resolveAndPriceLine(
 
   if (costCents == null) {
     throw new CrmValidationError(
-      'No cost basis for this line — enter a cost, or link a variant that has a cost.'
+      'No cost basis for this line. Enter a cost, or link a variant that has a cost.'
     );
   }
 
@@ -104,7 +104,7 @@ export async function resolveAndPriceLine(
     }
     if (rule.appliesTo !== 'document' && rule.appliesTo !== 'both') {
       throw new CrmValidationError(
-        `Markup rule "${rule.name}" is catalog-only — it can't price a document line`
+        `Markup rule "${rule.name}" is catalog-only: it can't price a document line`
       );
     }
     const { result, snapshot } = priceLineByMarkup(

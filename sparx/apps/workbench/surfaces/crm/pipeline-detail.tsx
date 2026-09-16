@@ -173,7 +173,7 @@ function PipelineEditor({
     create.isError || update.isError
       ? pipelineErrorMessage(
           create.error ?? update.error,
-          'The server did not answer. Nothing was changed and your work is still on screen — try again in a moment.'
+          'The server did not answer. Nothing was changed and your work is still on screen. Try again in a moment.'
         )
       : null;
 
@@ -312,7 +312,7 @@ function PipelineEditor({
               </Heading>
               <Text>
                 A pipeline is your own set of stages a deal moves through. Name it, then add the
-                stages — from first contact to won or lost.
+                stages: from first contact to won or lost.
               </Text>
             </div>
           ) : null}
@@ -539,7 +539,7 @@ function StageRow({
     const targetName = otherStages.find((s) => s.id === reassignTo)?.name ?? 'another stage';
     const ok = await confirm({
       title: `Remove ${stage.name}?`,
-      description: `Any deals still on this stage move to “${targetName}”. This cannot be undone — but no deal is lost.`,
+      description: `Any deals still on this stage move to “${targetName}”. This cannot be undone, but no deal is lost.`,
       confirmLabel: 'Remove stage',
       cancelLabel: 'Keep it',
       color: 'danger',

@@ -33,18 +33,18 @@ const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
     label: 'Features',
     note: 'Capability-by-capability breakdown across every module.',
   },
-  { path: '/pricing', label: 'Pricing', note: 'Per-module pricing — pay only for what you use.' },
+  { path: '/pricing', label: 'Pricing', note: 'Per-module pricing. Pay only for what you use.' },
   {
     path: '/migrate',
     label: 'Switching',
-    note: 'Bring a business over from another platform — products, variants, stock by location, customers, order history, pages, posts, media and old URLs — from the export file that platform already makes. Checked in the browser before anything is uploaded, and dry-run before anything is written. A page per platform at /migrate/<slug>.',
+    note: 'Bring a business over from another platform (products, variants, stock by location, customers, order history, pages, posts, media and old URLs) from the export file that platform already makes. Checked in the browser before anything is uploaded, and dry-run before anything is written. A page per platform at /migrate/<slug>.',
   },
   {
     // The AI module's second document — /ai (in moduleLines above) is the
     // customer-facing concierge; this is the tenant-facing MCP / agentic story.
     path: '/agentic',
     label: 'Agentic (MCP)',
-    note: 'Point your own AI (Claude, ChatGPT, Copilot) at live business data over a first-class MCP server — scoped, audited, your key.',
+    note: 'Point your own AI (Claude, ChatGPT, Copilot) at live business data over a first-class MCP server: scoped, audited, your key.',
   },
   {
     path: '/security',
@@ -99,9 +99,9 @@ export function GET(): Response {
 
   const body = `# sparx
 
-> sparx (by WizeWorks) is a modular content and commerce operating system: sites, commerce, CRM, CMS, email, B2B/wholesale, dropship, scheduling, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
+> sparx (by WizeWorks) is a modular content and commerce operating system: sites, commerce, CRM, CMS, email, B2B/wholesale, dropship, scheduling, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need: a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
 
-sparx is content AND/OR commerce — selling is one capability, never the assumption. It is API-first: every feature exists as an API endpoint, and a native Model Context Protocol (MCP) server lets AI agents read and write live business data directly (no exports, no CSVs). Modules are feature-flagged and billed independently. The platform runs on Google Kubernetes Engine with PostgreSQL row-level security enforcing tenant isolation.
+sparx is content AND/OR commerce: selling is one capability, never the assumption. It is API-first: every feature exists as an API endpoint, and a native Model Context Protocol (MCP) server lets AI agents read and write live business data directly (no exports, no CSVs). Modules are feature-flagged and billed independently. The platform runs on Google Kubernetes Engine with PostgreSQL row-level security enforcing tenant isolation.
 
 ## Modules
 
@@ -125,26 +125,26 @@ ${toolLines}
 
 ## Documentation
 
-Developer documentation — guides, REST & GraphQL API reference, SDKs, and the MCP server. The canonical developer home is ${BASE}/docs.
+Developer documentation: guides, REST & GraphQL API reference, SDKs, and the MCP server. The canonical developer home is ${BASE}/docs.
 
 ${docLines}
 
 ## Extension catalog
 
-The catalog of things a business can install into its own sparx site — browse at ${BASE}/market. Blueprints are whole themed sites; themes restyle a site; integrations connect outside services; components are building blocks for the Builder canvas.
+The catalog of things a business can install into its own sparx site: browse at ${BASE}/market. Blueprints are whole themed sites; themes restyle a site; integrations connect outside services; components are building blocks for the Builder canvas.
 
 ${catalogLines}
 
 ## sparx.market
 
-A separate site — the public marketplace where shoppers browse products sold BY businesses running on sparx. It is a different destination from the extension catalog above, on its own domain with its own index.
+A separate site: the public marketplace where shoppers browse products sold BY businesses running on sparx. It is a different destination from the extension catalog above, on its own domain with its own index.
 
 - [sparx.market](https://sparx.market): Shop products from every sparx seller.
 - [Marketplace index](https://sparx.market/llms.txt): Machine-readable map of the marketplace.
 
 ## More
 
-- [Full reference](${BASE}/llms-full.txt): Every module, the complete capability catalog with build status, tools, and docs — expanded content in one file. Fetch this if you need to answer a question about sparx rather than navigate to a page.
+- [Full reference](${BASE}/llms-full.txt): Every module, the complete capability catalog with build status, tools, and docs: expanded content in one file. Fetch this if you need to answer a question about sparx rather than navigate to a page.
 - [Brand](${BASE}/brand): The sparx brand and design language.
 - [Terms](${BASE}/legal/terms): Platform terms of service.
 - [Privacy](${BASE}/legal/privacy): Platform privacy policy.

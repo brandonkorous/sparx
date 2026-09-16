@@ -65,7 +65,7 @@ export function AiPage() {
             <Spark color={AI.color} />
           </>
         }
-        lede="Your own key, where its answers come from, when a human takes over, and what it costs — answered straight. Still weighing it? Read the chat docs or start the 14-day trial."
+        lede="Your own key, where its answers come from, when a human takes over, and what it costs: answered straight. Still weighing it? Read the chat docs or start the 14-day trial."
       />
       <ConciergeCta />
     </>
@@ -83,7 +83,7 @@ const CONCIERGE_FAQ: FaqItem[] = [
     id: 'concierge-byok',
     question: 'Do I have to bring my own AI key?',
     answer:
-      'Yes. sparx never answers your customers on an AI credential of its own — there is no house account to fall back on. You paste your own Anthropic or OpenAI key into your chat settings once, it is encrypted at rest, and every conversation runs on your model and your terms. Haven’t connected a key? The concierge stands down and every chat goes straight to your team, exactly as if AI were switched off.',
+      'Yes. sparx never answers your customers on an AI credential of its own. There is no house account to fall back on. You paste your own Anthropic or OpenAI key into your chat settings once, it is encrypted at rest, and every conversation runs on your model and your terms. Haven’t connected a key? The concierge stands down and every chat goes straight to your team, exactly as if AI were switched off.',
   },
   {
     id: 'concierge-hallucinate',
@@ -113,7 +113,7 @@ const CONCIERGE_FAQ: FaqItem[] = [
     id: 'concierge-control',
     question: 'Can I control its tone, greeting, and look?',
     answer:
-      'Yes, without writing any code. In sparx you set the opening greeting, the away message, the tone and persona it writes in, the accent color, which corner of the page it sits in, and your operating hours — all from the dashboard, like any other setting. No prompt engineering, no training data, no developer.',
+      'Yes, without writing any code. In sparx you set the opening greeting, the away message, the tone and persona it writes in, the accent color, which corner of the page it sits in, and your operating hours. All from the dashboard, like any other setting. No prompt engineering, no training data, no developer.',
   },
   {
     id: 'concierge-usage-cost',
@@ -125,7 +125,7 @@ const CONCIERGE_FAQ: FaqItem[] = [
     id: 'concierge-vs-agentic',
     question: 'How is this different from the agentic / MCP tool?',
     answer:
-      'They are two halves of the same sparx AI module ($49/mo), and turning it on gets you both. The concierge faces outward: it answers your customers in the live chat on your site. The agentic tool faces inward: it points the AI you already use — Claude, ChatGPT, Copilot — at your own business data, so your team can ask questions and get work done from the chat they are already in. One module, one bill, both tools.',
+      'They are two halves of the same sparx AI module ($49/mo), and turning it on gets you both. The concierge faces outward: it answers your customers in the live chat on your site. The agentic tool faces inward: it points the AI you already use (Claude, ChatGPT, Copilot) at your own business data, so your team can ask questions and get work done from the chat they are already in. One module, one bill, both tools.',
   },
 ];
 
@@ -379,7 +379,7 @@ function GroundedInData() {
     {
       module: 'commerce',
       label: 'Catalog · live',
-      value: 'Pour-Over Kit — 12 in stock',
+      value: 'Pour-Over Kit: 12 in stock',
       sub: 'Reads your real inventory count, not a cached page.',
     },
     {
@@ -683,7 +683,7 @@ function ConciergePricing() {
         </div>
       </div>
       <p className="mt-3.5 font-sans text-sm">
-        The concierge needs the Live Chat module too ($19/mo) — that&rsquo;s the chat widget on your
+        The concierge needs the Live Chat module too ($19/mo). That&rsquo;s the chat widget on your
         site and the staff inbox your team answers from. $68/mo for both, on one bill.
       </p>
     </Section>

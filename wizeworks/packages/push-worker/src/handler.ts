@@ -56,7 +56,7 @@ export interface PushOutcome {
 
 export async function handle(event: PushSendEvent, logger: Logger): Promise<PushOutcome> {
   if (!configureVapid()) {
-    logger.warn('VAPID keys unset — acking push.send without delivery');
+    logger.warn('VAPID keys unset: acking push.send without delivery');
     return { sent: 0, expired: 0, failed: 0, skipped: true };
   }
 

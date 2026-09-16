@@ -15,7 +15,8 @@ import type { SystemAutomationSpec } from '@wizeworks/automation';
 // (`customer.email is_set`), inlined per seed to match the other seed files.
 
 export const SUBSCRIPTION_CONFIRMED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription confirmed — email',
+  name: 'Subscription confirmed: email',
+  previousNames: ['Subscription confirmed — email'],
   description: 'Emails the customer when a new subscription starts.',
   trigger: { kind: 'event', eventType: 'subscription.created' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
@@ -30,7 +31,8 @@ export const SUBSCRIPTION_CONFIRMED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_RENEWED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription renewed — email',
+  name: 'Subscription renewed: email',
+  previousNames: ['Subscription renewed — email'],
   description: 'Emails the customer when their subscription renews and reorders.',
   trigger: { kind: 'event', eventType: 'subscription.renewed' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
@@ -45,7 +47,8 @@ export const SUBSCRIPTION_RENEWED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription payment failed — email',
+  name: 'Subscription payment failed: email',
+  previousNames: ['Subscription payment failed — email'],
   description: 'Emails the customer when a subscription renewal payment fails, so they can fix it.',
   trigger: { kind: 'event', eventType: 'subscription.payment_failed' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
@@ -60,7 +63,8 @@ export const SUBSCRIPTION_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_AUTHENTICATION_REQUIRED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription payment needs confirming — email',
+  name: 'Subscription payment needs confirming: email',
+  previousNames: ['Subscription payment needs confirming — email'],
   description:
     'Emails the customer when their bank asks them to confirm a renewal payment, so a good card is not mistaken for a failed one.',
   trigger: { kind: 'event', eventType: 'subscription.authentication_required' },
@@ -79,7 +83,8 @@ export const SUBSCRIPTION_AUTHENTICATION_REQUIRED_EMAIL: SystemAutomationSpec = 
 };
 
 export const SUBSCRIPTION_INVOICE_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription invoice — email',
+  name: 'Subscription invoice: email',
+  previousNames: ['Subscription invoice — email'],
   description:
     'Emails the customer the bill for a repeat order that is invoiced rather than charged to a saved card.',
   trigger: { kind: 'event', eventType: 'subscription.invoiced' },
@@ -95,7 +100,8 @@ export const SUBSCRIPTION_INVOICE_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_PAUSED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription paused — email',
+  name: 'Subscription paused: email',
+  previousNames: ['Subscription paused — email'],
   description: 'Emails the customer when their subscription is paused.',
   trigger: { kind: 'event', eventType: 'subscription.paused' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
@@ -110,7 +116,8 @@ export const SUBSCRIPTION_PAUSED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_RESUMED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription resumed — email',
+  name: 'Subscription resumed: email',
+  previousNames: ['Subscription resumed — email'],
   description: 'Emails the customer when their subscription resumes.',
   trigger: { kind: 'event', eventType: 'subscription.resumed' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
@@ -125,7 +132,8 @@ export const SUBSCRIPTION_RESUMED_EMAIL: SystemAutomationSpec = {
 };
 
 export const SUBSCRIPTION_CANCELLED_EMAIL: SystemAutomationSpec = {
-  name: 'Subscription cancelled — email',
+  name: 'Subscription cancelled: email',
+  previousNames: ['Subscription cancelled — email'],
   description: 'Emails the customer when their subscription is cancelled.',
   trigger: { kind: 'event', eventType: 'subscription.cancelled' },
   conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },

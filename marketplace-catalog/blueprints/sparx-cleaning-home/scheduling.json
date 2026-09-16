@@ -14,7 +14,7 @@
       "depositType": "none",
       "cancellationWindowHours": 24,
       "reminderOffsetsMin": [2880, 1440, 120],
-      "policyText": "Your first clean and any recurring plan is fully flexible — change your day, skip a visit or pause any time with 24 hours’ notice. No lock-in, ever."
+      "policyText": "Your first clean and any recurring plan is fully flexible. Change your day, skip a visit or pause any time with 24 hours’ notice. No lock-in, ever."
     }
   ],
   "resources": [
@@ -155,7 +155,7 @@
     {
       "handle": "free-estimate",
       "name": "Free in-home estimate",
-      "description": "A friendly walk-through of your home so we can quote an exact price — no obligation, no pressure.",
+      "description": "A friendly walk-through of your home so we can quote an exact price: no obligation, no pressure.",
       "durationMinutes": 60,
       "priceCents": 0,
       "assignmentStrategy": "any_available",
@@ -172,7 +172,7 @@
     {
       "handle": "standard-clean",
       "name": "Standard clean",
-      "description": "Kitchens, bathrooms, floors and surfaces across your whole home — the everyday refresh that keeps things sparkling.",
+      "description": "Kitchens, bathrooms, floors and surfaces across your whole home: the everyday refresh that keeps things sparkling.",
       "durationMinutes": 120,
       "priceCents": 12000,
       "assignmentStrategy": "any_available",
@@ -189,7 +189,7 @@
     {
       "handle": "deep-clean",
       "name": "Deep clean",
-      "description": "Top-to-bottom detail — baseboards, inside the oven and fridge, grout, vents and the spots that get skipped.",
+      "description": "Top-to-bottom detail: baseboards, inside the oven and fridge, grout, vents and the spots that get skipped.",
       "durationMinutes": 180,
       "priceCents": 22000,
       "assignmentStrategy": "any_available",
@@ -205,7 +205,7 @@
     },
     {
       "handle": "recurring-setup",
-      "name": "Recurring plan — first visit",
+      "name": "Recurring plan: first visit",
       "description": "Set up weekly, every-two-weeks or monthly cleans with the same friendly cleaner each time. Change or skip any time.",
       "durationMinutes": 120,
       "priceCents": 11000,
@@ -240,7 +240,7 @@
     {
       "handle": "one-time-refresh",
       "name": "One-time refresh",
-      "description": "A quick single visit before guests, after a party or whenever life gets busy — the essentials, done well.",
+      "description": "A quick single visit before guests, after a party or whenever life gets busy: the essentials, done well.",
       "durationMinutes": 90,
       "priceCents": 9000,
       "assignmentStrategy": "any_available",

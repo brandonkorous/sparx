@@ -224,7 +224,7 @@ export function AuthorizeConsent(): React.ReactElement {
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
           <Text className="text-base-content">
             {clientName} wants to access your {storeName} account
-            {info.email ? ` (${info.email})` : ''}. Choose what it can do — you can revoke this
+            {info.email ? ` (${info.email})` : ''}. Choose what it can do. You can revoke this
             anytime.
           </Text>
         </div>

@@ -96,7 +96,7 @@ export function ToolsIndex() {
               <span className="text-primary">.</span>
             </Heading>
             <Text variant="lead" className="text-base-content max-w-2xl text-xl">
-              Favicons, QR codes, campaign links, social cards, signatures, invoices — the things
+              Favicons, QR codes, campaign links, social cards, signatures, invoices: the things
               that quietly eat an afternoon. Open one and start; nothing uploads, nothing costs
               anything, and there is no account to make.
             </Text>
@@ -166,8 +166,8 @@ export function ToolsIndex() {
               <span className="text-primary">.</span>
             </Heading>
             <Text variant="lead" className="text-base-content max-w-xl">
-              These handle one job each, free, forever. sparx is the whole thing — site, store,
-              content, customers, email — switched on a module at a time, on one bill.
+              These handle one job each, free, forever. sparx is the whole thing (site, store,
+              content, customers, email) switched on a module at a time, on one bill.
             </Text>
           </div>
           <div className="flex flex-col items-start gap-3.5">

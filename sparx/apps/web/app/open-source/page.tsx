@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { ComingSoon } from '@/components/marketing/coming-soon';
 
 export const metadata: Metadata = {
-  title: 'Open source — sparx',
+  title: 'Open source: sparx',
   description:
     'sparx open-source: Builder SDK, MCP server reference, theme starter kits. Repos on github.com/wizeworks.',
   alternates: { canonical: '/open-source' },

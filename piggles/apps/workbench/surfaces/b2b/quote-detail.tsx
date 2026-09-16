@@ -65,7 +65,7 @@ export function QuoteDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               error={quoteQuery.error}
               noun="quote"
               title="Could not load this quote"
-              description="This is a problem reaching the server. The quote itself is unaffected — nothing has been lost."
+              description="This is a problem reaching the server. The quote itself is unaffected. Nothing has been lost."
               onRetry={() => {
                 void quoteQuery.refetch();
               }}

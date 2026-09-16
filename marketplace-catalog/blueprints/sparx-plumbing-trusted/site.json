@@ -555,7 +555,7 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Copper & Main Plumbing — trusted local plumbers",
+      "seoTitle": "Copper & Main Plumbing: trusted local plumbers",
       "seoDescription": "Copper & Main is a family-run, licensed plumbing company with upfront flat-rate pricing and on-time service. Book a free estimate or a service call online.",
       "root": {
         "kind": "element",
@@ -683,7 +683,7 @@
                             "tag": "p",
                             "class": "text-base leading-relaxed text-base-content",
                             "children": [
-                              "Fully licensed, bonded and insured — the same crew in the same vans, background-checked and in uniform at your door."
+                              "Fully licensed, bonded and insured: the same crew in the same vans, background-checked and in uniform at your door."
                             ],
                             "id": "b5f51aca-6ae7-48f8-b2ea-2722eeb7abe8",
                             "ord": "a1"
@@ -1121,7 +1121,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Twenty years later we’re still family-run — a small crew of licensed plumbers who’d rather do the job right and be your plumber for life than chase the next ticket."
+                          "Twenty years later we’re still family-run: a small crew of licensed plumbers who’d rather do the job right and be your plumber for life than chase the next ticket."
                         ],
                         "id": "4bf3e701-0571-43d6-a766-710dc62ca30c",
                         "ord": "a2"
@@ -1186,7 +1186,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "The same familiar faces every visit — licensed, background-checked and glad to explain what they’re doing."
+                          "The same familiar faces every visit: licensed, background-checked and glad to explain what they’re doing."
                         ],
                         "id": "52c9b388-e7b4-4999-b7d9-278cbd30b856",
                         "ord": "a1"
@@ -1243,7 +1243,7 @@
                                 "tag": "p",
                                 "class": "text-base leading-relaxed text-base-content",
                                 "children": [
-                                  "Twenty years on the tools. Marcus handles repairs, drains and water heaters — and answers the phone."
+                                  "Twenty years on the tools. Marcus handles repairs, drains and water heaters, and answers the phone."
                                 ],
                                 "id": "57b5ad3e-e8c1-4bcd-ba62-0f75b2ec7674",
                                 "ord": "a2"
@@ -1470,7 +1470,7 @@
       "name": "Book",
       "kind": "singleton",
       "slug": "book",
-      "seoTitle": "Book — Copper & Main Plumbing",
+      "seoTitle": "Book: Copper & Main Plumbing",
       "seoDescription": "See what Copper & Main Plumbing offers, with prices and how long each takes, and book your appointment online.",
       "root": {
         "kind": "element",
@@ -1521,7 +1521,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed @2xl:text-xl",
                     "children": [
-                      "Choose the visit you need to see the flat price, how long it takes and the next open time — then pick your plumber and day."
+                      "Choose the visit you need to see the flat price, how long it takes and the next open time, then pick your plumber and day."
                     ],
                     "id": "68320a2c-3af4-49fd-8681-5082a00c5b17",
                     "ord": "a1"
@@ -1594,7 +1594,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "What happens once you pick a time — and how to change it if something comes up."
+                          "What happens once you pick a time, and how to change it if something comes up."
                         ],
                         "id": "7db23ea6-5bdf-4d4e-9ff3-eb0aaafa7108",
                         "ord": "a1"
@@ -1701,7 +1701,7 @@
       "name": "About",
       "kind": "singleton",
       "slug": "about",
-      "seoTitle": "About — Copper & Main Plumbing",
+      "seoTitle": "About: Copper & Main Plumbing",
       "seoDescription": "Who Copper & Main Plumbing is, what we do and the people behind the work.",
       "root": {
         "kind": "element",
@@ -1750,7 +1750,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We built Copper & Main Plumbing on the plumbing most people wish they got — someone who shows up when they say, quotes an honest flat price, and does the work like it’s their own home."
+                          "We built Copper & Main Plumbing on the plumbing most people wish they got. Someone who shows up when they say, quotes an honest flat price, and does the work like it’s their own home."
                         ],
                         "id": "08ec0576-2bff-4f80-8b96-4174b0fcb535",
                         "ord": "a1"
@@ -1920,7 +1920,7 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Visit — Copper & Main Plumbing",
+      "seoTitle": "Visit: Copper & Main Plumbing",
       "seoDescription": "Where to find Copper & Main Plumbing, our hours, and how to reach us.",
       "root": {
         "kind": "element",
@@ -1957,7 +1957,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Questions before you book? Send a note and Copper & Main Plumbing will get back to you — usually the same day."
+                          "Questions before you book? Send a note and Copper & Main Plumbing will get back to you, usually the same day."
                         ],
                         "id": "0d546490-bc53-4581-9e53-81c13ff2f3bb",
                         "ord": "a1"
@@ -2409,7 +2409,7 @@
                     "tag": "p",
                     "class": "max-w-xl text-lg leading-relaxed opacity-90",
                     "children": [
-                      "See the next open times and reserve your visit online — no phone tag, no waiting on hold."
+                      "See the next open times and reserve your visit online: no phone tag, no waiting on hold."
                     ],
                     "id": "4304609a-a497-46f7-ad1d-ed266e5ba7fa",
                     "ord": "a1"

@@ -2,7 +2,7 @@ import type { AppMarketing } from './types';
 
 export const CUSTOMERS: AppMarketing = {
   heading: 'Everything you know about someone, in one history.',
-  lede: 'Customers is the memory of your business. Who they are, what they have bought, what they asked last time, what you promised, and what is still open — so anybody who picks up the phone can pick up the thread.',
+  lede: 'Customers is the memory of your business. Who they are, what they have bought, what they asked last time, what you promised, and what is still open, so anybody who picks up the phone can pick up the thread.',
   alsoKnownAs: ['CRM', 'customer relationship management', 'contact management', 'helpdesk'],
   does: [
     {
@@ -15,7 +15,7 @@ export const CUSTOMERS: AppMarketing = {
     },
     {
       title: 'Track work you are trying to win',
-      body: 'Quotes and jobs on a board you can move along, with what it is worth and what happens next — instead of a spreadsheet nobody updates.',
+      body: 'Quotes and jobs on a board you can move along, with what it is worth and what happens next: instead of a spreadsheet nobody updates.',
     },
     {
       title: 'Questions and complaints, answered',
@@ -27,13 +27,13 @@ export const CUSTOMERS: AppMarketing = {
     },
     {
       title: 'One of them, not two',
-      body: 'Find and merge duplicates properly — the history joins up instead of one copy being abandoned.',
+      body: 'Find and merge duplicates properly: the history joins up instead of one copy being abandoned.',
     },
   ],
   chapters: [
     {
       heading: 'Work you have not won yet is still work.',
-      body: 'The jobs you are quoting for are the most valuable records in the business and usually the worst kept — a quote in a sent-items folder, a promise made on a phone call, and a follow-up that depended on somebody remembering. Here they are records with a value, a stage and a next action, on a board you move things along.',
+      body: 'The jobs you are quoting for are the most valuable records in the business and usually the worst kept: a quote in a sent-items folder, a promise made on a phone call, and a follow-up that depended on somebody remembering. Here they are records with a value, a stage and a next action, on a board you move things along.',
       does: [
         {
           title: 'A board you actually move',
@@ -45,7 +45,7 @@ export const CUSTOMERS: AppMarketing = {
         },
         {
           title: 'The next thing, on somebody',
-          body: 'Tasks attached to the person and the job, with a date — so a follow-up is a thing that exists rather than an intention.',
+          body: 'Tasks attached to the person and the job, with a date, so a follow-up is a thing that exists rather than an intention.',
         },
         {
           title: 'Which ones are worth your morning',
@@ -53,13 +53,13 @@ export const CUSTOMERS: AppMarketing = {
         },
         {
           title: 'Won and lost, counted',
-          body: 'What came in, what did not, and by whom — so a pattern is visible before it becomes a bad quarter.',
+          body: 'What came in, what did not, and by whom, so a pattern is visible before it becomes a bad quarter.',
         },
       ],
     },
     {
       heading: 'When somebody has a problem, the clock is already running.',
-      body: 'A complaint that ages in a shared inbox becomes a bad review. Requests here are records with an owner and a time they are expected to be answered by, so nothing depends on somebody noticing an unread email — and the whole history of that customer sits beside the request while you answer it.',
+      body: 'A complaint that ages in a shared inbox becomes a bad review. Requests here are records with an owner and a time they are expected to be answered by, so nothing depends on somebody noticing an unread email, and the whole history of that customer sits beside the request while you answer it.',
       does: [
         {
           title: 'Assigned to a person, not to everybody',
@@ -79,13 +79,13 @@ export const CUSTOMERS: AppMarketing = {
         },
         {
           title: 'Calls and email on the record',
-          body: 'Connect your mailbox and your phone system and the conversation lands on the customer automatically — not because somebody typed a note afterwards.',
+          body: 'Connect your mailbox and your phone system and the conversation lands on the customer automatically, not because somebody typed a note afterwards.',
         },
       ],
     },
     {
       heading: 'Your customers, in the shape your trade actually has.',
-      body: 'Every business has records that no generic system has a name for — a vehicle, a property, a machine under contract, a member. Rather than making you bend that into "contact" and "note", you define what a thing is, what it has on it, and how it relates to a person, and it appears in the navigation beside everything else.',
+      body: 'Every business has records that no generic system has a name for: a vehicle, a property, a machine under contract, a member. Rather than making you bend that into "contact" and "note", you define what a thing is, what it has on it, and how it relates to a person, and it appears in the navigation beside everything else.',
       does: [
         {
           title: 'Records you invent',
@@ -93,7 +93,7 @@ export const CUSTOMERS: AppMarketing = {
         },
         {
           title: 'Related to the right people',
-          body: 'How your records connect — this vehicle belongs to this person, this contract covers this site — rather than everything hanging off one flat contact.',
+          body: 'How your records connect (this vehicle belongs to this person, this contract covers this site) rather than everything hanging off one flat contact.',
         },
         {
           title: 'Groups that keep themselves current',

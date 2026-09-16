@@ -719,8 +719,8 @@
     {
       "name": "Home",
       "kind": "singleton",
-      "seoTitle": "Aphelion — reference headphones, earbuds & speakers",
-      "seoDescription": "Aphelion builds reference headphones, earbuds and speakers the way instruments are made — measured, tuned and finished so nothing is added to the recording and nothing taken away.",
+      "seoTitle": "Aphelion: reference headphones, earbuds & speakers",
+      "seoDescription": "Aphelion builds reference headphones, earbuds and speakers the way instruments are made: measured, tuned and finished so nothing is added to the recording and nothing taken away.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -773,7 +773,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Reference headphones, earbuds and speakers built the way instruments are — measured, tuned, and finished by the people who designed them. Nothing added to the recording, and nothing taken away."
+                          "Reference headphones, earbuds and speakers built the way instruments are: measured, tuned, and finished by the people who designed them. Nothing added to the recording, and nothing taken away."
                         ],
                         "id": "a389631e-02c2-4359-baf8-3286bbcc276c",
                         "ord": "a1"
@@ -1067,7 +1067,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "We start from the recording and work backwards — a signature that adds no color of its own, so a voice sounds like the person and a room sounds like the room. What the artist meant, and not a hair more."
+                          "We start from the recording and work backwards: a signature that adds no color of its own, so a voice sounds like the person and a room sounds like the room. What the artist meant, and not a hair more."
                         ],
                         "id": "0e36269f-9aa9-444c-b6a6-7071584dd405",
                         "ord": "a1"
@@ -1341,7 +1341,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A planar-magnetic driver moves the whole surface of the diaphragm at once, so detail arrives without the ring or the lag a cone leaves behind. Cancelling reads the noise around you a thousand times a second and answers it — quietly, without the pressure that tires your ears."
+                          "A planar-magnetic driver moves the whole surface of the diaphragm at once, so detail arrives without the ring or the lag a cone leaves behind. Cancelling reads the noise around you a thousand times a second and answers it: quietly, without the pressure that tires your ears."
                         ],
                         "id": "71a4bd1e-96b4-4be2-b4ab-aa823511f22f",
                         "ord": "a1"
@@ -1877,7 +1877,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "Every number here is one we publish because we test for it — on our own gear, in our own room, the same way you will hear it."
+                          "Every number here is one we publish because we test for it: on our own gear, in our own room, the same way you will hear it."
                         ],
                         "id": "21b90af2-9ea1-44b0-8fa7-450d5f738c15",
                         "ord": "a1"
@@ -1952,7 +1952,7 @@
                             "tag": "p",
                             "class": "text-base text-base-content",
                             "children": [
-                              "The plane, the train and the open office, turned down to a hush — so the music, not the world, sets the volume."
+                              "The plane, the train and the open office, turned down to a hush, so the music, not the world, sets the volume."
                             ],
                             "id": "b5426e1a-e718-4947-bec7-c54a0e72442c",
                             "ord": "a2"
@@ -2071,7 +2071,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg text-base-content",
                         "children": [
-                          "One signature, tuned for the room you are actually in — the studio, the street, the desk, the departure lounge."
+                          "One signature, tuned for the room you are actually in: the studio, the street, the desk, the departure lounge."
                         ],
                         "id": "23d4e3c2-8f51-443f-994f-7def45aab1f8",
                         "ord": "a1"
@@ -2428,7 +2428,7 @@
       "name": "Shop",
       "kind": "singleton",
       "slug": "shop",
-      "seoTitle": "Shop — Aphelion",
+      "seoTitle": "Shop: Aphelion",
       "seoDescription": "Browse everything Aphelion makes, with prices and options at a glance. Premium audio.",
       "root": {
         "kind": "element",
@@ -2477,7 +2477,7 @@
                         "tag": "p",
                         "class": "text-lg leading-relaxed text-base-content",
                         "children": [
-                          "Every Aphelion piece — headphones, earbuds, speakers and the parts that keep them running — filtered and sorted however you like. One reference signature, engineered for wherever you listen."
+                          "Every Aphelion piece (headphones, earbuds, speakers and the parts that keep them running) filtered and sorted however you like. One reference signature, engineered for wherever you listen."
                         ],
                         "id": "6a7774e7-dd05-414b-8f41-4fb9939bd695",
                         "ord": "a1"
@@ -2509,7 +2509,7 @@
       "name": "Collections",
       "kind": "singleton",
       "slug": "collections",
-      "seoTitle": "Collections — Aphelion",
+      "seoTitle": "Collections: Aphelion",
       "seoDescription": "Explore the collections at Aphelion, grouped to help you find what you are after.",
       "root": {
         "kind": "element",
@@ -2541,7 +2541,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Headphones, earbuds, speakers and the parts that keep them running — grouped the way you actually listen, so you can start from the desk, the commute or the living room and work out from there. One reference signature across all of it."
+                      "Headphones, earbuds, speakers and the parts that keep them running: grouped the way you actually listen, so you can start from the desk, the commute or the living room and work out from there. One reference signature across all of it."
                     ],
                     "id": "2bb7c600-a33b-4d1b-b1b1-22f9eb1f1770",
                     "ord": "a1"
@@ -2569,7 +2569,7 @@
       "name": "Cart",
       "kind": "singleton",
       "slug": "cart",
-      "seoTitle": "Your cart — Aphelion",
+      "seoTitle": "Your cart: Aphelion",
       "seoDescription": "Review what is in your cart and check out securely at Aphelion.",
       "root": {
         "kind": "element",
@@ -2601,7 +2601,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Free insured shipping, dispatched within two business days and tracked to your door. Every piece is covered for three years and ships with a sixty-day home audition — listen on your own music, in your own room, and send it back for a full refund if it does not earn its place."
+                      "Free insured shipping, dispatched within two business days and tracked to your door. Every piece is covered for three years and ships with a sixty-day home audition: listen on your own music, in your own room, and send it back for a full refund if it does not earn its place."
                     ],
                     "id": "3fac491d-5c07-473b-9df7-31e19dd7c798",
                     "ord": "a1"
@@ -2629,7 +2629,7 @@
       "name": "Search",
       "kind": "singleton",
       "slug": "search",
-      "seoTitle": "Search — Aphelion",
+      "seoTitle": "Search: Aphelion",
       "seoDescription": "Search Aphelion for a product, a collection or a page.",
       "root": {
         "kind": "element",
@@ -2661,7 +2661,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Looking for something specific — a driver type, a price, a piece you read about in The Signal Path? Search the whole range and the journal below."
+                      "Looking for something specific: a driver type, a price, a piece you read about in The Signal Path? Search the whole range and the journal below."
                     ],
                     "id": "34f06ece-1b09-4384-b8d9-94091025d2a5",
                     "ord": "a1"
@@ -2689,7 +2689,7 @@
       "name": "Journal",
       "kind": "singleton",
       "slug": "journal",
-      "seoTitle": "Journal — Aphelion",
+      "seoTitle": "Journal: Aphelion",
       "seoDescription": "Stories, guides and notes from Aphelion.",
       "root": {
         "kind": "element",
@@ -2721,7 +2721,7 @@
                     "tag": "p",
                     "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Engineering notes from the people who tune the gear — inside the drivers, how we measure what we publish, and the choices behind the way an Aphelion piece sounds."
+                      "Engineering notes from the people who tune the gear: inside the drivers, how we measure what we publish, and the choices behind the way an Aphelion piece sounds."
                     ],
                     "id": "59b5cf34-21a5-4ce1-bc49-3973870c48d3",
                     "ord": "a1"
@@ -2855,7 +2855,7 @@
       "kind": "singleton",
       "slug": "about",
       "seoTitle": "About Aphelion",
-      "seoDescription": "The people and engineering behind Aphelion — how every driver is measured, tuned and finished before it ships.",
+      "seoDescription": "The people and engineering behind Aphelion: how every driver is measured, tuned and finished before it ships.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2886,7 +2886,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "Aphelion is a small audio company that builds reference gear — headphones, earbuds and speakers designed to get out of the way of the recording. We are engineers who happen to love music, which is the right way round: the measurements come first, and they are honest, because the ear catches what a spec sheet flatters over."
+                      "Aphelion is a small audio company that builds reference gear: headphones, earbuds and speakers designed to get out of the way of the recording. We are engineers who happen to love music, which is the right way round: the measurements come first, and they are honest, because the ear catches what a spec sheet flatters over."
                     ],
                     "id": "736cc983-828b-4561-96b9-030a32ffe1f9",
                     "ord": "a1"
@@ -2896,7 +2896,7 @@
                     "tag": "p",
                     "class": "text-lg leading-relaxed text-base-content",
                     "children": [
-                      "We design and tune everything ourselves, publish the numbers we test for, and put every piece through a sixty-day home audition — because the only room that matters is the one you actually listen in. Nothing here is re-badged. We can tell you which driver is inside, why it was chosen, and how to keep it running for years."
+                      "We design and tune everything ourselves, publish the numbers we test for, and put every piece through a sixty-day home audition, because the only room that matters is the one you actually listen in. Nothing here is re-badged. We can tell you which driver is inside, why it was chosen, and how to keep it running for years."
                     ],
                     "id": "c8a545bd-0d02-4fd5-bc7f-642845d87bb2",
                     "ord": "a2"
@@ -2916,8 +2916,8 @@
       "name": "Contact",
       "kind": "singleton",
       "slug": "contact",
-      "seoTitle": "Contact — Aphelion",
-      "seoDescription": "Get in touch with Aphelion — questions, orders and anything else you need.",
+      "seoTitle": "Contact: Aphelion",
+      "seoDescription": "Get in touch with Aphelion: questions, orders and anything else you need.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -2953,7 +2953,7 @@
                         "tag": "p",
                         "class": "max-w-2xl text-lg leading-relaxed text-base-content",
                         "children": [
-                          "A question about which pair suits your music, a room you want to fill, or a piece that needs a part after a few good years — a real person who knows the gear reads every message and replies, usually the same day."
+                          "A question about which pair suits your music, a room you want to fill, or a piece that needs a part after a few good years: a real person who knows the gear reads every message and replies, usually the same day."
                         ],
                         "id": "c3a1040f-a85c-4fa4-925f-8fdfecccdd41",
                         "ord": "a1"
@@ -3224,8 +3224,8 @@
       "kind": "collection",
       "recordType": "commerce.product",
       "isDefault": true,
-      "seoTitle": "Product — Aphelion",
-      "seoDescription": "Product details at Aphelion — premium audio, with options and pricing.",
+      "seoTitle": "Product: Aphelion",
+      "seoDescription": "Product details at Aphelion: premium audio, with options and pricing.",
       "root": {
         "kind": "element",
         "tag": "div",
@@ -3270,7 +3270,7 @@
                             "kind": "element",
                             "tag": "p",
                             "class": "text-sm font-medium uppercase tracking-widest text-base-content",
-                            "children": ["Aphelion — Reference audio"],
+                            "children": ["Aphelion: Reference audio"],
                             "id": "491bc7ad-834b-45d7-956c-77a2a483c3a7",
                             "ord": "a0"
                           },

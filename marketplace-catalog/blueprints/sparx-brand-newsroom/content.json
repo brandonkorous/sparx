@@ -20,7 +20,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "We started rebuilding Launch Notes eleven months ago, and today it is yours. 3.0 is not a coat of paint — it is a new foundation, and almost everything you touch is faster because of it."
+                "text": "We started rebuilding Launch Notes eleven months ago, and today it is yours. 3.0 is not a coat of paint. It is a new foundation, and almost everything you touch is faster because of it."
               }
             ]
           },
@@ -83,7 +83,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "3.0 clears the runway for the things we have been holding back — a few of which you will see before the end of the quarter. As always, every one of them will get a post here first. Thank you for building with us; go make something."
+                "text": "3.0 clears the runway for the things we have been holding back: a few of which you will see before the end of the quarter. As always, every one of them will get a post here first. Thank you for building with us; go make something."
               }
             ]
           }
@@ -99,7 +99,7 @@
     "categories": ["Products"],
     "tags": ["Nimbus"],
     "body": {
-      "title": "Introducing Nimbus — our focus timer, out now",
+      "title": "Introducing Nimbus. Our focus timer, out now",
       "excerpt": "A focus timer built the way we actually work: no gimmicks, no streaks to guilt you, just a quiet way to protect an hour and see where it went.",
       "featuredImage": {
         "$asset": "cover-nimbus"
@@ -154,7 +154,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The feature people love most is the one we almost cut: a plain weekly view of where your focused hours actually went. Not a score, not a leaderboard — just the honest shape of your week. It turns out that seeing the truth is far more motivating than any badge we could have designed."
+                "text": "The feature people love most is the one we almost cut: a plain weekly view of where your focused hours actually went. Not a score, not a leaderboard. Just the honest shape of your week. It turns out that seeing the truth is far more motivating than any badge we could have designed."
               }
             ]
           },
@@ -179,7 +179,7 @@
     "categories": ["Hardware"],
     "tags": ["Deck", "Field Kit"],
     "body": {
-      "title": "The Launch Notes Deck — a first look",
+      "title": "The Launch Notes Deck: a first look",
       "excerpt": "Our first piece of hardware. Two years, more prototypes than we will admit to, and a device built around one idea: your studio should fit in a bag.",
       "featuredImage": {
         "$asset": "cover-deck"
@@ -192,7 +192,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "For two years we have been quietly making hardware. Today we can finally show you the Deck — a portable workstation built around a simple frustration: the best tools were always tied to a desk, and the desk was never where the work happened."
+                "text": "For two years we have been quietly making hardware. Today we can finally show you the Deck: a portable workstation built around a simple frustration: the best tools were always tied to a desk, and the desk was never where the work happened."
               }
             ]
           },
@@ -234,7 +234,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "The Deck is the heart of the Field Kit — it docks at your desk, packs into your bag, and runs the same Launch Notes workspace you already know. Nothing to migrate, nothing to relearn. Your work is simply there, wherever you are."
+                "text": "The Deck is the heart of the Field Kit. It docks at your desk, packs into your bag, and runs the same Launch Notes workspace you already know. Nothing to migrate, nothing to relearn. Your work is simply there, wherever you are."
               }
             ]
           },
@@ -243,7 +243,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "This is a first look, not a launch — we will open pre-orders once firmware 2.4 has had another few weeks in the field. Watch this space, and thank you for two years of patience."
+                "text": "This is a first look, not a launch. We will open pre-orders once firmware 2.4 has had another few weeks in the field. Watch this space, and thank you for two years of patience."
               }
             ]
           }
@@ -260,7 +260,7 @@
     "tags": ["Aurora", "Nimbus"],
     "body": {
       "title": "Five workflows our team lives in",
-      "excerpt": "The small habits and shortcuts the studio actually uses every day — the ones that never make it into the docs because we forget they are not obvious.",
+      "excerpt": "The small habits and shortcuts the studio actually uses every day: the ones that never make it into the docs because we forget they are not obvious.",
       "featuredImage": {
         "$asset": "cover-guides"
       },
@@ -335,7 +335,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Sync only helps if you can find things later, and a folder full of Untitled-3 helps no one. We name a session the moment we start it, in plain language, as if a teammate will read it — because in our workspace, one will."
+                "text": "Sync only helps if you can find things later, and a folder full of Untitled-3 helps no one. We name a session the moment we start it, in plain language, as if a teammate will read it, because in our workspace, one will."
               }
             ]
           },
@@ -373,7 +373,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Aurora has been in beta for a year, and in that time you have used it to ship real products — which is exactly why we took so long to call it 1.0. A design tool earns that number by being boring in all the right places, and Aurora finally is."
+                "text": "Aurora has been in beta for a year, and in that time you have used it to ship real products, which is exactly why we took so long to call it 1.0. A design tool earns that number by being boring in all the right places, and Aurora finally is."
               }
             ]
           },
@@ -424,7 +424,7 @@
             "content": [
               {
                 "type": "text",
-                "text": "Aurora 1.0 is available today for everyone with a studio membership. If you have been waiting for it to leave beta before trusting it with real work — it has, and you can."
+                "text": "Aurora 1.0 is available today for everyone with a studio membership. If you have been waiting for it to leave beta before trusting it with real work. It has, and you can."
               }
             ]
           }

@@ -45,9 +45,9 @@ export async function renderBarcodeSvg(value: string, style: BarcodeStyle): Prom
 
 /** Human label + required length hint for each supported format. */
 export const BARCODE_FORMATS: { value: BarcodeFormat; label: string; hint: string }[] = [
-  { value: 'CODE128', label: 'Code 128', hint: 'Any text or number — SKUs, shipping, internal.' },
+  { value: 'CODE128', label: 'Code 128', hint: 'Any text or number: SKUs, shipping, internal.' },
   { value: 'UPC', label: 'UPC-A', hint: '11 digits (12th is the check digit, added for you).' },
   { value: 'EAN13', label: 'EAN-13', hint: '12 digits (13th is the check digit, added for you).' },
   { value: 'EAN8', label: 'EAN-8', hint: '7 digits (8th is the check digit, added for you).' },
-  { value: 'CODE39', label: 'Code 39', hint: 'Letters, digits, and a few symbols — asset tags.' },
+  { value: 'CODE39', label: 'Code 39', hint: 'Letters, digits, and a few symbols: asset tags.' },
 ];

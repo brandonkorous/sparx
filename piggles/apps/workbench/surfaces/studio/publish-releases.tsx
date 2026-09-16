@@ -27,7 +27,7 @@ export function PublishReleases() {
     const when = `${DAY.format(new Date(release.createdAt))} at ${CLOCK.format(new Date(release.createdAt))}`;
     const ok = await confirm({
       title: 'Put your website back to this version?',
-      description: `Visitors will see the site exactly as it was on ${when}, straight away — there is no publish step after this. Everything you have been working on since stays where it is, unpublished.`,
+      description: `Visitors will see the site exactly as it was on ${when}, straight away. There is no publish step after this. Everything you have been working on since stays where it is, unpublished.`,
       confirmLabel: 'Put my website back',
       cancelLabel: 'Leave it as it is',
       color: 'danger',
@@ -48,7 +48,7 @@ export function PublishReleases() {
     <section className="bg-base-100 rounded-lg p-3 shadow-sm">
       <h3 className="text-base-content mb-1 text-base font-medium">Every time you published</h3>
       <p className="text-base-content mb-2 text-sm">
-        Your website goes back all together — pages, header and footer, and the pieces inside them
+        Your website goes back all together: pages, header and footer, and the pieces inside them
         are one connected thing.
       </p>
 

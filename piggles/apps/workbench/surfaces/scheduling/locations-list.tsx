@@ -78,7 +78,7 @@ function LocationsToolbar({
         label: 'Add a place',
         icon: faPlus,
         onClick: openNew,
-        title: 'Add a place — hold Shift to open alongside, Alt for a new window',
+        title: 'Add a place: hold Shift to open alongside, Alt for a new window',
       }}
       controls={<InUseOnlyToggle activeOnly={activeOnly} setActiveOnly={setActiveOnly} />}
       views={{

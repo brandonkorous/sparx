@@ -2,12 +2,12 @@ import type { AppMarketing } from './types';
 
 export const BOOKINGS: AppMarketing = {
   heading: 'Let people book you without the back-and-forth.',
-  lede: 'Bookings publishes real availability, takes the appointment, and keeps your calendar honest — including the parts that are hard: two staff, one room, a deposit, a cancellation and somebody who did not turn up.',
+  lede: 'Bookings publishes real availability, takes the appointment, and keeps your calendar honest, including the parts that are hard: two staff, one room, a deposit, a cancellation and somebody who did not turn up.',
   alsoKnownAs: ['scheduling', 'appointment booking', 'calendar software', 'reservations'],
   does: [
     {
       title: 'Availability that is actually true',
-      body: 'Worked out from opening hours, who is in, how long the job takes and what is already booked — not a calendar you keep in step by hand.',
+      body: 'Worked out from opening hours, who is in, how long the job takes and what is already booked, not a calendar you keep in step by hand.',
     },
     {
       title: 'Rooms, equipment and more than one address',

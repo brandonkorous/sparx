@@ -247,7 +247,7 @@ export function ModulePanel({
             </Tooltip>
           ) : null}
           {pinnable ? (
-            <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
+            <Tooltip content={pinned ? 'Unpin: hide after opening' : 'Pin: keep this open'}>
               <Button
                 color="neutral"
                 variant="ghost"
@@ -301,7 +301,7 @@ export function ModulePanel({
                     <div key={navRowKey(surface)} className="group/row relative flex items-center">
                       <Tooltip
                         side="right"
-                        content={`${label} — Shift-click to open alongside, Alt-click for a new window`}
+                        content={`${label}: Shift-click to open alongside, Alt-click for a new window`}
                       >
                         <SidebarItem
                           data-nav-item

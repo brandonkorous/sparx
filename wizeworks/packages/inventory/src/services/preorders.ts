@@ -316,7 +316,7 @@ export async function updatePreorderWindow(
     // merchant discovering their own oversell from a rendering artefact.
     if (input.isCapped && (input.maxQuantity ?? 0) < existing.soldQuantity) {
       throw new InventoryValidationError(
-        `${existing.soldQuantity} are already committed — the limit cannot go below that.`,
+        `${existing.soldQuantity} are already committed: the limit cannot go below that.`,
         [{ field: 'maxQuantity', message: `Must be at least ${existing.soldQuantity}.` }]
       );
     }

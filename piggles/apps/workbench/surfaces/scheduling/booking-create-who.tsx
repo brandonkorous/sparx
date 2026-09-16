@@ -40,7 +40,7 @@ export function BookingCreateWho({
   return (
     <FormSection
       title="Who it is for"
-      description="Link the customer this is booked for, so it shows on their record and their reminders reach them. Leave it blank for a booking with no account — a walk-in you are writing down."
+      description="Link the customer this is booked for, so it shows on their record and their reminders reach them. Leave it blank for a booking with no account: a walk-in you are writing down."
     >
       <CustomerPicker value={customer} onChange={setCustomer} />
 
@@ -90,7 +90,7 @@ export function BookingCreateWho({
           }
         />
         <FieldDescription>
-          For a table or a group — how many are coming. Leave blank for one.
+          For a table or a group: how many are coming. Leave blank for one.
         </FieldDescription>
       </Field>
     </FormSection>

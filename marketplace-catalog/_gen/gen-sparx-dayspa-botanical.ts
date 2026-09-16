@@ -141,7 +141,7 @@ const SCHEDULING = {
             cancellationWindowHours: 24,
             reminderOffsetsMin: [1440, 120],
             policyText:
-                'Please give us at least 24 hours’ notice to change or cancel — it lets us offer the time to someone else. We’ll send a gentle reminder the day before and two hours ahead.',
+                'Please give us at least 24 hours’ notice to change or cancel. It lets us offer the time to someone else. We’ll send a gentle reminder the day before and two hours ahead.',
         },
         {
             handle: 'spa-cancellation',
@@ -151,7 +151,7 @@ const SCHEDULING = {
             cancellationWindowHours: 48,
             reminderOffsetsMin: [2880, 1440, 120],
             policyText:
-                'Longer and couples treatments hold a $40 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over — inside 48 hours the deposit covers the room we set aside for you.',
+                'Longer and couples treatments hold a $40 deposit that comes off your total. Reschedule with 48 hours’ notice and it carries over: inside 48 hours the deposit covers the room we set aside for you.',
         },
     ],
     resources: [
@@ -225,7 +225,7 @@ const SCHEDULING = {
             handle: 'swedish-90',
             name: 'Swedish massage · 90 min',
             description:
-                'The full ninety minutes — unhurried, whole-body, with time to work slowly and finish gently. Deeply restorative.',
+                'The full ninety minutes: unhurried, whole-body, with time to work slowly and finish gently. Deeply restorative.',
             durationMinutes: 90,
             priceCents: 15500,
             bufferAfterMin: 15,
@@ -255,7 +255,7 @@ const SCHEDULING = {
             handle: 'hot-stone',
             name: 'Hot-stone massage',
             description:
-                'Warm basalt stones melt into tired muscles as the massage works around them — grounding, comforting, quietly indulgent.',
+                'Warm basalt stones melt into tired muscles as the massage works around them: grounding, comforting, quietly indulgent.',
             durationMinutes: 75,
             priceCents: 14500,
             bufferAfterMin: 20,
@@ -270,7 +270,7 @@ const SCHEDULING = {
             handle: 'aromatherapy-facial',
             name: 'Aromatherapy facial',
             description:
-                'A calming facial with botanical oils and a long, mindful massage — skin left soft and glowing, shoulders left lighter.',
+                'A calming facial with botanical oils and a long, mindful massage: skin left soft and glowing, shoulders left lighter.',
             durationMinutes: 60,
             priceCents: 12000,
             bufferAfterMin: 15,
@@ -300,7 +300,7 @@ const SCHEDULING = {
             handle: 'couples-massage',
             name: 'Couples massage',
             description:
-                'Two therapists, one calm room, side by side — an unhurried ninety minutes to slow down together.',
+                'Two therapists, one calm room, side by side: an unhurried ninety minutes to slow down together.',
             durationMinutes: 90,
             priceCents: 30000,
             bufferAfterMin: 20,
@@ -315,7 +315,7 @@ const SCHEDULING = {
             handle: 'sauna-session',
             name: 'Sauna session',
             description:
-                'Forty-five quiet minutes in the cedar sauna to warm through and reset — book it on its own, or before a treatment.',
+                'Forty-five quiet minutes in the cedar sauna to warm through and reset. Book it on its own, or before a treatment.',
             durationMinutes: 45,
             priceCents: 4000,
             bufferAfterMin: 10,
@@ -332,7 +332,7 @@ const HOME = [
         image: url(IMG.hero),
         alt: 'A calm treatment room in warm oat and eucalyptus, softly lit by daylight',
         title: 'Come back to yourself',
-        sub: 'A warm, unhurried sanctuary for restorative massage, botanical facials and quiet time in the sauna — the everyday, softened.',
+        sub: 'A warm, unhurried sanctuary for restorative massage, botanical facials and quiet time in the sauna: the everyday, softened.',
         primary: { label: 'Book online', href: '/book' },
         secondary: { label: 'See treatments', href: '/book' },
         overlay: 'soft',
@@ -345,11 +345,11 @@ const HOME = [
             },
             {
                 title: 'Natural, botanical care',
-                body: 'Plant-based oils, warm stones and salt — simple, honest ingredients chosen to soothe skin and settle the mind, never overwhelm it.',
+                body: 'Plant-based oils, warm stones and salt: simple, honest ingredients chosen to soothe skin and settle the mind, never overwhelm it.',
             },
             {
                 title: 'The same hands each visit',
-                body: 'Book your therapist by name and see the same person each time — someone who learns your body and works to how it feels that day.',
+                body: 'Book your therapist by name and see the same person each time. Someone who learns your body and works to how it feels that day.',
             },
         ],
     }),
@@ -373,14 +373,14 @@ const HOME = [
         alt: 'A quiet spa lounge with linen, timber and potted greenery',
         heading: 'A garden sanctuary in the city',
         body: [
-            'Verdure is a small studio built to feel like a long exhale — warm timber, soft linen, greenery in every corner and daylight that moves through the day. No harsh lights, no clinical hush, no clock you can hear.',
+            'Verdure is a small studio built to feel like a long exhale: warm timber, soft linen, greenery in every corner and daylight that moves through the day. No harsh lights, no clinical hush, no clock you can hear.',
             'Come a little early. Sit with a cup of herbal tea, breathe out, and let the treatment start before it starts.',
         ],
         cta: { label: 'Book a treatment', href: '/book' },
     }),
     teamRow({
         heading: 'Your therapists',
-        intro: 'Book by name — you’ll see the same person each time.',
+        intro: 'Book by name: you’ll see the same person each time.',
         members: [
             { name: 'Elena Vasquez', role: 'Massage therapist', image: url(IMG.elena), alt: 'Elena Vasquez, massage therapist', bio: 'Swedish, deep-tissue and hot-stone. Elena founded Verdure and leads the studio.' },
             { name: 'Marisol Reyes', role: 'Facial & massage therapist', image: url(IMG.marisol), alt: 'Marisol Reyes, facial and massage therapist', bio: 'Botanical facials and gentle, restorative massage.' },
@@ -398,7 +398,7 @@ const HOME = [
         ],
     }),
     testimonial({
-        quote: 'I left feeling like I’d been away for a week. The calmest hour of my month, every month — I don’t know how they do it.',
+        quote: 'I left feeling like I’d been away for a week. The calmest hour of my month, every month: I don’t know how they do it.',
         attribution: 'Dana, guest since 2024',
     }),
     bookingCta({
@@ -426,7 +426,7 @@ const ABOUT = [
         alt: 'A calm treatment room in warm oat and eucalyptus, softly lit by daylight',
         heading: 'About Verdure',
         body: [
-            'We opened Verdure to make a place that feels the way a good treatment should — warm, quiet and completely unhurried. Somewhere you can put the day down at the door and pick it back up softer.',
+            'We opened Verdure to make a place that feels the way a good treatment should: warm, quiet and completely unhurried. Somewhere you can put the day down at the door and pick it back up softer.',
             'No upselling, no rushing, no packages you didn’t ask for. Just honest, botanical care from therapists who love the work, in a room that lets you breathe.',
         ],
         cta: { label: 'Book a treatment', href: '/book' },
@@ -436,8 +436,8 @@ const ABOUT = [
         heading: 'How we work',
         items: [
             { title: 'We start by listening', body: 'Every treatment begins with a quiet check-in about how you’re feeling and where you’re holding tension, so the hour fits the day you’re actually having.' },
-            { title: 'Ingredients we trust', body: 'Plant-based oils, warm stones and mineral salts — gentle, natural care, and honest advice on the short list of things worth taking home.' },
-            { title: 'Calm that carries', body: 'We finish slowly and send you off with a little space, not a sales pitch — so the calm lasts past the front door.' },
+            { title: 'Ingredients we trust', body: 'Plant-based oils, warm stones and mineral salts: gentle, natural care, and honest advice on the short list of things worth taking home.' },
+            { title: 'Calm that carries', body: 'We finish slowly and send you off with a little space, not a sales pitch, so the calm lasts past the front door.' },
         ],
     }),
 ];
@@ -455,7 +455,7 @@ const CONTACT = [
     }),
     bookingCta({
         title: 'Rather book than call?',
-        sub: 'See live availability and reserve your time online — no phone tag.',
+        sub: 'See live availability and reserve your time online: no phone tag.',
         surface: 'muted',
         cta: { label: 'Book online', href: '/book' },
     }),
@@ -466,8 +466,8 @@ const SPEC: ServiceSiteSpec = {
     key: 'sparx-dayspa-botanical',
     name: 'Day Spa (Botanical)',
     summary:
-        'A warm, botanical day-spa site — an oat-and-cream palette, a deep eucalyptus primary and a soft serif, with unhurried, restorative copy and natural light carrying the page. Installs a working booking flow: a real treatment menu (Swedish, deep-tissue and hot-stone massage, aromatherapy facial, body scrub, couples massage and a sauna session), three therapists booked by name with their own hours, three treatment rooms, and a cancellation policy. Ships as "Verdure", a calm garden sanctuary.',
-    tagline: 'A warm, botanical template for day spas — book online from day one.',
+        'A warm, botanical day-spa site: an oat-and-cream palette, a deep eucalyptus primary and a soft serif, with unhurried, restorative copy and natural light carrying the page. Installs a working booking flow: a real treatment menu (Swedish, deep-tissue and hot-stone massage, aromatherapy facial, body scrub, couples massage and a sauna session), three therapists booked by name with their own hours, three treatment rooms, and a cancellation policy. Ships as "Verdure", a calm garden sanctuary.',
+    tagline: 'A warm, botanical template for day spas. Book online from day one.',
     industry: 'Day spa',
     sortWeight: 80,
     requiresModules: ['builder', 'scheduling', 'crm', 'email'],
@@ -476,7 +476,7 @@ const SPEC: ServiceSiteSpec = {
     chrome: { navbar: 'brandLeft', footer: 'columns', showCta: true },
     seo: {
         home: {
-            title: 'Verdure — a botanical day spa & wellness sanctuary',
+            title: 'Verdure: a botanical day spa & wellness sanctuary',
             description:
                 'Verdure is a calm day spa for restorative massage, botanical facials and quiet time in the sauna. Book your therapist and treatment online.',
         },

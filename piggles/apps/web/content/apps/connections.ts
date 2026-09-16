@@ -2,7 +2,7 @@ import type { AppMarketing } from './types';
 
 export const CONNECTIONS: AppMarketing = {
   heading: 'Piggles and the other things you already use.',
-  lede: 'Connections links Piggles to the software you are not giving up — the accounting package, the payment provider, the marketplace, the calendar — and lets modern AI assistants work with your business data under your control.',
+  lede: 'Connections links Piggles to the software you are not giving up (the accounting package, the payment provider, the marketplace, the calendar) and lets modern AI assistants work with your business data under your control.',
   alsoKnownAs: ['integrations', 'API', 'webhooks', 'MCP', 'AI assistant'],
   does: [
     {
@@ -15,7 +15,7 @@ export const CONNECTIONS: AppMarketing = {
     },
     {
       title: 'Work with an AI assistant',
-      body: 'Connect the assistant you already use and ask it about your own business — what sold, what is low, who has not paid.',
+      body: 'Connect the assistant you already use and ask it about your own business: what sold, what is low, who has not paid.',
     },
     {
       title: 'Your key, your choice',
@@ -33,7 +33,7 @@ export const CONNECTIONS: AppMarketing = {
   chapters: [
     {
       heading: 'Nothing here asks you to abandon what works.',
-      body: 'Nobody changes their accountant because they changed their website. Connections is how Piggles fits around the things you already pay for and already trust — you sign in to the service, Piggles keeps the connection, and the two stay in step without you being the integration.',
+      body: 'Nobody changes their accountant because they changed their website. Connections is how Piggles fits around the things you already pay for and already trust. You sign in to the service, Piggles keeps the connection, and the two stay in step without you being the integration.',
       does: [
         {
           title: 'Connected by signing in',
@@ -45,7 +45,7 @@ export const CONNECTIONS: AppMarketing = {
         },
         {
           title: 'One place for all of them',
-          body: 'Every connection — payment, marketplace, social, accounting, AI — in one panel, so "what is this business plugged into" is a question with an answer.',
+          body: 'Every connection (payment, marketplace, social, accounting, AI) in one panel, so "what is this business plugged into" is a question with an answer.',
         },
       ],
       // Only categories with named services verified elsewhere on this site.
@@ -71,7 +71,7 @@ export const CONNECTIONS: AppMarketing = {
       does: [
         {
           title: 'Point your assistant at your business',
-          body: 'Connect the AI app you already use and ask it real questions — what sold, what is running low, who has not paid, what is booked tomorrow. It reads your actual data rather than guessing.',
+          body: 'Connect the AI app you already use and ask it real questions: what sold, what is running low, who has not paid, what is booked tomorrow. It reads your actual data rather than guessing.',
         },
         {
           title: 'You decide what it may touch',
@@ -79,7 +79,7 @@ export const CONNECTIONS: AppMarketing = {
         },
         {
           title: 'Tell it how to sound',
-          body: 'Standing instructions — your tone, your terms, the things you never say — so what it writes for you reads like your business rather than like software.',
+          body: 'Standing instructions (your tone, your terms, the things you never say) so what it writes for you reads like your business rather than like software.',
         },
         {
           title: 'Your account, your bill, your data',
@@ -98,11 +98,11 @@ export const CONNECTIONS: AppMarketing = {
       does: [
         {
           title: 'Bring it in, with a look first',
-          body: 'Products, customers, stock and past orders from a spreadsheet or another system — with what will happen shown, row by row, before anything is written.',
+          body: 'Products, customers, stock and past orders from a spreadsheet or another system, with what will happen shown, row by row, before anything is written.',
         },
         {
           title: 'Tell other systems as it happens',
-          body: 'Send a message to another system the moment an order is placed, a booking is made or stock moves — with delivery attempts visible, so a silent failure is not possible.',
+          body: 'Send a message to another system the moment an order is placed, a booking is made or stock moves, with delivery attempts visible, so a silent failure is not possible.',
         },
         {
           title: 'A documented interface',

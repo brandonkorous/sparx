@@ -29,7 +29,7 @@ export function MetaTool() {
   const shownTitle = title || 'Your page title goes here';
   const shownDescription =
     description ||
-    'The couple of lines underneath. This is your advert — say what somebody gets, not what the page contains.';
+    'The couple of lines underneath. This is your advert: say what somebody gets, not what the page contains.';
 
   const code = [
     `<title>${escapeHtml(title || 'Your page title')}</title>`,
@@ -61,7 +61,7 @@ export function MetaTool() {
             { label: 'Page address', value: url },
             { label: 'Code to add', value: code },
           ],
-          note: 'The code goes inside the <head> of that page. If you are not the one who does that, forward this to whoever looks after your site. Check the preview before you publish — search results cut off by width, so a title full of capitals gets shortened earlier than one without.',
+          note: 'The code goes inside the <head> of that page. If you are not the one who does that, forward this to whoever looks after your site. Check the preview before you publish. Search results cut off by width, so a title full of capitals gets shortened earlier than one without.',
         }
       : null
   );
@@ -77,13 +77,13 @@ export function MetaTool() {
               hint="Put the thing somebody would search for near the beginning, so it survives being shortened."
               value={title}
               onChange={setTitle}
-              placeholder="Wood-fired pizza in Ancoats — Bella Cafe"
+              placeholder="Wood-fired pizza in Ancoats: Bella Cafe"
             />
             <MeasureBar text={title} limit={TITLE_LIMIT_PX} font="600 20px arial" label="title" />
 
             <AreaField
               label="Description"
-              hint="Write it as an advert, not a summary. It does not affect your ranking — it decides whether the person who already found you clicks."
+              hint="Write it as an advert, not a summary. It does not affect your ranking. It decides whether the person who already found you clicks."
               value={description}
               onChange={setDescription}
               rows={3}
@@ -129,7 +129,7 @@ export function MetaTool() {
                 </p>
               </div>
               <p className="mt-3 text-base">
-                Approximate — Google rewrites descriptions when it thinks another part of your page
+                Approximate: Google rewrites descriptions when it thinks another part of your page
                 answers the search better. That is normal, and usually an improvement.
               </p>
             </CardBody>
@@ -140,7 +140,7 @@ export function MetaTool() {
               <h3 className="text-lg font-bold">When somebody shares it</h3>
               <div className="rounded-box border-base-300 mt-4 overflow-hidden border">
                 <div className="bg-base-200 flex h-40 items-center justify-center">
-                  <p className="text-base">Your share image goes here — 1200 × 630</p>
+                  <p className="text-base">Your share image goes here: 1200 × 630</p>
                 </div>
                 <div className="bg-base-100 p-4">
                   <p className="text-base">{originOf(url).replace(/^https?:\/\//, '')}</p>
@@ -201,7 +201,7 @@ function MeasureBar({
       </div>
       <p className="mt-2 text-base">
         {text.length === 0 ? (
-          `Nothing yet — an empty ${label} means the search engine writes one for you.`
+          `Nothing yet: an empty ${label} means the search engine writes one for you.`
         ) : over ? (
           <>
             <Badge color="warning" variant="soft">
@@ -213,7 +213,7 @@ function MeasureBar({
         ) : veryShort ? (
           `Room for more. A short ${label} wastes space you have been given for free.`
         ) : (
-          `Good length — this fits.`
+          `Good length. This fits.`
         )}
       </p>
     </div>

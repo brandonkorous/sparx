@@ -47,7 +47,7 @@ describe('a web address that is not hers', () => {
     expect(row?.message).toContain('someone-else.com');
   });
 
-  it('is refused as a destination too — this platform does not redirect off-site', () => {
+  it('is refused as a destination too. This platform does not redirect off-site', () => {
     const [row] = parseRedirectRows('/deals, https://someone-else.com/deals', { ownHosts: OWN });
     expect(row?.state).toBe('fix');
   });

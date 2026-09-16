@@ -121,7 +121,7 @@ export function useCountActions(count: CountDetail, changed: ChangedLine[]) {
         title: `Apply ${count.number} and correct your stock?`,
         description: `This changes ${plural(differing, 'item', 'items')} at ${
           count.warehouseName ?? 'this location'
-        }${worth}. Your on-hand numbers are corrected straight away and the change is recorded against your name. This cannot be undone — if a figure looks wrong, go back before applying.`,
+        }${worth}. Your on-hand numbers are corrected straight away and the change is recorded against your name. This cannot be undone: if a figure looks wrong, go back before applying.`,
         confirmLabel: 'Yes, apply it',
         cancelLabel: 'Go back',
         color: 'danger',
@@ -146,7 +146,7 @@ export function useCountActions(count: CountDetail, changed: ChangedLine[]) {
     const ok = await confirm({
       title: `Discard ${count.number}?`,
       description:
-        'Nothing on your shelves changes — the quantities you have entered are thrown away and the count is closed. This cannot be undone.',
+        'Nothing on your shelves changes: the quantities you have entered are thrown away and the count is closed. This cannot be undone.',
       confirmLabel: 'Discard it',
       cancelLabel: 'Keep it',
       color: 'danger',

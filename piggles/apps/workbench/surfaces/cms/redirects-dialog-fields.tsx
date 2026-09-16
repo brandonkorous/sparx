@@ -70,7 +70,7 @@ export function RedirectFields({
         <FieldDescription>
           {lockFrom
             ? 'This is the link people are already following, so it stays as it is. To catch a different address, add a redirect for that one.'
-            : 'The address people are still using — the one you want to catch. Just the part after your domain, starting with a slash.'}
+            : 'The address people are still using: the one you want to catch. Just the part after your domain, starting with a slash.'}
         </FieldDescription>
       </Field>
 
@@ -94,13 +94,13 @@ export function RedirectFields({
           }
         />
         <FieldDescription>
-          Where the old address should take them instead — another page on this same site.
+          Where the old address should take them instead: another page on this same site.
         </FieldDescription>
       </Field>
 
       {sameAddress ? (
         <Text className="text-sm">
-          The old and new addresses are the same — send visitors somewhere different.
+          The old and new addresses are the same. Send visitors somewhere different.
         </Text>
       ) : null}
 
@@ -114,8 +114,8 @@ export function RedirectFields({
             onPermanentChange(event.target.value === 'permanent');
           }}
         >
-          <option value="permanent">Permanent — the page has moved for good</option>
-          <option value="temporary">Temporary — it will move back later</option>
+          <option value="permanent">Permanent: the page has moved for good</option>
+          <option value="temporary">Temporary. It will move back later</option>
         </NativeSelect>
         <FieldDescription>{redirectTypeMeta(permanent ? 301 : 302).detail}</FieldDescription>
       </Field>

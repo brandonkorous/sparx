@@ -324,7 +324,7 @@ export function ScanInput({
           <Icon glyph={faWifiSlash} className="size-4" aria-hidden />
           <span>
             {queued} scan{queued === 1 ? '' : 's'} saved on this device. They will sync by
-            themselves when the connection is back — keep going.
+            themselves when the connection is back. Keep going.
           </span>
         </Alert>
       ) : null}
