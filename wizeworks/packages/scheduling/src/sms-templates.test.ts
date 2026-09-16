@@ -26,6 +26,6 @@ describe('renderBookingSms', () => {
   });
 
   it('cancellation reads as a cancellation', () => {
-    expect(renderBookingSms('cancellation', fields)).toMatch(/cancelled/i);
+    expect(renderBookingSms('cancellation', fields)).toMatch(/canceled/i);
   });
 });
