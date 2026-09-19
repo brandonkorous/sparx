@@ -93,21 +93,27 @@ interface SummaryResponse {
  * a type with nothing on this site can still be undeletable). Serving only the
  * first would put "0 entries use this type" above a Delete the server then
  * refuses — issue 389, and the same trap as 385 pointing the other way.
+ *
+ * Declared beside the two functions that read it, so the rule below can be
+ * stated once and tested: ./content-type-usage-words.
  */
-export interface EntryCounts {
-  here: number;
-  allSites: number;
-}
+export type { EntryCounts } from './content-type-usage-words';
 
-/** A live aggregate from the CMS reports endpoint; a missing key means zero.
- *  Bounded and slow-changing, so it is cached for a minute. */
+/** A live aggregate from the CMS reports endpoint. Bounded and slow-changing, so
+ *  it is cached for a minute.
+ *
+ *  A KEY MISSING FROM THE MAP MEANS ZERO — the server groups over the rows that
+ *  exist, so a type nobody has used has nothing to group and gets no row. That
+ *  is not the same as the map itself being undefined, which means the numbers
+ *  have not arrived. Read it through `entriesHereLabel` / `entriesElsewhereLabel`
+ *  rather than `?.get()`, which flattens the two into one blank cell. */
 export function useEntryCountsByType() {
   return useQuery({
     queryKey: contentTypeKeys.counts(),
     queryFn: () => api.get<SummaryResponse>('/v1/content/reports/summary'),
     staleTime: 60_000,
     select: (data) => {
-      const map = new Map<string, EntryCounts>();
+      const map = new Map<string, { here: number; allSites: number }>();
       for (const row of data.byType) {
         map.set(row.typeKey, { here: row.count, allSites: row.allSitesCount });
       }

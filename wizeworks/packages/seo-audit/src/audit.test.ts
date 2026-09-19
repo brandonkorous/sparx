@@ -70,10 +70,71 @@ describe('auditEntity', () => {
     expect(denominator).toBe(83); // 100 − 9 (indexable) − 8 (sitemap)
   });
 
-  it('passes alt-text when there are no images', () => {
+  it('does not award alt-text points to a page with no pictures', () => {
+    // This test used to assert `pass`, which handed a page with no images the
+    // full 10 points — the heaviest check in the catalog — for a test that
+    // never ran, and filed it under "Already good · these are set up
+    // correctly". It was not a rule anyone would defend out loud; it was the
+    // bug written down. The `noindex` case directly above already had the
+    // right answer: not applicable is `info`, and info leaves the denominator.
     const card = auditEntity(healthy({ imageCount: 0, imagesMissingAlt: 0 }));
-    expect(byId(card, 'image-alt')?.status).toBe('pass');
-    expect(byId(card, 'image-alt')?.value).toBe('no images');
+    expect(byId(card, 'image-alt')?.status).toBe('info');
+    expect(byId(card, 'image-alt')?.value).toBe('no pictures on this page');
+
+    const denominator = card.categories.reduce((s, c) => s + c.max, 0);
+    expect(denominator).toBe(90); // 100 − 10 (image-alt)
+    // And an otherwise-perfect page still reads 100, over what was measured.
+    expect(card.score).toBe(100);
+  });
+
+  it('does not complain about the summary twice when there is no summary', () => {
+    // She saw both in "Worth fixing": "The page has a short summary · not
+    // written yet" AND "How long the summary is · nothing written". One
+    // missing thing, two rows, and the second carried no advice because its
+    // tip was already gated on there being something to measure.
+    const card = auditEntity(healthy({ description: '' }));
+    expect(byId(card, 'desc-present')?.status).toBe('warn');
+    expect(byId(card, 'desc-length')?.status).toBe('info');
+    expect(byId(card, 'desc-length')?.value).toBe('nothing to measure yet');
+
+    const complaints = card.checks.filter((c) => c.status === 'warn' || c.status === 'fail');
+    expect(complaints.map((c) => c.id)).toEqual(['desc-present']);
+  });
+
+  it('charges one missing summary once, not twice', () => {
+    // A `warn` earns half its weight, so the old pair cost 3 of 6 AND 2 of 4
+    // for the same absence. The length check now leaves the denominator
+    // entirely until there is a length to judge.
+    const card = auditEntity(healthy({ description: '' }));
+    const denominator = card.categories.reduce((s, c) => s + c.max, 0);
+    expect(denominator).toBe(96); // 100 − 4 (desc-length)
+    expect(card.score).toBe(97); // lost 3 of 6 on desc-present, over 96
+  });
+
+  it('never puts advice on a fact', () => {
+    // The first cut of the no-pictures fix kept the tip, because it was gated
+    // on `!== 'pass'` and `info` is not `pass`. So a page with no pictures was
+    // told "Write one for each". A fact is not a task; `finalize` strips both
+    // the tip and the action off every `info` check so the next one that turns
+    // out not to apply cannot bring its advice along.
+    const noPictures = auditEntity(healthy({ imageCount: 0, imagesMissingAlt: 0 }));
+    const noSummary = auditEntity(healthy({ description: '' }));
+    const noIndex = auditEntity(healthy({ noindex: true }));
+    for (const card of [noPictures, noSummary, noIndex]) {
+      for (const check of card.checks.filter((c) => c.status === 'info')) {
+        expect(check.tip, check.id).toBeUndefined();
+        expect(check.action, check.id).toBeUndefined();
+      }
+    }
+    // And the same check DOES advise once it applies.
+    const someMissing = auditEntity(healthy({ imageCount: 8, imagesMissingAlt: 3 }));
+    expect(byId(someMissing, 'image-alt')?.tip).toBeDefined();
+  });
+
+  it('judges the length again as soon as there is one', () => {
+    const short = auditEntity(healthy({ description: 'Too short.' }));
+    expect(byId(short, 'desc-length')?.status).toBe('warn');
+    expect(byId(short, 'desc-length')?.value).toBe('10 characters');
   });
 
   it('fails alt-text when a third or more images lack alt', () => {

@@ -401,7 +401,7 @@ export function AuditsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint what="a page to see what to fix" />
+      {matches.length > 0 ? <RowOpenHint what="a page to see what to fix" /> : null}
     </div>
   );
 }

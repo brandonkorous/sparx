@@ -50,6 +50,10 @@ import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { contentErrorMessage } from './data';
+// The three sentences that reckon with how much content uses a type. Kept in a
+// leaf module so the "a map that has not arrived is not a zero" rule is stated
+// once and tested.
+import { deleteTypeRowNote, deleteTypeWarning } from './content-type-usage-words';
 import { SaveFailure } from '@/components/save-failure';
 import {
   FIELD_TYPES,
@@ -416,7 +420,11 @@ function EditType({
   useDirtySource(dirty, 'You have unsaved changes to this content type. Close anyway?');
 
   const problem = metaProblem(draft, false);
-  const entryCount = counts?.get(type.key) ?? 0;
+  // The DELETE reckons with every site: `deleteContentTypeTx` refuses tenant-wide,
+  // so a type with nothing on this site can still be undeletable. And a map that
+  // has not arrived is not a zero — `?? 0` promised a delete the server would
+  // refuse, so both sentences are built where that rule is tested.
+  const deleteWarning = deleteTypeWarning(counts, type.key, type.name);
 
   const onSave = () => {
     if (problem) return;
@@ -443,10 +451,7 @@ function EditType({
   const onDelete = async () => {
     const ok = await confirm({
       title: `Delete “${type.name}”?`,
-      description:
-        entryCount > 0
-          ? `${String(entryCount)} ${entryCount === 1 ? 'entry uses' : 'entries use'} this type. You cannot delete it until those are removed: archiving them is not enough. This cannot be undone.`
-          : `This removes the “${type.name}” type and its fields for good. This cannot be undone.`,
+      description: deleteWarning,
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -508,11 +513,7 @@ function EditType({
           <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
             <div className="flex min-w-0 flex-col">
               <Text className="font-medium">Delete this type</Text>
-              <Text className="text-sm">
-                {entryCount > 0
-                  ? `${String(entryCount)} ${entryCount === 1 ? 'entry uses' : 'entries use'} it, so it cannot be deleted yet.`
-                  : 'Removes the type and its fields for good. This cannot be undone.'}
-              </Text>
+              <Text className="text-sm">{deleteTypeRowNote(counts, type.key)}</Text>
             </div>
             <Button
               size="sm"

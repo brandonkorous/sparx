@@ -264,7 +264,13 @@ export interface LegalStatus {
  * problem to fix, not a box already ticked. The fact that it is currently live
  * is carried in the sentence rather than a second badge.
  */
-export function legalItemStatus(item: ChecklistItem): LegalStatus {
+export function legalItemStatus(
+  item: ChecklistItem,
+  /** Whether the public site is currently dark. A suspended account serves the
+   *  "Temporarily unavailable" overlay instead of its pages, so "anyone can read
+   *  it" is false however published the page is. */
+  siteIsDark = false
+): LegalStatus {
   const entry = item.entry;
   if (!entry) {
     return {
@@ -302,7 +308,12 @@ export function legalItemStatus(item: ChecklistItem): LegalStatus {
     return {
       label: 'Published',
       tone: 'success',
-      detail: 'Live on your site. Anyone can read it.',
+      // The label and its color stay put — the page IS published, which is the
+      // state the owner controls and can change. What cannot be said while the
+      // site serves an unavailable overlay is that anybody can read it.
+      detail: siteIsDark
+        ? 'Published, and it goes back on your site as soon as your site is online again.'
+        : 'Live on your site. Anyone can read it.',
       needsReview: false,
       stale: false,
     };

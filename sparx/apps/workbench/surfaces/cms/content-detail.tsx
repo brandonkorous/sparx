@@ -37,6 +37,7 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
+  FieldStatus,
   Heading,
   Input,
   NativeSelect,
@@ -56,6 +57,8 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { BodyFields } from './schema-form';
 import { MediaPickerProvider } from './media-picker';
 import { SaveFailure } from '@/components/save-failure';
+import { missingRequiredNote } from './required-fields';
+import { addressNote } from './routable';
 import {
   contentErrorMessage,
   entryStatusState,
@@ -77,6 +80,7 @@ import {
   type ContentType,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -115,6 +119,7 @@ function EntryFields({
   onSeo,
 }: EntryFieldsProps) {
   const routable = Boolean(type.url_pattern);
+  const address = addressNote(type.key, type.url_pattern, slug);
   const seoString = (key: string): string => {
     const value = seo[key];
     return typeof value === 'string' ? value : '';
@@ -150,9 +155,15 @@ function EntryFields({
                 />
               }
             />
-            <FieldDescription>
-              {`This will live at ${(type.url_pattern ?? '/{slug}').replace('{slug}', slug.trim() || '…')}. Leave it and we'll make one from the title.`}
-            </FieldDescription>
+            {/* The address is real either way — it is what this is filed
+                under and what a future route would use. What she cannot find
+                out by looking is whether anybody can VISIT it, and for nine of
+                the eleven kinds on offer nobody can. See ./routable. */}
+            {address.served ? (
+              <FieldDescription>{address.text}</FieldDescription>
+            ) : (
+              <FieldStatus status="warning">{address.text}</FieldStatus>
+            )}
           </Field>
         </FormSection>
       ) : null}
@@ -275,17 +286,32 @@ function CreateEntry({ ctx }: { ctx: SurfaceContext }) {
   const dirty = typeKey !== '' && !create.isSuccess;
   useDirtySource(dirty, 'You have started something you have not saved. Close anyway?');
 
-  const failure = create.isError
-    ? contentErrorMessage(create.error, 'Could not create this. Nothing was saved.')
-    : null;
+  // Checked here rather than waited for. The schema is in hand while she types,
+  // so the boxes can be named before the request goes — and the server's own
+  // answer names them as `body.startAt`, which `apiErrorMessage` rightly
+  // refuses to show and wrongly had nothing to show instead.
+  const sent = pruneEmpty(body);
+  const missing = type ? missingRequiredNote(type.schema_json.fields, sent) : null;
+  const [showMissing, setShowMissing] = useState(false);
+
+  const failure =
+    (showMissing ? missing : null) ??
+    (create.isError
+      ? contentErrorMessage(create.error, 'Could not create this. Nothing was saved.')
+      : null);
 
   const submit = () => {
     if (!type) return;
+    if (missing !== null) {
+      setShowMissing(true);
+      return;
+    }
+    setShowMissing(false);
     create.mutate(
       {
         type_key: type.key,
         ...(slug.trim() ? { slug: slug.trim() } : {}),
-        body: pruneEmpty(body),
+        body: sent,
         seo: pruneEmpty(seo),
         ...(authorId ? { author_id: authorId } : {}),
       },
@@ -593,15 +619,25 @@ function ManageBody({
 
   const [scheduleOpen, setScheduleOpen] = useState(false);
 
-  const state = entryStatusState(entry.status);
+  const siteIsDark = useSiteIsDark();
+  const state = entryStatusState(entry.status, siteIsDark);
   const isPublished = entry.status === 'published';
   const isScheduled = entry.status === 'scheduled';
 
   const save = () => {
+    const sent = pruneEmpty(draft.body);
+    // Named here, not waited for. Emptying a required box and saving used to
+    // answer "Could not save · Nothing was changed" — true, and no help finding
+    // which box on a form this long.
+    const missing = missingRequiredNote(type.schema_json.fields, sent);
+    if (missing !== null) {
+      toast.add({ title: 'Could not save', description: missing, type: 'error' });
+      return;
+    }
     update.mutate(
       {
         ...(draft.slug.trim() ? { slug: draft.slug.trim() } : {}),
-        body: pruneEmpty(draft.body),
+        body: sent,
         seo: pruneEmpty(draft.seo),
         author_id: draft.authorId ? draft.authorId : null,
       },

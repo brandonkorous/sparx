@@ -45,6 +45,7 @@ import {
   type EntryStatus,
 } from './data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 /** The chips ARE the questions people open this list to answer. */
 const STATUS_FILTERS = [
@@ -119,6 +120,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
     return map;
   }, [authors]);
 
+  const siteIsDark = useSiteIsDark();
   const rows = data?.items ?? [];
   const total = data?.total;
   const staleAfterFailure = Boolean(error) && rows.length > 0;
@@ -314,7 +316,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((entry) => {
-                const state = entryStatusState(entry.status);
+                const state = entryStatusState(entry.status, siteIsDark);
                 const kind = typeName.get(entry.type_key) ?? entry.type_key;
                 const author = entry.author_id ? (authorName.get(entry.author_id) ?? '—') : '—';
                 return (
@@ -382,7 +384,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

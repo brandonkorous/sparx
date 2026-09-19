@@ -88,12 +88,12 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Redirects list controls"
+        label="Old links list controls"
         search={
           <div className="max-w-xs min-w-0 flex-1">
             <SearchInput
               size="sm"
-              aria-label="Search redirects"
+              aria-label="Search old links"
               placeholder="Old or new address…"
               value={search}
               onValueChange={setSearch}
@@ -101,7 +101,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Add redirect',
+          label: 'Add an old link',
           icon: faPlus,
           onClick: () => {
             setAdding(true);
@@ -124,7 +124,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
             label: 'Bulk import',
             icon: faUpload,
             onClick: openImport,
-            title: 'Import a list of redirects: hold Alt to open in a new window',
+            title: 'Import a list of old links: hold Alt to open in a new window',
           },
         ]}
         views={{
@@ -148,7 +148,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
       {overWindow ? (
         <Alert color="info">
           <AlertContent>
-            <AlertTitle>Showing the first {rows.length} redirects</AlertTitle>
+            <AlertTitle>Showing the first {rows.length} old links</AlertTitle>
             <AlertDescription>
               This site has {total} in total: more than this pane loads at once. Search and filter
               cover the ones shown here.
@@ -183,8 +183,8 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
         {error && !staleAfterFailure ? (
           <PaneLoadError
             icon={<Icon glyph={faUpRight} className="size-6" aria-hidden />}
-            title="Could not load your redirects"
-            description="This is a problem reaching the server. None of your redirects have been lost. They are still sending visitors on as before."
+            title="Could not load your old links"
+            description="This is a problem reaching the server. None of your old links have been lost. They are still sending visitors on as before."
             onRetry={() => {
               void refetch();
             }}
@@ -199,12 +199,12 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
               icon: <Icon glyph={faUpRight} className="size-6" aria-hidden />,
               title: 'Nothing matches that',
               description:
-                'No redirect matches what you searched or filtered for. Try part of an address, or switch the filter back to All.',
+                'No old link matches what you searched or filtered for. Try part of an address, or switch the filter back to All.',
             }}
             firstRun={{
-              title: 'No redirects yet',
+              title: 'No old links yet',
               description:
-                'When you move or rename a page, a redirect sends anyone using the old address to the new one instead of a dead end. Add your first one, or import a whole list at once.',
+                'When you move or rename a page, an old link sends anyone still using the old address to the new one instead of a dead end. Add your first one, or import a whole list at once.',
               actions: (
                 <Button
                   size="sm"
@@ -214,7 +214,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <Icon glyph={faPlus} className="size-4" aria-hidden />
-                  Add a redirect
+                  Add an old link
                 </Button>
               ),
             }}
@@ -232,7 +232,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
       <Text className="shrink-0 px-1 text-sm">
         {filtered.length === rows.length
-          ? `${rows.length} ${rows.length === 1 ? 'redirect' : 'redirects'}`
+          ? `${rows.length} ${rows.length === 1 ? 'old link' : 'old links'}`
           : `${filtered.length} of ${rows.length} shown`}
       </Text>
 

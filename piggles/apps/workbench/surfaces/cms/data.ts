@@ -366,7 +366,13 @@ export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
  * What an entry's status means, in the words an owner would use, with the tone
  * that carries the state's color on a `<Badge>`.
  */
-export function entryStatusState(status: EntryStatus): {
+export function entryStatusState(
+  status: EntryStatus,
+  /** Whether the public site is currently dark (a suspended account serves the
+   *  "Temporarily unavailable" overlay instead of its pages). Only the published
+   *  case cares: every other state is already about what nobody can see. */
+  siteIsDark = false
+): {
   label: string;
   tone: Tone;
   detail: string;
@@ -376,7 +382,12 @@ export function entryStatusState(status: EntryStatus): {
       return {
         label: 'Published',
         tone: 'success',
-        detail: 'This is live on your site. Anyone can read it now.',
+        // The label and its color stay put — the page IS published, which is the
+        // state the owner controls. What cannot be said while the site serves an
+        // unavailable overlay is that anybody can read it.
+        detail: siteIsDark
+          ? 'This is published. It goes back on your site as soon as your site is online again.'
+          : 'This is live on your site. Anyone can read it now.',
       };
     case 'scheduled':
       return {

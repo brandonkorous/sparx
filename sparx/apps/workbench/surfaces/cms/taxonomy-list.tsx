@@ -203,7 +203,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint />
+      {matches.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

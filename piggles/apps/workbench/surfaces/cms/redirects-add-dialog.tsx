@@ -113,7 +113,7 @@ export function AddRedirectDialog({
             close();
             afterPaneChange(() => {
               toast.add({
-                title: 'Redirect changed',
+                title: 'Old link changed',
                 description: `Anyone visiting ${fromPath} now lands on ${toPath}.`,
                 type: 'success',
               });
@@ -131,7 +131,7 @@ export function AddRedirectDialog({
           close();
           afterPaneChange(() => {
             toast.add({
-              title: 'Redirect added',
+              title: 'Old link added',
               description: `Anyone visiting ${fromPath} now lands on ${toPath}.`,
               type: 'success',
             });
@@ -146,7 +146,7 @@ export function AddRedirectDialog({
   // itself — in the dialog rather than a toast that vanishes mid-read.
   const verb = editing ? 'change' : 'add';
   const failure = mode.isError
-    ? redirectErrorMessage(mode.error, `Could not ${verb} that redirect. Nothing was changed.`)
+    ? redirectErrorMessage(mode.error, `Could not ${verb} that old link. Nothing was changed.`)
     : null;
   // The one failure with somewhere to go: the rule she is colliding with is the
   // rule she wants to edit.
@@ -161,13 +161,13 @@ export function AddRedirectDialog({
         }}
       >
         <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
-          <DialogTitle>{editing ? 'Change this redirect' : 'Add a redirect'}</DialogTitle>
+          <DialogTitle>{editing ? 'Change this old link' : 'Add an old link'}</DialogTitle>
 
           <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
             {failure ? (
               <Alert color="error">
                 <AlertContent>
-                  <AlertTitle>Could not {verb} that redirect</AlertTitle>
+                  <AlertTitle>Could not {verb} that old link</AlertTitle>
                   <AlertDescription>{failure}</AlertDescription>
                 </AlertContent>
                 {/* `AlertActions`, and `soft` on an error button — silica's own
@@ -217,7 +217,7 @@ export function AddRedirectDialog({
               disabled={!canSubmit}
               onClick={submit}
             >
-              {editing ? 'Save changes' : 'Add redirect'}
+              {editing ? 'Save changes' : 'Add an old link'}
             </Button>
           </DialogFooter>
         </DialogContent>

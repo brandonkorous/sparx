@@ -53,20 +53,20 @@ export const CONTENT_EVENTS: readonly WebhookEventDef[] = [
   },
   {
     key: 'redirect.added',
-    label: 'Redirect added',
+    label: 'Old link added',
     description: 'A rule is set up to send an old web address to a new one.',
-    group: 'Redirects',
+    group: 'Old links',
   },
   {
     key: 'redirect.changed',
-    label: 'Redirect changed',
-    description: 'An existing rule is repointed at a different address.',
-    group: 'Redirects',
+    label: 'Old link changed',
+    description: 'An existing one is pointed at a different address.',
+    group: 'Old links',
   },
   {
     key: 'redirect.removed',
-    label: 'Redirect removed',
-    description: 'A redirect rule is deleted.',
-    group: 'Redirects',
+    label: 'Old link removed',
+    description: 'An old address stops being sent anywhere.',
+    group: 'Old links',
   },
 ];

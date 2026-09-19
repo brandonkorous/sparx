@@ -259,7 +259,7 @@ export function AuthorsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint what="an author to edit" />
+      {matches.length > 0 ? <RowOpenHint what="an author to edit" /> : null}
     </div>
   );
 }

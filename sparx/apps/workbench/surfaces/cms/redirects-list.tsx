@@ -63,6 +63,7 @@ import {
   type Redirect,
   type RedirectStatusCode,
 } from './redirects-data';
+import { ActionLabel } from '../../components/action-label';
 
 /** The server's single-request ceiling. A config table well within it. */
 const WINDOW = 250;
@@ -345,7 +346,7 @@ export function RedirectsListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @xl:inline">Add redirect</span>
+            <ActionLabel from="xl">Add redirect</ActionLabel>
           </Button>
         }
         controls={

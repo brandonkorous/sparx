@@ -58,6 +58,7 @@ import {
   type Tone,
 } from './data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { searchFigureNote } from './seo-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 
@@ -277,7 +278,9 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
               <StatValue className="text-2xl tabular-nums">
                 {connected && organicSummary.data ? formatCount(organicSummary.data.clicks) : '—'}
               </StatValue>
-              <StatDesc>{connected ? 'in the last 28 days' : 'connect Google to see'}</StatDesc>
+              <StatDesc>
+                {searchFigureNote({ configured, connected }, 'in the last 28 days')}
+              </StatDesc>
             </Stat>
             <Stat>
               <StatTitle>Average position</StatTitle>
@@ -286,7 +289,9 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
                   ? formatPosition(organicSummary.data.avgPosition)
                   : '—'}
               </StatValue>
-              <StatDesc>{connected ? 'in Google results' : 'connect Google to see'}</StatDesc>
+              <StatDesc>
+                {searchFigureNote({ configured, connected }, 'in Google results')}
+              </StatDesc>
             </Stat>
             <Stat>
               <StatTitle>Pages to improve</StatTitle>

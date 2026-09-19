@@ -82,6 +82,11 @@ import {
   type FieldType,
   type TypeMetaInput,
 } from './content-types-data';
+// The three sentences that reckon with how much content uses a type. Kept in a
+// leaf module so the "a map that has not arrived is not a zero" rule is stated
+// once and tested (issue 389 reached by the loading door).
+import { deleteTypeRowNote, deleteTypeWarning } from './content-type-usage-words';
+import { REFERENCE_HELP, REFERENCE_HELP_FIXED, REFERENCE_LABEL } from './reference-word';
 import { productCopy } from '../../lib/product';
 import { SaveFailure } from '@/components/save-failure';
 
@@ -424,17 +429,10 @@ function EditType({
 
   const problem = metaProblem(draft, false);
   // The DELETE reckons with every site: `deleteContentTypeTx` refuses tenant-wide,
-  // so a type with nothing on this site can still be undeletable (issue 389).
-  const typeCounts = counts?.get(type.key);
-  const entryCount = typeCounts?.allSites ?? 0;
-  const entriesHere = typeCounts?.here ?? 0;
-  const entriesElsewhere = Math.max(0, entryCount - entriesHere);
-  /** The clause that stops "3 entries use this type" reading as a lie on a screen
-   *  whose own list shows none of them. Empty when they are all on this site. */
-  const elsewhereClause =
-    entriesElsewhere > 0
-      ? ` ${String(entriesElsewhere)} of them ${entriesElsewhere === 1 ? 'is' : 'are'} on your other sites.`
-      : '';
+  // so a type with nothing on this site can still be undeletable (issue 389). And
+  // a map that has not arrived is not a zero — `?? 0` promised a delete the
+  // server would refuse, so the sentence is built where that rule is tested.
+  const deleteWarning = deleteTypeWarning(counts, type.key, type.name);
 
   const onSave = () => {
     if (problem) return;
@@ -461,10 +459,7 @@ function EditType({
   const onDelete = async () => {
     const ok = await confirm({
       title: `Delete “${type.name}”?`,
-      description:
-        entryCount > 0
-          ? `${String(entryCount)} ${entryCount === 1 ? 'entry uses' : 'entries use'} this type.${elsewhereClause} You cannot delete it until those are removed: archiving them is not enough. This cannot be undone.`
-          : `This removes the “${type.name}” type and its fields for good. This cannot be undone.`,
+      description: deleteWarning,
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -526,11 +521,7 @@ function EditType({
           <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
             <div className="flex min-w-0 flex-col">
               <Text className="font-medium">Delete this type</Text>
-              <Text className="text-sm">
-                {entryCount > 0
-                  ? `${String(entryCount)} ${entryCount === 1 ? 'entry uses' : 'entries use'} it, so it cannot be deleted yet.${elsewhereClause}`
-                  : 'Removes the type and its fields for good. This cannot be undone.'}
-              </Text>
+              <Text className="text-sm">{deleteTypeRowNote(counts, type.key)}</Text>
             </div>
             <Button
               size="sm"
@@ -708,7 +699,10 @@ function MetaForm({
       </div>
 
       <Field>
-        <FieldLabel>Id</FieldLabel>
+        {/* "Reference" — the word the rest of Content uses for this exact thing
+            (the taxonomy pane's field and its list column both say it). This
+            said "Id" while the list one click away said "Key". */}
+        <FieldLabel>{REFERENCE_LABEL}</FieldLabel>
         <FieldControl
           render={
             <Input
@@ -728,8 +722,8 @@ function MetaForm({
         />
         <FieldDescription>
           {editableKey
-            ? 'A short internal name in lowercase letters, numbers and underscores. Filled in from the name. Change it now if you like, it cannot be changed later.'
-            : 'The internal name for this type. It is fixed once the type is created.'}
+            ? `${REFERENCE_HELP} Lowercase letters, numbers and underscores, filled in from the name. Change it now if you like, it cannot be changed later.`
+            : REFERENCE_HELP_FIXED}
         </FieldDescription>
       </Field>
 

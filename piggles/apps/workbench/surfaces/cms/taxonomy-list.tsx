@@ -24,6 +24,7 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { Badge, Button, Card, SearchInput } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
+import { REFERENCE_HELP, REFERENCE_LABEL } from './reference-word';
 import { faPlus, faTags } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -173,11 +174,8 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
             <thead>
               <tr>
                 <th>Name</th>
-                <th
-                  className="hidden @xl:table-cell"
-                  title="The code that connects this to your content. You never have to type it."
-                >
-                  Reference
+                <th className="hidden @xl:table-cell" title={REFERENCE_HELP}>
+                  {REFERENCE_LABEL}
                 </th>
                 <th className="hidden @2xl:table-cell">Nesting</th>
                 <th className="text-right">Labels</th>
@@ -232,7 +230,7 @@ export function TaxonomyListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint />
+      {matches.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

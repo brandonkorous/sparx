@@ -31,7 +31,7 @@ export function useRemoveRedirect(): RemoveRedirect {
       // Names both addresses and the real cost. Removing a rule is not the same
       // as repointing it — this one puts the old link back to being a dead end.
       const ok = await confirm({
-        title: 'Remove this redirect?',
+        title: 'Remove this old link?',
         description: `Anyone still using ${row.from_path} will hit a dead end again instead of being sent to ${row.to_path}. You can add it back later, but any search-engine standing it was passing on is lost.`,
         confirmLabel: 'Remove it',
         cancelLabel: 'Keep it',
@@ -41,11 +41,11 @@ export function useRemoveRedirect(): RemoveRedirect {
       setRemovingId(row.id);
       remove.mutate(row.id, {
         onSuccess: () => {
-          toast.add({ title: 'Redirect removed', type: 'success' });
+          toast.add({ title: 'Old link removed', type: 'success' });
         },
         onError: (err) => {
           toast.add({
-            title: 'Could not remove that redirect',
+            title: 'Could not remove that old link',
             description: redirectErrorMessage(err, 'Nothing was changed.'),
             type: 'error',
           });

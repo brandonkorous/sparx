@@ -372,20 +372,48 @@ export function useContentType(key: string) {
 }
 
 interface SummaryResponse {
-  byType: { typeKey: string; name: string; count: number; publishedCount: number }[];
+  byType: {
+    typeKey: string;
+    name: string;
+    count: number;
+    publishedCount: number;
+    allSitesCount: number;
+  }[];
 }
 
-/** How many entries use each type, keyed by type key — for the "in use" column and
- *  the delete warning. A live aggregate from the CMS reports endpoint; a missing
- *  key means zero. Bounded and slow-changing, so it is cached for a minute. */
+/**
+ * How many entries use each type — TWO numbers, because two readers ask two
+ * different questions of the same relation.
+ *
+ * `here` is what is on the site being worked in, which is what the "Entries"
+ * column means; `allSites` is what the type holds across the whole tenant, which
+ * is what a delete has to reckon with (`deleteContentTypeTx` refuses tenant-wide,
+ * so a type with nothing on this site can still be undeletable). This read only
+ * the first, which put "No entries yet" above a Delete the server then refused.
+ *
+ * Declared beside the functions that read it, so the rule below can be stated
+ * once and tested: ./content-type-usage-words.
+ */
+export type { EntryCounts } from './content-type-usage-words';
+
+/** A live aggregate from the CMS reports endpoint. Bounded and slow-changing, so
+ *  it is cached for a minute.
+ *
+ *  A KEY MISSING FROM THE MAP MEANS ZERO — the server groups over the rows that
+ *  exist, so a type nobody has used has nothing to group and gets no row. That
+ *  is not the same as the map itself being undefined, which means the numbers
+ *  have not arrived. Read it through the ./content-type-usage-words readers
+ *  rather than `?.get()`, which flattens the two into one blank cell. */
 export function useEntryCountsByType() {
   return useQuery({
     queryKey: contentTypeKeys.counts(),
     queryFn: () => api.get<SummaryResponse>('/v1/content/reports/summary'),
     staleTime: 60_000,
     select: (data) => {
-      const map = new Map<string, number>();
-      for (const row of data.byType) map.set(row.typeKey, row.count);
+      const map = new Map<string, { here: number; allSites: number }>();
+      for (const row of data.byType) {
+        map.set(row.typeKey, { here: row.count, allSites: row.allSitesCount });
+      }
       return map;
     },
   });

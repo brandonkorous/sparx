@@ -57,6 +57,7 @@ import {
   type ChecklistItem,
   type LegalPlacement,
 } from './legal-data';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -354,10 +355,11 @@ function ChecklistRows({
   acknowledgingId,
   takingWordingId,
 }: ChecklistRowsProps) {
+  const siteIsDark = useSiteIsDark();
   return (
     <ul className="flex flex-col">
       {items.map((item) => {
-        const status = legalItemStatus(item);
+        const status = legalItemStatus(item, siteIsDark);
         const entry = item.entry;
         // Acknowledging only clears the "unreviewed starter wording" note — it
         // cannot resolve a newer-version-available (stale) page, whose real fix

@@ -23,6 +23,7 @@
 
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { guessingLine } from './legal-guessing-words';
 import {
   Alert,
   AlertContent,
@@ -81,8 +82,16 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
   const requiredItems = items.filter((item) => item.required);
   const optionalItems = items.filter((item) => !item.required);
 
-  // Published pages still carrying a sentence the starter guessed for her.
-  const guessingCount = items.filter((item) => (item.stillGuessing ?? []).length > 0).length;
+  // Published pages still carrying a sentence the starter guessed for her,
+  // counted SEPARATELY for the required and the optional ones. The banner's
+  // subject is the required pages, so a count spanning both cannot be attached
+  // to it without being wrong — see legal-guessing-words.ts.
+  const guesses = {
+    required: requiredItems.filter((item) => (item.stillGuessing ?? []).length > 0).length,
+    optional: optionalItems.filter((item) => (item.stillGuessing ?? []).length > 0).length,
+  };
+  const guessingCount = guesses.required + guesses.optional;
+  const guessing = guessingLine(guesses);
 
   const allRequiredReady =
     completeness !== undefined &&
@@ -256,9 +265,7 @@ export function LegalListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {/* "Ready" counts publishing, not reading. Sitting a green
                           banner above three pages that still carry our guesses is
                           how an owner stops here — so it says so (issue 375). */}
-                      {guessingCount > 0
-                        ? ` ${String(guessingCount)} of them ${guessingCount === 1 ? 'still says' : 'still say'} things we guessed about your business. They are marked below.`
-                        : ''}
+                      {guessing === null ? '' : ` ${guessing}`}
                     </AlertDescription>
                   </AlertContent>
                 </Alert>

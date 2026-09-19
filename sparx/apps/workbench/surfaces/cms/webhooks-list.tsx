@@ -241,7 +241,7 @@ export function WebhooksListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint />
+      {rows.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

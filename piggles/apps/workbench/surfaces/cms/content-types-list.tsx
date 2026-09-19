@@ -91,7 +91,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <SearchInput
               size="sm"
               aria-label="Search content types"
-              placeholder="Name or id…"
+              placeholder="Name or reference…"
               value={search}
               onValueChange={setSearch}
             />
@@ -215,7 +215,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint />
+      {filtered.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

@@ -29,7 +29,7 @@ export const WEBHOOK_EVENT_GROUPS: readonly WebhookEventGroup[] = [
   'Selling',
   'Content',
   'Files',
-  'Redirects',
+  'Old links',
   'Stock',
   'Warehouse',
   'Supply',

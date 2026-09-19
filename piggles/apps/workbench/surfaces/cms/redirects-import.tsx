@@ -59,7 +59,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
   // clears the result, making it dirty once more.
   useDirtySource(
     text.trim() !== '' && result === null,
-    'You have redirects pasted in that you have not imported yet. Close anyway?'
+    'You have old links pasted in that you have not imported yet. Close anyway?'
   );
 
   const changeText = (next: string) => {
@@ -71,7 +71,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
     const left = outcome.skipped.length;
     toast.add({
       title:
-        outcome.inserted === 1 ? '1 redirect imported' : `${outcome.inserted} redirects imported`,
+        outcome.inserted === 1 ? '1 old link imported' : `${outcome.inserted} old links imported`,
       ...(left > 0
         ? {
             description:
@@ -101,7 +101,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
         },
         onError: (err) => {
           toast.add({
-            title: 'Could not import those redirects',
+            title: 'Could not import those old links',
             description: redirectErrorMessage(err, 'Nothing was changed. Try again in a moment.'),
             type: 'error',
           });
@@ -113,7 +113,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
   const viewList = () => {
     ctx.open('cms.redirects.list', {}, { target: 'replace' });
     afterPaneChange(() => {
-      toast.add({ title: 'Showing your redirects', type: 'success' });
+      toast.add({ title: 'Showing your old links', type: 'success' });
     });
   };
 
@@ -157,7 +157,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <FormSection
             title="Your list"
-            description="One redirect per line: the old address, then where it should go. Separate the two with a comma. Add a third word (permanent or temporary) to say whether the move is for good; leave it off and it counts as permanent."
+            description="One old link per line: the old address, then where it should go. Separate the two with a comma. Add a third word (permanent or temporary) to say whether the move is for good; leave it off and it counts as permanent."
           >
             <Textarea
               color="module"
@@ -166,7 +166,7 @@ export function RedirectsImportSurface({ ctx }: { ctx: SurfaceContext }) {
               spellCheck={false}
               className="font-mono text-sm"
               placeholder={SAMPLE}
-              aria-label="Paste your redirects"
+              aria-label="Paste your old links"
               onChange={(event) => {
                 changeText(event.target.value);
               }}

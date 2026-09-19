@@ -8,6 +8,7 @@ import { faArrowsRotate, faCheck, faPenSquare, faPlus } from '@fortawesome/pro-s
 import { Icon } from '@piggles/ui';
 
 import { legalItemStatus, legalKindBlurb, type ChecklistItem } from './legal-data';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 /* ── The checklist rows ─────────────────────────────────────────────────── */
 
@@ -35,10 +36,11 @@ export function ChecklistRows({
   acknowledgingId,
   takingWordingId,
 }: ChecklistRowsProps) {
+  const siteIsDark = useSiteIsDark();
   return (
     <ul className="flex flex-col">
       {items.map((item) => {
-        const status = legalItemStatus(item);
+        const status = legalItemStatus(item, siteIsDark);
         const entry = item.entry;
         // Acknowledging only clears the "unreviewed starter wording" note — it
         // cannot resolve a newer-version-available (stale) page, whose real fix

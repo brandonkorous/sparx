@@ -31,7 +31,16 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { useContentTypeList, useEntryCountsByType, type ContentType } from './content-types-data';
+import {
+  useContentTypeList,
+  useEntryCountsByType,
+  type ContentType,
+  type EntryCounts,
+} from './content-types-data';
+// Both readers take the whole MAP, not a looked-up row, because a missing key in
+// a loaded map is a real zero and a missing map is an unknown — and `?.get()`
+// flattens the two into one blank cell. See the module's own note.
+import { entriesElsewhereLabel, entriesHereLabel } from './content-type-usage-words';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 const KIND_FILTERS = [
@@ -47,12 +56,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-function usageLabel(count: number | undefined): string {
-  if (count === undefined) return '';
-  if (count === 0) return 'No entries yet';
-  return `${String(count)} ${count === 1 ? 'entry' : 'entries'}`;
 }
 
 export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -230,7 +233,7 @@ export function ContentTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint />
+      {filtered.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }
@@ -241,7 +244,7 @@ interface TypeGroupProps {
   title: string;
   description: string;
   types: ContentType[];
-  counts: Map<string, number> | undefined;
+  counts: Map<string, EntryCounts> | undefined;
   /** Shown instead of the rows when the group is empty; null hides the group. */
   emptyHint: string | null;
   onOpen: (type: ContentType, event: { shiftKey: boolean; altKey: boolean }) => void;
@@ -272,8 +275,8 @@ function TypeGroup({ title, description, types, counts, emptyHint, onOpen }: Typ
           </thead>
           <tbody>
             {types.map((type) => {
-              const count = counts?.get(type.key);
-              const usage = usageLabel(count);
+              const usage = entriesHereLabel(counts, type.key);
+              const elsewhere = entriesElsewhereLabel(counts, type.key);
               return (
                 <tr
                   key={type.id}
@@ -310,7 +313,12 @@ function TypeGroup({ title, description, types, counts, emptyHint, onOpen }: Typ
                     ) : null}
                   </td>
                   <td className="hidden font-mono text-sm @xl:table-cell">{type.key}</td>
-                  <td className="hidden text-sm whitespace-nowrap @2xl:table-cell">{usage}</td>
+                  <td className="hidden text-sm @2xl:table-cell">
+                    <span className="flex flex-col">
+                      <span className="whitespace-nowrap">{usage}</span>
+                      {elsewhere ? <span className="whitespace-nowrap">{elsewhere}</span> : null}
+                    </span>
+                  </td>
                 </tr>
               );
             })}

@@ -166,7 +166,15 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
     [card]
   );
   const alreadyGood = useMemo(
-    () => (card?.checks ?? []).filter((c) => c.status === 'pass' || c.status === 'info'),
+    () => (card?.checks ?? []).filter((c) => c.status === 'pass'),
+    [card]
+  );
+  // An `info` check is a FACT about this page, not something set up correctly:
+  // a page with no pictures, a page nobody has written a summary for yet, a
+  // page deliberately kept out of search. Filing those under "these are set up
+  // correctly" claimed a pass where there was no test.
+  const nothingToSetUp = useMemo(
+    () => (card?.checks ?? []).filter((c) => c.status === 'info'),
     [card]
   );
 
@@ -314,6 +322,25 @@ function AuditDetail({ ctx, type, id }: { ctx: SurfaceContext; type: EntityType;
                 </div>
                 <ul>
                   {alreadyGood.map((check) => (
+                    <CheckRow key={check.id} check={check} />
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {nothingToSetUp.length > 0 ? (
+              <section className="card bg-base-100 flex flex-col gap-2 p-4">
+                <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
+                  <Heading level={2} className="text-lg font-semibold">
+                    Worth knowing
+                  </Heading>
+                  <Text className="text-sm">
+                    Nothing to fix and nothing to praise. These say what the checker found, and none
+                    of them counts towards the score.
+                  </Text>
+                </div>
+                <ul>
+                  {nothingToSetUp.map((check) => (
                     <CheckRow key={check.id} check={check} />
                   ))}
                 </ul>

@@ -64,8 +64,19 @@ interface CheckDraft {
   action?: SeoAuditAction;
 }
 
+/**
+ * An `info` check never carries advice.
+ *
+ * A fact is not a task. When "Every picture is described" went `info` for a
+ * page with no pictures, its tip was gated on `!== 'pass'` and so came along:
+ * "Write one for each", about pictures that do not exist. Enforced here rather
+ * than at each call site, so the NEXT check that turns out not to apply cannot
+ * bring its advice with it.
+ */
 function finalize(d: CheckDraft): CheckResult {
-  return { ...d, earned: earnedFor(d.status, d.weight) };
+  const { tip: _tip, action: _action, ...bare } = d;
+  const kept = d.status === 'info' ? bare : d;
+  return { ...kept, earned: earnedFor(d.status, d.weight) };
 }
 
 // A slug is "clean" when each path segment is lowercase alphanumerics joined by
@@ -152,8 +163,22 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   );
 
   // 4 — Description length (meta, 4)
+  //
+  // With NO summary at all this is not a length problem, it is check 3 said
+  // twice. The owner saw both rows in "Worth fixing" — "The page has a short
+  // summary · not written yet" and "How long the summary is · nothing written"
+  // — and the second carried no advice at all, because the tip below was
+  // already gated on `dl > 0`. Somebody knew there was nothing to say and left
+  // the row anyway.
+  //
+  // It also charged her twice for one absence: a `warn` earns half its weight,
+  // so an unwritten summary lost 3 of 6 here AND 2 of 4 there.
+  //
+  // `info` is the status this file already keeps for a check the author cannot
+  // act on ("shown but excluded from the denominator"). Once a summary exists
+  // its length is a real question again.
   const dl = desc.length;
-  const descLen: CheckStatus = dl >= 70 && dl <= 160 ? 'pass' : 'warn';
+  const descLen: CheckStatus = dl === 0 ? 'info' : dl >= 70 && dl <= 160 ? 'pass' : 'warn';
   checks.push(
     finalize({
       id: 'desc-length',
@@ -161,7 +186,7 @@ function runChecks(e: AuditableEntity): CheckResult[] {
       label: 'How long the summary is',
       weight: 4,
       status: descLen,
-      value: dl > 0 ? `${dl} characters` : 'nothing written',
+      value: dl > 0 ? `${dl} characters` : 'nothing to measure yet',
       ...(descLen === 'warn' && dl > 0
         ? {
             tip:
@@ -233,11 +258,19 @@ function runChecks(e: AuditableEntity): CheckResult[] {
   );
 
   // 8 — Image alt text (content, 10)
+  //
+  // A page with no pictures used to PASS this, which handed it the full 10
+  // points — the heaviest check in the catalog — for a test that never ran, and
+  // filed it under "Already good · these are set up correctly". Nothing was set
+  // up; there was nothing to set up ([[feedback_never_present_absence_as_measurement]]).
+  //
+  // `info`: shown, so she can see the checker looked, and out of the
+  // denominator, so the score is over what was actually measured.
   let alt: CheckStatus;
   let altValue: string;
   if (e.imageCount === 0) {
-    alt = 'pass';
-    altValue = 'no images';
+    alt = 'info';
+    altValue = 'no pictures on this page';
   } else {
     const missing = Math.min(Math.max(0, e.imagesMissingAlt), e.imageCount);
     altValue = `${e.imageCount - missing} of ${e.imageCount} described`;
@@ -253,7 +286,7 @@ function runChecks(e: AuditableEntity): CheckResult[] {
       weight: 10,
       status: alt,
       value: altValue,
-      ...(alt !== 'pass'
+      ...(alt === 'warn' || alt === 'fail'
         ? {
             tip: 'A short description of each picture is how a search engine, and anyone using a screen reader, knows what it shows. Write one for each.',
             action: { label: 'Describe the pictures', target: 'images' },

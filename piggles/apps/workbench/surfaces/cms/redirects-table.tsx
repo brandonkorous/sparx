@@ -29,7 +29,7 @@ export function RedirectsTable({ rows, onOpen, onDelete, removingId, busy }: Red
     <Table size="sm">
       <thead>
         <tr>
-          <th>Redirect</th>
+          <th>Old link</th>
           <th>Type</th>
           <th className="hidden text-right @xl:table-cell">Times used</th>
           <th className="hidden @2xl:table-cell">Added</th>
@@ -49,7 +49,7 @@ export function RedirectsTable({ rows, onOpen, onDelete, removingId, busy }: Red
               // and a button inside a button is invalid and swallows the click.
               className="hover:bg-base-200 cursor-pointer"
               tabIndex={0}
-              aria-label={`Change the redirect from ${row.from_path}`}
+              aria-label={`Change where ${row.from_path} goes`}
               onClick={() => {
                 onOpen(row);
               }}
@@ -91,8 +91,8 @@ export function RedirectsTable({ rows, onOpen, onDelete, removingId, busy }: Red
                   variant="ghost"
                   color="danger"
                   shape="square"
-                  aria-label={`Remove the redirect from ${row.from_path}`}
-                  title="Remove this redirect"
+                  aria-label={`Remove the old link ${row.from_path}`}
+                  title="Remove this old link"
                   loading={removingId === row.id && busy}
                   disabled={busy}
                   onClick={(event) => {

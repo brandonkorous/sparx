@@ -78,6 +78,7 @@ import {
   type TaxonomyTerm,
   type TermNode,
 } from './taxonomy-data';
+import { REFERENCE_HELP_FIXED, REFERENCE_LABEL } from './reference-word';
 
 /** The one column everything in this pane sits in. Centred and capped, because a
  *  pane torn onto a second monitor is otherwise 2000px of dead grey with a
@@ -229,7 +230,7 @@ function CreateTaxonomy({ ctx }: { ctx: SurfaceContext }) {
             </Field>
 
             <Field>
-              <FieldLabel>Reference</FieldLabel>
+              <FieldLabel>{REFERENCE_LABEL}</FieldLabel>
               <FieldControl
                 render={
                   <Input
@@ -570,13 +571,11 @@ function ManageBody({
             </Field>
 
             <div className="border-base-300 flex flex-col gap-1 border-t pt-3">
-              <Text className="text-sm font-semibold">Reference</Text>
+              <Text className="text-sm font-semibold">{REFERENCE_LABEL}</Text>
               <code className="bg-base-200 w-fit max-w-full rounded px-2 py-1 font-mono text-sm break-all">
                 {taxonomy.key}
               </code>
-              <Text className="text-sm">
-                The code that connects this to your content. It cannot be changed.
-              </Text>
+              <Text className="text-sm">{REFERENCE_HELP_FIXED}</Text>
             </div>
           </FormSection>
 

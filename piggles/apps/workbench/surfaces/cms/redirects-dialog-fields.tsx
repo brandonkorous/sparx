@@ -69,7 +69,7 @@ export function RedirectFields({
         />
         <FieldDescription>
           {lockFrom
-            ? 'This is the link people are already following, so it stays as it is. To catch a different address, add a redirect for that one.'
+            ? 'This is the link people are already following, so it stays as it is. To catch a different address, add an old link for that one.'
             : 'The address people are still using: the one you want to catch. Just the part after your domain, starting with a slash.'}
         </FieldDescription>
       </Field>

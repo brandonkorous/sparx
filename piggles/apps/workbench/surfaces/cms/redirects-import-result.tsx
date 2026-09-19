@@ -24,7 +24,7 @@ export interface SentRow {
 
 function heading(inserted: number): string {
   if (inserted === 0) return 'Nothing new to add';
-  return inserted === 1 ? '1 redirect imported' : `${String(inserted)} redirects imported`;
+  return inserted === 1 ? '1 old link imported' : `${String(inserted)} old links imported`;
 }
 
 export function ImportResult({
@@ -48,7 +48,7 @@ export function ImportResult({
             {hasSkipped ? <SkippedList outcome={outcome} sent={sent} /> : <AllLanded />}
             <div className="flex flex-wrap gap-2">
               <Button size="sm" color="module" onClick={onViewList}>
-                View all redirects
+                View all old links
               </Button>
               <Button size="sm" variant="outline" onClick={onImportMore}>
                 Import another list
@@ -65,7 +65,7 @@ function AllLanded() {
   return (
     <span className="flex items-center gap-2">
       <Icon glyph={faCircleCheck} className="size-4 shrink-0" aria-hidden />
-      Every redirect on your list is now live.
+      Every old link on your list is now live.
     </span>
   );
 }

@@ -69,7 +69,7 @@ export function redirectTypeMeta(code: number): RedirectTypeMeta {
       return {
         label: `Code ${String(code)}`,
         tone: 'neutral',
-        detail: 'An uncommon redirect type set up elsewhere.',
+        detail: 'An uncommon kind, set up somewhere else.',
       };
   }
 }
@@ -77,14 +77,44 @@ export function redirectTypeMeta(code: number): RedirectTypeMeta {
 /* ── Errors ─────────────────────────────────────────────────────────────── */
 
 /**
- * The server's own sentence for a 4xx, shown verbatim: the redirect routes
- * explain the real problem ("A redirect from "/x" already exists", "A redirect
- * cannot point to itself", "Redirect would create a loop via …") far better than
- * a status code can. A 5xx carries no such sentence, so it falls back to the
- * caller's wording.
+ * The server's sentence for a 4xx, exactly as it arrives.
+ *
+ * The routes explain the real problem far better than a status code can, and
+ * this is where that sentence is read. It is NOT what goes on the screen —
+ * see `redirectErrorMessage` below, which says the same thing in this product's
+ * words.
+ */
+function rawServerMessage(error: unknown, fallback: string): string {
+  return apiErrorMessage(error, fallback);
+}
+
+/**
+ * The server's three refusals, said the way this product says things.
+ *
+ * The routes are shared with the other console, where "redirect" is the right
+ * word. Here the screen is called **Old links** — its own vocabulary note reads
+ * "'Redirects' is infrastructure; what it means to a shop owner is that a link
+ * they printed on a flyer two years ago still works" — so the sentence has to be
+ * translated on arrival rather than reworded at the source.
+ *
+ * Matched sentence by sentence, not by swapping the word, because two of them
+ * need more than that: "would create a loop" is its own piece of jargon, and
+ * "A redirect from …" cannot become "A old link from …".
+ *
+ * The fallback still drops the word. An unrecognised server sentence is the
+ * likely future — a new refusal, or a reworded one — and a half-translated
+ * sentence beats one that reintroduces the word this whole screen renames.
  */
 export function redirectErrorMessage(error: unknown, fallback: string): string {
-  return apiErrorMessage(error, fallback);
+  const raw = rawServerMessage(error, fallback);
+  const duplicate = /^A redirect from (".*?") already exists\.?$/i.exec(raw);
+  if (duplicate) return `There is already an old link from ${duplicate[1] ?? ''}.`;
+  if (/^A redirect cannot point to itself\.?$/i.test(raw)) {
+    return 'An old link cannot point at itself.';
+  }
+  const loop = /^Redirect would create a loop via (.+?)\.?$/i.exec(raw);
+  if (loop) return `That would send visitors round in a circle: ${loop[1] ?? ''}.`;
+  return raw.replace(/\bredirects\b/gi, 'old links').replace(/\bredirect\b/gi, 'old link');
 }
 
 /**
@@ -96,9 +126,14 @@ export function redirectErrorMessage(error: unknown, fallback: string): string {
  * Only the duplicate has somewhere for the person to go, so only it may offer
  * the way out. A wording change on the server turns the button off rather than
  * pointing it somewhere wrong, which is the safe direction to fail.
+ *
+ * READS THE RAW SENTENCE, deliberately. It used to call `redirectErrorMessage`,
+ * which now translates — and the translation of this very refusal does not
+ * contain "already exists", so routing this through it would have switched the
+ * duplicate's way out off on every duplicate. The one case it exists for.
  */
 export function isDuplicateRedirectError(error: unknown): boolean {
-  return /already exists/i.test(redirectErrorMessage(error, ''));
+  return /already exists/i.test(rawServerMessage(error, ''));
 }
 
 /* ── Formatting + paths ─────────────────────────────────────────────────── */

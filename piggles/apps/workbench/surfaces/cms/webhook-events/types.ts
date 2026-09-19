@@ -50,7 +50,7 @@ export type WebhookEventKey =
   | 'inventory.source.recovered';
 
 export type WebhookEventGroup =
-  'Selling' | 'Content' | 'Files' | 'Redirects' | 'Stock' | 'Warehouse' | 'Supply' | 'Stock feeds';
+  'Selling' | 'Content' | 'Files' | 'Old links' | 'Stock' | 'Warehouse' | 'Supply' | 'Stock feeds';
 
 export interface WebhookEventDef {
   key: WebhookEventKey;

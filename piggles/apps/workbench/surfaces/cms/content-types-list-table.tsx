@@ -12,24 +12,11 @@ import { Badge, Heading, Text } from '@wizeworks/silicaui-react';
 // app uses, so these rows sit at the same density as the ones beside them.
 import { IDENTITY_CELL, Table } from '../../components/table';
 import type { ContentType, EntryCounts } from './content-types-data';
-
-function usageLabel(counts: EntryCounts | undefined): string {
-  if (counts === undefined) return '';
-  if (counts.here === 0) return 'No entries yet';
-  return `${String(counts.here)} ${counts.here === 1 ? 'entry' : 'entries'}`;
-}
-
-/** How many of this type live on the business's OTHER websites, said out loud.
- *
- *  The column counts this site (issue 389). On a business running several sites
- *  that leaves a gap between what it shows and what a delete refuses, and an
- *  unexplained gap is how "No entries yet" ends up above a Delete that fails. */
-function elsewhereLabel(counts: EntryCounts | undefined): string | null {
-  if (!counts) return null;
-  const elsewhere = counts.allSites - counts.here;
-  if (elsewhere <= 0) return null;
-  return `${String(elsewhere)} on your other sites`;
-}
+// Both readers take the whole MAP, not a looked-up row, because a missing key in
+// a loaded map is a real zero and a missing map is an unknown — and `?.get()`
+// flattens the two into one blank cell. See the module's own note.
+import { entriesElsewhereLabel, entriesHereLabel } from './content-type-usage-words';
+import { REFERENCE_HELP, REFERENCE_LABEL } from './reference-word';
 
 export interface TypeGroupProps {
   title: string;
@@ -67,15 +54,21 @@ export function TypeGroup({
           <thead>
             <tr>
               <th>Name</th>
-              <th className="hidden @xl:table-cell">Key</th>
+              {/* "Reference", not "Key" — the SAME word the taxonomy pane and the
+                  type editor use for the same idea. Issue 389 left this section
+                  calling one thing three names: Key here, Id in the editor one
+                  click away, Reference in the twin pane beside it. The tooltip is
+                  the taxonomy pane's, verbatim, because it is the same fact. */}
+              <th className="hidden @xl:table-cell" title={REFERENCE_HELP}>
+                {REFERENCE_LABEL}
+              </th>
               <th className="hidden @2xl:table-cell">Entries</th>
             </tr>
           </thead>
           <tbody>
             {types.map((type) => {
-              const count = counts?.get(type.key);
-              const usage = usageLabel(count);
-              const elsewhere = elsewhereLabel(count);
+              const usage = entriesHereLabel(counts, type.key);
+              const elsewhere = entriesElsewhereLabel(counts, type.key);
               return (
                 <tr
                   key={type.id}

@@ -67,6 +67,7 @@ import {
   type ActivityRun,
   type Tone,
 } from './data';
+import { searchFigureNote } from './seo-words';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -283,7 +284,9 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
               <StatValue className="text-2xl tabular-nums">
                 {connected && organicSummary.data ? formatCount(organicSummary.data.clicks) : '—'}
               </StatValue>
-              <StatDesc>{connected ? 'in the last 28 days' : 'connect Google to see'}</StatDesc>
+              <StatDesc>
+                {searchFigureNote({ configured, connected }, 'in the last 28 days')}
+              </StatDesc>
             </Stat>
             <Stat>
               <StatTitle>Average position</StatTitle>
@@ -292,7 +295,9 @@ export function PerformanceSurface({ ctx }: { ctx: SurfaceContext }) {
                   ? formatPosition(organicSummary.data.avgPosition)
                   : '—'}
               </StatValue>
-              <StatDesc>{connected ? 'in Google results' : 'connect Google to see'}</StatDesc>
+              <StatDesc>
+                {searchFigureNote({ configured, connected }, 'in Google results')}
+              </StatDesc>
             </Stat>
             <Stat>
               <StatTitle>Pages to improve</StatTitle>
