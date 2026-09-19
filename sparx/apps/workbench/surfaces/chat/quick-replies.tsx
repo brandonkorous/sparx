@@ -15,7 +15,7 @@
 // default, so business-specific copy stays with its business unless you say
 // otherwise.
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -32,7 +32,7 @@ import {
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { MessageSquareText, Plus, Trash2 } from 'lucide-react';
+import { MessageSquareText, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -40,13 +40,33 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { useSites } from '../sites/data';
+// The sentences that reckon with which of her businesses a reply belongs to (a
+// business with ONE site reads none of them), and the ones that carry changing a
+// reply rather than deleting it and typing it again.
+import {
+  changedReplyFields,
+  deleteReplyWarning,
+  editFormWords,
+  fixedShortcutNote,
+  isSharedReply,
+  replyScopeNote,
+  savedReplyWords,
+  scopeOf,
+  shortcutIsFixed,
+} from './quick-reply-words';
 import {
   chatErrorMessage,
   useCreateQuickReply,
   useDeleteQuickReply,
   useQuickReplies,
+  useUpdateQuickReply,
   type QuickReply,
 } from './data';
+// Which of her sites "This site only" means. Null while the read is in flight,
+// and a null is left OUT of the comparison rather than guessed — a guess here
+// moves a reply between her businesses without her asking.
+import { useActivePropertyId } from '../../lib/api/shell-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -54,15 +74,39 @@ type Scope = 'site' | 'all';
 
 function QuickReplyRow({
   reply,
+  scopeNote,
+  onEdit,
+  editing,
   onDelete,
   deleting,
 }: {
   reply: QuickReply;
+  /** Which sites offer it, or null for a business with only one. */
+  scopeNote: string | null;
+  onEdit: () => void;
+  /** True while THIS reply is the one loaded into the form above. */
+  editing: boolean;
   onDelete: () => void;
   deleting: boolean;
 }) {
   return (
-    <li className="border-base-300 flex items-start gap-3 border-b px-4 py-3 last:border-b-0">
+    <li
+      // The row whose words are in the boxes above says so. Without it a person
+      // who scrolled down to press a pencil, then scrolled back, has two
+      // screens' worth of the same three fields and nothing joining them.
+      //
+      // A RING, not the module tint the panes use for "you are here". This row
+      // already carries a soft module badge for its shortcut, and tinting the row
+      // the same soft module color swallowed it — the one word she came to the
+      // row to read. The media picker marks a chosen item the same way.
+      //
+      // The space lives OUTSIDE the ${} on purpose: the class sorter trims a
+      // leading one inside a literal, which welds it onto the class before it.
+      className={`border-base-300 flex items-start gap-3 border-b px-4 py-3 last:border-b-0 ${
+        editing ? 'ring-module ring-2 ring-inset' : ''
+      }`}
+      aria-current={editing ? 'true' : undefined}
+    >
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex flex-wrap items-center gap-2">
           <Text as="span" className="font-medium">
@@ -73,9 +117,29 @@ function QuickReplyRow({
               /{reply.shortcut}
             </Badge>
           ) : null}
+          {/* The answer to the compose form's own question, on the row. The list
+              serves this site's replies AND the shared ones together, so without
+              it the two are indistinguishable and a reply that vanishes when she
+              changes shop has no explanation on screen. */}
+          {scopeNote ? (
+            <Badge color={isSharedReply(reply) ? 'info' : 'module'} variant="outline" size="sm">
+              {scopeNote}
+            </Badge>
+          ) : null}
         </div>
         <Text className="text-sm whitespace-pre-wrap">{reply.body}</Text>
       </div>
+      <Button
+        size="sm"
+        variant="ghost"
+        color="module"
+        shape="square"
+        aria-label={`Change “${reply.title}”`}
+        title={`Change “${reply.title}”`}
+        onClick={onEdit}
+      >
+        <Pencil className="size-4" aria-hidden />
+      </Button>
       <Button
         size="sm"
         variant="ghost"
@@ -97,24 +161,48 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
   const confirm = useConfirm();
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useQuickReplies();
   const create = useCreateQuickReply();
+  const update = useUpdateQuickReply();
   const remove = useDeleteQuickReply();
+  const activeSiteId = useActivePropertyId();
+  // How many websites this business runs. Every sentence about scope is silent
+  // below two, and the "Where it is offered" control has no choice to offer.
+  const { data: sites } = useSites();
+  const siteCount = (sites ?? []).length;
 
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
   const [shortcut, setShortcut] = useState('');
   const [scope, setScope] = useState<Scope>('site');
+  // The reply loaded into the form, or null while it is an add form. ONE form
+  // either way: this pane deliberately has no create modal (a modal is invisible
+  // to the unsaved-work guard), and a second form for editing would be the same
+  // mistake twice.
+  const [editing, setEditing] = useState<QuickReply | null>(null);
+  const formRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     ctx.setTitle('Quick replies');
   }, [ctx]);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const canAdd = title.trim() !== '' && body.trim() !== '';
-  const draftStarted = title.trim() !== '' || body.trim() !== '' || shortcut.trim() !== '';
+  const words = editFormWords(editing);
+  const busy = create.isPending || update.isPending;
+  const canSubmit = title.trim() !== '' && body.trim() !== '';
+  // Unsaved work is a STARTED draft while adding, and an ALTERED one while
+  // editing — a person who opened a reply and changed nothing has nothing to
+  // lose, so closing the pane must not stop to ask.
+  const pendingChanges = editing
+    ? changedReplyFields(editing, { title, body, shortcut, scope }, activeSiteId)
+    : [];
+  const dirty = editing
+    ? pendingChanges.length > 0
+    : title.trim() !== '' || body.trim() !== '' || shortcut.trim() !== '';
 
   useDirtySource(
-    draftStarted && !create.isPending,
-    "You've started a quick reply but haven't added it yet. Close anyway?"
+    dirty && !busy,
+    editing
+      ? `You've changed “${editing.title}” but haven't saved it yet. Close anyway?`
+      : "You've started a quick reply but haven't added it yet. Close anyway?"
   );
 
   const resetForm = () => {
@@ -122,17 +210,83 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
     setBody('');
     setShortcut('');
     setScope('site');
+    setEditing(null);
+  };
+
+  const startEdit = (reply: QuickReply) => {
+    setEditing(reply);
+    setTitle(reply.title);
+    setBody(reply.body);
+    setShortcut(reply.shortcut ?? '');
+    setScope(scopeOf(reply));
+    // The form is at the top and the row she pressed is usually below the fold.
+    // Moving the page to the boxes is the whole reason the pencil reads as an
+    // edit rather than as a second thing that did nothing.
+    afterPaneChange(() => {
+      formRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+  };
+
+  const save = () => {
+    if (!editing || !canSubmit || busy) return;
+    const changed = changedReplyFields(editing, { title, body, shortcut, scope }, activeSiteId);
+    // Nothing moved, so nothing is announced either. Pressing Save on a reply
+    // she only read must not report work it did not do.
+    if (changed.length === 0) {
+      const same = savedReplyWords(editing, 0);
+      resetForm();
+      afterPaneChange(() => {
+        toast.add(same);
+      });
+      return;
+    }
+    const saving = editing;
+    update.mutate(
+      {
+        id: saving.id,
+        ...(changed.includes('title') ? { title: title.trim() } : {}),
+        ...(changed.includes('body') ? { body: body.trim() } : {}),
+        // Only ever the FIRST shortcut. One already in use is shown as a fact,
+        // never as a box, so it cannot be in this list.
+        ...(changed.includes('shortcut') ? { shortcut: shortcut.trim() } : {}),
+        // Left out entirely unless she moved it, so fixing a typo never drags a
+        // reply shared across every business back to one of them.
+        ...(changed.includes('scope') ? { propertyId: scope === 'all' ? null : activeSiteId } : {}),
+      },
+      {
+        onSuccess: () => {
+          afterPaneChange(() => {
+            resetForm();
+            toast.add(savedReplyWords(saving, changed.length));
+          });
+        },
+        onError: (error) => {
+          afterPaneChange(() => {
+            toast.add({
+              title: `Could not save “${saving.title}”`,
+              description: chatErrorMessage(error, 'Nothing was changed. Try again.'),
+              type: 'error',
+            });
+          });
+        },
+      }
+    );
   };
 
   const add = () => {
-    if (!canAdd || create.isPending) return;
+    if (!canSubmit || busy) return;
     create.mutate(
       {
         title: title.trim(),
         body: body.trim(),
         ...(shortcut.trim() !== '' ? { shortcut: shortcut.trim() } : {}),
         // Omitted = this site (the route stamps it); explicit null = every site.
-        ...(scope === 'all' ? { propertyId: null } : {}),
+        // A ONE-SITE business is never asked, so it never chose "this site only"
+        // — sending it would quietly pin every reply to the shop she happens to
+        // have today, and none of them would follow her to a second one. With no
+        // second business to leak into, "every site" is the honest no-choice
+        // state, and it is already what the seeded replies carry.
+        ...(scope === 'all' || siteCount <= 1 ? { propertyId: null } : {}),
       },
       {
         onSuccess: () => {
@@ -162,10 +316,12 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const onDelete = async (reply: QuickReply) => {
+    // Deleting the one in the boxes would leave the form editing a row that no
+    // longer exists, and Save would then fail with a not-found she cannot act on.
+    if (editing?.id === reply.id) resetForm();
     const ok = await confirm({
       title: `Delete “${reply.title}”?`,
-      description:
-        'Your team will no longer be able to send this saved reply. This cannot be undone.',
+      description: deleteReplyWarning(reply, siteCount),
       confirmLabel: 'Delete it',
       cancelLabel: 'Keep it',
       color: 'danger',
@@ -227,97 +383,137 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
             </Text>
           </div>
 
-          <FormSection title="Add a quick reply">
-            <Field>
-              <FieldLabel>Name</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={title}
-                    maxLength={100}
-                    placeholder="e.g. Shipping times"
-                    onChange={(event) => {
-                      setTitle(event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                What you will recognize it by in the list: the visitor never sees this.
-              </FieldDescription>
-            </Field>
-
-            <Field>
-              <FieldLabel>Message</FieldLabel>
-              <FieldControl
-                render={
-                  <Textarea
-                    value={body}
-                    rows={3}
-                    maxLength={8000}
-                    placeholder="The reply your team sends…"
-                    onChange={(event) => {
-                      setBody(event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>This is the text that gets sent to the visitor.</FieldDescription>
-            </Field>
-
-            <div className="grid gap-4 @md:grid-cols-2">
+          <div ref={formRef} className="flex flex-col gap-4">
+            <FormSection title={words.heading}>
+              {words.note ? <Text className="text-sm">{words.note}</Text> : null}
               <Field>
-                <FieldLabel>Shortcut (optional)</FieldLabel>
+                <FieldLabel>Name</FieldLabel>
                 <FieldControl
                   render={
                     <Input
                       color="module"
-                      value={shortcut}
-                      maxLength={50}
-                      placeholder="shipping"
-                      autoComplete="off"
-                      spellCheck={false}
+                      value={title}
+                      maxLength={100}
+                      placeholder="e.g. Shipping times"
                       onChange={(event) => {
-                        setShortcut(event.target.value);
+                        setTitle(event.target.value);
                       }}
                     />
                   }
                 />
-                <FieldDescription>A short word to find it faster.</FieldDescription>
+                <FieldDescription>
+                  What you will recognize it by in the list: the visitor never sees this.
+                </FieldDescription>
               </Field>
 
               <Field>
-                <FieldLabel>Where it is offered</FieldLabel>
-                <Select
-                  color="module"
-                  aria-label="Which sites this reply is offered on"
-                  value={scope}
-                  items={{ site: 'This site only', all: 'All my sites' }}
-                  onValueChange={(next) => {
-                    setScope(next as Scope);
-                  }}
+                <FieldLabel>Message</FieldLabel>
+                <FieldControl
+                  render={
+                    <Textarea
+                      value={body}
+                      rows={3}
+                      maxLength={8000}
+                      placeholder="The reply your team sends…"
+                      onChange={(event) => {
+                        setBody(event.target.value);
+                      }}
+                    />
+                  }
                 />
-                <FieldDescription>
-                  Keep business-specific wording to this site; use “All my sites” for generic
-                  replies.
-                </FieldDescription>
+                <FieldDescription>This is the text that gets sent to the visitor.</FieldDescription>
               </Field>
-            </div>
 
-            <div className="flex justify-end">
-              <Button
-                color="module"
-                size="sm"
-                loading={create.isPending}
-                disabled={!canAdd}
-                onClick={add}
-              >
-                <Plus className="size-4" aria-hidden />
-                Add quick reply
-              </Button>
-            </div>
-          </FormSection>
+              <div className="grid gap-4 @md:grid-cols-2">
+                {editing && shortcutIsFixed(editing) ? (
+                  /* On a reply already in use this is NOT A FIELD, so it is not
+                   drawn as one. A disabled box still looks like somewhere to
+                   type, and greys out the one word she opened the form to check;
+                   the same badge her row wears says "this is what it is" instead
+                   of "this is broken". */
+                  <div className="flex flex-col gap-1">
+                    <Text as="span" className="font-medium">
+                      What your team types to send it
+                    </Text>
+                    <div>
+                      <Badge color="module" variant="soft" size="sm">
+                        /{editing.shortcut}
+                      </Badge>
+                    </div>
+                    <Text className="text-sm">{fixedShortcutNote(editing)}</Text>
+                  </div>
+                ) : (
+                  <Field>
+                    <FieldLabel>Shortcut (optional)</FieldLabel>
+                    <FieldControl
+                      render={
+                        <Input
+                          color="module"
+                          value={shortcut}
+                          maxLength={50}
+                          placeholder="shipping"
+                          autoComplete="off"
+                          spellCheck={false}
+                          onChange={(event) => {
+                            setShortcut(event.target.value);
+                          }}
+                        />
+                      }
+                    />
+                    <FieldDescription>A short word to find it faster.</FieldDescription>
+                  </Field>
+                )}
+
+                {/* One site, no choice to make. The house rule the shared
+                  SiteScopeField states: "renders NOTHING for a tenant with one
+                  site — an always-on toggle reading 'every site' is noise on the
+                  99% case." This pane had not applied it. */}
+                {siteCount > 1 ? (
+                  <Field>
+                    <FieldLabel>Where it is offered</FieldLabel>
+                    <Select
+                      color="module"
+                      aria-label="Which sites this reply is offered on"
+                      value={scope}
+                      items={{ site: 'This site only', all: 'All my sites' }}
+                      onValueChange={(next) => {
+                        setScope(next as Scope);
+                      }}
+                    />
+                    <FieldDescription>
+                      Keep business-specific wording to this site; use “All my sites” for generic
+                      replies.
+                    </FieldDescription>
+                  </Field>
+                ) : null}
+              </div>
+
+              <div className="flex justify-end gap-2">
+                {editing ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={busy}
+                    onClick={() => {
+                      resetForm();
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                ) : null}
+                <Button
+                  color="module"
+                  size="sm"
+                  loading={busy}
+                  disabled={!canSubmit}
+                  onClick={editing ? save : add}
+                >
+                  {editing ? null : <Plus className="size-4" aria-hidden />}
+                  {words.submit}
+                </Button>
+              </div>
+            </FormSection>
+          </div>
 
           <Card className="overflow-hidden">
             <header className="border-base-300 flex items-center gap-2 border-b px-4 py-3">
@@ -352,6 +548,11 @@ export function ChatQuickRepliesSurface({ ctx }: { ctx: SurfaceContext }) {
                   <QuickReplyRow
                     key={reply.id}
                     reply={reply}
+                    scopeNote={replyScopeNote(reply, siteCount)}
+                    editing={editing?.id === reply.id}
+                    onEdit={() => {
+                      startEdit(reply);
+                    }}
                     deleting={deletingId === reply.id}
                     onDelete={() => {
                       void onDelete(reply);

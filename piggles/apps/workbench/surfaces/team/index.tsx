@@ -116,7 +116,7 @@ function personState(person: RosterPerson): PersonState {
     // leave someone waiting on an email that is already dead.
     if (person.status === 'accepted') return { label: 'Joining', tone: 'success' };
     if (person.status === 'revoked' || person.status === 'cancelled') {
-      return { label: 'Cancelled', tone: 'neutral' };
+      return { label: 'Canceled', tone: 'neutral' };
     }
     if (person.status === 'expired' || new Date(person.expiresAt).getTime() < Date.now()) {
       return { label: 'Invitation expired', tone: 'danger' };

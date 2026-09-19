@@ -35,7 +35,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { todayIso } from '../../lib/today';
+import { dayEndLocal, dayStartLocal, todayIso } from '../../lib/today';
 import {
   faCalendarXmark,
   faClock,
@@ -294,7 +294,10 @@ function Closures({
     [exceptions, resourceId]
   );
 
-  const rangeValid = from !== '' && to !== '' && to >= from;
+  // A date box can hold something that is not a date; see `lib/today`.
+  const startAt = from === '' ? null : dayStartLocal(from);
+  const endAt = to === '' ? null : dayEndLocal(to);
+  const rangeValid = startAt !== null && endAt !== null && to >= from;
   const openMin = timeToMinutes(openTime);
   const closeMin = timeToMinutes(closeTime);
   // Special hours need an open and a close, with the close later than the open.
@@ -303,11 +306,9 @@ function Closures({
   const canAdd = rangeValid && hoursValid;
 
   const add = () => {
-    if (!canAdd) return;
+    if (!canAdd || startAt === null || endAt === null) return;
     // An exception covers whole days: local midnight to the end of the last day.
     // For special hours, the meta says which part of each of those days is open.
-    const startAt = new Date(`${from}T00:00:00`).toISOString();
-    const endAt = new Date(`${to}T23:59:59`).toISOString();
     const customHours = kind === 'custom_hours' && openMin !== null && closeMin !== null;
     create.mutate(
       {

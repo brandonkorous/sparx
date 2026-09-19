@@ -155,6 +155,7 @@ import {
   type SavedEmailBlock,
 } from './email-data';
 import { PaneLoadError } from '../../../components/pane-load-error';
+import { ActionLabel } from '../../../components/action-label';
 
 /** The neutral fallback theme — used only until the tenant brand loads, or if the
  *  brand/config read fails. The compiled tenant brand (below) is what normally
@@ -961,7 +962,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
           }}
         >
           <Eye className="size-4" aria-hidden />
-          <span className="hidden @md:inline">Preview</span>
+          <ActionLabel from="md">Preview</ActionLabel>
         </Button>
         <Button
           size="sm"
@@ -974,7 +975,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
           }}
         >
           <Upload className="size-4" aria-hidden />
-          <span className="hidden @md:inline">Publish</span>
+          <ActionLabel from="md">Publish</ActionLabel>
         </Button>
         <Button
           size="sm"
@@ -1049,7 +1050,7 @@ function MergeTagsMenu() {
         <PopoverTrigger>
           <Button size="sm" variant="outline" color="neutral">
             <Tags className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Merge tags</span>
+            <ActionLabel from="md">Merge tags</ActionLabel>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="flex max-h-96 w-80 flex-col overflow-hidden p-0">
@@ -1167,7 +1168,7 @@ function TrackingMenu({
         <PopoverTrigger>
           <Button size="sm" variant="outline" color="neutral">
             <MousePointerClick className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Tracking</span>
+            <ActionLabel from="md">Tracking</ActionLabel>
           </Button>
         </PopoverTrigger>
         <PopoverContent className="flex w-80 flex-col gap-3 p-3">

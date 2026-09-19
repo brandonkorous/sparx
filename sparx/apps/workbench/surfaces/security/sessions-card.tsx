@@ -37,6 +37,7 @@ import {
   useRevokeSession,
   type AuthSession,
 } from './security-data';
+import { whereFromPrefix, whereFromSentence } from './where-from-words';
 
 function ms(iso: string): number {
   return new Date(iso).getTime();
@@ -69,9 +70,9 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
     const device = describeDevice(row.userAgent);
     const ok = await confirm({
       title: `Sign out ${device}?`,
-      description: `That device will have to sign in again with your email and password to reach this account. ${
-        row.ipAddress ? `It was last seen from ${row.ipAddress}. ` : ''
-      }Nothing it has already done is undone.`,
+      description: `That device will have to sign in again with your email and password to reach this account. ${whereFromSentence(
+        row.ipAddress
+      )}Nothing it has already done is undone.`,
       confirmLabel: 'Sign it out',
       cancelLabel: 'Leave it signed in',
       color: 'danger',
@@ -190,7 +191,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
                     ) : null}
                   </div>
                   <Text className="text-sm">
-                    {row.ipAddress ? `From ${row.ipAddress} · ` : ''}
+                    {whereFromPrefix(row.ipAddress)}
                     Active <Timestamp value={ms(row.updatedAt)} format="relative" /> · Signed in{' '}
                     <Timestamp value={ms(row.createdAt)} format="relative" />
                   </Text>

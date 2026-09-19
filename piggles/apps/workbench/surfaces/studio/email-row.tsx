@@ -28,10 +28,13 @@ function status(email: EmailSummary): { label: string; tone: 'success' | 'warnin
 
 export function EmailRow({
   email,
+  origin,
   onOpen,
   onOpenBeside,
 }: {
   email: EmailSummary;
+  /** Where this one came from, said only when its name is shared (issue 631). */
+  origin: string | null;
   onOpen: (emailId: string) => void;
   onOpenBeside: (emailId: string) => void;
 }) {
@@ -41,6 +44,7 @@ export function EmailRow({
     <tr {...rowOpenProps(email.id, onOpen, onOpenBeside)}>
       <td>
         <span className="block max-w-56 truncate font-medium">{email.name}</span>
+        {origin === null ? null : <span className="block max-w-56 truncate text-sm">{origin}</span>}
       </td>
       <td>
         <span className="block max-w-72 truncate">{email.subject || 'No subject yet'}</span>

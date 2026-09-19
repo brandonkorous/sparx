@@ -184,7 +184,7 @@ export function bootcampState(status: BootcampStatus): { label: string; tone: To
     case 'draft':
       return { label: 'Draft', tone: 'neutral' };
     case 'cancelled':
-      return { label: 'Cancelled', tone: 'error' };
+      return { label: 'Canceled', tone: 'error' };
     case 'completed':
       return { label: 'Finished', tone: 'info' };
     default:

@@ -11,6 +11,7 @@ import {
   faCalendarCheck,
   faComment,
   faFileExclamation,
+  faInbox,
 } from '@fortawesome/pro-solid-svg-icons';
 import type { PigglesIcon } from '@piggles/ui';
 import type { AttentionCount, AttentionKey } from '@/lib/console/home-data';
@@ -59,6 +60,23 @@ export const SIGNALS: Signal[] = [
     many: 'people are waiting to hear back',
     clear: 'everyone has had a reply',
     noun: 'messages',
+  },
+  {
+    // Beside live chat on purpose: to the person who wrote it these are the
+    // same act, and only one of them was counted. Two people asked about sizing
+    // through the contact form and were still marked New seventeen days later,
+    // with nothing on Home, the rail or the app saying so (issue 629).
+    key: 'formReplies',
+    icon: faInbox,
+    module: 'builder',
+    surface: 'builder.forms',
+    // The inbox opens on New, so the number in the sentence is the number of
+    // rows behind it. Its own chip, so she can see it and turn it off ([258]).
+    params: { status: 'new' },
+    one: 'person wrote to you from your website',
+    many: 'people wrote to you from your website',
+    clear: 'nobody is waiting from your website',
+    noun: 'form replies',
   },
   {
     key: 'bookings',

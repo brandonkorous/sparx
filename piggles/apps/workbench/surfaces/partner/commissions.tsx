@@ -24,6 +24,7 @@ import {
 import { Table } from '../../components/table';
 import { faCoins, faMoneyBill } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { productCopy } from '../../lib/product';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -116,8 +117,10 @@ function PayoutSetup({ connected }: { connected: boolean }) {
   return (
     <div className="flex flex-col gap-3">
       <Text className="text-sm">
-        Connect a bank account so sparx can pay your commissions. Setup is handled by our payments
-        provider. You will be taken there to confirm your details, then brought back here.
+        {productCopy(
+          'partner.commissions.connectBank',
+          'Connect a bank account so sparx can pay your commissions. Setup is handled by our payments provider. You will be taken there to confirm your details, then brought back here.'
+        )}
       </Text>
       <Button
         color="module"
@@ -232,8 +235,10 @@ export function CommissionsSurface(_props: { ctx: SurfaceContext }) {
     <div className="min-h-0 flex-1 overflow-y-auto">
       <div className={COLUMN}>
         <Text>
-          What you have earned bringing businesses onto sparx, what is still accruing, and every
-          deposit that has settled it.
+          {productCopy(
+            'partner.commissions.intro',
+            'What you have earned bringing businesses onto sparx, what is still accruing, and every deposit that has settled it.'
+          )}
         </Text>
 
         <div className="grid gap-3 @md:grid-cols-3">
@@ -267,8 +272,10 @@ export function CommissionsSurface(_props: { ctx: SurfaceContext }) {
           {rows.length === 0 ? (
             <div className="p-4">
               <Text className="text-sm">
-                Nothing yet. When a business you referred makes its first payment to sparx, your
-                commission accrues here at the rate that was set when they signed up.
+                {productCopy(
+                  'partner.commissions.none',
+                  'Nothing yet. When a business you referred makes its first payment to sparx, your commission accrues here at the rate that was set when they signed up.'
+                )}
               </Text>
             </div>
           ) : (

@@ -38,7 +38,7 @@ export function NameCard({
   return (
     <FormSection
       title="What this form is called"
-      description="Only you see this. It is how the form is labelled in Form replies, so you can tell one from another at a glance."
+      description="Only you see this. It is how the form is labeled in Form replies, so you can tell one from another at a glance."
     >
       <Field>
         <FieldLabel>Name</FieldLabel>

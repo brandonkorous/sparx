@@ -37,6 +37,7 @@ import { faFloppyDisk } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
+import { productCopy } from '../../lib/product';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
@@ -219,8 +220,10 @@ export function ProfileSurface() {
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
           <Text>
-            This is how you appear in the sparx partner directory, where businesses go looking for
-            someone to help them build. Turn listing off to stay unlisted while still earning.
+            {productCopy(
+              'partner.profile.intro',
+              'This is how you appear in the sparx partner directory, where businesses go looking for someone to help them build. Turn listing off to stay unlisted while still earning.'
+            )}
           </Text>
 
           {/* Read-only grounding facts — what the partner can't change here. */}
@@ -453,8 +456,10 @@ export function ProfileSurface() {
                 <AlertContent>
                   <AlertTitle>Your listing goes live once your account is active</AlertTitle>
                   <AlertDescription>
-                    You can fill everything in now. It appears in the directory as soon as sparx
-                    activates your partner account.
+                    {productCopy(
+                      'partner.profile.pendingActivation',
+                      'You can fill everything in now. It appears in the directory as soon as sparx activates your partner account.'
+                    )}
                   </AlertDescription>
                 </AlertContent>
               </Alert>

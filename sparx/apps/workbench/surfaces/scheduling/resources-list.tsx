@@ -168,7 +168,7 @@ export function ResourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(resource, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">{resource.name}</span>
                     <span className="truncate text-sm @lg:hidden">

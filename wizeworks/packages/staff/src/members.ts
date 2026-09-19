@@ -10,7 +10,7 @@
 // opens the workbench still has hours, a rate and certifications, and is very
 // often the person whose labour cost matters most.
 
-import { withTenant, type TxClient } from '@wizeworks/db';
+import { nameSearchClauses, withTenant, type TxClient } from '@wizeworks/db';
 import { StaffMemberNotFoundError } from './errors.js';
 
 export type EmploymentType = 'employee' | 'contractor' | 'volunteer';
@@ -60,15 +60,15 @@ export async function listMembers(tenantId: string, query: ListMembersQuery = {}
         ...(query.status ? { status: query.status } : {}),
         ...(query.includeArchived ? {} : { archivedAt: null }),
         ...(query.propertyId ? { siteLinks: { some: { propertyId: query.propertyId } } } : {}),
-        ...(query.search
-          ? {
-              OR: [
-                { firstName: { contains: query.search, mode: 'insensitive' as const } },
-                { lastName: { contains: query.search, mode: 'insensitive' as const } },
-                { jobTitle: { contains: query.search, mode: 'insensitive' as const } },
-              ],
-            }
-          : {}),
+        // Every typed word has to land somewhere, so searching a person by
+        // their whole name finds them: a name is two columns and one string,
+        // and asking whether the string is inside either column finds nobody
+        // who has both a first and a last name. See `nameSearchClauses`.
+        AND: nameSearchClauses(query.search, (term) => [
+          { firstName: { contains: term, mode: 'insensitive' as const } },
+          { lastName: { contains: term, mode: 'insensitive' as const } },
+          { jobTitle: { contains: term, mode: 'insensitive' as const } },
+        ]),
       },
       include: DETAIL_INCLUDE,
       // Status first so the people who are actually here sort above the leavers,

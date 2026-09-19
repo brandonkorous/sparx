@@ -43,6 +43,7 @@ import {
 } from './data';
 import { employmentLabel, formatMinutes, formatTime, staffState } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { ActionLabel } from '../../components/action-label';
 
 const STATUS_FILTERS = [
   { value: 'active', label: 'Working' },
@@ -83,6 +84,29 @@ function PersonRow({
   const certs = person.certificationSummary;
   const now = Date.now();
 
+  // Built once and drawn in two places: the column at @md and up, and the fold
+  // under the name below it. Two copies of a badge is two chances to drift.
+  const clockBadge =
+    onTheClockSince === null ? null : (
+      // Solid, not soft: this is the one row state that means something is
+      // happening right now, and it has to win against the soft badges.
+      <Badge color="info" size="sm">
+        <Clock className="size-3.5" aria-hidden />
+        {formatMinutes(runningMinutes(onTheClockSince, now))}
+      </Badge>
+    );
+  const ticketBadge =
+    certs.expired > 0 ? (
+      <Badge color="error" size="sm">
+        <AlertTriangle className="size-3.5" aria-hidden />
+        {certs.expired === 1 ? '1 expired' : `${String(certs.expired)} expired`}
+      </Badge>
+    ) : certs.expiring > 0 ? (
+      <Badge color="warning" variant="soft" size="sm">
+        {certs.expiring === 1 ? '1 expiring' : `${String(certs.expiring)} expiring`}
+      </Badge>
+    ) : null;
+
   return (
     <tr
       className="cursor-pointer"
@@ -98,34 +122,28 @@ function PersonRow({
       <td className="max-w-56 min-w-0">
         <div className="truncate font-medium">{person.name}</div>
         {person.jobTitle ? <div className="truncate text-sm">{person.jobTitle}</div> : null}
+        {/* Below @md the Clock and Tickets columns are gone, so whichever of
+            them has something to say comes back here.
+
+            Both are EXCEPTION columns: they draw a badge when someone is on the
+            clock or a ticket has run out, and nothing at all otherwise. On an
+            ordinary roster that is nothing on any row, and the two of them still
+            held 158px of a 357px pane and pushed the table 128px past its edge.
+            Empty columns do not get to hide the ones with content in them. */}
+        {onTheClockSince !== null || certs.expired > 0 || certs.expiring > 0 ? (
+          <div className="mt-1 flex flex-wrap items-center gap-1 @md:hidden">
+            {clockBadge}
+            {ticketBadge}
+          </div>
+        ) : null}
       </td>
       <td>
         <Badge color={state.tone} variant="soft" size="sm">
           {state.label}
         </Badge>
       </td>
-      <td>
-        {onTheClockSince ? (
-          // Solid, not soft: this is the one row state that means something is
-          // happening right now, and it has to win against the soft badges.
-          <Badge color="info" size="sm">
-            <Clock className="size-3.5" aria-hidden />
-            {formatMinutes(runningMinutes(onTheClockSince, now))}
-          </Badge>
-        ) : null}
-      </td>
-      <td>
-        {certs.expired > 0 ? (
-          <Badge color="error" size="sm">
-            <AlertTriangle className="size-3.5" aria-hidden />
-            {certs.expired === 1 ? '1 expired' : `${String(certs.expired)} expired`}
-          </Badge>
-        ) : certs.expiring > 0 ? (
-          <Badge color="warning" variant="soft" size="sm">
-            {certs.expiring === 1 ? '1 expiring' : `${String(certs.expiring)} expiring`}
-          </Badge>
-        ) : null}
-      </td>
+      <td className="hidden @md:table-cell">{clockBadge}</td>
+      <td className="hidden @md:table-cell">{ticketBadge}</td>
       <td className="hidden text-sm @lg:table-cell">{employmentLabel(person.employmentType)}</td>
       <td className="hidden text-sm @2xl:table-cell">{person.email ?? '—'}</td>
       <td className="text-right">
@@ -169,6 +187,17 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
   }, [open.data?.items]);
 
   const people = data?.items ?? [];
+
+  // "No one on the roster yet" is two opposite facts: a business that has never
+  // hired, and one whose whole team has left. The second reads as though its own
+  // records had been thrown away, when archiving keeps every hour and every cost.
+  // Asked only when the answer could matter — this view is empty, nothing was
+  // typed, and it is not already showing everyone.
+  const anyone = useStaffMembers(
+    { includeArchived: true },
+    { enabled: people.length === 0 && search.trim() === '' && status !== 'all' }
+  );
+  const everyoneLeft = (anyone.data?.items.length ?? 0) > 0;
   const onTheClock = people.filter((person) => running.has(person.id));
   const needsAttention = people.reduce(
     (sum, person) => sum + person.certificationSummary.expired,
@@ -228,7 +257,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Add someone</span>
+            <ActionLabel>Add someone</ActionLabel>
           </Button>
         }
         controls={
@@ -288,11 +317,19 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="flex h-full items-center justify-center p-8">
             <EmptyState
               icon={<UserPlus className="size-6" aria-hidden />}
-              title={search.trim() ? 'Nobody matches that' : 'No one on the roster yet'}
+              title={
+                search.trim()
+                  ? 'Nobody matches that'
+                  : everyoneLeft
+                    ? 'Nobody is working for you right now'
+                    : 'No one on the roster yet'
+              }
               description={
                 search.trim()
                   ? 'Try a different name, or switch the filter to Everyone.'
-                  : 'Add the people who work for you and sparx can track their hours, what those hours cost, and when their tickets and licences run out.'
+                  : everyoneLeft
+                    ? 'Everyone on your roster has left, so this view is empty. Switch the filter to Everyone to see them, their hours and what they cost — none of it has gone anywhere.'
+                    : 'Add the people who work for you and sparx can track their hours, what those hours cost, and when their tickets and licenses run out.'
               }
               actions={
                 search.trim() ? null : (
@@ -334,7 +371,7 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
 
                 {needsAttention > 0 ? (
                   <Card className="p-4">
-                    <Text className="text-sm">Expired tickets and licences</Text>
+                    <Text className="text-sm">Expired tickets and licenses</Text>
                     <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
                       {needsAttention}
                     </Heading>
@@ -363,8 +400,8 @@ export function PeopleSurface({ ctx }: { ctx: SurfaceContext }) {
                   <tr>
                     <th>Name</th>
                     <th>Status</th>
-                    <th>Clock</th>
-                    <th>Tickets</th>
+                    <th className="hidden @md:table-cell">Clock</th>
+                    <th className="hidden @md:table-cell">Tickets</th>
                     <th className="hidden @lg:table-cell">Type</th>
                     <th className="hidden @2xl:table-cell">Email</th>
                     <th className="text-right" />

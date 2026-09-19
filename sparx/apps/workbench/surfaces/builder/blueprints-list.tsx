@@ -273,7 +273,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint what="a design to preview it" />
+        {rows.length > 0 ? <RowOpenHint what="a design to preview it" /> : null}
       </div>
     </div>
   );

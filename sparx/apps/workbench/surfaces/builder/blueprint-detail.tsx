@@ -65,6 +65,7 @@ import {
   type ContentsLine,
 } from './blueprints-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -175,7 +176,8 @@ function BlueprintBody({
       ),
     [installs, blueprint.key, targetSite]
   );
-  const state = current ? installState(current.status) : null;
+  const siteIsDark = useSiteIsDark();
+  const state = current ? installState(current.status, siteIsDark) : null;
 
   // An update is available when the chosen site's install trails the catalog version
   // and is in a state that can take one (a draft or a live install — not one that is

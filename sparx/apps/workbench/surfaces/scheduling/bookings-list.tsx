@@ -50,7 +50,7 @@ const STATUS_OPTIONS: { value: BookingStatus | ''; label: string }[] = [
   { value: 'confirmed', label: 'Confirmed' },
   { value: 'in_progress', label: 'In progress' },
   { value: 'completed', label: 'Completed' },
-  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'cancelled', label: 'Canceled' },
   { value: 'no_show', label: 'Did not turn up' },
 ];
 

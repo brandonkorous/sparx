@@ -16,7 +16,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
-import { getTokenState, resolveToken } from '../../lib/api/token';
+import { downloadServerFile } from '../../lib/api/download';
 
 /* ── Shapes ────────────────────────────────────────────────────────────────── */
 
@@ -238,9 +238,15 @@ export interface MemberFilters {
   property?: string;
 }
 
-export function useStaffMembers(filters: MemberFilters = {}) {
+/**
+ * `enabled` is deliberately OUTSIDE the query key: it says whether to ask, not
+ * what was asked. A caller probing "does this business have anybody at all"
+ * shares the cache entry with a caller that wants the rows.
+ */
+export function useStaffMembers(filters: MemberFilters = {}, options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: [...STAFF_KEY, 'members', filters],
+    ...(options.enabled === undefined ? {} : { enabled: options.enabled }),
     queryFn: () =>
       api.get<{ items: StaffMember[] }>('/v1/staff/members', {
         ...(filters.status ? { status: filters.status } : {}),
@@ -351,10 +357,13 @@ export function useTimeOff(query: { status?: TimeOffStatus; staffMemberId?: stri
   return useQuery({
     queryKey: [...STAFF_KEY, 'time-off', query],
     queryFn: () =>
-      api.get<{ items: TimeOffRequest[]; requestedCount: number }>('/v1/staff/time-off', {
-        ...(query.status ? { status: query.status } : {}),
-        ...(query.staffMemberId ? { staffMemberId: query.staffMemberId } : {}),
-      }),
+      api.get<{ items: TimeOffRequest[]; requestedCount: number; totalCount: number }>(
+        '/v1/staff/time-off',
+        {
+          ...(query.status ? { status: query.status } : {}),
+          ...(query.staffMemberId ? { staffMemberId: query.staffMemberId } : {}),
+        }
+      ),
     placeholderData: (previous) => previous,
   });
 }
@@ -684,9 +693,11 @@ export function useDeleteCertification() {
 /**
  * Download the period's hours file.
  *
- * A raw `fetch` rather than the api client, because the response is a FILE and
- * the client parses JSON. Both the base URL and the bearer token are resolved at
- * click time so a pane left open overnight cannot download with a dead one.
+ * `downloadServerFile` rather than the api client, because the response is a
+ * FILE and the client parses JSON. It resolves both the API origin and the
+ * bearer token at click time, so a pane left open overnight cannot download from
+ * the wrong place or with a dead token, and it rebuilds a refusal as a real
+ * `ApiError` so `staffErrorMessage` shows the server's own sentence.
  *
  * Returns the unpriced-minutes count. It arrives in a header because a download
  * cannot carry a warning, and dropping it would hand somebody a file whose hours
@@ -696,49 +707,14 @@ export async function downloadPayrollHours(params: {
   from: string;
   to: string;
 }): Promise<{ filename: string; unpricedMinutes: number }> {
-  const state = await getTokenState();
-  const token = await resolveToken();
   const query = new URLSearchParams({ from: params.from, to: params.to });
 
-  const response = await fetch(`${state.apiUrl}/v1/staff/timesheets/export?${query.toString()}`, {
-    headers: {
-      authorization: `Bearer ${token}`,
-      ...(state.propertyId ? { 'x-sparx-property-id': state.propertyId } : {}),
-    },
-  });
+  const { filename, headers } = await downloadServerFile(
+    `/v1/staff/timesheets/export?${query.toString()}`,
+    'hours.csv'
+  );
 
-  if (!response.ok) {
-    // The error path DOES answer JSON — the file body only exists on success.
-    // Rebuilt as a real ApiError so `staffErrorMessage` shows the server's own
-    // sentence exactly as it would for any other 4xx.
-    const detail = (await response.json().catch(() => null)) as {
-      error?: { message?: string; code?: string; request_id?: string };
-    } | null;
-    throw new ApiError(response.status, {
-      success: false,
-      error: {
-        message: detail?.error?.message ?? 'The hours file could not be built.',
-        code: detail?.error?.code ?? 'EXPORT_FAILED',
-        request_id: detail?.error?.request_id ?? '',
-      },
-    });
-  }
-
-  const disposition = response.headers.get('content-disposition') ?? '';
-  const filename = /filename="([^"]+)"/.exec(disposition)?.[1] ?? 'hours.csv';
-  const unpriced = Number(response.headers.get('x-sparx-unpriced-minutes') ?? '0');
-
-  const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  // Revoking immediately races the download in Safari.
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 1000);
-
+  const unpriced = Number(headers.get('x-sparx-unpriced-minutes') ?? '0');
   return { filename, unpricedMinutes: Number.isFinite(unpriced) ? unpriced : 0 };
 }
 

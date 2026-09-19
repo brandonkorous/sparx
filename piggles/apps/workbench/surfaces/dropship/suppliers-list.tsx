@@ -327,7 +327,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint what="a supplier to manage it" className="pb-1" />
+        {rows.length > 0 ? <RowOpenHint what="a supplier to manage it" className="pb-1" /> : null}
       </div>
     </div>
   );

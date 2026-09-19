@@ -477,7 +477,7 @@ export function IntegrationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint what="a service to connect or manage it" />
+      {groups.length > 0 ? <RowOpenHint what="a service to connect or manage it" /> : null}
     </div>
   );
 }

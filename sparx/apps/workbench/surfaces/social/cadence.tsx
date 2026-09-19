@@ -415,7 +415,9 @@ function ImportPanel({ destinations }: { destinations: { id: string; name: strin
               result.created === 1 ? '1 post imported' : `${String(result.created)} posts imported`,
             description:
               result.problems.length > 0
-                ? `${String(result.problems.length)} row(s) were skipped: see the list.`
+                ? `${String(result.problems.length)} ${
+                    result.problems.length === 1 ? 'row was' : 'rows were'
+                  } skipped: see the list.`
                 : 'They are in your Posts list as drafts.',
             type: result.problems.length > 0 ? 'info' : 'success',
           });

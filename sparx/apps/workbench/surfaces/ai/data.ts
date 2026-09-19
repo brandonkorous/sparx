@@ -404,7 +404,7 @@ export function categoryHint(category: PromptCategory): string {
     case 'social':
       return 'How the assistant should write posts for social media.';
     case 'crm':
-      return 'How the assistant should summarise and note things about your customers.';
+      return 'How the assistant should summarize and note things about your customers.';
     case 'general':
       return 'Instructions that do not fit one particular job.';
   }

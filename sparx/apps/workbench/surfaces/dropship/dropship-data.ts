@@ -531,7 +531,7 @@ export function orderState(status: DropshipOrderStatus): {
       };
     case 'cancelled':
       return {
-        label: 'Cancelled',
+        label: 'Canceled',
         tone: 'neutral',
         detail: 'This supplier order was canceled.',
       };

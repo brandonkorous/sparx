@@ -219,7 +219,7 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
           )}
         </Card>
 
-        {config.detailSurface ? (
+        {config.detailSurface && rows.length > 0 ? (
           // Sits on the pane rather than in a docked strip, so no border — a rule
           // here would underline nothing. Full ink for the same reason as above.
           <RowOpenHint />

@@ -16,9 +16,14 @@ import { useConfirm } from '../../lib/confirm';
 import { useReleases, useRestoreRelease, type Release } from '../../lib/studio/publish-data';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { CLOCK, DAY, TIME_CELL } from './when';
+import { currentReleaseLabel, restoreConfirmDetail } from './publish-words';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 export function PublishReleases() {
   const releases = useReleases();
+  // A suspended site serves an overlay instead of its pages, so "what visitors
+  // see" is nobody seeing anything. The restore itself is unaffected.
+  const siteIsDark = useSiteIsDark();
   const restore = useRestoreRelease();
   const confirm = useConfirm();
   const toast = useToast();
@@ -27,7 +32,7 @@ export function PublishReleases() {
     const when = `${DAY.format(new Date(release.createdAt))} at ${CLOCK.format(new Date(release.createdAt))}`;
     const ok = await confirm({
       title: 'Put your website back to this version?',
-      description: `Visitors will see the site exactly as it was on ${when}, straight away. There is no publish step after this. Everything you have been working on since stays where it is, unpublished.`,
+      description: restoreConfirmDetail(when, siteIsDark),
       confirmLabel: 'Put my website back',
       cancelLabel: 'Leave it as it is',
       color: 'danger',
@@ -57,7 +62,12 @@ export function PublishReleases() {
           You haven’t published yet. Once you do, every version appears here.
         </p>
       ) : (
-        <ReleaseList rows={rows} pending={restore.variables ?? null} onPutBack={putBack} />
+        <ReleaseList
+          rows={rows}
+          pending={restore.variables ?? null}
+          onPutBack={putBack}
+          siteIsDark={siteIsDark}
+        />
       )}
     </section>
   );
@@ -67,10 +77,12 @@ function ReleaseList({
   rows,
   pending,
   onPutBack,
+  siteIsDark,
 }: {
   rows: Release[];
   pending: string | null;
   onPutBack: (release: Release) => Promise<void>;
+  siteIsDark: boolean;
 }) {
   let lastDay = '';
   return (
@@ -84,7 +96,12 @@ function ReleaseList({
             {heading ? (
               <li className="text-base-content px-1 pt-3 text-sm font-medium">{heading}</li>
             ) : null}
-            <ReleaseRow release={release} pending={pending === release.id} onPutBack={onPutBack} />
+            <ReleaseRow
+              release={release}
+              pending={pending === release.id}
+              onPutBack={onPutBack}
+              siteIsDark={siteIsDark}
+            />
           </Fragment>
         );
       })}
@@ -96,10 +113,12 @@ function ReleaseRow({
   release,
   pending,
   onPutBack,
+  siteIsDark,
 }: {
   release: Release;
   pending: boolean;
   onPutBack: (release: Release) => Promise<void>;
+  siteIsDark: boolean;
 }) {
   return (
     <li className="flex items-center gap-2 px-1 py-1">
@@ -107,12 +126,15 @@ function ReleaseRow({
       <Badge color={release.source === 'restore' ? 'warning' : 'info'} variant="soft">
         {release.source === 'restore' ? 'Put back' : 'Published'}
       </Badge>
-      <span className="text-base-content truncate text-sm">
+      {/* Never truncated: "21 pages" is three words long and is the only thing
+          on the row that says HOW MUCH went live. It was shrinking to "21 pa…"
+          the moment the label beside it grew. */}
+      <span className="text-base-content shrink-0 text-sm whitespace-nowrap">
         {release.pageCount} {release.pageCount === 1 ? 'page' : 'pages'}
       </span>
       <span className="ml-auto shrink-0">
         {release.current ? (
-          <span className="text-base-content text-sm">This is what visitors see</span>
+          <span className="text-base-content text-sm">{currentReleaseLabel(siteIsDark)}</span>
         ) : (
           <Button
             size="sm"

@@ -173,7 +173,7 @@ export function FeedbackListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint what="a message to read the conversation" />
+      {rows.length > 0 ? <RowOpenHint what="a message to read the conversation" /> : null}
     </div>
   );
 }

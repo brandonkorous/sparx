@@ -5,13 +5,20 @@
 // silica's `renderHostNode` hook asks the host to DRAW a host node on the canvas.
 // Two kinds of answer, and the split is about SIZE, not importance:
 //
-//   · CHROME cores (brand, theme toggle, legal links) — drawn at their REAL size,
-//     inline. These live in a navbar or a footer column, and their whole promise is
-//     "the platform keeps this filled in for you". A dashed labelled card in a header
-//     row is not a preview of them, it is a lie about their footprint: a 24px icon
-//     button rendered as a 120px-tall bordered box with three grey bars blows the
-//     navbar apart and the author ends up styling around a shape that will never
-//     exist. Draw the actual control.
+//   · CHROME cores — drawn at their REAL size, inline. These live in a navbar or a
+//     footer column, and their whole promise is "the platform keeps this filled in for
+//     you". A dashed labelled card in a header row is not a preview of them, it is a
+//     lie about their footprint: a 24px icon button rendered as a 120px-tall bordered
+//     box with three grey bars blows the navbar apart and the author ends up styling
+//     around a shape that will never exist. Draw the actual control.
+//
+//     WHICH ONES: everything the catalog files under the "Your site" category, plus the
+//     two under "Your media". That is a fact in the catalog, not a list kept here — this
+//     comment used to name three, while the account link and the social row sat in a
+//     navbar and a footer column drawn as page-sized skeletons for exactly as long as
+//     the list went unread. `pnpm check:host-cores` now asserts the coverage and prints
+//     the denominator, so a core added to the catalog reddens the build rather than
+//     landing on a canvas as a grey box.
 //   · TRANSACTION cores (cart, checkout, search, PLP, booking…) — a labelled,
 //     non-interactive SKELETON. The real widget is a live transaction that can't run
 //     on a canvas (no cart/session/Stripe), and it legitimately occupies a page-sized
@@ -26,6 +33,7 @@
 
 import type { BuilderHost } from '@wizeworks/silicaui-builder/react';
 import type { HostNode } from '@wizeworks/silicaui-html';
+import { PlatformMark, hasPlatformMark } from '../../../components/platform-mark';
 import {
   HOST_COMPONENTS,
   HOST_KEYS,
@@ -44,14 +52,20 @@ function Bar({ w = 'w-full' }: { w?: string }) {
   return <div className={`bg-base-content/10 h-3 rounded ${w}`} />;
 }
 
-/** The frame every skeleton sits in — a labelled dashed card that reads as "a live
- *  region your customers see here" without pretending to be interactive. */
+/** The frame every skeleton sits in — a labelled dashed card that says the real thing
+ *  appears here without pretending to be interactive.
+ *
+ *  THE LABEL IS IN PLAIN WORDS. It used to end "· live region", which is a screen-reader
+ *  term borrowed to mean "the platform fills this in". The question an author is actually
+ *  asking, standing in front of a dashed box full of grey bars, is whether visitors are
+ *  going to see THIS. They are not, and now the label says so. Same voice as
+ *  `FrameMark`'s "Your map shows here". */
 function CoreFrame({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="border-base-content/25 bg-base-100 rounded-lg border border-dashed p-6">
       <div className="mb-4 flex items-center gap-2 text-sm font-medium">
         <span className="bg-primary inline-block size-2 rounded-full" />
-        {label} · live region
+        {label} · the real one shows on your site
       </div>
       {children}
     </div>
@@ -214,6 +228,118 @@ function FrameMark({ node, meta }: { node: HostNode; meta?: HostComponentMeta })
   );
 }
 
+/** The account link at its real size — a short text link in a navbar row.
+ *
+ *  Representative, and it has to be: live, this reads "Sign in" to a visitor and the
+ *  customer's own first name once they are signed in, and the canvas has no visitor. It
+ *  draws the signed-out word because that is the one every author will see on their own
+ *  published site, and the `title` says what the other state is. */
+function AccountLinkMark({ hint }: { hint: string }) {
+  return (
+    <span className="text-sm font-medium" title={hint}>
+      Sign in
+    </span>
+  );
+}
+
+/**
+ * The site's social row at its REAL size — the tenant's own accounts, as the live footer
+ * draws them.
+ *
+ * WHY THIS IS A CHROME MARK. It sits in a footer column beside the legal links, and the
+ * live control is a wrapped row of small circular ghost buttons about as tall as one
+ * line of text. Drawn as a page-sized skeleton it stood 146px tall in a 116px column,
+ * which is the exact footprint lie this file exists to stop.
+ *
+ * REAL DATA, like the brand mark and unlike the legal column. `site.social` is already
+ * in the canvas resolver root — `buildPreviewRoot` overlays it from the same chrome read
+ * that supplies the name and logo, and even overwrites it when empty — and nothing was
+ * drawing it. So the author sees the real accounts, in the real order, and can tell at a
+ * glance whether the footer is showing what they meant.
+ *
+ * THE EMPTY CASE DRAWS A SENTENCE, NOT A ROW. The live footer renders nothing at all
+ * until an account is added, so inventing three marks here would show a row the author
+ * never chose and cannot remove. `FrameMark` already settled this shape for a core whose
+ * field is not filled in yet: say which, and name where to fix it.
+ *
+ * An unknown platform ("Other", or a network with no glyph) draws its own name, exactly
+ * as the live `SocialLinks` does — a link is never silently dropped.
+ */
+function SocialLinksMark({ root, hint }: { root: unknown; hint: string }) {
+  const social = (root as { site?: { social?: unknown } })?.site?.social;
+  const items = Array.isArray(social)
+    ? social.filter(
+        (s): s is { platform: string; url: string } =>
+          typeof (s as { platform?: unknown })?.platform === 'string'
+      )
+    : [];
+
+  if (items.length === 0) {
+    return (
+      <span
+        className="border-base-content/25 text-base-content inline-flex items-center rounded-full border border-dashed px-3 py-1 text-sm"
+        title={hint}
+      >
+        Add your accounts under Site identity to show them here
+      </span>
+    );
+  }
+
+  return (
+    // The live row's own classes, so the footer column reflows here exactly as it will
+    // on the site. Spans rather than links: a click selects the node in the builder.
+    <span className="flex flex-wrap items-center gap-1" title={hint}>
+      {items.map((item, i) => {
+        const known = hasPlatformMark(item.platform);
+        return (
+          <span
+            key={`${String(i)}-${item.platform}`}
+            className={known ? 'btn btn-ghost btn-sm btn-circle' : 'btn btn-ghost btn-sm'}
+          >
+            {known ? (
+              <PlatformMark platform={item.platform} tone="ink" className="size-5" />
+            ) : (
+              item.platform
+            )}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+/** The save-for-later heart at its REAL size — a single control that sits beside the
+ *  Add-to-cart button, not a page-sized band.
+ *
+ *  It is filed under "Your shop" rather than "Your site", so `check:host-cores` does not
+ *  require a mark for it — but the reason the check exists applies exactly: a 40px
+ *  control drawn as a dashed page-width card blows the buy box apart on the canvas and
+ *  the author styles around a shape that will never exist. The rule is about SIZE, and
+ *  this one is small. */
+function SaveForLaterMark({ hint, label }: { hint: string; label: string }) {
+  return (
+    <span
+      className="rounded-field border-base-300 text-base-content inline-flex items-center gap-2 border px-3 py-2 text-base"
+      title={hint}
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+      </svg>
+      <span>{label}</span>
+    </span>
+  );
+}
+
 /** Build the studio's `renderHostNode`, closing over the canvas resolver root so the
  *  brand core can draw the tenant's real mark. Every other core draws a labelled
  *  skeleton keyed by its `component`; a registered-but-unhandled key still renders a
@@ -231,6 +357,12 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
     if (node.component === HOST_KEYS.siteThemeToggle) {
       return <ThemeToggleMark hint={meta?.hint ?? label} />;
     }
+    if (node.component === HOST_KEYS.siteAccountLink) {
+      return <AccountLinkMark hint={meta?.hint ?? label} />;
+    }
+    if (node.component === HOST_KEYS.siteSocialLinks) {
+      return <SocialLinksMark root={root} hint={meta?.hint ?? label} />;
+    }
     if (node.component === HOST_KEYS.sitePagination) {
       return <PagerMark hint={meta?.hint ?? label} />;
     }
@@ -242,6 +374,16 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
         <LegalLinksColumn
           heading={typeof node.props?.heading === 'string' ? node.props.heading : 'Legal'}
           hint={meta?.hint ?? label}
+        />
+      );
+    }
+    // Filed under "Your shop", but the size rule above is what decides how it draws,
+    // and this one is a single control beside the Add-to-cart button.
+    if (node.component === HOST_KEYS.commerceProductSave) {
+      return (
+        <SaveForLaterMark
+          hint={meta?.hint ?? label}
+          label={typeof node.props?.label === 'string' ? node.props.label : 'Save for later'}
         />
       );
     }

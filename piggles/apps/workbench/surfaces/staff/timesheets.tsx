@@ -80,6 +80,18 @@ function PersonRow({
   const unpriced = row.unpricedMinutes > 0;
   const waiting = row.submittedMinutes > 0;
 
+  // Built once and drawn in two places: the column at @md and up, and the fold
+  // under the name below it.
+  const stateBadge = waiting ? (
+    <Badge color="warning" variant="soft" size="sm">
+      {formatMinutes(row.submittedMinutes)} waiting
+    </Badge>
+  ) : row.approvedMinutes > 0 ? (
+    <Badge color="success" variant="soft" size="sm">
+      All approved
+    </Badge>
+  ) : null;
+
   return (
     <tr>
       <td className="w-8">
@@ -93,8 +105,14 @@ function PersonRow({
           }}
         />
       </td>
-      <td className="max-w-48 min-w-0">
-        <button type="button" className="link truncate text-left font-medium" onClick={onOpen}>
+      {/* The cell that GIVES, so the `truncate` below actually bites and the
+          Cost column is never the one pushed off the edge. */}
+      <td className="w-full max-w-0 min-w-56">
+        <button
+          type="button"
+          className="link block max-w-full truncate text-left font-medium"
+          onClick={onOpen}
+        >
           {row.name}
         </button>
         {row.openEntries > 0 ? (
@@ -107,19 +125,14 @@ function PersonRow({
             </Badge>
           </div>
         ) : null}
+        {/* Below @md the State column is gone, so it comes back here. Five
+            always-on columns held the table 90px past a 357px pane, and the one
+            pushed off the edge was COST: the money is the reason anybody opens
+            this screen before approving anything. */}
+        {stateBadge === null ? null : <div className="mt-1 @md:hidden">{stateBadge}</div>}
       </td>
       <td className="tabular-nums">{formatMinutes(row.totalMinutes)}</td>
-      <td>
-        {waiting ? (
-          <Badge color="warning" variant="soft" size="sm">
-            {formatMinutes(row.submittedMinutes)} waiting
-          </Badge>
-        ) : row.approvedMinutes > 0 ? (
-          <Badge color="success" variant="soft" size="sm">
-            All approved
-          </Badge>
-        ) : null}
-      </td>
+      <td className="hidden @md:table-cell">{stateBadge}</td>
       <td className="text-right">
         {unpriced ? (
           // NOT a number. This person's hours cannot be costed, and the only
@@ -433,7 +446,7 @@ export function TimesheetsSurface({ ctx }: { ctx: SurfaceContext }) {
                     <th />
                     <th>Who</th>
                     <th>Logged</th>
-                    <th>State</th>
+                    <th className="hidden @md:table-cell">State</th>
                     <th className="text-right">Cost</th>
                   </tr>
                 </thead>

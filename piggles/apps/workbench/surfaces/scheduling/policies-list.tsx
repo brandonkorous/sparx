@@ -152,7 +152,7 @@ export function PoliciesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(policy, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate font-medium">{policy.name}</span>
                   {/* Two lines rather than one joined by a dot: at 390px the join

@@ -50,10 +50,10 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
   const [reading, setReading] = useState(false);
 
   const start = useStartMigration();
-  const { data: catalogue } = useMigrationVendors();
+  const { data: catalog } = useMigrationVendors();
   const vendor = useMemo(
-    () => (catalogue?.vendors ?? []).find((entry) => entry.slug === vendorParam),
-    [catalogue, vendorParam]
+    () => (catalog?.vendors ?? []).find((entry) => entry.slug === vendorParam),
+    [catalog, vendorParam]
   );
 
   const onFile = useCallback(async (file: File) => {

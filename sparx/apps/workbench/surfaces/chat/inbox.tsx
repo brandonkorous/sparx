@@ -275,7 +275,14 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
             description={
               filtered
                 ? 'Try a different status, turn off “Mine”, or clear the search. Turn on “All sites” to look across every site you run.'
-                : 'When someone starts a chat on your site, it shows up here so you can reply. Add the chat box to your site from Chat settings.'
+                : // The chat box is not something a person adds. It mounts on
+                  // every page of a site whenever the Live chat app is on, and
+                  // this pane is itself gated on that app being on — so
+                  // "Add the chat box to your site from Chat settings" named an
+                  // action nobody takes, on a screen with no such control. 11 of
+                  // the 14 businesses running Live chat have no conversations
+                  // yet, and every one of them was sent looking for it.
+                  'The chat box is already on your site: it sits in the corner of every page while Live chat is on. When someone starts a chat, it shows up here so you can reply. Change how it looks and what it says in Chat settings.'
             }
           />
         ) : (
@@ -320,7 +327,7 @@ export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

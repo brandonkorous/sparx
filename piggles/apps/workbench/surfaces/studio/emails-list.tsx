@@ -17,6 +17,7 @@ import { PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useCreateEmail, useEmails, type EmailSummary } from '../../lib/studio/email-data';
 import { EmailRow } from './email-row';
+import { emailOriginNote } from './email-origin';
 
 const GLYPH = <Icon glyph={faEnvelope} className="size-6" aria-hidden />;
 
@@ -125,7 +126,15 @@ function EmailsTable({
       </thead>
       <tbody>
         {rows.map((email) => (
-          <EmailRow key={email.id} email={email} onOpen={onOpen} onOpenBeside={onOpenBeside} />
+          <EmailRow
+            key={email.id}
+            email={email}
+            // Two rows with one name have to be told apart, and the fact that
+            // does it is already in hand (issue 631).
+            origin={emailOriginNote(email, rows)}
+            onOpen={onOpen}
+            onOpenBeside={onOpenBeside}
+          />
         ))}
       </tbody>
     </Table>

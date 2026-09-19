@@ -207,7 +207,7 @@ export function shiftState(status: string): { label: string; tone: Tone } {
     case 'published':
       return { label: 'Published', tone: 'success' };
     case 'cancelled':
-      return { label: 'Cancelled', tone: 'error' };
+      return { label: 'Canceled', tone: 'error' };
     default:
       return { label: 'Draft', tone: 'neutral' };
   }
@@ -307,7 +307,7 @@ export function commissionState(status: string): { label: string; tone: Tone } {
     case 'approved':
       return { label: 'Approved', tone: 'info' };
     case 'void':
-      return { label: 'Cancelled', tone: 'neutral' };
+      return { label: 'Canceled', tone: 'neutral' };
     default:
       return { label: 'Pending', tone: 'warning' };
   }

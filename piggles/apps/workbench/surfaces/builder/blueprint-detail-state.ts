@@ -20,6 +20,7 @@ import { useBlueprintInstalls, type Blueprint, type BlueprintInstall } from './b
 import { useUpdatePlan, type UpdatePlan } from './blueprints-update';
 import { installState } from './blueprints-words';
 import { NEW_SITE, useNewSiteTarget, type NewSiteTarget } from './blueprint-new-site';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 export interface BlueprintTarget {
   /** Site id → name, for the picker. */
@@ -49,6 +50,7 @@ export interface BlueprintTarget {
 }
 
 export function useBlueprintTarget(blueprint: Blueprint): BlueprintTarget {
+  const siteIsDark = useSiteIsDark();
   const { data: sites } = useSites();
   const activeSiteId = useActivePropertyId();
   const { data: modules } = useModuleStates();
@@ -120,7 +122,7 @@ export function useBlueprintTarget(blueprint: Blueprint): BlueprintTarget {
     targetPageCount,
     chooseSite: setChosen,
     current,
-    status: current ? installState(current.status) : null,
+    status: current ? installState(current.status, siteIsDark) : null,
     updateAvailable,
     plan,
     offModules,

@@ -345,7 +345,7 @@ function LoadedModal({
         {booking.status === 'cancelled' && booking.cancellationReason ? (
           <Alert color="error">
             <AlertContent>
-              <AlertTitle>Cancelled</AlertTitle>
+              <AlertTitle>Canceled</AlertTitle>
               <AlertDescription>{booking.cancellationReason}</AlertDescription>
             </AlertContent>
           </Alert>

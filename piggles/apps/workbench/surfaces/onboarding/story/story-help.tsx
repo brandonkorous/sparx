@@ -56,7 +56,7 @@ export function StoryHelp(): ReactNode {
           }
         >
           <span className="font-medium">Tap a dashed +</span> to add another way people buy, or
-          another thing you do. Each one switches on the module it needs.
+          another thing you do. Each one switches on the app it needs.
         </HelpRow>
 
         <HelpRow
@@ -67,7 +67,7 @@ export function StoryHelp(): ReactNode {
           }
         >
           <span className="font-medium">Remove anything with its ✕</span>: your story only carries
-          what you actually do, and dropping it drops that module from your plan.
+          what you actually do, and dropping it drops that app from your plan.
         </HelpRow>
       </ul>
     </aside>

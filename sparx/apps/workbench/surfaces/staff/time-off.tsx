@@ -26,6 +26,7 @@ import {
   Field,
   FieldControl,
   FieldLabel,
+  FieldStatus,
   Filter,
   FilterItem,
   Heading,
@@ -42,6 +43,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { timeOffEmptyWords } from './time-off-empty';
 import {
   staffErrorMessage,
   useDecideTimeOff,
@@ -59,6 +61,8 @@ import {
   timeOffState,
   toDateInput,
 } from './format';
+import { NOT_A_DATE, dayEndLocal, dayStartLocal } from '../../lib/today';
+import { ActionLabel } from '../../components/action-label';
 
 const FILTERS = [
   { value: 'requested', label: 'Waiting on you' },
@@ -93,6 +97,9 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const items = requests.data?.items ?? [];
   const waiting = requests.data?.requestedCount ?? 0;
+  // Every request ever, whatever this view is filtered to. An empty list is
+  // two opposite facts and only the total tells them apart.
+  const emptyWords = timeOffEmptyWords(filter, requests.data?.totalCount ?? 0);
 
   const reset = () => {
     setComposing(false);
@@ -102,15 +109,21 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
     setReason('');
   };
 
+  // Time off starts at the person's own midnight, not UTC — see `lib/today`.
+  // Both halves can hold something that is not a date, so both are checked.
+  const startIso = dayStartLocal(startsAt);
+  const endIso = dayEndLocal(endsAt);
+  const dateError = startIso === null || endIso === null ? NOT_A_DATE : null;
+
   const submit = () => {
     const person = staffMemberId || (people.data?.items[0]?.id ?? '');
-    if (person === '') return;
+    if (person === '' || startIso === null || endIso === null) return;
     create.mutate(
       {
         staffMemberId: person,
         kind,
-        startsAt: new Date(`${startsAt}T00:00:00`).toISOString(),
-        endsAt: new Date(`${endsAt}T23:59:59`).toISOString(),
+        startsAt: startIso,
+        endsAt: endIso,
         reason: reason.trim() === '' ? null : reason.trim(),
       },
       {
@@ -200,7 +213,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Log time off</span>
+            <ActionLabel>Log time off</ActionLabel>
           </Button>
         }
         controls={
@@ -259,12 +272,8 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="flex h-full items-center justify-center p-8">
             <EmptyState
               icon={<CheckCircle2 className="size-6" aria-hidden />}
-              title={filter === 'requested' ? 'Nothing waiting on you' : 'No requests yet'}
-              description={
-                filter === 'requested'
-                  ? 'Every request has been answered. Switch to Everything to see what has already been decided.'
-                  : 'When someone asks for time off (or you log it for them), it appears here, and approved dates show on the schedule.'
-              }
+              title={emptyWords.title}
+              description={emptyWords.detail}
             />
           </div>
         ) : (
@@ -477,6 +486,8 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
               </Field>
             </div>
 
+            {dateError ? <FieldStatus status="error">{dateError}</FieldStatus> : null}
+
             <Field>
               <FieldLabel>Reason</FieldLabel>
               <FieldControl
@@ -500,7 +511,7 @@ export function TimeOffSurface({ ctx }: { ctx: SurfaceContext }) {
             <Button
               size="sm"
               color="module"
-              disabled={endsAt < startsAt}
+              disabled={endsAt < startsAt || dateError !== null}
               loading={create.isPending}
               onClick={submit}
             >

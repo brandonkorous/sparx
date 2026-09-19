@@ -47,6 +47,7 @@ import {
   type SortDir,
 } from './dropship-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { supplierProductsEmptyWords } from './dropship-empty';
 
 type StatusFilter = 'all' | 'imported' | 'available';
 
@@ -277,6 +278,12 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
     </th>
   );
 
+  // Bound once each. Read four times for two empty states, with the button's
+  // words hardcoded beside them, is how the button kept saying "Connect a
+  // supplier" after the sentence above it stopped.
+  const noneConnected = supplierProductsEmptyWords(0, false);
+  const nothingToShow = supplierProductsEmptyWords(1, anyFilter);
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
@@ -355,8 +362,8 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : noSuppliers ? (
           <EmptyState
             icon={<Package className="size-6" aria-hidden />}
-            title="No suppliers connected"
-            description="Supplier products appear once you connect a supplier and sync its catalog. Connect one to start importing products to sell."
+            title={noneConnected.title}
+            description={noneConnected.detail}
             actions={
               <Button
                 size="sm"
@@ -365,7 +372,7 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   ctx.open('dropship.supplier.detail', { id: 'new' }, { target: targetFor(event) });
                 }}
               >
-                Connect a supplier
+                {noneConnected.connect}
               </Button>
             }
           />
@@ -376,12 +383,8 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Package className="size-6" aria-hidden />}
-            title={anyFilter ? 'No products match those filters' : 'Nothing in this catalog yet'}
-            description={
-              anyFilter
-                ? 'Try a different word, or switch the filters back to All.'
-                : 'Sync a supplier from its page to pull its catalog in. Once it has synced, its products show here ready to import.'
-            }
+            title={nothingToShow.title}
+            description={nothingToShow.detail}
           />
         ) : (
           <Table size="sm" hover>
@@ -438,7 +441,7 @@ export function DropshipProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <Text className="hidden shrink-0 px-1 text-sm @md:block">
           Import a product to add it to your catalog.
         </Text>
-        <RowOpenHint what="an imported product to open it" />
+        {rows.length > 0 ? <RowOpenHint what="an imported product to open it" /> : null}
       </div>
     </div>
   );

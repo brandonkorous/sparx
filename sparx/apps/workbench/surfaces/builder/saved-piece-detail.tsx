@@ -41,6 +41,8 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
+import { useActivePropertyId } from '../../lib/api/shell-data';
+import { namesSites } from './saved-piece-usage-words';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -433,6 +435,17 @@ function ManagePiece({
 
 /* ── Where it's used ────────────────────────────────────────────────────── */
 
+/**
+ * WHICH "CONTACT"?
+ *
+ * A saved piece belongs to the whole tenant; a page belongs to exactly one site.
+ * So this scan legitimately crosses sites, and a tenant running several from one
+ * starter has the same page name on each of them — one measured account has six
+ * pages called "Contact". A list of names alone is six identical rows.
+ *
+ * Each row therefore names its site, but only when that tells the reader
+ * something: see `namesSites` for the three cases.
+ */
 function UsagePanel({
   usage,
   isPending,
@@ -442,17 +455,19 @@ function UsagePanel({
   isPending: boolean;
   isError: boolean;
 }) {
+  const activeSiteId = useActivePropertyId();
   const rows = usage
     ? [
         ...usage.pages.map((page) => ({ ...page, kind: 'Page' as const })),
         ...usage.layouts.map((layout) => ({ ...layout, kind: 'Layout' as const })),
       ]
     : [];
+  const showSite = namesSites(rows, activeSiteId);
 
   return (
     <FormSection
       title="Where it's used"
-      description="Every page and layout this piece appears on. Change it here or in the editor and all of these update together."
+      description="Every page and layout this piece appears on, across every site on this account. Change it here or in the editor and all of these update together."
     >
       {isError ? (
         <Text className="text-sm">Could not check where this is used just now.</Text>
@@ -477,8 +492,14 @@ function UsagePanel({
               ) : (
                 <LayoutTemplate className="size-4 shrink-0" aria-hidden />
               )}
-              <Text className="min-w-0 flex-1 truncate font-medium">{row.name}</Text>
-              <Badge color="neutral" variant="soft" size="sm" className="shrink-0">
+              <span className="flex min-w-0 flex-1 flex-col">
+                <Text className="truncate font-medium">{row.name}</Text>
+                {showSite ? <Text className="truncate text-sm">{row.siteName}</Text> : null}
+              </span>
+              {/* Colorless, not grey-by-name. "Page" and "Layout" are two kinds of
+                  thing and `neutral` says neither of them; a bare badge takes the
+                  surface's own ink and stays right in both themes. */}
+              <Badge variant="soft" size="sm" className="shrink-0">
                 {row.kind}
               </Badge>
             </li>

@@ -59,6 +59,7 @@ import {
 } from './data';
 import { productCopy } from '../../lib/product';
 import { SaveFailure } from '@/components/save-failure';
+import { awayMessageNote, chatIsAwayAllWeek, hoursNote, openDayCount } from './availability-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -299,6 +300,11 @@ export function ChatSettingsSurface() {
   };
 
   const hoursOn = draft.operatingHours !== null;
+  // How many days actually have a window. A shop that turns the switch on and
+  // stops there has closed its chat every hour of the week, because
+  // `isWithinOperatingHours` answers false for a day with no window — and the
+  // screen said "outside THESE hours" about hours that did not exist.
+  const openDays = openDayCount(draft.operatingHours?.days);
   const failure = update.isError
     ? chatErrorMessage(update.error, 'Could not save your settings. Nothing was changed.')
     : null;
@@ -436,9 +442,7 @@ export function ChatSettingsSurface() {
                   />
                 }
               />
-              <FieldDescription>
-                Shown when you are outside your available hours, so people know what to expect.
-              </FieldDescription>
+              <FieldDescription>{awayMessageNote(hoursOn, openDays)}</FieldDescription>
             </Field>
           </FormSection>
 
@@ -457,12 +461,27 @@ export function ChatSettingsSurface() {
                   />
                 }
               />
-              <FieldDescription>
-                {hoursOn
-                  ? 'Outside these hours the chat shows your away message instead of a reply box.'
-                  : 'Chat is always available. There is no away state.'}
-              </FieldDescription>
+              <FieldDescription>{hoursNote(hoursOn, openDays)}</FieldDescription>
             </Field>
+
+            {/* The switch is on and no day is. `isWithinOperatingHours` answers
+                false for a day with no window, so the chat is away every hour of
+                the week and every visitor gets the away message — which is the
+                one state on this screen where a shop believes it is open and is
+                not. The sentence above says it; this says it where she is about
+                to press Save. */}
+            {chatIsAwayAllWeek(hoursOn, openDays) ? (
+              <Alert color="warning">
+                <AlertContent>
+                  <AlertTitle>Your chat is away all week</AlertTitle>
+                  <AlertDescription>
+                    You have turned hours on but not switched on a single day, so nobody can start a
+                    chat at any time. Switch on the days you answer below, or turn hours back off to
+                    be available all the time.
+                  </AlertDescription>
+                </AlertContent>
+              </Alert>
+            ) : null}
 
             {hoursOn && draft.operatingHours ? (
               <HoursEditor

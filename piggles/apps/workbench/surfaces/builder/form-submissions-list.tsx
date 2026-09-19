@@ -220,7 +220,7 @@ export function FormSubmissionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setCursors([]);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

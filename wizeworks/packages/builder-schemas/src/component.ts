@@ -236,12 +236,33 @@ export interface SilicaPieceDto {
   root: SilicaNode;
 }
 
+/**
+ * One page or layout a component sits on, and WHICH SITE that is.
+ *
+ * The site is carried because a component library is TENANT-scoped while pages
+ * are per-site: one business's seven sites can each hold a page called
+ * "Contact", and a where-used list naming only the page is six identical rows
+ * with nothing to choose between them. It is also what lets a console open the
+ * right one — a page id from another site opened in this workspace resolves to
+ * nothing and reads as "this page has been deleted".
+ */
+export interface ComponentPlacementDto {
+  id: string;
+  name: string;
+  /** The web property this page or layout belongs to. */
+  siteId: string;
+  /** Its customer-facing name, for the row. Falls back to the id if the property
+   *  row has gone — a placement outliving its site is a broken state worth
+   *  seeing, not one to hide behind a blank. */
+  siteName: string;
+}
+
 /** Where a component is placed — the delete-impact / where-used read (docs/53
  *  §6). A page/layout appears if EITHER its draft or published tree references the
  *  component, so deleting it can't silently break the live site. */
 export interface ComponentUsageDto {
-  pages: { id: string; name: string }[];
-  layouts: { id: string; name: string }[];
+  pages: ComponentPlacementDto[];
+  layouts: ComponentPlacementDto[];
   total: number;
   /**
    * How many of those placements would REFUSE a delete.

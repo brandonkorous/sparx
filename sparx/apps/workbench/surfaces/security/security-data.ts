@@ -361,42 +361,6 @@ export function activityKindLabel(action: string): string {
   return verb.charAt(0).toUpperCase() + verb.slice(1);
 }
 
-/**
- * Turn a raw user-agent string into "Chrome on macOS" — the two facts a person
- * actually recognises about a device. Best-effort and deliberately coarse: the
- * goal is "is this the laptop I'm on or something I don't know?", not a forensic
- * breakdown. An unparseable or absent agent falls back to an honest "Unknown
- * device" rather than a made-up guess.
- */
-export function describeDevice(userAgent: string | null): string {
-  if (!userAgent || userAgent.trim() === '') return 'Unknown device';
-
-  const browser = /edg\//i.test(userAgent)
-    ? 'Edge'
-    : /opr\/|opera/i.test(userAgent)
-      ? 'Opera'
-      : /chrome|crios/i.test(userAgent)
-        ? 'Chrome'
-        : /firefox|fxios/i.test(userAgent)
-          ? 'Firefox'
-          : /safari/i.test(userAgent)
-            ? 'Safari'
-            : null;
-
-  const os = /windows/i.test(userAgent)
-    ? 'Windows'
-    : /iphone|ipad|ipod/i.test(userAgent)
-      ? 'iOS'
-      : /mac os x|macintosh/i.test(userAgent)
-        ? 'macOS'
-        : /android/i.test(userAgent)
-          ? 'Android'
-          : /linux/i.test(userAgent)
-            ? 'Linux'
-            : null;
-
-  if (browser && os) return `${browser} on ${os}`;
-  if (browser) return browser;
-  if (os) return os;
-  return 'Unknown device';
-}
+// `describeDevice` moved to ./where-from-words, beside the address it is always
+// shown next to. It is re-exported here so every existing caller is unchanged.
+export { describeDevice } from './where-from-words';

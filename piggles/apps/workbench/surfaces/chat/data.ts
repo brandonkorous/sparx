@@ -80,6 +80,9 @@ export interface QuickReply {
   title: string;
   body: string;
   shortcut: string | null;
+  /** One site's id, or null for every site. The list mixes both tiers, so this
+   *  is what tells them apart — and what a delete has to reckon with. */
+  propertyId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -385,6 +388,32 @@ export function useCreateQuickReply() {
       shortcut?: string;
       propertyId?: string | null;
     }) => api.post<QuickReply>('/v1/chat/quick-replies', input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: CHAT_KEYS.quickReplies });
+    },
+  });
+}
+
+/**
+ * Change a saved reply in place.
+ *
+ * Only the fields she touched go over the wire. An omitted `propertyId` leaves
+ * the reply on whichever sites already offer it — fixing a word must never move
+ * a reply between her businesses.
+ */
+export function useUpdateQuickReply() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      ...patch
+    }: {
+      id: string;
+      title?: string;
+      body?: string;
+      shortcut?: string;
+      propertyId?: string | null;
+    }) => api.patch<QuickReply>(`/v1/chat/quick-replies/${id}`, patch),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: CHAT_KEYS.quickReplies });
     },

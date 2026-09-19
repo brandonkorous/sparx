@@ -226,7 +226,7 @@ export function partnerState(person: PartnerPerson): {
   if (person.kind === 'invitation') {
     if (person.status === 'accepted') return { label: 'Joining', tone: 'success' };
     if (person.status === 'revoked' || person.status === 'cancelled') {
-      return { label: 'Cancelled', tone: 'neutral' };
+      return { label: 'Canceled', tone: 'neutral' };
     }
     if (person.status === 'expired' || new Date(person.expiresAt).getTime() < Date.now()) {
       return { label: 'Invitation expired', tone: 'error' };

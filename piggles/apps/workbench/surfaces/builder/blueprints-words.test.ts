@@ -8,7 +8,7 @@
 // as what it must.
 
 import { describe, expect, it } from 'vitest';
-import { installImpact } from './blueprints-words';
+import { installImpact, installState } from './blueprints-words';
 
 describe('installImpact', () => {
   it('reassures only when the site is genuinely empty', () => {
@@ -49,5 +49,26 @@ describe('installImpact', () => {
     expect(impact.pages).toBeNull();
     expect(impact.sentence).toContain('is replaced by this design');
     expect(impact.sentence).not.toMatch(/no pages yet/);
+  });
+});
+
+describe('a design that is live on a dark site', () => {
+  it('says visitors see it while the site is served', () => {
+    expect(installState('live', false).detail).toContain('visitors see it on your site now');
+  });
+
+  it('stops saying so once the site is offline', () => {
+    const state = installState('live', true);
+    // The badge still says Live, because the design IS the published one.
+    expect(state.label).toBe('Live');
+    expect(state.tone).toBe('success');
+    expect(state.detail).not.toContain('visitors');
+    expect(state.detail).toContain('the moment your site is back');
+  });
+
+  it('leaves every other install state alone, dark or not', () => {
+    for (const status of ['installed', 'running', 'failed', 'anything-else']) {
+      expect(installState(status, true), status).toEqual(installState(status, false));
+    }
   });
 });

@@ -482,8 +482,10 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>Publishing needs the Certified tier</AlertTitle>
                 <AlertDescription>
-                  You can build and save this cohort as a draft now. Publishing it to the public
-                  sparx directory unlocks when you reach the Certified partner tier.
+                  {productCopy(
+                    'partner.bootcamp.draftOnly',
+                    'You can build and save this cohort as a draft now. Publishing it to the public sparx directory unlocks when you reach the Certified partner tier.'
+                  )}
                 </AlertDescription>
               </AlertContent>
             </Alert>
@@ -494,8 +496,10 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <AlertContent>
                 <AlertTitle>This bootcamp is live</AlertTitle>
                 <AlertDescription>
-                  It’s on the public directory and taking sign-ups. Each on-platform sign-up becomes
-                  a lead in your CRM.
+                  {productCopy(
+                    'partner.bootcamp.liveHint',
+                    'It’s on the public directory and taking sign-ups. Each on-platform sign-up becomes a lead in your CRM.'
+                  )}
                 </AlertDescription>
               </AlertContent>
               <Button
@@ -733,8 +737,10 @@ export function BootcampDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               />
               <FieldDescription>
-                Sign-ups on sparx drop a lead straight into your CRM. Choose your own link if you
-                take registrations somewhere else.
+                {productCopy(
+                  'partner.bootcamp.signupHelp',
+                  'Sign-ups on sparx drop a lead straight into your CRM. Choose your own link if you take registrations somewhere else.'
+                )}
               </FieldDescription>
             </Field>
             {form.registrationMode === 'external' ? (

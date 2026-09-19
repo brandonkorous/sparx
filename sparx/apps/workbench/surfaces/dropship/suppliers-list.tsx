@@ -312,7 +312,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint what="a supplier to manage it" />
+        {rows.length > 0 ? <RowOpenHint what="a supplier to manage it" /> : null}
         <Text className="hidden shrink-0 px-1 text-sm @md:block">
           The browse icon opens what a supplier offers.
         </Text>

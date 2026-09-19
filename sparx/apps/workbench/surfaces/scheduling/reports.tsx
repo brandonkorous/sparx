@@ -132,7 +132,7 @@ const OUTCOME_DEFS = [
   { key: 'confirmed', label: 'Confirmed, still to come', tone: 'info' },
   { key: 'inProgress', label: 'Happening now', tone: 'module' },
   { key: 'requested', label: 'Waiting for you to confirm', tone: 'warning' },
-  { key: 'cancelled', label: 'Cancelled', tone: 'neutral' },
+  { key: 'cancelled', label: 'Canceled', tone: 'neutral' },
   { key: 'noShow', label: 'Did not turn up', tone: 'danger' },
 ] as const satisfies readonly {
   key: keyof SchedulingReportTotals;

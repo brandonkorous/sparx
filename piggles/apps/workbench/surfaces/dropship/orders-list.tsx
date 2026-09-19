@@ -17,7 +17,15 @@
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
-import { Badge, Card, EmptyState, SearchInput, Select, Timestamp } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  SearchInput,
+  Select,
+  Timestamp,
+} from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faArrowDown, faArrowUp, faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -35,6 +43,7 @@ import {
   type SortDir,
 } from './dropship-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { supplierOrdersEmptyWords } from './dropship-empty';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -147,6 +156,11 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const anyFilter = needle !== '' || status !== 'all' || supplierId !== 'all';
 
+  // An empty list of supplier orders means "nothing has been routed" or "there
+  // is nobody to route to", and only the supplier count tells them apart. The
+  // list was already fetched for the filter above, so this costs nothing.
+  const empty = supplierOrdersEmptyWords(supplierList.length, anyFilter);
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
@@ -245,11 +259,24 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faTruck} className="size-6" aria-hidden />}
-            title={anyFilter ? 'No orders match those filters' : 'No supplier orders yet'}
-            description={
-              anyFilter
-                ? 'Try a different word, or switch the filters back to All.'
-                : 'When a customer buys a product one of your suppliers ships, the order is routed to that supplier and appears here with its tracking. Nothing has been routed yet.'
+            title={empty.title}
+            description={empty.detail}
+            actions={
+              empty.connect !== null ? (
+                <Button
+                  size="sm"
+                  color="module"
+                  onClick={(event) => {
+                    ctx.open(
+                      'dropship.supplier.detail',
+                      { id: 'new' },
+                      { target: targetFor(event) }
+                    );
+                  }}
+                >
+                  {empty.connect}
+                </Button>
+              ) : undefined
             }
           />
         ) : (
@@ -347,7 +374,9 @@ export function DropshipOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint what="an order to see its items and tracking" className="pb-1" />
+        {rows.length > 0 ? (
+          <RowOpenHint what="an order to see its items and tracking" className="pb-1" />
+        ) : null}
       </div>
     </div>
   );

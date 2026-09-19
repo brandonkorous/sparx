@@ -62,6 +62,7 @@ import {
   toDateInput,
   weekRange,
 } from './format';
+import { NOT_A_DATE, dayTimeLocal } from '../../lib/today';
 
 const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -84,11 +85,11 @@ function shiftMinutes(shift: Shift): number {
   );
 }
 
-/** `2026-03-02` + `08:00` → an ISO instant. Kept explicit rather than relying on
- *  `new Date('2026-03-02T08:00')`, which is parsed in LOCAL time by every engine
- *  and would silently move a shift for anyone not on UTC. */
-function instant(day: string, time: string): string {
-  return new Date(`${day}T${time}:00`).toISOString();
+/** `2026-03-02` + `08:00` → an ISO instant, or `null` when either box holds
+ *  something it should not. Local time deliberately: a shift starts when the
+ *  person's morning starts. See `lib/today`. */
+function instant(day: string, time: string): string | null {
+  return dayTimeLocal(day, time);
 }
 
 interface ShiftDialogState {
@@ -183,12 +184,18 @@ export function ScheduleSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const doSave = () => {
     if (!editing || editing.staffMemberId === '') return;
+    const startsAt = instant(editing.day, editing.start);
+    const endsAt = instant(editing.day, editing.end);
+    if (startsAt === null || endsAt === null) {
+      toast.add({ title: 'Check the day and the times', description: NOT_A_DATE, type: 'error' });
+      return;
+    }
     saveShift.mutate(
       {
         id: editing.id,
         staffMemberId: editing.staffMemberId,
-        startsAt: instant(editing.day, editing.start),
-        endsAt: instant(editing.day, editing.end),
+        startsAt,
+        endsAt,
         label: editing.label.trim() === '' ? null : editing.label.trim(),
       },
       {

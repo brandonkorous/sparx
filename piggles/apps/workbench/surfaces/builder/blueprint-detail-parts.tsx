@@ -28,6 +28,7 @@ import {
 } from './blueprints-words';
 import type { Blueprint, BlueprintInstall } from './blueprints-data';
 import type { UpdatePlan } from './blueprints-update';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 export function BlueprintPreview({ blueprint }: { blueprint: Blueprint }) {
   if (!blueprint.preview) {
@@ -58,7 +59,8 @@ export function InstallStatusAlert({
   install: BlueprintInstall;
   targetName: string;
 }) {
-  const state = installState(install.status);
+  const siteIsDark = useSiteIsDark();
+  const state = installState(install.status, siteIsDark);
   const when =
     install.status === 'live' && install.live_at
       ? ` Live since ${formatDate(install.live_at)}.`

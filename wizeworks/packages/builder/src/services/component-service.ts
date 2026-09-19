@@ -507,16 +507,43 @@ export async function expandTreeForPublish(
  * Scans within the caller's transaction so it shares the publish/delete
  * consistency snapshot.
  */
+/**
+ * Attach each placement's site to it.
+ *
+ * Exported for its test: this is the part that can be wrong, and it has no
+ * database in it. A placement that cannot find its site still says WHICH one, by
+ * id — a blank there would read as "no site", which is not a state a page can be
+ * in, and a placement outliving its site is a broken state worth seeing rather
+ * than one to hide ([[feedback_never_present_absence_as_measurement]]).
+ */
+export function withSites(
+  rows: readonly { id: string; name: string; propertyId: string }[],
+  siteNames: ReadonlyMap<string, string>
+): ComponentUsageDto['pages'] {
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    siteId: row.propertyId,
+    siteName: siteNames.get(row.propertyId) ?? row.propertyId,
+  }));
+}
+
 async function scanUsages(tx: Prisma.TransactionClient, key: string): Promise<ComponentUsageDto> {
   const symbolId = tenantSymbolId(key);
   const refsFor = (tree: unknown): { key: string; version: number | null }[] =>
     collectComponentRefs(tree as BuilderNode).filter((r) => r.key === key);
   const usesKey = (tree: unknown): boolean => refsFor(tree).length > 0;
+  // `propertyId` is selected because this scan is TENANT-wide while pages are
+  // per-site: a component library is shared across a business's sites, so a hit
+  // can legitimately be on a site other than the one the caller is standing in.
+  // Without it the answer is a list of page NAMES, and one business here has six
+  // pages called "Contact".
   const [pages, layouts] = [
     await tx.builderPage.findMany({
       select: {
         id: true,
         name: true,
+        propertyId: true,
         draftTree: true,
         publishedTree: true,
         silicaDraftTree: true,
@@ -527,6 +554,7 @@ async function scanUsages(tx: Prisma.TransactionClient, key: string): Promise<Co
       select: {
         id: true,
         name: true,
+        propertyId: true,
         draftTree: true,
         publishedTree: true,
         silicaDraftTree: true,
@@ -556,9 +584,22 @@ async function scanUsages(tx: Prisma.TransactionClient, key: string): Promise<Co
     for (const r of refsFor(p.draftTree)) if (r.version != null) pinned.add(r.version);
   for (const l of layouts)
     for (const r of refsFor(l.draftTree)) if (r.version != null) pinned.add(r.version);
+  // One read for the names, over the sites actually hit — not one per row, and
+  // not every site the business owns.
+  const siteIds = [...new Set([...pageHits, ...layoutHits].map((r) => r.propertyId))];
+  const sites = new Map(
+    siteIds.length === 0
+      ? []
+      : (
+          await tx.property.findMany({
+            where: { id: { in: siteIds } },
+            select: { id: true, name: true },
+          })
+        ).map((site) => [site.id, site.name] as const)
+  );
   return {
-    pages: pageHits.map((p) => ({ id: p.id, name: p.name })),
-    layouts: layoutHits.map((l) => ({ id: l.id, name: l.name })),
+    pages: withSites(pageHits, sites),
+    layouts: withSites(layoutHits, sites),
     total: pageHits.length + layoutHits.length,
     blocking,
     pinnedVersions: [...pinned].sort((a, b) => a - b),

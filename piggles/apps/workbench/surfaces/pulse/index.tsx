@@ -106,8 +106,14 @@ export function PulseSurface({ ctx }: { ctx: SurfaceContext }) {
                   {finished.length > FINISHED_SHOWN ? (
                     // Says what is being withheld rather than trailing off — a
                     // list that silently stops reads as "that's all of them".
+                    //
+                    // "app", not "module": Piggles has no modules and does not
+                    // price by them, and the lexicon bans the word outright. It
+                    // survived here because the sentence has a value in the
+                    // middle of it, which is the one shape check:plain-words
+                    // could not read until it was taught to.
                     <Text className="text-sm">
-                      The {String(FINISHED_SHOWN)} most recent. Older runs live in the module that
+                      The {String(FINISHED_SHOWN)} most recent. Older runs live in the app that
                       started them.
                     </Text>
                   ) : null}

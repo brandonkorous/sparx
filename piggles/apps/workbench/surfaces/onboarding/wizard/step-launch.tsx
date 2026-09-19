@@ -202,7 +202,7 @@ export function StepLaunch({
         <ValuePoint
           icon={<Icon glyph={faArrowTrendUp} className="text-module size-4" aria-hidden />}
           title="Built to grow with you"
-          body="From your first sale to enterprise volume on the same platform, and an AI-native API so it can all be run in plain English."
+          body="From your first sale to as big as you get, in the same place. And you can point an AI assistant at it and run the whole thing by asking."
         />
       </div>
 

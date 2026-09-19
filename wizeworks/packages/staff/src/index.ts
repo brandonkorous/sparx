@@ -94,6 +94,7 @@ export {
   decideTimeOff,
   deleteShift,
   listShifts,
+  countTimeOff,
   listTimeOff,
   publishShifts,
   requestTimeOff,

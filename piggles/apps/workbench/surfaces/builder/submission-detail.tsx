@@ -63,6 +63,7 @@ import {
   submitterLabel,
 } from './form-submissions-words';
 import { submissionCsvName, submissionToCsv } from './form-submissions-csv';
+import { contextRow } from './submission-context-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -535,14 +536,9 @@ function contextValue(key: string, value: unknown): string {
   }
 }
 
-/** Friendly labels for the captured request context, in the words a business
- *  owner reads rather than the raw technical key. Anything unmapped falls back to
- *  a humanised key, so a future context field still shows up — just less prettily. */
-const CONTEXT_LABELS: Record<string, string> = {
-  referrer: 'Page they came from',
-  userAgent: 'Their browser',
-  ip: 'Their IP address',
-};
+// The labels and the two fields that must never be printed raw moved to
+// ./submission-context-words, so they can be tested and so the address and the
+// browser read the way the Devices card already reads them (issue 628).
 
 function SourceCard({ submission, site }: { submission: FormSubmission; site: string | null }) {
   const named = formName(submission);
@@ -555,10 +551,8 @@ function SourceCard({ submission, site }: { submission: FormSubmission; site: st
     ['Received', formatDateTime(submission.createdAt)],
   ];
   for (const [key, value] of Object.entries(submission.context)) {
-    // `submittedAt` is the same instant as "Received" above — don't say it twice.
-    if (key === 'submittedAt') continue;
-    const text = contextValue(key, value);
-    if (text.trim() !== '') rows.push([CONTEXT_LABELS[key] ?? humanizeKey(key), text]);
+    const row = contextRow(key, value, contextValue);
+    if (row) rows.push([row.label, row.value]);
   }
 
   return (

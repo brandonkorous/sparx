@@ -26,23 +26,8 @@ import {
 import { PublishChecks } from './publish-checks';
 import { PublishGaps } from './publish-gaps';
 import { PublishReleases } from './publish-releases';
-
-/** What is outstanding, in one sentence someone can act on. */
-function waiting(state: PublishState): string {
-  if (state.neverPublished) {
-    return 'Your website has never been published. Nobody can see it yet.';
-  }
-  if (!state.hasUnpublished) return 'Everything you have saved is live.';
-
-  const parts: string[] = [];
-  if (state.unpublishedPages > 0) {
-    parts.push(
-      `${String(state.unpublishedPages)} ${state.unpublishedPages === 1 ? 'page has' : 'pages have'} changes`
-    );
-  }
-  if (state.frameUnpublished) parts.push('your header and footer have changes');
-  return `${parts.join(', and ')} that visitors are not seeing yet.`;
-}
+import { waitingLine } from './publish-words';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 export function PublishPaneSurface() {
   const state = usePublishState();
@@ -103,11 +88,14 @@ function Waiting({
   publishing: boolean;
   onPublish: () => void;
 }) {
+  // Every sentence on this pane is written about VISITORS, and a suspended site
+  // serves an overlay rather than its pages — so there are none to speak of.
+  const siteIsDark = useSiteIsDark();
   return (
     <section className="bg-base-100 rounded-lg p-3 shadow-sm">
       <div className="flex flex-wrap items-center gap-3">
         <p className="text-base-content min-w-0 flex-1">
-          {state ? waiting(state) : 'We could not check what is live right now.'}
+          {state ? waitingLine(state, siteIsDark) : 'We could not check what is live right now.'}
         </p>
         <Button color="primary" disabled={publishing || !state?.hasUnpublished} onClick={onPublish}>
           <Icon glyph={faCloudArrowUp} className="size-4" aria-hidden />

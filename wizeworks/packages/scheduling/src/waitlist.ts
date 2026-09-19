@@ -9,6 +9,7 @@
 // tick drives auto-offer (checks live availability) + the offer email + expiry.
 
 import {
+  nameSearchClauses,
   withTenant,
   type Booking,
   type Prisma,
@@ -125,13 +126,16 @@ export async function listWaitlistDetailed(
     const base = waitlistBaseWhere(opts);
     let where: Prisma.WaitlistEntryWhereInput = base;
     if (needle) {
+      // Every typed word has to land somewhere, so a whole name finds the
+      // person waiting: a name is two columns and one string. See
+      // `nameSearchClauses`.
       const matched = await tx.customer.findMany({
         where: {
-          OR: [
-            { firstName: { contains: needle, mode: 'insensitive' } },
-            { lastName: { contains: needle, mode: 'insensitive' } },
-            { email: { contains: needle, mode: 'insensitive' } },
-          ],
+          AND: nameSearchClauses(needle, (term) => [
+            { firstName: { contains: term, mode: 'insensitive' as const } },
+            { lastName: { contains: term, mode: 'insensitive' as const } },
+            { email: { contains: term, mode: 'insensitive' as const } },
+          ]),
         },
         select: { id: true },
         take: 500,
@@ -142,6 +146,8 @@ export async function listWaitlistDetailed(
           {
             OR: [
               { customerId: { in: matched.map((c) => c.id) } },
+              // The service name is one phrase, not a person's two columns, so
+              // it keeps asking for the whole string.
               { service: { is: { name: { contains: needle, mode: 'insensitive' } } } },
             ],
           },

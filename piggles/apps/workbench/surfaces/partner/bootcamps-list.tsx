@@ -209,7 +209,7 @@ export function BootcampsListSurface({ ctx }: { ctx: SurfaceContext }) {
             )}
           </div>
 
-          <RowOpenHint what="a bootcamp to manage it" />
+          {bootcamps.length > 0 ? <RowOpenHint what="a bootcamp to manage it" /> : null}
         </div>
       )}
     </div>

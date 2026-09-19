@@ -147,6 +147,46 @@ export async function listTimeOff(
   );
 }
 
+/**
+ * How many time-off requests exist, ACROSS THE WHOLE QUEUE, whatever status the
+ * caller is looking at.
+ *
+ * Deliberately not derived from `listTimeOff`'s rows. The route used to do
+ * exactly that — `rows.filter((row) => row.status === 'requested').length` —
+ * under a comment explaining that the count is sent from the server precisely so
+ * a filtered list cannot report "0 waiting". The rows it filtered were the
+ * filtered ones, so narrowing to Approved reported zero waiting, which is the
+ * case the comment was written about.
+ *
+ * `total` is here for a second reason. An empty queue means two opposite things:
+ * every request has been answered, or nobody has ever asked. Only the total can
+ * tell them apart, and the screen was saying the first while the second was true
+ * on every tenant but one.
+ *
+ * `staffMemberId` still narrows — a page about one person should count that
+ * person — but `status` never does; narrowing a total by the thing it exists to
+ * see past is what produced the defect.
+ */
+export async function countTimeOff(
+  tenantId: string,
+  query: { staffMemberId?: string } = {}
+): Promise<{ requested: number; total: number }> {
+  const groups = await withTenant({ tenantId }, (tx) =>
+    tx.staffTimeOffRequest.groupBy({
+      by: ['status'],
+      where: { ...(query.staffMemberId ? { staffMemberId: query.staffMemberId } : {}) },
+      _count: { _all: true },
+    })
+  );
+  let requested = 0;
+  let total = 0;
+  for (const group of groups) {
+    total += group._count._all;
+    if (group.status === 'requested') requested += group._count._all;
+  }
+  return { requested, total };
+}
+
 export async function requestTimeOff(tenantId: string, input: TimeOffInput, tx?: TxClient) {
   const run = async (client: TxClient) => {
     const member = await client.staffMember.findFirst({ where: { id: input.staffMemberId } });

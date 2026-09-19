@@ -290,13 +290,21 @@ export type Tone = 'success' | 'warning' | 'error' | 'info' | 'neutral';
 
 /** What an install's status means, in an owner's words, with the tone that
  *  carries its color on a `<Badge>`. */
-export function installState(status: string): { label: string; tone: Tone; detail: string } {
+export function installState(
+  status: string,
+  /** Whether the public site is currently dark. A suspended account serves the
+   *  "Temporarily unavailable" overlay instead of its pages, so nobody is
+   *  looking at the design however published it is. */
+  siteIsDark = false
+): { label: string; tone: Tone; detail: string } {
   switch (status) {
     case 'live':
       return {
         label: 'Live',
         tone: 'success',
-        detail: 'This design has been published: visitors see it on your site now.',
+        detail: siteIsDark
+          ? 'This design has been published. Your site is offline right now, so it goes up the moment your site is back.'
+          : 'This design has been published: visitors see it on your site now.',
       };
     case 'installed':
       return {

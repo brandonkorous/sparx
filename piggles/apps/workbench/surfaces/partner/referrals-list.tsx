@@ -17,6 +17,7 @@ import { Badge, Button, Card, Heading, Input, Text } from '@wizeworks/silicaui-r
 import { Table } from '../../components/table';
 import { faCheck, faCopy, faShareNodes } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
+import { productCopy } from '../../lib/product';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { PaneEmpty } from '../../components/pane-empty';
 /** Registry module for this pane, so the brand draws one consistent picture
@@ -54,8 +55,10 @@ function ReferralLink({ code }: { code: string }) {
           Your referral link
         </Heading>
         <Text className="text-sm">
-          Share this anywhere. When a business signs up through it, they are credited to you, and
-          you earn commission on their first payment to sparx.
+          {productCopy(
+            'partner.referrals.linkHelp',
+            'Share this anywhere. When a business signs up through it, they are credited to you, and you earn commission on their first payment to sparx.'
+          )}
         </Text>
       </div>
       <div className="flex flex-wrap items-center gap-2">
@@ -94,7 +97,9 @@ function ReferralRow({ referral }: { referral: PartnerReferral }) {
   const state = referralState(referral.status);
   return (
     <tr>
-      <td className="align-top font-medium">{referral.referredOrgName ?? 'A sparx account'}</td>
+      <td className="align-top font-medium">
+        {referral.referredOrgName ?? productCopy('partner.referrals.unnamed', 'A sparx account')}
+      </td>
       <td className="hidden align-top whitespace-nowrap @lg:table-cell">
         {formatDate(referral.signupAt)}
       </td>

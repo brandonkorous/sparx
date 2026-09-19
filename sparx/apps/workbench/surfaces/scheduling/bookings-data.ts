@@ -621,7 +621,7 @@ export function bookingStateMeta(status: BookingStatus): { label: string; tone: 
     case 'completed':
       return { label: 'Completed', tone: 'neutral' };
     case 'cancelled':
-      return { label: 'Cancelled', tone: 'danger' };
+      return { label: 'Canceled', tone: 'danger' };
     case 'no_show':
       return { label: 'Did not turn up', tone: 'danger' };
     case 'waitlisted':
@@ -973,7 +973,7 @@ export function describeTimelineEntry(
       return { label: 'Marked as a no-show', detail: null };
     case 'booking.cancelled': {
       const reason = typeof diff.reason === 'string' && diff.reason.trim() ? diff.reason : null;
-      return { label: 'Cancelled', detail: reason };
+      return { label: 'Canceled', detail: reason };
     }
     case 'booking.rescheduled': {
       const from = typeof diff.fromStartAt === 'string' ? diff.fromStartAt : null;

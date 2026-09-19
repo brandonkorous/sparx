@@ -8,8 +8,9 @@
 // Each mark is drawn in `currentColor` inside a real silica `btn btn-ghost
 // btn-circle`, so the link inherits the surrounding ink and the theme's own hover
 // treatment. No third-party brand color is used, which is also why none of this
-// needs a light/dark variant. An unknown platform falls back to its name as text,
-// so a link is never silently dropped.
+// needs a light/dark variant. A platform with no glyph falls back to its NAME as
+// text, so a link is never silently dropped — see `socialLabel` for why that name
+// is not simply the key.
 //
 // SERVER component. Renders nothing when there are no items.
 
@@ -82,9 +83,37 @@ const ALIAS: Record<string, string> = {
   li: 'linkedin',
 };
 
-function iconFor(platform: string): React.ReactElement | null {
+/**
+ * What to CALL a platform the owner picked from a list but there is no glyph for.
+ *
+ * Site identity offers ten networks under the heading "the platforms a site footer
+ * renders a first-class icon for", and eight of them have one. The other two fell
+ * through to the raw key, so an owner who chose "WhatsApp" from a menu got the word
+ * `whatsapp`, lowercase, sitting in a row of round icon buttons — which reads as a
+ * mistake rather than a link ([[feedback_a_promise_in_copy_is_a_contract]]).
+ *
+ * Only for a key the editor OFFERS. A network typed in under "Other" carries the
+ * owner's own label as its platform, so the fallback below already prints exactly
+ * what she wrote, and second-guessing her capitalization would be worse.
+ */
+const NAMES: Record<string, string> = {
+  whatsapp: 'WhatsApp',
+  bluesky: 'Bluesky',
+};
+
+/** The name a platform normalizes to — lower-case, no punctuation. */
+function normalize(platform: string): string {
   const key = platform.toLowerCase().replace(/[^a-z0-9]/g, '');
-  return ICONS[ALIAS[key] ?? key] ?? null;
+  return ALIAS[key] ?? key;
+}
+
+function iconFor(platform: string): React.ReactElement | null {
+  return ICONS[normalize(platform)] ?? null;
+}
+
+/** What the link SAYS when there is no glyph for it. */
+export function socialLabel(platform: string): string {
+  return NAMES[normalize(platform)] ?? platform;
 }
 
 export function SocialLinks({ items, className }: SocialLinksProps): React.ReactElement | null {
@@ -97,7 +126,7 @@ export function SocialLinks({ items, className }: SocialLinksProps): React.React
           <a
             key={`${i}-${item.platform}`}
             href={item.url || '#'}
-            aria-label={item.platform || 'social link'}
+            aria-label={socialLabel(item.platform) || 'social link'}
             className={buttonClasses({
               variant: 'ghost',
               size: 'sm',
@@ -105,7 +134,7 @@ export function SocialLinks({ items, className }: SocialLinksProps): React.React
               className: icon ? '[&>svg]:size-5' : undefined,
             })}
           >
-            {icon ?? item.platform}
+            {icon ?? socialLabel(item.platform)}
           </a>
         );
       })}

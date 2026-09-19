@@ -30,6 +30,22 @@ interface PitchSection {
   points?: string[];
 }
 
+/**
+ * A list that a brand can rewrite.
+ *
+ * `productCopy` hands back one string, and every list on this screen is content
+ * a brand has to be able to change — the modules a client switches on are not
+ * the apps a Piggles customer gets. Newline-separated is the smallest thing that
+ * works: it reads as a list in the override file, it cannot drift out of step
+ * with a separate count, and an override that forgets a line simply shows one
+ * fewer bullet rather than a hole.
+ */
+const lines = (key: string, fallback: string): string[] =>
+  productCopy(key, fallback)
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
 const PITCH: PitchSection[] = [
   {
     heading: 'One platform instead of five tools',
@@ -39,24 +55,39 @@ const PITCH: PitchSection[] = [
     ),
   },
   {
-    heading: 'They only pay for what they switch on',
-    body: 'sparx is modular. A publisher can run content-only, a services team customers-only, a shop the full commerce stack. Each is first-class. Modules switch on independently, and a client pays for exactly the ones they use. Nothing is bundled they didn’t ask for.',
-    points: [
-      'Site Builder: pages, content and design, live fast',
-      'Commerce: catalog, checkout and payments',
-      'CMS: pages, posts and structured content',
-      'CRM: customers, pipelines and segments',
-      'Email: broadcasts and flows on their own domain',
-      'B2B, invoicing, inventory, scheduling, chat and AI as they grow',
-    ],
+    // HEADING AND BODY BOTH, because this section is about the PRICING MODEL and
+    // the two products do not share one. sparx is priced per module switched on;
+    // Piggles is one flat price with every app included (piggles/CLAUDE.md
+    // RULE #2). A partner repeating the wrong one is misselling, which is why
+    // nothing on this screen may be a name swap.
+    heading: productCopy('partner.pitch.modularHeading', 'They only pay for what they switch on'),
+    body: productCopy(
+      'partner.pitch.modular',
+      'sparx is modular. A publisher can run content-only, a services team customers-only, a shop the full commerce stack. Each is first-class. Modules switch on independently, and a client pays for exactly the ones they use. Nothing is bundled they didn’t ask for.'
+    ),
+    points: lines(
+      'partner.pitch.modularPoints',
+      `Site Builder: pages, content and design, live fast
+       Commerce: catalog, checkout and payments
+       CMS: pages, posts and structured content
+       CRM: customers, pipelines and segments
+       Email: broadcasts and flows on their own domain
+       B2B, invoicing, inventory, scheduling, chat and AI as they grow`
+    ),
   },
   {
     heading: 'Live in minutes, not months',
-    body: 'A client picks the modules they need, starts from a complete themed template, and has a real site with real content in under an hour, then refines from there. No developer needed to get to launch.',
+    body: productCopy(
+      'partner.pitch.live',
+      'A client picks the modules they need, starts from a complete themed template, and has a real site with real content in under an hour, then refines from there. No developer needed to get to launch.'
+    ),
   },
   {
     heading: 'It grows with them',
-    body: 'When a content site starts selling, they switch on Commerce. When they land wholesale accounts, they switch on B2B. Nothing to migrate, no replatforming: the data and the customers are already there.',
+    body: productCopy(
+      'partner.pitch.grows',
+      'When a content site starts selling, they switch on Commerce. When they land wholesale accounts, they switch on B2B. Nothing to migrate, no replatforming: the data and the customers are already there.'
+    ),
   },
   {
     heading: 'Getting started costs nothing',
@@ -68,14 +99,21 @@ const PITCH: PitchSection[] = [
 ];
 
 const ONE_PAGER = {
-  tagline: 'The modular platform for content and commerce. One login, one bill.',
-  what: 'sparx replaces a business’s site builder, CRM, email tool and more with a single platform whose parts share the same customers, content and data. Turn on only what you need; add the rest as you grow.',
-  bestFor: [
-    'Owners tired of paying for and wiring up five separate tools',
-    'Content sites that are starting to sell',
-    'Service businesses that need a site, CRM and email in one place',
-    'Wholesalers who need B2B and a public site together',
-  ],
+  tagline: productCopy(
+    'partner.onePager.tagline',
+    'The modular platform for content and commerce. One login, one bill.'
+  ),
+  what: productCopy(
+    'partner.onePager.what',
+    'sparx replaces a business’s site builder, CRM, email tool and more with a single platform whose parts share the same customers, content and data. Turn on only what you need; add the rest as you grow.'
+  ),
+  bestFor: lines(
+    'partner.onePager.bestFor',
+    `Owners tired of paying for and wiring up five separate tools
+     Content sites that are starting to sell
+     Service businesses that need a site, CRM and email in one place
+     Wholesalers who need B2B and a public site together`
+  ),
 };
 
 interface ModuleGuide {
@@ -84,67 +122,70 @@ interface ModuleGuide {
   steps: string[];
 }
 
+/** One playbook. The label is a PRODUCT's name for a part of itself, so it goes
+ *  through the adapter like everything else here: a Piggles partner is setting
+ *  up "Sell", not "Commerce". */
+const guide = (slug: string, label: string, blurb: string, steps: string): ModuleGuide => ({
+  label: productCopy(`partner.guide.${slug}.label`, label),
+  blurb: productCopy(`partner.guide.${slug}.blurb`, blurb),
+  steps: lines(`partner.guide.${slug}.steps`, steps),
+});
+
 const GUIDES: ModuleGuide[] = [
-  {
-    label: 'Site Builder',
-    blurb: 'Stand up the client’s site: pages, layout and brand.',
-    steps: [
-      'Start from a template that fits the client’s industry, or a blank canvas.',
-      'Set the brand: logo, colors and fonts in the theme, which every page inherits.',
-      'Build the core pages (home, about, contact) from the component palette.',
-      'Point their domain at the site in Settings → Domains, then publish.',
-    ],
-  },
-  {
-    label: 'Commerce',
-    blurb: 'Turn the site into a shop: catalog, checkout, payments.',
-    steps: [
-      'Switch on Commerce and connect the client’s payment account.',
-      'Add products (or import a catalog) with images, variants and prices.',
-      'Set up shipping and tax, then place a test order end to end.',
-      'Drop product and cart components onto the site and publish.',
-    ],
-  },
-  {
-    label: 'CMS',
-    blurb: 'Give them a real content engine: pages and posts.',
-    steps: [
-      'Switch on CMS and define the content types they need (posts, guides, FAQs).',
-      'Create a few starter entries so the layout has real content to show.',
-      'Add a blog or index component to the site and link it in the navigation.',
-      'Hand off the editor: it’s explicit-save, last-write-wins, like every editor.',
-    ],
-  },
-  {
-    label: 'CRM',
-    blurb: 'One view of every customer, lead and deal.',
-    steps: [
-      'Switch on CRM: site forms and orders start creating customer records automatically.',
-      'Set up the pipeline stages that match how the client actually sells.',
-      'Import existing contacts and tag them into segments.',
-      'Show the client the timeline: every order, email and note on one customer.',
-    ],
-  },
-  {
-    label: 'Email',
-    blurb: 'Campaigns and flows that send from their own domain.',
-    steps: [
-      'Switch on Email and verify the client’s sending domain with the DNS records.',
-      'Build a welcome flow triggered when a customer is created in CRM.',
-      'Design a first broadcast from the email components.',
-      'Confirm deliverability with a test send before going live.',
-    ],
-  },
-  {
-    label: 'B2B',
-    blurb: 'Wholesale accounts, price lists and a buyer portal.',
-    steps: [
-      'Switch on B2B (Commerce comes with it) and create the wholesale accounts.',
-      'Set per-account price lists and payment terms.',
-      'Invite the buyers to the account portal.',
-      'Test a wholesale order at account-specific pricing.',
-    ],
-  },
+  guide(
+    'builder',
+    'Site Builder',
+    'Stand up the client’s site: pages, layout and brand.',
+    `Start from a template that fits the client’s industry, or a blank canvas.
+     Set the brand: logo, colors and fonts in the theme, which every page inherits.
+     Build the core pages (home, about, contact) from the component palette.
+     Point their domain at the site in Settings → Domains, then publish.`
+  ),
+  guide(
+    'commerce',
+    'Commerce',
+    'Turn the site into a shop: catalog, checkout, payments.',
+    `Switch on Commerce and connect the client’s payment account.
+     Add products (or import a catalog) with images, variants and prices.
+     Set up shipping and tax, then place a test order end to end.
+     Drop product and cart components onto the site and publish.`
+  ),
+  guide(
+    'cms',
+    'CMS',
+    'Give them a real content engine: pages and posts.',
+    `Switch on CMS and define the content types they need (posts, guides, FAQs).
+     Create a few starter entries so the layout has real content to show.
+     Add a blog or index component to the site and link it in the navigation.
+     Hand off the editor: it’s explicit-save, last-write-wins, like every editor.`
+  ),
+  guide(
+    'crm',
+    'CRM',
+    'One view of every customer, lead and deal.',
+    `Switch on CRM: site forms and orders start creating customer records automatically.
+     Set up the pipeline stages that match how the client actually sells.
+     Import existing contacts and tag them into segments.
+     Show the client the timeline: every order, email and note on one customer.`
+  ),
+  guide(
+    'email',
+    'Email',
+    'Campaigns and flows that send from their own domain.',
+    `Switch on Email and verify the client’s sending domain with the DNS records.
+     Build a welcome flow triggered when a customer is created in CRM.
+     Design a first broadcast from the email components.
+     Confirm deliverability with a test send before going live.`
+  ),
+  guide(
+    'b2b',
+    'B2B',
+    'Wholesale accounts, price lists and a buyer portal.',
+    `Switch on B2B (Commerce comes with it) and create the wholesale accounts.
+     Set per-account price lists and payment terms.
+     Invite the buyers to the account portal.
+     Test a wholesale order at account-specific pricing.`
+  ),
 ];
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -199,18 +240,20 @@ export function ResourcesSurface({ ctx }: { ctx: SurfaceContext }) {
         <div className={COLUMN}>
           <div className="flex flex-col gap-1">
             <Heading level={1} className="text-2xl font-semibold">
-              Pitch sparx, and get clients live
+              {productCopy('partner.resources.title', 'Pitch sparx, and get clients live')}
             </Heading>
             <Text>
-              Everything you need to walk a client through sparx and get each part working for them.
-              Use it in a conversation, print it, or send it on.
+              {productCopy(
+                'partner.resources.intro',
+                'Everything you need to walk a client through sparx and get each part working for them. Use it in a conversation, print it, or send it on.'
+              )}
             </Text>
           </div>
 
           {/* The pitch — the honest story of sparx for a client conversation. */}
           <section className="card bg-base-100 flex flex-col gap-4 p-4">
             <Heading level={2} className="text-lg font-semibold">
-              The sparx pitch
+              {productCopy('partner.resources.pitchHeading', 'The sparx pitch')}
             </Heading>
             <div className="flex flex-col gap-4">
               {PITCH.map((section) => (
@@ -261,11 +304,13 @@ export function ResourcesSurface({ ctx }: { ctx: SurfaceContext }) {
           <section className="flex flex-col gap-3">
             <div className="flex flex-col gap-1">
               <Heading level={2} className="text-lg font-semibold">
-                Get each module live
+                {productCopy('partner.resources.guidesHeading', 'Get each module live')}
               </Heading>
               <Text className="text-sm">
-                Short playbooks for what to do, in order, to get a client running on each part of
-                sparx.
+                {productCopy(
+                  'partner.resources.guidesIntro',
+                  'Short playbooks for what to do, in order, to get a client running on each part of sparx.'
+                )}
               </Text>
             </div>
             <div className="grid gap-3 @2xl:grid-cols-2">

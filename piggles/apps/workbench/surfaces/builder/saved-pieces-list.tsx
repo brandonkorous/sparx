@@ -35,6 +35,8 @@ import {
   type PieceGroup,
   type PieceSummary,
 } from './saved-pieces-data';
+import { sharedLibraryNote } from './saved-piece-usage-words';
+import { useSites } from '../../lib/api/shell-data';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -82,6 +84,12 @@ function PieceRow({
 export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: pieces, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSavedPieces();
   const [search, setSearch] = useState('');
+  // The library is tenant-wide while every other screen in this app is per-site,
+  // so an owner running more than one gets told. `?? 1` while the sites read is
+  // in flight: one site is the shape that says nothing, so a beat of silence
+  // rather than a caveat that appears and then leaves.
+  const { data: sites } = useSites();
+  const shared = sharedLibraryNote(sites?.length ?? 1);
 
   const all = useMemo(() => pieces ?? [], [pieces]);
   const needle = search.trim().toLowerCase();
@@ -233,6 +241,10 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
           // Capped and centred: a pane torn onto a second monitor is otherwise
           // 2000px wide with the tags a foot away from their names.
           <div className="mx-auto flex w-full max-w-4xl flex-col gap-4">
+            {/* Above the cards, not inside one: it is true of the whole library
+                rather than of any kind of piece. Null for a single-site account —
+                see sharedLibraryNote. */}
+            {shared === null ? null : <Text className="px-1 text-sm">{shared}</Text>}
             {groups.map(({ group, rows }) => {
               const meta = groupMeta(group);
               return (
@@ -267,7 +279,7 @@ export function SavedPiecesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint what="a piece to manage it" />
+      {groups.length > 0 ? <RowOpenHint what="a piece to manage it" /> : null}
     </div>
   );
 }

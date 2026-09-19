@@ -363,7 +363,7 @@ export function SocialQueueSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint what="a post to open it" />
+      {grouped.length > 0 ? <RowOpenHint what="a post to open it" /> : null}
     </div>
   );
 }

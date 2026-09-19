@@ -832,9 +832,12 @@ function PageWeights({
 
           {budget.unbackedClasses.length > 0 ? (
             <p className="text-base">
-              {plural(budget.unbackedClasses.length, 'styling name', 'styling names')} on this site
-              produce nothing at all: {budget.unbackedClasses.join(', ')}. Each one is listed above
-              with the block it is on.
+              {plural(budget.unbackedClasses.length, 'styling name', 'styling names')} on this site{' '}
+              {budget.unbackedClasses.length === 1 ? 'produces' : 'produce'} nothing at all:{' '}
+              {budget.unbackedClasses.join(', ')}.{' '}
+              {budget.unbackedClasses.length === 1
+                ? 'It is listed above with the block it is on.'
+                : 'Each one is listed above with the block it is on.'}
             </p>
           ) : null}
         </>

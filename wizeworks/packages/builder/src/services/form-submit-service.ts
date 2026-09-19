@@ -328,10 +328,11 @@ export interface SubmissionFormRef {
  *  narrows by status — filtering to "spam" (or "partial") must not empty the
  *  form picker. Its `count` therefore INCLUDES partials, which is right for a
  *  picker and wrong for a headline; `submissionCounts` is the headline. */
-export async function submissionForms(ctx: ServiceContext): Promise<SubmissionFormRef[]> {
+export async function submissionForms(ctx: PropertyContext): Promise<SubmissionFormRef[]> {
   const grouped = await withTenant(ctx, (tx) =>
     tx.formSubmission.groupBy({
       by: ['formNodeId'],
+      where: { OR: [{ propertyId: ctx.propertyId }, { propertyId: null }] },
       _count: { _all: true },
       _max: { formName: true, pageSlug: true, createdAt: true },
       orderBy: { _max: { createdAt: 'desc' } },
@@ -394,13 +395,23 @@ async function liveFormNames(
 
 /** Tenant-wide list (across sites) of form submissions, newest first. */
 export async function listSubmissions(
-  ctx: ServiceContext,
+  ctx: PropertyContext,
   filter: ListSubmissionsFilter = {}
 ): Promise<FormSubmission[]> {
   const limit = Math.min(Math.max(filter.limit ?? 50, 1), 200);
   return withTenant(ctx, (tx) =>
     tx.formSubmission.findMany({
       where: {
+        // SITE-SCOPED. A form lives on a page, a page lives on a site, and a
+        // tenant can run several unrelated businesses — so somebody asking the
+        // clothing shop about sizing does not belong in the jewelry line's
+        // inbox ([[feedback_site_is_the_business]], issue 630).
+        //
+        // `null` included on purpose: `propertyId` is SetNull so a submission
+        // OUTLIVES a deleted site, and the schema says in as many words that it
+        // "stays in the inbox". A strict equality here would keep that promise
+        // on paper and delete the row from every screen.
+        OR: [{ propertyId: ctx.propertyId }, { propertyId: null }],
         // Unfiltered means FINISHED submissions. A half-filled form sitting in
         // the inbox looking like a message somebody sent is worse than not
         // recording it: the tenant replies to something nobody sent them. It is
@@ -419,12 +430,18 @@ export async function listSubmissions(
  *  form and stopped. `total` counts FINISHED submissions only — folding partials
  *  into it would quietly inflate every "you have N enquiries" figure on the
  *  platform. */
-export async function submissionCounts(ctx: ServiceContext): Promise<SubmissionCounts> {
+export async function submissionCounts(ctx: PropertyContext): Promise<SubmissionCounts> {
+  // SITE-SCOPED, like the list it heads. These two numbers sit above that list
+  // and are read by Home and the app rail, so counting a wider population than
+  // the rows underneath would put a badge on one business for another's post.
+  const site: Prisma.FormSubmissionWhereInput = {
+    OR: [{ propertyId: ctx.propertyId }, { propertyId: null }],
+  };
   return withTenant(ctx, async (tx) => {
     const [total, fresh, partial] = await Promise.all([
-      tx.formSubmission.count({ where: { status: { not: PARTIAL_STATUS } } }),
-      tx.formSubmission.count({ where: { status: 'new' } }),
-      tx.formSubmission.count({ where: { status: PARTIAL_STATUS } }),
+      tx.formSubmission.count({ where: { ...site, status: { not: PARTIAL_STATUS } } }),
+      tx.formSubmission.count({ where: { ...site, status: 'new' } }),
+      tx.formSubmission.count({ where: { ...site, status: PARTIAL_STATUS } }),
     ]);
     return { total, new: fresh, partial };
   });

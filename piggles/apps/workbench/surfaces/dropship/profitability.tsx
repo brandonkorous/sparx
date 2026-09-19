@@ -24,6 +24,7 @@ import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
   Badge,
+  Button,
   Card,
   Heading,
   Select,
@@ -54,12 +55,14 @@ import {
   useDropshipAnalytics,
   useOrdersTimeseries,
   useSupplierSla,
+  useSuppliers,
   type AnalyticsSupplierRow,
   type RangePreset,
   type SlaRow,
   type TimeseriesPoint,
   type Tone,
 } from './dropship-data';
+import { dropshipProfitEmptyWords } from './dropship-empty';
 
 const NUMBER = new Intl.NumberFormat();
 
@@ -193,7 +196,7 @@ function SlaRowView({ row }: { row: SlaRow }) {
   );
 }
 
-export function DropshipProfitabilitySurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
+export function DropshipProfitabilitySurface({ ctx }: { ctx: SurfaceContext }) {
   const [preset, setPreset] = useState<RangePreset>('30');
   const range = useMemo(() => presetRange(preset), [preset]);
 
@@ -210,6 +213,12 @@ export function DropshipProfitabilitySurface({ ctx: _ctx }: { ctx: SurfaceContex
 
   const data = analytics.data;
   const hasOrders = (data?.totalOrders ?? 0) > 0;
+
+  // "No sales in this period" is two facts: a quiet month, or a business with no
+  // supplier to sell through at all. Only a count outside the period tells them
+  // apart, and telling the second one to try a longer period is a dead end.
+  const suppliers = useSuppliers();
+  const empty = dropshipProfitEmptyWords(suppliers.data?.items.length ?? 0);
 
   return (
     <div className={PANE_SHELL}>
@@ -280,13 +289,32 @@ export function DropshipProfitabilitySurface({ ctx: _ctx }: { ctx: SurfaceContex
                   <PaneEmpty
                     module={MODULE}
                     icon={<Icon glyph={faChartLine} className="size-6" aria-hidden />}
-                    title="No dropship sales in this period"
-                    description="Once customers buy products your suppliers ship, this fills with your profit, your margin, and how each supplier is doing. Try a longer period above, or check back after your next sale."
+                    title={empty.title}
+                    description={empty.detail}
+                    actions={
+                      empty.connect !== null ? (
+                        <Button
+                          size="sm"
+                          color="module"
+                          onClick={(event) => {
+                            ctx.open(
+                              'dropship.supplier.detail',
+                              { id: 'new' },
+                              {
+                                target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab',
+                              }
+                            );
+                          }}
+                        >
+                          {empty.connect}
+                        </Button>
+                      ) : undefined
+                    }
                   />
                 </Card>
               ) : (
                 <>
-                  <Stats className="w-full">
+                  <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
                     <Stat>
                       <StatTitle>Profit</StatTitle>
                       <StatValue>{formatCentsRounded(data.profitCents)}</StatValue>

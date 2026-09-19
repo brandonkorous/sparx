@@ -20,6 +20,7 @@ import { createMember } from '../../src/members.js';
 import { createTimeEntry, approveTimeEntries } from '../../src/time.js';
 import {
   cancelTimeOff,
+  countTimeOff,
   createShift,
   decideTimeOff,
   listShifts,
@@ -209,6 +210,48 @@ describe('time off', () => {
 
     const requested = await listTimeOff(ctx.tenantId, { status: 'requested' });
     expect(requested.map((row) => row.id)).toEqual([waiting.id]);
+  });
+
+  it('the counts see past the filter the list was narrowed by', async () => {
+    // The route used to count "waiting" by filtering the rows it had already
+    // asked the database to filter, under a comment saying the count is sent
+    // from the server precisely so a narrowed list cannot report zero waiting.
+    // Looking at Approved therefore reported zero waiting — the exact case.
+    const member = await hire();
+    const waiting = await requestTimeOff(ctx.tenantId, {
+      staffMemberId: member.id,
+      startsAt: day('2026-06-06'),
+      endsAt: day('2026-06-07'),
+    });
+    const approved = await requestTimeOff(ctx.tenantId, {
+      staffMemberId: member.id,
+      startsAt: day('2026-07-06'),
+      endsAt: day('2026-07-07'),
+    });
+    await decideTimeOff(ctx.tenantId, approved.id, {
+      status: 'approved',
+      decidedBy: null,
+      at: new Date(),
+    });
+
+    const onlyApproved = await listTimeOff(ctx.tenantId, {
+      staffMemberId: member.id,
+      status: 'approved',
+    });
+    expect(onlyApproved.map((row) => row.id)).toEqual([approved.id]);
+    expect(onlyApproved.filter((row) => row.status === 'requested')).toHaveLength(0);
+
+    const counts = await countTimeOff(ctx.tenantId, { staffMemberId: member.id });
+    expect(counts.requested).toBe(1);
+    expect(counts.total).toBe(2);
+    expect(waiting.status).toBe('requested');
+  });
+
+  it('a queue nobody has ever used totals zero, which is not the same as answered', async () => {
+    const member = await hire();
+    const counts = await countTimeOff(ctx.tenantId, { staffMemberId: member.id });
+    expect(counts.total).toBe(0);
+    expect(counts.requested).toBe(0);
   });
 });
 

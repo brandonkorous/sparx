@@ -15,7 +15,7 @@
 //
 // The order of those steps is the whole design. Every importer that people abandon
 // asks for the upload first and reports the problems afterwards, by which point the
-// tenant has already been told their catalogue is half-broken and has no idea which
+// tenant has already been told their catalog is half-broken and has no idea which
 // half.
 //
 // Steps 2 to 4 are IDENTICAL whether the rows came from a file or from a live
@@ -374,10 +374,10 @@ export function MigrationRunSurface({ ctx }: { ctx: SurfaceContext }) {
   const [reading, setReading] = useState(false);
 
   const start = useStartMigration();
-  const { data: catalogue } = useMigrationVendors();
+  const { data: catalog } = useMigrationVendors();
   const vendor = useMemo(
-    () => (catalogue?.vendors ?? []).find((entry) => entry.slug === vendorParam),
-    [catalogue, vendorParam]
+    () => (catalog?.vendors ?? []).find((entry) => entry.slug === vendorParam),
+    [catalog, vendorParam]
   );
 
   const onFile = useCallback(async (file: File) => {

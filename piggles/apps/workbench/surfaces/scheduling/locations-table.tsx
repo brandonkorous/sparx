@@ -75,7 +75,7 @@ function LocationRow({
         onOpen(location, event);
       }}
     >
-      <td className="w-full max-w-0">
+      <td className="w-full max-w-0 min-w-56">
         <span className="flex min-w-0 flex-col">
           <span className="truncate font-medium">{location.name}</span>
           {/* The address is only ever shown here, so it always shows. The "filed

@@ -265,7 +265,7 @@ export function CampaignsSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint what="a campaign to open it" />
+      {matches.length > 0 ? <RowOpenHint what="a campaign to open it" /> : null}
     </div>
   );
 }

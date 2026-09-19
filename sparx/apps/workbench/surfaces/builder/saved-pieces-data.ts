@@ -23,6 +23,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
+import type { Placement } from './saved-piece-usage-words';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
 
@@ -82,10 +83,15 @@ export interface Piece extends PieceSummary {
 }
 
 /** Where a piece is placed — the delete-impact / "changes everywhere" read. A
- *  page or layout appears if EITHER its draft or its live tree uses the piece. */
+ *  page or layout appears if EITHER its draft or its live tree uses the piece.
+ *
+ *  The scan is TENANT-wide (see the header note): a saved piece serves every site
+ *  the business runs, so a placement can be on a site other than the active one.
+ *  Each row therefore carries its site — see `saved-piece-usage-words.ts` for
+ *  when that is shown and what a cross-site open has to ask first. */
 export interface PieceUsage {
-  pages: { id: string; name: string }[];
-  layouts: { id: string; name: string }[];
+  pages: Placement[];
+  layouts: Placement[];
   total: number;
   pinnedVersions: number[];
 }
@@ -245,11 +251,19 @@ export function groupMeta(group: PieceGroup): GroupMeta {
  * Almost every piece is page-only, so badging "Pages" on every row would be
  * noise repeating what the surface already is. We flag only the pieces that go
  * somewhere unusual (the site chrome, or emails), where it genuinely informs.
+ *
+ * IT SAYS WHERE, NOT HOW FAR. The site badge used to read "Site-wide", which is
+ * a reach and not a place — and on this product a reach is a real question,
+ * because pieces ARE shared across every site the business runs. An owner with
+ * seven of them read a badge saying "Site-wide" on a screen whose neighbour
+ * spells the same idea "All your sites", and the badge meant neither: it means
+ * the piece may also be placed in the header and footer. So it says that, using
+ * the name of the screen those are edited on.
  */
 export function surfaceScopeTag(surfaces: PieceSurface[]): string | null {
   const special = surfaces.filter((surface) => surface !== 'page');
   if (special.length === 0) return null;
-  const parts = special.map((surface) => (surface === 'site' ? 'Site-wide' : 'Emails'));
+  const parts = special.map((surface) => (surface === 'site' ? 'Header & footer' : 'Emails'));
   return [...new Set(parts)].join(' · ');
 }
 

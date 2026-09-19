@@ -34,6 +34,7 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useBlueprints, type Blueprint } from './blueprints-data';
 import { contentsSummary, installState } from './blueprints-words';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { useSiteIsDark } from '../../lib/billing/site-live';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -63,7 +64,8 @@ function BlueprintCard({
   blueprint: Blueprint;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
-  const state = blueprint.install ? installState(blueprint.install.status) : null;
+  const siteIsDark = useSiteIsDark();
+  const state = blueprint.install ? installState(blueprint.install.status, siteIsDark) : null;
   const updateAvailable = blueprint.install?.update_available ?? false;
   const vertical = verticalLabel(blueprint.vertical);
   const summary = contentsSummary(blueprint.contents);
@@ -284,7 +286,7 @@ export function BlueprintsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint what="a design to preview it" />
+        {rows.length > 0 ? <RowOpenHint what="a design to preview it" /> : null}
       </div>
     </div>
   );

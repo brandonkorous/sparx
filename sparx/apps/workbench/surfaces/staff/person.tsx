@@ -600,7 +600,7 @@ function CertificationsSection({ staffMemberId }: { staffMemberId: string }) {
 
   return (
     <FormSection
-      title="Tickets and licences"
+      title="Tickets and licenses"
       description="What has to be current before this person can do the work."
       action={
         adding ? null : (
