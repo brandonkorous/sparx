@@ -388,7 +388,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
       ) : null}
 
-      <RowOpenHint what="a site to manage it" />
+      {paged.length > 0 ? <RowOpenHint what="a site to manage it" /> : null}
     </div>
   );
 }

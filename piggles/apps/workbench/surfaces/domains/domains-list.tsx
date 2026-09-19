@@ -238,7 +238,7 @@ export function DomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
       {/* No border now that the pane is base-200 — the hint sits ON the pane
           rather than in a docked strip, so a rule above it would be drawing a
           line under nothing. */}
-      <RowOpenHint what="an address to set it up" />
+      {groups.length > 0 ? <RowOpenHint what="an address to set it up" /> : null}
     </div>
   );
 }

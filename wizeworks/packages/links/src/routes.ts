@@ -643,9 +643,19 @@ export const ROUTES: readonly AppRoute[] = [
 
   /* ── Email ────────────────────────────────────────────────────────────── */
   { path: '/email/broadcasts', surface: 'email.broadcasts.list' },
-  { path: '/email/broadcasts/:id', surface: 'email.broadcasts.detail' },
+  {
+    path: '/email/broadcasts/:id',
+    surface: 'email.broadcasts.detail',
+    entity: 'email_broadcast',
+    entityLabel: 'Campaigns',
+  },
   { path: '/email/sequences', surface: 'email.sequences.list' },
-  { path: '/email/sequences/:id', surface: 'email.sequences.detail' },
+  {
+    path: '/email/sequences/:id',
+    surface: 'email.sequences.detail',
+    entity: 'email_sequence',
+    entityLabel: 'Automatic emails',
+  },
   { path: '/email/sequences/:sequenceId/enrolled', surface: 'email.sequences.enrollments' },
   { path: '/email/sending-addresses', surface: 'email.domains.list' },
   { path: '/email/sending-addresses/:id', surface: 'email.domains.detail' },
@@ -705,7 +715,12 @@ export const ROUTES: readonly AppRoute[] = [
   { path: '/automations', surface: 'automations.list' },
   { path: '/automations/recipes', surface: 'automations.recipes' },
   { path: '/automations/reports', surface: 'automations.reports' },
-  { path: '/automations/:id', surface: 'automations.detail' },
+  {
+    path: '/automations/:id',
+    surface: 'automations.detail',
+    entity: 'automation',
+    entityLabel: 'Automations',
+  },
   { path: '/automations/:automationId/runs', surface: 'automations.runs' },
   { path: '/automations/:automationId/runs/:runId', surface: 'automations.run' },
 

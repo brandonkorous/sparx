@@ -328,7 +328,7 @@ function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const onMakeCanonical = async () => {
     const ok = await confirm({
       title: `Make ${domain.host} the main address?`,
-      description: `This becomes the address your site is known by, and the address it uses now will redirect here automatically. Links people have already saved keep working.`,
+      description: `This becomes the address your site is known by, and the address it uses now sends people here automatically. Links people have already saved keep working.`,
       confirmLabel: 'Make it the main address',
       cancelLabel: 'Leave it as it is',
       color: 'warning',

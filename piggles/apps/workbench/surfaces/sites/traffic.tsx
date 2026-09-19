@@ -191,7 +191,7 @@ export function SiteTraffic({ propertyId }: { propertyId: string }) {
     <div className="flex flex-col gap-4">
       {hasAnything ? (
         <>
-          <Stats className="w-full">
+          <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
             <Stat>
               <StatTitle>Visitors</StatTitle>
               <StatValue>{NUMBER.format(data.visitors)}</StatValue>
