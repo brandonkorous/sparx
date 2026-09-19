@@ -83,6 +83,7 @@ export function usePublishState() {
         // knows nothing about the live site, and "your visitors are missing
         // these" invented from a network error is worse than saying nothing.
         liveChromeGaps: [],
+        livePageGaps: [],
       })),
   });
 }

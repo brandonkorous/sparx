@@ -17,6 +17,18 @@
 //
 // A sibling of the template-update offer, and here for the same reason: nothing is late
 // and nothing is waiting on her, so it is an offer rather than a line in "What needs you".
+//
+// HER PAGES CAN BE BEHIND TOO, and that half is worse (issue 684). A product page is
+// stamped from the catalog once, when the site is made, and never re-reads it, so a
+// shop can be physically unable to tell a customer that something is sold out.
+// Measured the day this shipped: **0 of the 13 live product pages on the platform
+// could say it**, every one of them with a working Add-to-cart button on a product
+// with nothing behind it, and not one owner told.
+//
+// PAGES FIRST when both are behind. A header missing its account link is a visitor
+// inconvenienced; a page that cannot say "sold out" is a customer paying for something
+// that is not there. Only one offer shows at a time, because two boxes on Home saying
+// "your site is behind" is a wall she scrolls past.
 
 import {
   Alert,
@@ -28,7 +40,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { ModuleScope } from '@/components/module-scope';
 import type { SurfaceContext } from '@/lib/surfaces/registry';
-import { usePublishState } from '@/lib/studio/publish-data';
+import { usePublishState, useRepairPages } from '@/lib/studio/publish-data';
 import { useRepairChrome } from '@/lib/studio/repair-chrome';
 
 /** What to say and where to send her, per the road that actually gets her there. */
@@ -53,16 +65,91 @@ const ROADS = {
   },
 } as const;
 
+/** What to say about PAGES, per the road that actually gets her there.
+ *
+ *  The `waiting` road cannot say "open the page", the way the chrome road can say
+ *  "open your header and footer": a site has many pages, and the stale one is usually
+ *  a record template she has never had a reason to look at. So it offers the repair
+ *  outright and leaves her at Publish. */
+const PAGE_ROADS = {
+  saved: {
+    title: 'Your live shop is behind the pages you have saved',
+    lead: 'Until you publish, your product pages cannot tell a customer:',
+    close: 'Publishing puts them on your site. Nothing you have written changes.',
+    action: 'Review and publish',
+  },
+  waiting: {
+    title: 'Your product pages have not caught up with your shop',
+    lead: 'They were built when your site was made. Right now they cannot tell a customer:',
+    close:
+      'We can bring them up to date for you, then you publish. Nothing you have written changes.',
+    action: 'Bring my pages up to date',
+  },
+} as const;
+
 /** Renders nothing when the live site already has everything, which is the usual
  *  case and the one this must cost a reader nothing in. */
 export function SiteRefreshPanel({ ctx }: { ctx: SurfaceContext }) {
   const { data } = usePublishState();
   const repair = useRepairChrome();
+  const repairPages = useRepairPages();
   const gaps = data?.liveChromeGaps ?? [];
+  const pageGaps = data?.livePageGaps ?? [];
   // Never published is a different sentence entirely, and the Publish pane already
   // leads with it. Saying "your live site is behind" about a site nobody can reach
   // would be the wrong end of the problem.
-  if (gaps.length === 0 || data?.neverPublished) return null;
+  if (data?.neverPublished) return null;
+
+  // PAGES FIRST. A header missing its account link inconveniences a visitor; a page
+  // that cannot say "sold out" takes their money for a thing that is not there.
+  if (pageGaps.length > 0) {
+    const road = pageGaps.some((gap) => gap.source === 'waiting')
+      ? PAGE_ROADS.waiting
+      : PAGE_ROADS.saved;
+    return (
+      <ModuleScope module="builder">
+        <Alert color="warning" className="mt-6 flex-col text-base @[34rem]:flex-row">
+          <AlertContent>
+            <AlertTitle>{road.title}</AlertTitle>
+            <AlertDescription>
+              <p>{road.lead}</p>
+              <ul className="mt-2 flex list-disc flex-col gap-1 pl-5">
+                {pageGaps.map((gap) => (
+                  <li key={gap.ref}>
+                    {gap.pages > 1 ? `${gap.says} (on ${gap.pages} of your pages)` : gap.says}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2">{road.close}</p>
+            </AlertDescription>
+          </AlertContent>
+          <AlertActions>
+            <Button
+              size="sm"
+              color="warning"
+              disabled={repairPages.isPending}
+              onClick={() => {
+                // The `waiting` road PROMISES the repair, so it is asked for outright
+                // and she is sent to Publish only once it has landed — otherwise she
+                // arrives at a pane that still says her pages are behind.
+                if (road === PAGE_ROADS.waiting) {
+                  void repairPages
+                    .mutateAsync()
+                    .then(() => ctx.open('builder.publish', {}, { target: 'tab' }));
+                  return;
+                }
+                ctx.open('builder.publish', {}, { target: 'tab' });
+              }}
+            >
+              {road.action}
+            </Button>
+          </AlertActions>
+        </Alert>
+      </ModuleScope>
+    );
+  }
+
+  if (gaps.length === 0) return null;
 
   // One `waiting` gap decides the whole panel: that road resolves the saved ones too
   // (the header and footer pane publishes), and the other road leaves it stranded.

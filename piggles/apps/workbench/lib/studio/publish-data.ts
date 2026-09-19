@@ -31,6 +31,12 @@ export interface PublishState {
    *  differs: the platform repairs stale chrome on the author's behalf, so that flag
    *  is routinely true of changes she did not make. */
   liveChromeGaps: { core: string; says: string; source: 'saved' | 'waiting' }[];
+  /** Things the LIVE product pages physically cannot say. Same shape and same two
+   *  sources as the chrome gaps above, for the same reason: a product page is stamped
+   *  from the catalog once and the repair that updates a stale one lands on the DRAFT,
+   *  so a shop can be unable to tell a customer something is sold out with nothing
+   *  anywhere saying so. `pages` is how many live pages are missing it. */
+  livePageGaps: { ref: string; says: string; source: 'saved' | 'waiting'; pages: number }[];
 }
 
 export function usePublishState() {
@@ -115,6 +121,33 @@ export function useRestoreRelease() {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: PUBLISH_STATE_KEY });
       void queryClient.invalidateQueries({ queryKey: RELEASES_KEY });
+    },
+  });
+}
+
+/**
+ * Ask the platform to bring every saved page up to date.
+ *
+ * `useRepairLayout`'s sibling. The page repair runs whenever a page is OPENED, and
+ * that is enough for an owner who is already editing. It is not enough for the owner
+ * this exists for: a site has many pages, so "open the page and we will fix it" is not
+ * an instruction anybody can follow when what is stale is a record template she has
+ * never had a reason to look at.
+ *
+ * Draft only. It leaves her with something to publish, which is the next thing the
+ * surface that calls this offers.
+ *
+ * No document reload afterwards, unlike the chrome repair: this does not touch the
+ * pane she is looking at, and the page panes read their own tree when they open.
+ */
+export function useRepairPages() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ repaired: number }>('/v1/builder/site/repair-pages', {}),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: PUBLISH_STATE_KEY });
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'silica-site'] });
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'pages'] });
     },
   });
 }

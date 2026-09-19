@@ -62,6 +62,7 @@ import {
   starterFrame,
   starterPages,
   liveChromeGaps,
+  livePageGaps,
   upgradeFrameChrome,
   upgradePageBody,
   type ChromeGap,
@@ -1335,8 +1336,10 @@ function syncTx(
       )
     ) {
       throw new BuilderConflictError(
-        `Refusing to sync: none of the ${roster.length} incoming page(s) match any of ` +
-          `the ${silicaRows.length} stored page(s) for this site, so this write would delete ` +
+        `Refusing to sync: none of the ${String(roster.length)} incoming ` +
+          `${roster.length === 1 ? 'page matches' : 'pages match'} any of ` +
+          `the ${String(silicaRows.length)} stored ` +
+          `${silicaRows.length === 1 ? 'page' : 'pages'} for this site, so this write would delete ` +
           `every existing page. This usually means the editor loaded a starter or a different ` +
           `site instead of yours. Reload the editor; if you meant to replace the whole site, ` +
           `use the explicit replace path.`
@@ -1831,6 +1834,35 @@ export function repairFrame(ctx: PropertyContext): Promise<{ repaired: boolean }
 }
 
 /**
+ * Apply the automatic PAGE repair to every saved page, because the owner asked for it.
+ *
+ * `repairFrame`'s sibling, and it exists for a sharper version of the same reason. The
+ * page repair already runs whenever a page is opened, and for most owners that is
+ * enough. It is not enough for the one this exists for: a site has many pages, so
+ * "open the page and we will fix it" is not an instruction anybody can follow when
+ * what is stale is a record template she has never had a reason to look at.
+ *
+ * Measured 2026-09-19, before this shipped: **0 of the 13 live product pages on the
+ * platform could tell a customer something was sold out**, and every one of them kept
+ * a working Add-to-cart button on a product with nothing behind it. Not one owner had
+ * been told (issue 684).
+ *
+ * DRAFT ONLY, like every repair. Nothing reaches a visitor until she publishes, which
+ * is the next thing the surface that calls this sends her to do.
+ */
+export function repairPages(ctx: PropertyContext): Promise<{ repaired: number }> {
+  return withTenant(ctx, async (tx) => {
+    const pages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
+    let repaired = 0;
+    for (const page of pages.filter(isSilica)) {
+      const after = await healPageTx(tx, page);
+      if (after.silicaDraftTree !== page.silicaDraftTree) repaired++;
+    }
+    return { repaired };
+  });
+}
+
+/**
  * Publish the site's chrome alone — the layout builder's Publish.
  *
  * A header typo should not require shipping every half-built page with it, which is
@@ -2284,6 +2316,16 @@ export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
       liveChromeGaps: liveChromeGaps(
         (active?.silicaDraftTree ?? null) as SilicaNode | null,
         (active?.silicaPublishedTree ?? null) as SilicaNode | null
+      ),
+      // EVERY page, not only the unpublished ones. The owners this is for have no
+      // unpublished work at all: their draft is exactly as stale as their live page,
+      // the two agree, and both are years behind the catalog. Filtering to pages that
+      // differ would report nothing for precisely the sites that need telling.
+      livePageGaps: livePageGaps(
+        pages.map((p) => ({
+          draft: (p.silicaDraftTree ?? null) as SilicaNode | null,
+          published: (p.silicaPublishedTree ?? null) as SilicaNode | null,
+        }))
       ),
     };
   });

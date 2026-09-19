@@ -8,6 +8,9 @@
 //   GET    /v1/builder/site/publish-state
 //                                     → what differs between the draft and what
 //                                       visitors are served (the "not live yet" signal)
+//   POST   /v1/builder/site/repair-pages
+//                                     → apply the automatic page repair to every saved
+//                                       page, on request. DRAFT ONLY
 //   GET    /v1/builder/site/check    → the pre-publish check over the DRAFT: broken
 //                                       links, missing image descriptions, heading
 //                                       gaps, dead buttons, styling that emits no CSS,
@@ -239,6 +242,26 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const state = await siteService.publishState(await toBuilderContext(request));
     return ok(state);
+  });
+
+  /**
+   * Apply the automatic PAGE repair to every saved page, as something the owner asked
+   * for.
+   *
+   * The sibling of `POST /layouts/silica/repair`, and it exists for a sharper version
+   * of the same reason. The repair already runs whenever a page is opened, but a site
+   * has many pages, so "open the page and we will fix it" is not an instruction anybody
+   * can follow when what is stale is a record template she has never had a reason to
+   * look at.
+   *
+   * Draft only. Nothing reaches a visitor until she publishes, which is where the
+   * surface that calls this sends her next.
+   */
+  app.post('/v1/builder/site/repair-pages', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const result = await siteService.repairPages(await toBuilderContext(request));
+    return ok(result);
   });
 
   /**

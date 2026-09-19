@@ -301,6 +301,19 @@ export interface SitePublishState {
    *  Shaped inline, not imported: this package is the wire contract and does not
    *  depend on the catalog that produces the list. */
   liveChromeGaps: { core: string; says: string; source: 'saved' | 'waiting' }[];
+  /** Things the LIVE product pages physically cannot say, for the same reason and
+   *  with the same two sources as `liveChromeGaps` above.
+   *
+   *  A product page is stamped from the catalog once, when the site is made, and
+   *  never re-reads it; the repair that brings a stale one up to date lands on the
+   *  DRAFT. So a shop can be unable to tell a customer that something is sold out,
+   *  with nothing anywhere saying so. Measured 2026-09-19 before this shipped:
+   *  **0 of 13 live product pages on the platform could say "Sold out"**, and each
+   *  one kept a working Add-to-cart button on a product with nothing behind it.
+   *
+   *  `pages` is how many live pages are missing it, so a surface can say "on 2 of
+   *  your pages" rather than implying a whole shop when one template is behind. */
+  livePageGaps: { ref: string; says: string; source: 'saved' | 'waiting'; pages: number }[];
 }
 
 // ── Publish history (docs/126 §5.3) ──────────────────────────────────────────
