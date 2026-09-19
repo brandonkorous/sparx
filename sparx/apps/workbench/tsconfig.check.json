@@ -1,0 +1,26 @@
+// Typecheck this app WHILE THE DEV SERVER IS RUNNING.
+//
+// `next-env.d.ts` imports `.next/dev/types/routes.d.ts`, which the dev server
+// rewrites constantly and which is regularly caught half written:
+//
+//   .next/dev/types/routes.d.ts(76,1): error TS1434: Unexpected keyword or identifier.
+//
+// That is a PARSE error, so `tsc -p tsconfig.json` stops there and checks no
+// source file at all. Filtering those lines out of the output prints nothing,
+// which reads exactly like a clean run — and a `<Icon glyph={faHandshake}>` with
+// no import survived four of them before crashing the pane in the browser.
+//
+// This config drops that one generated file so the answer is about the code.
+// `exclude` alone is not enough: the import in `next-env.d.ts` pulls it back in,
+// so that file is excluded too. Nothing else differs from tsconfig.json.
+//
+//   npx tsc --noEmit -p tsconfig.check.json
+//
+// The real `tsconfig.json` is what CI and the pre-push hook use, and they are
+// right to: a broken generated file there fails the push rather than hiding.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules", ".next", ".turbo", "next-env.d.ts"]
+}

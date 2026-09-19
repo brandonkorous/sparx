@@ -1,8 +1,8 @@
 # Dashboard Overview — Data Gaps & Wiring Backlog
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-15
+**Last Updated:** 2026-09-16
 
 ---
 
@@ -81,7 +81,7 @@ Module color is shown for orientation. ✅ = live today, 🟡 = wire-now, 🔴 =
 - ✅ Inventory value — `GET /v1/commerce/reports/inventory-valuation` (wired 2026-06-14; units + stock value on the Inventory card)
 - ✅ Sales **timeseries** — `GET /v1/commerce/reports/revenue-timeseries` (shipped 2026-06-15; **first rollup** — `rollup_commerce_daily_revenue` + nightly reconcile + live-overlay read per docs/97 §5; powers the Revenue chart + Gross/Refunds/Discounts/Net footer)
 - ✅ Channel breakdown (orders + revenue by `channel`: storefront/b2b_portal/admin/import/mcp) — `GET /v1/commerce/reports/channel-breakdown` (shipped 2026-06-15). The referrer/UTM "traffic sources" half still needs site-analytics event capture (workload B).
-- ✅ Discount performance (per-discount redemptions / discount given / unique orders) — `GET /v1/commerce/reports/discount-performance` (shipped 2026-06-15)
+- ⚠️ Discount performance (per-discount redemptions / discount given / unique orders) — `GET /v1/commerce/reports/discount-performance` (endpoint shipped 2026-06-15). **The route has never had a caller.** Measured 2026-09-16: no console fetches it, so for three months this line read as shipped over a capability nobody had. The figure an owner actually wants now reaches her where she already stands: `listDiscounts`/`getDiscount` carry `givenAwayCents`, and the Discounts list and detail show it (persona issue 536). The windowed REPORT is still unbuilt, and a ✅ here means the report, not the number.
 
 ### CMS / Content — Teal
 

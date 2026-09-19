@@ -152,6 +152,12 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
         // sentence: a business that would rather answer by email must be able to take
         // the section off the page without breaking anything.
         HOST_KEYS.commerceProductQuestions,
+        // Saving is the third of that set and unpinned for the third time: a shop
+        // that tries "save for later" and decides it is clutter beside the buy
+        // button has to be able to take it off. Nothing breaks without it — the
+        // shopper's saved-list page simply stays empty, which is what it did on
+        // every shop on the platform until this core existed (issue 642).
+        HOST_KEYS.commerceProductSave,
       ].sort()
     );
   });

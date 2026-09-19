@@ -91,6 +91,24 @@ export const HOST_KEYS = {
    *  that no page on her website could take one — the queue was waiting on a doorbell
    *  nobody had fitted. */
   commerceProductQuestions: 'commerce.product-questions',
+  /** A product's SAVE FOR LATER control — the heart a signed-in shopper presses to put
+   *  this product on their saved list, and presses again to take it off. A per-record
+   *  template (`commerce.product` record type); the route passes the product handle via
+   *  context.
+   *
+   *  Interactive, and for a sharper reason than reviews: saved items key on a VERSION,
+   *  not a product, so the control has to know which size and color the shopper is
+   *  looking at right now. A binding could draw a heart; it could not follow a choice
+   *  being made in the buy box beside it.
+   *
+   *  It exists for the reason the questions core does, one entry up. Everything else was
+   *  built — the endpoint, the shopper's saved-list page, the link to it in the account
+   *  menu, and the heart itself — and the only place the heart was ever placed was the
+   *  PREVIOUS generation's product body. When product pages became silica trees it went
+   *  out of reach, and nothing said so: 43 shops, 0 saved lists, and a console screen
+   *  promising "when a shopper saves a product for later, it shows up here" (issue 642).
+   */
+  commerceProductSave: 'commerce.product-save',
   /** The bookable-service DETAIL — one service's header + its LIVE time-picker (availability,
    *  slot selection, booking). A per-record functional template (`scheduling.service` record
    *  type); the route passes the service id via context. Interactive (client widget). */
@@ -495,6 +513,42 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
         label: 'Let customers ask a question',
         type: 'boolean',
         default: true,
+      },
+    ],
+  },
+  {
+    key: HOST_KEYS.commerceProductSave,
+    // What a shopper presses and what a shop owner calls the list it lands on. Not
+    // "wishlist widget" and not "favorites" — her console calls the screen Wishlists
+    // and the thing the shopper does is save something for later.
+    label: 'Save for later',
+    category: 'Your shop',
+    // The heart it draws. Registered in the curated icon set; an unregistered name
+    // renders an empty square, so the name is taken from there and not invented.
+    icon: 'heart',
+    hint: 'A heart a signed-in customer presses to save this product for later. What they save shows up in Sell, under Wishlists. Put it on your product page.',
+    // Unpinned, for the sentence reviews and questions already use: saving is a
+    // CHOICE. Nothing about the shop stops working without it, and a business that
+    // tries it and changes its mind must be able to take it off the page.
+    pinned: false,
+    // Sits beside the Add-to-cart button rather than filling a band, so it gets no
+    // column of its own.
+    defaultClass: 'inline-flex',
+    props: [
+      {
+        name: 'label',
+        label: 'What it says',
+        type: 'text',
+        default: 'Save for later',
+      },
+      {
+        name: 'savedLabel',
+        label: 'What it says once saved',
+        type: 'text',
+        // Says the state, not the next action. A control reading "Remove" at rest
+        // makes a shopper work out whether it is saved by reading the button that
+        // undoes it.
+        default: 'Saved',
       },
     ],
   },
