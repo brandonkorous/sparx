@@ -37,7 +37,6 @@ import {
   AlertDescription,
   AlertTitle,
   Badge,
-  Button,
   Card,
   EmptyState,
   Heading,
@@ -50,7 +49,7 @@ import {
   Text,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
-import { faArrowTrendUp, faChartColumn, faDownload } from '@fortawesome/pro-solid-svg-icons';
+import { faArrowTrendUp, faChartColumn } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -81,6 +80,8 @@ import {
 } from './reporting-data';
 import { productCopyWith } from '../../lib/product';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { DownloadButton } from '../../components/download-button';
+import { countClass } from '../../lib/count-ink';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 
@@ -130,25 +131,15 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-/** The one download control, repeated per card. A link rather than a fetch: the
- *  browser's own download handling beats anything built here and survives a
- *  large file. */
+/** The one download control, repeated per card. `DownloadButton` fetches with
+ *  the console's bearer token and saves the bytes: api-rest cannot be reached by
+ *  an anchor, whatever the href says. */
 function ExportButton({ reportKey, filters }: { reportKey: string; filters: ReportFilters }) {
   return (
-    <Button
-      color="neutral"
-      variant="outline"
-      size="sm"
-      // A real anchor, so right-click → save and open-in-new-tab both work. The
-      // label lives INSIDE it rather than as Button children: silica merges them
-      // either way, and an empty <a /> is an accessibility failure the linter is
-      // right to flag even when the runtime output is fine.
-      render={
-        <a href={reportCsvPath(reportKey, filters)} download>
-          <Icon glyph={faDownload} className="size-4" aria-hidden />
-          Spreadsheet
-        </a>
-      }
+    <DownloadButton
+      path={reportCsvPath(reportKey, filters)}
+      filename={`inventory-${reportKey}.csv`}
+      label="Spreadsheet"
     />
   );
 }
@@ -242,7 +233,7 @@ function SellThroughCard({
                   onOpen(row.variantId, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{row.title}</span>
                     <span className="truncate font-mono text-sm">{row.sku}</span>
@@ -294,9 +285,14 @@ function GmroiCard({
             <Icon glyph={faArrowTrendUp} className="size-4" aria-hidden />
             What your stock earned
           </Heading>
+          {/* The unit comes from the tenant's own currency, never a word. This
+              sentence said "for every pound" to every shop on the platform,
+              including the ones whose every other figure on the page is in
+              dollars. */}
           <Text className="text-sm">
-            For every pound tied up in stock, how much profit it brought back. One means it paid for
-            the money it tied up and nothing more; three is what a healthy line looks like.
+            For every {formatCents(100, report.currency)} tied up in stock, how much profit it
+            brought back. One means it paid for the money it tied up and nothing more; three is what
+            a healthy line looks like.
           </Text>
         </div>
         <ExportButton reportKey="gmroi" filters={filters} />
@@ -355,7 +351,7 @@ function GmroiCard({
                   onOpen(row.variantId, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{row.title}</span>
                     <span className="truncate font-mono text-sm">{row.sku}</span>
@@ -463,7 +459,14 @@ function FillRateCard({
             <Text className="text-sm">Of the units ordered, shipped from stock</Text>
           </div>
           <div className="flex flex-col">
-            <Text className="text-danger text-2xl font-semibold tabular-nums">
+            {/* Red only while she WAS short. See `count-ink`. */}
+            <Text
+              className={countClass(
+                report.linesShort,
+                'text-2xl font-semibold tabular-nums',
+                'text-danger'
+              )}
+            >
               {formatCount(report.linesShort)}
             </Text>
             <Text className="text-sm">
@@ -501,7 +504,7 @@ function FillRateCard({
                     onOpen(row.variantId, event);
                   }}
                 >
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate">{row.title}</span>
                       <span className="truncate font-mono text-sm">{row.sku}</span>
@@ -578,7 +581,14 @@ function StockoutCard({
 
       <div className="grid grid-cols-2 gap-2">
         <div className="flex flex-col">
-          <Text className="text-warning text-2xl font-semibold tabular-nums">
+          {/* Amber only while something DID run out. See `count-ink`. */}
+          <Text
+            className={countClass(
+              report.linesAffected,
+              'text-2xl font-semibold tabular-nums',
+              'text-warning'
+            )}
+          >
             {formatCount(report.linesAffected)}
           </Text>
           <Text className="text-sm">Lines that ran out at least once</Text>
@@ -829,7 +839,11 @@ export function PerformanceReportsSurface({ ctx }: { ctx: SurfaceContext }) {
               <StatDesc>{sellThroughVerdict(st.totals.sellThroughPct)}</StatDesc>
             </Stat>
             <Stat>
-              <StatTitle>Earned per pound of stock</StatTitle>
+              {/* Currency-free on purpose: the tile is drawn before the GMROI
+                  report lands, so there is no currency to name yet, and a title
+                  that changes as data arrives reads as a glitch. The per-unit
+                  wording lives on the card below, where the currency is known. */}
+              <StatTitle>How hard your stock money works</StatTitle>
               <StatValue className="text-2xl tabular-nums">
                 {gmroi.data ? formatRatio(gmroi.data.data.totals.gmroi) : '—'}
               </StatValue>

@@ -37,7 +37,12 @@ export interface AsnLine {
   unitsPerUom: number;
   lotNumber: string | null;
   quantityOrdered: number;
+  /** Every delivery ever made against this order line. Context only. */
   quantityReceived: number;
+  /** What arrived on the delivery THIS notice was settled by — the only figure
+   *  the notice can honestly be compared with, and what the Arrived column
+   *  shows. Null until it is settled against a receipt. */
+  quantityArrivedOnThisDelivery: number | null;
   /** Received minus shipped, once the delivery has been booked. Null before. */
   discrepancyUnits: number | null;
 }

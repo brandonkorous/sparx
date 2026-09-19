@@ -61,6 +61,7 @@ import {
 } from './data';
 import { openProductFacet } from '../commerce/product-scope';
 import { countVerdict } from './integrity-data';
+import { OwnershipBadge } from './stock-ownership-block';
 import { RowOpenHint } from '../../components/row-open-hint';
 import { StockUncountedBand } from './stock-uncounted-band';
 
@@ -242,7 +243,16 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
             title={
               locationName ? `Nothing is running low at ${locationName}` : 'Nothing is running low'
             }
-            description="Everything with a reorder rule is above the level you asked to be warned at. Turn the filter off to see all your stock."
+            /* Says what this filter COVERS, rather than asserting a fact about
+               the stock. It used to read "Everything with a reorder rule is
+               above the level you asked to be warned at", which is one of three
+               reasons this list can be empty and the only reassuring one. The
+               dangerous one is an item below its rule that has run out ENTIRELY,
+               which `sellable_only` deliberately excludes here. Measured
+               2026-09-16 in the other console: a shop with exactly one reorder
+               rule, the item at ZERO against a rule of 2, told everything was
+               above the line. */
+            description="This shows items that have a reorder rule, are below it, and still have some left to sell. Anything that has run out completely is under the out-of-stock filter."
           />
         );
       }
@@ -345,7 +355,7 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
                     right edge — the one column that must never be the one to
                     go. Zeroing the max width makes this the cell that GIVES,
                     which is what lets the truncation below actually bite. */}
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   {/* Identity is two facts and they are not equals: the product
                       name is what a person recognises, the code is how the shelf
                       is labelled. Both readable, one leading. */}
@@ -383,6 +393,11 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {countBadge.label}
                       </Badge>
                     ) : null}
+                    {/* A row that is somebody else's reads as yours without
+                        this, and the number beside it is counted in a valuation
+                        it does not belong in. Rare enough never to crowd the
+                        row: only marked levels carry it. */}
+                    <OwnershipBadge level={level} />
                   </span>
                 </td>
                 <td>

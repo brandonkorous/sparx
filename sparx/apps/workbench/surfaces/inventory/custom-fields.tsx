@@ -110,13 +110,17 @@ const HAS_EDITABLE_LIST: Record<CustomFieldEntity, boolean> = {
 /** Where a field on this record actually turns up, said plainly. The sentence
  *  is per record because the answer is: a `level` field reaches the grid and
  *  the spreadsheet, and the others do not. */
+// These used to say "over the API", five times between them and once more in
+// the notice at the top, with nothing on the screen saying what that was. It was
+// redundant as well as unexplained: the clause beside it already names something
+// a reader can picture, and "any app or assistant you have connected" covers the
+// accounts package and the till as well as the AI.
 const ENTITY_REACH: Record<CustomFieldEntity, string> = {
-  variant: 'on every item, over the API, and to any assistant connected to your account',
+  variant: 'on every item, and to any app or assistant you have connected',
   level:
-    'in the stock grid, in your spreadsheet exports as a cf_ column that imports back, over the API, and to any assistant connected to your account',
-  supplier: 'on every supplier, over the API, and to any assistant connected to your account',
-  purchase_order:
-    'on every purchase order, over the API, and to any assistant connected to your account',
+    'in the stock grid, in your spreadsheet exports as a cf_ column that imports back, and to any app or assistant you have connected',
+  supplier: 'on every supplier, and to any app or assistant you have connected',
+  purchase_order: 'on every purchase order, and to any app or assistant you have connected',
 };
 
 function NewFieldDialog({
@@ -473,10 +477,10 @@ export function InventoryCustomFieldsSurface(_props: { ctx: SurfaceContext }) {
           <Alert color="info">
             <AlertContent>
               <AlertDescription>
-                Anything you add here appears on the record straight away, in the API, and to any
-                assistant connected to your account. Columns on <strong>stock at a location</strong>{' '}
-                go further: they are editable in the stock grid and ride your spreadsheet exports as
-                a <span className="font-mono">cf_</span> column that imports back.
+                Anything you add here appears on the record straight away, and to any app or
+                assistant you have connected. Columns on <strong>stock at a location</strong> go
+                further: they are editable in the stock grid and ride your spreadsheet exports as a{' '}
+                <span className="font-mono">cf_</span> column that imports back.
               </AlertDescription>
             </AlertContent>
           </Alert>

@@ -41,6 +41,20 @@ export interface WarehouseRow {
   isSample: boolean;
   createdAt: string;
   updatedAt: string;
+  /**
+   * Units on hand here, and how many shelves this location has.
+   *
+   * Carried on the LIST because two screens read the same fact and neither had
+   * it. The Shelves list showed a column of zeros on every row while 491 units
+   * sat at another location entirely, and the Locations list did not say which
+   * location held anything — so a wall of zeros was indistinguishable from an
+   * empty warehouse. Counted once, here, rather than probed per row.
+   *
+   * NULL when the caller did not ask for it, never 0: "nobody counted" and
+   * "nothing here" are different answers and a zero would assert the second.
+   */
+  onHand: number | null;
+  binCount: number | null;
 }
 
 export async function listWarehouses(
@@ -81,7 +95,43 @@ export async function listWarehouses(
       }),
       tx.warehouse.count({ where }),
     ]);
-    return { items: rows.map(serializeWarehouse), total };
+
+    // Two grouped queries over the page's warehouses, rather than two per row.
+    // A location with nothing in it returns no group, which is why the maps
+    // below default to 0 HERE and not in the serializer: a warehouse on this
+    // page was counted and genuinely holds nothing, while a warehouse reached
+    // through `getWarehouse` was never counted at all.
+    const ids = rows.map((row) => row.id);
+    const [levels, bins] = await Promise.all([
+      ids.length === 0
+        ? []
+        : tx.inventoryLevel.groupBy({
+            by: ['warehouseId'],
+            where: { warehouseId: { in: ids } },
+            _sum: { onHand: true },
+          }),
+      ids.length === 0
+        ? []
+        : tx.inventoryBin.groupBy({
+            by: ['warehouseId'],
+            where: { warehouseId: { in: ids } },
+            _count: { _all: true },
+          }),
+    ]);
+    const onHandBy = new Map<string, number>(
+      levels.map((row) => [row.warehouseId, row._sum.onHand ?? 0])
+    );
+    const binsBy = new Map<string, number>(bins.map((row) => [row.warehouseId, row._count._all]));
+
+    return {
+      items: rows.map((row) =>
+        serializeWarehouse(row, {
+          onHand: onHandBy.get(row.id) ?? 0,
+          binCount: binsBy.get(row.id) ?? 0,
+        })
+      ),
+      total,
+    };
   });
 }
 
@@ -354,8 +404,13 @@ export async function bootstrapDefaultWarehouse(
   return result;
 }
 
-export function serializeWarehouse(w: Warehouse): WarehouseRow {
+export function serializeWarehouse(
+  w: Warehouse,
+  counts?: { onHand: number; binCount: number }
+): WarehouseRow {
   return {
+    onHand: counts?.onHand ?? null,
+    binCount: counts?.binCount ?? null,
     id: w.id,
     name: w.name,
     code: w.code,

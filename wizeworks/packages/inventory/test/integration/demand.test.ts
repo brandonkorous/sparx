@@ -326,6 +326,38 @@ describe('demand-side commitments — DB-backed', () => {
       const open = await listBackorders(ctx(), { variantId: f.variantId, status: 'open' });
       expect(open.items.some((i) => i.holderId === order)).toBe(false);
     });
+
+    it('the cross-lens counts see past the lens, and the ever-count past all of them', async () => {
+      // The console shows "N people are waiting with no date at all" as a
+      // banner while you are on a DIFFERENT lens. Both counts used to be
+      // computed over the lens's own filtered rows, and both of their tests
+      // require `status IN ('open','partial')` — so on the Overdue lens the
+      // undated count was structurally always 0, and on Allocated both were.
+      // The nudges were dead on the views that needed them.
+      const f = await createInventoryFixture(tenantId);
+      const order = await makeOrder(await makeCustomer('Crosslens'));
+      await sell(f, order, 5, 'line-crosslens');
+
+      const undated = await listBackorders(ctx(), { variantId: f.variantId });
+      expect(undated.undatedCount).toBe(1);
+
+      // Ask for a lens that CANNOT contain an undated open row.
+      const overdueLens = await listBackorders(ctx(), {
+        variantId: f.variantId,
+        overdueOnly: true,
+      });
+      expect(overdueLens.items).toHaveLength(0);
+      expect(overdueLens.total).toBe(0);
+      expect(overdueLens.undatedCount).toBe(1);
+      expect(overdueLens.everCount).toBe(1);
+
+      // And a variant nothing has ever waited on: the empty list that means
+      // something else entirely.
+      const untouched = await createInventoryFixture(tenantId);
+      const never = await listBackorders(ctx(), { variantId: untouched.variantId });
+      expect(never.everCount).toBe(0);
+      expect(never.undatedCount).toBe(0);
+    });
   });
 
   /* ── 5. Preorder caps ───────────────────────────────────────────────────── */

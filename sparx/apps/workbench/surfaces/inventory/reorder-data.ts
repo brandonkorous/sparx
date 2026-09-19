@@ -130,6 +130,11 @@ export interface DraftedPurchaseOrder {
   lineCount: number;
   totalCents: number;
   currency: string;
+  /** True when the lines joined a draft already open for that supplier and
+   *  location, rather than starting a new order. The console used to create a
+   *  new one every time, so this was always false in effect and the toast could
+   *  always say "created". */
+  appended: boolean;
 }
 
 export interface DraftReorderResult {
@@ -181,6 +186,20 @@ export function useReorderWorklist(query: ReorderQuery) {
       }),
     placeholderData: (previous) => previous,
   });
+}
+
+/**
+ * How many of the narrowed lines cannot become an order, because no supplier is
+ * linked to the item.
+ *
+ * It rides on the list response rather than on `/reorder/summary`, because it
+ * is a fact about the lines this narrowing returned — a supplier filter or a
+ * search changes it. It comes off the envelope's open `meta`, so it arrives
+ * typed `unknown`: checked once here rather than at the call site.
+ */
+export function unsuppliedFrom(meta: Record<string, unknown> | undefined): number | undefined {
+  const count = meta?.unsupplied;
+  return typeof count === 'number' ? count : undefined;
 }
 
 /**

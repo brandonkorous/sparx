@@ -30,6 +30,7 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
+  FieldStatus,
   Heading,
   Input,
   NativeSelect,
@@ -46,6 +47,7 @@ import { formatCents, plural, stockErrorMessage } from './data';
 import { usePurchaseOrder, usePurchaseOrders } from './purchase-orders-data';
 import { useCreateSupplierBill } from './supplier-bills-data';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
+import { NOT_A_DATE, dayStartUtc } from '../../lib/today';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -151,20 +153,29 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
   const freightCents = moneyCents(freight) ?? 0;
   const taxCents = moneyCents(tax) ?? 0;
 
+  // A date box can hold something that is not a date; see `lib/today`.
+  const billedIso = dayStartUtc(billedAt);
+  const dueIso = dueAt === '' ? null : dayStartUtc(dueAt);
+  const billedError = billedAt !== '' && billedIso === null ? NOT_A_DATE : null;
+  const dueError = dueAt !== '' && dueIso === null ? NOT_A_DATE : null;
+
   const canSave =
+    billedIso !== null &&
+    dueError === null &&
     supplierId !== '' &&
     number.trim().length > 0 &&
     lines.length > 0 &&
     lines.every((line) => Number.parseFloat(line.quantity) > 0);
 
   const onSave = () => {
+    if (!canSave || billedIso === null) return;
     create.mutate(
       {
         supplierId,
         purchaseOrderId,
         number: number.trim(),
-        billedAt: new Date(billedAt).toISOString(),
-        ...(dueAt ? { dueAt: new Date(dueAt).toISOString() } : {}),
+        billedAt: billedIso,
+        ...(dueIso === null ? {} : { dueAt: dueIso }),
         currency,
         taxCents,
         freightCents,
@@ -289,6 +300,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                     />
                   }
                 />
+                {billedError ? <FieldStatus status="error">{billedError}</FieldStatus> : null}
               </Field>
               <Field>
                 <FieldLabel>Due</FieldLabel>
@@ -308,6 +320,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                   Leave it blank if they have not stated one. An invoice with no due date is never
                   reported as overdue, which is honest rather than convenient.
                 </FieldDescription>
+                {dueError ? <FieldStatus status="error">{dueError}</FieldStatus> : null}
               </Field>
             </FormSection>
 
@@ -330,7 +343,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                     const priceMoved = typedCost !== line.agreedUnitCostCents;
                     return (
                       <tr key={line.purchaseOrderLineId}>
-                        <td className="w-full max-w-0">
+                        <td className="w-full max-w-0 min-w-56">
                           <span className="flex min-w-0 flex-col">
                             <span className="truncate">{line.title ?? 'Untitled line'}</span>
                             <span className="truncate font-mono text-sm">
@@ -351,6 +364,12 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                             type="number"
                             min={0}
                             aria-label={`Quantity billed for ${line.sku ?? 'this line'}`}
+                            /* See the note on the same field in
+                               `supplier-return-detail`: beside a `w-full` give
+                               cell, a number box with no width of its own is
+                               crushed to a couple of pixels. This one is what an
+                               invoice gets checked against. */
+                            className="w-20 text-right tabular-nums"
                             value={line.quantity}
                             onChange={(event) => {
                               const quantity = event.target.value;
@@ -364,6 +383,7 @@ export function NewSupplierBill({ ctx }: { ctx: SurfaceContext }) {
                           <MoneyTextInput
                             size="sm"
                             color="module"
+                            className="w-28"
                             aria-label={`Price each billed for ${line.sku ?? 'this line'}`}
                             text={line.unitCost}
                             onTextChange={(unitCost) => {

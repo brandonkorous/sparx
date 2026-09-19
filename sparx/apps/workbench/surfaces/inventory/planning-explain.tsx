@@ -59,7 +59,7 @@ import { plural, stockErrorMessage } from './data';
 import {
   confidenceLabel,
   confidenceTone,
-  forecastBasisLabel,
+  forecastLine,
   leadTimeSourceLabel,
   useApplyReorderPoint,
   usePlanningExplanation,
@@ -164,7 +164,7 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
         </Badge>
       </div>
 
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>Reorders at</StatTitle>
           <StatValue>{data.currentReorderPoint ?? '—'}</StatValue>
@@ -348,12 +348,11 @@ export function PlanningExplainSurface({ ctx }: { ctx: SurfaceContext }) {
               </tbody>
             </Table>
           </div>
+          {/* One helper rather than a sentence assembled here, because two of
+              its five shapes read as broken English and only a test catches
+              that. See forecastLine in planning-data.ts. */}
           <Text className="text-sm">
-            The forecast uses the {forecastBasisLabel(data.velocity.forecastBasis)}, at{' '}
-            {rate(data.velocity.forecastPerDay)} a day. Sales landed on{' '}
-            {plural(data.velocity.daysWithDemand, 'day', 'days')} out of the last 90, and there
-            {data.velocity.historyDays === 1 ? ' is ' : ' are '}
-            {plural(data.velocity.historyDays, 'day', 'days')} of history for it.
+            {forecastLine(data.velocity, rate(data.velocity.forecastPerDay))}
           </Text>
         </Card>
       ) : null}

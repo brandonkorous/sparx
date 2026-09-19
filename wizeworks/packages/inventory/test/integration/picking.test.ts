@@ -378,6 +378,31 @@ describe('picking and packing — DB-backed', () => {
     expect(done.list.status).toBe('picked');
   });
 
+  /* ── 5b. What the pack bench is told about a short pick ───────────── */
+
+  it('tells the pack bench which outstanding units nobody could find', async () => {
+    // Measured as P03: a walk ended "1 line came up short", and the very next
+    // screen listed that line under "Still to pack" with an Add all button, as
+    // though it were on the trolley. The line has to STAY — the units are still
+    // owed and still held — so the bench is told instead of the row being hidden.
+    const f = await createInventoryFixture(tenantId);
+    await receive(f, 10);
+    const order = await placeOrder(f, 3);
+
+    const walk = await generatePickList(ctx(), { orderIds: [order.orderId] });
+    const line = walk.lines[0];
+    await shortPick(ctx(), walk.id, {
+      lineId: line?.id ?? '',
+      quantity: 1, // one of the three was on the shelf
+      reason: 'not_found',
+    });
+
+    const box = await createPackage(ctx(), { orderId: order.orderId });
+    const owed = box.outstanding.find((o) => o.orderItemId === order.orderItemId);
+    expect(owed?.remaining).toBe(3);
+    expect(owed?.shortWhilePicking).toBe(2);
+  });
+
   /* ── 6. Packing ─────────────────────────────────────────────────────────── */
 
   it('refuses to pack more than the order wants, and refuses to seal an incomplete box', async () => {

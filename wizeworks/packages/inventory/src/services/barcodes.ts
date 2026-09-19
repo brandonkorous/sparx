@@ -107,6 +107,23 @@ export interface BarcodeConflictRow {
   heldByProductTitle: string | null;
 }
 
+/**
+ * A variant nothing can scan: no active code in the registry.
+ *
+ * The OTHER half of "can we scan yet". `listBarcodeConflicts` answers the
+ * question for items whose code two things claim; this answers it for items
+ * that have no code at all, which is the larger number in every tenant that has
+ * not started, and the one that decides whether scanning is worth switching on.
+ */
+export interface UnbarcodedVariantRow {
+  variantId: string;
+  /** So the surface can open the item rather than only naming it. */
+  productId: string;
+  sku: string;
+  productTitle: string;
+  variantTitle: string | null;
+}
+
 // ─── Reads ─────────────────────────────────────────────────────────────────────
 
 interface BarcodeQueryRow {
@@ -343,6 +360,69 @@ export async function listBarcodeConflicts(
        ORDER BY p.title ASC, v.sku ASC
        LIMIT ${limit}
     `;
+  });
+}
+
+/**
+ * Everything that cannot be scanned, and how many there are.
+ *
+ * ── The predicate has to be the minting rule, word for word ────────────────
+ *
+ * `generateBarcodes` skips any variant with an ACTIVE registry row and mints
+ * for the rest. So "cannot be scanned" is defined here as exactly that and
+ * nothing cleverer, because the count this returns is the number printed on the
+ * button that calls it. A count derived from a slightly different question is
+ * how a screen comes to promise 12 and deliver 9.
+ *
+ * Note it deliberately ignores `v.barcode`. That column is the GTIN mirror for
+ * feeds and channels; a scan resolves against the registry alone, so a variant
+ * carrying a column value with no registry row is unscannable AND a conflict,
+ * and belongs in both lists rather than being quietly excluded from this one.
+ */
+export async function listUnbarcodedVariants(
+  ctx: ServiceContext,
+  query: { search?: string; variantId?: string; limit?: number; offset?: number } = {}
+): Promise<{ items: UnbarcodedVariantRow[]; total: number }> {
+  const limit = query.limit ?? 200;
+  const offset = query.offset ?? 0;
+  return withTenant(ctx, async (tx) => {
+    const clauses: Prisma.Sql[] = [
+      Prisma.sql`v.tenant_id = ${ctx.tenantId}::uuid`,
+      Prisma.sql`v.deleted_at IS NULL`,
+      Prisma.sql`NOT EXISTS (
+        SELECT 1 FROM commerce_variant_barcodes bc
+         WHERE bc.tenant_id = v.tenant_id
+           AND bc.variant_id = v.id
+           AND bc.is_active = true
+      )`,
+    ];
+    if (query.variantId) clauses.push(Prisma.sql`v.id = ${query.variantId}::uuid`);
+    if (query.search) {
+      const like = `%${query.search}%`;
+      clauses.push(Prisma.sql`(v.sku ILIKE ${like} OR p.title ILIKE ${like})`);
+    }
+    const where = Prisma.join(clauses, ' AND ');
+
+    const rows = await tx.$queryRaw<UnbarcodedVariantRow[]>`
+      SELECT v.id         AS "variantId",
+             v.product_id AS "productId",
+             v.sku        AS "sku",
+             p.title      AS "productTitle",
+             v.title      AS "variantTitle"
+        FROM commerce_product_variants v
+        JOIN commerce_products p ON p.id = v.product_id
+       WHERE ${where}
+       ORDER BY p.title ASC, v.sku ASC
+       LIMIT ${limit} OFFSET ${offset}
+    `;
+    const totals = await tx.$queryRaw<{ total: number }[]>`
+      SELECT COUNT(*)::int AS total
+        FROM commerce_product_variants v
+        JOIN commerce_products p ON p.id = v.product_id
+       WHERE ${where}
+    `;
+
+    return { items: rows, total: totals[0]?.total ?? 0 };
   });
 }
 
@@ -830,7 +910,9 @@ export async function generateBarcodes(
 
     if (remaining.length > 0) {
       throw new InventoryConflictError(
-        `Could not mint a free barcode for ${remaining.length} item(s) after three attempts. This should not happen. Check for imported codes in the 2xxxxxxxxxxx range.`
+        `Could not find a free barcode for ${String(remaining.length)} ${
+          remaining.length === 1 ? 'item' : 'items'
+        } after three attempts. This should not happen. Check for imported codes in the 2xxxxxxxxxxx range.`
       );
     }
 

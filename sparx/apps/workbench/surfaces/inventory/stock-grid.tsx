@@ -42,8 +42,9 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Download, Grid3x3, Save, Undo2 } from 'lucide-react';
+import { Grid3x3, Save, Undo2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { DownloadButton } from '../../components/download-button';
 import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
@@ -306,24 +307,15 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
       <PaneToolbar
         label="Stock grid controls"
         primary={
-          <Button
-            color="neutral"
-            variant="outline"
-            size="sm"
+          <DownloadButton
             className="ml-auto"
-            render={
-              <a
-                href={stockGridCsvPath({
-                  ...(warehouseId ? { warehouseId } : {}),
-                  ...(search ? { search } : {}),
-                  ...(lowOnly ? { lowOnly } : {}),
-                })}
-                download
-              >
-                <Download className="size-4" aria-hidden />
-                Export
-              </a>
-            }
+            label="Export"
+            filename="stock.csv"
+            path={stockGridCsvPath({
+              ...(warehouseId ? { warehouseId } : {}),
+              ...(search ? { search } : {}),
+              ...(lowOnly ? { lowOnly } : {}),
+            })}
           />
         }
         controls={
@@ -461,7 +453,7 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>{plural(failures.size, 'row', 'rows')} did not save</AlertTitle>
             <AlertDescription>
-              They are still here with what you typed. Everything else went through.
+              Still here, with what you typed. Everything else went through.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -496,8 +488,25 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                     shrink to the width its input actually needs. Without it the
                     inputs claim their intrinsic width — five of them across a
                     row — and the item column collapses to "6a…", which is the
-                    one column you cannot edit a grid without reading. */}
-                <th className="w-full">Item</th>
+                    one column you cannot edit a grid without reading.
+
+                    `min-w-56` is the half that was missing, and without it the
+                    collapse the paragraph above predicts happened anyway. A
+                    `w-full` column is the one that PAYS when the row is crowded:
+                    every other column here carries a `min-w` floor and this one
+                    carried none, so it absorbed the whole shortfall. Measured on
+                    Juniper Row's 74 rows, the item column sat at 64px — about
+                    two characters — at EVERY pane width from 320 up to 900,
+                    while the table was already overflowing its card by 358px at
+                    the narrow end. The row paid twice over: scroll sideways to
+                    reach the figures AND no way to tell which item the figure
+                    belongs to.
+
+                    56 is 224px, less 32px of cell padding, which leaves 192px.
+                    The widest product code on that account renders at 185px, so
+                    it fits on one line even at the floor. Past the floor the
+                    column still grows, because `w-full` is kept. */}
+                <th className="w-full min-w-56">Item</th>
                 <th className="hidden @lg:table-cell">Location</th>
                 {/* `min-w` and not just `w`: a width alone is a SUGGESTION the
                     table drops when the row is crowded, and a dropped width
@@ -538,9 +547,26 @@ export function StockGridSurface(_props: { ctx: SurfaceContext }) {
                         }}
                       />
                     </td>
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
-                        <span className="truncate font-mono text-sm">{row.sku}</span>
+                        {/* The CODE wraps and the TITLE truncates, which is the
+                            opposite way round from uncosted-row.tsx, on purpose.
+                            A grid of stock is mostly variants: those 74 rows
+                            carry 9 distinct titles between them, eight sizes and
+                            colors of one overshirt sharing "The Ash Overshirt",
+                            so the title does not tell the rows apart and the
+                            code is the only thing that does. Worse, a code is
+                            distinguished by its TAIL — ASH-OVERSHIRT-L-INK
+                            against ASH-OVERSHIRT-XL-MOSS — and truncation cuts
+                            the tail, so a clipped code is not a shortened name,
+                            it is another row's name. Typing a count into the
+                            wrong size is the whole cost of getting this wrong.
+
+                            `break-all` and not `break-words`: it is the house
+                            treatment for a product code (stock-item.tsx,
+                            order-detail-lines.tsx) and it keeps a code with no
+                            hyphens in it from pushing the column wider. */}
+                        <span className="font-mono text-sm break-all">{row.sku}</span>
                         <span className="truncate text-sm">{row.title}</span>
                         {failure ? <span className="text-danger text-sm">{failure}</span> : null}
                       </span>

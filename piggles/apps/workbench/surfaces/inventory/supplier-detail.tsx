@@ -1054,7 +1054,10 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               {/* How they have ACTUALLY behaved (docs/146 Phase 8.1), directly
                   under the terms somebody typed in when the record was set up —
                   because the point of the panel is the gap between the two. */}
-              <SupplierScorecardPanel supplierId={id} />
+              <SupplierScorecardPanel
+                supplierId={id}
+                statedLeadTimeDays={supplier.data.leadTimeDays}
+              />
 
               <PurchasingLinks
                 supplierId={id}

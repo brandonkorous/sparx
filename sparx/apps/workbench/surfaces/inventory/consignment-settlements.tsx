@@ -114,9 +114,9 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
               {plural(unpricedTotal, 'unit', 'units')} sold with no cost recorded
             </AlertTitle>
             <AlertDescription>
-              They are counted below and left out of the money, because a line reading nothing would
-              say the owner gave them to you. A period containing them cannot be closed. Put a cost
-              on those items and rebuild the draft.
+              That stock is counted below and left out of the money, because a line reading nothing
+              would say the owner gave it to you. A period containing it cannot be closed. Put a
+              cost on the items and rebuild the draft.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -149,7 +149,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
                 <tbody>
                   {behind.map((owner) => (
                     <tr key={owner.ownerId}>
-                      <td className="w-full max-w-0">
+                      <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate">{owner.ownerName ?? 'Unnamed owner'}</span>
                           {owner.earliestUnsettledSaleAt ? (
@@ -227,7 +227,7 @@ export function ConsignmentSettlementsSurface({ ctx }: { ctx: SurfaceContext }) 
                         open(row.id, event);
                       }}
                     >
-                      <td className="w-full max-w-0">
+                      <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate font-mono">{row.number}</span>
                           <span className="truncate text-sm">

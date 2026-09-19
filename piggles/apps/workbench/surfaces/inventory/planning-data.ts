@@ -32,7 +32,8 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
-import type { Tone } from './data';
+import { performanceKeys } from './supplier-performance-data';
+import { plural, type Tone } from './data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -505,6 +506,11 @@ export function useRecomputePlanning() {
       // shows and what the stock list flags as low.
       void queryClient.invalidateQueries({ queryKey: ['inventory', 'reorder'] });
       void queryClient.invalidateQueries({ queryKey: ['inventory', 'stock'] });
+      // The sweep's `supplier_scorecards` stage recomputes every scorecard, so
+      // the screens reading them are stale the moment it finishes. Leaving this
+      // out is how a supplier's card could keep saying how long they take has
+      // never been worked out, straight after somebody worked it out.
+      void queryClient.invalidateQueries({ queryKey: performanceKeys.all });
     },
   });
 }
@@ -715,6 +721,46 @@ export function forecastBasisLabel(basis: string | null): string {
     default:
       return 'not measured';
   }
+}
+
+/**
+ * Where the forecast rate came from, as a whole sentence.
+ *
+ * The sentence used to be assembled at the call site as "The forecast uses the
+ * {forecastBasisLabel(basis)}". Three of that function's five answers name a
+ * WINDOW ("last 30 days") and read correctly in that frame. The other two do
+ * not name a window at all, so the screen printed **"The forecast uses the
+ * nothing sold"** and "The forecast uses the not measured" — and those two are
+ * exactly the branches a shop with no sales history gets. Seen as P03 on
+ * Juniper Row's only reorder line, on the pane whose whole promise is
+ * "nothing here is a black box".
+ *
+ * The 90-day clause is dropped when nothing sold, because "Sales landed on 0
+ * days out of the last 90" then says the same thing a second time. The history
+ * depth is kept in every case: it is the part that says how much the number is
+ * standing on. [[feedback_never_present_absence_as_measurement]]
+ */
+export function forecastLine(
+  velocity: { forecastBasis: string; daysWithDemand: number; historyDays: number },
+  perDay: string
+): string {
+  const history = `there ${velocity.historyDays === 1 ? 'is' : 'are'} ${plural(
+    velocity.historyDays,
+    'day',
+    'days'
+  )} of history for it`;
+
+  if (velocity.forecastBasis === 'none') {
+    return `Nothing has sold, so the forecast is ${perDay} a day, and ${history}.`;
+  }
+  if (!['7d', '30d', '90d'].includes(velocity.forecastBasis)) {
+    return `How fast this sells has not been measured, so the forecast is ${perDay} a day, and ${history}.`;
+  }
+  return `The forecast uses the ${forecastBasisLabel(velocity.forecastBasis)}, at ${perDay} a day. Sales landed on ${plural(
+    velocity.daysWithDemand,
+    'day',
+    'days'
+  )} out of the last 90, and ${history}.`;
 }
 
 export function cadenceLabel(cadence: CountCadence, intervalDays: number): string {

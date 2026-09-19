@@ -380,7 +380,7 @@ function DeadStockCard({
                 onOpen(item, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{item.title ?? 'Untitled product'}</span>
                   <span className="truncate font-mono text-sm">{item.sku ?? 'No code'}</span>
@@ -668,7 +668,7 @@ function AsOfCard({ locationId }: { locationId: string }) {
                   {report.data.uncostedUnits === 1 ? ' it' : ' them'}
                 </AlertTitle>
                 <AlertDescription>
-                  Those units are counted but not valued, because nothing records what they cost,
+                  That stock is counted but not valued, because nothing records what it cost,
                   usually stock that was here before you started recording deliveries. The value
                   above is everything else.
                 </AlertDescription>
@@ -689,7 +689,7 @@ function AsOfCard({ locationId }: { locationId: string }) {
               <tbody>
                 {report.data.rows.slice(0, 10).map((row) => (
                   <tr key={`${row.variantId}:${row.warehouseId}`}>
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate">{row.title ?? 'Untitled product'}</span>
                         <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>

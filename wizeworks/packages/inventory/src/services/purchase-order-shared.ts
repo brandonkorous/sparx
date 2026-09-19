@@ -49,6 +49,13 @@ export interface PurchaseOrderRow {
   orderedAt: string | null;
   expectedArrivalAt: string | null;
   receivedAt: string | null;
+  /** When the nightly pass announced this order as late, or null if it never
+   *  has. NOT the same as "on time": an order that went past its date this
+   *  afternoon has not been through a nightly pass yet. The order's own pane
+   *  used to state flatly that it had been flagged, with nothing to read it
+   *  from — this is that field. Cleared again whenever a new date is accepted,
+   *  so it always refers to the date currently on the order. */
+  lateAlertedAt: string | null;
   subtotalCents: number;
   freightCents: number;
   totalCents: number;
@@ -62,6 +69,10 @@ export interface PurchaseOrderRow {
 
 export interface PurchaseOrderDetail extends PurchaseOrderRow {
   lines: PurchaseOrderLineRow[];
+  /** Freight booked in WITH the goods, which `freightCents` never hears about.
+   *  Separate because one is what was agreed and the other is what turned up,
+   *  and checking an invoice needs both. See `receiptFreightCents`. */
+  receiptFreightCents: number;
 }
 
 // ─── Prisma include shapes ─────────────────────────────────────────────────────
@@ -84,6 +95,11 @@ export const DETAIL_INCLUDE = {
     orderBy: { createdAt: 'asc' },
     include: { variant: { select: { sku: true, product: { select: { title: true } } } } },
   },
+  // Freight can arrive AFTER the order is raised, booked in against a delivery
+  // rather than agreed up front, and the order's own `freightCents` never hears
+  // about it. Without this the Freight field reads $0.00 over a real charge —
+  // see `receiptFreightCents` (issue 552).
+  receipts: { select: { charges: { select: { kind: true, amountCents: true } } } },
 } satisfies Prisma.PurchaseOrderInclude;
 
 type PoWithLineQty = Prisma.PurchaseOrderGetPayload<{ include: typeof LIST_INCLUDE }>;
@@ -111,6 +127,7 @@ export function serializePurchaseOrderRow(po: PoWithLineQty): PurchaseOrderRow {
     orderedAt: po.orderedAt?.toISOString() ?? null,
     expectedArrivalAt: po.expectedArrivalAt?.toISOString() ?? null,
     receivedAt: po.receivedAt?.toISOString() ?? null,
+    lateAlertedAt: po.lateAlertedAt?.toISOString() ?? null,
     subtotalCents: po.subtotalCents,
     freightCents: po.freightCents,
     totalCents: po.totalCents,
@@ -141,7 +158,40 @@ export function serializePurchaseOrderLine(line: PoLineFull): PurchaseOrderLineR
 }
 
 export function serializePurchaseOrderDetail(po: PoWithLines): PurchaseOrderDetail {
-  return { ...serializePurchaseOrderRow(po), lines: po.lines.map(serializePurchaseOrderLine) };
+  return {
+    ...serializePurchaseOrderRow(po),
+    lines: po.lines.map(serializePurchaseOrderLine),
+    receiptFreightCents: receiptFreightCents(po),
+  };
+}
+
+/**
+ * Freight booked in WITH the goods, rather than agreed when the order was
+ * raised.
+ *
+ * `PurchaseOrder.freightCents` is the second one: it is written when the order
+ * is created or edited, and it is what the order screen shows. A charge added
+ * during receiving lands on `GoodsReceiptCharge` instead, and nothing carries
+ * it back — so the screen said "Freight $0.00" over a delivery that had cost
+ * $14.00 to get there, while every figure downstream had it: the stock was
+ * valued at $3.84 a unit against a $3.60 goods cost, and the supplier's invoice
+ * came in at $222.72 against an order total of $216.00. She had no way to see
+ * where the $6.72 came from (issue 552).
+ *
+ * Reported separately rather than added into `freightCents`, because they are
+ * different facts. One is what she agreed to pay; the other is what turned up.
+ * Merging them would lose which is which, and she needs both to check an
+ * invoice.
+ */
+function receiptFreightCents(po: PoWithLines): number {
+  return po.receipts.reduce(
+    (total, receipt) =>
+      total +
+      receipt.charges
+        .filter((charge) => charge.kind === 'freight')
+        .reduce((sum, charge) => sum + charge.amountCents, 0),
+    0
+  );
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────

@@ -23,6 +23,7 @@
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { isNotFound, stockErrorMessage, type Tone } from './data';
+import { reorderKeys } from './reorder-data';
 
 // Re-exported so the Buying surfaces import their error helpers from one place
 // rather than reaching past this layer into the Stock module's file.
@@ -149,6 +150,15 @@ export function useInvalidateSuppliers() {
   return (id?: string) => {
     void queryClient.invalidateQueries({ queryKey: supplierKeys.all });
     if (id) void queryClient.invalidateQueries({ queryKey: supplierKeys.detail(id) });
+    // What to reorder reads suppliers too: the worklist resolves who to buy
+    // each low line from, prints their name, and refuses to let a line with
+    // nobody be chosen. Without this, the notice on that pane sends somebody
+    // here to link a supplier and is still saying "cannot be ordered yet" when
+    // they turn back — and the two panes sit SIDE BY SIDE, because that notice
+    // opens this one beside it. Kept here rather than on the two link
+    // mutations so archiving or renaming a supplier is covered by the same
+    // line.
+    void queryClient.invalidateQueries({ queryKey: reorderKeys.all });
   };
 }
 

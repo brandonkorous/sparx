@@ -31,6 +31,7 @@
 //   GET /v1/inventory/lots/:id/serials  the units in one batch
 //   GET /v1/inventory/serials         the serial list — server search / location
 //                                     / status filters, and paging
+//   POST /v1/inventory/recalls                 put a batch under recall
 //   POST /v1/inventory/lots/:id/clear-recall   resolve an open recall
 //   PATCH /v1/inventory/serials/:id            change one unit's status
 //
@@ -113,6 +114,10 @@ export interface SerialRow {
   status: string;
   /** Set once the unit has left on an order — where this unit went. */
   soldOnOrderItemId: string | null;
+  /** The order that line belongs to, so the unit can be followed to a person.
+   *  A recall is the whole reason this matters. */
+  soldOnOrderId: string | null;
+  soldOnOrderNumber: string | null;
   soldAt: string | null;
   createdAt: string;
 }
@@ -122,6 +127,9 @@ export interface SerialRow {
 export interface LotsQuery {
   q?: string;
   warehouseId?: string;
+  /** One item's batches. Used by the stock pane to say a batch of THIS is
+   *  recalled, on the screen that says how many of it there are to sell. */
+  variantId?: string;
   /** 'pending' | 'active' | 'cleared'. */
   recallStatus?: string;
   /** Only batches expiring on/before this ISO instant (and that have an expiry). */
@@ -164,6 +172,7 @@ export function useLots(query: LotsQuery) {
       api.list<LotRow>('/v1/inventory/lots', {
         ...(query.q ? { q: query.q } : {}),
         ...(query.warehouseId ? { warehouse_id: query.warehouseId } : {}),
+        ...(query.variantId ? { variant_id: query.variantId } : {}),
         ...(query.recallStatus ? { recall_status: query.recallStatus } : {}),
         ...(query.expiringBefore ? { expiring_before: query.expiringBefore } : {}),
         take: query.take,
@@ -244,6 +253,31 @@ export function useInvalidateLots() {
 /* ── Writes ─────────────────────────────────────────────────────────────── */
 
 /**
+ * Put a batch under recall.
+ *
+ * The endpoint takes a LIST of batches because a bad run often spans several,
+ * and one reason covers them all. The pane sends one, which is the shape a
+ * person works in: they are looking at the batch that went wrong.
+ *
+ * What comes back is how many individually-numbered units have already been
+ * sold — the part of the problem that is no longer in the building. The batch
+ * itself is re-read rather than guessed, because the server stamps the moment.
+ */
+export function useInitiateRecall() {
+  const invalidate = useInvalidateLots();
+  return useMutation({
+    mutationFn: (input: { lotBatchId: string; reason: string }) =>
+      api.post<{ affectedSerialUnits: number; affectedLotBatches: number }>(
+        '/v1/inventory/recalls',
+        { lotBatchIds: [input.lotBatchId], reason: input.reason }
+      ),
+    onSuccess: (_result, input) => {
+      invalidate(input.lotBatchId);
+    },
+  });
+}
+
+/**
  * Resolve an open recall on a batch.
  *
  * The server only allows this on a batch whose recall is still `active` or
@@ -271,6 +305,43 @@ export function useUpdateSerialStatus() {
       invalidate(input.lotBatchId ?? undefined);
     },
   });
+}
+
+/**
+ * Somebody's own words, ended with exactly one full stop.
+ *
+ * A recall reason is free text a person typed under "What is wrong with it",
+ * and the sentence around it adds its own punctuation. Whoever writes a proper
+ * sentence — which is what the field asks for — got two full stops for the
+ * trouble: "Do not put any of it on a belt.. Raised 2 minutes ago."
+ *
+ * Question marks and exclamation marks are left alone: they already end the
+ * sentence, and replacing one with a period would edit what she wrote.
+ */
+export function endsSentence(text: string): string {
+  const written = text.trim();
+  if (written === '') return '';
+  return /[.!?…]$/.test(written) ? written : `${written}.`;
+}
+
+/**
+ * How much of a recalled batch is already with customers, and where to look.
+ *
+ * One sentence in one place because three screens say it — the recall dialog
+ * before it happens, the toast after, and the batch's own banner every time it
+ * is opened — and three copies is three chances for them to disagree about what
+ * a recall reached.
+ *
+ * Written out for one and for many rather than wrapped around `plural()`: "with
+ * the order each one left on" is fine for six units and wrong for one, which is
+ * exactly the shape `provenance-copy.test.ts` guards against.
+ */
+export function soldUnitsLine(count: number): string {
+  if (count <= 0) return 'No individually-numbered unit from it has been sold.';
+  if (count === 1) {
+    return '1 unit from it has already gone to a customer. It is listed below, with the order it left on.';
+  }
+  return `${String(count)} units from it have already gone to customers. They are listed below, with the order each one left on.`;
 }
 
 /* ── Saying what a date or a status means ───────────────────────────────── */

@@ -42,7 +42,7 @@ import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PANE_SHELL, PANE_SHELL_SCROLL } from '../../components/pane-toolbar';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { plural, stockErrorMessage, useStockLocations } from './data';
+import { physicalLocations, plural, stockErrorMessage, useStockLocations } from './data';
 import {
   abcLabel,
   abcTone,
@@ -110,8 +110,9 @@ export function CountScheduleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // exceeded" for as long as it stayed open, and because React's depth counter is shared,
   // the error surfaced against whatever component happened to setState next — including
   // innocent `onChange` handlers in unrelated panes.
+  // Somewhere a person can walk with a scanner. Nobody counts "In transit".
   const activeLocations = useMemo(
-    () => (locations.data?.items ?? []).filter((location) => location.isActive),
+    () => physicalLocations(locations.data?.items ?? []),
     [locations.data]
   );
 

@@ -161,6 +161,11 @@ export interface SupplierBillsReport {
    *  Reported alongside the count so a single figure is never read as a
    *  converted total it is not. */
   outstandingCents: number;
+  /** The part of the above that is QUERIED with the supplier — counted as owed,
+   *  because somebody is still expecting it, but named on its own because it is
+   *  the one figure in here that might change. */
+  queriedCents: number;
+  queriedCount: number;
   outstandingCount: number;
 }
 
@@ -177,12 +182,31 @@ export async function listSupplierBills(
       ...(filter.status ? { status: filter.status } : {}),
       ...(filter.overdueOnly ? { paidAt: null, dueAt: { lt: new Date() } } : {}),
     };
+    // WHAT "OWED" MEANS: every unpaid bill the supplier is still expecting.
+    //
+    // This used to read `notIn: ['cancelled', 'draft']`, which is wrong twice
+    // over and was wrong in opposite directions at once. It EXCLUDED every bill
+    // in `draft` — the status this console labels "Entered", i.e. a bill that
+    // has arrived and been typed in, which is exactly the money a shop owes —
+    // and it INCLUDED `disputed`, the one status that means she has told the
+    // supplier she is not paying it yet.
+    //
+    // On Juniper Row that produced "$684.00 owed across 1 bill" as the heading
+    // over a list of four unpaid bills worth $1,626.72, and the single bill it
+    // was counting was the one she is querying. The heading and the rows beneath
+    // it had ZERO overlap.
+    //
+    // Cancelled is the only thing that is not owed. A queried bill still is —
+    // until it is resolved somebody is expecting the money — so it is counted
+    // and reported SEPARATELY rather than hidden, because it is the one figure
+    // that might still change.
     const outstandingWhere = {
       tenantId: ctx.tenantId,
       paidAt: null,
-      status: { notIn: ['cancelled', 'draft'] },
+      status: { notIn: ['cancelled'] },
     };
-    const [rows, total, outstanding] = await Promise.all([
+    const queriedWhere = { ...outstandingWhere, status: 'disputed' };
+    const [rows, total, outstanding, queried] = await Promise.all([
       tx.supplierBill.findMany({
         where,
         // Soonest due first — this list is a payment run.
@@ -197,12 +221,19 @@ export async function listSupplierBills(
         _sum: { totalCents: true },
         _count: true,
       }),
+      tx.supplierBill.aggregate({
+        where: queriedWhere,
+        _sum: { totalCents: true },
+        _count: true,
+      }),
     ]);
     return {
       items: rows.map(serializeRow),
       total,
       outstandingCents: outstanding._sum.totalCents ?? 0,
       outstandingCount: outstanding._count,
+      queriedCents: queried._sum.totalCents ?? 0,
+      queriedCount: queried._count,
     };
   });
 }
@@ -359,7 +390,9 @@ export async function approveSupplierBill(
     if (detail.match.ok === false && detail.varianceAcceptedAt === null) {
       throw new InventoryConflictError(
         `Bill ${detail.number} does not agree with what was ordered and received: ` +
-          `${detail.match.linesFlagged} line(s) differ. Accept the difference with a reason, or dispute it.`,
+          `${String(detail.match.linesFlagged)} ${
+            detail.match.linesFlagged === 1 ? 'line differs' : 'lines differ'
+          }. Accept the difference with a reason, or dispute it.`,
         'match'
       );
     }

@@ -125,7 +125,7 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(row.id, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">
                     <span className="font-mono">{row.number}</span>
@@ -205,12 +205,10 @@ export function AsnListSurface({ ctx }: { ctx: SurfaceContext }) {
       {overdue > 0 && view !== 'overdue' ? (
         <Alert color="danger" variant="soft">
           <AlertContent>
-            <AlertTitle>
-              {plural(overdue, 'shipment was', 'shipments were')} due and have not arrived
-            </AlertTitle>
+            <AlertTitle>{plural(overdue, 'shipment is', 'shipments are')} overdue</AlertTitle>
             <AlertDescription>
-              The supplier believes they have sent these. Nothing has been booked in against them,
-              so either they are stuck with the carrier or they never left.
+              The supplier has said this stock is on its way, and nothing has been booked in against
+              it, so either it is stuck with the carrier or it never left.
             </AlertDescription>
           </AlertContent>
         </Alert>

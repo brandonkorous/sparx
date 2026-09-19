@@ -56,6 +56,8 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { plural } from './data';
+import { useStaffMembers } from '../staff/data';
+import { useReachableModules } from '../../lib/surfaces/use-visible-nav';
 import {
   pickErrorMessage,
   pickKindLabel,
@@ -68,6 +70,7 @@ import {
   usePickList,
   type PickLine,
 } from './picking-data';
+import { ActionLabel } from '../../components/action-label';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -103,6 +106,20 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const assign = useAssignPickList(id);
   const cancel = useCancelPickList(id);
+
+  // The people who work here, offered as suggestions on the assignee box.
+  // Only asked for when the Team screens exist at all: a warehouse-only account
+  // has no staff module, and a 404 on every walk would be a request that can
+  // never succeed. `null` means the module list has not arrived yet, which the
+  // rest of the console reads as "show everything", so it is treated as yes.
+  const reachable = useReachableModules();
+  const team = useStaffMembers(
+    { status: 'active' },
+    { enabled: reachable === null || reachable.has('staff') }
+  );
+  const teamNames = (team.data?.items ?? [])
+    .map((member) => member.name)
+    .filter((name) => name.trim() !== '');
   const confirm = useConfirm();
 
   if (isError) {
@@ -160,7 +177,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Icon glyph={faBarcodeRead} className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Work this walk</span>
+            <ActionLabel from="md">Work this walk</ActionLabel>
           </Button>
         ) : null}
 
@@ -235,7 +252,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               </AlertTitle>
               <AlertDescription>
                 Those units have gone back into stock and are held for their orders, so nobody else
-                can buy them. Each shelf has been put on a blind count: settle those and the numbers
+                can buy them. Each shelf has been put on a blind count. Settle it and the numbers
                 come right.
               </AlertDescription>
               {shorts[0]?.shortCountId ? (
@@ -280,9 +297,17 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         </Card>
 
-        {/* Who has it. An input rather than a picker because a floor login is
-            often not a sparx account, and refusing an unlinked name would mean
-            the throughput report simply has no rows for half a shift. */}
+        {/* Who has it.
+            An INPUT rather than a picker, because a floor login is often not a
+            sparx account and refusing an unlinked name would mean the throughput
+            report simply has no rows for half a shift.
+
+            But it SUGGESTS the team, because the name is stored as text and the
+            throughput report does `GROUP BY picked_by` on it: "Priya", "priya"
+            and "Priya R" are three pickers who each did a third of the work. A
+            datalist keeps the free text and makes the ordinary case one click,
+            spelled the same way every time. It is empty and harmless on a
+            warehouse-only account with no Team screen. */}
         {open ? (
           <Card>
             <div className="flex flex-wrap items-end gap-3 p-4">
@@ -290,12 +315,18 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Text className="mb-1 text-sm">Who is walking it</Text>
                 <Input
                   size="sm"
+                  list={`pickers-${walk.id}`}
                   placeholder={walk.assignedTo ?? 'Nobody yet'}
                   value={assignee}
                   onChange={(event) => {
                     setAssignee(event.target.value);
                   }}
                 />
+                <datalist id={`pickers-${walk.id}`}>
+                  {teamNames.map((name) => (
+                    <option key={name} value={name} />
+                  ))}
+                </datalist>
               </div>
               <Button
                 size="sm"
@@ -354,7 +385,7 @@ export function PickListDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   const lineState = pickLineState(line.status);
                   return (
                     <tr key={line.id}>
-                      <td className="w-full max-w-0">
+                      <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate font-medium">{line.productTitle}</span>
                           <span className="truncate font-mono text-sm">{line.sku}</span>

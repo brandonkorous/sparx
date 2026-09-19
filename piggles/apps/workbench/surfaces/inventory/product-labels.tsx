@@ -27,13 +27,28 @@
 // quietly reverts to typing, so this screen does not merely refuse to print an
 // item without a barcode: it offers to mint one. That is the whole path from a
 // spreadsheet catalogue to a scannable warehouse, and it is two clicks.
+//
+// That paragraph was here, and the button, and the count, and the success
+// message — and nothing called any of them. `GenerateBarcodesButton` and
+// `MissingBarcodeCount` were exported with no importer in either console; the
+// "Created N codes" alert below read a mutation this file never fired. A shop
+// with 108 items and no codes saw a picture of a pig and a button that opened a
+// list with no way to pick anything. [[feedback_screen_over_a_function_nobody_calls]]
+//
+// So the block is wired now, and it sits ABOVE the sheet rather than inside it.
+// The sheet is the things you CAN print; this is the reason the sheet is short.
+// Putting it inside the card would hide it in the one case that matters, which
+// is a tenant who has never barcoded anything and whose card is empty.
 
 import { useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { ListEmptyState } from '../../components/list-empty-state';
 import {
   Alert,
-  Badge,
+  AlertActions,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Button,
   Card,
   Checkbox,
@@ -56,7 +71,13 @@ import { plural } from './data';
 /** Registry module for this pane, so the brand draws Stock's own picture rather
  *  than the generic one. */
 const MODULE = 'inventory';
-import { useBarcodes, useGenerateBarcodes, type Barcode } from './scan-data';
+import {
+  useBarcodes,
+  useGenerateBarcodes,
+  useUnbarcodedVariants,
+  type Barcode,
+  type UnbarcodedVariant,
+} from './scan-data';
 import { productCopy } from '../../lib/product';
 
 /** Label sizes named by what they are FOR. Nobody picks a label by remembering 62mm. */
@@ -211,6 +232,180 @@ function LabelCell({
   );
 }
 
+/**
+ * The things you sell that nothing can scan, and the one button that fixes it.
+ *
+ * ── Why it is an alert and not a tab ──────────────────────────────────────
+ *
+ * It mirrors the conflicts alert on the barcode list deliberately: the two are
+ * the same question asked of different rows, and answering only one of them is
+ * how this screen came to promise a path it did not have. Same shape, same
+ * place, so a person who has met one recognises the other.
+ *
+ * ── Ticked by default ─────────────────────────────────────────────────────
+ *
+ * Nobody opens this wanting SOME of their shop scannable. Everything is ticked
+ * and the list is there to untick from, because reading 108 rows before you are
+ * allowed to press the button is the sort of care that stops people bothering.
+ */
+function NotYetScannable({
+  search,
+  variantId,
+  onOpenItem,
+}: {
+  search: string;
+  variantId: string | undefined;
+  onOpenItem: (productId: string, event: { shiftKey: boolean; altKey: boolean }) => void;
+}) {
+  const missing = useUnbarcodedVariants({
+    ...(search ? { q: search } : {}),
+    ...(variantId ? { variantId } : {}),
+  });
+  const [showList, setShowList] = useState(false);
+  const [skipped, setSkipped] = useState<ReadonlySet<string>>(new Set());
+  const [made, setMade] = useState<{ generated: number; skipped: number } | null>(null);
+
+  const items = missing.data?.items ?? [];
+  const total = missing.data?.total ?? 0;
+
+  // What the button will actually act on. Unticking is held as a set of the
+  // ones she took OUT, not the ones left in: the list reloads after minting and
+  // a list of what is still in would then be a stale list of things that no
+  // longer need anything.
+  const chosen = items.filter((row) => !skipped.has(row.variantId));
+
+  if (made !== null && total === 0) {
+    return (
+      <Alert color="success" variant="soft" className="print:hidden">
+        <Icon glyph={faSparkles} className="size-5 shrink-0" aria-hidden />
+        <AlertContent>
+          <AlertTitle>Everything can be scanned now</AlertTitle>
+          <AlertDescription>
+            {made.generated > 0
+              ? `${plural(made.generated, 'code', 'codes')} created. The labels are below, ready to print.`
+              : 'Nothing was left to give a code to.'}
+          </AlertDescription>
+        </AlertContent>
+      </Alert>
+    );
+  }
+
+  if (missing.isLoading || total === 0) return null;
+
+  return (
+    <Alert color="warning" variant="soft" className="print:hidden">
+      <Icon glyph={faBarcode} className="size-5 shrink-0" aria-hidden />
+      <AlertContent>
+        <AlertTitle>
+          {total === 1
+            ? 'One thing you sell cannot be scanned'
+            : `${String(total)} things you sell cannot be scanned`}
+        </AlertTitle>
+        <AlertDescription>
+          {productCopy(
+            'inventory.labels.mintOffer',
+            'A label can only be printed for something that already has a code. Piggles can create one for each of these now: a real barcode any scanner reads, taken from the range set aside for a shop to use on its own things, so it can never clash with a code off a supplier tag.'
+          )}
+        </AlertDescription>
+        {made !== null && made.generated > 0 ? (
+          <Text className="text-sm">
+            {plural(made.generated, 'code', 'codes')} created so far.{' '}
+            {made.skipped > 0
+              ? `${plural(made.skipped, 'item', 'items')} already had one and was left alone.`
+              : ''}
+          </Text>
+        ) : null}
+        {showList ? (
+          <div className="border-base-300 mt-2 max-h-64 overflow-y-auto rounded border">
+            {items.map((row) => (
+              <UnscannableRow
+                key={row.variantId}
+                row={row}
+                checked={!skipped.has(row.variantId)}
+                onToggle={(next) => {
+                  setSkipped((current) => {
+                    const copy = new Set(current);
+                    if (next) copy.delete(row.variantId);
+                    else copy.add(row.variantId);
+                    return copy;
+                  });
+                }}
+                onOpen={onOpenItem}
+              />
+            ))}
+            {total > items.length ? (
+              <Text className="p-2 text-sm">
+                Showing the first {String(items.length)}. Create codes for these and the rest
+                follow, or search above to work through a part of the shop at a time.
+              </Text>
+            ) : null}
+          </div>
+        ) : null}
+      </AlertContent>
+      <AlertActions>
+        <GenerateBarcodesButton
+          variantIds={chosen.map((row) => row.variantId)}
+          onDone={(result) => {
+            setMade((current) => ({
+              generated: (current?.generated ?? 0) + result.generated,
+              skipped: (current?.skipped ?? 0) + result.skipped,
+            }));
+            setSkipped(new Set());
+          }}
+        />
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            setShowList((open) => !open);
+          }}
+        >
+          {showList ? 'Hide the list' : 'Choose which'}
+        </Button>
+      </AlertActions>
+    </Alert>
+  );
+}
+
+/** One unscannable item. Its own component so the checkbox and the link to the
+ *  item do not fight over the same click. */
+function UnscannableRow({
+  row,
+  checked,
+  onToggle,
+  onOpen,
+}: {
+  row: UnbarcodedVariant;
+  checked: boolean;
+  onToggle: (next: boolean) => void;
+  onOpen: (productId: string, event: { shiftKey: boolean; altKey: boolean }) => void;
+}) {
+  return (
+    <div className="border-base-300 flex items-center gap-2 border-b px-2 py-1.5 last:border-b-0">
+      <Checkbox
+        checked={checked}
+        onChange={(event) => {
+          onToggle(event.target.checked);
+        }}
+        aria-label={`Give ${row.sku} a barcode`}
+      />
+      <button
+        type="button"
+        className="min-w-0 flex-1 cursor-pointer text-left"
+        onClick={(event) => {
+          onOpen(row.productId, event);
+        }}
+      >
+        <Text className="truncate text-sm">
+          {row.productTitle}
+          {row.variantTitle ? ` · ${row.variantTitle}` : ''}
+        </Text>
+        <Text className="truncate font-mono text-sm">{row.sku}</Text>
+      </button>
+    </div>
+  );
+}
+
 export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
   const presetVariant = typeof ctx.params.variantId === 'string' ? ctx.params.variantId : undefined;
 
@@ -226,8 +421,6 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
     limit: 200,
     offset: 0,
   });
-  const generate = useGenerateBarcodes();
-
   const sizeSpec = SIZES.find((s) => s.value === size) ?? SIZES[1];
   const presetSpec = PRESETS.find((p) => p.value === preset) ?? PRESETS[0];
 
@@ -336,6 +529,21 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       />
 
+      {/* ABOVE the card, not inside it: the card is the things that CAN be
+          printed, and on a shop that has never barcoded anything the card is
+          empty, which is exactly when this most needs to be on screen. */}
+      <NotYetScannable
+        search={search.trim()}
+        variantId={presetVariant}
+        onOpenItem={(productId, event) => {
+          ctx.open(
+            'commerce.product.detail',
+            { id: productId },
+            { target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab' }
+          );
+        }}
+      />
+
       {/* ONE card around the whole conditional — loading, empty and the sheet all
           fill the same content region. The printed copy is portaled to <body>
           (components/print-sheet.tsx), so the card never reaches the paper. */}
@@ -352,21 +560,15 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
               description: 'Try part of a code, a SKU, or a product name.',
             }}
             firstRun={{
-              title: 'No barcodes to print',
+              // No button here on purpose. When there is something to give a
+              // code to, the banner above this card is already holding the
+              // button, and two of them a hand apart is a screen arguing with
+              // itself. When there is nothing, the honest answer is that the
+              // shop is empty, and no button fixes that from here.
+              title: 'Nothing to print yet',
               description: productCopy(
                 'inventory.labels.needsBarcode',
-                'Items need a barcode before a label can be printed. Piggles can create one for anything that arrived without a manufacturer code: a real UPC that any scanner reads, in the range reserved for in-house use.'
-              ),
-              actions: (
-                <Button
-                  color="module-inventory"
-                  onClick={() => {
-                    ctx.open('inventory.stock.list', {}, { target: 'tab' });
-                  }}
-                >
-                  <Icon glyph={faSparkles} className="size-4" aria-hidden />
-                  Pick items to create codes for
-                </Button>
+                'A label can only be printed for something that already has a barcode. Anything without one is listed above, ready to be given a code.'
               ),
             }}
           />
@@ -376,13 +578,6 @@ export function ProductLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
               {plural(rows.length, 'label', 'labels')} at {sizeSpec.label.toLowerCase()} size:{' '}
               {sizeSpec.hint.toLowerCase()}. What you see here is exactly what prints.
             </Text>
-
-            {generate.data && generate.data.generated.length > 0 ? (
-              <Alert color="success" variant="soft" className="print:hidden">
-                Created {plural(generate.data.generated.length, 'code', 'codes')}. They are on the
-                sheet below.
-              </Alert>
-            ) : null}
 
             {/* The sheet. `PrintSheet` is what keeps the workbench itself off the
                 paper — see components/print-sheet.tsx. */}
@@ -450,16 +645,5 @@ export function GenerateBarcodesButton({
           : `Create ${plural(variantIds.length, 'barcode', 'barcodes')}`}
       </Button>
     </Tooltip>
-  );
-}
-
-/** How many of a set of items still have no code. The number that decides
- *  whether a warehouse can go scan-first at all. */
-export function MissingBarcodeCount({ missing }: { missing: number }) {
-  if (missing === 0) return null;
-  return (
-    <Badge color="warning" variant="soft" size="sm">
-      {missing} without a barcode
-    </Badge>
   );
 }

@@ -10,6 +10,12 @@
 // are surfaced at the top as counts you can act on, because a registry that
 // merely LISTS what is already right is a screen nobody opens twice.
 //
+// That paragraph was true of ONE of the two for a long time. Conflicts had a
+// card; "items with no barcode at all" was counted nowhere, in either console,
+// and the tenant who needed it most — 108 items, no codes, every scan screen
+// useless — got an encouraging empty state instead of the number.
+// [[feedback_a_fix_leaves_its_neighbour_behind]]
+//
 // ── Pack size is a first-class column ─────────────────────────────────────
 //
 // It is the one field here with consequences on the floor: a case code with a
@@ -45,6 +51,7 @@ import {
   useBarcodeConflicts,
   useBarcodes,
   useSetPrimaryBarcode,
+  useUnbarcodedVariants,
   type Barcode as BarcodeRow,
 } from './scan-data';
 
@@ -88,12 +95,18 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
     offset: skip,
   });
   const conflicts = useBarcodeConflicts();
+  // The count this screen's own description has always promised. It is read
+  // whatever the code list holds, because a tenant with no codes at all is the
+  // one furthest from scanning and the one the empty state used to send away
+  // with nothing but an encouraging sentence.
+  const unbarcoded = useUnbarcodedVariants({ limit: 1 });
   const setPrimary = useSetPrimaryBarcode();
 
   const rows = data?.items ?? [];
   const total = data?.total;
   const narrowed = search.trim() !== '' || includeInactive;
   const conflictCount = conflicts.data?.length ?? 0;
+  const missingCount = unbarcoded.data?.total ?? 0;
 
   const resetWindow = () => {
     setPage(1);
@@ -147,7 +160,12 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               >
                 <Sparkles className="size-4" aria-hidden />
-                Create codes and print labels
+                {/* The button says what it will do to THIS catalogue, with the
+                    number in it, because "create codes" beside a count of 108
+                    and beside a count of 2 are different decisions. */}
+                {missingCount > 0
+                  ? `Give ${plural(missingCount, 'item', 'items')} a code`
+                  : 'Create codes and print labels'}
               </Button>
             )
           }
@@ -185,7 +203,7 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   openItem(row, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-mono font-medium">{row.value}</span>
                     <span className="flex flex-wrap items-center gap-1">
@@ -332,8 +350,8 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
               {plural(conflictCount, 'item is', 'items are')} sharing a barcode with something else
             </AlertTitle>
             <AlertDescription>
-              A barcode has to point at exactly one thing, or scanning it is a coin toss. These
-              codes were left off the scan list until somebody decides which item owns them.
+              A barcode has to point at exactly one thing, or scanning it is a coin toss. Any code
+              shared this way is left off the scan list until somebody decides which item owns it.
             </AlertDescription>
           </AlertContent>
           <AlertActions>
@@ -344,7 +362,42 @@ export function BarcodesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 ctx.open('inventory.barcodes.conflicts', {}, { target: 'beside' });
               }}
             >
-              Sort them out
+              {/* One shared barcode is singular. The heading counted; the button did not. */}
+              {conflictCount === 1 ? 'Sort it out' : 'Sort them out'}
+            </Button>
+          </AlertActions>
+        </Alert>
+      ) : null}
+
+      {/* The other half of "can we scan yet", and the bigger half everywhere
+          nobody has started. Below the conflicts card because a code pointing at
+          two things breaks scans that already happen, while a missing code only
+          means one never starts. Warning, not danger, for the same reason. */}
+      {missingCount > 0 ? (
+        <Alert color="warning" variant="soft">
+          <Barcode className="size-5 shrink-0" aria-hidden />
+          <AlertContent>
+            <AlertTitle>
+              {missingCount === 1
+                ? 'One item you sell has no barcode'
+                : `${String(missingCount)} items you sell have no barcode`}
+            </AlertTitle>
+            <AlertDescription>
+              Nothing can scan them, and no label can be printed for them. sparx can give each one a
+              real UPC from the range reserved for in-house use, so it can never clash with a
+              manufacturer code.
+            </AlertDescription>
+          </AlertContent>
+          <AlertActions>
+            <Button
+              color="module-inventory"
+              size="sm"
+              onClick={() => {
+                ctx.open('inventory.barcodes.labels', {}, { target: 'beside' });
+              }}
+            >
+              <Sparkles className="size-4" aria-hidden />
+              {missingCount === 1 ? 'Give it a code' : 'Give them codes'}
             </Button>
           </AlertActions>
         </Alert>

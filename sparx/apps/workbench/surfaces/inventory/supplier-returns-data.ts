@@ -75,6 +75,9 @@ export interface SupplierReturnsReport {
   /** What suppliers owe right now, across everything sent and uncredited. */
   awaitingCreditCents: number;
   awaitingCreditCount: number;
+  /** Every return ever raised, whatever the view is filtered to. An empty list
+   *  is two opposite facts and only this can tell them apart. */
+  everCount: number;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */

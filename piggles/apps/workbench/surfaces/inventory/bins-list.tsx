@@ -28,6 +28,10 @@ import { PaneWaiting } from '../../components/pane-waiting';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Card,
@@ -59,6 +63,7 @@ import {
   useBins,
   type Bin,
 } from './bins-data';
+import { emptyShelvesNote } from './location-stock-line';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -111,6 +116,36 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
+  // Null while the locations are still loading, so the note waits rather than
+  // deciding on facts it does not have yet.
+  const emptyNote = emptyShelvesNote(rows, locations.data ? activeLocations : null);
+  // Whether this page is showing EVERY shelf of the locations it names, which is
+  // what the "no default shelf" claim below needs in order to be true.
+  const narrowedToOneLocation = total !== undefined && rows.length === total;
+  // ── LOCATIONS THAT CANNOT RECEIVE ANYTHING ────────────────────────────────
+  //
+  // A put-away with no shelf named falls back to the location's default shelf.
+  // A location with shelves turned on and none marked as the default therefore
+  // refuses EVERY delivery, transfer and return — and said so only at the last
+  // moment, on the screen where somebody was booking a van in. Every
+  // bin-enabled warehouse on this platform was in that state, because the
+  // shelves these locations were set up with never included one.
+  //
+  // Judged from the rows ON SCREEN, so it is only claimed about a location
+  // whose shelves are actually in view: a filtered page must not assert
+  // something about shelves it did not look at.
+  const shelvesInView = new Map<string, { name: string; hasDefault: boolean }>();
+  for (const bin of rows) {
+    const seen = shelvesInView.get(bin.warehouseId);
+    shelvesInView.set(bin.warehouseId, {
+      name: bin.warehouseName ?? seen?.name ?? 'this location',
+      hasDefault: (seen?.hasDefault ?? false) || bin.isDefault,
+    });
+  }
+  const noDefault =
+    narrowedToOneLocation && !search.trim() && type === '' && !nonEmptyOnly
+      ? [...shelvesInView.values()].filter((place) => !place.hasDefault)
+      : [];
   const narrowed = search.trim() !== '' || locationId !== '' || type !== '' || nonEmptyOnly;
 
   const resetWindow = () => {
@@ -196,7 +231,7 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(bin, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-mono font-medium">{bin.code}</span>
                     {bin.name ? <span className="truncate text-sm">{bin.name}</span> : null}
@@ -221,6 +256,16 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     {!bin.isSellable && bin.unitCount > 0 ? (
                       <Badge color="danger" variant="outline" size="sm">
                         Not sellable
+                      </Badge>
+                    ) : null}
+                    {/* WHICH SHELF THINGS ACTUALLY LAND ON. Every row already
+                        carried this and no row drew it, so five identical-looking
+                        shelves gave a person no way to tell which one a delivery
+                        goes to, and no way to notice that NONE of them was it.
+                        [[feedback_fetched_but_never_rendered]] */}
+                    {bin.isDefault ? (
+                      <Badge color="module-inventory" variant="soft" size="sm">
+                        Where things land
                       </Badge>
                     ) : null}
                   </span>
@@ -368,6 +413,35 @@ export function BinsListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         }
       />
+
+      {/* A ZERO ON EVERY ROW HAS TWO OPPOSITE MEANINGS. Juniper Row's five
+          shelves all read 0 while 491 units sat at a location with no shelves
+          at all, and nothing on the screen said so. Only shown when the shelves
+          on screen really are all empty AND the locations have loaded. */}
+      {noDefault.length > 0 ? (
+        <Alert color="warning" className="shrink-0">
+          <AlertContent>
+            <AlertTitle>
+              {noDefault.length === 1
+                ? `Nothing can be booked in at ${noDefault[0]?.name ?? 'this location'}`
+                : `${String(noDefault.length)} of your locations cannot have anything booked in`}
+            </AlertTitle>
+            <AlertDescription>
+              {noDefault.length === 1
+                ? 'It uses shelves, and none of them is the one things go on when nobody says which. Until one is, every delivery, transfer and return there will be refused. Open a shelf and turn on "Put things here when nobody says which shelf".'
+                : 'They use shelves, and none of their shelves is the one things go on when nobody says which. Until one is, every delivery, transfer and return there will be refused. Open a shelf at each and turn on "Put things here when nobody says which shelf".'}
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
+      {emptyNote ? (
+        <Alert color="info" className="shrink-0">
+          <AlertContent>
+            <AlertDescription>{emptyNote}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
 
       {/* ONE card around the whole conditional — loading, failure, empty and the
           table all fill the same content region, so the pane never jumps. */}

@@ -40,9 +40,8 @@ function UncostedNotice({ units }: { units: number }) {
           {plural(units, 'unit', 'units')} with no purchase behind{units === 1 ? ' it' : ' them'}
         </AlertTitle>
         <AlertDescription>
-          Those units are counted but not valued, because nothing records what they cost, usually
-          stock that was here before you started recording deliveries. The value above is everything
-          else.
+          That stock is counted but not valued, because nothing records what it cost, usually stock
+          that was here before you started recording deliveries. The value above is everything else.
         </AlertDescription>
       </AlertContent>
     </Alert>
@@ -64,7 +63,7 @@ function AsOfRows({ data }: { data: AsOfValuation }) {
       <tbody>
         {data.rows.slice(0, 10).map((row) => (
           <tr key={`${row.variantId}:${row.warehouseId}`}>
-            <td className="w-full max-w-0">
+            <td className="w-full max-w-0 min-w-56">
               <span className="flex min-w-0 flex-col">
                 <span className="truncate">{row.title ?? 'Untitled product'}</span>
                 <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>

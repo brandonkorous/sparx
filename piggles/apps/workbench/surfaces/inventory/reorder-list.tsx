@@ -63,7 +63,7 @@ import { targetFor } from './reorder-shared';
 import { useReorderPane } from './reorder-window';
 import { ReorderDraftBar } from './reorder-draft-bar';
 import { ReorderBody } from './reorder-list-body';
-import { PartialCoverNote } from './reorder-list-empty';
+import { NoSupplierNote, PartialCoverNote } from './reorder-list-empty';
 import { ReorderFooter } from './reorder-list-footer';
 import { ReorderListToolbar } from './reorder-list-toolbar';
 
@@ -110,6 +110,11 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
           being looked at — while the At risk screen beside it was naming two of
           them as $558 of orders about to have nothing to come from. */}
       <PartialCoverNote ctx={ctx} policyCount={p.policyCount} levelCount={p.levelCount} />
+
+      {/* And the second reason this list cannot do its job: a line with no
+          supplier has nobody to send an order to, so its tick box is dead. That
+          was the whole of what the screen said about it. */}
+      <NoSupplierNote ctx={ctx} unsupplied={p.unsupplied} total={p.total} />
 
       {/* Full width — matches the house list convention: the table fills the pane. */}
       <Card className="min-h-0 flex-1 overflow-y-auto">

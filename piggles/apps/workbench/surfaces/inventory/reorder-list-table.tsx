@@ -43,12 +43,12 @@ function HeaderRow({
       <th>Item</th>
       <th className="hidden @2xl:table-cell">Supplier</th>
       <th className="hidden text-right whitespace-nowrap @lg:table-cell">Available</th>
-      <th className="hidden whitespace-nowrap @3xl:table-cell">Takes</th>
+      <th className="hidden whitespace-nowrap @6xl:table-cell">Takes</th>
       <th className="hidden text-right whitespace-nowrap @xl:table-cell">Sells</th>
       <th className="text-right whitespace-nowrap">To order</th>
-      <th className="hidden text-right whitespace-nowrap @3xl:table-cell">On the way</th>
-      <th className="whitespace-nowrap">Runs out</th>
-      <th className="text-right whitespace-nowrap">At risk</th>
+      <th className="hidden text-right whitespace-nowrap @6xl:table-cell">On the way</th>
+      <th className="hidden whitespace-nowrap @4xl:table-cell">Runs out</th>
+      <th className="hidden text-right whitespace-nowrap @4xl:table-cell">At risk</th>
     </tr>
   );
 }

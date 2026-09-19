@@ -177,10 +177,38 @@ export async function createSerialUnit(
 }
 
 /**
- * Mark every unsold serial in the named lots as recalled, flip the lots
- * themselves to `recalled`, and return the count of affected sold units
- * so the dashboard can drive a notification list. Customer email goes
- * through @wizeworks/events → email-worker via a separate publisher.
+ * Put the named batches under recall: the stock stops being pickable, and the
+ * units that already went out are counted so somebody can go after them.
+ *
+ * ── What this does, exactly ──────────────────────────────────────────────
+ *
+ * It sets `recall_status = 'active'` with the reason and the moment, and it
+ * writes an audit entry. Nothing else in the tenant is touched.
+ *
+ * The effect on stock is real but INDIRECT: `resolveFefoLot` excludes a recalled
+ * batch outright, so a warehouse picking by expiry stops handing it out on the
+ * next order rather than ranking it last.
+ *
+ * ── What it deliberately does NOT do ─────────────────────────────────────
+ *
+ * It does not mark the individual units. This docstring used to say it marked
+ * every unsold serial as recalled, and it never did — nor could it, since
+ * `SerialUnitStatus` has no such value. A unit's status says where the unit IS
+ * (in stock, sold, scrapped); the recall is a fact about the BATCH, and reading
+ * it off the batch means one row to clear when the recall is resolved instead of
+ * hundreds to walk back.
+ *
+ * It does not email anybody either. There is no recall event in the catalog and
+ * no template behind one. The input used to carry `notifyCustomers`, defaulting
+ * to TRUE, which was parsed and then read by nothing — so every caller was told
+ * customers were being contacted and none ever were. That field is gone rather
+ * than left to keep making the promise. What the console does instead is name
+ * the orders the affected units left on, so a person can reach those customers
+ * with what they already know about them.
+ * [[feedback_a_promise_in_copy_is_a_contract]]
+ *
+ * `affectedSerialUnits` is how many individually-numbered units have already
+ * been sold — the size of the problem that is now outside the building.
  */
 export async function initiateRecall(
   ctx: ServiceContext,

@@ -34,6 +34,8 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { pickCountLocation, readLastCountLocation, writeLastCountLocation } from './count-location';
+import { StockRecalledBand } from './stock-recalled-band';
+import { OwnershipBadge, StockOwnershipBlock } from './stock-ownership-block';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneEmpty } from '../../components/pane-empty';
@@ -65,6 +67,7 @@ import {
   faClipboardCheck,
   faClockRotateLeft,
   faFloppyDisk,
+  faHandshake,
   faLocationDot,
   faLock,
   faPrint,
@@ -596,6 +599,7 @@ function LocationCard({
   currency: string;
 }) {
   const [editing, setEditing] = useState(false);
+  const [owning, setOwning] = useState(false);
   const state = levelState(level);
   const cost = level.avgCostCents ?? level.unitCostCents;
 
@@ -609,6 +613,10 @@ function LocationCard({
           </Heading>
         </div>
         <div className="flex shrink-0 items-center gap-2">
+          {/* Said where the quantity is said. A number that belongs to somebody
+              else is not the same number, and until this the only place in the
+              product that knew was a list most people never open. */}
+          <OwnershipBadge level={level} />
           <Badge color={state.tone} variant="soft" size="sm">
             {state.label}
           </Badge>
@@ -682,6 +690,38 @@ function LocationCard({
           {level.reorderPoint === null ? 'Set a reorder rule' : 'Change how this is managed'}
         </Button>
       </div>
+
+      {/* Kept apart from the reorder form on purpose: a reorder rule is about
+          buying more, and this is about whether the units are yours at all. */}
+      {owning ? null : (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <Text className="text-sm">
+            {level.ownership === 'owned'
+              ? 'Yours, so it counts toward what your stock is worth.'
+              : `Not yours${level.ownerName === null ? '' : `. It belongs to ${level.ownerName}`}. It sells as normal and does not count toward what your stock is worth.`}
+          </Text>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => {
+              setOwning(true);
+            }}
+          >
+            <Icon glyph={faHandshake} className="size-4" aria-hidden />
+            Whose stock is this?
+          </Button>
+        </div>
+      )}
+
+      {owning ? (
+        <StockOwnershipBlock
+          variantId={variantId}
+          level={level}
+          onDone={() => {
+            setOwning(false);
+          }}
+        />
+      ) : null}
 
       {editing ? (
         <ManagementForm
@@ -1154,6 +1194,11 @@ export function StockItemSurface({ ctx }: { ctx: SurfaceContext }) {
               </div>
             ) : null}
           </section>
+
+          {/* A recall is the loudest thing that can be true about an item, so it
+              sits ABOVE the running-low and sold-out banding. Renders nothing
+              when no batch of this is under one. */}
+          <StockRecalledBand ctx={ctx} variantId={variantId} />
 
           {alert ? (
             <Alert color={alert.tone} variant="soft">

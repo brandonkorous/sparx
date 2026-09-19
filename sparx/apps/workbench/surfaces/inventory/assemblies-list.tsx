@@ -28,6 +28,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
 import { runKindLabel, runState, useAssemblyOrders, type AssemblyOrder } from './assembly-data';
+import { ActionLabel } from '../../components/action-label';
 
 const PAGE = 50;
 
@@ -136,7 +137,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               >
                 <td className="font-mono whitespace-nowrap">{run.number}</td>
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{run.outputTitle ?? 'Untitled product'}</span>
                     <span className="truncate text-sm">
@@ -200,7 +201,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Plan a run</span>
+            <ActionLabel>Plan a run</ActionLabel>
           </Button>
         }
         controls={

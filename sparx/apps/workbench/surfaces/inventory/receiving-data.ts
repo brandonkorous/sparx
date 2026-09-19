@@ -19,6 +19,9 @@
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
 import { stockKeys, type Tone } from './data';
+// Safe in this direction only: advance-ship-notices-data does NOT import this
+// file, so there is no cycle to route around.
+import { asnKeys } from './advance-ship-notices-data';
 import { purchaseOrderKeys } from './purchase-orders-data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
@@ -160,6 +163,12 @@ export interface ReceiveChargeInput {
 
 export interface CreateReceiptInput {
   purchaseOrderId: string;
+  /** The supplier's dispatch note this delivery answers, when the receiver came
+   *  from one. Sending it is what CLOSES that notice: the server stamps it
+   *  received against this receipt, and what they said is then compared with
+   *  what arrived. Left out, the notice stays open for ever saying nothing has
+   *  turned up, beside an Arrived column that says it has. */
+  advanceShipNoticeId?: string;
   receivedAt?: string;
   reference?: string;
   note?: string;
@@ -192,6 +201,9 @@ export function useCreateReceipt() {
       });
       // The point of receiving: the stock numbers just moved.
       void queryClient.invalidateQueries({ queryKey: stockKeys.all });
+      // And the supplier's notice, if this delivery answered one — it has just
+      // gone from "on the way" to settled, on its own pane and in the list.
+      void queryClient.invalidateQueries({ queryKey: asnKeys.all });
     },
   });
 }

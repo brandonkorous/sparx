@@ -438,6 +438,7 @@ export {
   barcodesForVariant,
   resolveBarcode,
   listBarcodeConflicts,
+  listUnbarcodedVariants,
   resolveBarcodeConflict,
   createBarcode,
   updateBarcode,
@@ -450,6 +451,7 @@ export type {
   BarcodeRow,
   BarcodeMatch,
   BarcodeConflictRow,
+  UnbarcodedVariantRow,
   GeneratedBarcode,
   GenerateBarcodesResult,
 } from './barcodes';

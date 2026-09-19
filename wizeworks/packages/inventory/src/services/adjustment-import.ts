@@ -398,6 +398,10 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
   // and would silently land as "already correct" (docs/146 Phase 11.3).
   const statedOnHand = readInteger(read(record, 'onHand', COLUMNS.onHand), args.decimal);
   const statedDelta = readInteger(read(record, 'delta', COLUMNS.delta), args.decimal);
+  // Carried on EVERY row shape below, including a failed one: a row that could
+  // not be matched still has the sentence the person wrote about it, and that
+  // sentence is often the thing that explains the failure.
+  const note = read(record, 'note', COLUMNS.note);
 
   const fail = (error: string): ImportRowPlan => ({
     line,
@@ -414,6 +418,7 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
     name,
     unitCostCents,
     customFields: carriedFields,
+    note,
   });
 
   if (!sku && !explicitVariantId) return fail('This row does not say which item it is about');
@@ -464,6 +469,7 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
         name,
         unitCostCents,
         customFields: carriedFields,
+        note,
       };
     }
     return fail('This row has neither a counted quantity nor a change');
@@ -495,7 +501,32 @@ function planRow(args: PlanRowArgs): ImportRowPlan {
     name,
     unitCostCents,
     customFields: carriedFields,
+    note,
   };
+}
+
+/**
+ * What the stock history will say about one imported movement.
+ *
+ * The person's own words come FIRST. Somebody scrolling an item's history is
+ * asking why the number moved, and "Two went to the window display" answers
+ * that, where "Imported from a spreadsheet" only says where the answer came
+ * from. The provenance follows in brackets so the movement can still be traced
+ * back to its file and its line.
+ *
+ * Capped at the same 500 characters the API row schema allows, because a pasted
+ * paragraph in one history row makes every row around it unreadable.
+ */
+function movementNote(
+  filename: string | null | undefined,
+  line: number,
+  note: string | null
+): string {
+  const source = `${filename ?? 'a spreadsheet'}, row ${String(line)}`;
+  const written = note?.trim() ?? '';
+  if (written === '') return `Imported from ${source}`;
+  const capped = written.length > 500 ? `${written.slice(0, 499)}…` : written;
+  return `${capped} (imported from ${source})`;
 }
 
 /** The name the file gave, or the code when it gave none. An EMPTY name is a
@@ -800,7 +831,7 @@ export async function applyImportBatch(
         reason: batch.reason,
         referenceType: 'InventoryImportBatch',
         referenceId: id,
-        note: `Imported from ${batch.filename ?? 'a spreadsheet'}, row ${row.line}`,
+        note: movementNote(batch.filename, row.line, row.note ?? null),
         actorType: resolveActorType(ctx),
         actorId: ctx.userId ?? null,
         source: null,

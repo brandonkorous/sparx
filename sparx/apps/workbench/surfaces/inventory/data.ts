@@ -96,6 +96,13 @@ export interface StockLevel {
    *  counting schedule. Null when they have not set one — and with no schedule
    *  there is no such thing as a count being late. */
   countIntervalDays: number | null;
+  /** Whose these units are: `owned` | `consignment` | `customer_owned` |
+   *  `3pl_owned`. It changes what the stock is WORTH, never what can be sold. */
+  ownership: string;
+  ownerSupplierId: string | null;
+  ownerCustomerId: string | null;
+  /** The supplier or customer named above, when there is one to name. */
+  ownerName: string | null;
 }
 
 /** A place stock is kept — a warehouse, a shop floor, a van. */
@@ -108,6 +115,34 @@ export interface StockLocation {
   region: string | null;
   country: string | null;
   isActive: boolean;
+  /** Units held here, and how many shelves this place has. NULL means nobody
+   *  counted, never zero — the LIST counts both; a single location read on its
+   *  own does not. */
+  onHand: number | null;
+  binCount: number | null;
+}
+
+/**
+ * The locations goods can actually BE, for a picker that moves, counts or
+ * labels stock.
+ *
+ * A `virtual` location is a bucket the platform keeps rather than a place: "In
+ * transit" is the one every shop has, and it exists so stock on a van is not
+ * lost between two warehouses. It is a fair thing to FILTER a list by — "show
+ * me what is on its way" is a real question — and it is not a place a pallet
+ * can leave from, a person can walk round with a scanner, or a shelf can be
+ * screwed to a wall.
+ *
+ * MEASURED 2026-09-18: transfers worked this out for itself and was the only
+ * screen in either console that did. Everywhere else, "Leaving from" on a
+ * supplier return offered "In transit" beside the two real warehouses, and it
+ * was one of three entries in an alphabetical list with no hint which was which.
+ *
+ * Its own function so the rule has one home, rather than the same `.filter` copied
+ * into the next picker and forgotten in the one after that.
+ */
+export function physicalLocations(items: StockLocation[]): StockLocation[] {
+  return items.filter((location) => location.isActive && location.type !== 'virtual');
 }
 
 /** One hold against stock — the itemisation of a level's `allocated` count. */

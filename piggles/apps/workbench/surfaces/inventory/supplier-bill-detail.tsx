@@ -62,6 +62,7 @@ import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, stockErrorMessage } from './data';
+import { formatDay, formatMoment } from './purchase-orders-data';
 import { NewSupplierBill } from './supplier-bill-new';
 import {
   billStatusLabel,
@@ -264,7 +265,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         </Badge>
       </div>
 
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>They are asking for</StatTitle>
           <StatValue>{formatCents(data.totalCents, data.currency)}</StatValue>
@@ -314,7 +315,17 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             )}
           </StatValue>
           <StatDesc>
-            Invoiced <Timestamp value={data.billedAt} format="relative" />
+            {/* The DAYS, not only "in 3 weeks". This is the screen somebody is
+                standing on when they decide whether to pay, and a countdown is
+                not a thing you can write on a check or quote down the phone.
+                Both dates, because a queried bill is usually an argument about
+                when it was raised. The countdown stays as the value above: it
+                is the right headline and the wrong record. */}
+            {data.paidAt
+              ? `Paid ${formatMoment(data.paidAt)} · invoiced ${formatDay(data.billedAt)}`
+              : data.dueAt
+                ? `${formatDay(data.dueAt)} · invoiced ${formatDay(data.billedAt)}`
+                : `Invoiced ${formatDay(data.billedAt)}`}
           </StatDesc>
         </Stat>
       </Stats>
@@ -370,7 +381,7 @@ function ExistingBill({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <tbody>
             {data.lines.map((line) => (
               <tr key={line.id}>
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">
                       {line.productTitle ?? line.description ?? 'Untitled line'}

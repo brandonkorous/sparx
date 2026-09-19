@@ -128,7 +128,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(bom, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">
                       {bom.outputTitle ?? 'Untitled product'}

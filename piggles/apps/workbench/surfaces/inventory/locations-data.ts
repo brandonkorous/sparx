@@ -64,6 +64,15 @@ export interface Location {
   isSample: boolean;
   createdAt: string;
   updatedAt: string;
+  /**
+   * How much stock is here, and how many shelves this place has.
+   *
+   * NULL means nobody counted, never zero. The list endpoint counts both; a
+   * single location read on its own does not, and a 0 there would claim the
+   * place is empty when the truth is that nothing asked.
+   */
+  onHand: number | null;
+  binCount: number | null;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */

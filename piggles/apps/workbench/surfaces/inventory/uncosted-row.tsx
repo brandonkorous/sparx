@@ -32,7 +32,7 @@ export function UncostedRow({
 
   return (
     <tr>
-      <td className="w-full max-w-0">
+      <td className="w-full max-w-0 min-w-56">
         <span className="flex min-w-0 flex-col">
           {/* The name WRAPS where the other two truncate. In a narrow pane every
               row read "Linen Shir…", which tells her nothing about which product

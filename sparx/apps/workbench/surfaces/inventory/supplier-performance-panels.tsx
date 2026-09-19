@@ -56,13 +56,24 @@ import {
   useSetPriceBreaks,
   useSupplierScorecard,
 } from './supplier-performance-data';
+import { useRecomputePlanning } from './planning-data';
+import { leadTimeLine } from './supplier-lead-time-words';
 import { MoneyTextInput, moneyCents } from '../../components/money-input';
 
 /* ── How they have actually performed ───────────────────────────────────── */
 
-export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
+export function SupplierScorecardPanel({
+  supplierId,
+  statedLeadTimeDays,
+}: {
+  supplierId: string;
+  /** What somebody typed on the record. The whole point of this panel is the
+   *  gap between that and what actually happens, so it has to be in reach. */
+  statedLeadTimeDays: number | null;
+}) {
   const card = useSupplierScorecard(supplierId);
   const recompute = useRecomputeScorecards();
+  const sweep = useRecomputePlanning();
   const toast = useToast();
 
   const onMeasure = () => {
@@ -82,6 +93,33 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
         });
       },
     });
+  };
+
+  // NOT the same button as "Measure now" above. That recomputes scorecards,
+  // which COPY the delivery time from the planning tables. Only the planning
+  // pass works it out, which is why a card can show four measures and no time.
+  const onWorkOutTimes = () => {
+    // No warehouse: a supplier's delivery time is not warehouse-scoped, so the
+    // pass runs over all of them.
+    sweep.mutate(
+      {},
+      {
+        onSuccess: () => {
+          afterCommit(() => {
+            toast.add({ title: 'Delivery times worked out', type: 'success' });
+          });
+        },
+        onError: (error) => {
+          afterCommit(() => {
+            toast.add({
+              title: 'Could not work out delivery times',
+              description: stockErrorMessage(error, 'Nothing was changed. Please try again.'),
+              type: 'error',
+            });
+          });
+        },
+      }
+    );
   };
 
   // A 404 here is the NORMAL state for a supplier nobody has measured, so it is
@@ -118,6 +156,14 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
   }
 
   const data = card.data;
+  const lead = leadTimeLine({
+    meanDays: data.leadTimeMeanDays,
+    sample: data.leadTimeSample,
+    promisedDays: data.leadTimePromisedDays,
+    varianceDays: data.leadTimeVarianceDays,
+    deliveries: data.deliveries,
+    statedDays: statedLeadTimeDays,
+  });
 
   return (
     <FormSection
@@ -148,7 +194,7 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
         </Text>
       )}
 
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @lg:grid-cols-2 @3xl:grid-cols-4">
         <Stat>
           <StatTitle>On time</StatTitle>
           <StatValue>
@@ -221,23 +267,20 @@ export function SupplierScorecardPanel({ supplierId }: { supplierId: string }) {
 
       {/* Their stated delivery time against the measured one. The gap is the
           single most useful number on this panel for planning: every reorder
-          level built on the promise inherits its optimism. */}
-      {data.leadTimeMeanDays !== null ? (
-        <Text className="text-sm">
-          Deliveries take {data.leadTimeMeanDays} days on average, measured across{' '}
-          {plural(data.leadTimeSample, 'delivery', 'deliveries')}
-          {data.leadTimePromisedDays !== null
-            ? `, they say ${data.leadTimePromisedDays}, so they run ${
-                (data.leadTimeVarianceDays ?? 0) >= 0 ? 'slower' : 'faster'
-              } than stated by ${Math.abs(data.leadTimeVarianceDays ?? 0)} days.`
-            : ', and they have never stated a delivery time to compare it against.'}
-        </Text>
-      ) : (
-        <Text className="text-sm">
-          No delivery from them has been measured yet, so planning still uses whatever delivery time
-          was typed in on their record.
-        </Text>
-      )}
+          level built on the promise inherits its optimism.
+
+          The words are in a leaf module because this sentence contradicted the
+          four measures above it for a year and nothing could have caught that:
+          the panel renders, so there was nowhere to test it from. */}
+      <Text className="text-sm">{lead.text}</Text>
+      {lead.measure !== null ? (
+        <div>
+          <Button color="module" size="sm" loading={sweep.isPending} onClick={onWorkOutTimes}>
+            <Calculator className="size-4" aria-hidden />
+            {lead.measure}
+          </Button>
+        </div>
+      ) : null}
 
       <Text className="text-sm">
         Measured <Timestamp value={data.measuredAt} format="relative" />.

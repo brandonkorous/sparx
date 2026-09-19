@@ -405,6 +405,10 @@ export interface ImportRowPlan {
   name?: string | null;
   unitCostCents?: number | null;
   customFields?: Record<string, unknown>;
+  /** What the person wrote in the file's `note` column, beside the count. It
+   *  goes on the stock movement, so it is the sentence somebody reading this
+   *  item's history months later will find. */
+  note?: string | null;
   resolution?: 'skip' | 'match' | 'create';
 }
 
@@ -545,6 +549,9 @@ export function importTemplatePath(warehouseId?: string): string {
 
 export interface ReconciliationLine {
   kind: string;
+  /** The few words that head the row. Carried by the service, never derived
+   *  from the description here. */
+  label: string;
   description: string;
   /** Null where the figure could not be established — which is different from a
    *  difference of nothing. */

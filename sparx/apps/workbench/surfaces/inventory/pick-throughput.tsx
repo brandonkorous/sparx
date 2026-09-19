@@ -28,15 +28,13 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { plural, useStockLocations } from './data';
-import { shortReasonLabel, usePickThroughput } from './picking-data';
+import { pickingRate, shortReasonLabel, usePickThroughput } from './picking-data';
 
 const WINDOWS: { value: string; label: string; days: number }[] = [
   { value: '7', label: 'Last 7 days', days: 7 },
   { value: '30', label: 'Last 30 days', days: 30 },
   { value: '90', label: 'Last 90 days', days: 90 },
 ];
-
-const DAY_MS = 86_400_000;
 
 /** The color a rate wears. A short-pick rate is bad when high; a scan-verified
  *  rate is bad when low — so they cannot share one helper, and pretending they
@@ -45,6 +43,25 @@ function shortTone(rate: number): 'success' | 'warning' | 'danger' {
   if (rate >= 10) return 'danger';
   if (rate >= 3) return 'warning';
   return 'success';
+}
+
+/**
+ * What to call whoever did the work.
+ *
+ * The ledger stamps an IDENTITY — a login id when somebody is signed in, the
+ * walk's assignee text when nobody is — and this screen used to print it. The
+ * Picker column read `db9c1296-1ed4-4109-90ba-adfc090adf50` on the one report a
+ * shop owner opens to see who is quick and who keeps coming up short.
+ *
+ * The server names it where it can. Where it cannot, the row says so in words
+ * rather than falling back to the hex, because a business owner reading a
+ * thirty-six character string learns nothing and cannot act on it. The raw value
+ * stays on the row as its `title`, for whoever is chasing it down.
+ */
+function whoDidIt(id: string | null, name: string | null): string {
+  if (name !== null && name.trim() !== '') return name;
+  if (id === null) return 'Not signed in';
+  return 'Somebody this account cannot name';
 }
 
 function verifiedTone(rate: number): 'success' | 'warning' | 'danger' {
@@ -58,13 +75,12 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   const [locationId, setLocationId] = useState('');
 
   const days = WINDOWS.find((w) => w.value === windowKey)?.days ?? 30;
-  const from = new Date(Date.now() - days * DAY_MS).toISOString();
 
   const locations = useStockLocations();
   const activeLocations = (locations.data?.items ?? []).filter((l) => l.isActive);
 
   const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = usePickThroughput({
-    from,
+    days,
     ...(locationId ? { warehouseId: locationId } : {}),
   });
 
@@ -96,6 +112,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
     }
 
     const t = data.totals;
+    const rate = pickingRate(t.unitsPicked, t.activeMinutes);
 
     return (
       <div className="flex flex-col gap-3">
@@ -104,8 +121,8 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
         <div className="grid gap-3 @lg:grid-cols-4">
           <Metric
             label="Units an hour"
-            value={t.unitsPerHour.toFixed(1)}
-            hint={`${plural(t.unitsPicked, 'unit', 'units')} over ${plural(Math.round(t.activeMinutes / 60), 'hour', 'hours')} of picking`}
+            value={rate.value}
+            hint={rate.hint}
             color="module-inventory"
           />
           <Metric
@@ -149,10 +166,13 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 {data.pickers.map((picker) => (
                   <tr key={picker.pickedBy ?? 'unattributed'}>
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
-                        <span className="truncate font-medium">
-                          {picker.pickedBy ?? 'Not signed in'}
+                        <span
+                          className="truncate font-medium"
+                          {...(picker.pickedBy === null ? {} : { title: picker.pickedBy })}
+                        >
+                          {whoDidIt(picker.pickedBy, picker.pickerName)}
                         </span>
                         <span className="truncate text-sm @lg:hidden">
                           {plural(picker.linesPicked, 'line', 'lines')} ·{' '}
@@ -160,8 +180,11 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                         </span>
                       </span>
                     </td>
+                    {/* Same rule as the headline: a walk done too fast to
+                        measure has no rate, and 0.0 is not the honest way to
+                        say so. */}
                     <td className="text-right whitespace-nowrap tabular-nums">
-                      {picker.unitsPerHour.toFixed(1)}
+                      {pickingRate(picker.unitsPicked, picker.activeMinutes).value}
                     </td>
                     <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
                       {picker.linesPicked}
@@ -203,7 +226,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 {data.bins.map((bin) => (
                   <tr key={bin.binId ?? 'no-shelf'}>
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate font-mono font-medium">
                           {bin.binCode ?? 'No shelf recorded'}
@@ -245,7 +268,7 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 {data.shortReasons.map((reason) => (
                   <tr key={reason.reason}>
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="truncate">{shortReasonLabel(reason.reason)}</span>
                     </td>
                     <td className="text-right whitespace-nowrap tabular-nums">
@@ -279,9 +302,12 @@ export function PickThroughputSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 {data.packers.map((packer) => (
                   <tr key={packer.packedBy ?? 'unattributed'}>
-                    <td className="w-full max-w-0">
-                      <span className="truncate font-medium">
-                        {packer.packedBy ?? 'Not signed in'}
+                    <td className="w-full max-w-0 min-w-56">
+                      <span
+                        className="truncate font-medium"
+                        {...(packer.packedBy === null ? {} : { title: packer.packedBy })}
+                      >
+                        {whoDidIt(packer.packedBy, packer.packerName)}
                       </span>
                     </td>
                     <td className="text-right whitespace-nowrap tabular-nums">

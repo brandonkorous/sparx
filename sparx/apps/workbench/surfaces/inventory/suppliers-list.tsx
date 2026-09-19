@@ -34,6 +34,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { supplierState, supplierTerms, useSuppliers } from './suppliers-data';
+import { ActionLabel } from '../../components/action-label';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -172,7 +173,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
               >
                 {/* `max-w-0 w-full` makes this the cell that GIVES, so a long
                     supplier name never pushes the State badge off the right. */}
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">{supplier.name}</span>
                     <span className="truncate font-mono text-sm">{supplier.code}</span>
@@ -257,7 +258,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
               }}
             >
               <Plus className="size-4" aria-hidden />
-              <span className="hidden @lg:inline">New supplier</span>
+              <ActionLabel>New supplier</ActionLabel>
             </Button>
           </>
         }

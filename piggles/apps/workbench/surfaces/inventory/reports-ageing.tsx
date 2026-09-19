@@ -120,7 +120,7 @@ function DeadStockRow({
         onOpen(item, event);
       }}
     >
-      <td className="w-full max-w-0">
+      <td className="w-full max-w-0 min-w-56">
         <span className="flex min-w-0 flex-col">
           <span className="truncate">{item.title ?? 'Untitled product'}</span>
           <span className="truncate font-mono text-sm">{item.sku ?? 'No code'}</span>

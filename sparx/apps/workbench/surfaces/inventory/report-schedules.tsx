@@ -169,8 +169,9 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
                 {plural(paused.length, 'report has', 'reports have')} stopped sending
               </AlertTitle>
               <AlertDescription>
-                Each one failed four times in a row and was paused so it would not keep trying into
-                a mailbox that is not there. Open it to see why and switch it back on.
+                {paused.length === 1
+                  ? 'It failed four times in a row and was paused so it would not keep trying into a mailbox that is not there. Open it to see why and switch it back on.'
+                  : 'Each one failed four times in a row and was paused so it would not keep trying into a mailbox that is not there. Open them to see why and switch them back on.'}
               </AlertDescription>
             </AlertContent>
           </Alert>
@@ -203,7 +204,7 @@ export function ReportSchedulesSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(schedule.id, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">{schedule.name}</span>
                     <span className="truncate text-sm">{schedule.reportLabel}</span>

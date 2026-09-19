@@ -65,6 +65,10 @@ export interface PurchaseOrder {
   orderedAt: string | null;
   expectedArrivalAt: string | null;
   receivedAt: string | null;
+  /** When the nightly pass announced this order as late, or null if it never
+   *  has. Null is NOT "on time" — an order that went past its date this
+   *  afternoon has not been through a nightly pass yet. */
+  lateAlertedAt: string | null;
   subtotalCents: number;
   freightCents: number;
   totalCents: number;
@@ -78,6 +82,10 @@ export interface PurchaseOrder {
 
 export interface PurchaseOrderDetail extends PurchaseOrder {
   lines: PurchaseOrderLine[];
+  /** Freight booked in WITH a delivery, which `freightCents` never hears about.
+   *  Separate from it on purpose: one is what was agreed and the other is what
+   *  turned up, and checking a supplier's invoice needs both (issue 552). */
+  receiptFreightCents: number;
 }
 
 export interface PurchaseOrderListQuery {
@@ -89,6 +97,11 @@ export interface PurchaseOrderListQuery {
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
+
+/** `approvalKeys.all` from `po-approvals-data`, which cannot be imported here:
+ *  that module already imports `purchaseOrderKeys` from this one. The copy is
+ *  held to the original by a test rather than by hope. */
+export const APPROVALS_QUERY_KEY = ['inventory', 'po-approvals'] as const;
 
 export const purchaseOrderKeys = {
   all: ['inventory', 'purchase-orders'] as const,
@@ -131,6 +144,13 @@ export function useInvalidatePurchaseOrders() {
   return (id?: string) => {
     void queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.all });
     if (id) void queryClient.invalidateQueries({ queryKey: purchaseOrderKeys.detail(id) });
+    // Placing an order OPENS a sign-off request when a spending limit catches
+    // it, so the queue and its "waiting" count are now stale. The mirror of
+    // this already existed — deciding an approval invalidates the orders — and
+    // only went the one way, so an order placed while the Sign-offs pane was
+    // open left it reading "Nothing waiting" over the order it was holding.
+    // [[feedback_a_fix_leaves_its_neighbour_behind]]
+    void queryClient.invalidateQueries({ queryKey: APPROVALS_QUERY_KEY });
   };
 }
 
@@ -380,7 +400,7 @@ export function purchaseOrderState(po: {
       };
     case 'cancelled':
       return {
-        label: 'Cancelled',
+        label: 'Canceled',
         tone: 'danger',
         detail: 'This order was called off. Nothing was received.',
       };
@@ -408,9 +428,36 @@ export function isReceivable(status: string): boolean {
   return status === 'submitted' || status === 'partial';
 }
 
-/** A stored date as a plain calendar day — "20 July 2026". Shared across the
- *  Buying surfaces so an expected/received date reads the same everywhere. */
+/**
+ * A stored calendar DAY, printed as the day it actually is — "20 July 2026".
+ *
+ * `timeZone: 'UTC'`, deliberately. A day-valued field is stored at UTC midnight
+ * (`pickedDayUtc`), and handing UTC midnight to `toLocaleDateString` renders it
+ * on the READER's clock, which is the previous day for everyone west of
+ * Greenwich. MEASURED 2026-09-18 in Los Angeles: a buyer typed September 10 into
+ * "When it is expected", pressed Record it, got "New date recorded", and the
+ * order above read "September 9, 2026". `finance/format.ts` has carried this
+ * exact line and this exact reasoning for months; Buying never got it.
+ *
+ * For a real INSTANT — when a delivery was booked in, when an order was placed —
+ * use `formatMoment`. That is the reader's own clock and should be: a delivery
+ * booked in at half past four on Tuesday happened on Tuesday, for her.
+ */
 export function formatDay(iso: string | null): string {
+  if (!iso) return 'Not set';
+  return new Date(iso).toLocaleDateString(undefined, {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+}
+
+/** An INSTANT, printed as the day it happened on the reader's own clock. The
+ *  twin of `formatDay`, which is for days. Keeping them apart is the whole
+ *  point: one of these two is wrong for every field, and which one is wrong
+ *  depends on what the column holds, never on how it looks. */
+export function formatMoment(iso: string | null): string {
   if (!iso) return 'Not set';
   return new Date(iso).toLocaleDateString(undefined, {
     day: 'numeric',

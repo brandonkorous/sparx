@@ -34,6 +34,7 @@ import { formatCents, plural } from './data';
 import { slowMoverLabel, slowMoverTone, useSlowMovers } from './planning-data';
 import { PlanningShell, targetFor, useHasBeenMeasured } from './planning-shell';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 
 export function PlanningIdleSurface({ ctx }: { ctx: SurfaceContext }) {
   const report = useSlowMovers('');
@@ -85,7 +86,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
           unknown and none of them is zero. Same reason as the headlines on At
           risk: the empty state below already says nothing has been checked, and
           a $0.00 above it says the opposite louder. */}
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>Cash tied up</StatTitle>
           {measured ? (
@@ -148,6 +149,11 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
               in.
             </AlertDescription>
           </AlertContent>
+          <SetCostsAction
+            onOpen={() => {
+              ctx.open(SET_COSTS_SURFACE, {}, { target: 'tab' });
+            }}
+          />
         </Alert>
       ) : null}
 
@@ -198,7 +204,7 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
                     ctx.open('inventory.stock.item', { variantId: row.variantId });
                   }}
                 >
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate">{row.title ?? 'Untitled product'}</span>
                       <span className="truncate text-sm">
@@ -211,7 +217,9 @@ function SlowMoverPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: 
                           follows from the KIND, so on a list of six dead lines
                           it would otherwise be the same sentence six times. */}
                       {row.suggestedAction !== rows[index - 1]?.suggestedAction ? (
-                        <span className="truncate text-sm">{row.suggestedAction}</span>
+                        <span className="truncate text-sm" title={row.suggestedAction}>
+                          {row.suggestedAction}
+                        </span>
                       ) : null}
                     </span>
                   </td>

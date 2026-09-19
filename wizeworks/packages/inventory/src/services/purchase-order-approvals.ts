@@ -36,6 +36,7 @@ import {
   CreatePoApprovalRuleInput,
   DecidePoApprovalInput,
   UpdatePoApprovalRuleInput,
+  canSignOff,
   resolveApprovalRule,
 } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
@@ -191,6 +192,10 @@ export interface PoApprovalRow {
   requestedAt: string;
   requiredApproverUserId: string | null;
   requiredApproverName: string | null;
+  /** The role the RULE routes to, carried through so a screen can say who has to
+   *  sign. Without it the order's own pane said "anybody who can approve
+   *  spending can sign it off" over a rule that said the owner. */
+  requiredRole: string | null;
   decidedByUserId: string | null;
   decidedByName: string | null;
   decidedAt: string | null;
@@ -327,11 +332,21 @@ export async function listPoApprovals(
  * at submit, because until somebody signed there was no order. Rejecting returns
  * it to draft so the buyer can amend and try again, which mints a fresh approval
  * row rather than reopening this one.
+ *
+ * `actorRole` is the signer's staff role, passed explicitly because the service
+ * context carries a tenant and a user and deliberately not an authorisation
+ * tier. It is what makes the rule's "who signs it off" mean anything: the
+ * endpoint itself only gates on `editor`, so leaving it out let the junior
+ * person who raised a £20k order sign their own off under a rule that named the
+ * owner. Omitting it is refused for any rule that names a role, rather than
+ * waved through — a spending control that assumes when it cannot tell is not a
+ * control.
  */
 export async function decidePoApproval(
   ctx: ServiceContext,
   approvalId: string,
-  rawInput: unknown
+  rawInput: unknown,
+  actorRole?: string | null
 ): Promise<PurchaseOrderDetail> {
   const input = DecidePoApprovalInput.parse(rawInput);
 
@@ -339,6 +354,7 @@ export async function decidePoApproval(
     const approval = await tx.purchaseOrderApproval.findFirst({
       where: { id: approvalId },
       include: {
+        rule: { select: { requiredRole: true } },
         purchaseOrder: {
           select: {
             id: true,
@@ -370,6 +386,15 @@ export async function decidePoApproval(
       throw new InventoryValidationError('This order has to be signed off by the named approver', [
         { field: 'approverId', message: 'You are not the approver named on this request' },
       ]);
+    }
+
+    // And a rule that names a ROLE rather than a person is just as binding. The
+    // endpoint admits any editor; the rule is what narrows that.
+    if (!canSignOff(actorRole, approval.rule?.requiredRole ?? null)) {
+      throw new InventoryValidationError(
+        `This order has to be signed off by ${roleWords(approval.rule?.requiredRole ?? null)}`,
+        [{ field: 'approverRole', message: 'Your account cannot sign off spending this large' }]
+      );
     }
 
     const po = approval.purchaseOrder;
@@ -466,7 +491,9 @@ const RULE_INCLUDE = {
 
 const APPROVAL_INCLUDE = {
   purchaseOrder: { select: { number: true, supplier: { select: { name: true } } } },
-  rule: { select: { name: true } },
+  // `requiredRole` lives on the RULE, not on the request, so every screen that
+  // wants to say who has to sign has to reach through this join.
+  rule: { select: { name: true, requiredRole: true } },
   requestedBy: { select: { name: true } },
   requiredApprover: { select: { name: true } },
   decidedBy: { select: { name: true } },
@@ -496,6 +523,20 @@ async function assertScopeExists(
 function deriveArrival(now: Date, leadTimeDays: number | null): Date | null {
   if (leadTimeDays === null) return null;
   return new Date(now.getTime() + leadTimeDays * DAY_MS);
+}
+
+/** The role a refusal names, in the words the console uses for it. */
+function roleWords(role: string | null): string {
+  switch (role) {
+    case 'owner':
+      return 'the owner';
+    case 'admin':
+      return 'an administrator';
+    case 'editor':
+      return 'somebody who can edit';
+    default:
+      return 'somebody else';
+  }
 }
 
 interface RuleRecord {
@@ -548,7 +589,7 @@ interface ApprovalRecord {
   decidedAt: Date | null;
   note: string | null;
   purchaseOrder?: { number: string; supplier?: { name: string | null } | null } | null;
-  rule?: { name: string | null } | null;
+  rule?: { name: string | null; requiredRole?: string | null } | null;
   requestedBy?: { name: string | null } | null;
   requiredApprover?: { name: string | null } | null;
   decidedBy?: { name: string | null } | null;
@@ -570,6 +611,7 @@ function serializeApproval(row: ApprovalRecord): PoApprovalRow {
     requestedAt: row.requestedAt.toISOString(),
     requiredApproverUserId: row.requiredApproverUserId,
     requiredApproverName: row.requiredApprover?.name ?? null,
+    requiredRole: row.rule?.requiredRole ?? null,
     decidedByUserId: row.decidedByUserId,
     decidedByName: row.decidedBy?.name ?? null,
     decidedAt: row.decidedAt?.toISOString() ?? null,

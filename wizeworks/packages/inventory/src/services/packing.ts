@@ -80,8 +80,22 @@ export interface PackageRow {
 
 export interface PackageDetail extends PackageRow {
   lines: PackageLineRow[];
-  /** Order lines with units still owed a box. Empty means the order is complete. */
-  outstanding: { orderItemId: string; sku: string; name: string; remaining: number }[];
+  /**
+   * Order lines with units still owed a box. Empty means the order is complete.
+   *
+   * `shortWhilePicking` is how many units of that line a picker recorded as NOT
+   * THERE. They are still owed and still held for this order, so the line stays
+   * — dropping it would hide an obligation — but the bench has to say so, or it
+   * offers "Add all" for something nobody could find, one screen after the walk
+   * said "1 line came up short".
+   */
+  outstanding: {
+    orderItemId: string;
+    sku: string;
+    name: string;
+    remaining: number;
+    shortWhilePicking: number;
+  }[];
   /** Every unit the order wants is in this box or another one. */
   orderFullyPacked: boolean;
 }
@@ -455,6 +469,7 @@ export async function loadPackageDetail(
       scannedQuantity: number;
       ordered: number;
       packedElsewhere: number;
+      shortWhilePicking: number;
     }[]
   >`
     SELECT pl.id                            AS "id",
@@ -465,7 +480,8 @@ export async function loadPackageDetail(
            COALESCE(pl.quantity, 0)         AS "quantity",
            COALESCE(pl.scanned_quantity, 0) AS "scannedQuantity",
            oi.quantity                      AS "ordered",
-           COALESCE(other.units, 0)::int    AS "packedElsewhere"
+           COALESCE(other.units, 0)::int    AS "packedElsewhere",
+           COALESCE(short.units, 0)::int    AS "shortWhilePicking"
       FROM order_items oi
       LEFT JOIN inventory_shipment_package_lines pl
              ON pl.order_item_id = oi.id AND pl.package_id = ${packageId}::uuid
@@ -477,6 +493,14 @@ export async function loadPackageDetail(
            AND xp.status <> 'canceled'
            AND xp.id <> ${packageId}::uuid
       ) other ON TRUE
+      -- What a picker could not find. Summed across every walk that has touched
+      -- this line, because an order can be picked more than once.
+      LEFT JOIN LATERAL (
+        SELECT SUM(pll.short_quantity) AS units
+          FROM inventory_pick_list_lines pll
+         WHERE pll.tenant_id = ${tenantId}::uuid
+           AND pll.order_item_id = oi.id
+      ) short ON TRUE
      WHERE oi.tenant_id = ${tenantId}::uuid
        AND oi.order_id  = ${header.orderId}::uuid
      ORDER BY oi.created_at ASC
@@ -489,6 +513,7 @@ export async function loadPackageDetail(
       sku: l.sku,
       name: l.name,
       remaining: l.ordered - l.packedElsewhere - l.quantity,
+      shortWhilePicking: l.shortWhilePicking,
     }))
     .filter((l) => l.remaining > 0);
 

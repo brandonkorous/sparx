@@ -26,7 +26,7 @@ import { InventoryNotFoundError, InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 
 import { createPurchaseOrderOnTx, isReorderUniqueViolation } from './purchase-orders';
-import { recomputeTotals, resolveLineData } from './purchase-order-shared';
+import { loadPurchaseOrderDetail, recomputeTotals, resolveLineData } from './purchase-order-shared';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -298,6 +298,12 @@ export interface DraftedPurchaseOrder {
   lineCount: number;
   totalCents: number;
   currency: string;
+  /** True when the lines joined a draft that was already open for this
+   *  supplier and location, rather than starting a new order. The caller has to
+   *  know which happened: "PO-000003 created" about an order that already
+   *  existed is a different sentence, and the buyer looking for what changed
+   *  needs the right one. */
+  appended: boolean;
 }
 
 export interface DraftReorderResult {
@@ -354,6 +360,52 @@ function groupDraftLines(
   return [...map.values()];
 }
 
+/**
+ * The lines of one (supplier, location) group, onto the draft already open for
+ * it if there is one.
+ *
+ * FIND-OR-APPEND, the same rule `autoDraftReorder` has always followed and this
+ * path never did. Drafting from the worklist twice used to make TWO draft
+ * orders to the same supplier, for the same location, for the same item — seen
+ * as P03 on Juniper Row: PO-000003 for 12 of a shirt, then PO-000004 for 12
+ * more, while the row between the two clicks was already saying "12 already on
+ * the way". Two orders to notice, reconcile, and cancel one of.
+ *
+ * The reason the automatic side gives applies word for word here: "so the low
+ * items for one supplier converge into one reviewable order."
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ */
+async function appendToOpenDraft(
+  tx: TxClient,
+  ctx: ServiceContext,
+  draftId: string,
+  supplierId: string,
+  lines: { variantId: string; quantity: number }[]
+): Promise<void> {
+  for (const line of lines) {
+    // A line for this item may already be on the draft. Adding to it rather
+    // than inserting a second one, because (purchase_order, variant) is unique
+    // and because two lines for one item on one order is not what anybody
+    // means — the same reasoning `groupDraftLines` applies to the request.
+    const existing = await tx.purchaseOrderLine.findFirst({
+      where: { purchaseOrderId: draftId, variantId: line.variantId },
+      select: { id: true, quantityOrdered: true },
+    });
+    if (existing) {
+      await tx.purchaseOrderLine.update({
+        where: { id: existing.id },
+        data: { quantityOrdered: existing.quantityOrdered + line.quantity },
+      });
+    } else {
+      const lineData = await resolveLineData(tx, supplierId, line);
+      await tx.purchaseOrderLine.create({
+        data: { tenantId: ctx.tenantId, purchaseOrderId: draftId, ...lineData },
+      });
+    }
+  }
+  await recomputeTotals(tx, draftId);
+}
+
 async function draftGroupsOnTx(
   tx: TxClient,
   ctx: ServiceContext,
@@ -366,14 +418,34 @@ async function draftGroupsOnTx(
       select: { id: true, currency: true },
     });
     if (!supplier) throw new InventoryNotFoundError('Supplier', g.supplierId);
-    const detail = await createPurchaseOrderOnTx(tx, ctx, {
-      supplierId: g.supplierId,
-      warehouseId: g.warehouseId,
-      currency: supplier.currency ?? 'USD',
-      reference: 'Reorder',
-      freightCents: 0,
-      lines: g.lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
+
+    const open = await tx.purchaseOrder.findFirst({
+      where: { supplierId: g.supplierId, warehouseId: g.warehouseId, status: 'draft' },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true },
     });
+
+    let detail;
+    let appended = false;
+    if (open) {
+      await appendToOpenDraft(tx, ctx, open.id, g.supplierId, g.lines);
+      await auditReorder(tx, ctx, open.id, 'reorder_line_added', {
+        lines: g.lines.length,
+        variantIds: g.lines.map((l) => l.variantId),
+      });
+      detail = await loadPurchaseOrderDetail(tx, open.id);
+      appended = true;
+    } else {
+      detail = await createPurchaseOrderOnTx(tx, ctx, {
+        supplierId: g.supplierId,
+        warehouseId: g.warehouseId,
+        currency: supplier.currency ?? 'USD',
+        reference: 'Reorder',
+        freightCents: 0,
+        lines: g.lines.map((l) => ({ variantId: l.variantId, quantity: l.quantity })),
+      });
+    }
+
     out.push({
       id: detail.id,
       number: detail.number,
@@ -384,6 +456,7 @@ async function draftGroupsOnTx(
       lineCount: detail.lineCount,
       totalCents: detail.totalCents,
       currency: detail.currency,
+      appended,
     });
   }
   return { purchaseOrders: out, count: out.length };

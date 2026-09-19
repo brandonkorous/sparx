@@ -65,7 +65,7 @@ function CountRowCells({
         onOpen(count, event);
       }}
     >
-      <td className="w-full max-w-0">
+      <td className="w-full max-w-0 min-w-56">
         <span className="flex min-w-0 flex-col">
           <span className="truncate font-medium">{count.warehouseName ?? 'Stock count'}</span>
           <span className="truncate font-mono text-sm">{count.number}</span>

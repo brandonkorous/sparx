@@ -51,11 +51,22 @@ export interface AsnLineRow {
   lotNumber: string | null;
   /** What the order asked for, for context on the same row. */
   quantityOrdered: number;
-  /** What has actually arrived against that order line so far. */
+  /** What has arrived against that order LINE across every delivery. Context,
+   *  never the thing this notice is judged by — see the field below. */
   quantityReceived: number;
-  /** Received minus shipped, once anything has been received against the notice.
-   *  Null while the notice is still `expected` — nothing has arrived, so there
-   *  is nothing to disagree with, and printing 0 here would read as "matched". */
+  /** What arrived on the delivery THIS notice was settled by, which is the only
+   *  figure it can honestly be compared with. Null until it is settled.
+   *
+   *  It used to be judged against `quantityReceived`, the line's lifetime total,
+   *  and that is wrong the moment an order takes two deliveries — which is the
+   *  ordinary case for a supplier who sends dispatch notes at all. A second
+   *  notice for the last 2 of 6 read "4 more than the notice" and warned about
+   *  paying twice, over a delivery that matched exactly. */
+  quantityArrivedOnThisDelivery: number | null;
+  /** Arrived minus shipped, on this delivery. Null while the notice is still
+   *  `expected` — nothing has arrived, so there is nothing to disagree with, and
+   *  printing 0 here would read as "matched". Also null when a settled notice
+   *  has no receipt behind it, because then nothing can be compared at all. */
   discrepancyUnits: number | null;
 }
 
@@ -497,6 +508,26 @@ async function loadDetail(tx: TxClient, id: string): Promise<AsnDetail> {
   // delivery nobody has opened.
   const settled = asn.status === 'received';
 
+  // What arrived ON THIS DELIVERY, per order line. The order line's own running
+  // total counts every delivery ever made against it, so comparing a notice with
+  // that total accuses the supplier of over-shipping every time a second lorry
+  // turns up. A settled notice with no receipt behind it stays uncomparable
+  // rather than being measured against zero.
+  const arrivedHere = new Map<string, number>();
+  if (settled && asn.goodsReceiptId) {
+    const receiptLines = await tx.goodsReceiptLine.findMany({
+      where: { goodsReceiptId: asn.goodsReceiptId },
+      select: { purchaseOrderLineId: true, quantityReceived: true },
+    });
+    for (const row of receiptLines) {
+      arrivedHere.set(
+        row.purchaseOrderLineId,
+        (arrivedHere.get(row.purchaseOrderLineId) ?? 0) + row.quantityReceived
+      );
+    }
+  }
+  const comparable = settled && asn.goodsReceiptId !== null;
+
   const lines: AsnLineRow[] = asn.lines.map((line) => ({
     id: line.id,
     purchaseOrderLineId: line.purchaseOrderLineId,
@@ -509,8 +540,11 @@ async function loadDetail(tx: TxClient, id: string): Promise<AsnDetail> {
     lotNumber: line.lotNumber,
     quantityOrdered: line.purchaseOrderLine.quantityOrdered,
     quantityReceived: line.purchaseOrderLine.quantityReceived,
-    discrepancyUnits: settled
-      ? line.purchaseOrderLine.quantityReceived - line.quantityShipped
+    quantityArrivedOnThisDelivery: comparable
+      ? (arrivedHere.get(line.purchaseOrderLineId) ?? 0)
+      : null,
+    discrepancyUnits: comparable
+      ? (arrivedHere.get(line.purchaseOrderLineId) ?? 0) - line.quantityShipped
       : null,
   }));
 
@@ -520,7 +554,7 @@ async function loadDetail(tx: TxClient, id: string): Promise<AsnDetail> {
       lines: asn.lines.map((l) => ({ quantityShipped: l.quantityShipped })),
     }),
     lines,
-    hasDiscrepancy: settled ? lines.some((l) => (l.discrepancyUnits ?? 0) !== 0) : null,
+    hasDiscrepancy: comparable ? lines.some((l) => (l.discrepancyUnits ?? 0) !== 0) : null,
   };
 }
 

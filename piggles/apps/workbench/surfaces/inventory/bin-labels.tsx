@@ -37,7 +37,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { PrintSheet } from '../../components/print-sheet';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { plural, useStockLocations } from './data';
+import { physicalLocations, plural, useStockLocations } from './data';
 
 /** Registry module for this pane, so the brand draws Stock's own picture rather
  *  than the generic one. */
@@ -152,7 +152,8 @@ export function BinLabelsSurface({ ctx }: { ctx: SurfaceContext }) {
   const [size, setSize] = useState<SizeKey>('medium');
 
   const locations = useStockLocations();
-  const activeLocations = (locations.data?.items ?? []).filter((l) => l.isActive);
+  // Labels get stuck on real shelves in a real building.
+  const activeLocations = physicalLocations(locations.data?.items ?? []);
 
   // A single-shelf reprint still goes through the list query — one code path for
   // one label and for four hundred, so the sheet always looks the same.

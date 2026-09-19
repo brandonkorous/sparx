@@ -116,11 +116,24 @@ export interface ListSupplierReturnsFilter {
 
 export interface SupplierReturnsReport {
   items: SupplierReturnRow[];
+  /** Matching the FILTER. Cannot answer "has this business ever sent anything
+   *  back" — see `everCount`. */
   total: number;
   /** What is out there unresolved, in money. The headline a finance-minded owner
-   *  actually wants: "you are owed £4,310 by suppliers right now." */
+   *  actually wants: "you are owed $4,310 by suppliers right now." */
   awaitingCreditCents: number;
   awaitingCreditCount: number;
+  /**
+   * Every return this business has ever raised, whatever the filter says.
+   *
+   * An empty list means two opposite things — everything has been credited, or
+   * nothing was ever sent back — and the chase view was stating the first
+   * ("Every return you have sent has been credited or written off") over
+   * businesses that had never sent one. Nothing inside a filtered result can
+   * tell them apart, which is the same reason `awaitingCredit*` above is
+   * counted against its own `where` rather than off `rows`.
+   */
+  everCount: number;
 }
 
 export async function listSupplierReturns(
@@ -141,7 +154,7 @@ export async function listSupplierReturns(
       status: 'sent',
       creditReceivedCents: null,
     };
-    const [rows, total, awaiting] = await Promise.all([
+    const [rows, total, awaiting, everCount] = await Promise.all([
       tx.supplierReturn.findMany({
         where,
         // Biggest unresolved credit first: this list is worked by value.
@@ -156,12 +169,16 @@ export async function listSupplierReturns(
         _sum: { creditExpectedCents: true },
         _count: true,
       }),
+      // Tenant only. Deliberately not `where` — the point of this number is to
+      // see past the filter.
+      tx.supplierReturn.count({ where: { tenantId: ctx.tenantId } }),
     ]);
     return {
       items: rows.map(serializeRow),
       total,
       awaitingCreditCents: awaiting._sum.creditExpectedCents ?? 0,
       awaitingCreditCount: awaiting._count,
+      everCount,
     };
   });
 }

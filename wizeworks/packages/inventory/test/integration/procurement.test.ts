@@ -64,6 +64,7 @@ import {
 import {
   createSupplierReturn,
   getSupplierReturn,
+  listSupplierReturns,
   recordSupplierCredit,
   sendSupplierReturn,
 } from '../../src/services/supplier-returns.js';
@@ -439,6 +440,87 @@ describe('supplier performance + procurement — DB-backed', () => {
       expect(trail.items[0]?.decidedAt).not.toBeNull();
     });
 
+    it('creates a limit that covers every supplier and location', async () => {
+      // The form's DEFAULT state: "Any supplier · Any location", which a form
+      // sends as null rather than as a missing key. The create schema refused
+      // null while the patch accepted it, so this exact payload saved when
+      // editing a limit and 400'd when making one. Zero limits existed on the
+      // whole platform as a result, and therefore zero orders had ever been
+      // held for sign-off.
+      const everywhere = await createPoApprovalRule(ctx(), {
+        name: 'Anything at all',
+        minAmountCents: 500_00,
+        supplierId: null,
+        warehouseId: null,
+        requiredApproverUserId: null,
+        requiredRole: null,
+      });
+      expect(everywhere.supplierId).toBeNull();
+      expect(everywhere.warehouseId).toBeNull();
+      await updatePoApprovalRule(ctx(), everywhere.id, { isActive: false });
+    });
+
+    it('refuses a signature from below the role the limit names', async () => {
+      const owned = await createPoApprovalRule(ctx(), {
+        name: 'The owner signs this',
+        minAmountCents: 10_000,
+        requiredRole: 'owner',
+        sortOrder: -10,
+      });
+      try {
+        const created = await createPurchaseOrder(ctx(), {
+          supplierId,
+          warehouseId: f.warehouseId,
+          lines: [{ variantId: f.variantId, quantity: 100, unitCostCents: 500 }],
+        });
+        await submitPurchaseOrder(ctx(), created.id, {});
+        const queue = await listPoApprovals(ctx(), { purchaseOrderId: created.id });
+        const approvalId = queue.items[0]?.id ?? '';
+        // The rule is what narrows the endpoint, which admits any editor. Left
+        // unchecked, the person who raised the order signed their own off under
+        // a rule that said the owner.
+        expect(queue.items[0]?.requiredRole).toBe('owner');
+        await expect(
+          decidePoApproval(ctx(), approvalId, { decision: 'approved' }, 'editor')
+        ).rejects.toThrow(/signed off by the owner/);
+
+        const still = await listPoApprovals(ctx(), { purchaseOrderId: created.id });
+        expect(still.items[0]?.status).toBe('pending');
+
+        const signed = await decidePoApproval(ctx(), approvalId, { decision: 'approved' }, 'owner');
+        expect(signed.status).toBe('submitted');
+      } finally {
+        await updatePoApprovalRule(ctx(), owned.id, { isActive: false });
+      }
+    });
+
+    it('returns the WHOLE trail for one order, refusals included', async () => {
+      // The buyer's own pane reads this. Asking for one order used to default to
+      // pending, so a buyer whose order had been sent back got an empty list
+      // and a screen that said nothing had happened.
+      const created = await createPurchaseOrder(ctx(), {
+        supplierId,
+        warehouseId: f.warehouseId,
+        lines: [{ variantId: f.variantId, quantity: 100, unitCostCents: 500 }],
+      });
+      await submitPurchaseOrder(ctx(), created.id, {});
+      const first = await listPoApprovals(ctx(), { purchaseOrderId: created.id });
+      await decidePoApproval(
+        ctx(),
+        first.items[0]?.id ?? '',
+        { decision: 'rejected', note: 'Get a second quote.' },
+        'owner'
+      );
+      await submitPurchaseOrder(ctx(), created.id, {});
+
+      const trail = await listPoApprovals(ctx(), { purchaseOrderId: created.id });
+      expect(trail.items).toHaveLength(2);
+      // Oldest first, so the story reads in order.
+      expect(trail.items[0]?.status).toBe('rejected');
+      expect(trail.items[0]?.note).toBe('Get a second quote.');
+      expect(trail.items[1]?.status).toBe('pending');
+    });
+
     it('refuses to decide the same request twice', async () => {
       const created = await createPurchaseOrder(ctx(), {
         supplierId,
@@ -576,6 +658,59 @@ describe('supplier performance + procurement — DB-backed', () => {
       expect(settled.lines[0]?.discrepancyUnits).toBe(-4);
     });
 
+    it('judges each notice against its OWN delivery, not the line’s running total', async () => {
+      // The case the test above cannot see. With ONE delivery per order, the
+      // line's lifetime total and what arrived on that delivery are the same
+      // number, so comparing the notice with either gives the same answer and a
+      // green test. Take two deliveries — the ordinary shape for a supplier who
+      // sends dispatch notes at all — and they part company: the second notice
+      // was judged against everything that had ever arrived and read "4 more
+      // than the notice", warning about paying twice, over a delivery that
+      // matched to the unit.
+      const f = await createInventoryFixture(tenantId);
+      const supplierId = await supplier();
+      const orderId = await placeOrder(supplierId, f, 6, 1800);
+      const line = await withTenant(ctx(), (tx) =>
+        tx.purchaseOrderLine.findFirstOrThrow({ where: { purchaseOrderId: orderId } })
+      );
+
+      // Four of six, exactly as the first note said.
+      const first = await createAdvanceShipNotice(ctx(), {
+        purchaseOrderId: orderId,
+        lines: [{ purchaseOrderLineId: line.id, quantityShipped: 4 }],
+      });
+      await createGoodsReceipt(ctx(), {
+        purchaseOrderId: orderId,
+        advanceShipNoticeId: first.id,
+        lines: [{ purchaseOrderLineId: line.id, quantity: 4 }],
+      });
+
+      // Then the last two, also exactly as the second note said.
+      const second = await createAdvanceShipNotice(ctx(), {
+        purchaseOrderId: orderId,
+        lines: [{ purchaseOrderLineId: line.id, quantityShipped: 2 }],
+      });
+      await createGoodsReceipt(ctx(), {
+        purchaseOrderId: orderId,
+        advanceShipNoticeId: second.id,
+        lines: [{ purchaseOrderLineId: line.id, quantity: 2 }],
+      });
+
+      const settledSecond = await getAdvanceShipNotice(ctx(), second.id);
+      expect(settledSecond.lines[0]?.quantityArrivedOnThisDelivery).toBe(2);
+      // The line has taken in 6 over its life; that is context on the row, and
+      // is NOT what the notice is measured against.
+      expect(settledSecond.lines[0]?.quantityReceived).toBe(6);
+      expect(settledSecond.lines[0]?.discrepancyUnits).toBe(0);
+      expect(settledSecond.hasDiscrepancy).toBe(false);
+
+      // And the first notice still reads true once a later delivery has landed.
+      const settledFirst = await getAdvanceShipNotice(ctx(), first.id);
+      expect(settledFirst.lines[0]?.quantityArrivedOnThisDelivery).toBe(4);
+      expect(settledFirst.lines[0]?.discrepancyUnits).toBe(0);
+      expect(settledFirst.hasDiscrepancy).toBe(false);
+    });
+
     it('refuses to receive against a notice that was called off', async () => {
       const f = await createInventoryFixture(tenantId);
       const supplierId = await supplier();
@@ -595,7 +730,10 @@ describe('supplier performance + procurement — DB-backed', () => {
           advanceShipNoticeId: asn.id,
           lines: [{ purchaseOrderLineId: line.id, quantity: 5 }],
         })
-      ).rejects.toThrow(/cancelled/);
+        // American spelling, matching the message the service actually raises.
+        // The sweep that changed "cancelled" to "canceled" in the copy left this
+        // assertion behind, so the guard has been red rather than guarding.
+      ).rejects.toThrow(/canceled/);
     });
   });
 
@@ -720,6 +858,33 @@ describe('supplier performance + procurement — DB-backed', () => {
           lines: [{ variantId: uncosted.id, quantity: 1 }],
         })
       ).rejects.toThrow(/cost/i);
+    });
+
+    it('the ever-count sees past the view the list is filtered to', async () => {
+      // An empty list is two opposite facts: everything has been credited, or
+      // nothing was ever sent back. The chase view said the first — "Every
+      // return you have sent has been credited or written off" — over every
+      // business on the platform, none of which had sent one. `total` is the
+      // FILTERED count and cannot tell them apart; this is the number that can.
+      // A delta, not a total: every test in this file shares one tenant, so an
+      // absolute figure measures whatever ran before it.
+      const before = await listSupplierReturns(ctx(), { awaitingCreditOnly: true });
+
+      const f = await createInventoryFixture(tenantId);
+      const supplierId = await supplier();
+      await createSupplierReturn(ctx(), {
+        supplierId,
+        warehouseId: f.warehouseId,
+        reason: 'quality',
+        lines: [{ variantId: f.variantId, quantity: 1, unitCostCents: 500 }],
+      });
+
+      // Still a DRAFT, so the chase view is empty — and that empty list now
+      // means something different from the empty one above.
+      const chase = await listSupplierReturns(ctx(), { awaitingCreditOnly: true });
+      expect(chase.items).toHaveLength(before.items.length);
+      expect(chase.total).toBe(before.total);
+      expect(chase.everCount).toBe(before.everCount + 1);
     });
 
     it('detail reads back what was sent', async () => {

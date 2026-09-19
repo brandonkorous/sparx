@@ -54,7 +54,14 @@ import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents, plural, stockErrorMessage, useStockLocations } from './data';
+import {
+  formatCents,
+  physicalLocations,
+  plural,
+  stockErrorMessage,
+  useStockLocations,
+} from './data';
+import { formatMoment } from './purchase-orders-data';
 import { useSuppliers, useVariantLookup } from './suppliers-data';
 import {
   RETURN_REASONS,
@@ -123,7 +130,9 @@ export function SupplierReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 function NewReturn({ ctx }: { ctx: SurfaceContext }) {
   const suppliers = useSuppliers({ includeArchived: false, take: 250, skip: 0 });
   const locations = useStockLocations();
-  const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
+  // Somewhere a pallet can physically leave from. "In transit" is a bucket,
+  // not a loading bay, and it sat in this list between the two real ones.
+  const activeLocations = physicalLocations(locations.data?.items ?? []);
 
   const create = useCreateSupplierReturn();
   const lookup = useVariantLookup();
@@ -141,8 +150,14 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
   // not, and a form she never touched must close without a question.
   const defaultWarehouseRef = useRef('');
 
+  // ONLY when there is one, which is what the note above always said and what
+  // the code never did: it filled in whichever location sorted first. A shop
+  // with a shop floor and a stockroom got "Fulfillment Center" pre-chosen over
+  // "Main Warehouse" purely on the alphabet, and sending a return out of the
+  // wrong place takes the stock off the wrong shelf. With more than one, she
+  // picks. (`bin-detail` next door has had this right all along.)
   useEffect(() => {
-    if (warehouseId === '' && activeLocations.length > 0) {
+    if (warehouseId === '' && activeLocations.length === 1) {
       const only = activeLocations[0]?.id ?? '';
       setWarehouseId(only);
       defaultWarehouseRef.current = only;
@@ -283,6 +298,12 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                     setWarehouseId(event.target.value);
                   }}
                 >
+                  {/* A blank option, because nothing is chosen until she chooses
+                      it. Without one a select holding '' still DRAWS the first
+                      location, so the screen said "Fulfillment Center" while the
+                      form held nothing and the button stayed greyed out with
+                      nothing to say why. */}
+                  <option value="">Choose a location…</option>
                   {activeLocations.map((location) => (
                     <option key={location.id} value={location.id}>
                       {location.name}
@@ -366,7 +387,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                   <Input
                     color="module"
                     value={skuInput}
-                    placeholder="PUMP-4471"
+                    placeholder="SATCHEL-1"
                     onChange={(event) => {
                       setSkuInput(event.target.value);
                     }}
@@ -400,7 +421,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 {lines.map((line, index) => (
                   <tr key={`${line.variantId}:${index}`}>
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate">{line.productTitle ?? 'Untitled product'}</span>
                         <span className="truncate font-mono text-sm">{line.sku}</span>
@@ -413,6 +434,15 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                         type="number"
                         min={1}
                         aria-label={`How many ${line.sku} are going back`}
+                        /* A WIDTH. The item cell beside this one is the give
+                           cell — `w-full`, which in a table means "take whatever
+                           is left" — so an unfloored number box beside it pays
+                           the whole shortfall: measured at about 20px, showing a
+                           sliver of the digit. A quantity you cannot read is not
+                           a smaller field, it is a wrong one. Receiving and
+                           recipes next door have carried `w-20`/`w-24` all
+                           along. */
+                        className="w-20 text-right tabular-nums"
                         value={line.quantity}
                         onChange={(event) => {
                           const quantity = Number.parseInt(event.target.value, 10);
@@ -430,6 +460,7 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
                       <MoneyTextInput
                         size="sm"
                         color="module"
+                        className="w-28"
                         placeholder="What you paid"
                         aria-label={`What you paid for each ${line.sku}`}
                         text={line.unitCost}
@@ -475,6 +506,16 @@ function NewReturn({ ctx }: { ctx: SurfaceContext }) {
 
 /* ── Working an existing one ────────────────────────────────────────────── */
 
+/**
+ * A return that has stopped being a chase, and which of the three ways it
+ * stopped. Absent while it is still open, which the card reads as "Waiting".
+ */
+const SETTLED_TITLE: Record<string, string> = {
+  credited: 'Credited',
+  closed: 'Written off',
+  cancelled: 'Called off',
+};
+
 function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const existing = useSupplierReturn(id);
   const update = useUpdateSupplierReturn(id);
@@ -498,6 +539,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   }, [data]);
 
   if (!data) return null;
+  const settledTitle = SETTLED_TITLE[data.status] ?? null;
 
   const fail = (title: string) => (error: unknown) => {
     afterCommit(() => {
@@ -627,7 +669,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         </div>
       </div>
 
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>You are owed</StatTitle>
           <StatValue>{formatCents(data.creditExpectedCents, data.currency)}</StatValue>
@@ -651,9 +693,18 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           </StatDesc>
         </Stat>
         <Stat>
-          <StatTitle>Waiting</StatTitle>
+          {/* THREE DIFFERENT FACTS USED TO SHARE ONE HEADING. `awaitingCreditDays`
+              goes null the moment a credit is recorded, and this card then fell
+              back to the time the goods LEFT — under the word "Waiting". A return
+              settled in full read "Waiting · 39 seconds ago", which is neither the
+              right label nor the right moment. `resolvedAt` is when it actually
+              finished, and it was being fetched into both consoles and drawn by
+              nothing. [[feedback_fetched_but_never_rendered]] */}
+          <StatTitle>{settledTitle ?? 'Waiting'}</StatTitle>
           <StatValue>
-            {data.awaitingCreditDays === null ? (
+            {settledTitle !== null ? (
+              formatMoment(data.resolvedAt)
+            ) : data.awaitingCreditDays === null ? (
               data.sentAt ? (
                 <Timestamp value={data.sentAt} format="relative" />
               ) : (
@@ -694,7 +745,7 @@ function ExistingReturn({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <tbody>
             {data.lines.map((line) => (
               <tr key={line.id}>
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{line.productTitle ?? 'Untitled product'}</span>
                     <span className="truncate text-sm">

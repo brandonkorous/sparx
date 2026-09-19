@@ -82,6 +82,8 @@ import {
 } from './integrity-data';
 import { useOversellIncidents, type OversellIncident } from './integrity-data';
 import { productCopy } from '../../lib/product';
+import { channelLabel } from '../../lib/console/channels';
+import { countClass } from '../../lib/count-ink';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 const NUMBER = new Intl.NumberFormat();
@@ -353,26 +355,25 @@ function OversellCard({
         </Text>
       </div>
 
+      {/* Three independent problem counters, so each keeps its color only while
+          it has something to report. They read "1 / 0 / 0" in amber, blue and
+          red, and the eye went to the red one — the number saying nothing had
+          gone wrong. The count 150 lines above already guards itself this way.
+          See `count-ink`. */}
       {summary ? (
         <div className="grid grid-cols-3 gap-2">
-          <div className="flex flex-col">
-            <Text className="text-warning text-2xl font-semibold tabular-nums">
-              {NUMBER.format(summary.blocked)}
-            </Text>
-            <Text className="text-sm">Sales refused</Text>
-          </div>
-          <div className="flex flex-col">
-            <Text className="text-info text-2xl font-semibold tabular-nums">
-              {NUMBER.format(summary.allowed)}
-            </Text>
-            <Text className="text-sm">Promised anyway</Text>
-          </div>
-          <div className="flex flex-col">
-            <Text className="text-danger text-2xl font-semibold tabular-nums">
-              {NUMBER.format(summary.negativeOnHand)}
-            </Text>
-            <Text className="text-sm">Sold below zero</Text>
-          </div>
+          {[
+            { n: summary.blocked, label: 'Sales refused', ink: 'text-warning' },
+            { n: summary.allowed, label: 'Promised anyway', ink: 'text-info' },
+            { n: summary.negativeOnHand, label: 'Sold below zero', ink: 'text-danger' },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col">
+              <Text className={countClass(stat.n, 'text-2xl font-semibold tabular-nums', stat.ink)}>
+                {NUMBER.format(stat.n)}
+              </Text>
+              <Text className="text-sm">{stat.label}</Text>
+            </div>
+          ))}
         </div>
       ) : null}
 
@@ -424,7 +425,10 @@ function OversellCard({
                         {incident.productTitle ?? incident.variantSku ?? 'Unnamed item'}
                       </span>
                       {incident.channel ? (
-                        <span className="text-sm">via {incident.channel}</span>
+                        /* The place, in the console's ONE vocabulary. This read
+                           "via storefront" — the raw stored word — while the
+                           same sale on Money read "Your website". */
+                        <span className="text-sm">{channelLabel(incident.channel)}</span>
                       ) : null}
                     </td>
                     <td>

@@ -102,6 +102,14 @@ export interface PickerProduct {
   title: string;
   variantCount: number;
   vendor: string | null;
+  /**
+   * Whether it is for sale.
+   *
+   * A transfer does not care. It is carried so the picker can SAY that an item
+   * is not on the website yet, rather than either hiding it or listing it with
+   * no explanation of why it looks different from the others.
+   */
+  status: 'draft' | 'active' | 'archived';
 }
 
 export interface PickerVariant {
@@ -170,12 +178,97 @@ export function useTransfer(id: string) {
 /** The catalog, for choosing what to put on a transfer. Bounded fetch, filtered
  *  in the picker; long-lived because the catalog changes far slower than a
  *  transfer is composed. */
+/**
+ * Everything this shop can move between its own buildings.
+ *
+ * ── Why it does not filter to `active` ──────────────────────────────────────
+ *
+ * It did, and Juniper Row could not move the 58 antique belt buckles sitting on
+ * her Main Warehouse shelf, because that product is still a draft. The picker
+ * answered **"No product matches that"**, which says the item is not in her
+ * catalog. It is in her catalog. It is on her shelf. It has a barcode. She had
+ * just printed a label for it.
+ *
+ * A transfer moves PHYSICAL stock between two of the tenant's own buildings.
+ * Whether a customer can buy it is a different question with a different answer,
+ * and it has no bearing on whether a box can go in a van. Filtering by it turned
+ * "this is not for sale yet" into "this does not exist", which is the shape
+ * where one outcome covers two causes and the message sends somebody to fix the
+ * wrong thing. [[feedback_one_outcome_two_causes]]
+ *
+ * Archived products stay out, which is the endpoint's default: archived is a
+ * decision that the item is finished with, not a decision about the website.
+ *
+ * ── Why every SITE, not the one she is looking at ──────────────────────────
+ *
+ * `x-sparx-property-id` rides on every request, so without `property: 'all'`
+ * this list is the catalog of whichever website is open in the switcher. A
+ * warehouse is not. `inventory_warehouses` and `inventory_transfers` have no
+ * property column at all: one building holds one pile of boxes for the whole
+ * business, and a van going from that building to another does not know which
+ * website a jumper is listed on.
+ *
+ * Juniper Row has seven sites and 34 products, of which 10 are visible on the
+ * primary. The other 24 were unmovable and unmentioned, and the moment one of
+ * them has stock, "No product matches that" becomes a lie about a box that is
+ * physically on a shelf.
+ *
+ * `'all'` is the platform's own checked way to read across sites: an owner gets
+ * everything, an account limited to certain sites gets exactly those, and one
+ * limited to none is refused. It is not a way around the boundary.
+ * [[feedback_site_is_the_business]]
+ *
+ * ── Why 250 and not 100 ────────────────────────────────────────────────────
+ *
+ * The Combobox filters `items` in the BROWSER, so anything not fetched here can
+ * never be typed for. At 100, a shop's 101st product did not exist as far as
+ * this screen was concerned — and it said so in the same sentence it uses for a
+ * typo. 250 is the endpoint's own maximum, and the caller compares `total`
+ * against what came back so it can say when the list is short instead of
+ * quietly answering "no such product".
+ * [[feedback_never_present_absence_as_measurement]]
+ */
 export function usePickerProducts() {
   return useQuery({
     queryKey: ['commerce', 'products', 'transfer-picker'],
-    queryFn: () =>
-      api.list<PickerProduct>('/v1/commerce/products', { take: 100, status: 'active' }),
+    queryFn: () => api.list<PickerProduct>('/v1/commerce/products', { take: 250, property: 'all' }),
     staleTime: 60_000,
+  });
+}
+
+/**
+ * What is on the shelf, at the location this transfer leaves FROM.
+ *
+ * The number the whole decision turns on, and it was on no screen. Juniper Row
+ * picked an item, typed 100, added the line, saved the transfer and pressed Send
+ * before anything mentioned that the warehouse holds 58 — four steps and a
+ * confirm dialog, all of them silent, and then a refusal.
+ *
+ * `available`, not `onHand`, because that is what the dispatch check uses:
+ * stock already spoken for by an order cannot go in the van either.
+ *
+ * NO row is not zero. A variant with no level at that location has never been
+ * counted there, which is a different sentence and a different fix.
+ * [[feedback_never_present_absence_as_measurement]]
+ */
+export interface SourceStock {
+  variantId: string;
+  warehouseId: string;
+  onHand: number;
+  allocated: number;
+  available: number;
+}
+
+export function useSourceStock(variantId: string | null, warehouseId: string) {
+  return useQuery({
+    queryKey: ['inventory', 'transfer-source', variantId ?? '', warehouseId] as const,
+    queryFn: () =>
+      api.list<SourceStock>('/v1/inventory', {
+        variant_id: variantId ?? '',
+        warehouse_id: warehouseId,
+        take: 1,
+      }),
+    enabled: Boolean(variantId) && warehouseId !== '',
   });
 }
 
@@ -380,7 +473,7 @@ export function transferState(status: TransferStatus): TransferState {
     case 'received':
       return { label: 'Received', tone: 'success' };
     case 'cancelled':
-      return { label: 'Cancelled', tone: 'danger' };
+      return { label: 'Canceled', tone: 'danger' };
     default:
       return { label: status, tone: 'neutral' };
   }

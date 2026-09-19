@@ -46,6 +46,7 @@ import {
   type SourceType,
 } from './sources-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { ActionLabel } from '../../components/action-label';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -193,7 +194,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       shove the state badge — the one column that must never go —
                       off the right edge. Zeroing the max width makes THIS the
                       cell that gives, which is what lets the truncation bite. */}
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 items-center gap-3">
                       <TypeIcon type={source.type} />
                       <span className="flex min-w-0 flex-col">
@@ -261,7 +262,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
         primary={
           <Button size="sm" color="module" className="ml-auto shrink-0" onClick={addSource}>
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @sm:inline">Add a source</span>
+            <ActionLabel from="sm">Add a source</ActionLabel>
           </Button>
         }
         controls={

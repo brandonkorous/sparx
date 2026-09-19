@@ -706,7 +706,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     const withScrap = Math.ceil(quantity * (1 + scrap / 100));
                     return (
                       <tr key={component.variantId}>
-                        <td className="w-full max-w-0">
+                        <td className="w-full max-w-0 min-w-56">
                           <span className="flex min-w-0 flex-col">
                             <span className="truncate">
                               {component.productTitle || 'Untitled product'}
@@ -847,7 +847,7 @@ export function BomDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <tbody>
                   {buildable.data.components.map((component) => (
                     <tr key={component.variantId}>
-                      <td className="w-full max-w-0">
+                      <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate">
                             {component.productTitle ?? 'Untitled product'}

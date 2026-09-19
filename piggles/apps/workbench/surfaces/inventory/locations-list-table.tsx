@@ -8,6 +8,7 @@ import { Badge } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import type { Location } from './locations-data';
 import { locationPlace, locationState, locationTypeLabel } from './locations-vocabulary';
+import { locationStockLine } from './location-stock-line';
 
 interface Modifiers {
   shiftKey: boolean;
@@ -23,6 +24,10 @@ function Row({
 }) {
   const state = locationState(location);
   const place = locationPlace(location);
+  // What is actually IN this place. The list showed name, kind, where and
+  // state, and nothing about its contents — so a business whose shelves all
+  // read 0 had no way to see that every unit it owns is somewhere else.
+  const stock = locationStockLine(location);
   return (
     <tr
       key={location.id}
@@ -42,7 +47,7 @@ function Row({
             sizes to its content, so without it a long location name
             pushes the row wider and shoves the State badge off the right
             edge — the one column that must never be the one to go. */}
-      <td className="w-full max-w-0">
+      <td className="w-full max-w-0 min-w-56">
         <span className="flex min-w-0 flex-col">
           <span className="flex min-w-0 items-center gap-2">
             <span className="truncate font-medium">{location.name}</span>
@@ -59,6 +64,9 @@ function Row({
           {/* The code is how the shelves are labelled — mono because it
                 is a code, not prose. */}
           <span className="truncate font-mono text-sm">{location.code}</span>
+          {/* Always on, at every width: this is the fact the screen was
+                missing, so it does not fold away with the rest. */}
+          {stock ? <span className="truncate text-sm">{stock}</span> : null}
           {/* Below @lg the Kind column is gone; below @xl the Where
                 column is gone. Each folds back here so a narrow pane
                 still says what the place is and where it is. */}

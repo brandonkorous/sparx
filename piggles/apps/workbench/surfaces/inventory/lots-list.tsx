@@ -455,7 +455,7 @@ function LotRows({
             >
               {/* `max-w-0 w-full` makes THIS the cell that gives, so the state
                   badge is never the column shoved off the right edge. */}
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate font-mono">{lot.lotNumber}</span>
                   <span className="truncate text-sm">
@@ -546,7 +546,7 @@ function SerialRows({
               className={lotBatchId !== null ? 'cursor-pointer' : ''}
               {...interactive}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate font-mono">{serial.serial}</span>
                   <span className="truncate text-sm">

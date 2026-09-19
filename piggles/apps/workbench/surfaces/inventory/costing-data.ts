@@ -227,10 +227,16 @@ export interface PriceVariance {
   from: string;
   to: string;
   currency: string;
+  /** Every unit that arrived, planned or not. */
   totalUnits: number;
+  /** The units this report can COMPARE. The three money figures below are all
+   *  over this set and no other — see the service for why that matters. */
+  comparedUnits: number;
   totalStandardCents: number;
   totalActualCents: number;
   totalVarianceCents: number;
+  /** What everything that arrived cost, planned or not. */
+  allActualCents: number;
   unitsWithoutStandard: number;
   rows: PriceVarianceRow[];
 }

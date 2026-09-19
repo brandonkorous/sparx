@@ -21,21 +21,32 @@ export function anyUnpriced(counts: CountRow[]): boolean {
   return counts.some(movedButUnpriced);
 }
 
-function movedButUnpriced(count: CountRow): boolean {
-  return count.varianceValueCents === 0 && count.varianceUnits > 0;
+/**
+ * Two states have no difference to report AT ALL, rather than a difference of
+ * zero: a count still being COUNTED has no frozen value yet, and a DISCARDED
+ * one was closed without applying anything. "$0.00" on either reads as "we
+ * checked and it all matched", which is a different and much more reassuring
+ * claim than "we never finished".
+ */
+function hasSomethingToReport(count: CountRow): boolean {
+  return count.status !== 'counting' && count.status !== 'cancelled';
 }
 
 /**
- * The money column.
+ * Moved stock that nothing can put a price on.
  *
- * Two states have no difference to report at all rather than a difference of
- * zero, and both show a dash: a count still being COUNTED has no frozen value
- * yet, and a DISCARDED one was closed without applying anything. "$0.00" on
- * either reads as "we checked and it all matched", which is a different and
- * much more reassuring claim than "we never finished".
+ * The status check is here and not only in `differenceLabel`, so the standing
+ * notice and the column cannot disagree: a discarded count showing a dash while
+ * a banner above the table says it "moved real stock" is two screens telling a
+ * shop owner opposite things about the same row.
  */
+function movedButUnpriced(count: CountRow): boolean {
+  return hasSomethingToReport(count) && count.varianceValueCents === 0 && count.varianceUnits > 0;
+}
+
+/** The money column. */
 export function differenceLabel(count: CountRow): string {
-  if (count.status === 'counting' || count.status === 'cancelled') return '—';
+  if (!hasSomethingToReport(count)) return '—';
   if (movedButUnpriced(count)) return 'No cost yet';
   return formatCents(count.varianceValueCents);
 }

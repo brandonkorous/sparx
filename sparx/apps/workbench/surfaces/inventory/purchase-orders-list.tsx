@@ -42,6 +42,7 @@ import {
   type PurchaseOrder,
 } from './purchase-orders-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { ActionLabel } from '../../components/action-label';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -57,7 +58,7 @@ const STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: 'partial', label: 'Partly received' },
   { value: 'received', label: 'Received' },
   { value: 'closed', label: 'Closed' },
-  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'cancelled', label: 'Canceled' },
 ];
 
 export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -187,7 +188,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(po, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-mono font-medium">{po.number}</span>
                     {/* Below @lg the supplier column is gone, so it rides here —
@@ -253,7 +254,7 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">New order</span>
+            <ActionLabel>New order</ActionLabel>
           </Button>
         }
         controls={

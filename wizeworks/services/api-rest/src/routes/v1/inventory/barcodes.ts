@@ -7,6 +7,7 @@
 //   POST   /v1/inventory/barcodes/:id/primary      → make it the item's main code
 //   GET    /v1/inventory/barcodes/variant/:variantId
 //   GET    /v1/inventory/barcodes/conflicts        → codes two items both claim
+//   GET    /v1/inventory/barcodes/unbarcoded       → items with no code at all
 //   POST   /v1/inventory/barcodes/generate         → mint internal codes
 //   GET    /v1/inventory/scan                      ?value&expect&warehouse_id
 //   POST   /v1/inventory/scan                      → same, for a body too long for a URL
@@ -51,6 +52,13 @@ const ListQuery = z.object({
   q: z.string().trim().min(1).max(64).optional(),
   include_inactive: queryBool.optional(),
   limit: z.coerce.number().int().min(1).max(200).optional(),
+  offset: z.coerce.number().int().min(0).optional(),
+});
+
+const UnbarcodedQuery = z.object({
+  q: z.string().trim().min(1).max(64).optional(),
+  variant_id: z.string().uuid().optional(),
+  limit: z.coerce.number().int().min(1).max(500).optional(),
   offset: z.coerce.number().int().min(0).optional(),
 });
 
@@ -134,6 +142,25 @@ const inventoryBarcodeRoutes: FastifyPluginAsync = async (app) => {
     await requireInventoryModule(request);
     requireRole(request, 'viewer');
     return reply.send(ok(await inventoryService.listBarcodeConflicts(toInventoryContext(request))));
+  });
+
+  // The other half of "can we scan yet": the items with no code at all. Viewer,
+  // like conflicts — reading how far off scan-first you are asks nobody to
+  // change anything.
+  app.get('/v1/inventory/barcodes/unbarcoded', async (request, reply) => {
+    await requireInventoryModule(request);
+    requireRole(request, 'viewer');
+    const q = UnbarcodedQuery.parse(request.query);
+    const { items, total } = await inventoryService.listUnbarcodedVariants(
+      toInventoryContext(request),
+      {
+        ...(q.q !== undefined ? { search: q.q } : {}),
+        ...(q.variant_id !== undefined ? { variantId: q.variant_id } : {}),
+        limit: q.limit ?? 200,
+        offset: q.offset ?? 0,
+      }
+    );
+    return reply.send(paged(items, { total, skip: q.offset ?? 0, per_page: q.limit ?? 200 }));
   });
 
   // Settling a conflict rewrites which item a code points at, which changes what

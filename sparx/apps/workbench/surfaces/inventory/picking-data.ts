@@ -166,7 +166,16 @@ export interface PackageRow {
 
 export interface PackageDetail extends PackageRow {
   lines: PackageLine[];
-  outstanding: { orderItemId: string; sku: string; name: string; remaining: number }[];
+  /** Order lines still owed a box. `shortWhilePicking` is how many of them a
+   *  picker recorded as not on the shelf: still owed, still held for this order,
+   *  and not on the trolley. */
+  outstanding: {
+    orderItemId: string;
+    sku: string;
+    name: string;
+    remaining: number;
+    shortWhilePicking: number;
+  }[];
   orderFullyPacked: boolean;
 }
 
@@ -191,7 +200,11 @@ export interface FulfillResult {
 /* ── Throughput ─────────────────────────────────────────────────────────── */
 
 export interface PickerThroughput {
+  /** The IDENTITY the ledger stamped: a login id when somebody was signed in,
+   *  the walk's assignee text when nobody was. Never a label — see `pickerName`. */
   pickedBy: string | null;
+  /** That identity as a person, when this business can name one. */
+  pickerName: string | null;
   linesPicked: number;
   unitsPicked: number;
   linesShort: number;
@@ -215,7 +228,10 @@ export interface BinShortfall {
 }
 
 export interface PackThroughput {
+  /** Same contract as `PickerThroughput.pickedBy`. */
   packedBy: string | null;
+  /** That identity as a person, when this business can name one. */
+  packerName: string | null;
   boxesPacked: number;
   unitsPacked: number;
   unitsScanned: number;
@@ -326,9 +342,32 @@ export function usePackage(id: string) {
   });
 }
 
+/**
+ * How the picking went over the last `days`.
+ *
+ * IT TAKES A NUMBER OF DAYS, NOT A TIMESTAMP, AND THAT IS THE POINT.
+ *
+ * It used to take `from` as an ISO string, which the surface computed as
+ * `new Date(Date.now() - days * DAY_MS).toISOString()` in its render body. That
+ * string carries MILLISECONDS, and it went straight into the query key, so
+ * every render minted a key react-query had never seen, which fetched, which
+ * re-rendered, which minted another one. The screen looked fine the whole time
+ * because `placeholderData` kept the last result on it.
+ *
+ * Measured: it drained the API's 600-requests-a-minute budget on its own and
+ * held it empty, and every other pane in the console then failed. Six other
+ * call sites of `rangeForDays` each carry a `useMemo` and a comment warning
+ * about exactly this; this one was written by hand and missed.
+ *
+ * A caller cannot make that mistake with this signature: `days` is a small
+ * integer, the window is worked out inside `queryFn` where nothing keys on it,
+ * and the clock is read when the request is actually made rather than on every
+ * paint.
+ */
+const DAY_MS = 86_400_000;
+
 export function usePickThroughput(query: {
-  from?: string;
-  to?: string;
+  days: number;
   warehouseId?: string;
   pickedBy?: string;
 }) {
@@ -336,8 +375,7 @@ export function usePickThroughput(query: {
     queryKey: pickKeys.throughput(query),
     queryFn: () =>
       api.get<PickThroughputReport>('/v1/inventory/reports/pick-throughput', {
-        ...(query.from ? { from: query.from } : {}),
-        ...(query.to ? { to: query.to } : {}),
+        from: new Date(Date.now() - query.days * DAY_MS).toISOString(),
         ...(query.warehouseId ? { warehouseId: query.warehouseId } : {}),
         ...(query.pickedBy ? { pickedBy: query.pickedBy } : {}),
       }),
@@ -731,4 +769,48 @@ export function pickErrorMessage(error: unknown, fallback: string): string {
 
 export function isPickNotFound(error: unknown): boolean {
   return error instanceof ApiError && error.status === 404;
+}
+
+/* ── How fast, said honestly ──────────────────────────────────── */
+
+/**
+ * The headline picking rate, and the line under it.
+ *
+ * `activeMinutes` is the span between a walk's first and last confirmed line, so
+ * a walk done in twenty seconds measures as ZERO minutes — and the card read
+ * **0.0 units an hour**, over **"1 unit over 0 hours of picking"**. That is a
+ * measurement of somebody being infinitely slow, printed for work that actually
+ * happened. A rate nobody could work out has to say so rather than print a
+ * number. [[feedback_never_present_absence_as_measurement]]
+ *
+ * The screen above this already refuses to draw anything when nothing at all was
+ * picked, so "no units" here means the lines were all shorts.
+ */
+export function pickingRate(
+  unitsPicked: number,
+  activeMinutes: number
+): { value: string; hint: string } {
+  if (unitsPicked <= 0) {
+    return { value: '—', hint: 'Nothing was actually taken off a shelf in this period.' };
+  }
+  const units = `${String(unitsPicked)} ${unitsPicked === 1 ? 'unit' : 'units'}`;
+  if (activeMinutes < 1) {
+    return {
+      value: '—',
+      hint: `${units} picked, too close together in time to work out a rate.`,
+    };
+  }
+  const rate = (unitsPicked / activeMinutes) * 60;
+  if (activeMinutes < 60) {
+    const minutes = Math.round(activeMinutes);
+    return {
+      value: rate.toFixed(1),
+      hint: `${units} over ${String(minutes)} ${minutes === 1 ? 'minute' : 'minutes'} of picking.`,
+    };
+  }
+  const hours = Math.round(activeMinutes / 60);
+  return {
+    value: rate.toFixed(1),
+    hint: `${units} over ${String(hours)} ${hours === 1 ? 'hour' : 'hours'} of picking.`,
+  };
 }

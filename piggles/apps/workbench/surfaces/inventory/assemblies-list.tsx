@@ -152,7 +152,7 @@ export function AssembliesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
               >
                 <td className="font-mono whitespace-nowrap">{run.number}</td>
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{run.outputTitle ?? 'Untitled product'}</span>
                     <span className="truncate text-sm">

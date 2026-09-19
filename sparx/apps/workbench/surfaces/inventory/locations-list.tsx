@@ -42,6 +42,7 @@ import {
   type Location,
 } from './locations-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { locationStockLine } from './location-stock-line';
 
 const DETAIL_KEY = 'inventory.warehouses.detail';
 
@@ -203,12 +204,20 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     sizes to its content, so without it a long location name
                     pushes the row wider and shoves the State badge off the right
                     edge — the one column that must never be the one to go. */}
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">{location.name}</span>
                     {/* The code is how the shelves are labelled — mono because it
                         is a code, not prose. */}
                     <span className="truncate font-mono text-sm">{location.code}</span>
+                    {/* What is actually IN this place. The list showed name,
+                        kind, where and state, and nothing about its contents,
+                        so a business whose shelves all read 0 had no way to see
+                        that every unit it owns is somewhere else. Always on, at
+                        every width. */}
+                    {locationStockLine(location) ? (
+                      <span className="truncate text-sm">{locationStockLine(location)}</span>
+                    ) : null}
                     {/* Below @lg the Kind column is gone; below @xl the Where
                         column is gone. Each folds back here so a narrow pane
                         still says what the place is and where it is. */}

@@ -30,7 +30,6 @@ import {
   Card,
   EmptyState,
   Text,
-  Timestamp,
 } from '@wizeworks/silicaui-react';
 import { Table } from '../../components/table';
 import { faBoxMagnifyingGlass, faCalendarClock } from '@fortawesome/pro-solid-svg-icons';
@@ -39,8 +38,11 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
+import { formatDay, formatMoment } from './purchase-orders-data';
 import { latenessTone, useLatePurchaseOrders } from './supplier-performance-data';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { useBusinessZone } from '../../lib/business-timezone';
+import { daysPastDue } from '../../lib/console/days';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -50,6 +52,19 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
   const report = useLatePurchaseOrders();
+  // HOW LATE, COUNTED IN CALENDAR DAYS, IN THE SHOP'S OWN ZONE.
+  //
+  // The server counts elapsed seconds and divides by 86,400, in UTC. An order
+  // due on the 10th, read on the evening of the 18th in Los Angeles, came back
+  // as "9 days" because in UTC it was already the 19th. The number a buyer
+  // quotes down the phone must be the number she would count off her own
+  // calendar. `lib/console/days.ts` is that rule, already written and already
+  // tested, for exactly this reason. The server's own figure is kept as the
+  // fallback for an order with no due date to count from.
+  const zone = useBusinessZone();
+  const now = new Date();
+  const lateDays = (row: { dueAt: string; daysLate: number }): number =>
+    daysPastDue(row.dueAt, now, zone) ?? row.daysLate;
 
   const rows = report.data?.items ?? [];
   const undated = report.data?.undated ?? 0;
@@ -113,7 +128,7 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(row.purchaseOrderId, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">
                     <span className="font-mono">{row.number}</span>
@@ -126,17 +141,41 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
                     {row.dueSource === 'expected_arrival'
                       ? 'against the date on the order'
                       : 'against their usual delivery time'}
-                    {row.alertedAt === null ? ' · not yet flagged' : ''}
+                    {/* "Flagged" is what the code calls it; it means nothing to the
+                        person reading this, and reads like a chore they have
+                        missed. Say who actually hears about it: the late-order
+                        event has exactly one consumer, the webhooks under Tell
+                        other software. Nobody in the business is emailed or
+                        notified, so the phrase must not imply they were. Both
+                        halves are shown, or the meaning only ever lives in the
+                        absence of the words. */}
+                    {row.alertedAt === null
+                      ? ' · not passed to your other software yet'
+                      : ' · passed to your other software'}
                   </span>
                 </span>
               </td>
               <td className="whitespace-nowrap">
-                <Badge color={latenessTone(row.daysLate)} variant="soft" size="sm">
-                  {plural(row.daysLate, 'day', 'days')}
+                <Badge color={latenessTone(lateDays(row))} variant="soft" size="sm">
+                  {plural(lateDays(row), 'day', 'days')}
                 </Badge>
               </td>
               <td className="hidden whitespace-nowrap @lg:table-cell">
-                <Timestamp value={row.dueAt} format="relative" />
+                {/* The date itself, not "2 weeks ago". "Overdue by" beside it
+                    already says how long; this is the one a buyer quotes down
+                    the phone, and it was the only column that did not carry
+                    it.
+
+                    Not `<Timestamp format="absolute">`: that is "5:00 PM" on
+                    anything less than a day old, which is not a date at all, and
+                    it prints a stored day on the READER's clock, which is the
+                    day before for everyone west of Greenwich. The date on an
+                    order is a DAY; a date worked out from how long a supplier
+                    usually takes is an instant, and each gets the formatter that
+                    is true for it. */}
+                {row.dueSource === 'expected_arrival'
+                  ? formatDay(row.dueAt)
+                  : formatMoment(row.dueAt)}
               </td>
               <td className="hidden text-right tabular-nums @xl:table-cell">
                 {row.unitsOutstanding}
@@ -178,9 +217,9 @@ export function LateOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
               {plural(undated, 'open order has', 'open orders have')} no expected date
             </AlertTitle>
             <AlertDescription>
-              They cannot appear here, because nothing says when they should have arrived, and that
-              is not the same as being on time. Put a date on the order, or record a delivery time
-              against the supplier, and they start being checked.
+              An order with no date cannot appear here, because nothing says when it should have
+              arrived, and that is not the same as being on time. Put a date on the order, or record
+              a delivery time against the supplier, and it starts being checked.
             </AlertDescription>
           </AlertContent>
         </Alert>

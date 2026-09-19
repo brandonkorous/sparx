@@ -205,7 +205,7 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       shove the state badge — the one column that must never go —
                       off the right edge. Zeroing the max width makes THIS the
                       cell that gives, which is what lets the truncation bite. */}
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 items-center gap-3">
                       <TypeIcon type={source.type} />
                       <span className="flex min-w-0 flex-col">

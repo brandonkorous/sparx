@@ -162,3 +162,45 @@ export async function resolvePutAwayBin(
   }
   return fallback.id;
 }
+
+/**
+ * Whether a put-away here would find a shelf, WITHOUT performing one.
+ *
+ * ── Why this exists ────────────────────────────────────────────────────────
+ *
+ * The answer used to be discovered at the last possible moment. Juniper Row sent
+ * 12 belt buckles from her Main Warehouse to her Fulfillment Center, and only
+ * when the van had arrived and she pressed **Mark received** did anything say:
+ *
+ *     This location has no default shelf, so there is nowhere to record the
+ *     stock. Turn bins off for it, or add one.
+ *
+ * The sentence is a good one. It arrived after the stock had already left the
+ * source, so her 12 units were in transit to a place that could not take them,
+ * and her only way out was to cancel the whole transfer.
+ *
+ * Every warehouse on this platform with shelves turned on is in that state:
+ * FIVE of five, across five different tenants, none of them with a default
+ * shelf. So this is not an edge somebody contrived; it is what happens the first
+ * time anyone turns shelves on.
+ *
+ * It calls the real resolver rather than re-implementing its rules, because a
+ * second copy of "can this land here" is a second copy that drifts, and the one
+ * thing worse than finding out late is finding out wrongly.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ */
+export async function canPutAway(
+  tx: TxClient,
+  ctx: ServiceContext,
+  input: { warehouseId: string; variantId: string }
+): Promise<boolean> {
+  try {
+    await resolvePutAwayBin(tx, ctx, { ...input, requested: null, quantity: 0 });
+    return true;
+  } catch (error) {
+    // A validation error IS the answer: there is no shelf for this. Anything
+    // else is a real fault and must not be swallowed into a cheerful "no".
+    if (error instanceof InventoryValidationError) return false;
+    throw error;
+  }
+}

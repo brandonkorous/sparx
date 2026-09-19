@@ -23,9 +23,12 @@ import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-p
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { formatDay } from './purchase-orders-data';
+// `formatMoment`: a delivery is booked in at a MOMENT, so the day it
+// happened is the day on the receiver's own clock, not in UTC.
+import { formatMoment } from './purchase-orders-data';
 import { useReceipts, type GoodsReceipt } from './receiving-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { ActionLabel } from '../../components/action-label';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -133,18 +136,41 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(receipt, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate font-mono font-medium">{receipt.number}</span>
-                  <span className="truncate text-sm @lg:hidden">
-                    {receipt.purchaseOrderNumber
-                      ? `Order ${receipt.purchaseOrderNumber}`
-                      : 'No order'}
-                    {receipt.reference ? ` · ${receipt.reference}` : ''}
+                  {/* WHAT THE COLUMNS DROP, FOLDED BACK UNDER THE NUMBER.
+                      This file's own header says a narrow pane "keeps the
+                      reference, the order and when it landed". It kept the
+                      order. In a three-pane layout — 549px, which is @lg — the
+                      DATE and the PACKING SLIP were both gone, and a list of
+                      deliveries with no dates cannot answer the one question it
+                      exists for. The packing-slip reference was worse: every
+                      receipt on the platform has one, the search box invites you
+                      to type it, and no column ever shows it.
+
+                      Each piece hides at the breakpoint where its own column
+                      arrives, so nothing is ever said twice. The reference has
+                      no column at all, so it never hides. */}
+                  <span className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 text-sm">
+                    <span className="@lg:hidden">
+                      {receipt.purchaseOrderNumber
+                        ? `Order ${receipt.purchaseOrderNumber}`
+                        : 'No order'}
+                    </span>
+                    {receipt.warehouseName ? (
+                      <span className="max-w-40 truncate @xl:hidden">{receipt.warehouseName}</span>
+                    ) : null}
+                    <span className="whitespace-nowrap @2xl:hidden">
+                      {formatMoment(receipt.receivedAt)}
+                    </span>
+                    {receipt.reference ? (
+                      <span className="max-w-40 truncate font-mono">{receipt.reference}</span>
+                    ) : null}
                   </span>
                 </span>
               </td>
-              <td className="hidden font-mono @lg:table-cell">
+              <td className="hidden font-mono whitespace-nowrap @lg:table-cell">
                 {receipt.purchaseOrderNumber ?? '—'}
               </td>
               <td className="hidden max-w-40 truncate @xl:table-cell">
@@ -152,7 +178,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
               </td>
               <td className="text-right font-medium tabular-nums">{receipt.quantityReceived}</td>
               <td className="hidden whitespace-nowrap @2xl:table-cell">
-                {formatDay(receipt.receivedAt)}
+                {formatMoment(receipt.receivedAt)}
               </td>
             </tr>
           ))}
@@ -187,7 +213,7 @@ export function ReceivingListSurface({ ctx }: { ctx: SurfaceContext }) {
             onClick={startReceiving}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Receive a delivery</span>
+            <ActionLabel>Receive a delivery</ActionLabel>
           </Button>
         }
         refresh={

@@ -33,6 +33,7 @@ import {
   Input,
   NativeSelect,
   Table,
+  Switch,
   Text,
   Timestamp,
   Tooltip,
@@ -45,7 +46,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { plural, stockErrorMessage, useStockLocations } from './data';
+import { physicalLocations, plural, stockErrorMessage, useStockLocations } from './data';
 import {
   BIN_TYPES,
   binTypeLabel,
@@ -73,6 +74,8 @@ interface Draft {
   pickSequence: string;
   capacityUnits: string;
   notes: string;
+  /** Where things go when nobody says a shelf. Exactly one per location. */
+  isDefault: boolean;
 }
 
 const EMPTY: Draft = {
@@ -87,6 +90,7 @@ const EMPTY: Draft = {
   pickSequence: '',
   capacityUnits: '',
   notes: '',
+  isDefault: false,
 };
 
 function draftFrom(bin: Bin): Draft {
@@ -102,6 +106,7 @@ function draftFrom(bin: Bin): Draft {
     pickSequence: bin.pickSequence === null ? '' : String(bin.pickSequence),
     capacityUnits: bin.capacityUnits === null ? '' : String(bin.capacityUnits),
     notes: bin.notes ?? '',
+    isDefault: bin.isDefault,
   };
 }
 
@@ -124,7 +129,8 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const update = useUpdateBin();
   const archive = useArchiveBin();
 
-  const activeLocations = (locations.data?.items ?? []).filter((l) => l.isActive);
+  // A shelf is screwed to a wall somewhere. A virtual location has no walls.
+  const activeLocations = physicalLocations(locations.data?.items ?? []);
   const [draft, setDraft] = useState<Draft>(EMPTY);
   const [loaded, setLoaded] = useState(false);
 
@@ -173,6 +179,7 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       ...(draft.pickSequence.trim() ? { pickSequence: Number(draft.pickSequence) } : {}),
       ...(draft.capacityUnits.trim() ? { capacityUnits: Number(draft.capacityUnits) } : {}),
       ...(draft.notes.trim() ? { notes: draft.notes.trim() } : {}),
+      isDefault: draft.isDefault,
     };
 
     const onError = (error: unknown) => {
@@ -440,6 +447,33 @@ export function BinDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             <Heading level={2} className="text-lg font-semibold">
               How it is worked
             </Heading>
+
+            {/* WHERE THINGS GO WHEN NOBODY SAYS.
+                Every put-away falls back to this shelf: a delivery booked in
+                without one, a transfer arriving, a return coming back. A
+                location with shelves turned on and none of them marked here
+                refuses all three, and until this control existed there was no
+                way to fix that from anywhere — the refusal said "add a default
+                shelf" over a screen with no such field. Every bin-enabled
+                warehouse on the platform was in exactly that state. */}
+            <div className="flex items-start gap-3">
+              <Switch
+                color="module"
+                checked={draft.isDefault}
+                aria-label="Put things here when nobody says which shelf"
+                onCheckedChange={(checked) => {
+                  set('isDefault', checked);
+                }}
+              />
+              <div className="flex flex-col">
+                <Text>Put things here when nobody says which shelf</Text>
+                <Text className="text-sm">
+                  {draft.isDefault
+                    ? 'Deliveries, transfers and returns land here unless somebody scans a different shelf. Only one shelf per location can be this, so turning it on turns it off elsewhere.'
+                    : 'One shelf in each location has to be this, or nothing can be booked in there at all. Turning it on here turns it off wherever it is now.'}
+                </Text>
+              </div>
+            </div>
 
             <Field>
               <FieldLabel>Walk order</FieldLabel>

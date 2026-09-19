@@ -35,6 +35,7 @@
 // deleting anything — the ledger is append-only, and an import that could be
 // erased is one nobody could audit.
 
+import { countClass } from '../../lib/count-ink';
 import { useRef, useState } from 'react';
 import {
   Alert,
@@ -53,9 +54,10 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Download, FileSpreadsheet, Undo2, Upload } from 'lucide-react';
+import { FileSpreadsheet, Undo2, Upload } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { DownloadButton } from '../../components/download-button';
 import { RefreshButton } from '../../components/refresh-button';
 import { useConfirm } from '../../lib/confirm';
 import { afterCommit } from '../../lib/defer';
@@ -86,17 +88,62 @@ import {
   type ImportPreview,
 } from './onboarding-data';
 
-/** What the movements this file writes will be recorded AS. The choice matters:
- *  `recount` puts the differences in the shrinkage report, where a stock-take
- *  belongs, and `manual` does not. */
+/**
+ * What the movements this file writes will be recorded AS, and what each choice
+ * does to the books.
+ *
+ * The label is the NAME of the choice and nothing else, because a native select
+ * truncates: at 360px "A stock count: differences count as shrinkage" rendered
+ * as "A stock count: differences count", cut at the exact word the sentence was
+ * written to reach. The consequence therefore lives in a line under the select,
+ * where it has the full width of the pane and cannot be cut at all.
+ *
+ * The consequences are the shrinkage service's own rule, not a paraphrase of it:
+ * `loss`, `damage` and NEGATIVE `recount` movements are shrinkage; a positive
+ * recount is reported beside them as a gain rather than netted off, because
+ * netting the pair hides both. `manual`, `opening` and `receive` are not
+ * shrinkage at all. See `packages/inventory/src/services/shrinkage.ts`.
+ */
 const REASONS = [
-  { value: 'recount', label: 'A stock count: differences count as shrinkage' },
-  { value: 'manual', label: 'A correction: keep it out of the shrinkage figures' },
-  { value: 'opening', label: 'What we started with: the first quantities on the books' },
-  { value: 'receive', label: 'Goods arriving' },
-  { value: 'damage', label: 'Damaged stock' },
-  { value: 'loss', label: 'Stock lost' },
+  {
+    value: 'recount',
+    label: 'A stock count',
+    detail:
+      'Anything the file says is lower than the books counts as shrinkage, which is where a stock count belongs. Anything higher is reported next to it, so the two are never quietly added together.',
+  },
+  {
+    value: 'manual',
+    label: 'A correction',
+    detail:
+      'Differences stay out of the shrinkage figures. A number being put right is not stock going missing.',
+  },
+  {
+    value: 'opening',
+    label: 'What we started with',
+    detail:
+      'The first quantities on the books. Nothing counts as a gain or a loss, because there was nothing on the books before this.',
+  },
+  {
+    value: 'receive',
+    label: 'Goods arriving',
+    detail: 'Recorded as goods coming in, the same as a delivery being received.',
+  },
+  {
+    value: 'damage',
+    label: 'Damaged stock',
+    detail: 'Recorded as stock written off broken, and counted as shrinkage.',
+  },
+  {
+    value: 'loss',
+    label: 'Stock lost',
+    detail: 'Recorded as stock gone with no known cause, and counted as shrinkage.',
+  },
 ];
+
+/** The chosen reason's consequence, for the line under the select. */
+function reasonDetail(value: string): string {
+  return REASONS.find((option) => option.value === value)?.detail ?? '';
+}
 
 /** The name the file gave, or the code when it gave none. An EMPTY name is a
  *  missing one, so `??` would keep the empty string and produce an item titled
@@ -288,6 +335,9 @@ function PlanTable({
   const changes = batch.plan.filter((row) => row.outcome === 'apply');
   const skipped = batch.plan.filter((row) => row.outcome === 'skipped');
   const newItems = errors.filter((row) => row.sku !== null && row.variantId === null);
+  // Whether this file said anything about WHY, which decides if the changes
+  // table carries a "Why" column at all.
+  const anyNotes = changes.some((row) => (row.note ?? '').trim() !== '');
 
   return (
     <div className="flex flex-col gap-3">
@@ -377,6 +427,10 @@ function PlanTable({
               <th className="text-right">Now</th>
               <th className="text-right">Becomes</th>
               <th className="text-right">Change</th>
+              {/* Only when the file actually explains itself. A column of
+                  dashes on every stock-take that skipped the note column is
+                  worse than no column: it reads as something missing. */}
+              {anyNotes ? <th>Why</th> : null}
             </tr>
           </thead>
           <tbody>
@@ -392,6 +446,7 @@ function PlanTable({
                     {formatCount(row.delta)}
                   </Badge>
                 </td>
+                {anyNotes ? <td className="text-sm">{row.note ?? ''}</td> : null}
               </tr>
             ))}
           </tbody>
@@ -593,16 +648,10 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
         }
         controls={
           <>
-            <Button
-              color="neutral"
-              variant="outline"
-              size="sm"
-              render={
-                <a href={importTemplatePath(warehouseId === '' ? undefined : warehouseId)} download>
-                  <Download className="size-4" aria-hidden />
-                  Download what you have
-                </a>
-              }
+            <DownloadButton
+              label="Download what you have"
+              filename="stock-on-hand.csv"
+              path={importTemplatePath(warehouseId === '' ? undefined : warehouseId)}
             />
           </>
         }
@@ -677,6 +726,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                     </option>
                   ))}
                 </NativeSelect>
+                <Text className="text-sm">{reasonDetail(reason)}</Text>
               </Field>
 
               <Field>
@@ -933,7 +983,16 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                   <Text className="text-sm">Rows read</Text>
                 </div>
                 <div className="flex flex-col">
-                  <Text className="text-success text-2xl font-semibold tabular-nums">
+                  {/* Green says the file landed. A file that matched nothing
+                      did not land, so zero keeps the ordinary ink rather than
+                      reporting a failure in the color of success. */}
+                  <Text
+                    className={countClass(
+                      current.summary?.matchedCount ?? 0,
+                      'text-2xl font-semibold tabular-nums',
+                      'text-success'
+                    )}
+                  >
                     {formatCount(current.summary?.matchedCount ?? 0)}
                   </Text>
                   <Text className="text-sm">Matched an item</Text>
@@ -975,6 +1034,21 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                 icon={<FileSpreadsheet className="size-6" aria-hidden />}
                 title="Nothing imported yet"
                 description="Download what you have, count the shelves, and upload it back. The differences become stock movements you can trace and undo."
+                /* The sentence above names the FIRST step of a two-step job, and
+                   this state is the one a person reaches before they have done
+                   either. Without this slot it told her to download and gave her
+                   nothing to press: the only download on the screen sits in the
+                   toolbar's foldable slot, which is a hamburger menu at any pane
+                   under about 700px. Upload stays the toolbar's primary, because
+                   it is the step that commits; download is step one and belongs
+                   where step one is described. */
+                actions={
+                  <DownloadButton
+                    label="Download what you have"
+                    filename="stock-on-hand.csv"
+                    path={importTemplatePath(warehouseId === '' ? undefined : warehouseId)}
+                  />
+                }
               />
             ) : (
               <Table size="sm" hover>
@@ -1004,7 +1078,7 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                         setPlanId(batch.id);
                       }}
                     >
-                      <td className="w-full max-w-0">
+                      <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate">{batch.filename ?? 'A spreadsheet'}</span>
                           <span className="truncate text-sm">
@@ -1037,11 +1111,15 @@ export function StockImportSurface(_props: { ctx: SurfaceContext }) {
                               void (async () => {
                                 const ok = await confirm({
                                   title: `Undo ${batch.filename ?? 'this import'}?`,
-                                  description: `Every one of the ${plural(
-                                    batch.rowsApplied,
-                                    'change',
-                                    'changes'
-                                  )} it made will be reversed with an opposite movement. Nothing is deleted: the original entries stay on the record, with the undo beside them. Any items it created stay too.`,
+                                  // One change cannot be "every one of the 1".
+                                  // This is the sentence on a destructive
+                                  // confirm, so it is the last place a count
+                                  // may disagree with its own words.
+                                  description: `${
+                                    batch.rowsApplied === 1
+                                      ? 'The one change it made'
+                                      : `Every one of the ${String(batch.rowsApplied)} changes it made`
+                                  } will be reversed with an opposite movement. Nothing is deleted: the original entries stay on the record, with the undo beside them. Any items it created stay too.`,
                                   confirmLabel: 'Undo it',
                                   cancelLabel: 'Leave it',
                                   color: 'danger',

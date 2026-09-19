@@ -11,7 +11,7 @@ import { writeAuditLog } from '../audit';
 import { InventoryOutOfStockError, InventoryValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 
-import { ensureVariantExists, ensureWarehouseActive } from './internal';
+import { ensureVariantExists, ensureWarehouseActive, variantLabel } from './internal';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 
 export async function adjust(
@@ -102,7 +102,8 @@ export async function transfer(ctx: ServiceContext, rawInput: unknown): Promise<
       throw new InventoryOutOfStockError(
         input.variantId,
         input.quantity,
-        Math.max(0, sourceAvailable)
+        Math.max(0, sourceAvailable),
+        await variantLabel(tx, input.variantId)
       );
     }
 

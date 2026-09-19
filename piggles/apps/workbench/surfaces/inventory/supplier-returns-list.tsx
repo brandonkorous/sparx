@@ -65,6 +65,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const rows = report.data?.items ?? [];
   const owed = report.data?.awaitingCreditCents ?? 0;
   const owedCount = report.data?.awaitingCreditCount ?? 0;
+  const neverSent = (report.data?.everCount ?? 0) === 0;
 
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('inventory.supplier-returns.detail', { id }, { target: targetFor(event) });
@@ -87,11 +88,20 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <EmptyState
           icon={<Icon glyph={faRotateLeft} className="size-6" aria-hidden />}
-          title={view === 'awaiting' ? 'Nothing is waiting on a credit' : 'Nothing sent back'}
+          title={
+            neverSent || view !== 'awaiting'
+              ? 'Nothing sent back'
+              : 'Nothing is waiting on a credit'
+          }
           description={
-            view === 'awaiting'
-              ? 'Every return you have sent has been credited or written off. Nothing is outstanding.'
-              : 'When something arrives broken, wrong, or simply too much, record it going back here (with what you paid for it), and the credit you are owed stops being something one person remembers.'
+            // "Every return you have sent has been credited or written off" is
+            // a claim about returns. Said over a business that has never sent
+            // one it reads as reassurance that nothing is outstanding, when the
+            // truth is that nothing was ever chased. `everCount` sees past the
+            // view's own filter, which `total` cannot.
+            neverSent || view !== 'awaiting'
+              ? 'When something arrives broken, wrong, or simply too much, record it going back here (with what you paid for it), and the credit you are owed stops being something one person remembers.'
+              : 'Every return you have sent has been credited or written off. Nothing is outstanding.'
           }
           actions={
             <Button
@@ -135,7 +145,7 @@ export function SupplierReturnsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(row.id, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">
                     <span className="font-mono">{row.number}</span>

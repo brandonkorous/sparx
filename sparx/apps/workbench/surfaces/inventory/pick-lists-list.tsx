@@ -42,6 +42,7 @@ import {
   type PickListRow,
   type PickListStatus,
 } from './picking-data';
+import { ActionLabel } from '../../components/action-label';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -57,24 +58,38 @@ const STATUS_OPTIONS: { value: PickListStatus; label: string }[] = [
   { value: 'cancelled', label: 'Abandoned' },
 ];
 
-/** One plain sentence per walk, tuned to the stage it is at. */
+/**
+ * One plain sentence per walk, tuned to the stage it is at.
+ *
+ * THE KIND LABEL HAS ALREADY SAID HOW MANY ORDERS. It is printed immediately
+ * before this, and for a `single` walk it reads "One order" — so leading with the
+ * count as well produced "One order · 1 order · 2 things to fetch" on every
+ * single-order walk, which is the commonest kind there is. The count is only
+ * news when the label was vague about it.
+ */
 function summaryLine(walk: PickListRow): string {
-  const orders = plural(walk.orderCount, 'order', 'orders');
+  const stage = stageLine(walk);
+  if (walk.kind === 'single') return stage;
+  return `${plural(walk.orderCount, 'order', 'orders')}${stage === '' ? '' : ` · ${stage}`}`;
+}
+
+/** What has happened to the walk, with no count of orders in it. */
+function stageLine(walk: PickListRow): string {
   switch (walk.status) {
     case 'draft':
-      return `${orders} · ${plural(walk.lineCount, 'thing', 'things')} to fetch`;
+      return `${plural(walk.lineCount, 'thing', 'things')} to fetch`;
     case 'assigned':
-      return `${orders} · ${walk.assignedTo ?? 'someone'} has it`;
+      return `${walk.assignedTo ?? 'someone'} has it`;
     case 'picking':
-      return `${orders} · ${String(walk.unitsPicked)} of ${String(walk.unitsRequested)} units picked`;
+      return `${String(walk.unitsPicked)} of ${String(walk.unitsRequested)} units picked`;
     case 'picked':
       return walk.shortCount > 0
-        ? `${orders} · ${plural(walk.shortCount, 'line', 'lines')} came up short`
-        : `${orders} · everything found`;
+        ? `${plural(walk.shortCount, 'line', 'lines')} came up short`
+        : 'everything found';
     case 'cancelled':
-      return `${orders} · abandoned`;
+      return 'abandoned';
     default:
-      return orders;
+      return '';
   }
 }
 
@@ -191,7 +206,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   openWalk(walk, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">
                       {walk.orderNumbers.slice(0, 3).join(', ') || walk.warehouseName}
@@ -201,7 +216,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </span>
                     <span className="truncate font-mono text-sm">{walk.number}</span>
                     <span className="truncate text-sm @lg:hidden">
-                      {pickKindLabel(walk.kind)} · {summaryLine(walk)}
+                      {[pickKindLabel(walk.kind), summaryLine(walk)].filter(Boolean).join(' · ')}
                     </span>
                     <span className="truncate text-sm @3xl:hidden">
                       {walk.warehouseName}
@@ -276,7 +291,7 @@ export function PickListsListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <ClipboardList className="size-4" aria-hidden />
-            <span className="hidden @md:inline">How the floor is running</span>
+            <ActionLabel from="md">How the floor is running</ActionLabel>
           </Button>
         }
         controls={

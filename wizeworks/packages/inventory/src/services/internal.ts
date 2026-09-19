@@ -28,6 +28,29 @@ export async function ensureVariantExists(tx: TxClient, variantId: string): Prom
 }
 
 /**
+ * What to call a variant in a message somebody will read.
+ *
+ * The product's name with the code beside it, which is exactly how every list in
+ * the console prints a line ("Brass belt hardware, antique · BRASS-BELT-1"), so
+ * a refusal names the same thing the screen does.
+ *
+ * Called only on a FAILURE path, never on the way a request normally goes, so
+ * the extra read costs nothing that anybody waits for. Returns null rather than
+ * throwing when the variant cannot be read: a refusal with a worse sentence is
+ * still a refusal, and losing one is far worse than losing a name.
+ */
+export async function variantLabel(tx: TxClient, variantId: string): Promise<string | null> {
+  const row = await tx.productVariant.findFirst({
+    where: { id: variantId },
+    select: { sku: true, title: true, product: { select: { title: true } } },
+  });
+  if (!row) return null;
+  const name = row.product?.title ?? row.title ?? null;
+  if (!name) return row.sku || null;
+  return row.sku ? `${name} (${row.sku})` : name;
+}
+
+/**
  * Recompute the product's denormalized `inStock` + `lowStock` flags from current
  * levels across all warehouses. Cheap, runs inside the caller's tx so the
  * storefront's PLP grid stays consistent with inventory state. Called by

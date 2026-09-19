@@ -143,7 +143,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
       </div>
 
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>They say they sent</StatTitle>
           <StatValue>{data.unitsShipped}</StatValue>
@@ -229,7 +229,7 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <tbody>
             {data.lines.map((line) => (
               <tr key={line.id}>
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{line.productTitle ?? 'Untitled product'}</span>
                     <span className="truncate text-sm">
@@ -240,7 +240,12 @@ export function AsnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 </td>
                 <td className="text-right tabular-nums">{line.quantityOrdered}</td>
                 <td className="text-right tabular-nums">{line.quantityShipped}</td>
-                <td className="text-right tabular-nums">{line.quantityReceived}</td>
+                {/* What arrived on THIS delivery, not what the order line has
+                    taken in over its life — the second is what made a perfectly
+                    matched second notice read "4 more than the notice". */}
+                <td className="text-right tabular-nums">
+                  {line.quantityArrivedOnThisDelivery ?? '—'}
+                </td>
                 <td className="whitespace-nowrap">
                   <Badge color={discrepancyTone(line.discrepancyUnits)} variant="soft" size="sm">
                     {discrepancyLabel(line.discrepancyUnits)}

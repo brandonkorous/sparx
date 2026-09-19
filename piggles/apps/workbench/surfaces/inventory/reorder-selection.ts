@@ -17,20 +17,28 @@ import {
   type ReorderRow,
 } from './reorder-data';
 import { rowKey } from './reorder-shared';
+import { alreadyComingLine, draftedOutcome } from './reorder-supplier-words';
 import { useListSelection } from '../../lib/workbench/selection';
 
 export type ReorderSelection = ReturnType<typeof useReorderSelection>;
 
 /** Says plainly that nothing is ordered yet — a draft is the merchant's to
- *  check, change or discard before it reaches a supplier. */
-function draftConfirm(itemCount: number, orderCount: number) {
+ *  check, change or discard before it reaches a supplier.
+ *
+ *  `coming` is the second sentence it needs: a line whose stock is already on an
+ *  order can be drafted again, and was, in silence. See `alreadyComingLine`. */
+function draftConfirm(itemCount: number, orderCount: number, coming: string | null) {
+  const base = `This turns the ${plural(itemCount, 'chosen item', 'chosen items')} into ${plural(
+    orderCount,
+    'draft order',
+    'draft orders'
+  )}, grouped by supplier and location. Nothing is ordered yet: a draft is yours to check, change, or discard before you send it to the supplier.`;
   return {
     title: `Draft ${plural(orderCount, 'purchase order', 'purchase orders')}?`,
-    description: `This turns the ${plural(itemCount, 'chosen item', 'chosen items')} into ${plural(
-      orderCount,
-      'draft order',
-      'draft orders'
-    )}, grouped by supplier and location. Nothing is ordered yet: a draft is yours to check, change, or discard before you send it to the supplier.`,
+    // One paragraph, warning first: the dialog renders its description as plain
+    // text, so a blank line between them would collapse to a space anyway, and
+    // the fact that changes her mind has to be the thing she reads first.
+    description: coming === null ? base : `${coming} ${base}`,
     confirmLabel: 'Create drafts',
     cancelLabel: 'Not yet',
     color: 'module' as const,
@@ -45,17 +53,11 @@ function draftFailedToast(error: unknown) {
   };
 }
 
-/** Names the orders it made, because "3 draft orders created" without their
- *  numbers leaves you hunting a list to find out what just happened. */
+/** Names the orders it touched, because "3 draft orders created" without their
+ *  numbers leaves you hunting a list to find out what just happened — and
+ *  because some of them may not have been created at all. See `draftedOutcome`. */
 function draftedToast(result: DraftReorderResult) {
-  const numbers = result.purchaseOrders.map((po) => po.number).join(', ');
-  return {
-    title: `${plural(result.count, 'draft order', 'draft orders')} created`,
-    description: numbers
-      ? `${numbers}. Find them under Purchase orders to review and send.`
-      : 'Find them under Purchase orders to review and send.',
-    type: 'success' as const,
-  };
+  return { ...draftedOutcome(result.purchaseOrders), type: 'success' as const };
 }
 
 export function useReorderSelection(rows: ReorderRow[]) {
@@ -80,9 +82,12 @@ export function useReorderSelection(rows: ReorderRow[]) {
   }));
   const orderCount = purchaseOrderCount(lines);
 
+  const chosenRows = [...chosen.chosen.values()];
+
   const onDraft = async () => {
     if (lines.length === 0) return;
-    if (!(await confirm(draftConfirm(lines.length, orderCount)))) return;
+    const coming = alreadyComingLine(chosenRows);
+    if (!(await confirm(draftConfirm(lines.length, orderCount, coming)))) return;
     draft.mutate(lines, {
       onSuccess: (result) => {
         chosen.clear();

@@ -70,8 +70,9 @@ import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import { buyingErrorMessage, isNotFound } from './suppliers-data';
+import { useAsnPrefill } from './advance-ship-notices-data';
 import {
-  formatDay,
+  formatMoment,
   outstandingUnits,
   usePurchaseOrder,
   usePurchaseOrders,
@@ -99,6 +100,7 @@ import {
 } from './costing-data';
 import { describeQuantityShort } from './assembly-data';
 import { ReceiptBillPanel } from './receipt-bill-panel';
+import { ActionLabel } from '../../components/action-label';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -138,7 +140,16 @@ function outstandingFor(line: PurchaseOrderLine): number {
 
 /* ── Booking a delivery ─────────────────────────────────────────────────── */
 
-function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPoId: string }) {
+function BookDelivery({
+  ctx,
+  preTargetPoId,
+  preAsnId,
+}: {
+  ctx: SurfaceContext;
+  preTargetPoId: string;
+  /** Set when the receiver came from a supplier's dispatch note. */
+  preAsnId: string;
+}) {
   const toast = useToast();
   const confirm = useConfirm();
   const createReceipt = useCreateReceipt();
@@ -168,15 +179,41 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
   const poDetail = usePurchaseOrder(poId === '' ? 'new' : poId);
   const detail = poId !== '' ? (poDetail.data ?? null) : null;
 
+  // What the supplier SAID was in the box, when the receiver arrived here from a
+  // dispatch note. A read; it books nothing.
+  const prefill = useAsnPrefill(preAsnId);
+  const saidLines = preAsnId === '' ? null : (prefill.data?.lines ?? null);
+
   // Seed each line blank when the order lands — a deliberate entry per line, so a
   // full delivery is a "fill it in" click rather than a silent pre-tick that
   // over-books whatever the buyer did not glance at.
+  //
+  // A dispatch note is the exception, and the only one: the supplier has stated
+  // a figure per line, and "receiving starts pre-filled" is the whole reason for
+  // recording one. It is not a silent pre-tick either — the panel above the
+  // table names the note the numbers came from and says to correct them, which
+  // is what keeps this on the right side of that rule.
   useEffect(() => {
     if (!detail) return;
+    const said = new Map((saidLines ?? []).map((line) => [line.purchaseOrderLineId, line]));
     const next: Record<string, LineEntry> = {};
-    for (const line of detail.lines) next[line.id] = { received: '', damaged: '', lot: '' };
+    for (const line of detail.lines) {
+      const claim = said.get(line.id);
+      next[line.id] = {
+        received: claim && claim.quantity > 0 ? String(claim.quantity) : '',
+        damaged: '',
+        lot: claim?.lotNumber ?? '',
+      };
+    }
     setEntries(next);
-  }, [detail]);
+  }, [detail, saidLines]);
+
+  // Their dispatch number is the receipt's reference, if the receiver has not
+  // already typed one of their own.
+  useEffect(() => {
+    const theirs = prefill.data?.reference;
+    if (theirs) setReference((current) => (current === '' ? theirs : current));
+  }, [prefill.data]);
 
   useEffect(() => {
     ctx.setTitle('Receive a delivery');
@@ -313,6 +350,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
     createReceipt.mutate(
       {
         purchaseOrderId: poId,
+        ...(preAsnId ? { advanceShipNoticeId: preAsnId } : {}),
         ...(receivedAt ? { receivedAt: receivedAt.toISOString() } : {}),
         ...(reference.trim() ? { reference: reference.trim() } : {}),
         ...(note.trim() ? { note: note.trim() } : {}),
@@ -469,6 +507,21 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                   </Button>
                 }
               >
+                {saidLines !== null && prefill.data ? (
+                  <Alert color="info">
+                    <AlertContent>
+                      <AlertTitle>
+                        Filled in from {prefill.data.number}, what they say they sent
+                      </AlertTitle>
+                      <AlertDescription>
+                        These are the supplier&apos;s figures, not a count. Change anything that did
+                        not turn up, or turned up damaged: what you enter here is what goes onto
+                        your stock, and the two are compared for you afterwards.
+                      </AlertDescription>
+                    </AlertContent>
+                  </Alert>
+                ) : null}
+
                 <Table size="sm">
                   <thead>
                     <tr>
@@ -488,7 +541,7 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                       const lotDisabled = row.received === 0 && row.damaged > 0;
                       return (
                         <tr key={row.line.id}>
-                          <td className="w-full max-w-0">
+                          <td className="w-full max-w-0 min-w-56">
                             <span className="flex min-w-0 flex-col">
                               <span className="truncate">
                                 {row.line.description ?? row.line.productTitle ?? 'Item'}
@@ -1132,7 +1185,7 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               }}
             >
               <Icon glyph={faClipboardList} className="size-4" aria-hidden />
-              <span className="hidden @lg:inline">Open the order</span>
+              <ActionLabel>Open the order</ActionLabel>
             </Button>
           ) : (
             <span className="ml-auto" />
@@ -1182,7 +1235,7 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
           <Text className="text-sm">
             {data.purchaseOrderNumber ? `Against order ${data.purchaseOrderNumber}` : 'No order'}
             {data.warehouseName ? ` · Into ${data.warehouseName}` : ''}
-            {` · Received ${formatDay(data.receivedAt)}`}
+            {` · Received ${formatMoment(data.receivedAt)}`}
             {data.reference ? ` · Slip ${data.reference}` : ''}
           </Text>
 
@@ -1211,7 +1264,7 @@ function ViewReceipt({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                         });
                   return (
                     <tr key={line.id}>
-                      <td className="w-full max-w-0">
+                      <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate">{line.productTitle ?? 'Item'}</span>
                           <span className="truncate font-mono text-sm">
@@ -1308,8 +1361,13 @@ export function ReceiptDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const preTargetPoId =
     typeof ctx.params.purchaseOrderId === 'string' ? ctx.params.purchaseOrderId : '';
+  // "Book this delivery in" on a dispatch note has always passed this; nothing
+  // read it, so the promise that receiving starts pre-filled was false.
+  const preAsnId =
+    typeof ctx.params.advanceShipNoticeId === 'string' ? ctx.params.advanceShipNoticeId : '';
 
-  if (id === 'new') return <BookDelivery ctx={ctx} preTargetPoId={preTargetPoId} />;
+  if (id === 'new')
+    return <BookDelivery ctx={ctx} preTargetPoId={preTargetPoId} preAsnId={preAsnId} />;
 
   // A receipt id with no such receipt shows the not-found handling in ViewReceipt.
   if (id === '') {

@@ -38,7 +38,7 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, ShieldCheck, X } from 'lucide-react';
+import { Check, ShieldCheck, SlidersVertical, X } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
@@ -47,11 +47,14 @@ import { formatCents, plural, stockErrorMessage } from './data';
 import {
   approvalStatusLabel,
   approvalStatusTone,
+  approverLabel,
   useDecidePoApproval,
   usePoApprovalQueue,
+  usePoApprovalRules,
   waitingTone,
   type PoApproval,
 } from './po-approvals-data';
+import { poApprovalsEmptyWords } from './po-approvals-empty';
 
 type QueueStatus = 'pending' | 'approved' | 'rejected' | 'cancelled';
 
@@ -71,6 +74,13 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
 
   const rows = queue.data?.items ?? [];
+  // The limits, read here so an empty queue can say what it means.
+  // "Every order that needed signing off has been dealt with" over a
+  // business with no limit set is reassurance about a control that does
+  // not exist (`po-approvals-empty.ts`). Inactive ones included: a limit
+  // switched off holds nothing, and saying so is the point.
+  const limits = usePoApprovalRules(true).data?.items ?? [];
+  const emptyWords = poApprovalsEmptyWords(status, limits, (cents) => formatCents(cents));
   const pending = queue.data?.pending ?? 0;
 
   const openOrder = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
@@ -154,11 +164,24 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
       return (
         <EmptyState
           icon={<ShieldCheck className="size-6" aria-hidden />}
-          title={status === 'pending' ? 'Nothing is waiting on you' : 'Nothing here'}
-          description={
-            status === 'pending'
-              ? 'Every order that needed signing off has been dealt with. Orders only appear here when they clear a limit set under Spending limits.'
-              : 'No requests have reached this state.'
+          title={emptyWords.title}
+          description={emptyWords.detail}
+          // Every one of these sentences sends her to Spending limits, and none
+          // of them offered a way there — the same shape as the reorder list
+          // naming Suppliers with nothing to press (issue 663). She had to go
+          // back to the search box and type it.
+          actions={
+            status === 'pending' ? (
+              <Button
+                color="module"
+                onClick={() => {
+                  ctx.open('inventory.purchase-orders.approval-rules', {}, { target: 'beside' });
+                }}
+              >
+                <SlidersVertical className="size-4" aria-hidden />
+                {limits.length === 0 ? 'Set a spending limit' : 'Spending limits'}
+              </Button>
+            ) : undefined
           }
         />
       );
@@ -191,7 +214,7 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                 openOrder(row.purchaseOrderId, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">
                     <span className="font-mono">{row.purchaseOrderNumber ?? '—'}</span>
@@ -200,7 +223,11 @@ export function PoApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                   <span className="truncate text-sm">
                     {row.ruleName ? `Held by “${row.ruleName}”` : 'Held by a rule since removed'}
-                    {row.requiredApproverName ? ` · ${row.requiredApproverName} to sign` : ''}
+                    {/* By ROLE as well as by name: a rule routing to the owner
+                        named nobody, so this said nothing at all. */}
+                    {approverLabel(row) === 'Anyone who can edit buying'
+                      ? ''
+                      : ` · ${approverLabel(row)} to sign`}
                   </span>
                   {row.note ? <span className="truncate text-sm">{row.note}</span> : null}
                 </span>

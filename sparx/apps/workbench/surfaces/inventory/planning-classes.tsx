@@ -38,6 +38,7 @@ import {
   type XyzClass,
 } from './planning-data';
 import { PlanningShell, targetFor, useHasBeenMeasured } from './planning-shell';
+import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 
 export function PlanningClassesSurface({ ctx }: { ctx: SurfaceContext }) {
   // Filter state lives up here so the controls can sit in the pane's ONE
@@ -155,6 +156,33 @@ function ClassesPanel({
   const adviceOf = (row: (typeof rows)[number] | undefined) =>
     row && rankable(row) ? row.advice : null;
 
+  // THE PAIR IS THE SCREEN, so it has to survive a narrow pane.
+  //
+  // Worth and Demand were two always-on `whitespace-nowrap` columns beside a
+  // name cell that GIVES (`w-full max-w-0`), which in an auto-layout table means
+  // the name receives whatever is left after they have taken what they want.
+  // Measured in a three-pane layout: "Not enough history" took 164px and "No
+  // cost price" 130px, and "Sunday Trouser, wide leg" was left with 64 and read
+  // "Su...". The stock list carries the same fix, with the same 64px in its
+  // comment. Built once here and used in all three places so the badge in the
+  // column and the badge under the name can never drift apart.
+  const worthBadge = (row: (typeof rows)[number]) => (
+    <Badge color={abcTone(rankable(row) ? row.abcClass : null)} variant="soft" size="sm">
+      {rankable(row) ? abcLabel(row.abcClass) : 'No cost price'}
+    </Badge>
+  );
+  const demandBadge = (row: (typeof rows)[number]) => (
+    <Badge color={xyzTone(row.xyzClass)} variant="soft" size="sm">
+      {xyzLabel(row.xyzClass)}
+    </Badge>
+  );
+  const overrideNote = (row: (typeof rows)[number]) =>
+    row.abcOverride ? (
+      <span className="block text-sm">
+        you set this · measured {abcLabel(row.measuredAbcClass).toLowerCase()}
+      </span>
+    ) : null;
+
   return (
     <div className="flex flex-col gap-3">
       {noneRankable ? (
@@ -209,11 +237,16 @@ function ClassesPanel({
           <AlertContent>
             <AlertTitle>{plural(withoutCost, 'item has', 'items have')} no cost price</AlertTitle>
             <AlertDescription>
-              Worth is worked out from what a unit cost you, so those lines rank at the bottom
-              whatever they are really worth. Set what you paid for them and they will take their
-              real place in this list.
+              Worth is worked out from what a unit cost you, so a line with no cost ranks at the
+              bottom whatever it is really worth. Set what you paid and it takes its real place in
+              this list.
             </AlertDescription>
           </AlertContent>
+          <SetCostsAction
+            onOpen={() => {
+              ctx.open(SET_COSTS_SURFACE, {}, { target: 'tab' });
+            }}
+          />
         </Alert>
       ) : null}
 
@@ -258,8 +291,8 @@ function ClassesPanel({
             <thead>
               <tr>
                 <th>Item</th>
-                <th className="whitespace-nowrap">Worth</th>
-                <th className="whitespace-nowrap">Demand</th>
+                <th className="hidden whitespace-nowrap @md:table-cell">Worth</th>
+                <th className="hidden whitespace-nowrap @md:table-cell">Demand</th>
                 <th className="hidden text-right whitespace-nowrap @lg:table-cell">Used a year</th>
                 <th className="hidden text-right whitespace-nowrap @xl:table-cell">Value a year</th>
                 <th className="hidden text-right whitespace-nowrap @2xl:table-cell">Share</th>
@@ -288,7 +321,7 @@ function ClassesPanel({
                     });
                   }}
                 >
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate">{row.title ?? 'Untitled product'}</span>
                       <span className="truncate text-sm">
@@ -306,35 +339,31 @@ function ClassesPanel({
                           instruction without the wall of identical sentences —
                           the badges on every row still carry the pair. */}
                       {adviceOf(row) && adviceOf(row) !== adviceOf(rows[index - 1]) ? (
-                        <span className="truncate text-sm">{row.advice}</span>
+                        <span className="truncate text-sm" title={row.advice}>
+                          {row.advice}
+                        </span>
                       ) : null}
+                      {/* Below @md the Worth and Demand columns are gone, so the
+                          pair comes back here. A ranking screen that cannot show
+                          you the ranking is not a narrower version of itself. */}
+                      <span className="mt-1 flex flex-wrap items-center gap-1 @md:hidden">
+                        {worthBadge(row)}
+                        {demandBadge(row)}
+                      </span>
+                      <span className="@md:hidden">{overrideNote(row)}</span>
                     </span>
                   </td>
-                  <td className="whitespace-nowrap">
-                    {/* Not "Long tail" on a line whose cost nobody has recorded:
-                        that is where the arithmetic puts every such line, and it
-                        is a statement about the missing cost rather than about
-                        the item. Same shape as the Demand column beside it,
-                        which already says "Not enough history" rather than
-                        guessing at Erratic. */}
-                    <Badge
-                      color={abcTone(rankable(row) ? row.abcClass : null)}
-                      variant="soft"
-                      size="sm"
-                    >
-                      {rankable(row) ? abcLabel(row.abcClass) : 'No cost price'}
-                    </Badge>
-                    {row.abcOverride ? (
-                      <span className="block text-sm">
-                        you set this · measured {abcLabel(row.measuredAbcClass).toLowerCase()}
-                      </span>
-                    ) : null}
+                  {/* Not "Long tail" on a line whose cost nobody has recorded:
+                      that is where the arithmetic puts every such line, and it
+                      is a statement about the missing cost rather than about the
+                      item. Same shape as the Demand column beside it, which
+                      already says "Not enough history" rather than guessing at
+                      Erratic. */}
+                  <td className="hidden whitespace-nowrap @md:table-cell">
+                    {worthBadge(row)}
+                    {overrideNote(row)}
                   </td>
-                  <td className="whitespace-nowrap">
-                    <Badge color={xyzTone(row.xyzClass)} variant="soft" size="sm">
-                      {xyzLabel(row.xyzClass)}
-                    </Badge>
-                  </td>
+                  <td className="hidden whitespace-nowrap @md:table-cell">{demandBadge(row)}</td>
                   <td className="hidden text-right tabular-nums @lg:table-cell">
                     {row.annualUsageUnits}
                   </td>

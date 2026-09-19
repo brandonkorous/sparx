@@ -97,6 +97,7 @@ import {
   type SourceType,
 } from './sources-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { ActionLabel } from '../../components/action-label';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -657,12 +658,12 @@ function SourceEditor({
               {source?.status === 'paused' ? (
                 <>
                   <Play className="size-4" aria-hidden />
-                  <span className="hidden @lg:inline">Turn on</span>
+                  <ActionLabel>Turn on</ActionLabel>
                 </>
               ) : (
                 <>
                   <Pause className="size-4" aria-hidden />
-                  <span className="hidden @lg:inline">Pause</span>
+                  <ActionLabel>Pause</ActionLabel>
                 </>
               )}
             </Button>
@@ -685,7 +686,7 @@ function SourceEditor({
                   onClick={runSync}
                 >
                   <RefreshCw className="size-4" aria-hidden />
-                  <span className="hidden @lg:inline">Sync now</span>
+                  <ActionLabel>Sync now</ActionLabel>
                 </Button>
               )}
               <Button

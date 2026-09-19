@@ -16,6 +16,9 @@ import {
   InventoryOutOfStockError,
   InventoryValidationError,
 } from '../errors';
+
+import { canPutAway } from './bin-routing';
+import { variantLabel } from './internal';
 import type { ServiceContext } from '../errors';
 import { indexInventoryEntityOnCommit, publishInventoryEvent } from '../events';
 
@@ -64,7 +67,8 @@ export async function shipInventoryTransfer(
     }
 
     const source = await levelMap(tx, transfer.fromWarehouseId, lines);
-    assertAvailable(lines, source);
+    await assertAvailable(tx, lines, source);
+    await assertDestinationCanReceive(tx, ctx, transfer.toWarehouseId, lines);
 
     const legs: LegEvent[] = [];
     for (const line of lines) {
@@ -364,14 +368,60 @@ async function levelMap(
   return map;
 }
 
-/** Each line's source warehouse must have enough AVAILABLE (not just on-hand). */
-function assertAvailable(lines: TransferLineLite[], source: Map<string, LevelInfo>): void {
+/**
+ * Each line's source warehouse must have enough AVAILABLE (not just on-hand).
+ *
+ * Async only so the refusal can name the item. The lookup happens after the
+ * decision to refuse, so the ordinary path does not pay for it.
+ */
+async function assertAvailable(
+  tx: TxClient,
+  lines: TransferLineLite[],
+  source: Map<string, LevelInfo>
+): Promise<void> {
   for (const line of lines) {
     const lvl = source.get(line.variantId);
     const available = (lvl?.onHand ?? 0) - (lvl?.allocated ?? 0);
     if (!lvl || available < line.quantity) {
-      throw new InventoryOutOfStockError(line.variantId, line.quantity, Math.max(0, available));
+      throw new InventoryOutOfStockError(
+        line.variantId,
+        line.quantity,
+        Math.max(0, available),
+        await variantLabel(tx, line.variantId)
+      );
     }
+  }
+}
+
+/**
+ * The destination must be able to take every line, BEFORE the stock leaves.
+ *
+ * Checked here rather than at receiving, which is where it used to be found. A
+ * location with shelves turned on and no shelf that can hold the item refuses
+ * the put-away, and by then the units have left the source and are in transit to
+ * somewhere that cannot accept them: the only way out is cancelling the whole
+ * transfer. The same refusal, one step earlier, costs nothing and strands
+ * nothing. [[feedback_one_outcome_two_causes]]
+ */
+async function assertDestinationCanReceive(
+  tx: TxClient,
+  ctx: ServiceContext,
+  toWarehouseId: string,
+  lines: TransferLineLite[]
+): Promise<void> {
+  for (const line of lines) {
+    if (await canPutAway(tx, ctx, { warehouseId: toWarehouseId, variantId: line.variantId })) {
+      continue;
+    }
+    const where = await tx.warehouse.findFirst({
+      where: { id: toWarehouseId },
+      select: { name: true, code: true },
+    });
+    const place = where?.name ?? where?.code ?? 'the destination';
+    const what = (await variantLabel(tx, line.variantId)) ?? 'this item';
+    throw new InventoryValidationError(
+      `There is nowhere to put ${what} at ${place} when it arrives. That location uses shelves and none of them can take it, so add a default shelf there, or turn shelves off for it. Nothing has been sent.`
+    );
   }
 }
 

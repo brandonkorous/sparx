@@ -104,6 +104,17 @@ export interface CountRow {
   requiresApproval: boolean;
   /** Σ |counted − expected| × unit cost, frozen at review. */
   varianceValueCents: number;
+  /**
+   * Sigma |counted - expected| in UNITS.
+   *
+   * Read this before the money. A count that moved 372 garments none of which
+   * has a cost recorded reports a value of zero, which on its own is
+   * indistinguishable from a count where everything matched. The API has always
+   * returned it; this console simply did not ask for it, and said "everything
+   * matched, nothing to correct" over the largest stock event in a shop's
+   * history.
+   */
+  varianceUnits: number;
   lineCount: number;
   countedLineCount: number;
   startedAt: string;

@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { type PageSize } from '../../components/list-pagination';
 import { useStockLocations } from './data';
 import {
+  unsuppliedFrom,
   useReorderSummary,
   useReorderSuppliers,
   useReorderWorklist,
@@ -93,6 +94,11 @@ export function useReorderPane() {
     activeSuppliers,
     policyCount: summary.data?.policyCount,
     levelCount: summary.data?.levelCount,
+    // Both counted over the WHOLE narrowed list by the server, never over the
+    // page in hand: a page is a window, and "3 of these cannot be ordered" is
+    // untrue of a window holding three of sixty-five.
+    total: query.data?.total,
+    unsupplied: unsuppliedFrom(query.data?.meta),
     locationName: activeLocations.find((l) => l.id === w.filters.locationId)?.name ?? null,
     supplierName: activeSuppliers.find((s) => s.id === w.filters.supplierId)?.name ?? null,
     // The selection is built from the rows the window returns, so narrowing

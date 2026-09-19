@@ -68,7 +68,7 @@ interface Draft {
 }
 
 const NEW_DRAFT: Draft = {
-  name: 'Orders over $1,000',
+  name: 'Orders of $1,000 or more',
   supplierId: '',
   warehouseId: '',
   minAmount: '1000',
@@ -148,7 +148,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           description:
             minAmountCents === 0
               ? 'Every purchase order will now wait for sign-off.'
-              : `Orders over ${formatCents(minAmountCents)} will now wait for sign-off.`,
+              : `Orders of ${formatCents(minAmountCents)} or more will now wait for sign-off.`,
           type: 'success',
         });
       });
@@ -253,7 +253,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Input
                   color="module"
                   value={draft.name}
-                  placeholder="Orders over $1,000"
+                  placeholder="Orders of $1,000 or more"
                   onChange={(event) => {
                     patch({ name: event.target.value });
                   }}
@@ -268,12 +268,12 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           description="An order has to clear the amount AND match the supplier and location for this limit to hold it."
         >
           <Field>
-            <FieldLabel>Hold orders over</FieldLabel>
+            <FieldLabel>Hold orders of this much or more</FieldLabel>
             <FieldControl
               render={
                 <MoneyTextInput
                   color="module"
-                  aria-label="Hold orders over"
+                  aria-label="Hold orders of this much or more"
                   text={draft.minAmount}
                   onTextChange={(minAmount) => {
                     patch({ minAmount });
@@ -282,7 +282,8 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               }
             />
             <FieldDescription>
-              The order&apos;s total, including freight. Leave it at 0 to hold every order.
+              The order&apos;s total, including freight. An order for exactly this much is held too,
+              so a limit of $200 catches a $200 order. Leave it at 0 to hold every order.
             </FieldDescription>
           </Field>
 
@@ -292,7 +293,7 @@ export function PoApprovalRuleDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <AlertTitle>This will hold every single order</AlertTitle>
                 <AlertDescription>
                   Including a $4 order for a box of screws. That is a real thing some businesses
-                  want, but if you meant &ldquo;orders over $1,000&rdquo;, type 1000 above.
+                  want, but if you meant &ldquo;$1,000 or more&rdquo;, type 1000 above.
                 </AlertDescription>
               </AlertContent>
             </Alert>

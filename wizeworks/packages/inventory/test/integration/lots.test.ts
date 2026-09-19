@@ -145,14 +145,28 @@ describe('inventory lots + serials', () => {
       serial: 'SN-SOLD-1',
       status: 'sold',
     });
+    const onShelf = await createSerialUnit(ctx(), {
+      variantId: variantA,
+      warehouseId,
+      lotBatchId: lot.id,
+      serial: 'SN-SHELF-1',
+      status: 'in_stock',
+    });
 
     const recall = await initiateRecall(ctx(), {
       lotBatchIds: [lot.id],
       reason: 'Contaminated batch',
-      notifyCustomers: true,
     });
     expect(recall.affectedLotBatches).toBe(1);
     expect(recall.affectedSerialUnits).toBe(1); // the one sold unit
+
+    // The recall is a fact about the BATCH, not about each unit. The docstring
+    // used to claim it marked every unsold serial as recalled; it never did, and
+    // `SerialUnitStatus` has no such value to mark them with. Pinned here so the
+    // sentence and the code cannot drift apart again.
+    const units = await listSerials(ctx(), { lotBatchId: lot.id });
+    expect(units.items.find((u) => u.id === onShelf.id)?.status).toBe('in_stock');
+    expect(units.items.find((u) => u.serial === 'SN-SOLD-1')?.status).toBe('sold');
 
     const active = await listLots(ctx(), { recallStatus: 'active' });
     expect(active.items.some((l) => l.id === lot.id)).toBe(true);

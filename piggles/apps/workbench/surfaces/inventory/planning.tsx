@@ -123,7 +123,7 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
           "Suppliers measured" is left alone. It counts delivery times taken
           from real deliveries, which is a fact about the supplier records rather
           than an output of the pass, so zero there is a real zero. */}
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>Sales at risk</StatTitle>
           {measured ? (
@@ -169,8 +169,8 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
               measured
             </AlertTitle>
             <AlertDescription>
-              They cannot appear in this list, because nothing is known about how fast they sell.
-              They will be picked up on the next overnight run.
+              Nothing is known yet about how fast that stock sells, so it cannot appear in this
+              list. It will be picked up on the next overnight run.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -225,13 +225,15 @@ function RiskPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: strin
                       open(row, event);
                     }}
                   >
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate">{row.title ?? 'Untitled product'}</span>
                         <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>
                         {/* The sentence IS the row. Everything else is a number
                             you would otherwise have to assemble yourself. */}
-                        <span className="truncate text-sm">{row.reasoning}</span>
+                        <span className="truncate text-sm" title={row.reasoning}>
+                          {row.reasoning}
+                        </span>
                       </span>
                     </td>
                     <td className="hidden text-right tabular-nums @lg:table-cell">

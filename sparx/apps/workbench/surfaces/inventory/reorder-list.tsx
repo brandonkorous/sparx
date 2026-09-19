@@ -87,6 +87,7 @@ import {
   purchaseOrderCount,
   supplierLabel,
   useDraftReorder,
+  unsuppliedFrom,
   useReorderSummary,
   useReorderSuppliers,
   useReorderWorklist,
@@ -95,6 +96,12 @@ import {
   type ReorderRow,
   type ReorderSort,
 } from './reorder-data';
+import {
+  alreadyComingLine,
+  draftedOutcome,
+  reorderHint,
+  unsuppliedNote,
+} from './reorder-supplier-words';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -158,6 +165,10 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
+  // Counted over the WHOLE narrowed list by the server, never over the page in
+  // hand: a page is a window, and "3 of these cannot be ordered" is untrue of a
+  // window holding three of sixty-five.
+  const stuck = unsuppliedNote(unsuppliedFrom(data?.meta), total);
   const narrowed = search.trim() !== '' || locationId !== '' || supplierId !== '';
 
   /** A change to WHICH rows match returns to the first window and drops the
@@ -215,17 +226,25 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const onDraft = async () => {
     if (selectedLines.length === 0) return;
+    const base = `This turns the ${plural(
+      selectedLines.length,
+      'chosen item',
+      'chosen items'
+    )} into ${plural(
+      orderCount,
+      'draft order',
+      'draft orders'
+    )}, grouped by supplier and location. Nothing is ordered yet: a draft is yours to check, change, or discard before you send it to the supplier.`;
+    // A line whose stock is already on an open order can be drafted again, and
+    // was, in silence: twelve ordered, the row saying "12 already on the way",
+    // and twelve more one click later. Warning rather than refusing, because a
+    // buyer may genuinely want more and this is where they decide.
+    const coming = alreadyComingLine([...selected.values()]);
     const ok = await confirm({
       title: `Draft ${plural(orderCount, 'purchase order', 'purchase orders')}?`,
-      description: `This turns the ${plural(
-        selectedLines.length,
-        'chosen item',
-        'chosen items'
-      )} into ${plural(
-        orderCount,
-        'draft order',
-        'draft orders'
-      )}, grouped by supplier and location. Nothing is ordered yet: a draft is yours to check, change, or discard before you send it to the supplier.`,
+      // One paragraph, warning first: the dialog renders its description as
+      // plain text, and the fact that changes her mind has to be read first.
+      description: coming === null ? base : `${coming} ${base}`,
       confirmLabel: 'Create drafts',
       cancelLabel: 'Not yet',
       color: 'module',
@@ -234,14 +253,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
     draft.mutate(selectedLines, {
       onSuccess: (result) => {
         setSelected(new Map());
-        const numbers = result.purchaseOrders.map((po) => po.number).join(', ');
-        toast.add({
-          title: `${plural(result.count, 'draft order', 'draft orders')} created`,
-          description: numbers
-            ? `${numbers}. Find them under Purchase orders to review and send.`
-            : 'Find them under Purchase orders to review and send.',
-          type: 'success',
-        });
+        toast.add({ ...draftedOutcome(result.purchaseOrders), type: 'success' });
       },
       onError: (error) => {
         toast.add({
@@ -338,12 +350,12 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th>Item</th>
             <th className="hidden @2xl:table-cell">Supplier</th>
             <th className="hidden text-right whitespace-nowrap @lg:table-cell">Available</th>
-            <th className="hidden whitespace-nowrap @3xl:table-cell">Takes</th>
+            <th className="hidden whitespace-nowrap @6xl:table-cell">Takes</th>
             <th className="hidden text-right whitespace-nowrap @xl:table-cell">Sells</th>
             <th className="text-right whitespace-nowrap">To order</th>
-            <th className="hidden text-right whitespace-nowrap @3xl:table-cell">On the way</th>
-            <th className="whitespace-nowrap">Runs out</th>
-            <th className="text-right whitespace-nowrap">At risk</th>
+            <th className="hidden text-right whitespace-nowrap @6xl:table-cell">On the way</th>
+            <th className="hidden whitespace-nowrap @4xl:table-cell">Runs out</th>
+            <th className="hidden text-right whitespace-nowrap @4xl:table-cell">At risk</th>
           </tr>
         </thead>
         <tbody>
@@ -397,33 +409,65 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                 {/* `max-w-0 w-full` makes this the cell that GIVES, so the truncation
                     below actually bites and the "To order" number and state badge
                     are never the columns pushed off the right edge. */}
-                <td className="w-full max-w-0">
+                {/* `min-w-56` is the floor under the give. Without it "gives" means
+                    "gives EVERYTHING": measured on Juniper Row this cell rendered at
+                    140px the moment Runs out and At risk appeared, 97px when Available
+                    joined them and 64px once Supplier did, so it got WORSE as the pane
+                    got WIDER — 229px at 400px wide, 64px at 800px wide. 56 is 224px,
+                    which holds the longest product code on that account (185px) plus
+                    padding. */}
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{row.title ?? 'Untitled product'}</span>
                     <span className="truncate font-mono text-sm">{row.sku ?? 'No code'}</span>
-                    {/* Columns that vanish on a narrow pane fold back in here — a
-                        reorder line without its place, its supplier or how fast it
-                        sells is half an answer. */}
-                    <span className="truncate text-sm @lg:hidden">{locationLabel(row)}</span>
+                    {/* Every column that is not showing at this width folds back in here, and
+                        the place a line is short in NEVER hides: there is no Location column
+                        for it to fold back OUT to, so it used to vanish at @lg and stay
+                        vanished. A reorder line without its building is an instruction to
+                        order twelve of something, somewhere. */}
+                    <span className="truncate text-sm">{locationLabel(row)}</span>
                     <span className="truncate text-sm @2xl:hidden">{supplierLabel(row)}</span>
                     {sells ? (
                       <span className="truncate text-sm @xl:hidden">Sells {sells}</span>
                     ) : null}
-                    {/* The whole calculation in one sentence. It is the row's
-                        most useful line — it is what turns "at risk $412" from
-                        an assertion into something a buyer can agree with. */}
+                    {/* "Takes" and "On the way" arrive last as columns, so they fold back
+                        the longest. A buyer without the supplier's real lead time, or
+                        without what is already coming, is typing a quantity from half the
+                        facts. */}
+                    {lead ? (
+                      <span className="truncate text-sm @6xl:hidden">Takes {lead.label}</span>
+                    ) : null}
+                    {row.onOrder > 0 ? (
+                      <span className="truncate text-sm @6xl:hidden">
+                        {row.onOrder} already on the way
+                      </span>
+                    ) : null}
+                    {/* The whole calculation in one sentence — what turns "at risk $412"
+                        from an assertion into something a buyer can agree with. */}
                     {row.reasoning ? (
                       <span className="truncate text-sm">{row.reasoning}</span>
                     ) : null}
+                    {/* Runs out and At risk fold back as badges below @4xl. They are two
+                        `whitespace-nowrap` cells worth 201px between them beside a give-cell,
+                        and they used to arrive at @md, which left the NAME 140px the moment
+                        they appeared and 64px once the rest joined them. A buyer cannot
+                        reorder a thing whose name they cannot read. */}
+                    <span className="mt-1 flex flex-wrap items-center gap-1 @4xl:hidden">
+                      <Badge color={cover.tone} variant="soft" size="sm">
+                        {cover.label}
+                      </Badge>
+                      {row.revenueAtRiskCents > 0 ? (
+                        <Badge color="danger" variant="soft" size="sm">
+                          {formatCents(row.revenueAtRiskCents)} at risk
+                        </Badge>
+                      ) : null}
+                    </span>
                   </span>
                 </td>
 
                 <td className="hidden max-w-40 @2xl:table-cell">
                   {suppliable ? (
-                    <span className="flex min-w-0 flex-col">
-                      <span className="truncate">{supplierLabel(row)}</span>
-                      <span className="truncate text-sm @3xl:hidden">{locationLabel(row)}</span>
-                    </span>
+                    <span className="truncate">{supplierLabel(row)}</span>
                   ) : (
                     <Badge color="warning" variant="soft" size="sm">
                       No supplier yet
@@ -435,7 +479,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                 {/* Replaces "Reorder at". The trigger level is on the row's own
                     calculation page; how long the supplier ACTUALLY takes, and
                     whether that is measured or claimed, changes what to do now. */}
-                <td className="hidden whitespace-nowrap @3xl:table-cell">
+                <td className="hidden whitespace-nowrap @6xl:table-cell">
                   {lead ? (
                     <Badge color={lead.tone} variant="soft" size="sm" title={lead.detail}>
                       {lead.label}
@@ -450,10 +494,10 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="text-right font-medium whitespace-nowrap tabular-nums">
                   {row.suggestedQuantity}
                 </td>
-                <td className="hidden text-right tabular-nums @3xl:table-cell">
+                <td className="hidden text-right tabular-nums @6xl:table-cell">
                   {row.onOrder > 0 ? row.onOrder : '—'}
                 </td>
-                <td className="whitespace-nowrap">
+                <td className="hidden whitespace-nowrap @4xl:table-cell">
                   <Badge color={cover.tone} variant="soft" size="sm">
                     {cover.label}
                   </Badge>
@@ -462,7 +506,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
                     compares straight down the column. Zero reads as a dash —
                     "$0.00" would look like a measurement of nothing, when it
                     almost always means there is no deadline at all. */}
-                <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                <td className="hidden text-right font-medium whitespace-nowrap tabular-nums @4xl:table-cell">
                   {row.revenueAtRiskCents > 0 ? formatCents(row.revenueAtRiskCents) : '—'}
                 </td>
               </tr>
@@ -611,6 +655,30 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
         </Alert>
       ) : null}
 
+      {/* And the second reason this list cannot do its job. A row with no
+          supplier has nobody to send an order to, so its tick box is dead —
+          and a dead tick box was the whole of what the screen said about it.
+          MEASURED 2026-09-18: 71 of the platform's 76 triggered lines, and for
+          four tenants of six that is every line on the list. */}
+      {stuck ? (
+        <Alert color="warning">
+          <AlertContent>
+            <AlertTitle>{stuck.title}</AlertTitle>
+            <AlertDescription>{stuck.body}</AlertDescription>
+          </AlertContent>
+          <Button
+            size="sm"
+            color="module"
+            onClick={() => {
+              ctx.open('inventory.suppliers.list', {}, { target: 'beside' });
+            }}
+          >
+            <Truck className="size-4" aria-hidden />
+            Suppliers
+          </Button>
+        </Alert>
+      ) : null}
+
       {/* Full width — matches the house list convention: the table fills the pane. */}
       <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
@@ -636,11 +704,15 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
+        {/* The opening clause used to appear whenever the list had rows,
+            including on a page where not one tick box could be ticked — which is
+            most pages on most accounts. A sentence telling somebody to do what
+            the screen will not let them do is the same defect as one sending
+            them somewhere with nothing there. */}
         {rows.length > 0 ? (
           <Text className="hidden px-1 pb-1 text-sm @xl:block">
             <Truck className="mr-1 inline size-4 align-text-bottom" aria-hidden />
-            Choose lines to draft orders · click a row to see how its figures were worked out ·
-            shift-click alongside
+            {reorderHint(selectableRows.length)}
           </Text>
         ) : null}
       </div>

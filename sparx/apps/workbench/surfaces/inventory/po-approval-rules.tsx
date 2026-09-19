@@ -72,7 +72,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<ShieldCheck className="size-6" aria-hidden />}
           title="No spending limits set"
-          description="Every purchase order goes straight to the supplier the moment somebody sends it. Set a limit and orders over it wait for a named person to approve them first: the usual reason is a business where more than one person can buy."
+          description="Every purchase order goes straight to the supplier the moment somebody sends it. Set a limit and orders of that much or more wait for a named person to approve them first: the usual reason is a business where more than one person can buy."
           actions={
             <Button
               color="module"
@@ -93,7 +93,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
         <thead>
           <tr>
             <th>Limit</th>
-            <th className="text-right whitespace-nowrap">Over</th>
+            <th className="text-right whitespace-nowrap">Holds from</th>
             <th className="hidden whitespace-nowrap @lg:table-cell">Signed off by</th>
             <th className="whitespace-nowrap">State</th>
           </tr>
@@ -114,7 +114,7 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(row.id, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{row.name}</span>
                   <span className="truncate text-sm">{ruleScopeLabel(row)}</span>
@@ -169,9 +169,9 @@ export function PoApprovalRulesSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>When two limits both apply</AlertTitle>
             <AlertDescription>
-              The strictest one the order clears wins, so an order over your highest limit goes to
-              that approver rather than to the person named on a smaller one. The list is in that
-              order, top first.
+              The strictest one the order clears wins, so an order that reaches your highest limit
+              goes to that approver rather than to the person named on a smaller one. The list is in
+              that order, top first.
             </AlertDescription>
           </AlertContent>
         </Alert>

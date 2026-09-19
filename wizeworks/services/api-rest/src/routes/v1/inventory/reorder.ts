@@ -340,7 +340,23 @@ const inventoryReorderRoutes: FastifyPluginAsync = async (app) => {
     const total = filtered.length;
     const skip = q.skip ?? 0;
     const take = q.take ?? 50;
-    return reply.send(paged(filtered.slice(skip, skip + take), { total, skip, per_page: take }));
+    // How many of these cannot become an order at all, because no active
+    // supplier is linked to the item. The service has always counted this
+    // (`counts.unsupplied`) and this route has always dropped it, so the only
+    // thing a screen could say about such a line was to grey its checkbox.
+    //
+    // Counted over the WHOLE narrowed list rather than the page, because the
+    // page is a window: "3 of these cannot be ordered" is a lie when the window
+    // happens to hold three of sixty-five.
+    //
+    // MEASURED 2026-09-18: 71 of the platform's 76 triggered lines have no
+    // supplier, including every one of Threadline's 65 and the single line on
+    // Juniper Row's list. For four of six tenants the whole worklist is
+    // un-orderable, which is not an edge case the screen may stay quiet about.
+    const unsupplied = filtered.reduce((n, r) => (r.supplierId === null ? n + 1 : n), 0);
+    return reply.send(
+      paged(filtered.slice(skip, skip + take), { total, skip, per_page: take, unsupplied })
+    );
   });
 
   // How many levels have a reorder rule, out of how many there are.

@@ -456,7 +456,7 @@ function FinishedPanel({
           <AlertTitle>{plural(skipped.length, 'line', 'lines')} still to come back to</AlertTitle>
           <AlertDescription>
             Everything else is done. Go back for {skipped.map((l) => l.sku).join(', ')}: the walk
-            finishes when they are picked or marked as not there.
+            finishes once every line is picked or marked as not there.
           </AlertDescription>
         </AlertContent>
       </Alert>

@@ -158,8 +158,8 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
             <th className="hidden whitespace-nowrap @lg:table-cell">Covers</th>
             <th className="hidden whitespace-nowrap @xl:table-cell">How often</th>
             <th className="hidden text-right whitespace-nowrap @2xl:table-cell">Per run</th>
-            <th className="whitespace-nowrap">Next</th>
-            <th className="whitespace-nowrap">State</th>
+            <th className="hidden whitespace-nowrap @md:table-cell">Next</th>
+            <th className="hidden whitespace-nowrap @md:table-cell">State</th>
             <th className="w-0" />
           </tr>
         </thead>
@@ -181,7 +181,7 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(row.id, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{row.name}</span>
                     <span className="truncate text-sm">
@@ -190,6 +190,20 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                     </span>
                     <span className="truncate text-sm @xl:hidden">
                       {cadenceLabel(row.cadence, row.intervalDays)}
+                    </span>
+                    {/* Below @md the Next and State columns are gone, so they
+                        come back here. They were two always-on
+                        `whitespace-nowrap` cells beside a give-cell, and with
+                        the Count now button they left the schedule's NAME 100px
+                        in a three-pane layout, reading "Everyth..." over
+                        "Main W...". Worse, the notice above the table says to
+                        press "Count now" on a row, and at that width the button
+                        it names was off the right-hand edge. */}
+                    <span className="mt-1 flex flex-wrap items-center gap-2 text-sm @md:hidden">
+                      <Badge color={state.tone} variant="soft" size="sm">
+                        {state.label}
+                      </Badge>
+                      <Timestamp value={row.nextRunAt} format="relative" />
                     </span>
                   </span>
                 </td>
@@ -209,10 +223,10 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden text-right tabular-nums @2xl:table-cell">
                   {row.maxItemsPerRun}
                 </td>
-                <td className="whitespace-nowrap">
+                <td className="hidden whitespace-nowrap @md:table-cell">
                   <Timestamp value={row.nextRunAt} format="relative" />
                 </td>
-                <td className="whitespace-nowrap">
+                <td className="hidden whitespace-nowrap @md:table-cell">
                   <Badge color={state.tone} variant="soft" size="sm">
                     {state.label}
                   </Badge>
@@ -307,8 +321,11 @@ export function CountSchedulesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>{plural(dueCount, 'schedule is', 'schedules are')} due</AlertTitle>
             <AlertDescription>
-              Tonight&rsquo;s run will create their counts. Press “Count now” on a row to do it
-              immediately.
+              {/* "1 schedule is due ... will create their counts" was the shape
+                  this had: a title that counts properly above a sentence that
+                  assumes more than one. */}
+              Tonight&rsquo;s run will create {dueCount === 1 ? 'its count' : 'their counts'}. Press
+              “Count now” on a row to do it immediately.
             </AlertDescription>
           </AlertContent>
         </Alert>

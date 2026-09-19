@@ -70,6 +70,7 @@ import {
   useScanToPack,
   type PackageDetail,
 } from './picking-data';
+import { ActionLabel } from '../../components/action-label';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -110,6 +111,33 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
   }
 
   const sealed = (boxes.data?.items ?? []).filter((b) => b.status === 'packed');
+  const boxCount = (boxes.data?.items ?? []).filter((b) => b.status !== 'cancelled').length;
+  // "Another box" on a bench with none is a button naming a box that does not
+  // exist. The first one is started, the rest are another.
+  const firstBox = boxCount === 0;
+
+  /** Start a box, in the one place, so both controls fail the same way. The
+   *  empty state's button used to await the mutation bare: a refusal became an
+   *  unhandled rejection and the bench simply did nothing. */
+  const startBox = () => {
+    void (async () => {
+      try {
+        const box = await create.mutateAsync({
+          orderId,
+          ...(pickListId ? { pickListId } : {}),
+        });
+        setActiveId(box.id);
+        setError(null);
+      } catch (err) {
+        setError(
+          pickErrorMessage(
+            err,
+            firstBox ? 'Could not start a box.' : 'Could not start another box.'
+          )
+        );
+      }
+    })();
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -126,13 +154,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
         }
       >
         <Icon glyph={faBoxCheck} className="size-4" aria-hidden />
-        <span className="text-sm">
-          {plural(
-            (boxes.data?.items ?? []).filter((b) => b.status !== 'cancelled').length,
-            'box',
-            'boxes'
-          )}
-        </span>
+        <span className="text-sm">{plural(boxCount, 'box', 'boxes')}</span>
 
         <Button
           size="sm"
@@ -140,23 +162,10 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
           variant="outline"
           className="ml-auto"
           disabled={create.isPending || !orderId}
-          onClick={() => {
-            void (async () => {
-              try {
-                const box = await create.mutateAsync({
-                  orderId,
-                  ...(pickListId ? { pickListId } : {}),
-                });
-                setActiveId(box.id);
-                setError(null);
-              } catch (err) {
-                setError(pickErrorMessage(err, 'Could not start another box.'));
-              }
-            })();
-          }}
+          onClick={startBox}
         >
           <Icon glyph={faPlus} className="size-4" aria-hidden />
-          <span className="hidden @md:inline">Another box</span>
+          <ActionLabel from="md">{firstBox ? 'Start a box' : 'Another box'}</ActionLabel>
         </Button>
       </PaneToolbar>
 
@@ -180,19 +189,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
                 refused.
               </AlertDescription>
               <AlertActions>
-                <Button
-                  color="module-inventory"
-                  disabled={create.isPending}
-                  onClick={() => {
-                    void (async () => {
-                      const box = await create.mutateAsync({
-                        orderId,
-                        ...(pickListId ? { pickListId } : {}),
-                      });
-                      setActiveId(box.id);
-                    })();
-                  }}
-                >
+                <Button color="module-inventory" disabled={create.isPending} onClick={startBox}>
                   <Icon glyph={faBox} className="size-4" aria-hidden />
                   Start a box
                 </Button>
@@ -213,7 +210,7 @@ export function PackBenchSurface({ ctx }: { ctx: SurfaceContext }) {
               <tbody>
                 {sealed.map((box) => (
                   <tr key={box.id}>
-                    <td className="w-full max-w-0">
+                    <td className="w-full max-w-0 min-w-56">
                       <span className="flex min-w-0 flex-col">
                         <span className="truncate font-mono">{box.number}</span>
                         <span className="truncate text-sm">
@@ -377,7 +374,7 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
             <tbody>
               {box.lines.map((line) => (
                 <tr key={line.id}>
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate font-medium">{line.name}</span>
                       <span className="truncate font-mono text-sm">{line.sku}</span>
@@ -442,10 +439,24 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
             <tbody>
               {box.outstanding.map((line) => (
                 <tr key={line.orderItemId}>
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate">{line.name}</span>
                       <span className="truncate font-mono text-sm">{line.sku}</span>
+                      {/* The walk said this one was not on the shelf. It is still
+                          owed and still held for this order, so the row stays —
+                          but without this the bench offers "Add all" for
+                          something nobody could find, one screen after the walk
+                          finished with "1 line came up short". */}
+                      {line.shortWhilePicking > 0 ? (
+                        <span className="text-sm">
+                          Nobody could find{' '}
+                          {line.shortWhilePicking === line.remaining
+                            ? 'it'
+                            : `${String(line.shortWhilePicking)} of these`}{' '}
+                          while picking. It is still held for this order.
+                        </span>
+                      ) : null}
                     </span>
                   </td>
                   <td className="text-right whitespace-nowrap tabular-nums">{line.remaining}</td>
@@ -454,11 +465,21 @@ function ActiveBox({ packageId, ctx }: { packageId: string; ctx: SurfaceContext 
                       <Button
                         size="sm"
                         variant="outline"
+                        {...(line.shortWhilePicking > 0 ? { color: 'warning' as const } : {})}
                         onClick={() => {
-                          void packItem.mutateAsync({
-                            orderItemId: line.orderItemId,
-                            quantity: line.remaining,
-                          });
+                          void (async () => {
+                            try {
+                              await packItem.mutateAsync({
+                                orderItemId: line.orderItemId,
+                                quantity: line.remaining,
+                              });
+                            } catch (err) {
+                              // Said out loud, like every other write on this
+                              // bench. Left bare it was an unhandled rejection
+                              // and a button that appeared to do nothing.
+                              say(pickErrorMessage(err, 'Could not add that line.'), 'danger');
+                            }
+                          })();
                         }}
                       >
                         Add all

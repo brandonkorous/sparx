@@ -43,6 +43,7 @@ import { Table } from '../../components/table';
 import {
   faArrowUpRightFromSquare,
   faCircleCheck,
+  faCircleInfo,
   faExclamationTriangle,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -51,6 +52,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { holderLabel, movementReason, plural } from './data';
 import { countVerdict, humanDuration } from './integrity-data';
+import { reconcileWords, recentChangesWords } from './provenance-copy';
 import {
   actorLabel,
   bufferSourceLabel,
@@ -58,6 +60,7 @@ import {
   type StockProvenance,
 } from './provenance-data';
 import { productCopy } from '../../lib/product';
+import { channelLabel } from '../../lib/console/channels';
 
 const NUMBER = new Intl.NumberFormat();
 
@@ -65,16 +68,21 @@ const NUMBER = new Intl.NumberFormat();
 
 function ReconcileBanner({ data }: { data: StockProvenance }) {
   if (data.reconciles) {
+    // Three counts, three sentences, built in `provenance-copy.ts` so they have
+    // a test. One recorded change cannot be "added together", and no recorded
+    // change at all must not wear a green tick: a verified-looking claim over an
+    // empty ledger is absence dressed as a measurement.
+    const words = reconcileWords(data.movementCount, NUMBER.format(data.onHand));
     return (
-      <Alert color="success" variant="soft">
-        <Icon glyph={faCircleCheck} className="size-5 shrink-0" aria-hidden />
+      <Alert color={words.checked ? 'success' : 'info'} variant="soft">
+        <Icon
+          glyph={words.checked ? faCircleCheck : faCircleInfo}
+          className="size-5 shrink-0"
+          aria-hidden
+        />
         <AlertContent>
-          <AlertTitle>This number adds up</AlertTitle>
-          <AlertDescription>
-            Every one of the {plural(data.movementCount, 'recorded change', 'recorded changes')} to
-            this item here, added together, comes to exactly {NUMBER.format(data.onHand)}. Nothing
-            has moved that was not written down.
-          </AlertDescription>
+          <AlertTitle>{words.title}</AlertTitle>
+          <AlertDescription>{words.detail}</AlertDescription>
         </AlertContent>
       </Alert>
     );
@@ -162,7 +170,11 @@ function Breakdown({ data }: { data: StockProvenance }) {
       {data.channel ? (
         <div className="border-base-300 flex flex-col gap-0.5 border-t pt-2">
           <div className="flex items-baseline justify-between gap-3">
-            <Text className="font-semibold">On {data.channel.channel}</Text>
+            {/* The channel's own name, with no preposition in front of it.
+                The console's channel words are written to stand alone ("At the
+                till", "Added by hand"), so "On " cannot precede them — and this
+                printed the raw stored word anyway. */}
+            <Text className="font-semibold">{channelLabel(data.channel.channel)}</Text>
             <Text className="text-module text-xl font-semibold tabular-nums">
               {NUMBER.format(data.channel.sellable)}
             </Text>
@@ -304,10 +316,12 @@ function RecentChanges({ data }: { data: StockProvenance }) {
         <Heading level={2} className="text-lg font-semibold">
           What changed it
         </Heading>
+        {/* "The most recent 1 of 1 recorded change." The pane asks for 20
+            movements and no stock level measured has more than 5, so nothing
+            was ever left out and the sentence implied a truncation that has
+            never happened. Built in `provenance-copy.ts` with a test. */}
         <Text className="text-sm">
-          The most recent {data.recentMovements.length} of{' '}
-          {plural(data.movementCount, 'recorded change', 'recorded changes')}, newest first. The
-          running total is what the number was immediately after each one.
+          {recentChangesWords(data.recentMovements.length, data.movementCount)}
         </Text>
       </div>
       <Table className="table-sm">

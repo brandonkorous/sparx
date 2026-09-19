@@ -91,7 +91,17 @@ export function StockListEmpty(props: EmptyProps) {
         title={
           locationName ? `Nothing is running low at ${locationName}` : 'Nothing is running low'
         }
-        description="Everything with a reorder rule is above the level you asked to be warned at. Choose All to see the rest of your stock."
+        /* SAYS WHAT THIS TAB COVERS, rather than asserting a fact about the
+           stock. It used to read "Everything with a reorder rule is above the
+           level you asked to be warned at", which is one of THREE reasons this
+           list can be empty and the only reassuring one. The other two are an
+           account with no reorder rules at all, and — the dangerous one — an
+           item that is below its rule and has run out ENTIRELY, which this tab
+           deliberately excludes (`sellable_only`) and which then reads as
+           everything being fine. Measured 2026-09-16: one shop had exactly one
+           item with a reorder rule, it was at ZERO against a rule of 2, and this
+           screen told her everything was above the line (persona issue 541). */
+        description="This shows items that have a reorder rule, are below it, and still have some left to sell. Anything that has run out completely is under “None to sell”."
       />
     );
   }

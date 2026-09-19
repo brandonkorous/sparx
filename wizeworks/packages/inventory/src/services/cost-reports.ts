@@ -22,7 +22,7 @@
 // valuing them at zero or silently dropping them — a valuation that does not
 // admit its own gaps is the kind an audit finds for you.
 
-import { withTenant } from '@wizeworks/db';
+import { Prisma, withTenant } from '@wizeworks/db';
 
 import type { ServiceContext } from '../errors';
 
@@ -30,6 +30,33 @@ import { listOpenLayers, movementCostBreakdown } from './cost-layers';
 import type { CostLayerRow, MovementCostBreakdownRow } from './cost-layers';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * A layer only COVERS its units if somebody said what they cost.
+ *
+ * `unit_cost_cents` is NOT NULL, so a path that has no cost to record writes a
+ * zero — and both paths that do so are machines rather than choices. A stock
+ * COUNT knows the quantity and cannot know the price; a RETURN puts a unit back
+ * on the shelf without a purchase behind it. Measured on this database: 72 of
+ * 72 count-sourced layers and 4 of 4 return-sourced layers are exactly zero,
+ * while every receipt-sourced layer carries a real figure.
+ *
+ * Counting those zeros as covered made `uncostedUnits` come out at 0 for eight
+ * tenants, which this report then stated as "every unit on hand has a cost
+ * behind it" — beside a stock value of $0.00 for four of them. That reads as
+ * "your stock is genuinely worth nothing" rather than "nobody has said what it
+ * cost", which is the exact distinction this report's own header promises to
+ * keep.
+ *
+ * A genuinely free unit is therefore reported as uncosted. That is the safe
+ * direction: it admits an unknown instead of asserting a worth, and the unit is
+ * listed on the uncosted screen where its owner can confirm the zero.
+ *
+ * Shared rather than written twice: the per-row walk and the totals walk are
+ * separate queries over the same ledger, and a rule that lives in one of them
+ * is a rule that disagrees with itself the first time somebody edits one.
+ */
+const LAYER_CARRIES_A_COST = Prisma.sql`l.unit_cost_cents <> 0`;
 
 // ─── Valuation as of a date ──────────────────────────────────────────────────
 
@@ -40,8 +67,10 @@ export interface AsOfValuationRow {
   warehouseId: string;
   warehouseCode: string;
   units: number;
-  /** Units the cost layers can account for. Below `units` where stock predates
-   *  costing or a level was driven negative. */
+  /** Units a cost layer accounts for AND puts a real figure against. Below
+   *  `units` where stock predates costing, where a level was driven negative,
+   *  or where the only layer behind it was written by a count or a return and
+   *  so says zero (see `LAYER_CARRIES_A_COST`). */
   unitsCovered: number;
   valueCents: number;
 }
@@ -51,8 +80,14 @@ export interface AsOfValuationReport {
   totalUnits: number;
   totalUnitsCovered: number;
   totalValueCents: number;
-  /** Units on hand that no cost layer accounts for. Zero is the normal answer;
-   *  anything else is a number someone should look at. */
+  /**
+   * Units on hand that nothing has put a real cost against.
+   *
+   * This is NOT normally zero, and a version of this comment that said so was
+   * how the false reassurance survived: a shop stocks its shelves by counting
+   * what it already had, and a count cannot know a price. Treat a zero here as
+   * a claim worth checking, not as the resting state.
+   */
   uncostedUnits: number;
   currency: string;
   rows: AsOfValuationRow[];
@@ -115,6 +150,7 @@ export async function valuationAsOf(
         WHERE l.tenant_id = ${ctx.tenantId}::uuid
           AND l.acquired_at <= ${params.asOf}
           AND (${warehouse}::uuid IS NULL OR l.warehouse_id = ${warehouse}::uuid)
+          AND ${LAYER_CARRIES_A_COST}
         GROUP BY l.variant_id, l.warehouse_id
       )
       SELECT u.variant_id, v.sku, COALESCE(p.title, v.sku) AS title,
@@ -159,6 +195,7 @@ export async function valuationAsOf(
         WHERE l.tenant_id = ${ctx.tenantId}::uuid
           AND l.acquired_at <= ${params.asOf}
           AND (${warehouse}::uuid IS NULL OR l.warehouse_id = ${warehouse}::uuid)
+          AND ${LAYER_CARRIES_A_COST}
       )
       SELECT COALESCE((SELECT units FROM units), 0)::bigint AS units,
              COALESCE((SELECT units_covered FROM layered), 0)::bigint AS units_covered,
@@ -217,10 +254,29 @@ export interface PriceVarianceReport {
   from: string;
   to: string;
   currency: string;
+  /** Every unit that arrived in the window, planned or not. */
   totalUnits: number;
+  /**
+   * The units this report can actually COMPARE — the ones with a planned cost.
+   *
+   * `totalStandardCents`, `totalActualCents` and `totalVarianceCents` are all
+   * over THIS set and no other. They used to be over two different sets: the
+   * planned figure counted only planned units while the actual figure counted
+   * every unit, so the difference between them was mostly the cost of goods
+   * nobody had planned for. A shop with 98 unplanned units and none planned read
+   * "planned $0.00, actually $967.92, **$967.92 more than planned**" in red,
+   * while the sum of the rows' own variances underneath was exactly $0.00.
+   */
+  comparedUnits: number;
   totalStandardCents: number;
+  /** Over `comparedUnits`. For the whole window's spend see `allActualCents`. */
   totalActualCents: number;
+  /** Equal to `totalActualCents - totalStandardCents`, and therefore equal to
+   *  the sum of every row's `varianceCents`, by construction. */
   totalVarianceCents: number;
+  /** What everything that arrived cost, planned or not. Kept so the gap notice
+   *  can name it: the money did not stop existing because nobody planned it. */
+  allActualCents: number;
   /** Units received against a variant with no standard cost set. The report is
    *  blind to those, and says so rather than counting them as zero variance. */
   unitsWithoutStandard: number;
@@ -312,8 +368,10 @@ export async function priceVarianceReport(
     });
 
     let totalUnits = 0;
+    let comparedUnits = 0;
     let totalStandardCents = 0;
     let totalActualCents = 0;
+    let allActualCents = 0;
     let unitsWithoutStandard = 0;
 
     const mapped = rows.map((r) => {
@@ -323,9 +381,17 @@ export async function priceVarianceReport(
       const standard = hasStandard ? Number(r.standard_cents) : 0;
 
       totalUnits += units;
-      totalActualCents += actual;
-      if (hasStandard) totalStandardCents += standard;
-      else unitsWithoutStandard += units;
+      allActualCents += actual;
+      // BOTH sides of the comparison over the same set. Adding every unit's
+      // actual cost to a planned figure that covered only some of them is what
+      // turned "nobody set a plan" into a red overspend the size of the delivery.
+      if (hasStandard) {
+        comparedUnits += units;
+        totalStandardCents += standard;
+        totalActualCents += actual;
+      } else {
+        unitsWithoutStandard += units;
+      }
 
       const varianceCents = hasStandard ? actual - standard : 0;
       return {
@@ -348,9 +414,11 @@ export async function priceVarianceReport(
       to: params.to.toISOString(),
       currency: policy?.baseCurrency ?? 'USD',
       totalUnits,
+      comparedUnits,
       totalStandardCents,
       totalActualCents,
       totalVarianceCents: totalActualCents - totalStandardCents,
+      allActualCents,
       unitsWithoutStandard,
       rows: mapped,
     };

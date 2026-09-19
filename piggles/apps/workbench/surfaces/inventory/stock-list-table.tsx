@@ -12,6 +12,7 @@ import { Badge, Button, Tooltip } from '@wizeworks/silicaui-react';
 import { faArrowDown, faArrowUp, faShieldCheck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Table } from '../../components/table';
+import { OwnershipBadge } from './stock-ownership-block';
 import {
   levelState,
   locationLabel,
@@ -119,7 +120,7 @@ function StockRow({
           and shoved the state badge off the right edge — the one column that
           must never be the one to go. Zeroing the max width makes this the cell
           that GIVES, which is what lets the truncation below actually bite. */}
-      <td className="w-full max-w-0">
+      <td className="w-full max-w-0 min-w-56">
         {/* Identity is two facts and they are not equals: the product name is
             what a person recognises, the code is how the shelf is labelled. */}
         <span className="flex min-w-0 flex-col">
@@ -187,6 +188,10 @@ function StateBadges({ level }: { level: StockLevel }) {
           {count.label}
         </Badge>
       ) : null}
+      {/* A row that is somebody else's reads as yours without this, and the
+          number beside it is counted in a valuation it does not belong in.
+          Rare enough never to crowd the row: only marked levels carry it. */}
+      <OwnershipBadge level={level} />
     </span>
   );
 }

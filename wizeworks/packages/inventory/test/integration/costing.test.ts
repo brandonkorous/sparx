@@ -517,6 +517,45 @@ describe('true cost — DB-backed', () => {
     expect(report.totalValueCents).toBe(1200);
   });
 
+  it('counts stock brought in by a count as uncosted, not as worth nothing', async () => {
+    const f = await createInventoryFixture(tenantId);
+
+    // How a shop actually stocks its shelves on day one: it counts what it
+    // already had. A count knows the quantity and cannot know the price, so the
+    // layer it writes carries a zero — as every count-sourced layer on the live
+    // database does, 72 of 72.
+    await withTenant(ctx(), (tx) =>
+      applyMovement(tx, {
+        tenantId,
+        variantId: f.variantId,
+        warehouseId: f.warehouseId,
+        delta: 40,
+        reason: 'recount',
+        actorType: 'system',
+      })
+    );
+    // …and one real delivery beside it, so the report has to tell the two apart
+    // rather than being right by having nothing to be wrong about.
+    const { poId, lineIds } = await submittedOrder(f, [
+      { variantId: f.variantId, quantity: 10, unitCostCents: 500 },
+    ]);
+    await createGoodsReceipt(ctx(), {
+      purchaseOrderId: poId,
+      lines: [{ purchaseOrderLineId: lineIds[0]!, quantity: 10 }],
+    });
+
+    const report = await valuationAsOf(ctx(), { asOf: new Date(), warehouseId: f.warehouseId });
+
+    expect(report.totalUnits).toBe(50);
+    // Only the delivered ten have a price behind them.
+    expect(report.totalUnitsCovered).toBe(10);
+    expect(report.totalValueCents).toBe(10 * 500);
+    // The counted forty come back as UNKNOWN. Reporting zero here is what let
+    // the reconciliation screen say "every unit on hand has a cost behind it"
+    // beside a stock value of $0.00.
+    expect(report.uncostedUnits).toBe(40);
+  });
+
   /* ── Reporting ──────────────────────────────────────────────────────────── */
 
   it('compares what was planned against what was actually paid, landed', async () => {
@@ -545,6 +584,81 @@ describe('true cost — DB-backed', () => {
     expect(row!.actualUnitCostCents).toBe(600);
     expect(row!.varianceCents).toBe(2000);
     expect(row!.variancePercent).toBe(20);
+  });
+
+  it('never turns "nobody set a plan" into an overspend', async () => {
+    // The three headline figures used to be over TWO DIFFERENT SETS: the planned
+    // total counted only the units with a plan, while the actual total counted
+    // every unit. So a delivery of goods nobody had costed came out as
+    // "planned $0.00, actually $967.92, $967.92 more than planned" in red, while
+    // the sum of the rows' own variances underneath was exactly $0.00.
+    //
+    // Measured when this was found: 105 of Juniper Row's 108 variants carry no
+    // planned cost at all.
+    const f = await createInventoryFixture(tenantId);
+    // A SECOND variant on the same product, with no planned cost — the shape the
+    // report was blind to.
+    const unplanned = await withTenant(ctx(), (tx) =>
+      tx.productVariant.create({
+        data: {
+          tenantId,
+          productId: f.productId,
+          sku: `NOPLAN-${String(Date.now())}`,
+          priceCents: 1000,
+          costCents: null,
+          currency: 'USD',
+          isDefault: false,
+        },
+      })
+    );
+
+    const { poId, lineIds } = await submittedOrder(f, [
+      { variantId: f.variantId, quantity: 10, unitCostCents: 500 },
+      { variantId: unplanned.id, quantity: 40, unitCostCents: 250 },
+    ]);
+    const from = new Date(Date.now() - 60 * 60 * 1000);
+    await createGoodsReceipt(ctx(), {
+      purchaseOrderId: poId,
+      lines: [
+        { purchaseOrderLineId: lineIds[0]!, quantity: 10 },
+        { purchaseOrderLineId: lineIds[1]!, quantity: 40 },
+      ],
+    });
+
+    const report = await priceVarianceReport(ctx(), {
+      from,
+      to: new Date(Date.now() + 60 * 1000),
+      warehouseId: f.warehouseId,
+    });
+
+    // Asserted by VARIANT, never by line order: `submittedOrder` does not
+    // promise to hand the lines back in the order they were given, and a test
+    // that assumes it measures the fixture rather than the report.
+    const plannedRow = report.rows.find((row) => row.variantId === f.variantId);
+    const unplannedRow = report.rows.find((row) => row.variantId === unplanned.id);
+    expect(plannedRow?.standardUnitCostCents).toBe(500);
+    expect(unplannedRow?.standardUnitCostCents).toBeNull();
+
+    const plannedUnits = plannedRow!.unitsReceived;
+    const unplannedUnits = unplannedRow!.unitsReceived;
+
+    // Both halves of the comparison over the same units.
+    expect(report.totalUnits).toBe(50);
+    expect(report.comparedUnits).toBe(plannedUnits);
+    expect(report.unitsWithoutStandard).toBe(unplannedUnits);
+
+    // The headline and the table agree, which is the whole property.
+    const rowSum = report.rows.reduce((sum, row) => sum + row.varianceCents, 0);
+    expect(report.totalVarianceCents).toBe(rowSum);
+
+    // Bought exactly at plan, so there is no overspend to report — and the
+    // unplanned goods must not become one.
+    expect(report.totalVarianceCents).toBe(0);
+    expect(report.totalStandardCents).toBe(plannedUnits * 500);
+    expect(report.totalActualCents).toBe(plannedUnits * 500);
+    // The money did not stop existing because nobody planned it.
+    expect(report.allActualCents).toBe(plannedUnits * 500 + unplannedUnits * 250);
+    expect(report.allActualCents).toBeGreaterThan(report.totalActualCents);
   });
 
   it('totals the cost of goods by why they left', async () => {

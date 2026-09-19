@@ -73,7 +73,7 @@ import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { useStockLocations, type StockLocation } from './data';
+import { physicalLocations, useStockLocations, type StockLocation } from './data';
 import {
   isNotFound,
   newDraftLineKey,
@@ -83,6 +83,7 @@ import {
   transferStatusBlurb,
   usePickerProducts,
   usePickerVariants,
+  useSourceStock,
   useCancelTransfer,
   useDeleteTransfer,
   useDispatchTransfer,
@@ -95,6 +96,7 @@ import {
   type TransferDetail,
   type TransferLine,
 } from './transfers-data';
+import { formatCount } from './reporting-data';
 import { ScanInput, playScanFeedback } from './scan-input';
 import { useScanQueue, useScanToTransfer, type ScanActionResult } from './scan-data';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -165,12 +167,18 @@ function LineEditorModal({
   open,
   line,
   existingVariantIds,
+  fromWarehouseId,
+  fromWarehouseName,
   onClose,
   onSave,
 }: {
   open: boolean;
   line: DraftLine | null;
   existingVariantIds: Set<string>;
+  /** Where the stock leaves from, so the quantity can be judged against what is
+   *  actually there rather than against nothing. */
+  fromWarehouseId: string;
+  fromWarehouseName: string;
   onClose: () => void;
   onSave: (line: DraftLine) => void;
 }) {
@@ -202,13 +210,28 @@ function LineEditorModal({
 
   const productItems = useMemo(
     () =>
-      (products.data?.items ?? []).map((product) => ({
-        value: product.id,
-        label: product.vendor ? `${product.title} · ${product.vendor}` : product.title,
-        product,
-      })),
+      (products.data?.items ?? []).map((product) => {
+        const named = product.vendor ? `${product.title} · ${product.vendor}` : product.title;
+        return {
+          value: product.id,
+          // The draft note is part of the LABEL rather than a badge beside it,
+          // so it is searchable and so it survives however the popup renders a
+          // row. Stock on a shelf can be moved whatever the website says, and a
+          // person who sees a draft listed here should be told why it reads
+          // differently from the rest rather than left to wonder.
+          label: product.status === 'draft' ? `${named} · not for sale yet` : named,
+          product,
+        };
+      }),
     [products.data]
   );
+  // What the catalog holds, against what this picker was handed. The Combobox
+  // filters in the browser, so a short list cannot be typed past — and saying
+  // "no product matches that" over a truncated list is a wrong answer, not an
+  // unhelpful one.
+  const fetched = products.data?.items.length ?? 0;
+  const total = products.data?.total ?? fetched;
+  const listIsShort = total > fetched;
   const selectedProduct = productItems.find((item) => item.value === productId) ?? null;
   const activeProduct = selectedProduct?.product ?? null;
   const needsVariant = !isEdit && (activeProduct?.variantCount ?? 0) > 1;
@@ -228,6 +251,13 @@ function LineEditorModal({
   const qtyValid = Number.isFinite(parsedQty) && parsedQty > 0;
   const duplicate = !isEdit && variantId !== null && existingVariantIds.has(variantId);
   const canSave = variantId !== null && qtyValid && !duplicate;
+
+  // What is actually at the source location, for the variant now chosen. Only
+  // asked once there is a variant AND a source — before that there is no
+  // question to answer.
+  const sourceStock = useSourceStock(variantId, fromWarehouseId);
+  const sourceLevel = sourceStock.data?.items[0] ?? null;
+  const tooMany = sourceLevel !== null && qtyValid && parsedQty > sourceLevel.available;
 
   const changed = isEdit ? line.quantity !== parsedQty : variantId !== null || quantity !== '1';
   useDirtySource(
@@ -285,7 +315,11 @@ function LineEditorModal({
                     value={selectedProduct}
                     disabled={products.isLoading}
                     placeholder={products.isLoading ? 'Loading products…' : 'Search products…'}
-                    emptyMessage="No product matches that."
+                    emptyMessage={
+                      listIsShort
+                        ? `No match in the first ${String(fetched)} of your ${String(total)} products. Open the item and move it from there.`
+                        : 'No product matches that.'
+                    }
                     aria-label="Product"
                     clearable={false}
                     onValueChange={(next) => {
@@ -348,6 +382,43 @@ function LineEditorModal({
                 }
               />
             </Field>
+
+            {/* What is actually there, beside the box where she says how much to
+                take. Without it the first mention of the real number was the
+                refusal after Send, four steps later. */}
+            {variantId !== null && fromWarehouseId !== '' && !sourceStock.isLoading ? (
+              sourceLevel === null ? (
+                <Alert color="warning" variant="soft">
+                  <AlertContent>
+                    <AlertTitle>Nothing has ever been counted at {fromWarehouseName}</AlertTitle>
+                    <AlertDescription>
+                      That is not the same as none: it means this item has no count there at all, so
+                      there is nothing to send. Count it in first, or send it from somewhere else.
+                    </AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : tooMany ? (
+                <Alert color="warning" variant="soft">
+                  <AlertContent>
+                    <AlertTitle>
+                      {formatCount(sourceLevel.available)} available at {fromWarehouseName}
+                    </AlertTitle>
+                    <AlertDescription>
+                      {sourceLevel.allocated > 0
+                        ? `${formatCount(sourceLevel.onHand)} are on the shelf, but ${formatCount(sourceLevel.allocated)} are spoken for by orders that have not shipped. A transfer can only take what is free.`
+                        : 'A transfer this big cannot be sent, and it will be refused when you try.'}
+                    </AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : (
+                <Text className="text-sm">
+                  {formatCount(sourceLevel.available)} available at {fromWarehouseName}
+                  {sourceLevel.allocated > 0
+                    ? `, of ${formatCount(sourceLevel.onHand)} on the shelf. The rest is spoken for by orders that have not shipped.`
+                    : '.'}
+                </Text>
+              )
+            ) : null}
 
             {duplicate ? (
               <Alert color="warning">
@@ -612,11 +683,10 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle(isNew ? 'New transfer' : (detail?.number ?? 'Transfer'));
   }, [ctx, isNew, detail?.number]);
 
+  // This screen worked the rule out first; it now shares it, so the next
+  // picker that needs it has somewhere to find it. See `physicalLocations`.
   const locations = useMemo(
-    () =>
-      (locationsQuery.data?.items ?? []).filter(
-        (location) => location.isActive && location.type !== 'virtual'
-      ),
+    () => physicalLocations(locationsQuery.data?.items ?? []),
     [locationsQuery.data]
   );
 
@@ -816,6 +886,23 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           }}
         />
       </div>
+    );
+  }
+
+  // A transfer is two locations and some lines. The pane waits for the
+  // locations, so an unread list must not render as two empty choosers with
+  // nothing on screen saying why (issue 627).
+  if (locationsQuery.isError) {
+    return (
+      <PaneLoadError
+        error={locationsQuery.error}
+        noun="transfer"
+        title="Could not load your locations"
+        description="Moving stock means moving it between two of your locations, and the list of them could not be read just now. Nothing about your stock has changed."
+        onRetry={() => {
+          void locationsQuery.refetch();
+        }}
+      />
     );
   }
 
@@ -1215,6 +1302,10 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
         open={editing !== null}
         line={editing?.line ?? null}
         existingVariantIds={new Set(lines.map((line) => line.variantId))}
+        fromWarehouseId={fromId}
+        fromWarehouseName={
+          locations.find((location) => location.id === fromId)?.name ?? 'that location'
+        }
         onClose={() => {
           setEditing(null);
         }}

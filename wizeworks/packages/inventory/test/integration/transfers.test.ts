@@ -160,7 +160,18 @@ describe('inventory transfers', () => {
       toWarehouseId,
       lines: [{ variantId: a, quantity: 10 }],
     });
-    await expect(shipInventoryTransfer(ctx(), draft.id)).rejects.toThrow(/out of stock/i);
+    // The CODE is the contract, not the sentence — this used to match
+    // /out of stock/i, which is a wording, and the wording changed the day the
+    // refusal started naming the item instead of printing its UUID.
+    // What the test should hold to is that it refuses, with the right code, and
+    // that the sentence is readable: it must name the item and must NOT be a
+    // bare id. [[feedback_a_test_that_cannot_go_red]]
+    await expect(shipInventoryTransfer(ctx(), draft.id)).rejects.toMatchObject({
+      code: 'OUT_OF_STOCK',
+      requested: 10,
+      available: 3,
+    });
+    await expect(shipInventoryTransfer(ctx(), draft.id)).rejects.toThrow(/not enough/i);
 
     // Nothing moved; the transfer is still an editable draft.
     expect(await onHandAt(a, fromWarehouseId)).toBe(3);

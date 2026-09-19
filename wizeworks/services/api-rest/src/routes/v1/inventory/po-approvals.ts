@@ -91,15 +91,26 @@ const poApprovalRoutes: FastifyPluginAsync = async (app) => {
     await requireInventoryModule(request);
     requireRole(request, 'viewer');
     const q = QueueQuery.parse(request.query);
+    // Two different questions share this route, and they have opposite defaults.
+    //
+    // With no order named it is THE QUEUE — a list of things to do — so it is
+    // pending unless asked otherwise, and the decided ones are history.
+    //
+    // With one order named it is THAT ORDER'S TRAIL, and the whole point of a
+    // trail is the refusals: who asked, who said no and why, then who asked
+    // again. Defaulting that to pending returned an empty list for every order
+    // that had been dealt with, which is how the buyer's own pane came to show
+    // nothing at all after their order was sent back — over a dialog that had
+    // promised them "the buyer sees it". There was no value of `status` that
+    // meant "all", so asking for the trail was not possible at all.
+    const wholeTrail = q.purchase_order_id !== undefined && q.status === undefined;
     // `ok(result)`: `pending` is the count of everything still waiting whatever
     // this page is filtered to — the badge on the nav item — so it belongs in
     // the body rather than in pagination meta.
     return reply.send(
       ok(
         await inventoryService.listPoApprovals(toInventoryContext(request), {
-          // Pending unless asked otherwise: a queue is a list of things to do,
-          // and the decided ones are history.
-          status: q.status ?? 'pending',
+          ...(wholeTrail ? {} : { status: q.status ?? 'pending' }),
           ...(q.purchase_order_id ? { purchaseOrderId: q.purchase_order_id } : {}),
           ...(q.required_approver_user_id
             ? { requiredApproverUserId: q.required_approver_user_id }
@@ -113,10 +124,21 @@ const poApprovalRoutes: FastifyPluginAsync = async (app) => {
 
   app.post('/v1/inventory/purchase-orders/approvals/:id/decide', async (request, reply) => {
     await requireInventoryModule(request);
-    requireRole(request, 'editor');
+    // `editor` is the floor for touching buying at all. The RULE is what narrows
+    // it beyond that, so the signer's role goes to the service, which refuses
+    // anyone the rule did not route to. Without it, "the owner signs it off" was
+    // satisfied by the same editor who raised the order.
+    const auth = requireRole(request, 'editor');
     const { id } = IdPath.parse(request.params);
     return reply.send(
-      ok(await inventoryService.decidePoApproval(toInventoryContext(request), id, request.body))
+      ok(
+        await inventoryService.decidePoApproval(
+          toInventoryContext(request),
+          id,
+          request.body,
+          auth.role
+        )
+      )
     );
   });
 

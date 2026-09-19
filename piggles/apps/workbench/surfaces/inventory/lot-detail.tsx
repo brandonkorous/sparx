@@ -38,14 +38,22 @@ import {
   AlertTitle,
   Badge,
   Button,
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogTitle,
+  Field,
+  FieldLabel,
   Card,
   Heading,
   NativeSelect,
   Text,
+  Textarea,
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
+import { PaneScope } from '../../lib/dock/window-boundary';
 import {
   faBoxes,
   faCalendarClock,
@@ -54,6 +62,7 @@ import {
   faLocationDot,
   faShieldCheck,
   faShieldExclamation,
+  faTriangleExclamation,
   faTruck,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
@@ -65,14 +74,17 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { isNotFound, plural, stockErrorMessage } from './data';
 import {
   describeExpiry,
+  endsSentence,
   hazmatLabel,
   isTerminalSerialStatus,
   lotLocationLabel,
   lotState,
   recallState,
   serialStatusState,
+  soldUnitsLine,
   SERIAL_STATUSES,
   useClearRecall,
+  useInitiateRecall,
   useLot,
   useLotSerials,
   useUpdateSerialStatus,
@@ -116,7 +128,13 @@ function Fact({
 
 /* ── One unit in the roster ─────────────────────────────────────────────── */
 
-function SerialRosterRow({ serial }: { serial: SerialRow }) {
+function SerialRosterRow({
+  serial,
+  onOpenOrder,
+}: {
+  serial: SerialRow;
+  onOpenOrder: (orderId: string, event: { shiftKey: boolean; altKey: boolean }) => void;
+}) {
   const toast = useToast();
   const confirm = useConfirm();
   const update = useUpdateSerialStatus();
@@ -162,9 +180,33 @@ function SerialRosterRow({ serial }: { serial: SerialRow }) {
     <li className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 py-2">
       <div className="flex min-w-0 flex-col">
         <Text className="min-w-0 font-mono break-all">{serial.serial}</Text>
-        {serial.status === 'sold' && serial.soldAt ? (
+        {/* WHICH order, not just "an order".
+            The id of the line this unit went out on has always been on the row
+            and nothing drew it, so a recall could say how many units were gone
+            and never who had them — which is the entire question a recall asks.
+            The order number is the thing a person can act on, so it is a button
+            that opens the order rather than a fact to copy down. */}
+        {serial.status === 'sold' && serial.soldOnOrderId !== null ? (
           <Text className="text-sm">
-            Left on an order <Timestamp value={serial.soldAt} format="relative" />
+            Left on{' '}
+            <button
+              type="button"
+              className="link font-medium"
+              onClick={(event) => {
+                onOpenOrder(serial.soldOnOrderId ?? '', event);
+              }}
+            >
+              {serial.soldOnOrderNumber ?? 'an order'}
+            </button>
+            {serial.soldAt ? ' ' : ''}
+            {serial.soldAt ? <Timestamp value={serial.soldAt} format="relative" /> : null}
+          </Text>
+        ) : serial.status === 'sold' && serial.soldAt ? (
+          // Sold, but the order it left on is gone. Saying "an order" here is
+          // the honest answer; inventing a link would be worse than none.
+          <Text className="text-sm">
+            Left on an order <Timestamp value={serial.soldAt} format="relative" /> · that order has
+            since been deleted
           </Text>
         ) : null}
       </div>
@@ -195,7 +237,7 @@ function SerialRosterRow({ serial }: { serial: SerialRow }) {
 
 /* ── The serial roster ──────────────────────────────────────────────────── */
 
-function SerialRoster({ lot }: { lot: LotDetail }) {
+function SerialRoster({ lot, ctx }: { lot: LotDetail; ctx: SurfaceContext }) {
   const [status, setStatus] = useState('');
   const [pageSize, setPageSize] = useState<PageSize>(50);
   const [page, setPage] = useState(1);
@@ -247,8 +289,10 @@ function SerialRoster({ lot }: { lot: LotDetail }) {
             Individual units
           </Heading>
           <Text className="text-sm">
-            {summary || `${plural(lot.serialCount, 'unit', 'units')} in this batch`}: where each one
-            is now, and which have left.
+            {summary || `${plural(lot.serialCount, 'unit', 'units')} in this batch`}:{' '}
+            {lot.serialCount === 1
+              ? 'where it is now, and whether it has left.'
+              : 'where each one is now, and which have left.'}
           </Text>
         </div>
         <NativeSelect
@@ -283,7 +327,17 @@ function SerialRoster({ lot }: { lot: LotDetail }) {
       ) : (
         <ul className="divide-base-300 flex flex-col divide-y">
           {rows.map((serial) => (
-            <SerialRosterRow key={serial.id} serial={serial} />
+            <SerialRosterRow
+              key={serial.id}
+              serial={serial}
+              onOpenOrder={(orderId, event) => {
+                ctx.open(
+                  'commerce.order.detail',
+                  { id: orderId },
+                  { target: event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab' }
+                );
+              }}
+            />
           ))}
         </ul>
       )}
@@ -315,6 +369,130 @@ function SerialRoster({ lot }: { lot: LotDetail }) {
   );
 }
 
+/* ── Putting a batch under recall ───────────────────────────────────────── */
+
+/**
+ * The reason, and what saying yes will actually do.
+ *
+ * A recall needs a sentence — the API refuses an empty one, and rightly: the
+ * next person to open this batch reads that sentence to find out what happened.
+ * `useConfirm` cannot collect a sentence, so this is the one action in the pane
+ * that is a dialog.
+ *
+ * The dialog states the consequences in the terms the person is thinking in,
+ * because none of them are guessable from the word "recall": stock stops being
+ * picked, units already sold are counted and named, and nobody is emailed. That
+ * last one is said out loud rather than left to be discovered, because the
+ * obvious assumption is the opposite.
+ */
+function RecallDialog({
+  lot,
+  open,
+  onClose,
+}: {
+  lot: LotDetail;
+  open: boolean;
+  onClose: () => void;
+}) {
+  const [reason, setReason] = useState('');
+  const toast = useToast();
+  const recall = useInitiateRecall();
+
+  // The units already outside the building — the part a reason cannot fix.
+  const sold = lot.serialCounts.find((entry) => entry.status === 'sold')?.count ?? 0;
+
+  const submit = () => {
+    const written = reason.trim();
+    if (written === '') return;
+    recall.mutate(
+      { lotBatchId: lot.id, reason: written },
+      {
+        onSuccess: (result) => {
+          onClose();
+          afterPaneChange(() => {
+            toast.add({
+              title: `Batch ${lot.lotNumber} is recalled`,
+              description: soldUnitsLine(result.affectedSerialUnits),
+              type: 'success',
+            });
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not recall this batch',
+            description: stockErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  return (
+    <PaneScope>
+      <Dialog
+        open={open}
+        onOpenChange={(next) => {
+          if (!next) onClose();
+        }}
+      >
+        <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col overflow-hidden">
+          <DialogTitle>Recall batch {lot.lotNumber}?</DialogTitle>
+
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-1 py-2">
+            <Text className="text-base">
+              {lot.productTitle ?? 'Untitled product'}
+              {lot.variantSku ? ` · ${lot.variantSku}` : ''} at {lotLocationLabel(lot)}.
+            </Text>
+
+            <Field>
+              <FieldLabel>What is wrong with it</FieldLabel>
+              <Textarea
+                rows={3}
+                placeholder="Supplier says the run was contaminated"
+                value={reason}
+                onChange={(event) => {
+                  setReason(event.target.value);
+                }}
+              />
+              <Text className="text-sm">
+                This is kept on the batch for good, and it is what the next person reads to find out
+                what happened. Write it for them.
+              </Text>
+            </Field>
+
+            <Alert color="warning" variant="soft">
+              <AlertContent>
+                <AlertTitle>What this does</AlertTitle>
+                <AlertDescription>
+                  A location that picks by expiry date stops handing this batch out. The batch is
+                  marked, with your reason and the time, and the mark stays until somebody clears
+                  it. {soldUnitsLine(sold)} Nobody is emailed: telling customers is yours to do.
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+          </div>
+
+          <DialogFooter>
+            <Button color="neutral" variant="ghost" size="sm" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              color="danger"
+              size="sm"
+              disabled={reason.trim() === ''}
+              loading={recall.isPending}
+              onClick={submit}
+            >
+              Recall this batch
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </PaneScope>
+  );
+}
+
 /* ── The pane ───────────────────────────────────────────────────────────── */
 
 export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -324,6 +502,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const confirm = useConfirm();
   const lot = useLot(id);
   const clearRecall = useClearRecall();
+  const [recalling, setRecalling] = useState(false);
 
   const lotNumber = lot.data?.lotNumber ?? null;
   useEffect(() => {
@@ -394,12 +573,21 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const recall = recallState(data.recallStatus);
   const hazard = hazmatLabel(data.hazmatClass);
   const openRecall = data.recallStatus === 'active' || data.recallStatus === 'pending';
+  // How much of this batch is already outside the building. The counts are on
+  // the batch itself, so this costs nothing and answers the only question a
+  // recall really asks.
+  const soldOut = data.serialCounts.find((entry) => entry.status === 'sold')?.count ?? 0;
 
   const doClearRecall = async () => {
     const ok = await confirm({
       title: `Clear the recall on batch ${data.lotNumber}?`,
+      // NOT "units already marked recalled keep that history" — no unit is ever
+      // marked recalled. There is no such serial status, and the recall has
+      // always been a fact about the batch. The sentence described a mechanism
+      // that does not exist, in the dialog where somebody decides whether the
+      // problem is over. [[feedback_a_promise_in_copy_is_a_contract]]
       description:
-        'This records that the problem is resolved and the batch can be handled normally again. Units already marked recalled keep that history.',
+        'This records that the problem is resolved and the batch can be picked and sold normally again. Your reason stays on the record, so the next person can still see that it happened and why.',
       confirmLabel: 'Yes, clear the recall',
       cancelLabel: 'Go back',
       color: 'warning',
@@ -423,6 +611,13 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <div className={PANE_SHELL}>
+      <RecallDialog
+        lot={data}
+        open={recalling}
+        onClose={() => {
+          setRecalling(false);
+        }}
+      />
       <PaneToolbar
         label="Batch actions"
         status={
@@ -431,23 +626,44 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           </Badge>
         }
         primary={
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            className="ml-auto shrink-0 whitespace-nowrap"
-            title="Open this item's stock"
-            onClick={(event) => {
-              ctx.open(
-                'inventory.stock.item',
-                { variantId: data.variantId },
-                { target: event.shiftKey ? 'beside' : 'tab' }
-              );
-            }}
-          >
-            <Icon glyph={faBoxes} className="size-4" aria-hidden />
-            <span className="hidden @xl:inline">Item stock</span>
-          </Button>
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            {/* The lifecycle action, in the pane's own header where every other
+                surface keeps one. Only offered when there is no recall open:
+                with one open the decision on screen is whether to CLEAR it, and
+                that button lives in the alert beside the reason it was raised. */}
+            {openRecall ? null : (
+              <Button
+                size="sm"
+                variant="outline"
+                color="danger"
+                className="shrink-0 whitespace-nowrap"
+                title="Put this batch under recall"
+                onClick={() => {
+                  setRecalling(true);
+                }}
+              >
+                <Icon glyph={faTriangleExclamation} className="size-4" aria-hidden />
+                <span className="hidden @xl:inline">Recall</span>
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="outline"
+              color="neutral"
+              className="shrink-0 whitespace-nowrap"
+              title="Open this item's stock"
+              onClick={(event) => {
+                ctx.open(
+                  'inventory.stock.item',
+                  { variantId: data.variantId },
+                  { target: event.shiftKey ? 'beside' : 'tab' }
+                );
+              }}
+            >
+              <Icon glyph={faBoxes} className="size-4" aria-hidden />
+              <span className="hidden @xl:inline">Item stock</span>
+            </Button>
+          </div>
         }
         refresh={
           <RefreshButton
@@ -485,11 +701,12 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                     : 'A recall is pending on this batch'}
                 </AlertTitle>
                 <AlertDescription>
-                  {data.recallReason ? `Reason: ${data.recallReason}. ` : ''}
+                  {data.recallReason ? `Reason: ${endsSentence(data.recallReason)} ` : ''}
                   {data.recalledAt ? 'Raised ' : ''}
                   {data.recalledAt ? <Timestamp value={data.recalledAt} format="relative" /> : null}
                   {data.recalledAt ? '. ' : ''}
-                  Do not sell units from this batch until the problem is resolved.
+                  Do not sell units from this batch until the problem is resolved.{' '}
+                  {soldUnitsLine(soldOut)}
                 </AlertDescription>
               </AlertContent>
               <Button
@@ -513,7 +730,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 <AlertTitle>A past recall on this batch has been cleared</AlertTitle>
                 <AlertDescription>
                   {data.recallReason
-                    ? `It was raised for: ${data.recallReason}. It has since been marked resolved.`
+                    ? `It was raised for: ${endsSentence(data.recallReason)} It has since been marked resolved.`
                     : 'It has been marked resolved.'}
                 </AlertDescription>
               </AlertContent>
@@ -605,7 +822,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             </div>
           </section>
 
-          <SerialRoster lot={data} />
+          <SerialRoster lot={data} ctx={ctx} />
         </div>
       </div>
     </div>

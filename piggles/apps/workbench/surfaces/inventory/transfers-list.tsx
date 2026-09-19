@@ -70,7 +70,7 @@ const STATUS_OPTIONS: { value: TransferStatus; label: string }[] = [
   { value: 'draft', label: 'Draft, not sent yet' },
   { value: 'in_transit', label: 'In transit' },
   { value: 'received', label: 'Received' },
-  { value: 'cancelled', label: 'Cancelled' },
+  { value: 'cancelled', label: 'Canceled' },
 ];
 
 /** What to try when nothing matched — naming only what is actually narrowing. */
@@ -202,7 +202,7 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 {/* `max-w-0 w-full` makes this the cell that GIVES, so the state
                     badge on the right is never the column pushed off a narrow
                     pane. */}
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-mono font-medium">{transfer.number}</span>
                     {/* Below @lg the Route column is gone, so the route comes

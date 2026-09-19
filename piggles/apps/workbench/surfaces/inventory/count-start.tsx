@@ -36,7 +36,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { plural, useStockLocations } from './data';
+import { physicalLocations, plural, useStockLocations } from './data';
 import { countErrorMessage, useCreateCount, type CountDetail, type CountType } from './counts-data';
 import { COLUMN } from './count-shared';
 
@@ -53,7 +53,8 @@ export function StartCount({ ctx }: { ctx: SurfaceContext }) {
   const locationsQuery = useStockLocations();
   const create = useCreateCount();
 
-  const locations = (locationsQuery.data?.items ?? []).filter((location) => location.isActive);
+  // A count is a person walking the aisles. There are no aisles in transit.
+  const locations = physicalLocations(locationsQuery.data?.items ?? []);
 
   const [warehouseId, setWarehouseId] = useState('');
   const [type, setType] = useState<CountType>('full');

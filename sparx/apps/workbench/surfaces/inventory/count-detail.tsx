@@ -453,7 +453,7 @@ function LinesCard({
                 : counted - line.expectedQuantity;
             return (
               <tr key={line.id}>
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate">{line.productTitle ?? 'Untitled product'}</span>
                     <span className="truncate font-mono text-sm">
@@ -482,7 +482,11 @@ function LinesCard({
                       min={0}
                       inputMode="numeric"
                       aria-label={`Counted quantity for ${line.variantSku ?? 'item'}`}
-                      className="ml-auto max-w-24 text-right"
+                      /* `w-24`, not `max-w-24`. A ceiling is not a floor: beside
+                         the `w-full` item column this box could still be
+                         squeezed under it, and the count somebody typed is the
+                         one number on this screen that must be readable. */
+                      className="ml-auto w-24 text-right"
                       value={drafts[line.id] ?? line.countedQuantity?.toString() ?? ''}
                       onChange={(event) => {
                         setDraft(line.id, event.target.value);

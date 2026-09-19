@@ -552,7 +552,7 @@ const gmroiDef: ReportDefinition<GmroiReport> = {
   }),
   summary: (r) => [
     {
-      label: 'Earned per pound of stock',
+      label: `Earned per ${money(100, r.currency)} of stock`,
       value: r.totals.gmroi === null ? 'not measured' : String(r.totals.gmroi),
       ...(r.totals.gmroi === null ? { isGap: true } : {}),
     },

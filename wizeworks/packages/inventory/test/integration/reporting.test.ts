@@ -413,6 +413,50 @@ describe('reporting + the accounting handoff — DB-backed', () => {
       expect(after.unexplainedCents).toBe(0);
     });
 
+    it('names stock the owner priced but never bought through us', async () => {
+      // The day-one shape: count what is already on the shelf, then say what it
+      // cost. The count writes a cost layer worth nothing (it cannot know a
+      // price), so the ledger walk cannot see the money — but every other stock
+      // screen values it off the cost price, and the two figures have to be
+      // reconciled rather than silently differing.
+      const f = await createInventoryFixture(tenantId);
+      const before = await glReconciliationReport(ctx(), { asOf: new Date() });
+
+      // No unit cost on the movement: a count knows how many, never how much.
+      await adjust(ctx(), {
+        variantId: f.variantId,
+        warehouseId: f.warehouseId,
+        delta: 10,
+        reason: 'recount',
+      });
+
+      const after = await glReconciliationReport(ctx(), { asOf: new Date() });
+
+      // Deltas, not totals: every test in this file shares one tenant, so an
+      // absolute figure here measures whatever ran before it rather than what
+      // this test did.
+      const priced = (r: typeof after): number =>
+        r.lines.find((l) => l.kind === 'priced_not_purchased')?.amountCents ?? 0;
+      const unknownUnits = (r: typeof after): number =>
+        Number(
+          /^(\d+)/.exec(r.lines.find((l) => l.kind === 'uncosted_units')?.reference ?? '')?.[1] ?? 0
+        );
+
+      // Ten units at the $5.00 cost price on the product, which the ledger walk
+      // values at nothing because no purchase stands behind them.
+      expect(priced(after) - priced(before)).toBe(500 * 10);
+
+      // And they must not ALSO be reported as unknown, or the same ten garments
+      // are counted twice: once as money found, once as money nobody can name.
+      expect(unknownUnits(after)).toBe(unknownUnits(before));
+
+      // The whole point: the figure the screen starts from plus what it explains
+      // is the figure the rest of the platform shows.
+      expect(after.sparxValueCents + after.explainedCents).toBe(
+        before.sparxValueCents + before.explainedCents + 500 * 10
+      );
+    });
+
     it('replaces rather than duplicating a second reading of the same account', async () => {
       const asOf = new Date();
       await recordGlSnapshot(ctx(), {

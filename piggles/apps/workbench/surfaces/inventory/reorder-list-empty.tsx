@@ -25,10 +25,12 @@ import {
   faBoxOpen,
   faMagnifyingGlass,
   faSliders,
+  faTruck,
 } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { REORDER_RULES_ADVICE, emptyAdvice } from './reorder-shared';
+import { unsuppliedNote } from './reorder-supplier-words';
 
 /**
  * A failed load REPLACES the table — an empty grid under live filters invites
@@ -126,6 +128,52 @@ export function PartialCoverNote({
         }}
       >
         How many you have
+      </Button>
+    </Alert>
+  );
+}
+
+/**
+ * The lines on this list that cannot leave it.
+ *
+ * A worklist row with no supplier is running low like any other, but drafting
+ * an order needs somebody to send it to — so `useReorderSelection` refuses to
+ * choose it. Everything the screen said about that refusal was a tick box that
+ * did nothing when clicked. MEASURED across every tenant on 2026-09-18: 71 of
+ * the platform's 76 triggered lines, including all 65 of Threadline's and the
+ * only one on Juniper Row's, so for most accounts opening this screen the
+ * refusal IS the screen.
+ *
+ * Sits under the reorder-level note, not instead of it: they are two different
+ * reasons this list cannot do its job, and an account can have both at once.
+ */
+export function NoSupplierNote({
+  ctx,
+  unsupplied,
+  total,
+}: {
+  ctx: SurfaceContext;
+  unsupplied: number | undefined;
+  total: number | undefined;
+}) {
+  const note = unsuppliedNote(unsupplied, total);
+  if (!note) return null;
+
+  return (
+    <Alert color="warning">
+      <AlertContent>
+        <AlertTitle>{note.title}</AlertTitle>
+        <AlertDescription>{note.body}</AlertDescription>
+      </AlertContent>
+      <Button
+        size="sm"
+        color="module"
+        onClick={() => {
+          ctx.open('inventory.suppliers.list', {}, { target: 'beside' });
+        }}
+      >
+        <Icon glyph={faTruck} className="size-4" aria-hidden />
+        Suppliers
       </Button>
     </Alert>
   );

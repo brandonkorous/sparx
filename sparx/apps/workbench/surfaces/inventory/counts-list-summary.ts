@@ -1,0 +1,94 @@
+// What a count can honestly SAY about itself — the one summary line under its
+// name, and the money column beside it.
+//
+// ── Zero is two opposite answers ─────────────────────────────────────────
+//
+// `varianceValueCents` is Σ |counted − expected| × unit cost. Cost is optional
+// and nothing ever asks for it, so a shop that has never entered one gets zero
+// out of that sum no matter how much stock moved: a clothing shop counted 372
+// garments onto empty shelves and the list reported the whole thing as $0.00.
+//
+// This console said worse than $0.00. Its summary line branched on the MONEY,
+// so the same count read "62 items · everything matched, nothing to correct" —
+// a false statement about what happened, on 2 of the 6 counts in the database.
+// Every discarded count read "$0.00" too, which claims a check that was never
+// applied.
+//
+// "$0.00" is the exact reading of a count that found nothing wrong, which is the
+// glance-and-move-on case. Printed over the largest stock event in a shop's
+// history it is not a rounding problem, it is the wrong sentence. The unit count
+// is what separates the two, so every function here reads units BEFORE money.
+
+import { formatCents, plural } from './data';
+import type { CountRow } from './counts-data';
+
+/** Nothing moved, or nothing has a cost to value it with? */
+export function anyUnpriced(counts: CountRow[]): boolean {
+  return counts.some(movedButUnpriced);
+}
+
+/**
+ * Two states have no difference to report AT ALL, rather than a difference of
+ * zero: a count still being COUNTED has no frozen value yet, and a DISCARDED
+ * one was closed without applying anything. "$0.00" on either reads as "we
+ * checked and it all matched", which is a different and much more reassuring
+ * claim than "we never finished".
+ */
+function hasSomethingToReport(count: CountRow): boolean {
+  return count.status !== 'counting' && count.status !== 'cancelled';
+}
+
+/**
+ * Moved stock that nothing can put a price on.
+ *
+ * The status check is here and not only in `differenceLabel`, so the standing
+ * notice and the column cannot disagree: a discarded count showing a dash while
+ * a banner above the table says it "moved real stock" is two screens telling a
+ * shop owner opposite things about the same row.
+ */
+function movedButUnpriced(count: CountRow): boolean {
+  return hasSomethingToReport(count) && count.varianceValueCents === 0 && count.varianceUnits > 0;
+}
+
+/** The money column. */
+export function differenceLabel(count: CountRow): string {
+  if (!hasSomethingToReport(count)) return '—';
+  if (movedButUnpriced(count)) return 'No cost yet';
+  return formatCents(count.varianceValueCents);
+}
+
+/** The same fact in a sentence, for the narrow layout and screen readers. Kept
+ *  short: at 360px this line is the ONLY place these numbers appear, and a
+ *  sentence that runs past two lines gets clipped where it matters. */
+export function differenceSentence(count: CountRow): string {
+  const units = plural(count.varianceUnits, 'unit', 'units');
+  if (movedButUnpriced(count)) return `${units} different, no cost recorded`;
+  return `differences worth ${formatCents(count.varianceValueCents)}`;
+}
+
+/**
+ * The one summary line a card carries, tuned to what matters at each stage:
+ * progress while counting, the value of the differences once counted, what was
+ * corrected once applied.
+ */
+export function summaryLine(count: CountRow): string {
+  const items = plural(count.lineCount, 'item', 'items');
+  switch (count.status) {
+    case 'counting':
+      return `${String(count.countedLineCount)} of ${items} counted`;
+    case 'review':
+    case 'approved':
+      if (count.varianceUnits === 0) return `${items} counted · everything matched`;
+      return `${items} counted · ${differenceSentence(count)}`;
+    case 'posted':
+      if (count.varianceUnits === 0) return `${items} · everything matched, nothing to correct`;
+      if (movedButUnpriced(count)) {
+        return `${items} · ${plural(count.varianceUnits, 'unit', 'units')} corrected, no cost recorded`;
+      }
+      return `${items} · ${formatCents(count.varianceValueCents)} of corrections applied`;
+    case 'cancelled':
+      return `${items} · discarded without changing any stock`;
+    default:
+      return items;
+  }
+}

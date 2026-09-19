@@ -218,7 +218,9 @@ export async function runPlanningSweep(
         summary:
           r.lateOrders === 0
             ? 'Nothing on order is overdue.'
-            : `${r.lateOrders} order(s) overdue; ${r.newlyFlagged} flagged tonight.`,
+            : `${String(r.lateOrders)} ${
+                r.lateOrders === 1 ? 'order is' : 'orders are'
+              } overdue; ${String(r.newlyFlagged)} flagged tonight.`,
         detail: { ...r },
       };
     })

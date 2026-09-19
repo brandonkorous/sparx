@@ -62,6 +62,22 @@ export interface Barcode {
 }
 
 /** A code two items both claim. Refused entry to the registry; only a human can pick. */
+/**
+ * Something you sell that nothing can scan.
+ *
+ * The other half of "can we scan yet": `BarcodeConflict` is one code two items
+ * claim, this is an item with no code at all. In a shop that has never started
+ * barcoding, every item is one of these, which is exactly why the count has to
+ * appear even when the code list is empty.
+ */
+export interface UnbarcodedVariant {
+  variantId: string;
+  productId: string;
+  sku: string;
+  productTitle: string;
+  variantTitle: string | null;
+}
+
 export interface BarcodeConflict {
   variantId: string;
   productId: string;
@@ -169,6 +185,9 @@ export const scanKeys = {
   list: (query: Record<string, unknown>) => [...scanKeys.all, 'list', query] as const,
   forVariant: (variantId: string) => [...scanKeys.all, 'variant', variantId] as const,
   conflicts: () => [...scanKeys.all, 'conflicts'] as const,
+  // Under `all`, so minting a batch refreshes this list without anybody
+  // remembering to invalidate it by hand.
+  unbarcoded: (query: Record<string, unknown>) => [...scanKeys.all, 'unbarcoded', query] as const,
   receiving: (poId: string) => ['inventory', 'receiving-session', poId] as const,
   events: (query: Record<string, unknown>) => ['inventory', 'scan-events', query] as const,
 };
@@ -212,6 +231,30 @@ export function useBarcodeConflicts() {
   return useQuery({
     queryKey: scanKeys.conflicts(),
     queryFn: () => api.get<BarcodeConflict[]>('/v1/inventory/barcodes/conflicts'),
+  });
+}
+
+/**
+ * Everything with no code, and how many there are in total.
+ *
+ * `total` is the number the screens print, and it comes from the server rather
+ * than `items.length`: the list is capped, and a count of what fits on one page
+ * is not a count of the problem.
+ */
+export function useUnbarcodedVariants(
+  query: { q?: string; variantId?: string; limit?: number } = {}
+) {
+  const limit = query.limit ?? 200;
+  return useQuery({
+    queryKey: scanKeys.unbarcoded({ q: query.q ?? '', variantId: query.variantId ?? '', limit }),
+    queryFn: () =>
+      api.list<UnbarcodedVariant>('/v1/inventory/barcodes/unbarcoded', {
+        ...(query.q ? { q: query.q } : {}),
+        ...(query.variantId ? { variant_id: query.variantId } : {}),
+        limit,
+        offset: 0,
+      }),
+    placeholderData: (previous) => previous,
   });
 }
 

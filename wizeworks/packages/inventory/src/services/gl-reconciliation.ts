@@ -18,9 +18,14 @@
 //   stock that is not yours            consigned goods are in the building and
 //                                      are not your asset. If the books value
 //                                      them, that is the whole difference.
+//   priced by you, not bought here     counted onto the shelf with a cost price
+//                                      typed against the product. Every other
+//                                      stock screen values it; this walk, which
+//                                      only knows what was PURCHASED, does not.
 //   units nobody costed                counted stock with no purchase behind
-//                                      it. sparx values it at nothing, honestly;
-//                                      an opening journal may not have.
+//                                      it and no cost price either. sparx values
+//                                      it at nothing, honestly; an opening
+//                                      journal may not have.
 //   in transit between your locations  shipped from one and not booked into the
 //                                      other.
 //
@@ -39,44 +44,29 @@ import { withTenant } from '@wizeworks/db';
 import type { ServiceContext } from '../errors';
 
 import { valuationAsOf } from './cost-reports';
+import { reconciliationWords, type ReconciliationLine } from './gl-reconciliation-lines.js';
 
-/** Each line either RAISES what the books should show relative to sparx, or
- *  lowers it. The sign is on `amountCents` and the direction is stated in the
- *  description, because an accountant reading a signed column with no words
- *  around it will read the sign the other way half the time. */
-export type ReconciliationLineKind =
-  | 'sparx_value'
-  | 'goods_received_not_invoiced'
-  | 'invoiced_not_received'
-  | 'non_owned_stock'
-  | 'uncosted_units'
-  | 'in_transit'
-  | 'ledger_value'
-  | 'unexplained';
-
-export interface ReconciliationLine {
-  kind: ReconciliationLineKind;
-  /** Written for whoever is doing the reconciling — an owner or their
-   *  bookkeeper, not an engineer. */
-  description: string;
-  /** Signed, in the tenant's reporting currency. Null where the figure could
-   *  not be established, which is different from a difference of nothing. */
-  amountCents: number | null;
-  /** Where the number came from: `sparx` for anything derived from the ledger,
-   *  the provider slug for anything read out of their accounting system, or
-   *  `accountant` for a typed figure. */
-  source: string;
-  /** How many underlying rows the figure covers, or the account name for the
-   *  ledger line — enough to go and look. */
-  reference: string | null;
-}
+// The words on every row live next door, as a pure function, so the copy has a
+// test that does not need a database. See `gl-reconciliation-lines.ts`.
+export type {
+  ReconciliationLine,
+  ReconciliationLineKind,
+  ReconciliationMeasurement,
+} from './gl-reconciliation-lines.js';
 
 export interface GlReconciliationReport {
   asOf: string;
   currency: string;
-  /** What sparx says the stock is worth at `asOf` — the same figure the
-   *  valuation screen shows, deliberately, so the reconciliation reconciles the
-   *  number the business actually reads. */
+  /**
+   * What the PURCHASE ledger says the stock is worth at `asOf`.
+   *
+   * On its own this is NOT the figure the valuation screen shows, and a version
+   * of this comment claiming it was is how an $870 gap went unnamed on Juniper
+   * Row. The valuation screen also honours a cost price typed against a product;
+   * this walk only knows what was bought. The `priced_not_purchased` line is the
+   * bridge, so `sparxValueCents + explainedCents` IS the number the business
+   * reads, which is what has to be true for the reconciliation to mean anything.
+   */
   sparxValueCents: number;
   /** What their books say. Null when nobody has told us. */
   ledgerValueCents: number | null;
@@ -180,6 +170,46 @@ export async function glReconciliationReport(
         AND l.on_hand > 0
     `;
 
+    // ── Stock the owner priced, but never bought through us ────────────────
+    //
+    // The walk above values what the LEDGERS paid for. A shop stocks its shelves
+    // on day one by counting what it already had, and a count cannot know a
+    // price — so those units get a cost layer worth nothing. The owner may still
+    // have told us what they cost, by typing a cost price against the product,
+    // and every other stock screen on the platform honours that figure.
+    //
+    // Without this line the reconciliation starts from a number the business has
+    // never seen: Juniper Row reads $1,837.92 on "Cost to keep" and on the
+    // valuation screen, and this walk makes it $967.92. The $870.00 between them
+    // is ordinary and explainable, which is exactly what this screen is for, so
+    // it is NAMED here rather than left to surface as an unexplained difference
+    // the moment somebody types their trial balance in.
+    //
+    // Current, not as-of, for the same reason the consignment line above is:
+    // a cost price is a single current figure with no history to walk back.
+    const [pricedOnly] = await tx.$queryRaw<
+      { value_cents: bigint; levels: bigint; units: bigint }[]
+    >`
+      SELECT COALESCE(SUM(l.on_hand * COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents)), 0)::bigint
+               AS value_cents,
+             COUNT(*)::bigint AS levels,
+             COALESCE(SUM(l.on_hand), 0)::bigint AS units
+      FROM inventory_levels l
+      JOIN commerce_product_variants v ON v.id = l.variant_id AND v.deleted_at IS NULL
+      JOIN inventory_warehouses w ON w.id = l.warehouse_id AND w.deleted_at IS NULL
+      WHERE l.tenant_id = ${ctx.tenantId}::uuid
+        AND l.ownership = 'owned'
+        AND l.on_hand > 0
+        AND COALESCE(l.avg_cost_cents, l.unit_cost_cents, v.cost_cents) > 0
+        AND NOT EXISTS (
+          SELECT 1 FROM inventory_cost_layers cl
+          WHERE cl.tenant_id = l.tenant_id
+            AND cl.variant_id = l.variant_id
+            AND cl.warehouse_id = l.warehouse_id
+            AND cl.unit_cost_cents <> 0
+        )
+    `;
+
     // ── Stock in transit between the tenant's own locations ────────────────
     const [inTransit] = await tx.$queryRaw<{ value_cents: bigint; lines: bigint }[]>`
       SELECT COALESCE(SUM(
@@ -202,94 +232,40 @@ export async function glReconciliationReport(
       orderBy: [{ asOf: 'desc' }, { createdAt: 'desc' }],
     });
 
-    const uncostedUnits = valuation.uncostedUnits;
+    // Units the cost layers cannot price, LESS the ones the line above already
+    // explained — otherwise the same eighteen garments are reported twice, once
+    // as money found and once as money unknown.
+    const pricedOnlyCents = Number(pricedOnly?.value_cents ?? 0);
+    const pricedOnlyUnits = Number(pricedOnly?.units ?? 0);
+    const uncostedUnits = Math.max(0, valuation.uncostedUnits - pricedOnlyUnits);
     const grniCents = Number(timing?.grni_cents ?? 0);
     const inrCents = Number(timing?.inr_cents ?? 0);
     const nonOwnedCents = Number(nonOwned?.value_cents ?? 0);
     const inTransitCents = Number(inTransit?.value_cents ?? 0);
 
-    const lines: ReconciliationLine[] = [
-      {
-        kind: 'sparx_value',
-        description: 'What your stock is valued at here, from your deliveries and sales',
-        amountCents: valuation.totalValueCents,
-        source: 'sparx',
-        reference: `${valuation.totalUnits} units on hand`,
-      },
-      {
-        kind: 'goods_received_not_invoiced',
-        description:
-          'On your shelves with no supplier invoice yet: counted here, but not in your books until the bill arrives',
-        amountCents: grniCents,
-        source: 'sparx',
-        reference: `${Number(timing?.grni_lines ?? 0)} order lines`,
-      },
-      {
-        kind: 'invoiced_not_received',
-        description:
-          'Invoiced by a supplier but not yet booked in. Your books have it, your shelves do not',
-        amountCents: -inrCents,
-        source: 'sparx',
-        reference: `${Number(timing?.inr_lines ?? 0)} order lines`,
-      },
-      {
-        kind: 'non_owned_stock',
-        description:
-          'Consigned or customer-owned stock in your building. It is left out of your value here; if your books include it, this is the difference (measured today, not at the date above: ownership is not dated)',
-        amountCents: nonOwnedCents,
-        source: 'sparx',
-        reference: `${Number(nonOwned?.levels ?? 0)} lines`,
-      },
-      {
-        kind: 'uncosted_units',
-        description:
-          uncostedUnits > 0
-            ? `${uncostedUnits} units counted with no purchase behind them. They are valued at nothing here; an opening balance in your books may not have`
-            : 'Every unit on hand has a cost behind it',
-        // Deliberately null and not zero: the units exist and their value is
-        // genuinely unknown. Reporting £0 would assert they are worthless.
-        amountCents: uncostedUnits > 0 ? null : 0,
-        source: 'sparx',
-        reference: uncostedUnits > 0 ? `${uncostedUnits} units` : null,
-      },
-      {
-        kind: 'in_transit',
-        description: 'Shipped from one of your locations and not yet booked into the other',
-        amountCents: inTransitCents,
-        source: 'sparx',
-        reference: `${Number(inTransit?.lines ?? 0)} transfer lines`,
-      },
-    ];
-
-    const explainedCents = grniCents - inrCents + nonOwnedCents + inTransitCents;
+    const { lines, explainedCents, unexplainedCents } = reconciliationWords({
+      totalUnits: valuation.totalUnits,
+      totalValueCents: valuation.totalValueCents,
+      grniCents,
+      grniLines: Number(timing?.grni_lines ?? 0),
+      inrCents,
+      inrLines: Number(timing?.inr_lines ?? 0),
+      nonOwnedCents,
+      nonOwnedItems: Number(nonOwned?.levels ?? 0),
+      pricedOnlyCents,
+      pricedOnlyItems: Number(pricedOnly?.levels ?? 0),
+      uncostedUnits,
+      inTransitCents,
+      inTransitLines: Number(inTransit?.lines ?? 0),
+      ledger: snapshot
+        ? {
+            accountName: snapshot.accountName,
+            balanceCents: snapshot.balanceCents,
+            source: snapshot.source,
+          }
+        : null,
+    });
     const ledgerValueCents = snapshot?.balanceCents ?? null;
-    const unexplainedCents =
-      ledgerValueCents === null
-        ? null
-        : ledgerValueCents - (valuation.totalValueCents + explainedCents);
-
-    lines.push({
-      kind: 'ledger_value',
-      description: snapshot
-        ? 'What your accounting system says the inventory account holds'
-        : 'Nobody has entered what your inventory account says yet',
-      amountCents: ledgerValueCents,
-      source: snapshot?.source ?? 'accountant',
-      reference: snapshot ? snapshot.accountName : null,
-    });
-
-    lines.push({
-      kind: 'unexplained',
-      description:
-        unexplainedCents === null
-          ? 'Cannot be worked out until your inventory account balance is entered'
-          : unexplainedCents === 0
-            ? 'Nothing unexplained: the two agree once the timing differences are allowed for'
-            : 'Left over after every timing difference above. This is the part worth investigating',
-      amountCents: unexplainedCents,
-      source: 'sparx',
-      reference: null,
-    });
 
     return {
       asOf: asOf.toISOString(),

@@ -27,12 +27,14 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
+import { formatDay } from './purchase-orders-data';
 import {
   billStatusLabel,
   billStatusTone,
   useSupplierBills,
   type BillListQuery,
 } from './supplier-bills-data';
+import { owedLine } from './supplier-bills-words';
 
 type View = 'open' | 'overdue' | 'disputed' | 'paid' | 'all';
 
@@ -109,7 +111,7 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <thead>
           <tr>
             <th>Invoice</th>
-            <th className="whitespace-nowrap">State</th>
+            <th className="hidden whitespace-nowrap @md:table-cell">State</th>
             <th className="hidden whitespace-nowrap @lg:table-cell">Due</th>
             <th className="text-right whitespace-nowrap">Amount</th>
           </tr>
@@ -130,7 +132,7 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(row.id, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">
                     <span className="font-mono">{row.number}</span>
@@ -145,9 +147,20 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       ? ` · difference accepted by ${row.varianceAcceptedByName ?? 'someone'}`
                       : ''}
                   </span>
+                  {/* Below @md the State column is gone, so it comes back here.
+                      It was an always-on `whitespace-nowrap` cell beside a
+                      give-cell: "Queried with the supplier" took 198px and the
+                      invoice number it describes was left with 84, reading
+                      "FT-I..." over "again...". An invoice you cannot identify
+                      is not a shorter row, it is an empty one. */}
+                  <span className="mt-1 @md:hidden">
+                    <Badge color={billStatusTone(row.status)} variant="soft" size="sm">
+                      {billStatusLabel(row.status)}
+                    </Badge>
+                  </span>
                 </span>
               </td>
-              <td className="whitespace-nowrap">
+              <td className="hidden whitespace-nowrap @md:table-cell">
                 <Badge color={billStatusTone(row.status)} variant="soft" size="sm">
                   {billStatusLabel(row.status)}
                 </Badge>
@@ -158,9 +171,23 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     Paid <Timestamp value={row.paidAt} format="relative" />
                   </Text>
                 ) : (
-                  <Badge color={dueTone(row.daysUntilDue)} variant="soft" size="sm">
-                    {dueLabel(row.daysUntilDue)}
-                  </Badge>
+                  <span className="flex flex-col items-start gap-1">
+                    <Badge color={dueTone(row.daysUntilDue)} variant="soft" size="sm">
+                      {dueLabel(row.daysUntilDue)}
+                    </Badge>
+                    {/* The DAY, under the countdown. "in 20 days" is the right
+                        thing to sort a payment run by and the wrong thing to
+                        write on a check: this screen is worked once a week, and
+                        a countdown read on Tuesday is wrong by Thursday. The
+                        date was already on the row and nothing drew it. Money ›
+                        Bills to pay, which does the same job for costs, has
+                        shown both all along. */}
+                    {row.dueAt ? (
+                      <Text as="span" className="text-sm">
+                        {formatDay(row.dueAt)}
+                      </Text>
+                    ) : null}
+                  </span>
                 )}
               </td>
               <td className="text-right whitespace-nowrap tabular-nums">
@@ -179,9 +206,15 @@ export function SupplierBillsListSurface({ ctx }: { ctx: SurfaceContext }) {
         label="Supplier bill controls"
         status={
           <Text className="text-sm">
-            {outstandingCount === 0
-              ? 'Nothing owed'
-              : `${formatCents(outstanding)} owed across ${plural(outstandingCount, 'bill', 'bills')}`}
+            {owedLine(
+              {
+                outstandingCents: outstanding,
+                outstandingCount,
+                queriedCents: report.data?.queriedCents ?? 0,
+                queriedCount: report.data?.queriedCount ?? 0,
+              },
+              (cents) => formatCents(cents)
+            )}
           </Text>
         }
         controls={

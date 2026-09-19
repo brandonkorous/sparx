@@ -95,6 +95,14 @@ interface OpenLayerRow {
  * no units is a row that will be scanned forever and never consumed, and a
  * negative cost is a data error that would silently make stock worth less than
  * nothing in every report downstream.
+ *
+ * A ZERO-cost arrival is written, on purpose. The `count` and `return` sources
+ * genuinely know that units arrived and genuinely cannot know what they cost, so
+ * the layer is still the truthful record of the arrival and still orders the
+ * FIFO queue correctly. What it must never do is make the stock look valued:
+ * `LAYER_CARRIES_A_COST` in `cost-reports.ts` is the rule that keeps such a
+ * layer out of the COVERED count, so the units come back as "nobody has said
+ * what these cost" rather than as "these are worth nothing".
  */
 export async function writeCostLayer(tx: TxClient, input: WriteLayerInput): Promise<string | null> {
   if (input.quantity <= 0) return null;

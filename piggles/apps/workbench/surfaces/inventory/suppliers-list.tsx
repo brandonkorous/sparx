@@ -170,7 +170,7 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
               >
                 {/* `max-w-0 w-full` makes this the cell that GIVES, so a long
                     supplier name never pushes the State badge off the right. */}
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">{supplier.name}</span>
                     <span className="truncate font-mono text-sm">{supplier.code}</span>

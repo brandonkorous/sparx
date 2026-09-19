@@ -46,7 +46,9 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents, plural, useStockLocations } from './data';
+import { useStockLocations } from './data';
+import { CountsUnpricedNotice } from './counts-list-unpriced';
+import { anyUnpriced, differenceLabel, summaryLine } from './counts-list-summary';
 import {
   countState,
   countTypeLabel,
@@ -60,30 +62,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
-}
-
-/** The one summary line a card carries, tuned to what matters at each stage:
- *  progress while counting, the value of the differences once counted, what was
- *  corrected once applied. */
-function summaryLine(count: CountRow): string {
-  const items = plural(count.lineCount, 'item', 'items');
-  switch (count.status) {
-    case 'counting':
-      return `${String(count.countedLineCount)} of ${items} counted`;
-    case 'review':
-    case 'approved':
-      return count.varianceValueCents > 0
-        ? `${items} counted · differences worth ${formatCents(count.varianceValueCents)}`
-        : `${items} counted · everything matched`;
-    case 'posted':
-      return count.varianceValueCents > 0
-        ? `${items} · ${formatCents(count.varianceValueCents)} of corrections applied`
-        : `${items} · everything matched, nothing to correct`;
-    case 'cancelled':
-      return `${items} · discarded without changing any stock`;
-    default:
-      return items;
-  }
 }
 
 const STATUS_OPTIONS: { value: CountStatus; label: string }[] = [
@@ -194,11 +172,6 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         <tbody>
           {rows.map((count) => {
             const state = countState(count.status);
-            // The difference value is only frozen once counting is done, so a
-            // session still being counted shows a dash rather than a misleading
-            // "$0.00" that reads as "everything matched".
-            const difference =
-              count.status === 'counting' ? '—' : formatCents(count.varianceValueCents);
             return (
               <tr
                 key={count.id}
@@ -216,7 +189,7 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
               >
                 {/* `max-w-0 w-full` makes this the cell that GIVES, so a long
                     location name never pushes the State badge off the right. */}
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">
                       {count.warehouseName ?? 'Stock count'}
@@ -236,8 +209,12 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <td className="hidden text-right whitespace-nowrap tabular-nums @lg:table-cell">
                   {count.countedLineCount}/{count.lineCount}
                 </td>
-                <td className="hidden text-right whitespace-nowrap tabular-nums @xl:table-cell">
-                  {difference}
+                {/* Not `tabular-nums`: this cell is a number most of the time
+                    and a short phrase when nothing has a cost to value it
+                    with. `differenceLabel` reads the UNITS before the money, so
+                    a count that moved 372 garments no longer reports $0.00. */}
+                <td className="hidden text-right whitespace-nowrap @xl:table-cell">
+                  {differenceLabel(count)}
                 </td>
                 <td className="hidden whitespace-nowrap @3xl:table-cell">
                   <Timestamp value={count.createdAt} format="relative" />
@@ -341,6 +318,17 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         }
       />
+
+      {/* Only when a row on screen actually has a count with no cost behind
+          it. A standing notice about costs on a screen where every figure is
+          real is noise. */}
+      {anyUnpriced(rows) ? (
+        <CountsUnpricedNotice
+          onOpen={() => {
+            ctx.open('inventory.costing.uncosted', {}, { target: 'tab' });
+          }}
+        />
+      ) : null}
 
       {/* Full width — the base-100 card lifted off the recessed pane. Matches the
           house list convention: the table fills the pane. */}

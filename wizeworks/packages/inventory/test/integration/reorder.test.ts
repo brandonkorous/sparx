@@ -180,6 +180,54 @@ describe('reorder engine', () => {
     expect(onOrder.get(v3)).toBe(12);
   });
 
+  it('drafting the same supplier twice JOINS the open draft rather than opening a second', async () => {
+    // Found as P03 on Juniper Row: she drafted PO-000003 for 12 of a shirt, the
+    // row updated itself to say "12 already on the way", and one more click made
+    // PO-000004 for 12 more. Two draft orders to the same supplier, for the same
+    // location, for the same item.
+    //
+    // The auto-draft path below has always find-or-appended for exactly this
+    // reason. The path a PERSON uses created a new order every time.
+    const sup = await createSupplier(ctx(), { name: 'Twice', code: `TW-${rand()}` });
+    const v1 = await newVariant();
+    const v2 = await newVariant();
+    await stock(v1, { reorderPoint: 10, reorderQuantity: 12, onHand: 0 });
+    await stock(v2, { reorderPoint: 10, reorderQuantity: 5, onHand: 0 });
+    await linkSupplier(sup.id, v1, 900);
+    await linkSupplier(sup.id, v2, 400);
+
+    const first = await draftReorderPurchaseOrders(ctx(), {
+      lines: [{ variantId: v1, warehouseId, supplierId: sup.id, quantity: 12 }],
+    });
+    expect(first.purchaseOrders[0]!.appended).toBe(false);
+    const poId = first.purchaseOrders[0]!.id;
+
+    // Same item again: one order, one line, and the quantity ADDED to it rather
+    // than a second line for the same variant (which the per-PO unique would
+    // reject anyway).
+    const again = await draftReorderPurchaseOrders(ctx(), {
+      lines: [{ variantId: v1, warehouseId, supplierId: sup.id, quantity: 12 }],
+    });
+    expect(again.purchaseOrders[0]!.id).toBe(poId);
+    expect(again.purchaseOrders[0]!.appended).toBe(true);
+    const afterTwice = await getPurchaseOrder(ctx(), poId);
+    expect(afterTwice.lines).toHaveLength(1);
+    expect(afterTwice.lines[0]!.quantityOrdered).toBe(24);
+
+    // A DIFFERENT item joins the same open order as a new line.
+    const third = await draftReorderPurchaseOrders(ctx(), {
+      lines: [{ variantId: v2, warehouseId, supplierId: sup.id, quantity: 5 }],
+    });
+    expect(third.purchaseOrders[0]!.id).toBe(poId);
+    expect(third.purchaseOrders[0]!.appended).toBe(true);
+    const afterThird = await getPurchaseOrder(ctx(), poId);
+    expect(afterThird.lines).toHaveLength(2);
+    // The cost still comes from the (supplier, variant) link on the appended line.
+    expect(afterThird.lines.find((l) => l.variantId === v2)!.unitCostCents).toBe(400);
+    // And the order's total was recomputed rather than left at the first line's.
+    expect(afterThird.totalCents).toBe(24 * 900 + 5 * 400);
+  });
+
   it('auto-draft creates, appends, then skips already-on-order / recovered / no-supplier', async () => {
     const sup = await createSupplier(ctx(), {
       name: 'Stanadyne',

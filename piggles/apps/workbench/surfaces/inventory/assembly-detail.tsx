@@ -67,8 +67,12 @@ import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
+import { pickedDayUtc } from '../../lib/today';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents, plural, useStockLocations } from './data';
+import { formatCents, physicalLocations, plural, useStockLocations } from './data';
+// The day formatter, shared with Buying so a planned day and an expected
+// day cannot print the same stored value as two different days.
+import { formatDay } from './purchase-orders-data';
 import { buyingErrorMessage, isNotFound } from './suppliers-data';
 import {
   runKindLabel,
@@ -101,8 +105,10 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
   const [plannedFor, setPlannedFor] = useState<Date | null>(null);
   const [notes, setNotes] = useState('');
 
+  // Somewhere the making actually happens, and the components come off a
+  // shelf there. Not a bucket for things on a van.
   const activeLocations = useMemo(
-    () => (locations.data?.items ?? []).filter((l) => l.isActive),
+    () => physicalLocations(locations.data?.items ?? []),
     [locations.data]
   );
   useEffect(() => {
@@ -137,7 +143,10 @@ function PlanRun({ ctx }: { ctx: SurfaceContext }) {
         bomId,
         warehouseId,
         quantity: parsedQuantity,
-        ...(plannedFor ? { plannedFor: plannedFor.toISOString() } : {}),
+        // The day they PICKED. `toISOString()` on a date control's value is
+        // local midnight pushed into UTC, which is a different day for
+        // anyone reading it from another zone. See `pickedDayUtc`.
+        ...(plannedFor ? { plannedFor: pickedDayUtc(plannedFor) ?? undefined } : {}),
         ...(notes.trim() ? { notes: notes.trim() } : {}),
       },
       {
@@ -558,9 +567,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             <Text className="text-sm">
               {data.bomName ? `${data.bomName} · ` : ''}
               {data.warehouseName ?? 'No location'}
-              {data.plannedFor
-                ? ` · planned for ${new Date(data.plannedFor).toLocaleDateString()}`
-                : ''}
+              {data.plannedFor ? ` · planned for ${formatDay(data.plannedFor)}` : ''}
             </Text>
           </div>
 
@@ -679,7 +686,7 @@ function ViewRun({ ctx, id }: { ctx: SurfaceContext; id: string }) {
                 <tbody>
                   {data.lines.map((line) => (
                     <tr key={line.id}>
-                      <td className="w-full max-w-0">
+                      <td className="w-full max-w-0 min-w-56">
                         <span className="flex min-w-0 flex-col">
                           <span className="truncate">
                             {line.productTitle ?? 'Untitled product'}

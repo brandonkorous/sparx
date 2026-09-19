@@ -101,6 +101,25 @@ export interface PublicInventoryRow {
    * level's stock, so it cannot speak for the whole row.
    */
   countIntervalDays: number | null;
+  /**
+   * Whose these units actually are: `owned` | `consignment` | `customer_owned` |
+   * `3pl_owned`, and the name behind the last three.
+   *
+   * It rides on the level because that is where it is set, and because the
+   * screen that shows a quantity is the screen that has to say if the quantity
+   * belongs to somebody else. Without it the only place in the product that knew
+   * was the exception list, whose own empty state told people to set it “on an
+   * item's stock screen” — where there was nothing to set.
+   *
+   * It changes exactly one thing: whether the units count toward VALUATION.
+   * Availability is untouched, because being able to sell consigned stock is the
+   * entire reason to hold it (stock-ownership.ts).
+   */
+  ownership: string;
+  ownerSupplierId: string | null;
+  ownerCustomerId: string | null;
+  /** The supplier or customer named above, when there is one. */
+  ownerName: string | null;
 }
 
 /**
@@ -284,6 +303,9 @@ export async function listInventory(
         asOf: true,
         // For matching a cycle-count schedule that covers only one class.
         abcClass: true,
+        ownership: true,
+        ownerSupplierId: true,
+        ownerCustomerId: true,
         warehouse: { select: { code: true, name: true } },
         variant: {
           select: { sku: true, product: { select: { id: true, title: true } } },
@@ -333,6 +355,51 @@ export async function listInventory(
       return days.length === 0 ? null : Math.min(...days);
     };
 
+    // Whose the non-owned rows are. Two small reads over the page in hand, like
+    // the count dates above: `owner_supplier_id` / `owner_customer_id` are bare
+    // columns with no Prisma relation, and a name per row would be a round trip
+    // per row.
+    const supplierIds = [
+      ...new Set(rows.flatMap((r) => (r.ownerSupplierId ? [r.ownerSupplierId] : []))),
+    ];
+    const customerIds = [
+      ...new Set(rows.flatMap((r) => (r.ownerCustomerId ? [r.ownerCustomerId] : []))),
+    ];
+    // An empty `in` list is asked for rather than skipped: Prisma turns it into
+    // `IN ()` which matches nothing, so the query is cheap and the types stay
+    // honest. `Promise.resolve([])` here inferred `never[]` and quietly made
+    // every owner name null.
+    const [ownerSuppliers, ownerCustomers] = await Promise.all([
+      tx.supplier.findMany({
+        where: { id: { in: supplierIds }, tenantId: ctx.tenantId },
+        select: { id: true, name: true },
+      }),
+      tx.customer.findMany({
+        where: { id: { in: customerIds }, tenantId: ctx.tenantId },
+        select: { id: true, firstName: true, lastName: true, email: true },
+      }),
+    ]);
+    const supplierNames = new Map<string, string>(ownerSuppliers.map((o) => [o.id, o.name]));
+    // A customer with neither a name nor an email is left OUT rather than mapped
+    // to an empty string: `ownerName` is then null and the screen says it cannot
+    // name them, instead of drawing a blank where a person goes.
+    const customerNames = new Map<string, string>(
+      ownerCustomers.flatMap((o) => {
+        const written = [o.firstName, o.lastName].filter(Boolean).join(' ').trim();
+        const name = written === '' ? (o.email ?? '') : written;
+        return name === '' ? [] : [[o.id, name] as [string, string]];
+      })
+    );
+
+    /** Whichever of the two owner columns is set, as a name. Null when neither
+     *  is (the stock is the tenant's) or when the named record has nothing to
+     *  call it by — which the screen words rather than drawing a blank. */
+    const ownerNameFor = (supplierId: string | null, customerId: string | null): string | null => {
+      if (supplierId !== null) return supplierNames.get(supplierId) ?? null;
+      if (customerId !== null) return customerNames.get(customerId) ?? null;
+      return null;
+    };
+
     const byKey = new Map(rows.map((r) => [`${r.variantId}:${r.warehouseId}`, r]));
     // Re-ordered to the KEY query's order — `findMany` with an OR set makes no
     // promise about row order, so hydrating would otherwise silently discard the
@@ -363,6 +430,10 @@ export async function listInventory(
           ageSeconds: Math.max(0, Math.floor((Date.now() - r.asOf.getTime()) / 1000)),
           lastCountedAt: countedByKey.get(`${r.variantId}:${r.warehouseId}`)?.toISOString() ?? null,
           countIntervalDays: intervalFor(r.warehouseId, r.abcClass),
+          ownership: r.ownership,
+          ownerSupplierId: r.ownerSupplierId,
+          ownerCustomerId: r.ownerCustomerId,
+          ownerName: ownerNameFor(r.ownerSupplierId, r.ownerCustomerId),
         },
       ];
     });

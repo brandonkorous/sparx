@@ -58,6 +58,10 @@ export interface PoApproval {
   requestedAt: string;
   requiredApproverUserId: string | null;
   requiredApproverName: string | null;
+  /** The role the RULE routes to. Carried onto the request so the order's own
+   *  pane and the queue can say who has to sign, rather than falling back to
+   *  "anybody who can approve spending" over a rule that says the owner. */
+  requiredRole: string | null;
   decidedByUserId: string | null;
   decidedByName: string | null;
   decidedAt: string | null;
@@ -111,10 +115,13 @@ export function useOrderApprovals(purchaseOrderId: string) {
   return useQuery({
     queryKey: approvalKeys.forOrder(purchaseOrderId),
     queryFn: () =>
+      // No `status`: for ONE order the route returns the whole trail, which is
+      // the point of a trail — the refusals. It used to pass `status: 'pending'`
+      // directly under a comment saying "every status", so a buyer whose order
+      // had been sent back opened it to an ordinary draft with no sign anything
+      // had happened. [[feedback_a_fix_leaves_its_neighbour_behind]]
       api.get<ApprovalQueue>('/v1/inventory/purchase-orders/approvals', {
         purchase_order_id: purchaseOrderId,
-        // Every status: the point of a trail is the rejections.
-        status: 'pending',
       }),
     enabled: purchaseOrderId !== '' && purchaseOrderId !== 'new',
   });

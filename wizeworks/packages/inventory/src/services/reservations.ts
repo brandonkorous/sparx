@@ -21,7 +21,7 @@ import {
 } from '../errors';
 import type { ServiceContext } from '../errors';
 
-import { CART_TTL_SECONDS_DEFAULT, syncProductInStock } from './internal';
+import { CART_TTL_SECONDS_DEFAULT, syncProductInStock, variantLabel } from './internal';
 import { recordOversellIncidentDetached, recordOversellIncidentOnTx } from './integrity';
 import { applyMovement, emitStockEvents, resolveActorType } from './ledger';
 import { assertPreorderHeadroomOnTx } from './preorders';
@@ -190,7 +190,12 @@ export async function reserveOnTx(
       // precisely the incident an operator most wants to see. Detached, and
       // best-effort: observability must never be able to fail a checkout.
       await recordOversellIncidentDetached(ctx, { ...incident, kind: 'blocked' });
-      throw new InventoryOutOfStockError(input.variantId, input.quantity, Math.max(0, available));
+      throw new InventoryOutOfStockError(
+        input.variantId,
+        input.quantity,
+        Math.max(0, available),
+        await variantLabel(tx, input.variantId)
+      );
     }
 
     // A `preorder` variant with a live WINDOW is a bounded offer, not an open

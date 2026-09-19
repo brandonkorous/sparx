@@ -85,6 +85,7 @@ import { MoneyInput, MoneyTextInput, moneyCents } from '../../components/money-i
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
+import { dayFromStored, pickedDayUtc } from '../../lib/today';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, useStockLocations } from './data';
 import {
@@ -96,6 +97,7 @@ import {
 } from './suppliers-data';
 import {
   formatDay,
+  formatMoment,
   isEditable,
   isReceivable,
   outstandingUnits,
@@ -111,6 +113,9 @@ import {
   type PurchaseOrderLine,
   type PurchaseOrderLineDraft,
 } from './purchase-orders-data';
+import { resolveApprovalRule } from '@wizeworks/commerce-schemas';
+import { usePoApprovalRules } from './po-approvals-data';
+import { placingWords } from './po-approvals-words';
 import {
   ALLOCATION_BASES,
   CHARGE_KINDS,
@@ -123,6 +128,7 @@ import {
   type ChargeKind,
 } from './costing-data';
 import { describeQuantityShort } from './assembly-data';
+import { freightNote } from './freight-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-4xl flex-col gap-4';
 
@@ -1058,7 +1064,33 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const subtotal = subtotalOf(draft.lines);
   const total = subtotal + draft.header.freightCents;
+  // Which spending limit, if any, will catch this order when it is placed. The
+  // SAME pure resolver the server runs, so the warning and the outcome cannot
+  // disagree. Inactive limits are already excluded by the default read.
+  const spendingLimits = usePoApprovalRules().data?.items ?? [];
+  const heldByCandidate =
+    draft.header.supplierId === '' || draft.header.warehouseId === ''
+      ? null
+      : resolveApprovalRule(
+          {
+            supplierId: draft.header.supplierId,
+            warehouseId: draft.header.warehouseId,
+            totalCents: total,
+          },
+          spendingLimits
+        );
+  // The resolver answers WHICH rule, in the shape it needs to decide; the words
+  // need the rule's name, which only the full record carries.
+  const heldBy = spendingLimits.find((limit) => limit.id === heldByCandidate?.id) ?? null;
   const currency = draft.header.currency || 'USD';
+  // Freight agreed when the order was raised, and freight charged when the
+  // goods came in, are two different facts and the field showed only the first.
+  // See ./freight-words.
+  const freight = freightNote(
+    draft.header.freightCents,
+    detail?.receiptFreightCents ?? 0,
+    (cents) => formatCents(cents, currency)
+  );
 
   const supplierChosen = draft.header.supplierId !== '';
   const warehouseChosen = draft.header.warehouseId !== '';
@@ -1156,11 +1188,21 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
       const saved = await doSave();
       if (!saved) return;
     }
+    // What this button DOES depends on the spending limits, and it used to say
+    // the same thing either way: "This sends the order and locks it", followed
+    // by a toast reading "placed", over an order that had gone nowhere and a
+    // pane one line below saying so. [[feedback_a_promise_in_copy_is_a_contract]]
+    const words = placingWords(
+      { number: detail.number, supplierName: supplierName ?? null },
+      heldBy,
+      (cents) => formatCents(cents, currency)
+    );
     const ok = await confirm({
-      title: `Place ${detail.number} with ${supplierName ?? 'the supplier'}?`,
-      description:
-        'This sends the order and locks it. You will not be able to change the items or quantities afterwards. As the goods arrive you book them in under Receiving.',
-      confirmLabel: 'Place the order',
+      title: heldBy
+        ? `Send ${detail.number} for sign-off?`
+        : `Place ${detail.number} with ${supplierName ?? 'the supplier'}?`,
+      description: words.description,
+      confirmLabel: words.confirmLabel,
       cancelLabel: 'Keep it a draft',
       color: 'module',
     });
@@ -1168,7 +1210,11 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
     place.mutate(undefined, {
       onSuccess: () => {
         afterPaneChange(() => {
-          toast.add({ title: `${detail.number} placed`, type: 'success' });
+          toast.add({
+            title: words.toastTitle,
+            description: words.toastDescription,
+            type: heldBy ? 'info' : 'success',
+          });
         });
       },
       onError: (error) => {
@@ -1487,7 +1533,10 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               <Text className="text-sm">
                 {supplierName ?? 'No supplier'}
                 {detail.warehouseName ? ` · Landing at ${detail.warehouseName}` : ''}
-                {detail.orderedAt ? ` · Placed ${formatDay(detail.orderedAt)}` : ''}
+                {/* `formatMoment`, not `formatDay`: when an order was PLACED is an
+                    instant, so it belongs on the reader's own clock. The date
+                    beside it, Expected, is a day and belongs in UTC. */}
+                {detail.orderedAt ? ` · Placed ${formatMoment(detail.orderedAt)}` : ''}
               </Text>
               {state ? <Text className="text-sm">{state.detail}</Text> : null}
             </div>
@@ -1609,14 +1658,16 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   <FieldLabel>Expected</FieldLabel>
                   <DateInput
                     color="module"
-                    value={
-                      draft.header.expectedArrivalAt
-                        ? new Date(draft.header.expectedArrivalAt)
-                        : null
-                    }
+                    // A DAY, both ways. `new Date(stored)` offered the day before
+                    // the stored one to every reader west of Greenwich, and
+                    // `date.toISOString()` wrote back whatever local midnight
+                    // happened to be. The card below this one already stored and
+                    // read the same field in UTC, so the two controls on one order
+                    // disagreed about what day it was.
+                    value={dayFromStored(draft.header.expectedArrivalAt)}
                     aria-label="Expected arrival date"
                     onValueChange={(date) => {
-                      setHeader('expectedArrivalAt', date ? date.toISOString() : null);
+                      setHeader('expectedArrivalAt', pickedDayUtc(date));
                     }}
                   />
                   <FieldDescription>
@@ -1691,9 +1742,9 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               ) : (
                 <SettledField
                   label="Freight"
-                  value={formatCents(draft.header.freightCents, currency)}
+                  value={formatCents(freight.cents, currency)}
                   empty="None"
-                  description="Spread across the items as they arrive, so what you hold is valued at what it really cost."
+                  description={freight.detail}
                 />
               )}
             </div>
@@ -1755,7 +1806,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                   {editable
                     ? draft.lines.map((line, index) => (
                         <tr key={line.id ?? `new-${String(index)}`}>
-                          <td className="w-full max-w-0">
+                          <td className="w-full max-w-0 min-w-56">
                             <span className="flex min-w-0 flex-col">
                               <span className="truncate">
                                 {line.description ?? line.productTitle ?? 'Item'}
@@ -1817,7 +1868,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                         const complete = line.quantityReceived >= line.quantityOrdered;
                         return (
                           <tr key={line.id}>
-                            <td className="w-full max-w-0">
+                            <td className="w-full max-w-0 min-w-56">
                               <span className="flex min-w-0 flex-col">
                                 <span className="truncate">
                                   {line.description ?? line.productTitle ?? 'Item'}
@@ -1901,6 +1952,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               purchaseOrderNumber={detail.number}
               status={status}
               expectedArrivalAt={detail.expectedArrivalAt}
+              lateAlertedAt={detail.lateAlertedAt}
               currency={currency}
               ctx={ctx}
             />

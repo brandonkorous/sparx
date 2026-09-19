@@ -28,6 +28,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural } from './data';
 import { bomState, useBoms, type Bom } from './assembly-data';
+import { ActionLabel } from '../../components/action-label';
 
 const PAGE = 50;
 
@@ -124,7 +125,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   open(bom, event);
                 }}
               >
-                <td className="w-full max-w-0">
+                <td className="w-full max-w-0 min-w-56">
                   <span className="flex min-w-0 flex-col">
                     <span className="truncate font-medium">
                       {bom.outputTitle ?? 'Untitled product'}
@@ -188,7 +189,7 @@ export function BomsListSurface({ ctx }: { ctx: SurfaceContext }) {
             }}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Write a recipe</span>
+            <ActionLabel>Write a recipe</ActionLabel>
           </Button>
         }
         controls={

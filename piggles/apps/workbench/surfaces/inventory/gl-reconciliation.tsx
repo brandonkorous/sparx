@@ -55,6 +55,7 @@ import {
 } from './reporting-data';
 import { productCopy, productCopyWith } from '../../lib/product';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 
 /** How each reconciling line reads. Color carries the direction — something
  *  that RAISES what the books should show against sparx, or lowers it — so the
@@ -75,7 +76,7 @@ function lineTone(line: ReconciliationLine): 'success' | 'warning' | 'danger' | 
   }
 }
 
-export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
+export function GlReconciliationSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const [asOf, setAsOf] = useState<Date | null>(() => new Date());
   const iso = asOf ? asOf.toISOString() : undefined;
@@ -229,16 +230,12 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
                   <tbody>
                     {data.lines.map((line, index) => (
                       <tr key={`${line.kind}-${index}`}>
-                        <td className="w-full max-w-0">
+                        <td className="w-full max-w-0 min-w-56">
                           <span className="flex min-w-0 flex-col gap-0.5">
                             <span className="truncate font-medium">
                               {line.kind === 'sparx_value'
-                                ? productCopy('inventory.gl.ourFigure', 'What sparx says')
-                                : line.kind === 'ledger_value'
-                                  ? 'What your books say'
-                                  : line.kind === 'unexplained'
-                                    ? 'Unexplained'
-                                    : line.description.split('—')[0]?.trim()}
+                                ? productCopy('inventory.gl.ourFigure', line.label)
+                                : line.label}
                             </span>
                             <Text className="text-sm">{line.description}</Text>
                           </span>
@@ -268,6 +265,28 @@ export function GlReconciliationSurface(_props: { ctx: SurfaceContext }) {
                     ))}
                   </tbody>
                 </Table>
+                {/* The one line in the table that cannot be priced is also the
+                    one with somewhere to go. "Not known" is honest and it is
+                    where the reader stops, so the way out sits directly under
+                    it. */}
+                {data.lines.some(
+                  (line) => line.kind === 'uncosted_units' && line.amountCents === null
+                ) ? (
+                  <Alert color="warning">
+                    <AlertContent>
+                      <AlertTitle>Some of this stock has never been costed</AlertTitle>
+                      <AlertDescription>
+                        Until it is, that line cannot be priced and the two columns cannot be made
+                        to agree.
+                      </AlertDescription>
+                    </AlertContent>
+                    <SetCostsAction
+                      onOpen={() => {
+                        ctx.open(SET_COSTS_SURFACE, {}, { target: 'tab' });
+                      }}
+                    />
+                  </Alert>
+                ) : null}
               </FormSection>
             </>
           )}

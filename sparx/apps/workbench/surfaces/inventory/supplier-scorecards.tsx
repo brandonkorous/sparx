@@ -179,7 +179,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(row.supplierId, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{row.supplierName ?? 'Unnamed supplier'}</span>
                   <span className="truncate text-sm">
@@ -317,7 +317,7 @@ export function SupplierScorecardsSurface({ ctx }: { ctx: SurfaceContext }) {
             <AlertDescription>
               A grade needs at least two of the four measures, and each of those needs something to
               measure: a delivery with a date on it, an order that has finished, a price to compare,
-              or units received. They are shown with what IS known rather than given a mark nothing
+              or units received. Each is shown with what IS known rather than given a mark nothing
               supports.
             </AlertDescription>
           </AlertContent>

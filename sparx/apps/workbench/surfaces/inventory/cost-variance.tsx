@@ -55,6 +55,7 @@ import {
   varianceTone,
   type PriceVarianceRow,
 } from './costing-data';
+import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 
 const COLUMN = 'mx-auto flex w-full max-w-5xl flex-col gap-4';
 const NUMBER = new Intl.NumberFormat();
@@ -148,14 +149,22 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
               <StatValue className="text-2xl tabular-nums">
                 {formatCents(data.totalStandardCents, currency)}
               </StatValue>
-              <StatDesc>Across {plural(data.totalUnits, 'unit', 'units')} received</StatDesc>
+              <StatDesc>
+                {data.comparedUnits === data.totalUnits
+                  ? `Across ${plural(data.totalUnits, 'unit', 'units')} received`
+                  : `Across ${String(data.comparedUnits)} of ${plural(data.totalUnits, 'unit', 'units')} received`}
+              </StatDesc>
             </Stat>
             <Stat>
               <StatTitle>What it actually cost</StatTitle>
               <StatValue className="text-2xl tabular-nums">
                 {formatCents(data.totalActualCents, currency)}
               </StatValue>
-              <StatDesc>Goods plus everything it took to get them here</StatDesc>
+              <StatDesc>
+                {data.comparedUnits === data.totalUnits
+                  ? 'Goods plus everything it took to get them here'
+                  : 'Goods plus freight, for those same units'}
+              </StatDesc>
             </Stat>
             <Stat>
               <StatTitle>The difference</StatTitle>
@@ -171,9 +180,13 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                 {formatCents(Math.abs(data.totalVarianceCents), currency)}
               </StatValue>
               <StatDesc>
-                {data.totalVarianceCents === 0
-                  ? 'Exactly what you planned for'
-                  : `${over ? 'More' : 'Less'} than planned${pct === null ? '' : ` (${String(Math.abs(pct))}%)`}`}
+                {/* "Exactly what you planned for" over a business that planned
+                    NOTHING is the same zero meaning two opposite things. */}
+                {data.comparedUnits === 0
+                  ? 'Nothing here had a plan to compare against'
+                  : data.totalVarianceCents === 0
+                    ? 'Exactly what you planned for'
+                    : `${over ? 'More' : 'Less'} than planned${pct === null ? '' : ` (${String(Math.abs(pct))}%)`}`}
               </StatDesc>
             </Stat>
           </Stats>
@@ -189,10 +202,19 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                 against
               </AlertTitle>
               <AlertDescription>
-                Those items have no planned cost set, so they are left out of the figures above. Set
-                a cost on the product, or on its stock at a location, and they join the comparison.
+                That stock has no planned cost set, so it is left out of the figures above.{' '}
+                {data.comparedUnits === 0
+                  ? `Everything that arrived cost ${formatCents(data.allActualCents, currency)}, and there is no plan to weigh it against.`
+                  : `Everything that arrived, compared or not, cost ${formatCents(data.allActualCents, currency)}.`}{' '}
+                Set a cost on the product, or on its stock at a location, and it joins the
+                comparison.
               </AlertDescription>
             </AlertContent>
+            <SetCostsAction
+              onOpen={() => {
+                ctx.open(SET_COSTS_SURFACE, {}, { target: 'tab' });
+              }}
+            />
           </Alert>
         ) : null}
 
@@ -232,7 +254,7 @@ export function CostVarianceSurface({ ctx }: { ctx: SurfaceContext }) {
                     openItem(row, event);
                   }}
                 >
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate">{row.title ?? 'Untitled product'}</span>
                       <span className="truncate font-mono text-sm">

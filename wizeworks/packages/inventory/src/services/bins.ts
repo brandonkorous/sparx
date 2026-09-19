@@ -394,6 +394,15 @@ export async function getBin(ctx: ServiceContext, id: string): Promise<BinRow> {
   return found;
 }
 
+/** Whether this location already has a shelf for things nobody has placed. */
+async function hasDefaultBin(tx: TxClient, warehouseId: string): Promise<boolean> {
+  const found = await tx.inventoryBin.findFirst({
+    where: { warehouseId, isDefault: true, isActive: true, deletedAt: null },
+    select: { id: true },
+  });
+  return found !== null;
+}
+
 export async function createBin(ctx: ServiceContext, rawInput: unknown): Promise<BinRow> {
   const input = CreateBinInput.parse(rawInput);
 
@@ -410,7 +419,7 @@ export async function createBin(ctx: ServiceContext, rawInput: unknown): Promise
     });
     if (clash) {
       throw new InventoryConflictError(
-        `This location already has a shelf labelled ${input.code}.`,
+        `This location already has a shelf labeled ${input.code}.`,
         'code'
       );
     }
@@ -427,12 +436,24 @@ export async function createBin(ctx: ServiceContext, rawInput: unknown): Promise
         shelf: input.shelf ?? null,
         type: input.type,
         isSellable: input.isSellable ?? defaultSellableFor(input.type),
+        // The FIRST shelf a location gets is its default unless told otherwise.
+        // A location with shelves on and no default refuses every put-away, and
+        // somebody adding their first shelf has not been asked a question they
+        // could possibly know the answer to yet.
+        isDefault: input.isDefault ?? !(await hasDefaultBin(tx, input.warehouseId)),
         pickSequence: input.pickSequence ?? null,
         capacityUnits: input.capacityUnits ?? null,
         notes: input.notes ?? null,
       },
-      select: { id: true },
+      select: { id: true, isDefault: true },
     });
+
+    if (bin.isDefault) {
+      await tx.inventoryBin.updateMany({
+        where: { warehouseId: input.warehouseId, isDefault: true, id: { not: bin.id } },
+        data: { isDefault: false },
+      });
+    }
 
     await writeAuditLog({
       tx,
@@ -482,8 +503,38 @@ export async function updateBin(
       });
       if (clash) {
         throw new InventoryConflictError(
-          `This location already has a shelf labelled ${input.code}.`,
+          `This location already has a shelf labeled ${input.code}.`,
           'code'
+        );
+      }
+    }
+
+    // ── Exactly one default per location ───────────────────────────────
+    //
+    // Turning one ON turns the others off, in this transaction, because two
+    // defaults is a coin toss over where a delivery lands. Turning the LAST one
+    // off is refused: a location with shelves on and no default refuses every
+    // put-away, which is the state this field was added to get out of, and
+    // there is no reason to let anybody walk back into it by accident.
+    if (input.isDefault === true) {
+      await tx.inventoryBin.updateMany({
+        where: { warehouseId: existing.warehouseId, isDefault: true, id: { not: id } },
+        data: { isDefault: false },
+      });
+    } else if (input.isDefault === false) {
+      const others = await tx.inventoryBin.count({
+        where: {
+          warehouseId: existing.warehouseId,
+          isDefault: true,
+          isActive: true,
+          deletedAt: null,
+          id: { not: id },
+        },
+      });
+      if (others === 0) {
+        throw new InventoryValidationError(
+          'Every location that uses shelves needs one shelf for things nobody has placed. Make another shelf the default first, or turn shelves off for this location.',
+          [{ field: 'isDefault', message: 'A location cannot be left without a default shelf' }]
         );
       }
     }
@@ -491,6 +542,7 @@ export async function updateBin(
     await tx.inventoryBin.update({
       where: { id },
       data: {
+        ...(input.isDefault !== undefined ? { isDefault: input.isDefault } : {}),
         ...(input.code !== undefined ? { code: input.code } : {}),
         ...(input.name !== undefined ? { name: input.name } : {}),
         ...(input.zone !== undefined ? { zone: input.zone } : {}),

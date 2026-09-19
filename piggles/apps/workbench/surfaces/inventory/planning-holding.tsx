@@ -36,8 +36,11 @@ import { formatCents } from './data';
 import { abcLabel, abcTone, useHoldingCost } from './planning-data';
 import { PlanningShell } from './planning-shell';
 import { InlineWaiting } from '../../components/inline-waiting';
+import { coverNote } from './cover-note';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { SET_COSTS_SURFACE, SetCostsAction } from './set-costs-action';
 
-export function PlanningHoldingSurface() {
+export function PlanningHoldingSurface({ ctx }: { ctx: SurfaceContext }) {
   const report = useHoldingCost('');
 
   return (
@@ -49,12 +52,12 @@ export function PlanningHoldingSurface() {
         void report.refetch();
       }}
     >
-      {(locationId) => <CostPanel locationId={locationId} />}
+      {(locationId) => <CostPanel ctx={ctx} locationId={locationId} />}
     </PlanningShell>
   );
 }
 
-function CostPanel({ locationId }: { locationId: string }) {
+function CostPanel({ ctx, locationId }: { ctx: SurfaceContext; locationId: string }) {
   const report = useHoldingCost(locationId);
   const data = report.data;
 
@@ -84,10 +87,13 @@ function CostPanel({ locationId }: { locationId: string }) {
   }
 
   const multiLocation = new Set(data.topItems.map((item) => item.warehouseId)).size > 1;
+  // Counted from the rows on screen, not from a new field: a count taken
+  // anywhere else could disagree with what the reader is looking at.
+  const coverMissing = coverNote(data.topItems);
 
   return (
     <div className="flex flex-col gap-3">
-      <Stats className="w-full">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>Stock is worth</StatTitle>
           <StatValue>{formatCents(data.totalValueCents)}</StatValue>
@@ -117,10 +123,15 @@ function CostPanel({ locationId }: { locationId: string }) {
                 : `${data.itemsWithoutCost} items have no cost price`}
             </AlertTitle>
             <AlertDescription>
-              They are left out of everything on this screen, so what your stock is really worth
-              (and what it really costs to keep) is higher than these figures say.
+              That stock is left out of everything on this screen, so what your stock is really
+              worth (and what it really costs to keep) is higher than these figures say.
             </AlertDescription>
           </AlertContent>
+          <SetCostsAction
+            onOpen={() => {
+              ctx.open(SET_COSTS_SURFACE, {}, { target: 'tab' });
+            }}
+          />
         </Alert>
       ) : null}
 
@@ -173,6 +184,10 @@ function CostPanel({ locationId }: { locationId: string }) {
           Not the same list as the most valuable things to own: a slow item ties its money up for
           far longer.
         </Text>
+        {/* The screen already counts the levels with no cost price and says so
+            above. Cover is the OTHER absent measure on it, and it was a column
+            of dashes with nothing saying why. */}
+        {coverMissing ? <Text className="text-sm">{coverMissing}</Text> : null}
         <div className="overflow-x-auto">
           <Table size="sm">
             <thead>
@@ -187,7 +202,7 @@ function CostPanel({ locationId }: { locationId: string }) {
             <tbody>
               {data.topItems.map((item) => (
                 <tr key={`${item.variantId}:${item.warehouseId}`}>
-                  <td className="w-full max-w-0">
+                  <td className="w-full max-w-0 min-w-56">
                     <span className="flex min-w-0 flex-col">
                       <span className="truncate">{item.title ?? 'Untitled product'}</span>
                       <span className="truncate text-sm">

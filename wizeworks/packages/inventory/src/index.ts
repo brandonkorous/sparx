@@ -171,6 +171,7 @@ export type {
   BarcodeRow,
   BarcodeMatch,
   BarcodeConflictRow,
+  UnbarcodedVariantRow,
   GeneratedBarcode,
   GenerateBarcodesResult,
   ScanKind,

@@ -27,11 +27,22 @@
 
 import { PickThroughputQuery } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
+import type { TxClient } from '@wizeworks/db';
 
 import type { ServiceContext } from '../errors';
 
 export interface PickerThroughput {
+  /**
+   * Whoever `pick_lifecycle` stamped on the line: the signed-in operator's id,
+   * or the walk's assignee text when nothing was signed in.
+   *
+   * It is an IDENTITY, kept so the report can be filtered by it. It is not a
+   * label, and rendering it as one put `db9c1296-1ed4-4109-90ba-adfc090adf50`
+   * in the Picker column of the report a shop owner opens to see who is picking.
+   */
   pickedBy: string | null;
+  /** That id resolved to a person, when it is one this business can name. */
+  pickerName: string | null;
   linesPicked: number;
   unitsPicked: number;
   linesShort: number;
@@ -59,7 +70,10 @@ export interface BinShortfall {
 }
 
 export interface PackThroughput {
+  /** Same contract as `PickerThroughput.pickedBy`: an identity, not a label. */
   packedBy: string | null;
+  /** That id resolved to a person, when it is one this business can name. */
+  packerName: string | null;
   boxesPacked: number;
   unitsPacked: number;
   unitsScanned: number;
@@ -96,6 +110,57 @@ function ratio(numerator: number, denominator: number): number {
 
 function perHour(units: number, minutes: number): number {
   return minutes > 0 ? Math.round((units / minutes) * 60 * 10) / 10 : 0;
+}
+
+/** A uuid, so a login id can be told apart from a name somebody typed. */
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * The people behind the ids on a throughput report.
+ *
+ * `pick_lifecycle` stamps `picked_by` with `ctx.userId` when somebody is signed
+ * in, falling back to the walk's assignee text only when nothing is. So the
+ * ordinary case — a walk done through the console — stores a uuid, and the
+ * report was printing it: the Picker column read
+ * `db9c1296-1ed4-4109-90ba-adfc090adf50` on a screen whose entire purpose is to
+ * say who is quick and who is short.
+ *
+ * Two places can name one: the LOGINS on this account, and the people on the
+ * Team screen who are linked to one. Both are read under the tenant's own RLS,
+ * so an id belonging to somebody else's business resolves to nothing rather than
+ * leaking a name. A value that is not a uuid is already a name — it is what the
+ * walk was assigned to — and is returned as itself.
+ */
+async function nameThePeople(
+  tx: TxClient,
+  tenantId: string,
+  ids: (string | null)[]
+): Promise<Map<string, string>> {
+  const wanted = [...new Set(ids.filter((id): id is string => id !== null && UUID.test(id)))];
+  const names = new Map<string, string>();
+  if (wanted.length === 0) return names;
+
+  const logins = await tx.user.findMany({
+    where: { id: { in: wanted }, tenantId },
+    select: { id: true, name: true, email: true },
+  });
+  for (const login of logins) {
+    const written = login.name?.trim();
+    names.set(login.id, written && written !== '' ? written : login.email);
+  }
+
+  // Somebody on the Team screen who signs in — their staff record is the name the
+  // business actually uses for them, so it wins over the login's own.
+  const staff = await tx.staffMember.findMany({
+    where: { tenantId, userId: { in: wanted } },
+    select: { userId: true, firstName: true, lastName: true },
+  });
+  for (const person of staff) {
+    if (person.userId === null) continue;
+    names.set(person.userId, [person.firstName, person.lastName].filter(Boolean).join(' '));
+  }
+
+  return names;
 }
 
 export async function pickThroughput(
@@ -241,8 +306,19 @@ export async function pickThroughput(
          AND (${warehouseId}::uuid IS NULL OR pl.warehouse_id = ${warehouseId}::uuid)
     `;
 
+    const people = await nameThePeople(tx, ctx.tenantId, [
+      ...pickers.map((p) => p.pickedBy),
+      ...packerRows.map((p) => p.packedBy),
+    ]);
+
+    /** A name if this business can give one, else the raw value when it is
+     *  already a name, else null for the screen to word. */
+    const named = (id: string | null): string | null =>
+      id === null ? null : (people.get(id) ?? (UUID.test(id) ? null : id));
+
     const pickerRows: PickerThroughput[] = pickers.map((p) => ({
       ...p,
+      pickerName: named(p.pickedBy),
       unitsPerHour: perHour(p.unitsPicked, p.activeMinutes),
       scanVerifiedRate: ratio(p.linesScanVerified, p.linesPicked + p.linesShort),
       shortLineRate: ratio(p.linesShort, p.linesPicked + p.linesShort),
@@ -277,6 +353,7 @@ export async function pickThroughput(
       })),
       packers: packerRows.map((p) => ({
         ...p,
+        packerName: named(p.packedBy),
         scanVerifiedRate: ratio(p.unitsScanned, p.unitsPacked),
       })),
       shortReasons: reasonRows,

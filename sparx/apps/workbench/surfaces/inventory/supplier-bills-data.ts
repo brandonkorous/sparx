@@ -19,7 +19,10 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
-import type { Tone } from './data';
+// `plural`, because this file writes sentences a business owner reads. Receiving
+// learned that in issue 495, when a delivery two metres short told a dressmaker
+// "1 line(s) are short"; the bill check beside it kept saying it.
+import { plural, type Tone } from './data';
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -123,6 +126,10 @@ export interface SupplierBillsReport {
   total: number;
   outstandingCents: number;
   outstandingCount: number;
+  /** The part of the above queried with the supplier — inside the total, not
+   *  beside it. See supplier-bills-words.ts. */
+  queriedCents: number;
+  queriedCount: number;
 }
 
 /* ── Query keys ─────────────────────────────────────────────────────────── */
@@ -288,7 +295,7 @@ export function billStatusLabel(status: string): string {
     case 'paid':
       return 'Paid';
     case 'cancelled':
-      return 'Cancelled';
+      return 'Canceled';
     default:
       return status;
   }
@@ -384,11 +391,16 @@ export function matchSummary(match: BillMatch): { label: string; tone: Tone; det
     return {
       label: 'Agrees with the delivery',
       tone: 'success',
-      detail: `All ${match.linesMatched} line(s) match what was ordered and what arrived.`,
+      detail:
+        match.linesMatched === 1
+          ? 'The one line on this bill matches what was ordered and what arrived.'
+          : `All ${String(match.linesMatched)} lines match what was ordered and what arrived.`,
     };
   }
   return {
-    label: `${match.linesFlagged} line(s) do not agree`,
+    label: `${plural(match.linesFlagged, 'line', 'lines')} ${
+      match.linesFlagged === 1 ? 'does' : 'do'
+    } not agree`,
     tone: 'danger',
     detail:
       match.unorderedLines > 0

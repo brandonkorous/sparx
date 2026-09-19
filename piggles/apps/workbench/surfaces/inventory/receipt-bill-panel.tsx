@@ -32,6 +32,7 @@ import {
   Button,
   Field,
   FieldLabel,
+  FieldStatus,
   Input,
   Text,
   useToast,
@@ -46,6 +47,7 @@ import { MoneyTextInput, moneyCents } from '../../components/money-input';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, stockErrorMessage } from './data';
+import { badDayIn, dayStartUtc } from '../../lib/today';
 
 interface BillDraftLine {
   purchaseOrderLineId: string | null;
@@ -78,11 +80,14 @@ interface BillDraft {
 }
 
 function toDateInput(iso: string | null): string {
-  return iso ? new Date(iso).toISOString().slice(0, 10) : '';
+  if (!iso) return '';
+  const at = new Date(iso);
+  // A row the server should never send still must not take the pane down.
+  return Number.isNaN(at.getTime()) ? '' : at.toISOString().slice(0, 10);
 }
 
 function toIso(value: string): string | undefined {
-  return value ? new Date(`${value}T00:00:00Z`).toISOString() : undefined;
+  return value === '' ? undefined : (dayStartUtc(value) ?? undefined);
 }
 
 function toCents(raw: string): number {
@@ -174,6 +179,8 @@ export function ReceiptBillPanel({
   // The API requires a positive quantity on every line, so a half-typed "0"
   // would be refused by the server with nothing on screen to explain it.
   const linesUsable = editedLines.every((line) => line.quantity > 0);
+  // A date box can hold something that is not a date; see `lib/today`.
+  const dateError = badDayIn(billedAt, dueAt);
 
   return (
     <FormSection
@@ -257,6 +264,7 @@ export function ReceiptBillPanel({
               This supplier has no payment terms recorded, so no date was suggested.
             </Text>
           ) : null}
+          {dateError ? <FieldStatus status="error">{dateError}</FieldStatus> : null}
         </Field>
       </div>
 
@@ -274,7 +282,7 @@ export function ReceiptBillPanel({
         <tbody>
           {editedLines.map((line, index) => (
             <tr key={`${line.purchaseOrderLineId ?? 'line'}-${index}`}>
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{line.description}</span>
                   <span className="truncate font-mono text-sm">{line.sku ?? 'No code'}</span>
@@ -354,7 +362,7 @@ export function ReceiptBillPanel({
         </div>
         <Button
           color="module"
-          disabled={number.trim() === '' || !linesUsable || create.isPending}
+          disabled={number.trim() === '' || !linesUsable || create.isPending || dateError !== null}
           onClick={() => {
             create.mutate(
               {

@@ -191,12 +191,12 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
       <Table size="sm" hover>
         <thead>
           <tr>
-            <th className="hidden @lg:table-cell">When</th>
+            <th className="hidden @xl:table-cell">When</th>
             <th>Item</th>
             <th className="text-right whitespace-nowrap">Change</th>
-            <th className="hidden text-right @2xl:table-cell">Left on shelf</th>
-            <th>Why</th>
-            <th className="hidden @xl:table-cell">Location</th>
+            <th className="hidden text-right @3xl:table-cell">Left on shelf</th>
+            <th className="hidden @sm:table-cell">Why</th>
+            <th className="hidden @2xl:table-cell">Location</th>
             <th className="w-8">
               <span className="sr-only">Where this item&rsquo;s number stands now</span>
             </th>
@@ -218,14 +218,14 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(movement, event);
               }}
             >
-              <td className="hidden whitespace-nowrap @lg:table-cell">
+              <td className="hidden whitespace-nowrap @xl:table-cell">
                 <Timestamp value={movement.createdAt} format="relative" />
               </td>
 
               {/* `max-w-0 w-full` makes this the cell that gives, so the product
                   name truncates instead of shoving the Change column off the
                   right edge. */}
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span className="truncate">{movement.productTitle ?? 'Untitled product'}</span>
                   <span className="truncate font-mono text-sm">
@@ -233,12 +233,17 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   </span>
                   {/* Facts that fold back in when their column is gone — a change
                       with no when or where is only half an entry. */}
-                  <span className="truncate text-sm @lg:hidden">
+                  <span className="truncate text-sm @xl:hidden">
                     <Timestamp value={movement.createdAt} format="relative" />
                     {movement.warehouseName === null ? '' : ` · ${movement.warehouseName}`}
                   </span>
+                  {/* And the reason, at the one width where its own column
+                      cannot fit. A change with no WHY is not an entry. */}
+                  <span className="truncate text-sm @sm:hidden">
+                    {movementReason(movement.reason)}
+                  </span>
                   {movement.warehouseName !== null ? (
-                    <span className="hidden truncate text-sm @lg:inline @xl:hidden">
+                    <span className="hidden truncate text-sm @xl:inline @2xl:hidden">
                       {movement.warehouseName}
                     </span>
                   ) : null}
@@ -251,20 +256,38 @@ export function MovementsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Badge>
               </td>
 
-              <td className="hidden text-right tabular-nums @2xl:table-cell">
+              <td className="hidden text-right tabular-nums @3xl:table-cell">
                 {movement.balanceAfter ?? '—'}
               </td>
 
-              <td>
+              {/* CAPPED, and that cap is load-bearing. The Item cell above is the
+                  one that GIVES (`w-full max-w-0`), which in an auto-layout
+                  table means it receives whatever is left after every other
+                  column has taken what it wants. So an uncapped text column
+                  here does not share the room, it takes it: measured at 521px
+                  against 84px for the product name, and a note long enough held
+                  the whole table at 752px inside a 400px pane, which is the
+                  sideways scroll the @container column-hiding exists to
+                  prevent. Any column added beside a give-cell needs a width. */}
+              <td className="hidden max-w-28 @sm:table-cell @lg:max-w-40 @4xl:max-w-56">
                 <span className="flex min-w-0 flex-col">
                   <span>{movementReason(movement.reason)}</span>
+                  {/* The cap above is load-bearing, so the note HAS to clip —
+                      but it is a sentence that appears on no other screen, and
+                      clipped with nothing to hover it simply is not readable.
+                      "Replacement sent for the return on order O-000016" loses
+                      the order number, which is the whole of what issue 558
+                      put there. Matches the three planning tables, which are
+                      the only other truncated sentences in the console. */}
                   {movement.note === null ? null : (
-                    <span className="truncate text-sm">{movement.note}</span>
+                    <span className="truncate text-sm" title={movement.note}>
+                      {movement.note}
+                    </span>
                   )}
                 </span>
               </td>
 
-              <td className="hidden max-w-48 truncate @xl:table-cell">
+              <td className="hidden max-w-40 truncate @2xl:table-cell">
                 {movement.warehouseName ?? '—'}
               </td>
 

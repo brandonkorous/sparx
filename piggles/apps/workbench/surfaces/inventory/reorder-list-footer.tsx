@@ -7,10 +7,15 @@ import { Text } from '@wizeworks/silicaui-react';
 import { faTruck } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { ListPagination, MAX_TAKE } from '../../components/list-pagination';
+import { reorderHint } from './reorder-supplier-words';
 import type { ReorderPane } from './reorder-window';
 
-export function ReorderFooter({ pane }: { pane: Pick<ReorderPane, 'w' | 'rows' | 'query'> }) {
-  const { w, rows, query } = pane;
+export function ReorderFooter({
+  pane,
+}: {
+  pane: Pick<ReorderPane, 'w' | 'rows' | 'query' | 'selection'>;
+}) {
+  const { w, rows, query, selection } = pane;
   const { pageSize, take, page, setTake: onTake, setPage: onPage, setPageSize: onPageSize } = w;
   const shown = rows.length;
   const busy = query.isFetching;
@@ -39,11 +44,15 @@ export function ReorderFooter({ pane }: { pane: Pick<ReorderPane, 'w' | 'rows' |
           onTake(() => size);
         }}
       />
+      {/* The opening clause used to appear whenever the list had rows, including
+          on a page where not one tick box could be ticked — which is most pages
+          on most accounts. A sentence telling somebody to do what the screen
+          will not let them do is the same defect as one sending them somewhere
+          with nothing there. */}
       {shown > 0 ? (
         <Text className="hidden px-1 pb-1 text-sm @xl:block">
           <Icon glyph={faTruck} className="mr-1 inline size-4 align-text-bottom" aria-hidden />
-          Choose lines to draft orders · click a row to see how its figures were worked out ·
-          shift-click alongside
+          {reorderHint(selection.selectable.length)}
         </Text>
       ) : null}
     </div>

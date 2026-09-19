@@ -7,7 +7,7 @@
 
 import { UpdateSerialStatusInput } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
-import type { Prisma } from '@wizeworks/db';
+import type { Prisma, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { InventoryConflictError, InventoryNotFoundError } from '../errors';
@@ -53,6 +53,19 @@ export interface SerialRow {
   serial: string;
   status: string;
   soldOnOrderItemId: string | null;
+  /**
+   * The order this unit left on, resolved from `soldOnOrderItemId`.
+   *
+   * The id alone cannot be acted on: it names a LINE, and nothing in the product
+   * opens a line. A recall is the moment this matters — "which of my customers
+   * has one of these" is the entire question — so the order number that answers
+   * it, and the id that opens it, travel with the unit.
+   *
+   * Null on a unit that has not been sold, and also on one whose order has since
+   * been deleted, which is a real difference: `status` says which.
+   */
+  soldOnOrderId: string | null;
+  soldOnOrderNumber: string | null;
   soldAt: string | null;
   createdAt: string;
 }
@@ -171,7 +184,8 @@ export async function listSerials(
       }),
       tx.serialUnit.count({ where }),
     ]);
-    return { items: rows.map(serializeSerial), total };
+    const orders = await soldOnOrders(tx, ctx.tenantId, rows);
+    return { items: rows.map((row) => serializeSerial(row, orders)), total };
   });
 }
 
@@ -203,7 +217,7 @@ export async function updateSerialStatus(
       entityId: serialId,
       diff: { before: { status: before.status }, after: { status: input.status } },
     });
-    return serializeSerial(updated);
+    return serializeSerial(updated, await soldOnOrders(tx, ctx.tenantId, [updated]));
   });
 }
 
@@ -260,7 +274,38 @@ function serializeLot(l: LotWith): LotRow {
   };
 }
 
-function serializeSerial(s: SerialWith): SerialRow {
+/** What one order-item id resolves to, for the units that were sold. */
+interface SoldOn {
+  orderId: string;
+  orderNumber: string;
+}
+
+/**
+ * The orders behind a page of units, in one query.
+ *
+ * `SerialUnit.soldOnOrderItemId` is a bare column with an index and no Prisma
+ * relation, so this cannot ride along on the include. It is looked up per PAGE
+ * rather than per row: a roster of 500 units would otherwise be 500 round trips
+ * to answer one question.
+ */
+async function soldOnOrders(
+  tx: TxClient,
+  tenantId: string,
+  rows: { soldOnOrderItemId: string | null }[]
+): Promise<Map<string, SoldOn>> {
+  const ids = [...new Set(rows.flatMap((r) => (r.soldOnOrderItemId ? [r.soldOnOrderItemId] : [])))];
+  if (ids.length === 0) return new Map();
+  const items = await tx.orderItem.findMany({
+    where: { id: { in: ids }, tenantId },
+    select: { id: true, orderId: true, order: { select: { orderNumber: true } } },
+  });
+  return new Map(
+    items.map((item) => [item.id, { orderId: item.orderId, orderNumber: item.order.orderNumber }])
+  );
+}
+
+function serializeSerial(s: SerialWith, orders: Map<string, SoldOn>): SerialRow {
+  const soldOn = s.soldOnOrderItemId === null ? undefined : orders.get(s.soldOnOrderItemId);
   return {
     id: s.id,
     variantId: s.variantId,
@@ -273,6 +318,8 @@ function serializeSerial(s: SerialWith): SerialRow {
     serial: s.serial,
     status: s.status,
     soldOnOrderItemId: s.soldOnOrderItemId,
+    soldOnOrderId: soldOn?.orderId ?? null,
+    soldOnOrderNumber: soldOn?.orderNumber ?? null,
     soldAt: s.soldAt?.toISOString() ?? null,
     createdAt: s.createdAt.toISOString(),
   };
