@@ -19,7 +19,7 @@ import type { EntityType } from '@wizeworks/seo-audit';
 
 import { auditAndStore, storedPath } from '../../../lib/seo-audit.js';
 import { resolveListScope } from '../../../lib/property.js';
-import { auditsOnSite } from './site-scope.js';
+import { auditsOnSiteSql } from './site-scope.js';
 
 const ENTITY_TYPES = ['builder_page', 'cms_page', 'product', 'collection'] as const;
 
@@ -31,6 +31,20 @@ const AuditQuery = z.object({
 const ListQuery = z.object({
   type: z.enum(ENTITY_TYPES).optional(),
 });
+
+/** One stored scorecard as the overview reads it. Hand-named because the list is
+ *  a raw query (see below), so the column aliases above are the contract. */
+interface AuditListRow {
+  id: string;
+  entityType: string;
+  entityId: string;
+  score: number;
+  grade: string;
+  fixFirst: string | null;
+  title: string | null;
+  path: string | null;
+  computedAt: Date;
+}
 
 // Per-type cap on a single reindex pass — a guard against an unbounded scan, not
 // a real limit at Phase-1 catalog sizes. A larger site moves this to a job.
@@ -59,23 +73,25 @@ const seoAuditRoutes: FastifyPluginAsync = (app) => {
       undefined,
       request.headers['x-sparx-property-id']
     );
-    const rows = await withRequestTenant(request, (tx) =>
-      tx.seoAudit.findMany({
-        where: { ...auditsOnSite(propertyId), ...(type ? { entityType: type } : {}) },
-        select: {
-          id: true,
-          entityType: true,
-          entityId: true,
-          score: true,
-          grade: true,
-          fixFirst: true,
-          title: true,
-          path: true,
-          computedAt: true,
-        },
-        // Worst-scoring first — the overview's whole point is "what needs work".
-        orderBy: [{ score: 'asc' }, { computedAt: 'desc' }],
-      })
+    // RAW, because the scope predicate has to reach through the junction tables
+    // the three non-builder entity types use for their own site visibility, and
+    // `entity_id` is polymorphic so Prisma has no relation to traverse. See
+    // ./site-scope.ts. RLS still applies — `withRequestTenant` sets the tenant
+    // for the transaction, and this runs inside it like every other read.
+    const rows = await withRequestTenant(
+      request,
+      (tx) =>
+        tx.$queryRaw<AuditListRow[]>`
+        SELECT
+          a.id, a.entity_type AS "entityType", a.entity_id AS "entityId",
+          a.score, a.grade, a.fix_first AS "fixFirst", a.title, a.path,
+          a.computed_at AS "computedAt"
+        FROM seo_audits a
+        WHERE ${auditsOnSiteSql(propertyId)}
+          AND (${type ?? null}::text IS NULL OR a.entity_type = ${type ?? null}::text)
+        -- Worst-scoring first: the overview's whole point is "what needs work".
+        ORDER BY a.score ASC, a.computed_at DESC
+      `
     );
     return ok(rows.map((row) => ({ ...row, path: storedPath(row.path) })));
   });

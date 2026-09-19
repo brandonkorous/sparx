@@ -13,6 +13,18 @@
 // `source: 'api'` + the sample marker and are removed by Clear, so nothing here
 // contaminates what a real request looks like.
 //
+// THE PROMISE ITSELF IS STILL REAL, THOUGH. Writing the dates by hand is a
+// deliberate decision about the DATES; it was silently also a decision about the
+// POLICY, which this never created. The result was five requests showing live
+// reply clocks — one breached, one amber — beside a Response times screen that
+// said "No response times set up yet" and promised "one is created for you the
+// first time a support request comes in", with five requests already in the
+// queue. Measured before the fix: 10 of the 11 requests on the platform sat
+// under a tenant with no policy at all. So the starter promise is created here
+// alongside the queue, and every sample request names it. The hand-placed dates
+// are unchanged; what changes is that the owner can now find, read and edit the
+// rule they are measured against.
+//
 // The support queue's own pipeline is created if the tenant has not filed a
 // request yet — the same one `ticketService.ensureTicketPipeline` makes, kept in
 // step by hand because @wizeworks/db sits BELOW @wizeworks/crm and must not depend
@@ -30,6 +42,81 @@ const TICKET_STAGES = [
   { name: 'Resolved', sortOrder: 3, stageType: 'resolved', color: '#10B981' },
   { name: 'Closed', sortOrder: 4, stageType: 'closed', color: '#94A3B8' },
 ];
+
+/** Kept in step with DEFAULT_SLA_POLICY_TEMPLATE in @wizeworks/crm-schemas, by
+ *  hand and for the same reason as the stages above: @wizeworks/db sits below
+ *  @wizeworks/crm and must not depend upwards. */
+const SLA_TEMPLATE = {
+  name: 'Standard Support',
+  description: 'Weekday business hours. Edit the hours and targets to match how your team works.',
+  timezone: 'UTC',
+  businessHours: [
+    { day: 1, startMinute: 540, endMinute: 1020 },
+    { day: 2, startMinute: 540, endMinute: 1020 },
+    { day: 3, startMinute: 540, endMinute: 1020 },
+    { day: 4, startMinute: 540, endMinute: 1020 },
+    { day: 5, startMinute: 540, endMinute: 1020 },
+  ],
+  warnAtPercent: 80,
+  targets: [
+    { priority: 'urgent', firstResponseMinutes: 60, resolutionMinutes: 480 },
+    { priority: 'high', firstResponseMinutes: 240, resolutionMinutes: 960 },
+    { priority: 'medium', firstResponseMinutes: 480, resolutionMinutes: 2400 },
+    // No promise on low priority, expressed as the absence of one rather than a
+    // number nobody intends to meet.
+    { priority: 'low', firstResponseMinutes: null, resolutionMinutes: null },
+  ],
+};
+
+/**
+ * The starter promise, created if the tenant has none — the same row
+ * `ticketService.ensureDefaultPolicy` makes the first time a real request comes
+ * in, so a later real request finds this one rather than adding a second.
+ *
+ * Not removed by Clear, for the same reason the support queue above is not: it
+ * is the setup a business keeps, not a sample row. Anything that survives Clear
+ * has to be something the product would have created anyway, and this is.
+ */
+async function ensureSlaPolicy(ctx: ApplyCtx): Promise<string> {
+  const { tx, tenantId } = ctx;
+
+  const existing = await tx.ticketSlaPolicy.findFirst({
+    where: { propertyId: null, archivedAt: null },
+    select: { id: true },
+  });
+  if (existing) return existing.id;
+
+  // In the business's OWN hours. "Open 9 to 5" is the only thing a person means
+  // by it, and a promise bootstrapped in UTC counts those hours somewhere else.
+  const business = await tx.tenantBusiness.findFirst({ select: { timezone: true } });
+
+  const policy = await tx.ticketSlaPolicy.create({
+    data: {
+      tenantId,
+      propertyId: null,
+      name: SLA_TEMPLATE.name,
+      description: SLA_TEMPLATE.description,
+      isDefault: true,
+      timezone: business?.timezone ?? SLA_TEMPLATE.timezone,
+      businessHours: SLA_TEMPLATE.businessHours,
+      holidays: [],
+      warnAtPercent: SLA_TEMPLATE.warnAtPercent,
+    },
+    select: { id: true },
+  });
+
+  await tx.ticketSlaTarget.createMany({
+    data: SLA_TEMPLATE.targets.map((target) => ({
+      tenantId,
+      policyId: policy.id,
+      priority: target.priority,
+      firstResponseMinutes: target.firstResponseMinutes,
+      resolutionMinutes: target.resolutionMinutes,
+    })),
+  });
+
+  return policy.id;
+}
 
 /**
  * The five requests, described by the SHAPE each one is meant to demonstrate
@@ -167,6 +254,10 @@ export async function applySupportRequests(ctx: ApplyCtx, pack: SampleDataPack):
     .filter((id): id is string => Boolean(id));
   if (customerIds.length === 0) return;
 
+  // Alongside the queue, not after it: the clocks written below are meaningless
+  // to the owner unless the rule behind them exists on the Response times screen.
+  const slaPolicyId = await ensureSlaPolicy(ctx);
+
   const subjects = pack.supportRequests ?? fallbackSubjects(pack);
 
   // Numbering continues from whatever is already there, so loading sample data
@@ -186,6 +277,7 @@ export async function applySupportRequests(ctx: ApplyCtx, pack: SampleDataPack):
         number: already + i + 1,
         pipelineId: pipeline.id,
         stageId,
+        slaPolicyId,
         customerId: customerIds[i % customerIds.length]!,
         assignedToUserId: shape.assigned ? ctx.ownerUserId : null,
         subject: text.subject,

@@ -85,6 +85,19 @@ const financeReceivablesRoutes: FastifyPluginAsync = (app) => {
     const q = Query.parse(request.query);
     const scope = await resolveListScope(auth, q.property, request.headers['x-sparx-property-id']);
 
+    // HER clock, not the server's. A business in Denver is still on Tuesday for
+    // seven hours after UTC has turned over, and for those hours a UTC count
+    // called every unpaid invoice a day later than it was — while the invoice
+    // list, counting in the browser, said the true number on the screen next
+    // door. Most businesses have not said where they are; those keep UTC.
+    const timeZone = await withRequestTenant(request, async (tx) => {
+      const business = await tx.tenantBusiness.findUnique({
+        where: { tenantId: auth.tenantId },
+        select: { timezone: true },
+      });
+      return business?.timezone ?? null;
+    });
+
     const docs = await withRequestTenant(request, (tx) =>
       tx.billingDocument.findMany({
         where: {
@@ -132,7 +145,7 @@ const financeReceivablesRoutes: FastifyPluginAsync = (app) => {
           c?.companyName,
           c?.email
         ) ?? 'Customer';
-      const daysPast = daysPastDue(d.dueAt, now);
+      const daysPast = daysPastDue(d.dueAt, now, timeZone);
       return {
         id: d.id,
         number: d.number,

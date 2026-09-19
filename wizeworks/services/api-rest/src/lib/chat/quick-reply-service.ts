@@ -7,13 +7,21 @@ import { withTenant } from '@wizeworks/db';
 import type { TenantContext } from '@wizeworks/db';
 import { conflict, notFound } from '@wizeworks/api-core/errors';
 
-import type { CreateQuickReplyInputT } from './types.js';
+import type { CreateQuickReplyInputT, UpdateQuickReplyInputT } from './types.js';
 
 export interface QuickReplyDto {
   id: string;
   title: string;
   body: string;
   shortcut: string | null;
+  /** Which site offers it: one site's id, or NULL for every site the tenant runs.
+   *
+   *  Carried because the list below serves BOTH tiers together, so without it a
+   *  caller cannot tell a reply written for this business from one shared across
+   *  all of them — and those two react differently to a delete. It was dropped
+   *  here, which made the author's own "Where it is offered" choice unreadable
+   *  everywhere downstream. */
+  propertyId: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -23,6 +31,7 @@ function toDto(r: {
   title: string;
   body: string;
   shortcut: string | null;
+  propertyId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }): QuickReplyDto {
@@ -31,6 +40,7 @@ function toDto(r: {
     title: r.title,
     body: r.body,
     shortcut: r.shortcut,
+    propertyId: r.propertyId,
     createdAt: r.createdAt.toISOString(),
     updatedAt: r.updatedAt.toISOString(),
   };
@@ -86,6 +96,80 @@ export async function create(
       },
     });
     return toDto(created);
+  });
+}
+
+/**
+ * Change a saved reply in place.
+ *
+ * WHY THIS EXISTS. A quick reply had exactly two verbs: create and delete. The
+ * seven this service seeds on activation are deliberately generic starting copy
+ * — "Business hours: Monday to Friday, 9am to 5pm", "Returns", "Shipping times"
+ * — and the comment above them says out loud that the tenant "edits or replaces"
+ * them. Nothing could edit one. A shop whose hours are Thursday to Sunday had to
+ * DELETE the reply and retype it from nothing, re-entering the shortcut and the
+ * site choice from memory, with the reply missing from her team's inbox in
+ * between. 102 saved replies on this platform, none ever edited, because nothing
+ * could edit one.
+ *
+ * The identical concept one module over — CRM's saved paragraphs — has had a
+ * pencil the whole time, and its own note names the case: "a paragraph is
+ * usually a FACT about the business, the opening hours, the returns policy, the
+ * lead time, and whoever knows that fact should be able to fix it in one place."
+ * Those are the exact three replies seeded here.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * NOTHING CHANGED IS NOT A CHANGE. When every field sent already matches, the
+ * row is left alone rather than re-stamped, so `updatedAt` keeps meaning "when
+ * the wording last moved" instead of "when somebody last pressed Save".
+ */
+export async function update(
+  ctx: TenantContext,
+  id: string,
+  input: UpdateQuickReplyInputT
+): Promise<QuickReplyDto> {
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.chatQuickReply.findUnique({ where: { id } });
+    if (!existing) throw notFound('QuickReply', id);
+
+    const data: {
+      title?: string;
+      body?: string;
+      shortcut?: string;
+      propertyId?: string | null;
+    } = {};
+
+    if (input.title !== undefined && input.title !== existing.title) data.title = input.title;
+    if (input.body !== undefined && input.body !== existing.body) data.body = input.body;
+    if (input.propertyId !== undefined && input.propertyId !== existing.propertyId) {
+      data.propertyId = input.propertyId;
+    }
+
+    if (input.shortcut !== undefined && input.shortcut !== existing.shortcut) {
+      // Already in use by her team's fingers. Re-pointing it would break the
+      // habit everywhere at once while the old word returned nothing.
+      if (existing.shortcut) {
+        throw conflict(
+          `"${existing.shortcut}" is already what people type to send this reply, so it cannot be ` +
+            'changed. Delete this reply and make another if it is genuinely wrong.',
+          { field: 'shortcut' }
+        );
+      }
+      // Nothing was typing it yesterday, so giving it a word today breaks no
+      // habit — as long as the word is free.
+      const clash = await tx.chatQuickReply.findFirst({
+        where: { shortcut: input.shortcut, id: { not: id } },
+        select: { id: true },
+      });
+      if (clash)
+        throw conflict(`Shortcut "${input.shortcut}" is already in use.`, { field: 'shortcut' });
+      data.shortcut = input.shortcut;
+    }
+
+    if (Object.keys(data).length === 0) return toDto(existing);
+
+    const saved = await tx.chatQuickReply.update({ where: { id }, data });
+    return toDto(saved);
   });
 }
 

@@ -2,6 +2,7 @@
 //
 //   GET    /v1/chat/quick-replies      → list
 //   POST   /v1/chat/quick-replies      → create
+//   PATCH  /v1/chat/quick-replies/:id  → change one in place
 //   DELETE /v1/chat/quick-replies/:id  → delete
 //
 // Gated by requireModule('chat').
@@ -12,7 +13,11 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 
 import { requireChatModule, toChatContext } from '../../../lib/chat-context.js';
-import { quickReplyService, CreateQuickReplyInput } from '../../../lib/chat/index.js';
+import {
+  quickReplyService,
+  CreateQuickReplyInput,
+  UpdateQuickReplyInput,
+} from '../../../lib/chat/index.js';
 import { resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -48,6 +53,19 @@ const quickReplyRoutes: FastifyPluginAsync = (app) => {
     });
     reply.code(201);
     return ok(created);
+  });
+
+  app.patch('/v1/chat/quick-replies/:id', async (request) => {
+    requireRole(request, 'editor');
+    await requireChatModule(request);
+    const { id } = PathId.parse(request.params);
+    const input = UpdateQuickReplyInput.parse(request.body);
+    // No property default here, unlike create. An omitted propertyId on a PATCH
+    // means "leave it where it is" — stamping the site being worked in would
+    // quietly drag a reply shared across every business back to one of them the
+    // first time somebody fixed a typo in it.
+    const saved = await quickReplyService.update(toChatContext(request), id, input);
+    return ok(saved);
   });
 
   app.delete('/v1/chat/quick-replies/:id', async (request, reply) => {

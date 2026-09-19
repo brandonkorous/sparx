@@ -20,6 +20,12 @@ export {
   mediaSiteVisibilityWhere,
 } from './site-scope';
 
+// Searching for a person by the name they are called. A name lives in two
+// columns and is typed as one string, so every search box that asked whether
+// the whole string was a substring of one column could not find 635 of the
+// platform's 651 customers. See ./name-search.
+export { nameSearchClauses, searchTerms } from './name-search';
+
 // Sample data (docs/104, Wave 5) — load/clear/status + the per-industry packs,
 // shared by the dev/e2e seed and the api-rest production seam.
 export {
@@ -312,3 +318,5 @@ export { ADVISORY_LOCKS, type AdvisoryLockName } from './advisory-locks';
 // The transaction-scoped single-flight guard those keys are used with — replaces
 // the leak-prone session-lock acquire/release pattern (see ./advisory-tick-lock).
 export { withAdvisoryTickLock } from './advisory-tick-lock';
+
+export { reviewRollup, type ReviewRollup, type SeededReview } from './seed-review-rollup';

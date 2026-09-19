@@ -134,6 +134,7 @@ model Order {
   items          OrderItem[]
   payments       OrderPayment[]
   refunds        OrderRefund[]
+  returnRequests ReturnRequest[]
   fulfillments   OrderFulfillment[]
   dealLinks      DealOrder[]
   dropshipOrders DropshipOrder[]

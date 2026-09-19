@@ -19,6 +19,7 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { writeAudit } from '@wizeworks/api-core/audit';
 import { publish } from '@wizeworks/api-core/pubsub';
+import { indexEntity } from '@wizeworks/events';
 import { getStorage, originalKey } from '../../../lib/storage.js';
 import { resolvePropertyId } from '../../../lib/property.js';
 import { badRequest, conflict, notFound } from '@wizeworks/api-core/errors';
@@ -150,6 +151,16 @@ const uploadRoutes: FastifyPluginAsync = (app) => {
       return { asset: updated, presigned: url };
     });
 
+    // The row exists as soon as the upload is reserved, at status 'uploading'.
+    // Indexing it now is what makes the file findable while it is still being
+    // processed, and the status facet tells the searcher which of those it is.
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'media',
+      recordId: asset.id,
+    });
+
     reply.code(201);
     return ok({
       asset: serializeUploadAsset(asset),
@@ -218,6 +229,15 @@ const uploadRoutes: FastifyPluginAsync = (app) => {
       key: result.key,
       mimeType: result.mimeType,
       byteSize: result.byteSize.toString(),
+    });
+
+    // On a backend that does not transcode this is the moment the file becomes
+    // 'ready'. On one that does, media-worker signals again when it finishes.
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'media',
+      recordId: result.id,
     });
 
     return ok(serializeUploadAsset(result));

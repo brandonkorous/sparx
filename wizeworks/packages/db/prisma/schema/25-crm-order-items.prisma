@@ -53,6 +53,7 @@ model OrderItem {
 
   fulfillmentItems OrderFulfillmentItem[]
   refundItems      OrderRefundItem[]
+  returnLines      ReturnLineItem[]
   pickListLines    PickListLine[]
   packageLines     ShipmentPackageLine[]
 

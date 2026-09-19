@@ -97,3 +97,24 @@ Most tables are per-tenant and use the standard FORCE RLS + `tenant_isolation` p
 | `platform_components` | Platform component catalog | SELECT published → `sparx_app`; ALL → `sparx_owner`; API layer gates non-published reads + writes to `owner` role |
 
 For a global table: ENABLE + FORCE RLS, two policies — one for the app role (restrictive, e.g. `status = 'published'`), one for the owner/migration role (unrestricted). The platform-admin JWT tier (docs/16 §2.4, deferred) will extend this pattern when it ships.
+
+## Import extensions differ by directory, and TypeScript will not tell you
+
+`src/**` imports **without** a file extension. `prisma/**` imports **with** `.js`:
+
+```ts
+// src/index.ts
+export { withAdvisoryTickLock } from './advisory-tick-lock';
+
+// prisma/seed.ts
+import { seedPlatformData } from './platform-seed.js';
+```
+
+Both typecheck either way, because `moduleResolution` resolves both. **Turbopack
+does not.** An extensioned export added to `src/index.ts` compiles clean, passes
+`tsc --noEmit`, and then takes the whole console down with
+`Module not found: Can't resolve './thing.js'` the next time anyone loads a page,
+because every app imports `@wizeworks/db` through that file.
+
+Copy the convention off the line above the one you are adding. There is no lint
+rule for it and the typecheck is not the thing that catches it.

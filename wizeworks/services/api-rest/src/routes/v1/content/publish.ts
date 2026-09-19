@@ -15,6 +15,7 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { publishEntryTx, unpublishEntryTx, serializeEntry } from '@wizeworks/cms';
 import { writeAudit } from '@wizeworks/api-core/audit';
 import { publish } from '@wizeworks/api-core/pubsub';
+import { indexContentEntry } from '../../../lib/content-search.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -71,6 +72,10 @@ const publishRoutes: FastifyPluginAsync = (app) => {
       auditAndStore(tx, auth.tenantId, 'cms_page', id)
     ).catch(() => undefined);
 
+    // Status is a facet on the indexed document, and publishing is the exact
+    // moment somebody goes looking for the thing they just published.
+    await indexContentEntry(auth, id);
+
     return ok(serializeEntry(updated));
   });
 
@@ -109,6 +114,8 @@ const publishRoutes: FastifyPluginAsync = (app) => {
     for (const ev of events) {
       await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
     }
+
+    await indexContentEntry(auth, id);
 
     return ok(serializeEntry(updated));
   });

@@ -13,6 +13,7 @@
 // transient encode failures.
 
 import { withTenant } from '@wizeworks/db';
+import { indexEntity } from '@wizeworks/events';
 import { downloadObject, uploadVariant, variantKey } from './storage.js';
 import { transcode } from './transcode.js';
 import { cropSocialAspects } from './crop.js';
@@ -151,6 +152,15 @@ export async function processAsset(
       });
     });
 
+    // 'uploading' → 'ready' is a change to a FACETED field, and this worker is
+    // the only thing that makes it on a transcoding backend. Without this the
+    // search index shows every photograph as still uploading, forever.
+    await indexEntity({
+      tenantId: asset.tenantId,
+      entityType: 'media',
+      recordId: asset.id,
+    });
+
     const variantCount = result.variants.length + crops.length;
     logger.info({ assetId, variantCount }, 'asset ready');
     return { status: 'ready', variantCount };
@@ -162,6 +172,11 @@ export async function processAsset(
         where: { id: asset.id },
         data: { status: 'failed', processingError: message },
       });
+    });
+    await indexEntity({
+      tenantId: asset.tenantId,
+      entityType: 'media',
+      recordId: asset.id,
     });
     return { status: 'failed', variantCount: 0, errorMessage: message };
   }

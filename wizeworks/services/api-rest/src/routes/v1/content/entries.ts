@@ -20,6 +20,7 @@ import { requireRole } from '@wizeworks/api-core/auth';
 import { createEntryTx, updateEntryTx, deleteEntryTx, serializeEntry } from '@wizeworks/cms';
 import { writeAudit } from '@wizeworks/api-core/audit';
 import { publish } from '@wizeworks/api-core/pubsub';
+import { indexContentEntry } from '../../../lib/content-search.js';
 import { notFound } from '@wizeworks/api-core/errors';
 import { assertIfMatch, computeEntryEtag } from '@wizeworks/api-core/etag';
 import {
@@ -225,6 +226,10 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
     }
 
+    // A post written this morning is findable this morning, not after the next
+    // reindex.
+    await indexContentEntry(auth, created.id);
+
     reply.code(201);
     void reply.header('ETag', computeEntryEtag(created));
     return ok(serializeEntry(created));
@@ -275,6 +280,10 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
     }
 
+    // The title lives in the body JSON and the slug is a keyword, so a rename
+    // is an index change even though no status moved.
+    await indexContentEntry(auth, id);
+
     void reply.header('ETag', computeEntryEtag(updated));
     return ok(serializeEntry(updated));
   });
@@ -305,6 +314,8 @@ const entryRoutes: FastifyPluginAsync = (app) => {
     for (const ev of events) {
       await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
     }
+
+    await indexContentEntry(auth, id, 'delete');
 
     reply.code(204);
   });

@@ -32,6 +32,13 @@ model ReturnRequest {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant      Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // A return with no sale behind it is not a partial record, it is a
+  // non-record: no customer, no items, no money, nothing anybody can do. This
+  // column was the ONLY relation on this table without a constraint, so 35 of
+  // the platform's 83 returns came to point at orders that no longer exist, and
+  // one shop's list read 20 dead rows in 28. Cascading, because the return dies
+  // with the sale (migration 20270512000000, persona issue 537).
+  order       Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
   items       ReturnLineItem[]
   inspections ReturnInspection[]
   labels      ReturnLabel[]
@@ -58,8 +65,11 @@ model ReturnLineItem {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  return ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  tenant    Tenant        @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  return    ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  // The same gap, one level down: every one of those 35 dangling returns had a
+  // line pointing at an order item that had gone with the order.
+  orderItem OrderItem     @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
 
   @@index([tenantId, returnId])
   @@index([orderItemId])

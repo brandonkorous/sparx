@@ -18,6 +18,7 @@
     "ops:backfill-finance-categories": "node --import tsx src/scripts/backfill-finance-categories.ts",
     "ops:reindex-search": "node --import tsx src/scripts/reindex-search.ts",
     "ops:backfill-blueprint-scoping": "node --import tsx src/scripts/backfill-blueprint-scoping.ts",
+    "ops:repair-cross-brand-subdomains": "node --import tsx src/scripts/repair-cross-brand-subdomains.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",

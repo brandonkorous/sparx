@@ -3,7 +3,7 @@
 //   GET    /v1/forms/definitions        → every form on this site, for a picker
 //   GET    /v1/forms/definitions/:id    → one form's settings
 //   PUT    /v1/forms/definitions/:id    → save one form's settings
-//   GET    /v1/forms/submissions        → list (tenant-wide, newest first) + counts
+//   GET    /v1/forms/submissions        → list (THIS SITE, newest first) + counts
 //   GET    /v1/forms/submissions/:id    → one submission
 //   GET    /v1/forms/submissions/:id/attachments/:index → download an attachment
 //   PATCH  /v1/forms/submissions/:id    → set status (read | spam | archived | new)

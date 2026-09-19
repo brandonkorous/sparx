@@ -237,8 +237,11 @@ export async function tenantZone(tenantId: string): Promise<string> {
 /** The zone out of a host the platform minted itself. Every `type: 'subdomain'` row is
  *  one, so its last two labels ARE the zone — this reads back what provisioning wrote
  *  rather than trusting anything a tenant typed. It is what answers when
- *  `SPARX_ZONE_DOMAINS` is short of a zone this deployment is really serving. */
-function mintedZoneOf(host: string): string | null {
+ *  `SPARX_ZONE_DOMAINS` is short of a zone this deployment is really serving.
+ *
+ *  Exported because the cross-brand repair asks the same question of the same rows,
+ *  and two readings of "which zone is this host in" is how one of them drifts. */
+export function mintedZoneOf(host: string): string | null {
   const labels = host.split('.');
   return labels.length >= 3 ? labels.slice(-2).join('.') : null;
 }

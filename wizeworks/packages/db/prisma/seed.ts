@@ -16,6 +16,7 @@ import { blankPageTree } from '@wizeworks/builder-schemas';
 import { collectionDetailPage, productDetailPage } from '@wizeworks/silica-catalog';
 import { getFitmentDictionary, planFitmentDictionaryRows } from '@wizeworks/commerce-schemas';
 
+import { reviewRollup } from '../src/seed-review-rollup.js';
 import { seedPlatformData } from './platform-seed.js';
 
 const prisma = new PrismaClient();
@@ -1793,6 +1794,7 @@ async function seedDemoCommerceOps(tenantId: string): Promise<void> {
           })
         : [];
     let buyerCursor = 0;
+    const seededReviews: { productId: string; rating: number; status: string }[] = [];
 
     // Idempotent reset (FK cascades clear children: media/votes/log,
     // components, options/rules/add-ons, rates, entries).
@@ -1834,6 +1836,7 @@ async function seedDemoCommerceOps(tenantId: string): Promise<void> {
       }
 
       const moderated = s.status !== 'pending';
+      seededReviews.push({ productId, rating: s.rating, status: s.status });
       await tx.productReview.create({
         data: {
           tenantId,
@@ -1862,6 +1865,39 @@ async function seedDemoCommerceOps(tenantId: string): Promise<void> {
           createdAt: daysAgoDate(s.daysAgo),
         },
       });
+    }
+
+    // THE RATING COLUMNS A PRODUCT PAGE READS. This loop used to write reviews
+    // and never touch them, so five seeded products carried an approved review
+    // and reported `reviewCount: 0` — a real review the storefront would not
+    // show. Commerce's `recomputeProductRating` says exactly this: "without this
+    // the columns stay at their defaults (null / 0) and the PDP shows 'no
+    // reviews yet' no matter how many reviews are approved." It cannot be called
+    // from here (this package may not import a module), so the arithmetic lives
+    // in `seed-review-rollup` and both seeders go through it.
+    const byProduct = new Map<string, { rating: number; status: string }[]>();
+    for (const row of seededReviews) {
+      const list = byProduct.get(row.productId) ?? [];
+      list.push({ rating: row.rating, status: row.status });
+      byProduct.set(row.productId, list);
+    }
+    for (const [reviewedProductId, rows] of byProduct) {
+      const rollup = reviewRollup(rows);
+      await tx.product.update({
+        where: { id: reviewedProductId },
+        data: { averageRating: rollup.averageRating, reviewCount: rollup.reviewCount },
+      });
+      for (const bucket of rollup.bySite) {
+        await tx.productReviewRollup.create({
+          data: {
+            tenantId,
+            productId: reviewedProductId,
+            propertyId: bucket.propertyId,
+            sumRating: bucket.sumRating,
+            reviewCount: bucket.reviewCount,
+          },
+        });
+      }
     }
 
     // ── Q&A ──────────────────────────────────────────────────────────

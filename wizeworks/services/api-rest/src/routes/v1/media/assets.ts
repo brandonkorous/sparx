@@ -17,6 +17,7 @@ import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { writeAudit } from '@wizeworks/api-core/audit';
 import { publish } from '@wizeworks/api-core/pubsub';
+import { indexEntity } from '@wizeworks/events';
 import { getStorage } from '../../../lib/storage.js';
 import { mediaSiteVisibilityWhere, resolveListScope } from '../../../lib/property.js';
 import { conflict, notFound } from '@wizeworks/api-core/errors';
@@ -358,6 +359,15 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
         reason: 'recrop',
       });
     }
+
+    // Alt text and the caption are both keywords on the indexed document, and
+    // alt text is the words a person is most likely to search a photograph by.
+    await indexEntity({
+      tenantId: auth.tenantId,
+      actorId: auth.actorId,
+      entityType: 'media',
+      recordId: id,
+    });
 
     return ok(serializeAsset(updated.asset, updated.variants));
   });

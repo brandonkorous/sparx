@@ -54,6 +54,10 @@ import {
   RestoreAutomationVersionInput,
   UpdateAutomationInput,
 } from '@wizeworks/automation-schemas';
+// Universal search (docs/39): a rule is an `automation` entity. Its NAME is what
+// an owner types to find it again, and a seeded one has a name she can read, so
+// every write that moves one re-indexes. `indexEntity` never throws into the handler.
+import { indexEntity } from '@wizeworks/events';
 import { ok } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
 import { reachableSiteIds, resolveListScope } from '../../../lib/property.js';
@@ -118,6 +122,12 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const ctx = ctxFor(request, 'editor');
     const input = CreateAutomationInput.parse(request.body);
     const created = await createAutomation(ctx, input);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: created.id,
+    });
     reply.code(201);
     return ok(created);
   });
@@ -163,13 +173,27 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const ctx = ctxFor(request, 'editor');
     const { id } = IdParam.parse(request.params);
     const input = UpdateAutomationInput.parse(request.body);
-    return ok(await updateAutomation(ctx, id, input));
+    const updated = await updateAutomation(ctx, id, input);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: id,
+    });
+    return ok(updated);
   });
 
   app.delete('/v1/automations/:id', async (request) => {
     const ctx = ctxFor(request, 'editor');
     const { id } = IdParam.parse(request.params);
     await deleteAutomation(ctx, id);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: id,
+      op: 'delete',
+    });
     return ok({ id, deleted: true });
   });
 
@@ -178,6 +202,12 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const { id } = IdParam.parse(request.params);
     const input = CloneAutomationInput.parse(request.body ?? {});
     const clone = await cloneAutomation(ctx, id, input);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: clone.id,
+    });
     reply.code(201);
     return ok(clone);
   });
@@ -186,7 +216,15 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const ctx = ctxFor(request, 'editor');
     const { id } = IdParam.parse(request.params);
     const { status } = StatusBody.parse(request.body);
-    return ok(await setAutomationStatus(ctx, id, status));
+    const moved = await setAutomationStatus(ctx, id, status);
+    // Status is faceted in the index, so switching a rule on has to reach it.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: id,
+    });
+    return ok(moved);
   });
 
   // ── versioning (docs/84 Slice G-versioning) ──
@@ -202,14 +240,29 @@ const automationRoutes: FastifyPluginAsync = (app) => {
     const ctx = ctxFor(request, 'editor');
     const { id } = IdParam.parse(request.params);
     const { note } = PublishAutomationInput.parse(request.body ?? {});
-    return ok(await publishAutomation(ctx, id, { note }));
+    const published = await publishAutomation(ctx, id, { note });
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: id,
+    });
+    return ok(published);
   });
 
   app.post('/v1/automations/:id/restore', async (request) => {
     const ctx = ctxFor(request, 'editor');
     const { id } = IdParam.parse(request.params);
     const { version } = RestoreAutomationVersionInput.parse(request.body);
-    return ok(await restoreAutomationVersion(ctx, id, version));
+    const restored = await restoreAutomationVersion(ctx, id, version);
+    // A restore can bring back a different NAME, which is the indexed field.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      entityType: 'automation',
+      recordId: id,
+    });
+    return ok(restored);
   });
 
   app.post('/v1/automations/:id/discard-draft', async (request) => {

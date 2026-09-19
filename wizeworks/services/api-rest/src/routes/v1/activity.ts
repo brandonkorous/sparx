@@ -30,6 +30,7 @@ import {
   subjectFromDiff,
   READ_ONLY_ACTION_PREFIXES,
 } from '../../lib/activity-language.js';
+import { subjectKey, subjectNames } from '../../lib/activity-subjects.js';
 
 const Query = z.object({
   /** Narrow to one record — this is what makes an entity timeline. */
@@ -113,7 +114,7 @@ const activityRoutes: FastifyPluginAsync = async (app) => {
     requireAuth(request);
     const input = Query.parse(request.query);
 
-    const { rows, names } = await withRequestTenant(request, async (tx) => {
+    const { rows, names, subjects } = await withRequestTenant(request, async (tx) => {
       const found = await tx.auditLog.findMany({
         where: whereFrom(input, { excludeReads: true }),
         orderBy: { createdAt: 'desc' },
@@ -130,7 +131,12 @@ const activityRoutes: FastifyPluginAsync = async (app) => {
         },
       });
       const ids = found.map((row) => row.actorId).filter((id): id is string => id !== null);
-      return { rows: found, names: await actorNames(tx, ids) };
+      // Two batched lookups, never one per row: who did it, and which record it
+      // was done to. The second is new — the feed used to read the name out of
+      // the diff alone and was anonymous wherever the writer had not put one
+      // there, which was most of it.
+      const [names, subjects] = await Promise.all([actorNames(tx, ids), subjectNames(tx, found)]);
+      return { rows: found, names, subjects };
     });
 
     const items = rows.map((row) => ({
@@ -139,7 +145,10 @@ const activityRoutes: FastifyPluginAsync = async (app) => {
       action: row.action,
       module: moduleForAction(row.action),
       title: sentenceForAction(row.action),
-      subject: subjectFromDiff(row.diff),
+      // The record's own name wins over whatever the writer happened to put in
+      // the diff: it is the current one, and the diff's copy can be a value the
+      // change itself replaced.
+      subject: subjects.get(subjectKey(row.entityType, row.entityId)) ?? subjectFromDiff(row.diff),
       entityType: row.entityType,
       entityId: row.entityId,
       actor: {

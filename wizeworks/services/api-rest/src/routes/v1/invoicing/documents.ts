@@ -33,6 +33,7 @@ import {
   buildRenderDataFromDraft,
 } from '@wizeworks/crm';
 import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@wizeworks/payments';
+import { indexEntity } from '@wizeworks/events';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { ApiError } from '@wizeworks/api-core/errors';
 import { requireRole } from '@wizeworks/api-core/auth';
@@ -188,7 +189,17 @@ const documentRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/invoicing/documents', async (request, reply) => {
     requireRole(request, 'editor');
     await requireInvoicingModule(request);
-    const doc = await billingDocumentService.create(toInvoicingContext(request), request.body);
+    const ctx = toInvoicingContext(request);
+    const doc = await billingDocumentService.create(ctx, request.body);
+    // An invoice is looked for by its NUMBER, and the number is the one thing a
+    // person has in front of them when they come looking. It is findable from
+    // the moment it is raised, not after the next reindex.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'billing_document',
+      recordId: doc.id,
+    });
     reply.code(201);
     return ok(doc);
   });
@@ -197,7 +208,17 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
-    return ok(await billingDocumentService.update(toInvoicingContext(request), id, request.body));
+    const ctx = toInvoicingContext(request);
+    const updated = await billingDocumentService.update(ctx, id, request.body);
+    // Who it is billed to is the subtitle, so changing the customer changes the
+    // line a searcher reads.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'billing_document',
+      recordId: id,
+    });
+    return ok(updated);
   });
 
   // Give the document to the person who owes the money. Was the one thing
@@ -208,7 +229,16 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
     try {
-      return ok(await sendInvoice(request, id));
+      const sent = await sendInvoice(request, id);
+      const ctx = toInvoicingContext(request);
+      // Sending moves the status, and status is a facet.
+      await indexEntity({
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId,
+        entityType: 'billing_document',
+        recordId: id,
+      });
+      return ok(sent);
     } catch (error) {
       // The refusals this raises are sentences the operator can act on ("add an
       // email address under Bill to"), so they go back verbatim rather than as a
@@ -225,7 +255,15 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
-    await billingDocumentService.remove(toInvoicingContext(request), id);
+    const ctx = toInvoicingContext(request);
+    await billingDocumentService.remove(ctx, id);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'billing_document',
+      recordId: id,
+      op: 'delete',
+    });
     reply.code(204);
   });
 
@@ -262,9 +300,17 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
-    return ok(
-      await billingDocumentStageService.advance(toInvoicingContext(request), id, request.body)
-    );
+    const ctx = toInvoicingContext(request);
+    const advanced = await billingDocumentStageService.advance(ctx, id, request.body);
+    // Entering a stage can NUMBER the document for the first time. A quote that
+    // becomes invoice INV-1042 has to be findable as INV-1042 immediately.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'billing_document',
+      recordId: id,
+    });
+    return ok(advanced);
   });
 
   // ── Snapshots (append-only frozen records) ───────────────────────────────────
@@ -291,11 +337,15 @@ const documentRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireInvoicingModule(request);
     const { id } = PathId.parse(request.params);
-    const result = await billingPaymentService.recordPayment(
-      toInvoicingContext(request),
-      id,
-      request.body
-    );
+    const ctx = toInvoicingContext(request);
+    const result = await billingPaymentService.recordPayment(ctx, id, request.body);
+    // Paying it moves the status to partial or paid.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'billing_document',
+      recordId: id,
+    });
     reply.code(201);
     return ok(result);
   });

@@ -174,7 +174,32 @@ export const CreateQuickReplyInput = z.object({
   propertyId: z.string().uuid().nullable().optional(),
 });
 
+// WHAT A SAVED REPLY IS ALLOWED TO BECOME.
+//
+// Every field optional, because she is fixing one thing: the returns wording,
+// or which of her shops offers it. Sending the whole reply back to change two
+// words is how a half-loaded form silently blanks the rest.
+//
+// The SHORTCUT is the exception, and only half an exception. It is the thing an
+// agent types without thinking, so changing one already in use breaks the habit
+// everywhere at once while the old word quietly returns nothing — the same
+// reason `UpdateSnippetInput` next door has no shortcut at all. But a quick
+// reply's shortcut is OPTIONAL, so a reply can be sitting there without one, and
+// there no habit exists to break. The service allows SETTING an absent shortcut
+// and refuses CHANGING one that is already there.
+export const UpdateQuickReplyInput = z.object({
+  title: z.string().min(1).max(100).optional(),
+  body: z.string().min(1).max(8000).optional(),
+  shortcut: z.string().max(50).optional(),
+  // Same two meanings as on create: a site's id pins it to that business, an
+  // explicit null offers it on every one of them. Omitted leaves it where it is
+  // — moving a reply between businesses is a decision, never a side effect of
+  // fixing a typo.
+  propertyId: z.string().uuid().nullable().optional(),
+});
+
 export type CreateConversationInputT = z.infer<typeof CreateConversationInput>;
 export type UpdateConversationInputT = z.infer<typeof UpdateConversationInput>;
 export type PostMessageInputT = z.infer<typeof PostMessageInput>;
 export type CreateQuickReplyInputT = z.infer<typeof CreateQuickReplyInput>;
+export type UpdateQuickReplyInputT = z.infer<typeof UpdateQuickReplyInput>;

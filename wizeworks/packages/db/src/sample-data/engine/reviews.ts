@@ -6,6 +6,7 @@
 
 import type { SampleDataPack } from '../types';
 import { type ApplyCtx, daysAgo } from './context';
+import { reviewRollup, type SeededReview } from '../../seed-review-rollup';
 
 /** Cache: persona key → a settled order id for the verified-purchase link. */
 async function settledOrderFor(
@@ -37,8 +38,7 @@ export async function applyReviews(ctx: ApplyCtx, pack: SampleDataPack): Promise
     const productId = ctx.productIdByKey.get(p.key);
     if (!productId) continue;
 
-    let ratingSum = 0;
-    let approvedCount = 0;
+    const seeded: SeededReview[] = [];
     for (const r of p.reviews ?? []) {
       const status = r.status ?? 'approved';
       const customerId = r.authorPersona
@@ -73,20 +73,30 @@ export async function applyReviews(ctx: ApplyCtx, pack: SampleDataPack): Promise
         },
       });
       ctx.counts.reviews += 1;
-      if (status === 'approved') {
-        ratingSum += r.rating;
-        approvedCount += 1;
-      }
+      seeded.push({ rating: r.rating, status });
     }
 
-    if (approvedCount > 0) {
+    // Through the one rule rather than by hand. This used to round to a single
+    // decimal, so the column said 4.7 where commerce's own recompute says
+    // 4.666… — a figure that jumps the first time anybody moderates a review on
+    // this product. It also skipped the per-site rows the site grids read.
+    const rollup = reviewRollup(seeded);
+    if (rollup.reviewCount > 0) {
       await tx.product.update({
         where: { id: productId },
-        data: {
-          averageRating: Math.round((ratingSum / approvedCount) * 10) / 10,
-          reviewCount: approvedCount,
-        },
+        data: { averageRating: rollup.averageRating, reviewCount: rollup.reviewCount },
       });
+      for (const bucket of rollup.bySite) {
+        await tx.productReviewRollup.create({
+          data: {
+            tenantId,
+            productId,
+            propertyId: bucket.propertyId,
+            sumRating: bucket.sumRating,
+            reviewCount: bucket.reviewCount,
+          },
+        });
+      }
     }
 
     for (const q of p.questions ?? []) {

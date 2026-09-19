@@ -190,4 +190,73 @@ describe('commerce discounts + gift cards list', () => {
       await dropTestTenant(t.tenantId);
     }
   });
+
+  /**
+   * WHAT THE OFFER COST, not just how often it ran.
+   *
+   * The Discounts screens counted redemptions and stopped there, so a shop owner
+   * looking at her Spring sale read "Used 4 times" over $91.20 she could not
+   * see. `commerce_discount_usages.applied_cents` had recorded every penny of it
+   * the whole time.
+   *
+   * This asserts the SUM comes back on both reads, because the list and the
+   * detail are two different code paths and the screen shows the figure on both
+   * (persona issue 536).
+   */
+  it('reports what each discount has given away, on the list and on the detail', async () => {
+    const t = await createTestTenant('owner');
+    try {
+      await enableCommerce(t.tenantId);
+      const token = signToken(app, t);
+
+      const used = await seedDiscount(t, { name: 'Spring sale', code: 'SPRING15' });
+      const unused = await seedDiscount(t, { name: 'Never used', code: 'QUIET' });
+
+      await withTenant({ tenantId: t.tenantId }, async (tx) => {
+        for (const appliedCents of [630, 2280, 2070, 4140]) {
+          await tx.discountUsage.create({
+            data: { tenantId: t.tenantId, discountId: used, appliedCents },
+          });
+        }
+      });
+
+      const list = await app.inject({
+        method: 'GET',
+        url: '/v1/commerce/discounts',
+        headers: authHeader(token),
+      });
+      expect(list.statusCode).toBe(200);
+      const byName = new Map(
+        (list.json().data as { name: string; givenAwayCents: number }[]).map((r) => [
+          r.name,
+          r.givenAwayCents,
+        ])
+      );
+      expect(byName.get('Spring sale')).toBe(9120);
+      // Not undefined, and not left out: an offer nobody has used gave away zero,
+      // and the screen decides how to say that.
+      expect(byName.get('Never used')).toBe(0);
+
+      const detail = await app.inject({
+        method: 'GET',
+        url: `/v1/commerce/discounts/${used}`,
+        headers: authHeader(token),
+      });
+      expect(detail.statusCode).toBe(200);
+      expect(detail.json().data.givenAwayCents).toBe(9120);
+
+      // The detail reads through its own path, so it gets its own zero case:
+      // an offer nobody has used has to report 0 rather than leave the field
+      // out, or the header renders "undefined given away".
+      const quiet = await app.inject({
+        method: 'GET',
+        url: `/v1/commerce/discounts/${unused}`,
+        headers: authHeader(token),
+      });
+      expect(quiet.statusCode).toBe(200);
+      expect(quiet.json().data.givenAwayCents).toBe(0);
+    } finally {
+      await dropTestTenant(t.tenantId);
+    }
+  });
 });

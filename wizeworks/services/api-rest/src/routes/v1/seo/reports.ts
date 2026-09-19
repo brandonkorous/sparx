@@ -23,13 +23,27 @@ import { ok } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { storedPath } from '../../../lib/seo-audit.js';
 import { resolveListScope } from '../../../lib/property.js';
-import { auditsOnSite } from './site-scope.js';
+import { auditsOnSiteSql } from './site-scope.js';
 
 const ActivityQuery = z.object({
   limit: z.coerce.number().int().min(1).max(50).optional(),
 });
 
 type ChecklistStatus = 'pass' | 'warn' | 'fail' | 'info';
+
+/** One recent scorecard as the activity feed reads it. Hand-named because the
+ *  feed is a raw query, so the column aliases in it are the contract. */
+interface ActivityRow {
+  id: string;
+  entityType: string;
+  entityId: string;
+  title: string | null;
+  path: string | null;
+  score: number;
+  grade: string;
+  fixFirst: string | null;
+  computedAt: Date;
+}
 
 interface RawCheckRow {
   id: string;
@@ -61,12 +75,8 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
       undefined,
       request.headers['x-sparx-property-id']
     );
-    // Written as a parameter rather than interpolated: this is raw SQL, and the
-    // null case (an unscoped caller) has to mean "every row" rather than "no rows".
-    const scope = propertyId ?? null;
-
     return withRequestTenant(request, async (tx) => {
-      const [rows, pagesScored] = await Promise.all([
+      const [rows, scoredRows] = await Promise.all([
         // ── GROUPED BY `id` ALONE, NOT BY THE WORDS ──────────────────────
         //
         // A stored card is a SNAPSHOT: it keeps the label the checks carried on
@@ -99,13 +109,21 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
             CASE WHEN jsonb_typeof(a.card -> 'checks') = 'array'
                  THEN a.card -> 'checks' ELSE '[]'::jsonb END
           ) AS chk
-          WHERE ${scope}::uuid IS NULL
-             OR a.property_id = ${scope}::uuid
-             OR a.property_id IS NULL
+          -- The shared predicate, not a fourth spelling of it. This query used
+          -- to inline the pin-only rule, which is how it went on counting
+          -- another site's products after the list stopped (issue 639).
+          WHERE ${auditsOnSiteSql(propertyId)}
           GROUP BY 1
         `,
-        tx.seoAudit.count({ where: auditsOnSite(propertyId) }),
+        // The DENOMINATOR under "average score", so it has to be counted by the
+        // same rule the scores are averaged over.
+        tx.$queryRaw<{ n: bigint }[]>`
+          SELECT COUNT(*)::bigint AS n FROM seo_audits a WHERE ${auditsOnSiteSql(propertyId)}
+        `,
       ]);
+
+      // COUNT(*) comes back as a bigint, which does not survive JSON.
+      const pagesScored = Number(scoredRows[0]?.n ?? 0);
 
       const checks = rows
         .map((r) => {
@@ -156,22 +174,18 @@ const seoReportRoutes: FastifyPluginAsync = (app) => {
     );
 
     return withRequestTenant(request, async (tx) => {
-      const audits = await tx.seoAudit.findMany({
-        where: auditsOnSite(propertyId),
-        orderBy: { computedAt: 'desc' },
-        take,
-        select: {
-          id: true,
-          entityType: true,
-          entityId: true,
-          title: true,
-          path: true,
-          score: true,
-          grade: true,
-          fixFirst: true,
-          computedAt: true,
-        },
-      });
+      // Raw for the same reason the list is: the scope predicate reaches through
+      // junction tables Prisma has no relation for. See ./site-scope.ts.
+      const audits = await tx.$queryRaw<ActivityRow[]>`
+        SELECT
+          a.id, a.entity_type AS "entityType", a.entity_id AS "entityId",
+          a.title, a.path, a.score, a.grade, a.fix_first AS "fixFirst",
+          a.computed_at AS "computedAt"
+        FROM seo_audits a
+        WHERE ${auditsOnSiteSql(propertyId)}
+        ORDER BY a.computed_at DESC
+        LIMIT ${take}
+      `;
 
       return ok(
         audits.map((a) => ({

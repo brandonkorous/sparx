@@ -17,6 +17,10 @@ import { broadcastService } from '@wizeworks/email-platform';
 import { emailService } from '@wizeworks/builder';
 import { ok, paged } from '@wizeworks/api-core/envelope';
 import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
+// Universal search (docs/39): a campaign is an `email_broadcast` entity. Its NAME,
+// its subject and its status are all things an owner searches for, so every write
+// that moves one re-indexes. `indexEntity` never throws into the handler.
+import { indexEntity } from '@wizeworks/events';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
 import { requireVerifiedEmail } from '../../../lib/verified-email-guard.js';
 import { silicaEmailDataResolver } from '../../../lib/email-data.js';
@@ -75,6 +79,12 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
       typeof requested === 'string' ? requested : null
     );
     const row = await broadcastService.create(ctx, request.body, propertyId);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'email_broadcast',
+      recordId: row.id,
+    });
     reply.code(201);
     return ok(row);
   });
@@ -90,7 +100,15 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireEmailModule(request);
     const { id } = IdParam.parse(request.params);
-    return ok(await broadcastService.update(toEmailContext(request), id, request.body));
+    const ctx = toEmailContext(request);
+    const row = await broadcastService.update(ctx, id, request.body);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'email_broadcast',
+      recordId: id,
+    });
+    return ok(row);
   });
 
   app.get('/v1/email/broadcasts/:id/stats', async (request) => {
@@ -157,7 +175,15 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     // The broadcast body is a published Builder email (docs/52);
     // silicaEmailDataResolver resolves its bound sources — once for a per-send body,
     // per recipient (at dispatch) for a personalized one.
-    return ok(await broadcastService.sendNow(ctx, id, silicaEmailDataResolver(ctx)));
+    const sent = await broadcastService.sendNow(ctx, id, silicaEmailDataResolver(ctx));
+    // Sending moves the STATUS, which the index facets on.
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'email_broadcast',
+      recordId: id,
+    });
+    return ok(sent);
   });
 
   app.post('/v1/email/broadcasts/:id/schedule', async (request) => {
@@ -166,14 +192,34 @@ const emailBroadcastRoutes: FastifyPluginAsync = (app) => {
     await requireVerifiedEmail(request);
     const { id } = IdParam.parse(request.params);
     const ctx = toEmailContext(request);
-    return ok(await broadcastService.schedule(ctx, id, request.body, silicaEmailDataResolver(ctx)));
+    const scheduled = await broadcastService.schedule(
+      ctx,
+      id,
+      request.body,
+      silicaEmailDataResolver(ctx)
+    );
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'email_broadcast',
+      recordId: id,
+    });
+    return ok(scheduled);
   });
 
   app.post('/v1/email/broadcasts/:id/cancel', async (request) => {
     requireRole(request, 'editor');
     await requireEmailModule(request);
     const { id } = IdParam.parse(request.params);
-    return ok(await broadcastService.cancel(toEmailContext(request), id));
+    const ctx = toEmailContext(request);
+    const cancelled = await broadcastService.cancel(ctx, id);
+    await indexEntity({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId,
+      entityType: 'email_broadcast',
+      recordId: id,
+    });
+    return ok(cancelled);
   });
 
   return Promise.resolve();

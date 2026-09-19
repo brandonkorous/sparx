@@ -22,6 +22,7 @@ import {
   serializeRevisionMeta,
 } from '@wizeworks/cms';
 import { writeAudit } from '@wizeworks/api-core/audit';
+import { indexContentEntry } from '../../../lib/content-search.js';
 
 const ListParams = z.object({ id: z.string().uuid() });
 const OneParams = z.object({
@@ -85,6 +86,9 @@ const revisionRoutes: FastifyPluginAsync = (app) => {
       });
       return entry;
     });
+
+    // A restore rewrites the body, which is where the indexed title lives.
+    await indexContentEntry(auth, id);
 
     return ok(serializeEntry(updated));
   });

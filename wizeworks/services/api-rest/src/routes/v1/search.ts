@@ -11,12 +11,14 @@ import crypto from 'node:crypto';
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { withTenant } from '@wizeworks/db';
+import { productSiteVisibilityWhere, withTenant } from '@wizeworks/db';
 import {
   collectionStats,
   findableProductCount,
+  findableRecordCount,
   generateScopedSearchKeyWithExpiry,
   palette,
+  PLATFORM_MODULE,
   resolveTypesenseHost,
   resolveTypesensePort,
   resolveTypesenseProtocol,
@@ -215,20 +217,77 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'viewer');
     const auth = requireAuth(request);
     const settledBefore = new Date(Date.now() - INDEX_GRACE_MS);
-    const [collections, findable, onSale] = await Promise.all([
+    // SCOPED TO THE SITE, like the two search routes above it in this file.
+    //
+    // It was the only one of the three that was not, so on a tenant with seven
+    // sites it compared every site's catalog against every site's index and put
+    // the answer over a list showing one site's products: "Searching your shop
+    // won't find 31 of your products", above "Showing 1-10 of 10". Both numbers
+    // were right about their own population and neither was about the other
+    // ([[feedback_site_is_the_business]]).
+    //
+    // BOTH halves have to move together. Scoping the index count and leaving the
+    // catalog count tenant-wide would turn a confusing warning into a wrong one.
+    const propertyId = await resolveListScope(
+      auth,
+      undefined,
+      request.headers['x-sparx-property-id']
+    );
+    const [
+      collections,
+      findable,
+      onSale,
+      findableCustomers,
+      customerRows,
+      findableOrders,
+      orderRows,
+    ] = await Promise.all([
       collectionStats(auth.tenantId),
-      findableProductCount(auth.tenantId),
+      findableProductCount(auth.tenantId, propertyId),
       withTenant({ tenantId: auth.tenantId }, (tx) =>
         tx.product.count({
-          where: { status: 'active', deletedAt: null, updatedAt: { lte: settledBefore } },
+          where: {
+            status: 'active',
+            deletedAt: null,
+            updatedAt: { lte: settledBefore },
+            // `productSiteVisibilityWhere` is the SAME clause the products list
+            // filters on, so the catalog half of this comparison is counted the
+            // way the screen showing it counts. A product with no site row is
+            // global and shows everywhere, which is what the sentinel means on
+            // the index side.
+            ...(propertyId === undefined || propertyId === null
+              ? {}
+              : productSiteVisibilityWhere(propertyId)),
+          },
         })
+      ),
+      // Customers and orders live ONLY in the ⌘K palette's two collections, and
+      // that route filters on the tenant alone — so both halves of these two
+      // comparisons are counted tenant-wide, with no site scope. Products are
+      // the odd one out, not these.
+      findableRecordCount('customers', auth.tenantId),
+      withTenant({ tenantId: auth.tenantId }, (tx) =>
+        tx.customer.count({ where: { updatedAt: { lte: settledBefore } } })
+      ),
+      findableRecordCount('orders', auth.tenantId),
+      withTenant({ tenantId: auth.tenantId }, (tx) =>
+        tx.order.count({ where: { updatedAt: { lte: settledBefore } } })
       ),
     ]);
     // `null` is "the collection is not there, so we could not look" — never zero,
     // and never a gap of everything. A caller that renders a warning from this
     // must treat null as silence.
     const productsMissing = findable === null ? null : Math.max(0, onSale - findable);
-    return ok({ collections, productsMissing });
+    // The same reading for the other two things the search box promises to
+    // find. Without them the status route could say a shop's whole catalog was
+    // findable while every customer and every order was invisible to the box —
+    // which is exactly the state MEASURED on Juniper Row on 2026-09-18: 3 of 34
+    // products, 0 of 36 customers, 0 of 16 orders, under an empty state reading
+    // "Nothing in your records matches that".
+    const customersMissing =
+      findableCustomers === null ? null : Math.max(0, customerRows - findableCustomers);
+    const ordersMissing = findableOrders === null ? null : Math.max(0, orderRows - findableOrders);
+    return ok({ collections, productsMissing, customersMissing, ordersMissing });
   });
 
   // ── Universal search (docs/39) — the `entities` collection spanning every
@@ -240,11 +299,19 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     const auth = requireAuth(request);
     const q = SearchAllQuery.parse(request.query);
     const enabled = await listEnabledModules(auth.tenantId);
-    const enabledSet = enabled as readonly string[];
+    // PLATFORM_MODULE is always searchable. It is what a projector writes for
+    // records that belong to no module and so can never be switched off —
+    // automations are the worked example (docs/81 §3: "there is no `automations`
+    // slug"). Without this line the filter asks for a module nobody can enable,
+    // matches nothing, and says so as "Nothing in your records matches": 57
+    // automations on one tenant, correctly indexed, correctly routed, and
+    // unreachable. [[feedback_absent_behaves_like_fine]]
+    const searchable: readonly string[] = [...enabled, PLATFORM_MODULE];
     const requested = csv(q.modules);
-    // Intersect any requested modules with the enabled set; default to all
-    // enabled modules so disabled-module hits are never returned.
-    const modules = requested ? requested.filter((m) => enabledSet.includes(m)) : [...enabledSet];
+    // Intersect any requested modules with the searchable set; default to all of
+    // it, so disabled-module hits are never returned. A caller narrowing to one
+    // module gets exactly that module — platform records are not smuggled in.
+    const modules = requested ? requested.filter((m) => searchable.includes(m)) : [...searchable];
     const result = await searchAll({
       tenantId: auth.tenantId,
       q: q.q,

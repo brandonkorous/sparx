@@ -13,7 +13,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { type Prisma } from '@wizeworks/db';
+import { nameSearchClauses, type Prisma } from '@wizeworks/db';
 import { paged } from '@wizeworks/api-core/envelope';
 import { requireRole } from '@wizeworks/api-core/auth';
 import { withRequestTenant } from '@wizeworks/api-core/db';
@@ -85,23 +85,15 @@ const financePaymentRoutes: FastifyPluginAsync = (app) => {
     // (legacy/import) order has no site, so it appears only in the all-sites view.
     const orderWhere: Prisma.OrderWhereInput = {
       ...(scope ? { propertyId: scope } : {}),
-      ...(needle
-        ? {
-            OR: [
-              { orderNumber: { contains: needle, mode: 'insensitive' } },
-              {
-                customer: {
-                  OR: [
-                    { firstName: { contains: needle, mode: 'insensitive' } },
-                    { lastName: { contains: needle, mode: 'insensitive' } },
-                    { companyName: { contains: needle, mode: 'insensitive' } },
-                    { email: { contains: needle, mode: 'insensitive' } },
-                  ],
-                },
-              },
-            ],
-          }
-        : {}),
+      // Every typed word has to land somewhere, so a payer's full name finds
+      // their payments. See `nameSearchClauses`.
+      AND: nameSearchClauses(needle, (term) => [
+        { orderNumber: { contains: term, mode: 'insensitive' as const } },
+        { customer: { firstName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { lastName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { companyName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { email: { contains: term, mode: 'insensitive' as const } } },
+      ]),
     };
 
     // `refunded` asks the MONEY, not the status word — see `paymentListFilter`

@@ -21,6 +21,7 @@ import { badRequest } from '@wizeworks/api-core/errors';
 import { requireRole } from '@wizeworks/api-core/auth';
 import {
   cancelTimeOff,
+  countTimeOff,
   createShift,
   decideTimeOff,
   deleteShift,
@@ -182,13 +183,26 @@ const staffScheduleRoutes: FastifyPluginAsync = async (app) => {
     await requireStaffModule(request);
     const auth = requireRole(request, 'viewer');
     const query = TimeOffQuery.parse(request.query);
-    const rows = await listTimeOff(auth.tenantId, query);
+    // The counts are their own query on purpose. They used to be derived from
+    // `rows` — which is the FILTERED list — under a comment saying the server
+    // sends them precisely so a filtered list cannot report "0 waiting".
+    // Narrowing to Approved reported zero waiting, which is the case the comment
+    // was written about. `countTimeOff` ignores the status filter by
+    // construction, so the sentence and the code now agree.
+    const [rows, counts] = await Promise.all([
+      listTimeOff(auth.tenantId, query),
+      countTimeOff(auth.tenantId, {
+        ...(query.staffMemberId ? { staffMemberId: query.staffMemberId } : {}),
+      }),
+    ]);
     return ok({
       items: rows.map(timeOffView),
-      // The queue's badge count. Sent rather than counted client-side because a
-      // filtered list would otherwise report "0 waiting" whenever someone had
-      // narrowed it to approved requests.
-      requestedCount: rows.filter((row) => row.status === 'requested').length,
+      // The queue's badge count.
+      requestedCount: counts.requested,
+      // Every request ever, so an empty queue can tell "all answered" from
+      // "nobody has ever asked". They are the same empty screen and opposite
+      // facts, and the screen was stating the first.
+      totalCount: counts.total,
     });
   });
 
