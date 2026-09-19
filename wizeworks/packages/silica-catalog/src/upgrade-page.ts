@@ -44,6 +44,9 @@
 
 import type { Node } from '@wizeworks/silicaui-html';
 
+import { backInStockLine, madeToOrderNote, preorderNote, soldOutNotice } from './commerce';
+import { visibleWhen } from './conditional';
+
 /**
  * Dead classes the PLATFORM stamped, mapped to what its factory emits now.
  *
@@ -329,6 +332,239 @@ function repairFormAction(form: Element): Element {
   return { ...form, data: { kind: 'action', ref }, attrs, children };
 }
 
+/* ── The buy box that could not say why you cannot buy it ─────────────────── */
+
+/**
+ * Bring a stamped buy box's SUPPLY DISCLOSURES up to the factory.
+ *
+ * WHY THIS CLEARS THE BAR ABOVE, and it clears it by more than any repair here.
+ *
+ * MEASURED 2026-09-18 across every stored product page in the fleet. Thirteen are
+ * published and live, and every one of them has an Add-to-cart form:
+ *
+ * ```text
+ *   can say "Sold out"           3 of 13
+ *   can say "Made to order"      1 of 13
+ *   can say "Preorder, ships …"  0 of 13
+ *   can say "Back in stock …"    0 of 13
+ * ```
+ *
+ * Ten live shops cannot tell a customer the thing is gone. The form is not gated on
+ * `soldOut` either, because the ref did not exist when they were stamped, so it renders
+ * in full on a product with nothing behind it: a live button, a firm price, and no
+ * sentence anywhere. That is broken on published sites in the strongest sense this file
+ * has, because somebody pays for a thing that is not there.
+ *
+ * (2) The platform stamped all of it. `buyBox()` emits the form, the gate and every
+ * notice; no author has ever typed one. (3) The replacement is known: these are the
+ * factory's own nodes, CALLED here rather than rebuilt, so the repair cannot drift from
+ * what a new site gets.
+ *
+ * WHY IT IS SAFE, beyond the draft-only contract every repair here has. Every node it
+ * adds is gated on data that is ABSENT for an ordinary product — `madeToOrder.shown`,
+ * `preorder.shown`, `soldOut`, `backInStock` — and the engine drops a node whose ref
+ * resolves to nothing. A repaired page is therefore identical for a product that is
+ * simply in stock, which is almost all of them. It differs only where the old page was
+ * lying.
+ *
+ * ONE REPAIR, NOT FOUR. They are one capability: what the page says instead of, or
+ * before, the button. Splitting them would mean four cohorts over one stamped region,
+ * and a page healed to say "sold out" but not "preorder" still takes money for nothing.
+ */
+
+/** The action ref `addToCartForm()` has always carried. */
+const ADD_TO_CART = 'add-to-cart';
+
+function isAddToCartForm(node: Node): boolean {
+  return (
+    node.kind === 'element' &&
+    node.tag === 'form' &&
+    node.data?.kind === 'action' &&
+    node.data.ref === ADD_TO_CART
+  );
+}
+
+/** Is this exact node gated on `ref`, in the given sense? */
+function gatedOn(node: Node, ref: string, negate: boolean): boolean {
+  if (node.kind === 'outlet') return false;
+  const data = node.data;
+  return data?.kind === 'visible' && data.ref === ref && Boolean(data.negate) === negate;
+}
+
+/**
+ * Does one of these DIRECT children gate on `ref`, in the given sense?
+ *
+ * Shallow, and that is the whole point. The first version searched the subtree, and
+ * the subtree includes the add-to-cart form — where `versionChoice` gates each version
+ * on `soldOut` so a sold-out size can grey itself out. So every stale page looked as
+ * though it already had a sold-out NOTICE, the repair skipped it, and the single most
+ * important of the four disclosures was never added to any of the ten live shops that
+ * need it. Silently: the ref really was in the tree, so a JSON search said yes.
+ *
+ * Presence is not placement, for the third time in this file. The notice, the panels
+ * and the gate are all DIRECT children of the buy box column, because that is where
+ * the factory puts them and where this repair puts them, so that is the only place
+ * worth asking about.
+ */
+function hasDirectGate(
+  children: readonly (Node | string)[],
+  ref: string,
+  negate: boolean
+): boolean {
+  return children.some((child) => typeof child !== 'string' && gatedOn(child, ref, negate));
+}
+
+/** Does this subtree name `ref` at all — as a gate, as a value bind, anywhere? */
+function mentionsRef(node: Node, ref: string): boolean {
+  if (node.kind === 'outlet') return false;
+  const data = node.data as { ref?: string } | undefined;
+  if (data?.ref === ref) return true;
+  const kids = (node as Element).children;
+  if (!Array.isArray(kids)) return false;
+  return kids.some((child) => typeof child !== 'string' && mentionsRef(child, ref));
+}
+
+/**
+ * The child that is the add-to-cart form, or the gate this repair wraps it in.
+ *
+ * DELIBERATELY NOT "any child containing the form". That was the first version, and it
+ * put the preorder panel in the PAGE GRID: the two-column grid's child is the buy-box
+ * column, whose children include the form, so the grid matched first and the panel
+ * became a grid CELL beside the photo — 544 by 719 pixels of solid amber. It was caught
+ * by opening the page in the studio and clicking the block, which is the only thing that
+ * would have caught it: every ref was present and correctly gated, so a search of the
+ * JSON said it had worked. Presence is not placement.
+ *
+ * The one level of lookahead that IS right is the sold-out gate, because the factory
+ * wraps the form in one and the wrapper is part of the slot rather than a container
+ * around it.
+ */
+function formSlotIndex(children: readonly (Node | string)[]): number {
+  return children.findIndex((child) => {
+    if (typeof child === 'string') return false;
+    if (isAddToCartForm(child)) return true;
+    if (!gatedOn(child, 'soldOut', true)) return false;
+    const kids = (child as Element).children;
+    return Array.isArray(kids) && kids.some((k) => typeof k !== 'string' && isAddToCartForm(k));
+  });
+}
+
+/** Put the back-in-stock line inside a sold-out notice that predates it. */
+function addDateToNotice(node: Node): Node {
+  if (isElement(node) && gatedOn(node, 'soldOut', false)) {
+    return { ...node, children: [...(node.children ?? []), backInStockLine()] };
+  }
+  const kids = (node as Element).children;
+  if (!Array.isArray(kids)) return node;
+  return {
+    ...(node as Element),
+    children: kids.map((child) => (typeof child === 'string' ? child : addDateToNotice(child))),
+  };
+}
+
+/** The refs a buy box's supply disclosures hang on. Exported so the surface that
+ *  REPORTS a stale page and the repair that FIXES one name the same four things. */
+export const DISCLOSURE_REFS = [
+  'madeToOrder.shown',
+  'preorder.shown',
+  'soldOut',
+  'backInStock',
+] as const;
+
+export type DisclosureRef = (typeof DISCLOSURE_REFS)[number];
+
+/**
+ * What this buy box column cannot say.
+ *
+ * ONE ANSWER, TWO CALLERS, and that is deliberate. `repairBuyBoxDisclosures` uses it to
+ * decide what to add, and `livePageGaps` uses it to decide what to tell the owner. When
+ * those were two separate pieces of reasoning they disagreed immediately and silently:
+ * the report said a page could say "sold out" while the repair was not adding the
+ * notice, both for the same wrong reason. A repair and its report have to be the same
+ * sentence or the panel lies.
+ */
+export function missingDisclosures(column: Node): DisclosureRef[] {
+  if (!isElement(column)) return [];
+  const children = column.children;
+  if (!Array.isArray(children)) return [];
+  // SELF-GUARDING: a node that does not hold the buy box's form is missing nothing,
+  // because there is nothing there to disclose about. Without this an ordinary `<div>`
+  // reports all four, and a caller that walks a whole page — which the reporting
+  // surface does — would say a contact page cannot tell you it is sold out.
+  if (formSlotIndex(children) === -1) return [];
+  // The gate wrapper around the form is not the column; answering for it would count
+  // the same buy box twice.
+  if (gatedOn(column, 'soldOut', true) || gatedOn(column, 'soldOut', false)) return [];
+
+  const notice = children.find(
+    (child) => typeof child !== 'string' && gatedOn(child, 'soldOut', false)
+  ) as Node | undefined;
+
+  const out: DisclosureRef[] = [];
+  if (!hasDirectGate(children, 'madeToOrder.shown', false)) out.push('madeToOrder.shown');
+  if (!hasDirectGate(children, 'preorder.shown', false)) out.push('preorder.shown');
+  // BOTH senses. The notice says the thing is gone; the negated gate is what stops the
+  // button rendering beside it. A page with one and not the other contradicts itself.
+  if (!notice || !hasDirectGate(children, 'soldOut', true)) out.push('soldOut');
+  // Only when there IS a notice — otherwise the missing notice brings the line with it
+  // and reporting both would name one repair twice.
+  if (notice && !mentionsRef(notice, 'backInStock')) out.push('backInStock');
+  return out;
+}
+
+/** The element holding the buy box's form, when it is missing any disclosure.
+ *
+ *  A node GATED on `soldOut` is never the column. It is the wrapper that hides the
+ *  form — either the factory's own or the one this repair adds — and without that
+ *  guard the repair matches its OWN OUTPUT: it wraps the form, the walk descends into
+ *  the wrapper, finds the form again, wraps it again, and the stack goes. Found by
+ *  running the repair against a real stored tree, which is the only thing that would
+ *  have found it. */
+function needsDisclosures(node: Node): node is Element {
+  return isElement(node) && missingDisclosures(node).length > 0;
+}
+
+function repairBuyBoxDisclosures(column: Element): Element {
+  const children = [...(column.children ?? [])];
+  const at = formSlotIndex(children);
+  if (at === -1) return column;
+
+  const missing = new Set<DisclosureRef>(missingDisclosures(column));
+
+  // The form itself has to disappear when there is nothing to sell. A stale tree leaves
+  // it ungated, so it renders on a sold-out product beside the notice saying it is gone.
+  let slot = children[at] as Node;
+  if (!gatedOn(slot, 'soldOut', true)) {
+    slot = visibleWhen(
+      { kind: 'element', tag: 'div', class: 'flex flex-col', children: [slot] },
+      'soldOut',
+      true
+    );
+  }
+
+  // Before the button, because each one changes what is being agreed to.
+  const before: Node[] = [];
+  if (missing.has('madeToOrder.shown')) before.push(madeToOrderNote());
+  if (missing.has('preorder.shown')) before.push(preorderNote());
+
+  // Instead of the button. `soldOut` is missing when EITHER half is, so the notice is
+  // added only when there is genuinely not one.
+  const after: Node[] = [];
+  if (!hasDirectGate(children, 'soldOut', false)) after.push(soldOutNotice());
+
+  let healed: Element = {
+    ...column,
+    children: [...children.slice(0, at), ...before, slot, ...after, ...children.slice(at + 1)],
+  };
+
+  // A notice that already existed predates the date line, so the line goes INSIDE it
+  // rather than beside it: "Back in stock 14 March" under "we will put it back as soon
+  // as we have more" is one thought, and two sibling panels would read as two.
+  if (missing.has('backInStock')) healed = addDateToNotice(healed) as Element;
+
+  return healed;
+}
+
 /**
  * Repair one class string, preserving order and every token that is not in the table.
  *
@@ -395,6 +631,11 @@ export function upgradePageBody(root: Node): { root: Node; changed: boolean } {
 
     if (hasDeadFormAction(next)) {
       next = repairFormAction(next);
+      changed = true;
+    }
+
+    if (needsDisclosures(next)) {
+      next = repairBuyBoxDisclosures(next);
       changed = true;
     }
 

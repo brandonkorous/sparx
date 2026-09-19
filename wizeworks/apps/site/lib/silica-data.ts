@@ -42,7 +42,7 @@ import {
   type PublicProductVariant,
 } from './commerce';
 import { getEntriesByIds, publicGetPaged, type ApiEntry } from './content';
-import { formatMoney } from './format';
+import { backInStockLine, formatMoney, preorderShipsLine } from './format';
 import { madeToOrderCopy, type StorefrontPaymentMode } from './made-to-order-copy';
 import { mediaUrl } from './media';
 
@@ -237,6 +237,79 @@ export function productToSilicaRecord(
     // bind. `shown` is what the panel's visibility hangs on — absent, not false,
     // because the engine drops a node whose ref is absent (see `visibleWhen`).
     madeToOrder: madeToOrderRecord(p, price, commerce),
+    // Something you can buy before it exists (issue 682). Same shape and same
+    // reasoning as `madeToOrder` above: sentences, not values, because the tree
+    // has no calendar.
+    preorder: preorderRecord(p, commerce?.defaultLocale ?? 'en-US'),
+    // The day a sold-out thing comes back (issue 683). Only read inside the
+    // sold-out notice, so it never argues with a buyable product.
+    backInStock: backInStockSentence(p, commerce?.defaultLocale ?? 'en-US'),
+  };
+}
+
+/**
+ * "Back in stock March 14, 2027", but only when that is true of the WHOLE
+ * product (issue 683).
+ *
+ * Every variant carries its own `expectedBackAt`, read from the newest
+ * backorder's promised date. This record is the product, and the node that binds
+ * it renders inside the sold-out notice, which means nothing on the page is in
+ * stock. So the only question is WHICH date, and there is one honest answer:
+ * print it when all the dates anybody has promised are the SAME date. A product
+ * whose small returns in March and whose large returns in June has no single
+ * "back in stock" day, and picking the earlier one tells somebody waiting on a
+ * large a date that is not theirs.
+ *
+ * Empty string, never an absent key: an absent ref is UNKNOWN to the engine and
+ * keeps the node as authored, which would print an empty line under every
+ * sold-out product. An empty one is found, and the engine drops the node.
+ */
+function backInStockSentence(p: PublicProduct, locale: string): string {
+  const days = new Set(
+    p.variants.map((v) => v.expectedBackAt).filter((d): d is string => Boolean(d))
+  );
+  if (days.size !== 1) return '';
+  const [only] = [...days];
+  return only ? backInStockLine(only, locale) : '';
+}
+
+/**
+ * What a shopper has to be told before they pay for a thing that has not been
+ * made yet: that it is a preorder, when it ships, and what the maker says about
+ * it (issue 682).
+ *
+ * **Deliberately only for a product sold in ONE version.** The preorder window
+ * lives on a VARIANT, and this record is the product — so on a shirtdress where
+ * only the large chalk is on preorder and the other eight sizes are in stock, a
+ * product-level sentence would promise a March date to somebody buying a size
+ * that ships today. Saying nothing is the honest answer until the version picker
+ * can carry it per version.
+ *
+ * Every key always, even when there is nothing to say: an ABSENT key is an
+ * UNKNOWN ref to the engine, which keeps the node as authored, so `{}` would
+ * render an empty warning panel on every ordinary product. Empty strings are
+ * found, and the engine drops those. Same trap as `madeToOrderRecord`.
+ */
+function preorderRecord(p: PublicProduct, locale: string): Record<string, unknown> {
+  const blank = { shown: false, ships: '', note: '', scarce: '' };
+  if (p.variants.length !== 1) return blank;
+  const only = p.variants[0];
+  const offer = only?.preorder;
+  if (!offer?.isTakingOrders) return blank;
+  // The same condition the buy box itself uses: a preorder is what you are
+  // offered INSTEAD of the shelf, so an item with stock left goes on selling the
+  // ordinary way and this says nothing.
+  if ((only?.available ?? 0) > 0) return blank;
+  return {
+    shown: true,
+    // `timeZone: 'UTC'` lives in `formatArrival`, and it is the whole of issue
+    // 679: this is a calendar day stored at UTC midnight, so printing it on the
+    // shopper's clock promises the day before the one the maker typed.
+    ships: preorderShipsLine(offer.availableAt, locale),
+    note: offer.availabilityNote ?? '',
+    // Only when the run is capped. `remaining` is null for an uncapped one and
+    // there is no honest number for "no limit".
+    scarce: offer.remaining != null ? `${offer.remaining} left on this run` : '',
   };
 }
 

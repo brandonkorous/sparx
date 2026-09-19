@@ -176,4 +176,86 @@ describe('a record template shows the record', () => {
       expect(/\ssrc="[^"]+"/.test(tag), `<img> with no src — ${tag.slice(0, 80)}`).toBe(true);
     }
   });
+  // The supply sentences (issues 682, 683). These are the only words on a product
+  // page that decide whether somebody pays for a thing that is not in a box
+  // anywhere, and until this act the template carried NO ref for either of them:
+  // the legacy React product page said both, and the page every tenant actually
+  // gets said neither. `lib/silica-data.test.ts` in the site app proves the
+  // sentences are composed correctly; these prove the template puts them on the
+  // page, which is the half that was missing.
+
+  it('the product page says the thing is a preorder', () => {
+    const html = render('commerce.product', {
+      product: [
+        {
+          ...PRODUCT,
+          preorder: {
+            shown: true,
+            ships: 'Preorder: ships July 1, 2027',
+            note: 'Strung to order by the workshop in Lyon.',
+            scarce: '6 left on this run',
+          },
+        },
+      ],
+      'commerce.related': [ALSO_LIKE],
+    });
+
+    expect(html, 'the ship date').toContain('Preorder: ships July 1, 2027');
+    expect(html, "the maker's own words").toContain('Strung to order by the workshop in Lyon.');
+    expect(html, 'what is left of the run').toContain('6 left on this run');
+    // And it is ABOVE the button, because it changes what is being agreed to.
+    expect(
+      html.indexOf('Preorder: ships July 1, 2027'),
+      'the panel fell below the add-to-cart button'
+    ).toBeLessThan(html.indexOf('Add to cart'));
+  });
+
+  it('an ordinary product gets no preorder panel at all', () => {
+    // The trap this guards. An ABSENT ref is UNKNOWN to the engine, which keeps
+    // the node as authored, so a record missing the key renders an empty warning
+    // panel under every product in the shop. Empty strings are found and dropped.
+    const html = render('commerce.product', {
+      product: [{ ...PRODUCT, preorder: { shown: false, ships: '', note: '', scarce: '' } }],
+      'commerce.related': [ALSO_LIKE],
+    });
+
+    expect(html, 'preorder wording leaked').not.toContain('Preorder');
+    expect(html, 'an empty warning panel rendered').not.toContain('gap-1 rounded-box bg-warning');
+  });
+
+  it('a sold-out product says the day it comes back', () => {
+    const html = render('commerce.product', {
+      product: [
+        {
+          ...PRODUCT,
+          soldOut: true,
+          backInStock: 'Back in stock March 14, 2027',
+          preorder: { shown: false, ships: '', note: '', scarce: '' },
+        },
+      ],
+      'commerce.related': [ALSO_LIKE],
+    });
+
+    expect(html, 'the sold-out notice').toContain('Sold out');
+    expect(html, 'the day it comes back').toContain('Back in stock March 14, 2027');
+  });
+
+  it('a sold-out product nobody has promised back says only the general thing', () => {
+    // The commoner case by far, and the one that must not print a half sentence.
+    const html = render('commerce.product', {
+      product: [
+        {
+          ...PRODUCT,
+          soldOut: true,
+          backInStock: '',
+          preorder: { shown: false, ships: '', note: '', scarce: '' },
+        },
+      ],
+      'commerce.related': [ALSO_LIKE],
+    });
+
+    expect(html, 'the sold-out notice').toContain('Sold out');
+    expect(html, 'general sentence').toContain('as soon as we have more');
+    expect(html, 'a dangling date line').not.toContain('Back in stock');
+  });
 });

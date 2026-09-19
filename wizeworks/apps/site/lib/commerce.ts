@@ -181,9 +181,12 @@ export interface PublicProductVariant {
    *  9.4). Null for the overwhelming majority of variants. */
   preorder: PublicPreorderOffer | null;
   /** The soonest date anybody waiting on this item has been promised it back
-   *  (docs/146 Phase 9.3). Null when nobody has been able to promise anything —
-   *  which is common, and is shown as "we will confirm a date" rather than as an
-   *  invented one or as silence. */
+   *  (docs/146 Phase 9.3). Null when nobody has been able to promise anything,
+   *  which is the common case: measured 2026-09-18, all three backorders on the
+   *  platform carried no day. A null reads as the plain sold-out wording, never
+   *  as an invented date. Shown on BOTH product-page renderers since issue 683;
+   *  the silica one, which is the page tenants actually get, drew nothing for
+   *  it at all before that. */
   expectedBackAt: string | null;
 }
 

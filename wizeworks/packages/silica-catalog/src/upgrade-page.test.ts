@@ -1,6 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { atom, bind, el, toHtml, type Node } from '@wizeworks/silicaui-html';
+import {
+  atom,
+  bind,
+  el,
+  resolveTree,
+  toHtml,
+  type DataScope,
+  type Node,
+} from '@wizeworks/silicaui-html';
 
+import { addToCartForm, buyBox } from './commerce';
 import { checkClassString } from './vocabulary-check';
 import { repairDeadClasses, upgradePageBody } from './upgrade-page';
 
@@ -381,5 +390,164 @@ describe('the form that thanked people for messages it threw away', () => {
     const { root, changed } = upgradePageBody(page);
     expect(changed).toBe(true);
     expect(actionOf(root)).toEqual({ kind: 'action', ref: 'contact' });
+  });
+});
+
+describe('the buy box that could not say why you cannot buy it', () => {
+  /** A product column stamped before the supply refs existed: a title, a price, and an
+   *  Add-to-cart form with nothing gating it and nothing beside it. This is the shape
+   *  ten of the thirteen live product pages in the fleet are actually in. */
+  const staleBuyBox = (): Node =>
+    el('div', 'flex flex-col gap-4', {
+      children: [
+        bind(
+          el('h1', 'text-3xl font-semibold text-base-content', { text: 'Product name' }),
+          'title'
+        ),
+        bind(el('p', 'text-2xl text-base-content', { text: '$0.00' }), 'price'),
+        addToCartForm(),
+      ],
+    });
+
+  const json = (tree: Node) => JSON.stringify(tree);
+
+  /** The real page shape: a two-column grid, photo on the left, buy box on the right.
+   *  This is what every stamped product page in the fleet actually looks like. */
+  const stalePage = (): Node =>
+    el('section', 'bg-base-100 @container px-6 py-12', {
+      children: [
+        el('div', 'mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2', {
+          children: [
+            el('img', 'w-full rounded-box', { attrs: { src: '/x.jpg', alt: '' } }),
+            staleBuyBox(),
+          ],
+        }),
+      ],
+    });
+
+  it('puts the panels in the buy box, not in the page grid', () => {
+    // The bug this test exists for, found by opening the page in the studio and
+    // clicking the giant amber rectangle on it. The repair matched the two-column GRID
+    // first — the grid's child is the buy-box column, whose children include the form —
+    // so the preorder panel became a grid CELL beside the photo, 544 by 719 pixels of
+    // solid amber.
+    //
+    // Nothing caught it. Every ref was present and correctly gated, so the JSON search
+    // in the test above passed, and so did the whole fleet probe. PRESENCE IS NOT
+    // PLACEMENT. [[feedback_a_test_that_cannot_go_red]]
+    const { root } = upgradePageBody(stalePage());
+    const grid = (root as Extract<Node, { kind: 'element' }>).children?.[0] as Extract<
+      Node,
+      { kind: 'element' }
+    >;
+
+    expect(grid.class, 'the grid moved').toContain('grid-cols-2');
+    expect(grid.children, 'the repair added a cell to the page grid').toHaveLength(2);
+    // …and the panel really is in the column, so this is not passing by doing nothing.
+    expect(json(grid.children?.[1] as Node)).toContain('"preorder.shown"');
+  });
+
+  it('teaches a stamped buy box all four things it could not say', () => {
+    const { root, changed } = upgradePageBody(staleBuyBox());
+
+    expect(changed).toBe(true);
+    expect(json(root), 'sold out').toContain('"soldOut"');
+    expect(json(root), 'made to order').toContain('"madeToOrder.shown"');
+    expect(json(root), 'preorder').toContain('"preorder.shown"');
+    expect(json(root), 'back in stock').toContain('"backInStock"');
+  });
+
+  it('stops the form rendering on a product there is none of', () => {
+    // The half that makes it a money bug rather than a missing sentence. A notice
+    // saying "sold out" beside a live Add-to-cart button is worse than neither.
+    //
+    // Asserted STRUCTURALLY, on the slot's own binding, because the obvious version
+    // cannot go red: `addToCartForm` already gates each version choice on `soldOut`,
+    // so a substring check for the ref passes on the broken tree too. The question is
+    // which NODE carries it. [[feedback_a_test_that_cannot_go_red]]
+    const { root } = upgradePageBody(staleBuyBox());
+    const children = (root as Extract<Node, { kind: 'element' }>).children ?? [];
+    const slot = children.find(
+      (child) => typeof child !== 'string' && json(child).includes('"add-to-cart"')
+    );
+
+    expect(slot, 'the form went missing entirely').toBeDefined();
+    expect((slot as Extract<Node, { kind: 'element' }>).data).toEqual({
+      kind: 'visible',
+      ref: 'soldOut',
+      negate: true,
+    });
+  });
+
+  it('leaves the current factory buy box completely alone', () => {
+    // The test that says the repair knows what "already correct" looks like. If this
+    // ever reddens, the repair has started re-stamping pages that are up to date.
+    const { changed } = upgradePageBody(buyBox());
+    expect(changed).toBe(false);
+  });
+
+  it('heals once and then stops', () => {
+    const once = upgradePageBody(staleBuyBox());
+    const twice = upgradePageBody(once.root);
+    expect(twice.changed, 'the repair matched its own output').toBe(false);
+    expect(json(twice.root)).toBe(json(once.root));
+  });
+
+  it('puts not one extra word on a product that is simply in stock', () => {
+    // Why this repair is safe to run on somebody's page without asking. Every node it
+    // adds is gated on data an ordinary product does not carry, and the engine drops a
+    // node whose ref resolves to nothing.
+    //
+    // The first version of this asserted the two renders were byte-identical, and that
+    // was simply false: the gate needs a wrapper to hang on. Measuring the difference
+    // rather than asserting it away is what produced the three checks below.
+    // [[feedback_a_test_that_cannot_go_red]]
+    const host = {
+      resolveCollection: () => undefined,
+      resolveBinding: (ref: string, _scope: DataScope) => {
+        if (ref === 'title') return { value: 'Harbour Rope Lamp' };
+        if (ref === 'price') return { value: '$148.00' };
+        return { value: '' };
+      },
+    };
+    const render = (tree: Node) => toHtml(resolveTree(tree, host));
+    /** Everything a person can actually read, with the markup taken away. */
+    const words = (html: string) =>
+      html
+        .replace(/<[^>]*>/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+    const stale = render(staleBuyBox());
+    const healed = render(upgradePageBody(staleBuyBox()).root);
+
+    expect(healed, 'the product stopped selling').toContain('Add to cart');
+    expect(words(healed), 'the repair put words on an ordinary product').toBe(words(stale));
+
+    // The word check alone is not enough, and measuring showed why: the preorder and
+    // made-to-order panels carry NO literal text, so an ungated one renders as an empty
+    // bordered box and adds not a single word. Their fills are the only evidence.
+    expect(healed, 'an empty preorder panel rendered').not.toContain('bg-warning');
+    expect(healed, 'an empty notice panel rendered').not.toContain('bg-base-200');
+
+    // What DOES differ, said out loud so nobody reads the above as "nothing changed":
+    // the form gains a `flex flex-col` wrapper to hang the sold-out gate on, because a
+    // node carries one binding and the form's is its action. 33 bytes, no visual effect.
+    expect(healed.length - stale.length).toBe('<div class="flex flex-col"></div>'.length);
+  });
+
+  it('does not touch a form that is not an add-to-cart', () => {
+    const contact = el('div', 'flex flex-col gap-4', {
+      children: [
+        el('h2', 'text-2xl', { text: 'Write to us' }),
+        el('form', 'flex flex-col gap-3', {
+          children: [el('input', 'input', { attrs: { type: 'email', name: 'email' } })],
+        }),
+      ],
+    });
+    const before = json(contact);
+    const { root, changed } = upgradePageBody(contact);
+    expect(changed).toBe(false);
+    expect(json(root)).toBe(before);
   });
 });

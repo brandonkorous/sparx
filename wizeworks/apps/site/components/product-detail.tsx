@@ -10,7 +10,7 @@ import { useMemo, useState } from 'react';
 
 import { Button } from '@wizeworks/silicaui-react';
 
-import { formatMoney, formatPriceRange } from '@/lib/format';
+import { backInStockLine, formatMoney, formatPriceRange, preorderShipsLine } from '@/lib/format';
 import { mediaUrl } from '@/lib/media';
 import type { PublicPreorderOffer, PublicProduct, PublicProductVariant } from '@/lib/commerce';
 import { useCart } from './cart-provider';
@@ -426,22 +426,12 @@ export function ProductDetail({
   );
 }
 
-/** A calendar date in the shopper's own language. Date only — an expected
- *  arrival is never accurate to the hour, and printing one implies it is. */
-function formatArrival(iso: string, locale: string): string {
-  return new Date(iso).toLocaleDateString(locale, {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-}
-
 /**
  * What the buy box says about supply.
  *
  * Five states, and the order they are tested in is the order of how much the
  * shopper gets to know. The two new ones both exist to replace a dead end:
- * "Sold out" ends the visit, "Preorder — ships 14 March" and "Back in stock 14
+ * "Sold out" ends the visit, "Preorder: ships 14 March" and "Back in stock 14
  * March" do not.
  *
  * Neither invents a date. A preorder with no confirmed date says exactly that,
@@ -472,9 +462,7 @@ function StockLine({
     return (
       <span className="text-base-content inline-flex flex-wrap items-center gap-1.5 text-sm font-medium">
         <span className="bg-info h-2 w-2 rounded-full" />
-        {preorder.availableAt
-          ? `Preorder: ships ${formatArrival(preorder.availableAt, locale)}`
-          : 'Preorder: shipping date to be confirmed'}
+        {preorderShipsLine(preorder.availableAt, locale)}
         {preorder.availabilityNote ? (
           <span className="text-base-content font-normal">· {preorder.availabilityNote}</span>
         ) : null}
@@ -498,7 +486,7 @@ function StockLine({
           }
         />
         {expectedBackAt
-          ? `Back in stock ${formatArrival(expectedBackAt, locale)}`
+          ? backInStockLine(expectedBackAt, locale)
           : inStock
             ? 'Available to order'
             : 'Out of stock'}

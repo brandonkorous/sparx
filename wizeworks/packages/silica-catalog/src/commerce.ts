@@ -703,8 +703,16 @@ function buyStatus(): Node {
  *  Shown on the `soldOut` bind, which the form hides on — so the two are mutually
  *  exclusive by construction rather than by two conditions that can disagree. The
  *  words stay industry-agnostic and make no promise the business has not made: a
- *  bakery, a bookshop and a machine shop all sell out, and none of them can be told
- *  by this file when the thing comes back. */
+ *  bakery, a bookshop and a machine shop all sell out.
+ *
+ *  WHEN the business has actually named a day, it says the day (issue 683). The
+ *  public payload has carried `expectedBackAt` on every variant since backorders
+ *  shipped, the legacy `<ProductDetail>` printed it, and this template had no ref
+ *  for it at all, so a shop that had told its console 14 March showed a customer
+ *  nothing but "as soon as we have more". Same hole as the preorder panel below,
+ *  found the same afternoon. The generic sentence stays for the far commoner case
+ *  where nobody has promised anything; the dated line sharpens it when there is a
+ *  date, and neither one invents one. */
 export function soldOutNotice(): Node {
   return visibleWhen(
     el('div', 'mt-2 flex flex-col gap-2 rounded-box border border-base-300 bg-base-200 p-5', {
@@ -713,9 +721,32 @@ export function soldOutNotice(): Node {
         el('p', 'text-base text-base-content', {
           text: 'This one has gone for now. We will put it back as soon as we have more.',
         }),
+        backInStockLine(),
       ],
     }),
     'soldOut'
+  );
+}
+
+/**
+ * "Back in stock March 14, 2027", when the business has named a day.
+ *
+ * Its own factory rather than an inline child of the notice above, because it has a
+ * SECOND caller: `upgradePageBody` adds it to a buy box that was stamped before this
+ * existed, and a repair that rebuilt the sentence by hand would be a second copy to
+ * keep in step. One node, two callers, same reason `preorderShipsLine` has one home
+ * in the storefront.
+ *
+ * A whole sentence composed by the storefront, not a bare date: the tree has no
+ * calendar, so an ISO string cannot become "Back in stock March 14, 2027" inside a
+ * bind.
+ */
+export function backInStockLine(): Node {
+  return visibleWhen(
+    el('p', 'text-base font-semibold text-base-content', {
+      children: [bind(el('span', '', { text: '' }), 'backInStock')],
+    }),
+    'backInStock'
   );
 }
 
@@ -875,6 +906,48 @@ export function madeToOrderNote(): Node {
   );
 }
 
+/**
+ * A thing that does not exist yet, and when it will (issue 682).
+ *
+ * Built exactly like `madeToOrderNote` above and for the same reason: the tree
+ * has no calendar, so "2027-07-01T00:00:00Z" cannot become "ships 1 July 2027"
+ * inside a bind. The storefront composes the sentences (`lib/silica-data`) and
+ * this places them.
+ *
+ * **Why it had to exist at all.** The preorder window is a real record with a
+ * date, a limit and the merchant's own words, it rides the public product
+ * payload, and the legacy `<ProductDetail>` drew it — but the PDP every tenant
+ * actually gets renders through this template, which had no preorder ref of any
+ * kind. So a shop could sell a $6,800 bracelet it did not have, with the
+ * add-to-cart enabled and NOT ONE WORD about a July ship date. A preorder the
+ * customer is never told about is not a preorder, it is a late order.
+ *
+ * `warning`, not the neutral panel the made-to-order note uses: this is not
+ * extra detail about something in the box, it is the reason the box is empty.
+ * Above the button for the same reason as the note above it.
+ *
+ * SOLID `bg-warning` with `text-warning-content`, which is the pair the low-stock
+ * badge above already uses. A tint written as `bg-warning/10` was the first
+ * attempt and was wrong twice over: it is the only hand-mixed alpha anywhere in
+ * this catalog, so a theme that restates `--color-warning` would not carry it,
+ * and the ink over it stayed `base-content`, which has no promised contrast
+ * against a tinted fill on a dark theme. The token pair is contrast-safe by
+ * construction.
+ */
+export function preorderNote(): Node {
+  const line = (ref: string, cls: string): Node =>
+    visibleWhen(
+      el('span', cls, { children: [bind(el('span', '', { text: '' }), `preorder.${ref}`)] }),
+      `preorder.${ref}`
+    );
+  return visibleWhen(
+    el('div', 'flex flex-col gap-1 rounded-box bg-warning p-3 text-sm text-warning-content', {
+      children: [line('ships', 'font-semibold'), line('note', ''), line('scarce', 'font-semibold')],
+    }),
+    'preorder.shown'
+  );
+}
+
 export function buyBox(): Node {
   return repeat(
     // A self-contained SECTION so the buy box stands alone — dropped as a bare block,
@@ -973,6 +1046,8 @@ export function buyBox(): Node {
                 // (issue 184). Self-hides on every product that is not made to
                 // order, which is most of them.
                 madeToOrderNote(),
+                // The same rule for a thing that does not exist yet (issue 682).
+                preorderNote(),
                 // The form and the notice hang off the SAME `soldOut` bind, one negated,
                 // so a product that cannot be bought never renders a control that says
                 // it can. Wrapped in a plain div because a node carries one `data`
