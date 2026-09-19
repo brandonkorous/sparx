@@ -58,23 +58,66 @@ import { fileURLToPath } from 'node:url';
 const WORKBENCH = join(dirname(fileURLToPath(import.meta.url)), '..', 'apps', 'workbench');
 const read = (p) => readFileSync(join(WORKBENCH, p), 'utf8');
 
-/** BANNED_IN_PRODUCT_COPY from @piggles/config, plus the brand name itself —
- *  the one word that is not jargon but is still the wrong product. */
-const BANNED = [
-  'CMS',
-  'CRM',
-  'headless',
-  'MDI',
-  'RBAC',
-  'tenant',
-  'module',
-  'collection',
-  'price book',
-  'GraphQL',
-  'webhook',
-  'API key',
-  'sparx',
-];
+// Some of what a Piggles screen renders is not IN the Piggles console. The
+// ready-made compatibility lists are a shared package, and every one of the
+// fourteen described itself to a shop owner as "<Something> fitment: A -> B,
+// narrowable by C" on a screen this console titles "What fits what" — five uses
+// of the banned word on one pane, with this guard reporting clean, because it
+// only ever read files under `apps/workbench`.
+const PIGGLES = join(dirname(fileURLToPath(import.meta.url)), '..');
+const REPO = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const readRepo = (p) => readFileSync(join(REPO, p), 'utf8');
+
+/**
+ * BANNED_IN_PRODUCT_COPY, READ FROM @piggles/config, plus the brand name itself —
+ * the one word that is not jargon but is still the wrong product.
+ *
+ * It used to be a hand-typed copy of that list under a comment claiming it came
+ * from there. It did not, and the two drifted: `fitment` was added to the
+ * lexicon — the file a copy reviewer greps — and this checker went on passing,
+ * because its own twelve words had never heard of it. A list that says where it
+ * comes from and does not go there is worse than one that admits it is local.
+ *
+ * Parsed rather than imported because this is a plain .mjs script with no build
+ * step, and it throws rather than falling back: a vocabulary guard running on an
+ * empty word list reports every screen clean.
+ */
+const LEXICON = 'packages/config/src/lexicon.ts';
+const BANNED = (() => {
+  let src;
+  try {
+    src = readFileSync(join(PIGGLES, LEXICON), 'utf8');
+  } catch {
+    // A stack trace is loud but says nothing. Name the file and what happens
+    // without it, the way the moved-declaration throw below does.
+    throw new Error(
+      `check:nav-vocabulary — cannot read ${LEXICON}. That file is the banned-word ` +
+        `list this guard checks every screen against; without it there is nothing ` +
+        `to check and every screen reports clean. Fix the path, do not delete it.`
+    );
+  }
+  const from = src.search(/export const BANNED_IN_PRODUCT_COPY = \[/);
+  if (from < 0) {
+    throw new Error(
+      `check:nav-vocabulary — BANNED_IN_PRODUCT_COPY is not in ${LEXICON}. It has ` +
+        `moved or been renamed; point this at its new home. Carrying on would check ` +
+        `every screen against an empty word list and report them all clean.`
+    );
+  }
+  // COMMENTS STRIPPED FIRST. The entry explaining why a word is banned quotes
+  // that word, so a naive scan reads it twice and reports every hit twice —
+  // which is how this line came to be written.
+  const body = src.slice(from, src.indexOf('\n] as const;', from)).replace(/^\s*\/\/.*$/gm, '');
+  const words = [...body.matchAll(/'((?:[^'\\]|\\.)+)'/g)].map((m) => m[1]);
+  if (words.length < 10) {
+    throw new Error(
+      `check:nav-vocabulary — only ${String(words.length)} banned words parsed out of ` +
+        `${LEXICON}. That is below the floor; the shape of the list has changed.`
+    );
+  }
+  // Not in the lexicon because it is not jargon — it is the other product's name.
+  return [...words, 'sparx'];
+})();
 
 /** Other companies, banned in the catalogs (root CLAUDE.md). Not the whole market:
  *  the ones this fork actually arrived carrying, plus the obvious neighbours, so a
@@ -339,7 +382,12 @@ function walk(rel) {
   for (const entry of readdirSync(join(WORKBENCH, rel), { withFileTypes: true })) {
     const next = `${rel}/${entry.name}`;
     if (entry.isDirectory()) walk(next);
-    else if (/\.tsx?$/.test(entry.name)) {
+    // A TEST IS NOT A SCREEN. A test that pins how a word is translated has to
+    // quote the untranslated one to do it, and reporting that as screen copy
+    // would make the honest fixture the thing that fails the build — which
+    // teaches people to write a fixture that is not what the server sends.
+    // `check-plain-words` has excluded tests since it was written; this did not.
+    else if (/\.tsx?$/.test(entry.name) && !/\.test\.tsx?$/.test(entry.name)) {
       const src = read(next);
       for (const m of src.matchAll(CALL)) {
         const [, key, single, tpl] = m;
@@ -374,7 +422,11 @@ function walk(rel) {
         // One sentence can match two patterns above (a `title=` prop is also
         // sentence-shaped). Reporting it twice makes the output look longer than
         // the problem is, which is its own way of getting a check ignored.
-        const seenKey = `${next} ${text}`;
+        // The separator is written as an ESCAPE, never as a literal NUL byte. A raw
+        // null byte in the source makes this a BINARY file to grep and ripgrep, so
+        // every repo-wide text search silently skips the vocabulary guard - including
+        // a search for the rule you are looking for right now.
+        const seenKey = `${next}\u0000${text}`;
         if (seenCopy.has(seenKey)) continue;
         seenCopy.add(seenKey);
         rendered.push({ key: 'screen copy', file: next, listed: true, kind: 'copy', text });
@@ -437,6 +489,24 @@ const CATALOGS = [
     fields: ['title', 'supporting'],
     lists: [],
   },
+  {
+    // Outside the console — see `readRepo` above. The anchor proves the array is
+    // still there; the strings are read from the whole file, because each
+    // dictionary is its own `const` above it and only the array knows their
+    // names.
+    //
+    // `indent: 2` is load-bearing. These files are mostly TREES of real-world
+    // names — every make, model and engine carries a `name`, three and five
+    // levels deep — and scanning those would flag "Ford" as a foreign brand and
+    // get the whole check switched off. Two spaces is the dictionary's own
+    // fields and nothing below them.
+    repo: true,
+    file: 'wizeworks/packages/commerce-schemas/src/fitment-dictionaries.ts',
+    anchor: 'FITMENT_DICTIONARIES',
+    indent: 2,
+    fields: ['name', 'description'],
+    lists: [],
+  },
 ];
 
 /** The whole declaration body, or a throw naming what moved. */
@@ -454,11 +524,14 @@ function declaration(src, file, anchor) {
 }
 
 const catalogStrings = [];
-for (const { file, anchor, fields, lists } of CATALOGS) {
-  const body = declaration(read(file), file, anchor);
+for (const { file, anchor, fields, lists, repo, indent } of CATALOGS) {
+  const src = repo ? readRepo(file) : read(file);
+  // `indent` scans the WHOLE file at one depth; without it, the declaration.
+  const body = indent ? (declaration(src, file, anchor), src) : declaration(src, file, anchor);
+  const depth = indent ? String.raw`^ {${String(indent)}}` : String.raw`^\s*`;
   for (const field of fields) {
     for (const m of body.matchAll(
-      new RegExp(String.raw`^\s*${field}:\s*'((?:[^'\\]|\\.)*)'`, 'gm')
+      new RegExp(depth + String.raw`${field}:\s*'((?:[^'\\]|\\.)*)'`, 'gm')
     )) {
       catalogStrings.push({ key: `${anchor}.${field}`, file, kind: 'catalog', text: m[1] });
     }

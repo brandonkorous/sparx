@@ -2,6 +2,7 @@
 A full-service sparx partner. We design, build and run content-and-commerce sites for growing businesses, then stay on as their team.
 Sparx footer
 Sparx navbar
+The sparx team
 fill the slots and they are the tenant’s. For the FRAME prefer sparx.navbar / sparx.footer, which are these
 sparx ${name}
 sparx Managed Hosting
@@ -20,4 +21,3 @@ sparxcms.com → CMS
 sparxcrm.com → CRM
 sparxemail.com → Email
 zsh: sparx
-The sparx team

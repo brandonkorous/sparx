@@ -100,6 +100,20 @@ on:
           # orders to suppliers, deliveries, supplier invoices, returns,
           # transfers, counts), so that release needs this behind it.
           - reindex-search
+          # Moves a business's FREE web address onto its own brand's zone. Each brand
+          # mints one: a sparx business gets `<slug>.sparx.zone`, a Piggles business
+          # `<slug>.piggles.site`. Adding a SECOND site once took the default zone
+          # rather than the tenant's, so a Piggles shop ended up with sites in two
+          # brands' zones and the extra ones carried a product name its owner has
+          # never heard of — on the public address her customers type. The minting
+          # code is fixed; the rows it already wrote are what this repairs.
+          #
+          # It MINTS the right address and makes it canonical. It does NOT delete the
+          # old one: that address is live and may be written on something, so it stays
+          # and redirects. Custom domains are never touched. A brand with no
+          # `<BRAND>_ZONE_DOMAIN` set is reported and skipped rather than guessed at.
+          # Dry-runs by default. Safe to re-run.
+          - repair-cross-brand-subdomains
       environment:
         description: 'Where to run it'
         required: false
@@ -339,6 +353,16 @@ jobs:
               # WOULD seed and writes nothing. `tenant` composes, so a single account
               # can be repaired without touching the rest.
               args='"node","--import","tsx","src/scripts/backfill-finance-categories.ts"'
+              if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
+              if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
+              command="[$args]"
+              ;;
+            repair-cross-brand-subdomains)
+              image="$REPO/api-rest:$TAG"
+              # WORKDIR is /app/services/api-rest. Unticked it prints every address it
+              # WOULD move, with its before and after, and writes nothing. `tenant`
+              # composes, so one business can be repaired on its own.
+              args='"node","--import","tsx","src/scripts/repair-cross-brand-subdomains.ts"'
               if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
               if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
               command="[$args]"

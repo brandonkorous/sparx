@@ -435,19 +435,80 @@ const OTHER_BRAND = /(?<![\w@/_.`-])(sparx)(?![\w/_`-])(?!\.\w)/i;
  * So the number can only fall. Nothing new leaks in while the removals are
  * sequenced.
  */
+/**
+ * The keys Piggles has already written its own sentence for.
+ *
+ * `copy.ts` and `vocabulary.ts` are the brand's own writing, keyed by id. Read
+ * once, so the skip below is a lookup rather than a guess.
+ */
+function pigglesWrittenKeys() {
+  const keys = new Set();
+  for (const rel of [
+    'piggles/apps/workbench/lib/console/copy.ts',
+    'piggles/apps/workbench/lib/console/vocabulary.ts',
+  ]) {
+    const file = path.join(ROOT, rel);
+    if (!fs.existsSync(file)) {
+      console.error(`\n✖ check-boundaries is looking for ${rel} and it is not there.`);
+      console.error('   The brand copy moved, so this check would count sentences that are');
+      console.error('   already written. Point it at the new file rather than leaving it blind.\n');
+      process.exit(1);
+    }
+    const source = fs.readFileSync(file, 'utf8');
+    for (const hit of source.matchAll(/^\s*'([\w.-]+)':/gm)) keys.add(hit[1]);
+  }
+  return keys;
+}
+
+/**
+ * The sparx fallbacks Piggles has already replaced, per file.
+ *
+ * `productCopy('inventory.setup.title', 'Getting your stock into sparx')` is TWO
+ * things: an id, and the text to use when the brand has not written its own. In
+ * PIGGLES' OWN TREE the fallback is sparx's sentence on purpose — the file that
+ * holds the overrides says so out loud: "a key with no entry falls back to the
+ * surface's own sparx text, which is true but off-voice … an unfilled key is a
+ * Piggles customer reading sparx's words, so it is a debt, not a resting state."
+ *
+ * So a fallback WITH an entry is dead text: nothing renders it, and a Piggles
+ * customer cannot reach it. Counting it says a business is reading another
+ * company's name when it is not, and the count is the thing this ratchet is
+ * made of.
+ *
+ * A fallback with NO entry still counts, because that one really is on screen.
+ *
+ * This matters more than it looks. These sentences used to sit in JSX text,
+ * where `STRING_LITERAL` never saw them at all; moving them into `productCopy`
+ * calls made them visible to this check for the first time and pushed the count
+ * from 48 to 59 without a single new word being written.
+ */
+function replacedFallbacks(source, written) {
+  const replaced = new Set();
+  const CALL = /productCopy(?:With)?\(\s*'([\w.-]+)'\s*,\s*('(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*")/g;
+  for (const hit of source.matchAll(CALL)) {
+    if (!written.has(hit[1])) continue;
+    replaced.add(hit[2].slice(1, -1));
+  }
+  return replaced;
+}
+
 function countOtherBrandProse() {
   const problems = [];
+  const written = pigglesWrittenKeys();
   for (const file of walk(path.join(ROOT, 'piggles'))) {
     const name = rel(file);
     if (!BRAND_PROSE_EXTENSIONS.has(path.extname(file))) continue;
     if (isTestFile(name) || name.startsWith('piggles/docs/')) continue;
     const source = code(fs.readFileSync(file, 'utf8'));
+    const replaced = replacedFallbacks(source, written);
     source.split('\n').forEach((line, index) => {
       for (const match of line.matchAll(STRING_LITERAL)) {
         // Backticked text is an identifier being NAMED, same carve-out as above.
         if (match[1] === '`') continue;
         const text = match[2];
         if (!isSentence(text) || !OTHER_BRAND.test(text)) continue;
+        // Already written in Piggles' own words, so nothing renders this.
+        if (replaced.has(text)) continue;
         problems.push(`${name}:${index + 1}: ${text.trim().slice(0, 110)}`);
       }
     });

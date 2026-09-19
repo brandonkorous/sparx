@@ -198,42 +198,92 @@ function run(cmd, args, cwd) {
   execFileSync(cmd, args, { cwd, stdio: 'inherit', shell: process.platform === 'win32' });
 }
 
+/**
+ * Which step this run is on, so a failure can be reported as what it IS.
+ *
+ * It used to answer every failure with "Piggles does NOT build without sparx",
+ * whatever had gone wrong. Four of the five things that can fail here are not
+ * that claim at all: `git worktree add` refusing, the delete failing, `pnpm
+ * install` failing, or the install producing a tree that cannot resolve. One of
+ * those was measured on Windows — a dangling `@alloc/quick-lru` symlink written
+ * with a POSIX `/tmp/...` target, which no Windows process can follow — and the
+ * check reported it as a brand-boundary violation, sending the reader to look
+ * for a sparx import that does not exist.
+ *
+ * A failure message that names the wrong cause is worse than no message: it
+ * spends somebody's afternoon. [[feedback_one_outcome_two_causes]]
+ */
+const STEPS = {
+  worktree: {
+    what: 'the throwaway worktree could not be created',
+    means: 'Nothing was proven either way. This is a git problem, not a Piggles one.',
+  },
+  remove: {
+    what: "sparx's directories could not be deleted from the worktree",
+    means: 'Nothing was proven either way. Usually a file held open by another process.',
+  },
+  install: {
+    what: 'pnpm install failed in the worktree',
+    means:
+      'Nothing was proven about imports yet: the build never ran. Read the install output above.',
+  },
+  build: {
+    what: 'Piggles did not build with sparx deleted',
+    means:
+      'Read the build error above before concluding anything. It names a FILE. If that file is ' +
+      'under piggles/ and imports something under sparx/, this is the boundary violation the ' +
+      'check exists for. If it names a missing node_modules package, it is an install problem ' +
+      'wearing a build error, and `pnpm check:deletability` (no --build) answers the real ' +
+      'question from the dependency closure in seconds.',
+  },
+};
+
 function checkBuild() {
   const worktree = fs.mkdtempSync(path.join(os.tmpdir(), 'deletability-'));
   console.log(`→ worktree: ${worktree}\n`);
   let created = false;
+  let step = 'worktree';
   try {
     // Detached from HEAD, so an uncommitted working tree is neither used nor
     // disturbed. What is proven is what is COMMITTED, which is what ships.
     run('git', ['worktree', 'add', '--detach', worktree, 'HEAD'], ROOT);
     created = true;
 
+    step = 'remove';
     for (const owned of SPARX_OWNED) {
       const target = path.join(worktree, owned);
       console.log(`→ rm -rf ${owned}`);
       fs.rmSync(target, { recursive: true, force: true });
     }
 
+    step = 'install';
     console.log('\n→ pnpm install\n');
     run('pnpm', ['install', '--ignore-scripts'], worktree);
 
+    step = 'build';
     console.log('\n→ pnpm --filter "@piggles/*" build\n');
     run('pnpm', ['--filter', '@piggles/*', 'build'], worktree);
 
+    step = 'done';
     console.log('\n✓ Piggles builds with sparx deleted.\n');
     return 0;
   } catch (err) {
-    console.error(`\n✗ ${err.message}\n`);
-    console.error('  Piggles does NOT build without sparx. The worktree is left in');
-    console.error(`  place for inspection: ${worktree}\n`);
+    const failure = STEPS[step];
+    console.error(`\n✗ ${failure.what}.\n`);
+    console.error(`  ${err.message}\n`);
+    console.error(`  ${failure.means}\n`);
+    console.error(`  The worktree is left in place as the evidence: ${worktree}\n`);
     return 1;
   } finally {
-    if (created) {
-      // Only prune on success; on failure the directory above is the evidence.
+    // Prune on SUCCESS only — on failure the directory above is the evidence,
+    // and the message just told the reader to go and look at it. (This used to
+    // try the removal either way; it survived only because Windows refuses to
+    // delete a directory that is still busy, which is not a plan.)
+    if (created && step === 'done') {
       try {
         run('git', ['worktree', 'remove', '--force', worktree], ROOT);
       } catch {
-        /* left behind deliberately, or already gone */
+        /* already gone */
       }
     }
   }
