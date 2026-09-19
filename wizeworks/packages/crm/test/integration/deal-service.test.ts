@@ -201,4 +201,35 @@ describe('dealService', () => {
       dealService.moveStage(test.ctx, deal.id, { toStageId: otherStage.id })
     ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
   });
+
+  it('create — refuses a support queue, not just a mismatched stage', async () => {
+    // The stage-belongs-to-pipeline check above passes just as happily for a
+    // help desk: a support queue is a pipeline, and its first stage is `open`
+    // too. So a deal could be opened INSIDE the support queue with every
+    // existing check satisfied, and the deals board — which draws one sales
+    // process — would never show it again.
+    const queue = await pipelineService.create(test.ctx, {
+      name: 'Support Queue',
+      slug: `queue-${String(Date.now())}`,
+      objectKey: 'ticket',
+      isDefault: true,
+      sortOrder: 0,
+    });
+    const queueStage = await pipelineService.createStage(test.ctx, queue.id, {
+      name: 'Still open',
+      sortOrder: 0,
+      probability: 0,
+      stageType: 'open',
+    });
+
+    await expect(
+      dealService.create(test.ctx, {
+        pipelineId: queue.id,
+        stageId: queueStage.id,
+        customerId,
+        title: 'Website enquiry: someone',
+        value: 0,
+      })
+    ).rejects.toMatchObject({ code: 'VALIDATION_ERROR' });
+  });
 });

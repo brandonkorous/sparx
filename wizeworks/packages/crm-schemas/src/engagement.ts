@@ -147,7 +147,7 @@ export const LogCallInput = z.object({
   outcome: CallOutcome,
   durationSec: z.number().int().min(0).max(86_400).optional(),
   /** What was said. The whole reason for logging it. */
-  notes: z.string().max(20_000).optional(),
+  notes: z.string().max(20_000).nullish(),
   /** When it happened, if not now — people log calls after the fact. */
   occurredAt: z.string().datetime().optional(),
 });

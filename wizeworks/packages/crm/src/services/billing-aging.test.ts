@@ -103,3 +103,52 @@ describe('daysPastDue counts calendar days, not elapsed 24-hour periods', () => 
     expect(b.d1_30).toEqual({ count: 1, balance: 234.6 });
   });
 });
+
+describe('whose day it is', () => {
+  // 2026-09-17 03:38 UTC. In Denver it is still the evening of the 16th, which is
+  // the seven-hour window where a UTC count and the business disagree.
+  const UTC_HAS_TURNED_OVER = new Date('2026-09-17T03:38:00.000Z');
+  const DUE = new Date('2026-09-08T12:00:00.000Z');
+
+  it('counts on the business clock when the business has said where it is', () => {
+    // Her evening of Sep 16: an invoice due Sep 8 is eight days late.
+    expect(daysPastDue(DUE, UTC_HAS_TURNED_OVER, 'America/Denver')).toBe(8);
+  });
+
+  it('is a whole day out when it counts on the server clock instead', () => {
+    // The defect: the same invoice, on the same evening, read "9 days late" on
+    // Money -> Owed to you and "8 days late" on the invoice list one screen over.
+    expect(daysPastDue(DUE, UTC_HAS_TURNED_OVER)).toBe(9);
+    expect(daysPastDue(DUE, UTC_HAS_TURNED_OVER, 'America/Denver')).not.toBe(
+      daysPastDue(DUE, UTC_HAS_TURNED_OVER)
+    );
+  });
+
+  it('keeps UTC for a business that has never said where it is', () => {
+    // Most have not. They must behave exactly as they did before.
+    expect(daysPastDue(DUE, UTC_HAS_TURNED_OVER, null)).toBe(9);
+    expect(daysPastDue(DUE, UTC_HAS_TURNED_OVER, '')).toBe(9);
+    expect(daysPastDue(DUE, UTC_HAS_TURNED_OVER, undefined)).toBe(9);
+  });
+
+  it('falls back to UTC rather than throwing on a zone nobody recognises', () => {
+    // A bad value in one column must not take down a whole finance report.
+    expect(daysPastDue(DUE, UTC_HAS_TURNED_OVER, 'Mars/Olympus_Mons')).toBe(9);
+  });
+
+  it('moves the aging bucket with the business, not just the label', () => {
+    // A bill due today in Denver must not be filed under "1-30 days late"
+    // because the server has already started tomorrow.
+    const dueToday = new Date('2026-09-16T12:00:00.000Z');
+    const her = bucketAging(
+      [{ balance: 500, dueAt: dueToday }],
+      UTC_HAS_TURNED_OVER,
+      'America/Denver'
+    );
+    expect(her.current).toEqual({ count: 1, balance: 500 });
+    expect(her.d1_30).toEqual({ count: 0, balance: 0 });
+
+    const server = bucketAging([{ balance: 500, dueAt: dueToday }], UTC_HAS_TURNED_OVER);
+    expect(server.d1_30).toEqual({ count: 1, balance: 500 });
+  });
+});

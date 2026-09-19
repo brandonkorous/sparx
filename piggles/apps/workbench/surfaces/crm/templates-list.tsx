@@ -307,7 +307,7 @@ export function TemplatesListSurface() {
                 title: 'Write the email you keep retyping',
                 description: productCopy(
                   'crm.templates.description',
-                  'A template is a subject and a message your team can pick when they email a customer, so the fourth follow-up this week reads exactly like the first three. Piggles then counts how many were sent, opened and answered, which is how you find out which of your own words work.'
+                  'A template is a subject and a message your team can pick when they email a customer, so the fourth follow-up this week reads exactly like the first three. Piggles then counts how many were sent and how many got an answer, which is how you find out which of your own words work.'
                 ),
                 actions: (
                   <Button color="module" onClick={startNew}>

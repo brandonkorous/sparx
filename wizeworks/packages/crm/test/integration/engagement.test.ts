@@ -412,6 +412,46 @@ describe('salesTemplateService', () => {
     expect(performance[0]?.replyRate).toBeNull();
   });
 
+  it('never reports an open rate, because nothing measures opens', async () => {
+    // `openCount` has no writer anywhere on the platform: `bumpTemplate` accepts
+    // the field and both callers pass `sendCount` or `replyCount`. A one-to-one
+    // sales email carries no open beacon, so `openCount / sendCount` returned a
+    // confident 0 — "nobody opened it" — for a template that may have been read
+    // by everyone. The floor of 5 hid it here; a busy business clears the floor
+    // on its first week.
+    //
+    // Its OWN tenant: a busy template sorts to the top of `listTemplates`
+    // (sendCount desc), which the neighbouring archive test reads as `[0]`.
+    const busy = await makeTestContext('owner');
+    try {
+      const sent = await salesTemplateService.createTemplate(busy.ctx, {
+        name: 'Well used',
+        subject: 'Anything else?',
+        bodyHtml: '<p>Anything else I can help with?</p>',
+      });
+      const customer = await customerService.create(busy.ctx, {
+        type: 'retail',
+        email: 'opens@customer.test',
+      });
+      for (let i = 0; i < 6; i++) {
+        await engagementService.sendEmail(busy.ctx, {
+          customerId: customer.id,
+          subject: 'Anything else?',
+          bodyHtml: '<p>Anything else I can help with?</p>',
+          templateId: sent.id,
+        });
+      }
+
+      const performance = await salesTemplateService.templatePerformance(busy.ctx);
+      const row = performance.find((one) => one.id === sent.id);
+      // Well past the floor, so a rate would be reported if one were computed.
+      expect(row?.sendCount).toBeGreaterThanOrEqual(5);
+      expect(row?.openRate).toBeNull();
+    } finally {
+      await disposeTestContext(busy);
+    }
+  });
+
   it('refuses a duplicate name in words a person can act on', async () => {
     await expect(
       salesTemplateService.createTemplate(test.ctx, {

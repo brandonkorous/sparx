@@ -46,7 +46,7 @@ export type PaymentStatus = z.infer<typeof PaymentStatus>;
 export const RecordPaymentInput = z.object({
   orderId: Uuid,
   processor: PaymentProcessor,
-  processorRef: z.string().max(255).optional(),
+  processorRef: z.string().max(255).nullish(),
   amount: Money,
   currency: Currency.default('USD'),
   status: PaymentStatus.default('captured'),
@@ -58,7 +58,7 @@ export type RecordPaymentInput = z.infer<typeof RecordPaymentInput>;
 
 export const VoidPaymentInput = z.object({
   paymentId: Uuid,
-  reason: z.string().max(500).optional(),
+  reason: z.string().max(500).nullish(),
 });
 export type VoidPaymentInput = z.infer<typeof VoidPaymentInput>;
 
@@ -76,11 +76,11 @@ export type RefundLineInput = z.infer<typeof RefundLineInput>;
 // pass amount without specifying which items refunded.
 export const RecordRefundInput = z.object({
   orderId: Uuid,
-  paymentId: Uuid.optional(),
+  paymentId: Uuid.nullish(),
   amount: Money,
   currency: Currency.default('USD'),
-  reason: z.string().max(500).optional(),
-  processorRef: z.string().max(255).optional(),
+  reason: z.string().max(500).nullish(),
+  processorRef: z.string().max(255).nullish(),
   lines: z.array(RefundLineInput).optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 });

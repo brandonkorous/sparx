@@ -23,7 +23,7 @@ import {
   type LifecycleStage,
 } from '@wizeworks/crm-schemas';
 import { NEWSLETTER_SEGMENT_SLUG } from '@wizeworks/crm-schemas/builtins';
-import { withTenant } from '@wizeworks/db';
+import { nameSearchClauses, withTenant } from '@wizeworks/db';
 import type { Customer, CustomerAddress, CustomerDocument, Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -78,25 +78,27 @@ export async function list(
       ...(filter.leadStatus ? { leadStatus: filter.leadStatus } : {}),
       ...(filter.assignedRepId !== undefined ? { assignedRepId: filter.assignedRepId } : {}),
       ...(filter.companyId !== undefined ? { companyId: filter.companyId } : {}),
-      // docs/58 D2: a site-scoped list shows customers belonging to THAT site
-      // PLUS global (null-property) customers — null is treated as visible
-      // everywhere. Composed as `AND: [{ OR }]` so it never key-collides with the
-      // search `OR` below (mirrors the content/product site-visibility fragment).
-      ...(filter.propertyId
-        ? { AND: [{ OR: [{ propertyId: null }, { propertyId: filter.propertyId }] }] }
-        : {}),
       ...(filter.tag ? { tags: { has: filter.tag } } : {}),
       ...(filter.lastOrderBefore ? { lastOrderAt: { lt: filter.lastOrderBefore } } : {}),
-      ...(filter.q
-        ? {
-            OR: [
-              { email: { contains: filter.q, mode: 'insensitive' } },
-              { firstName: { contains: filter.q, mode: 'insensitive' } },
-              { lastName: { contains: filter.q, mode: 'insensitive' } },
-              { companyName: { contains: filter.q, mode: 'insensitive' } },
-            ],
-          }
-        : {}),
+      AND: [
+        // docs/58 D2: a site-scoped list shows customers belonging to THAT site
+        // PLUS global (null-property) customers — null is treated as visible
+        // everywhere. It shares the `AND` array with the search rather than
+        // taking a key of its own, because two `AND` keys in one object leave
+        // only the second and this is the filter that decides which rows a site
+        // may see at all.
+        ...(filter.propertyId
+          ? [{ OR: [{ propertyId: null }, { propertyId: filter.propertyId }] }]
+          : []),
+        // Every word has to land somewhere, so "Wren Ashcombe" finds the person
+        // whose name is split across two columns. See `nameSearchClauses`.
+        ...nameSearchClauses(filter.q, (term) => [
+          { email: { contains: term, mode: 'insensitive' as const } },
+          { firstName: { contains: term, mode: 'insensitive' as const } },
+          { lastName: { contains: term, mode: 'insensitive' as const } },
+          { companyName: { contains: term, mode: 'insensitive' as const } },
+        ]),
+      ],
     };
 
     const sortField = filter.sortBy ?? 'updatedAt';

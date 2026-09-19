@@ -78,6 +78,15 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (segment: Segment, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.segment.detail', { id: segment.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'New segment',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -103,12 +112,10 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
               size="sm"
               className="shrink-0"
               title="New segment: hold Shift to open alongside, Alt for a new window"
-              onClick={(event) => {
-                ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
-              }}
+              onClick={createFirst.onClick}
             >
               <Icon glyph={faPlus} className="size-4" aria-hidden />
-              New segment
+              {createFirst.label}
             </Button>
           </>
         }
@@ -170,6 +177,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No segments yet',
               description:
                 'A segment is a saved group of customers who share something: big spenders, or everyone who has not bought in a year. Create your first one to start targeting a group.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -223,7 +231,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered

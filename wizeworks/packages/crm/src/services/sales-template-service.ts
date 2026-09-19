@@ -191,7 +191,19 @@ export interface TemplatePerformance {
   id: string;
   name: string;
   sendCount: number;
-  openRate: number | null;
+  /**
+   * ALWAYS NULL. Nothing on the platform writes `SalesTemplate.openCount`:
+   * `bumpTemplate` accepts the field, and the only two callers pass `sendCount`
+   * and `replyCount`. A one-to-one sales email carries no open beacon, so there
+   * is no measurement to turn into a rate.
+   *
+   * Kept in the shape, and kept NULL, deliberately. `openCount / sendCount` over
+   * a counter nothing increments returns a confident `0` — "nobody opened it" —
+   * for a template that may well have been read by everyone. A value nobody
+   * measured must never render as one, so the absence is stated here rather than
+   * left for a future surface to discover by drawing 0% on every row.
+   */
+  openRate: null;
   replyRate: number | null;
 }
 
@@ -213,7 +225,8 @@ export async function templatePerformance(
       id: row.id,
       name: row.name,
       sendCount: row.sendCount,
-      openRate: row.sendCount >= floor ? row.openCount / row.sendCount : null,
+      // Not row.openCount / row.sendCount — see TemplatePerformance.openRate.
+      openRate: null,
       replyRate: row.sendCount >= floor ? row.replyCount / row.sendCount : null,
     }))
     .sort((a, b) => (b.replyRate ?? -1) - (a.replyRate ?? -1));

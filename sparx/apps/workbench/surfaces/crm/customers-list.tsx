@@ -151,6 +151,15 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (customer: Customer, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.customer.detail', { id: customer.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a customer',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('crm.customer.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -175,12 +184,10 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto shrink-0"
             title="Add a customer: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('crm.customer.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            Add a customer
+            {createFirst.label}
           </Button>
         }
         controls={
@@ -280,6 +287,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No customers yet',
               description:
                 'Everyone who buys from you or gets added by hand appears here. Add your first customer to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -373,7 +381,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered

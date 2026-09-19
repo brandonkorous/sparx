@@ -314,7 +314,7 @@ export function TicketsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered ? `${rows.length.toLocaleString()} shown` : `${total.toLocaleString()} open`}

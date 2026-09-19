@@ -41,7 +41,7 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
-import { ListMembership } from './list-membership';
+import { ListHistoryOnly, ListMembership } from './list-membership';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { customerName, customerTypeMeta } from './customer-display';
@@ -676,6 +676,21 @@ function SegmentEditor({
                 </ul>
               ) : null}
             </FormSection>
+          ) : null}
+
+          {/* WHO CAME AND WENT, on the kind of list that actually records it.
+              `ListHistoryOnly` was written for this exact branch — "membership
+              is not editable but who dropped out this month is still the
+              interesting question" — and then nothing rendered it. The panel
+              went out on hand-picked lists instead, where every joining and
+              leaving is something the reader did by hand a moment ago.
+
+              The measurement settles it: every one of the platform's membership
+              events belongs to a RULE-driven list, and not one belongs to a
+              hand-picked one. The record was being shown only where it is
+              always empty. [[feedback_fetched_but_never_rendered]] */}
+          {!isNew && segment && !isArchived && kind === 'dynamic' ? (
+            <ListHistoryOnly segmentId={id} />
           ) : null}
 
           {!isNew && segment && !isArchived ? (

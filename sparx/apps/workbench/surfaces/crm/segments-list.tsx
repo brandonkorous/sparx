@@ -22,7 +22,8 @@ import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
-import { ruleCount, segmentMembership, useSegments, type Segment } from './segments-data';
+import { segmentMembership, useSegments, type Segment } from './segments-data';
+import { describeRule } from './segment-summary';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -31,10 +32,17 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
+/**
+ * WHAT THE GROUP SELECTS, not how many clauses it has.
+ *
+ * `ruleCount` looked for `conditions` / `rules` / `all` / `any`. The stored tree
+ * has none of those: its key is `children`. So it returned 0 for every segment
+ * ever written, and every row in this column read "From activity" — a phrase
+ * that reads like a statement about the group rather than like a value nothing
+ * could compute. Piggles fixed this; this console never got it.
+ */
 function ruleSummary(segment: Segment): string {
-  const count = ruleCount(segment.rules);
-  if (count === 0) return 'From activity';
-  return count === 1 ? '1 rule' : `${String(count)} rules`;
+  return describeRule(segment.rules);
 }
 
 /** The segment's state as one soft badge — never a bland empty cell. */
@@ -78,6 +86,15 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (segment: Segment, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.segment.detail', { id: segment.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'New segment',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -101,12 +118,10 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto shrink-0"
             title="New segment: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('crm.segment.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            New segment
+            {createFirst.label}
           </Button>
         }
         controls={
@@ -170,6 +185,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No segments yet',
               description:
                 'A segment is a saved group of customers who share something: big spenders, or everyone who has not bought in a year. Create your first one to start targeting a group.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -223,7 +239,7 @@ export function SegmentsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered

@@ -408,7 +408,7 @@ const SUB_STATUS_META: Record<
   active: { label: 'Active', tone: 'success' },
   past_due: { label: 'Past due', tone: 'danger' },
   paused: { label: 'Paused', tone: 'warning' },
-  cancelled: { label: 'Cancelled', tone: 'neutral' },
+  cancelled: { label: 'Canceled', tone: 'neutral' },
 };
 
 function subNextDate(iso: string | null): string {

@@ -38,11 +38,11 @@ export type OrderChannel = z.infer<typeof OrderChannel>;
 export const CreateOrderInput = z.object({
   customerId: Uuid,
   orderNumber: z.string().min(1).max(63).optional(), // auto-generated if absent
-  channel: OrderChannel.optional(),
-  source: z.string().max(63).optional(),
+  channel: OrderChannel.nullish(),
+  source: z.string().max(63).nullish(),
   // Origin site (docs/58 D1) — which property the order was placed on. Checkout
   // passes the cart's; admin / import / MCP may set it explicitly or leave null.
-  propertyId: Uuid.optional(),
+  propertyId: Uuid.nullish(),
 
   currency: Currency.default('USD'),
   shippingTotal: Money.default(0),
@@ -61,8 +61,8 @@ export const CreateOrderInput = z.object({
   surchargeTotal: Money.default(0),
   appliedSurcharges: z.array(z.record(z.string(), z.unknown())).optional(),
 
-  shippingAddress: AddressSnapshot.optional(),
-  billingAddress: AddressSnapshot.optional(),
+  shippingAddress: AddressSnapshot.nullish(),
+  billingAddress: AddressSnapshot.nullish(),
 
   placedAt: z.string().datetime().optional(), // defaults to now
 
@@ -78,8 +78,8 @@ export const CreateOrderInput = z.object({
    */
   orderAheadDays: z.number().int().min(1).max(365).nullish(),
 
-  customerNote: z.string().max(10_000).optional(),
-  internalNote: z.string().max(10_000).optional(),
+  customerNote: z.string().max(10_000).nullish(),
+  internalNote: z.string().max(10_000).nullish(),
   metadata: z.record(z.string(), z.unknown()).optional(),
 
   items: z.array(LineItemInput).min(1).max(500),
@@ -143,7 +143,7 @@ export type ListOrdersInput = z.infer<typeof ListOrdersInput>;
 
 export const CancelOrderInput = z.object({
   orderId: Uuid,
-  reason: z.string().max(500).optional(),
+  reason: z.string().max(500).nullish(),
 });
 export type CancelOrderInput = z.infer<typeof CancelOrderInput>;
 

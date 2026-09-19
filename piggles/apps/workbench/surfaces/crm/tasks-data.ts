@@ -99,7 +99,7 @@ export function taskStatusMeta(
   overdue = false
 ): { label: string; tone: 'success' | 'warning' | 'danger' | 'info' | 'neutral' } {
   if (status === 'completed') return { label: 'Done', tone: 'success' };
-  if (status === 'cancelled') return { label: 'Cancelled', tone: 'neutral' };
+  if (status === 'cancelled') return { label: 'Canceled', tone: 'neutral' };
   if (overdue) return { label: 'Overdue', tone: 'danger' };
   return { label: 'To do', tone: 'info' };
 }

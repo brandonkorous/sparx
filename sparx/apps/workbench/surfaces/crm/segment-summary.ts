@@ -12,8 +12,12 @@
 // Reading the tree properly is barely more work than counting it, so this says
 // what the rule is, in the same words the builder uses to author it.
 
-import { fieldMeta, type CustomFieldIndex, type SegmentFieldPath } from './segment-fields';
-import { operatorLabel } from './segment-operators';
+import {
+  fieldMeta,
+  operatorLabel,
+  type CustomFieldIndex,
+  type SegmentFieldPath,
+} from './segment-rules';
 
 /** What a group with nothing readable in it says. A saved segment never shows
  *  this — the builder refuses to save one — so it means an unrecognised shape. */

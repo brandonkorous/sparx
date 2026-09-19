@@ -349,8 +349,14 @@ export function CrmReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                 value={s ? s.customers.toLocaleString() : '—'}
                 onOpen={go('crm.customers.list')}
               />
+              {/* Companies, not wholesale accounts. This counted `company` rows
+                  under a trade label, so a shop whose customers work for seven
+                  different firms read "Wholesale accounts 7" while selling
+                  wholesale to nobody. Measured: every tenant on the platform
+                  with a company record has ZERO wholesale customers. The tile
+                  now says what it counts, and matches the pane it opens. */}
               <KpiTile
-                label="Wholesale accounts"
+                label="Companies"
                 value={s ? s.companies.toLocaleString() : '—'}
                 onOpen={go('crm.accounts.list')}
               />

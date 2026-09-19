@@ -62,7 +62,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
     () => ({
       open: 'To do',
       completed: 'Done',
-      cancelled: 'Cancelled',
+      cancelled: 'Canceled',
       all: 'All tasks',
     }),
     []
@@ -70,6 +70,15 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const open = (task: Task, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.task.detail', { id: task.id }, { target: targetFor(event) });
+  };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'New task',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('crm.task.detail', { id: 'new' }, { target: targetFor(event) });
+    },
   };
 
   return (
@@ -94,12 +103,10 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto shrink-0"
             title="New task: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('crm.task.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            New task
+            {createFirst.label}
           </Button>
         }
         controls={
@@ -164,6 +171,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No tasks to do',
               description:
                 'Tasks are the things you need to do for a customer or a deal. Add your first one to keep track of follow-ups.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -221,7 +229,7 @@ export function TasksListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered ? `${rows.length.toLocaleString()} shown` : `${total.toLocaleString()} to do`}

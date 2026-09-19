@@ -200,13 +200,31 @@ export async function openFormRequest(
   });
 }
 
-/** The pipeline a form-sourced lead lands in: the default (else the first, else a
- *  freshly-bootstrapped template), with its stages ordered. Bootstrapping covers a
- *  tenant whose CRM was activated without the onboarding pipeline seed. */
+/**
+ * The pipeline a form-sourced DEAL lands in: the default sales process (else the
+ * first, else a freshly-bootstrapped template), with its stages ordered.
+ * Bootstrapping covers a tenant whose CRM was activated without the onboarding
+ * pipeline seed.
+ *
+ * `objectKey: 'deal'` is the whole point of the query and not a detail.
+ * Pipelines became generic (docs/144 §7.2) and a tenant now keeps a SUPPORT
+ * QUEUE alongside its sales process, in the same table, also flagged default.
+ * This lookup asked for "any pipeline" and ordered by `isDefault desc`, so the
+ * only thing keeping a website quote request out of the support queue was that
+ * the sales process happened to be seeded a couple of seconds earlier and won
+ * the `createdAt` tiebreak. Archive the sales pipeline — one button on its own
+ * pane, which also clears its default flag — and the very next enquiry opens a
+ * deal inside the help desk, in a stage called "Still open", on a board the
+ * deals list cannot render because a board is one sales process.
+ *
+ * `pipelineService.list` already defaults to `'deal'` for exactly this reason
+ * and says so in its own comment; `bootstrapDefaultPipeline` already filters on
+ * it too. This was the one lookup left behind.
+ */
 async function resolveEntryPipeline(ctx: ServiceContext) {
   const found = await withTenant(ctx, (tx) =>
     tx.pipeline.findFirst({
-      where: { archivedAt: null },
+      where: { archivedAt: null, objectKey: 'deal' },
       orderBy: [{ isDefault: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'asc' }],
       include: { stages: { orderBy: { sortOrder: 'asc' } } },
     })

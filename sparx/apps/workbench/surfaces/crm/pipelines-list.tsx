@@ -51,6 +51,15 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (pipeline: Pipeline, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('crm.pipeline.detail', { id: pipeline.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'New pipeline',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -74,12 +83,10 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto shrink-0"
             title="New pipeline: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('crm.pipeline.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            New pipeline
+            {createFirst.label}
           </Button>
         }
         controls={
@@ -143,6 +150,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No pipelines yet',
               description:
                 'A pipeline is the set of stages a deal moves through. Your own way of winning work. Create your first one to start tracking deals.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -212,7 +220,7 @@ export function PipelinesListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {filtered

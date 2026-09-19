@@ -33,6 +33,7 @@ import { faPlus, faTrashCan } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { FormSection } from '../../components/form-section';
 import { usePropertySchema, type PropertyField, type PropertySchema } from './object-types-data';
+import { localMomentInstant } from '../../lib/today';
 
 export interface CustomPropertiesPanelProps {
   /** contact | company | deal | ticket, or a custom object key. */
@@ -346,7 +347,7 @@ function ScalarControl({
           disabled={disabled}
           value={toLocalInput(value)}
           onChange={(e) => {
-            onChange(e.target.value === '' ? null : new Date(e.target.value).toISOString());
+            onChange(e.target.value === '' ? null : localMomentInstant(e.target.value));
           }}
         />
       );

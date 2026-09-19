@@ -131,8 +131,24 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
     // deal always belongs to the same business as its pipeline.
     const pipeline = await tx.pipeline.findUnique({
       where: { id: input.pipelineId },
-      select: { propertyId: true },
+      select: { propertyId: true, objectKey: true },
     });
+
+    // A deal belongs in a SALES process, never in a support queue. Pipelines are
+    // generic now (docs/144 §7.2) and both kinds live in this table, so the
+    // stage-belongs-to-pipeline check above passes just as happily for a help
+    // desk: a ticket pipeline's first stage is `open` too. Nothing downstream
+    // recovers from getting this wrong — the deals board renders one sales
+    // process, so a deal filed in the support queue is money the business is
+    // owed sitting on a screen nobody looks at for money.
+    if (pipeline && pipeline.objectKey !== 'deal') {
+      throw new CrmValidationError('That pipeline is not a sales process', [
+        {
+          field: 'pipelineId',
+          message: 'Deals can only be opened in a sales pipeline, not a support queue',
+        },
+      ]);
+    }
 
     // Tenant-declared extra fields (docs/144 §3), validated + calculated in the
     // same transaction that writes the deal.

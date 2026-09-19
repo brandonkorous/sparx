@@ -63,7 +63,7 @@ export type UpdateDealInput = z.infer<typeof UpdateDealInput>;
 export const MoveDealStageInput = z.object({
   toStageId: Uuid,
   // Optional: closedReason captured when moving to a won/lost terminal stage.
-  closedReason: z.string().max(500).optional(),
+  closedReason: z.string().max(500).nullish(),
 });
 export type MoveDealStageInput = z.infer<typeof MoveDealStageInput>;
 

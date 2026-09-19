@@ -36,6 +36,7 @@ import type { ServiceContext } from '../errors';
 import { CrmNotFoundError, CrmValidationError } from '../errors';
 import { recomputeTotals, type DocumentWithLines } from './billing-document-service';
 import { deriveDocumentStatus } from './billing-ar';
+import { businessTimeZone } from './business-clock';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 
 /** An address as commerce freezes it on an order. */
@@ -154,6 +155,7 @@ export async function listInvoicesForOrder(
   ctx: ServiceContext,
   orderId: string
 ): Promise<OrderInvoiceSummary[]> {
+  const timeZone = await withTenant(ctx, (tx) => businessTimeZone(tx, ctx.tenantId));
   const rows = await withTenant(ctx, (tx) =>
     tx.billingDocument.findMany({
       where: { tenantId: ctx.tenantId, orderId, deletedAt: null },
@@ -175,7 +177,8 @@ export async function listInvoicesForOrder(
     })
   );
   // One clock for the whole list, so two rows on the same screen cannot disagree
-  // about what "today" is.
+  // about what "today" is — and it is the BUSINESS's clock, so this list cannot
+  // disagree with the invoice list or the chase list either.
   const now = new Date();
   return rows.map((r) => {
     const meta = (r.metadata ?? {}) as Record<string, unknown>;
@@ -202,6 +205,7 @@ export async function listInvoicesForOrder(
         dueAt: r.dueAt,
         voided: r.status === 'void',
         now,
+        timeZone,
       }),
       total: Number(r.total),
       amountPaid: Number(r.amountPaid),

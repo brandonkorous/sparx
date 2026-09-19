@@ -78,13 +78,6 @@ export const segmentKeys = {
 /** How many conditions a rule tree carries, best-effort, so the list can say
  *  "3 rules" without understanding the predicate language. Falls back to a
  *  generic phrase for a shape it does not recognise. */
-export function ruleCount(rules: unknown): number {
-  if (!rules || typeof rules !== 'object') return 0;
-  const node = rules as { conditions?: unknown; rules?: unknown; all?: unknown; any?: unknown };
-  const branch = node.conditions ?? node.rules ?? node.all ?? node.any;
-  return Array.isArray(branch) ? branch.length : 0;
-}
-
 export function segmentMembership(count: number): string {
   if (count === 0) return 'No members yet';
   if (count === 1) return '1 customer';

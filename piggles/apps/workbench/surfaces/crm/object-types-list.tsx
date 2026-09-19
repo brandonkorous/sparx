@@ -207,7 +207,7 @@ export function ObjectTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between px-1">
-        <RowOpenHint what="one to add the extra details you track" />
+        {rows.length > 0 ? <RowOpenHint what="one to add the extra details you track" /> : null}
       </div>
     </div>
   );

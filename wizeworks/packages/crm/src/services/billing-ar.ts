@@ -12,18 +12,23 @@ export interface DeriveStatusArgs {
   dueAt: Date | null;
   voided: boolean;
   now: Date;
+  /** The business's IANA zone, when it has said where it is. "Past due" is a
+   *  claim about a DAY, and which day it is depends on where the shop is: in
+   *  Denver it is still Tuesday for seven hours after the server says Wednesday.
+   *  Omitted (most businesses have set no zone) this is UTC, as it always was. */
+  timeZone?: string | null;
 }
 
 /** The AR status machine. Precedence: void > paid > overdue > partial > unpaid.
  *  `overdue` is a past-due balance (any unpaid/partial amount past `dueAt`); a
  *  fully-paid document is never overdue. */
 export function deriveDocumentStatus(args: DeriveStatusArgs): DocumentStatus {
-  const { total, amountPaid, dueAt, voided, now } = args;
+  const { total, amountPaid, dueAt, voided, now, timeZone } = args;
   if (voided) return 'void';
   // Past due means the due DATE has gone by, not that the clock has passed some
   // hour on it. Comparing instants turned a bill due today into an overdue one
   // partway through its own due date — see `daysPastDue`.
-  const pastDue = daysPastDue(dueAt, now) > 0;
+  const pastDue = daysPastDue(dueAt, now, timeZone) > 0;
   if (amountPaid <= 0) {
     // Nothing paid: overdue only if something is actually owed past the due date.
     return pastDue && total > 0 ? 'overdue' : 'unpaid';
@@ -98,6 +103,54 @@ function utcDay(at: Date): number {
 }
 
 /**
+ * The calendar day a moment falls on IN A GIVEN ZONE, as a UTC-midnight number.
+ *
+ * Used for "today" only. A business in Denver is still on Tuesday for seven
+ * hours after UTC has turned over to Wednesday, and for those seven hours a
+ * UTC-based count told her every unpaid invoice was a day later than it was —
+ * while the console, counting on the reader's own clock, said the true number on
+ * the screen next door. Two Money screens, the same invoice, "8 days late" and
+ * "9 days late".
+ *
+ * Falls back to UTC when the business has not said where it is (most have not)
+ * and when the zone is not one `Intl` recognises, so an unknown value degrades
+ * to the old behaviour rather than throwing inside a report.
+ */
+function zoneDay(at: Date, timeZone: string | null | undefined): number {
+  if (!timeZone) return utcDay(at);
+  try {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(at);
+    const part = (type: string): number =>
+      Number(parts.find((p) => p.type === type)?.value ?? Number.NaN);
+    const year = part('year');
+    const month = part('month');
+    const day = part('day');
+    if (!Number.isFinite(year) || !Number.isFinite(month) || !Number.isFinite(day)) {
+      return utcDay(at);
+    }
+    return Date.UTC(year, month - 1, day);
+  } catch {
+    return utcDay(at);
+  }
+}
+
+/**
+ * Midnight at the start of the business's current day, as a Date.
+ *
+ * The query boundary that matches `daysPastDue`: "due before today" has to mean
+ * the same today the count uses, or a document can be selected as late and then
+ * counted as zero days late on the row that selected it.
+ */
+export function startOfBusinessDay(now: Date, timeZone?: string | null): Date {
+  return new Date(zoneDay(now, timeZone));
+}
+
+/**
  * How many whole days past its due date a document is — counted in CALENDAR
  * DAYS, not in elapsed 24-hour periods.
  *
@@ -118,12 +171,17 @@ function utcDay(at: Date): number {
  * EXACT day (7 / 14 / 30). Under the old rule the day a customer got chased was
  * set by the hour the invoice was created rather than the date on it.
  *
- * UTC on both sides, deliberately: it is the basis the due date is DISPLAYED
- * in, so the number and the printed date can never disagree.
+ * The DUE side is always UTC: it is the basis the due date is DISPLAYED in, so
+ * the number and the printed date can never disagree.
+ *
+ * The TODAY side is the BUSINESS's day when it has told us where it is. Her
+ * books run on her clock, not the server's and not the clock of whoever happens
+ * to be looking — a bill is late when it is late in the town it was billed
+ * from. Without a zone this is UTC, exactly as before.
  */
-export function daysPastDue(dueAt: Date | null, now: Date): number {
+export function daysPastDue(dueAt: Date | null, now: Date, timeZone?: string | null): number {
   if (!dueAt) return 0;
-  return Math.round((utcDay(now) - utcDay(dueAt)) / DAY_MS);
+  return Math.round((zoneDay(now, timeZone) - utcDay(dueAt)) / DAY_MS);
 }
 
 /** Bucket open balances by days past `dueAt`. A row with no `dueAt` (a pay-now
@@ -131,7 +189,8 @@ export function daysPastDue(dueAt: Date | null, now: Date): number {
  *  skipped. `current` also holds anything not yet past due. */
 export function bucketAging(
   rows: AgingInputRow[],
-  now: Date
+  now: Date,
+  timeZone?: string | null
 ): Record<AgingBucketKey, { count: number; balance: number }> {
   const out: Record<AgingBucketKey, { count: number; balance: number }> = {
     current: { count: 0, balance: 0 },
@@ -142,7 +201,7 @@ export function bucketAging(
   };
   for (const r of rows) {
     if (r.balance <= 0) continue;
-    const daysPast = daysPastDue(r.dueAt, now);
+    const daysPast = daysPastDue(r.dueAt, now, timeZone);
     const key: AgingBucketKey =
       daysPast <= 0
         ? 'current'

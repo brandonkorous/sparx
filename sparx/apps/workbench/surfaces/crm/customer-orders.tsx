@@ -45,7 +45,7 @@ const STATUS_ITEMS: Record<string, string> = {
   placed: 'Placed',
   fulfilled: 'Fulfilled',
   delivered: 'Delivered',
-  cancelled: 'Cancelled',
+  cancelled: 'Canceled',
   refunded: 'Refunded',
 };
 
@@ -198,7 +198,7 @@ export function CustomerOrdersSurface({ ctx }: { ctx: SurfaceContext }) {
         </Card>
 
         <div className="flex shrink-0 items-center justify-between px-1">
-          <RowOpenHint />
+          {rows.length > 0 ? <RowOpenHint /> : null}
           {typeof total === 'number' && !isPending ? (
             <p className="text-xs">
               {filtered

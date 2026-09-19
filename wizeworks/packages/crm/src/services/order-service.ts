@@ -22,7 +22,7 @@ import {
   UNCOUNTED_ORDER_STATUS,
   UpdateOrderInput,
 } from '@wizeworks/crm-schemas';
-import { afterCommit, withTenant } from '@wizeworks/db';
+import { afterCommit, nameSearchClauses, withTenant } from '@wizeworks/db';
 import type { Order, OrderItem, Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -120,17 +120,18 @@ export async function list(
       // PREFIX match, which answers only the question someone already knows the
       // answer to — a customer on the phone gives you their name, not
       // "ORD-1042", and a partial number ("1042") matched nothing at all.
-      ...(filter.q
-        ? {
-            OR: [
-              { orderNumber: { contains: filter.q, mode: 'insensitive' as const } },
-              { customer: { firstName: { contains: filter.q, mode: 'insensitive' as const } } },
-              { customer: { lastName: { contains: filter.q, mode: 'insensitive' as const } } },
-              { customer: { companyName: { contains: filter.q, mode: 'insensitive' as const } } },
-              { customer: { email: { contains: filter.q, mode: 'insensitive' as const } } },
-            ],
-          }
-        : {}),
+      //
+      // Then it still could not find them by that name, because it asked
+      // whether the WHOLE typed string was inside one column: "Jo Kim" is not
+      // inside "Jo" and not inside "Kim", so a box labelled "Order number or
+      // customer…" answered "No orders match that" over two of her orders.
+      AND: nameSearchClauses(filter.q, (term) => [
+        { orderNumber: { contains: term, mode: 'insensitive' as const } },
+        { customer: { firstName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { lastName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { companyName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { email: { contains: term, mode: 'insensitive' as const } } },
+      ]),
     };
     const [items, total] = await Promise.all([
       tx.order.findMany({

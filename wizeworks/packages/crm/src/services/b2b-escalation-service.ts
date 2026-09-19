@@ -24,7 +24,8 @@
 
 import { withTenant } from '@wizeworks/db';
 
-import { daysPastDue } from './billing-ar';
+import { daysPastDue, startOfBusinessDay } from './billing-ar';
+import { businessTimeZone } from './business-clock';
 import type { ServiceContext } from '../errors';
 
 /** Default ladder thresholds (oldest-overdue age in days). docs/10 §9. */
@@ -63,8 +64,8 @@ export interface EscalationThresholds {
  *  the receivables screen and the dunning ladder use. It was elapsed 24-hour
  *  periods, which put an account's credit hold a day late whenever its oldest
  *  invoice happened to be raised in the afternoon. */
-function pastDueDays(dueAt: Date, now: Date): number {
-  return Math.max(0, daysPastDue(dueAt, now));
+function pastDueDays(dueAt: Date, now: Date, timeZone: string | null): number {
+  return Math.max(0, daysPastDue(dueAt, now, timeZone));
 }
 
 /**
@@ -109,13 +110,19 @@ export async function escalateAccount(
     // past due, it's marked overdue and folds into the dunning ladder. `balance > 0`
     // + a due DATE before today excludes drafts/paid/void.
     //
-    // The boundary is midnight UTC today, not `now`: a bill due TODAY is not late,
-    // whatever the clock says. Comparing against `now` marked an invoice overdue on
-    // its own due date the moment the hour passed the one it happened to be raised
-    // at, and stamped it `overdueDays: 0` — a row saying "overdue by no days".
-    const startOfToday = new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
-    );
+    // The boundary is midnight at the start of today, not `now`: a bill due TODAY
+    // is not late, whatever the clock says. Comparing against `now` marked an
+    // invoice overdue on its own due date the moment the hour passed the one it
+    // happened to be raised at, and stamped it `overdueDays: 0` — a row saying
+    // "overdue by no days".
+    //
+    // And TODAY is the business's day. A shop in Denver is still on Tuesday for
+    // seven hours after the server says Wednesday, and putting an account on
+    // credit hold a day early is not a display detail: it stops the account
+    // ordering. One read of the zone here, shared by the boundary and the count,
+    // so the query cannot select a document the count then calls zero days late.
+    const timeZone = await businessTimeZone(tx, ctx.tenantId);
+    const startOfToday = startOfBusinessDay(now, timeZone);
     const documents = await tx.billingDocument.findMany({
       where: {
         companyId: accountId,
@@ -128,7 +135,7 @@ export async function escalateAccount(
     });
     for (const doc of documents) {
       if (!doc.dueAt) continue; // narrows the type; the filter already guarantees it
-      const age = pastDueDays(doc.dueAt, now);
+      const age = pastDueDays(doc.dueAt, now, timeZone);
       maxOverdueDays = Math.max(maxOverdueDays, age);
       const wasOverdue = doc.status === 'overdue';
       await tx.billingDocument.update({

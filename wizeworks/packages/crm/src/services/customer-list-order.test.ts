@@ -16,7 +16,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const findMany = vi.fn().mockResolvedValue([]);
 const count = vi.fn().mockResolvedValue(0);
 
-vi.mock('@wizeworks/db', () => ({
+// The real `nameSearchClauses`, not a stub: it is a pure function over a
+// string, and the where clause it builds is half of what these assert.
+vi.mock('@wizeworks/db', async (importOriginal) => ({
+  ...(await importOriginal<Record<string, unknown>>()),
   withTenant: (_ctx: unknown, fn: (tx: unknown) => unknown) =>
     Promise.resolve(fn({ customer: { findMany, count } })),
 }));
@@ -78,5 +81,40 @@ describe('customerService.list lastOrderBefore', () => {
   it('leaves the column unconstrained when no cutoff is given', async () => {
     await list(CTX, { sortBy: 'lastOrderAt' });
     expect((args().where as Record<string, unknown>).lastOrderAt).toBeUndefined();
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// The SEARCH, and the filter it used to be able to eat
+// ─────────────────────────────────────────────────────────────────────────
+
+describe('customerService.list searching', () => {
+  it('requires every typed word to land somewhere', async () => {
+    // A name is two columns and one string, so asking whether "Jo Kim" is
+    // inside either column found nobody. 635 of the platform's 651 customers
+    // have both a first and a last name (issue 546).
+    await list(CTX, { q: 'Jo Kim' });
+    const and = (args().where as { AND: { OR: unknown[] }[] }).AND;
+    expect(and).toHaveLength(2);
+    expect(and[0]?.OR).toContainEqual({ firstName: { contains: 'Jo', mode: 'insensitive' } });
+    expect(and[1]?.OR).toContainEqual({ lastName: { contains: 'Kim', mode: 'insensitive' } });
+  });
+
+  it('keeps the SITE filter when a search is also running', async () => {
+    // Both wanted the `AND` key, and the second one written wins. The loser
+    // here decides which rows a site is allowed to see at all, so a search box
+    // would have quietly shown another site's customers.
+    await list(CTX, { q: 'Jo Kim', propertyId: 'a3fd094d-c8fe-48fd-b8e7-d1e0dbb42586' });
+    const and = (args().where as { AND: { OR: unknown[] }[] }).AND;
+    expect(and).toHaveLength(3);
+    expect(and[0]?.OR).toEqual([
+      { propertyId: null },
+      { propertyId: 'a3fd094d-c8fe-48fd-b8e7-d1e0dbb42586' },
+    ]);
+  });
+
+  it('adds nothing at all when nothing was typed', async () => {
+    await list(CTX, {});
+    expect((args().where as { AND: unknown[] }).AND).toEqual([]);
   });
 });

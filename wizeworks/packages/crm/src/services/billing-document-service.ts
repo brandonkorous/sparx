@@ -14,7 +14,7 @@ import {
 // `Prisma` as a VALUE, not a type-only import: `Prisma.DbNull` is a runtime
 // sentinel, and it is the only way to ask a nullable Json column whether a key
 // is present.
-import { Prisma, withTenant } from '@wizeworks/db';
+import { nameSearchClauses, Prisma, withTenant } from '@wizeworks/db';
 import type { BillingDocument, BillingDocumentLine } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
@@ -30,6 +30,7 @@ import {
 } from './billing-ar';
 import { applyStageEntryEffects } from './billing-document-stage-service';
 import { computeBillingTotals } from './billing-totals';
+import { businessTimeZone } from './business-clock';
 
 /** The tenant's primary site — the issuer for a document created without one
  *  (docs/131 §3.6). Every tenant has exactly one, seeded at provisioning, so the
@@ -107,28 +108,6 @@ export async function list(
       ...(filter.workflowId ? { workflowId: filter.workflowId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
       ...(filter.customerId ? { customerId: filter.customerId } : {}),
-      // A COMPANY'S DOCUMENTS INCLUDE ITS PEOPLE'S. Billing a named contact
-      // writes `customerId` and leaves `companyId` null — which is correct, that
-      // is who the document is made out to — so matching the column alone
-      // answered "what has been billed to this company as an entity", not "what
-      // does this company owe me". A trade supplier deciding whether to release
-      // the next order needs the second one, and the first reads as a company
-      // with no debts while somebody there is 60 days late.
-      //
-      // Wrapped in `AND` so it composes with the `q` search below rather than
-      // one `OR` key silently overwriting the other.
-      ...(filter.companyId
-        ? {
-            AND: [
-              {
-                OR: [
-                  { companyId: filter.companyId },
-                  { customer: { companyId: filter.companyId } },
-                ],
-              },
-            ],
-          }
-        : {}),
       ...(filter.status ? { status: filter.status } : {}),
       // IS IT LATE? Asked of the due date, never of the status column.
       //
@@ -176,20 +155,41 @@ export async function list(
         : filter.sent
           ? { metadata: { path: ['sentAt'], not: Prisma.DbNull } }
           : { NOT: { metadata: { path: ['sentAt'], not: Prisma.DbNull } } }),
-      // No denormalized customer/account name column (bill-to/ship-to are
-      // frozen JSON, not queryable) — search the document number directly and
-      // fall back to the live customer/B2B-account relations.
-      ...(filter.q
-        ? {
-            OR: [
-              { number: { contains: filter.q, mode: 'insensitive' } },
-              { customer: { firstName: { contains: filter.q, mode: 'insensitive' } } },
-              { customer: { lastName: { contains: filter.q, mode: 'insensitive' } } },
-              { customer: { email: { contains: filter.q, mode: 'insensitive' } } },
-              { company: { companyName: { contains: filter.q, mode: 'insensitive' } } },
-            ],
-          }
-        : {}),
+      AND: [
+        // A COMPANY'S DOCUMENTS INCLUDE ITS PEOPLE'S. Billing a named contact
+        // writes `customerId` and leaves `companyId` null — which is correct,
+        // that is who the document is made out to — so matching the column
+        // alone answered "what has been billed to this company as an entity",
+        // not "what does this company owe me". A trade supplier deciding
+        // whether to release the next order needs the second one, and the first
+        // reads as a company with no debts while somebody there is 60 days
+        // late.
+        //
+        // Shares this `AND` array with the search below rather than taking a
+        // key of its own, because one `AND` key would silently overwrite the
+        // other.
+        ...(filter.companyId
+          ? [
+              {
+                OR: [
+                  { companyId: filter.companyId },
+                  { customer: { companyId: filter.companyId } },
+                ],
+              },
+            ]
+          : []),
+        // No denormalized customer/account name column (bill-to/ship-to are
+        // frozen JSON, not queryable) — search the document number directly and
+        // fall back to the live customer/B2B-account relations. Every typed word
+        // must land somewhere, so a two-part name finds its invoices.
+        ...nameSearchClauses(filter.q, (term) => [
+          { number: { contains: term, mode: 'insensitive' as const } },
+          { customer: { firstName: { contains: term, mode: 'insensitive' as const } } },
+          { customer: { lastName: { contains: term, mode: 'insensitive' as const } } },
+          { customer: { email: { contains: term, mode: 'insensitive' as const } } },
+          { company: { companyName: { contains: term, mode: 'insensitive' as const } } },
+        ]),
+      ],
     };
     const [rows, total] = await Promise.all([
       tx.billingDocument.findMany({
@@ -377,9 +377,14 @@ export async function aging(
       select: { balance: true, dueAt: true },
     });
     const now = new Date();
+    // Bucketed on HER clock. A balance due today in Denver must not appear under
+    // "1–30 days late" because UTC has already started tomorrow, and this report
+    // and the receivables screen have to agree about which bucket it is in.
+    const timeZone = await businessTimeZone(tx, ctx.tenantId);
     const grouped = bucketAging(
       rows.map((r) => ({ balance: Number(r.balance), dueAt: r.dueAt })),
-      now
+      now,
+      timeZone
     );
     const buckets: AgingBucketOut[] = AGING_BUCKETS.map(({ key, label }) => ({
       key,
@@ -651,6 +656,8 @@ export async function recomputeTotals(
     dueAt: doc.dueAt,
     voided: doc.voidedAt !== null,
     now,
+    // Overdue is a claim about a DAY, so it is decided on the business's day.
+    timeZone: await businessTimeZone(tx, tenantId),
   });
   const paidAt = status === 'paid' ? (doc.paidAt ?? now) : null;
 

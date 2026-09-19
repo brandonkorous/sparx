@@ -311,21 +311,30 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Ti
       const fallback = await ensureTicketPipeline(tx, ctx.tenantId);
       pipelineId ??= fallback.pipelineId;
       stageId ??= fallback.stageId;
-      // Set up the promise alongside the queue, in this same transaction. Doing
-      // it later would make the very first request the one ticket in the
-      // tenant's history that nobody was measured on — and the first one is the
-      // one somebody is watching.
-      if (input.slaPolicyId === undefined) {
-        // In the business's OWN hours, not UTC. "Open 9 to 5" is the only thing
-        // a person means by it, and a promise bootstrapped in UTC quietly counts
-        // those hours somewhere else — for a shop in Denver every deadline lands
-        // six hours early, and the first anyone hears of it is a request that
-        // went red overnight. The zone is already on file (the entity profile,
-        // where it is a real picker); UTC stays the fallback only when nobody
-        // has said yet.
-        const business = await tx.tenantBusiness.findFirst({ select: { timezone: true } });
-        await ensureDefaultPolicy(tx, ctx.tenantId, business?.timezone ?? undefined);
-      }
+    }
+
+    // Set up the promise, in this same transaction. Doing it later would make
+    // the very first request the one ticket in the tenant's history that nobody
+    // was measured on — and the first one is the one somebody is watching.
+    //
+    // NOT nested inside the queue branch above, which is where it used to sit.
+    // A promise has nothing to do with WHICH queue a request lands in, so a
+    // caller that named a pipeline — the MCP tool, or any API client posting
+    // `pipeline_id` — skipped the bootstrap entirely. If that was the tenant's
+    // FIRST request, `resolveForTicket` then found nothing, `computeDueDates`
+    // returned no dates, and the request arrived with no deadline at all, while
+    // Response times went on saying "one is created for you the first time a
+    // support request comes in". Two screens of copy promise this happens; the
+    // condition is now the one those sentences describe.
+    if (input.slaPolicyId === undefined) {
+      // In the business's OWN hours, not UTC. "Open 9 to 5" is the only thing a
+      // person means by it, and a promise bootstrapped in UTC quietly counts
+      // those hours somewhere else — for a shop in Denver every deadline lands
+      // six hours early, and the first anyone hears of it is a request that went
+      // red overnight. The zone is already on file (the entity profile, where it
+      // is a real picker); UTC stays the fallback only when nobody has said yet.
+      const business = await tx.tenantBusiness.findFirst({ select: { timezone: true } });
+      await ensureDefaultPolicy(tx, ctx.tenantId, business?.timezone ?? undefined);
     }
 
     const stage = await tx.pipelineStage.findUnique({ where: { id: stageId } });

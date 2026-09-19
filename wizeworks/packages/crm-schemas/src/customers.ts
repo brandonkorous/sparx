@@ -182,13 +182,13 @@ export const CreateCustomerAddressInput = z.object({
   line1: z.string().min(1).max(255),
   line2: z.string().max(255).optional(),
   city: z.string().min(1).max(120),
-  region: z.string().max(120).optional(),
-  postalCode: z.string().max(32).optional(),
+  region: z.string().max(120).nullish(),
+  postalCode: z.string().max(32).nullish(),
   country: z
     .string()
     .length(2)
     .regex(/^[A-Z]{2}$/, 'Country must be ISO 3166-1 alpha-2 (e.g. "US")'),
-  phone: z.string().max(50).optional(),
+  phone: z.string().max(50).nullish(),
 });
 export type CreateCustomerAddressInput = z.infer<typeof CreateCustomerAddressInput>;
 
@@ -207,6 +207,6 @@ export type UpdateCustomerAddressInput = z.infer<typeof UpdateCustomerAddressInp
 // a customer, plus an optional human label. `customerId` comes from the path.
 export const CreateCustomerDocumentInput = z.object({
   mediaAssetId: Uuid,
-  label: z.string().trim().min(1).max(200).optional(),
+  label: z.string().trim().min(1).max(200).nullish(),
 });
 export type CreateCustomerDocumentInput = z.infer<typeof CreateCustomerDocumentInput>;

@@ -62,7 +62,7 @@ const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 const STATUS_LABELS: Record<TaskStatus, string> = {
   open: 'To do',
   completed: 'Done',
-  cancelled: 'Cancelled',
+  cancelled: 'Canceled',
 };
 
 /* ── datetime-local ⇄ ISO ───────────────────────────────────────────────── */

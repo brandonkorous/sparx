@@ -23,6 +23,7 @@ import { prisma } from '@wizeworks/db';
 import {
   customerService,
   leadService,
+  pipelineService,
   slaPolicyService,
   ticketService,
   ticketSlaSweep,
@@ -729,6 +730,51 @@ describe('slaPolicyService', () => {
       expect(archived.archivedAt).not.toBeNull();
     } finally {
       await disposeTestContext(solo);
+    }
+  });
+  it('sets the promise up even when the first request names its own queue', async () => {
+    // The bootstrap used to sit INSIDE the "no pipeline was named" branch, so a
+    // caller that chose a queue — the MCP tool, or any API client posting
+    // `pipeline_id` — skipped it. On a tenant's FIRST request that left no
+    // policy at all, and the request arrived with no deadline, while Response
+    // times went on saying one is created the first time a request comes in.
+    //
+    // Its OWN tenant: "has never had a promise" is a statement about the whole
+    // set, which a tenant the other tests here have already seeded cannot make.
+    const fresh = await makeTestContext();
+    try {
+      const before = await slaPolicyService.list(fresh.ctx, {});
+      expect(before.total).toBe(0);
+
+      const queue = await pipelineService.create(fresh.ctx, {
+        name: 'Front desk',
+        slug: `desk-${String(Date.now())}`,
+        objectKey: 'ticket',
+        isDefault: true,
+        sortOrder: 0,
+      });
+      const stage = await pipelineService.createStage(fresh.ctx, queue.id, {
+        name: 'New',
+        sortOrder: 0,
+        probability: 0,
+        stageType: 'open',
+      });
+
+      const view = await ticketService.create(fresh.ctx, {
+        subject: 'Filed straight into a named queue',
+        priority: 'urgent',
+        pipelineId: queue.id,
+        stageId: stage.id,
+      });
+
+      // The promise exists, so the owner can find and edit it.
+      const after = await slaPolicyService.list(fresh.ctx, {});
+      expect(after.total).toBe(1);
+      // And the request was measured against it, rather than arriving with no
+      // deadline at all.
+      expect(view.ticket.firstResponseDueAt).not.toBeNull();
+    } finally {
+      await disposeTestContext(fresh);
     }
   });
 });

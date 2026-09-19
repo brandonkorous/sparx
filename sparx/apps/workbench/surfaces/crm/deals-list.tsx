@@ -288,6 +288,15 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const boardReady = !pipelinesPending && boardPipeline !== null && stages.length > 0;
   const truncated = isBoard && typeof total === 'number' && total > rows.length;
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'New deal',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('crm.deal.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -311,12 +320,10 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto shrink-0"
             title="New deal: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('crm.deal.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            New deal
+            {createFirst.label}
           </Button>
         }
         controls={
@@ -441,6 +448,7 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No deals yet',
               description:
                 'A deal tracks a sale you are working on, from first contact to close. Add your first one to start a pipeline.',
+              action: createFirst,
             }}
           />
         ) : isBoard ? (
@@ -505,7 +513,9 @@ export function DealsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </Card>
 
       <div className="flex shrink-0 items-center justify-between gap-3 px-1">
-        <RowOpenHint what={isBoard ? 'a card to open it' : undefined} className="px-0" />
+        {rows.length > 0 ? (
+          <RowOpenHint what={isBoard ? 'a card to open it' : undefined} className="px-0" />
+        ) : null}
         {typeof total === 'number' && !isPending ? (
           <p className="text-xs">
             {/* Say so when the board is not showing everything. A column that

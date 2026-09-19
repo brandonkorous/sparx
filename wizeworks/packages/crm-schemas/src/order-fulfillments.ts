@@ -35,13 +35,13 @@ export type FulfillmentLineInput = z.infer<typeof FulfillmentLineInput>;
 export const CreateFulfillmentInput = z.object({
   orderId: Uuid,
   status: FulfillmentStatus.default('pending'),
-  carrier: Carrier.optional(),
+  carrier: Carrier.nullish(),
   carrierOther: z.string().max(63).optional(), // when carrier === 'other'
-  service: z.string().max(63).optional(),
-  trackingNumber: z.string().max(127).optional(),
-  trackingUrl: z.string().url().max(2048).optional(),
+  service: z.string().max(63).nullish(),
+  trackingNumber: z.string().max(127).nullish(),
+  trackingUrl: z.string().url().max(2048).nullish(),
   shippedAt: z.string().datetime().optional(),
-  notes: z.string().max(10_000).optional(),
+  notes: z.string().max(10_000).nullish(),
   metadata: z.record(z.string(), z.unknown()).optional(),
   lines: z.array(FulfillmentLineInput).min(1),
 });
