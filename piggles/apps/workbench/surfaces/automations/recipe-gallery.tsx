@@ -45,6 +45,7 @@ import {
   type Automation,
 } from './automations-data';
 import { automationState, parseActions } from './automations-presentation';
+import { automationHealth } from './automation-health';
 import { deriveModules } from './automations-catalog';
 import {
   GOAL_GROUPS,
@@ -56,8 +57,14 @@ import {
 
 const COLUMN = 'mx-auto flex w-full max-w-6xl flex-col gap-5 @lg:gap-6';
 
-/** on = active or errored (an errored rule is still switched on — the badge is
- *  what flags that something went wrong); off = paused or draft. */
+/** on = active or errored (an errored rule is still switched on); off = paused
+ *  or draft.
+ *
+ *  This used to say "the badge is what flags that something went wrong". It did
+ *  not: the badge read the stored word, and NOTHING on the platform ever writes
+ *  `error` (issue 540 counted: 2,411 automations, zero of them). The card now
+ *  reads the run counters instead, like the list and the rule's own screen.
+ *  [[feedback_screen_over_a_function_nobody_calls]] */
 function isOn(status: Automation['status']): boolean {
   return status === 'active' || status === 'error';
 }
@@ -108,6 +115,12 @@ function RecipeCard({
   const toast = useToast();
   const setStatus = useSetAutomationStatus(automation.id);
   const state = automationState(automation.status);
+  // "Chase an invoice a week overdue" sat here badged a green On while its last
+  // eight runs had every one of them failed, so eight late invoices went
+  // unchased. This is the fourth screen to show that rule's state and the last
+  // one to start telling the truth about it.
+  // [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const health = automationHealth(automation.status, automation.runCount, automation.errorCount);
   const on = isOn(automation.status);
   const glyph = meta.icon;
 
@@ -171,8 +184,12 @@ function RecipeCard({
           </div>
 
           <div className="mt-auto flex items-center justify-between gap-2 pt-1">
-            <Badge color={state.tone} variant="soft">
-              {state.label}
+            <Badge
+              color={health ? health.tone : state.tone}
+              variant="soft"
+              title={health ? health.detail : state.detail}
+            >
+              {health ? health.label : state.label}
             </Badge>
             <Button
               size="sm"

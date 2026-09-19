@@ -47,8 +47,18 @@ import {
   faTrashCan,
   faUsers,
 } from '@fortawesome/pro-solid-svg-icons';
+import { hasMailingAddress } from './broadcast-ready';
+import { useEmailSettings } from './broadcasts-data';
 import { Icon } from '@piggles/ui';
 import type { SequenceStep } from '@wizeworks/email-sequences/schemas';
+import {
+  buildEnrollerWords,
+  offersToBuildEnroller,
+  sequenceNotice,
+  sequenceRowState,
+  turnOnWords,
+  type Enrollers,
+} from './sequence-words';
 import { useActivePropertyId, useSites } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useConfirm } from '../../lib/confirm';
@@ -61,7 +71,6 @@ import {
   formatDelay,
   joinDuration,
   sequenceErrorMessage,
-  sequenceState,
   splitDuration,
   useBuilderEmails,
   useCreateSequence,
@@ -380,6 +389,8 @@ function SequenceEditor({
     });
   };
 
+  const settings = useEmailSettings();
+
   const onToggleStatus = () => {
     if (!sequence) return;
     const turnOn = status !== 'active';
@@ -399,19 +410,43 @@ function SequenceEditor({
       });
       return;
     }
+
+    // Turning it on is this screen's Send button, so it carries the CAN-SPAM
+    // rule a broadcast does (issue 617). Only when a step actually sends
+    // marketing: a wholly transactional journey has nothing to opt out of and
+    // needs no address. The server refuses too — this is the copy she reads.
+    if (
+      turnOn &&
+      steps.some((step) => step.emailType === 'marketing') &&
+      hasMailingAddress(settings.data?.physicalAddress) === false
+    ) {
+      toast.add({
+        title: 'Add your mailing address first',
+        description:
+          'Anti-spam law wants a real postal address in the footer of every marketing email, ' +
+          'and this sequence sends one. It goes on your email settings.',
+        type: 'warning',
+      });
+      return;
+    }
     const next: SequenceStatus = turnOn ? 'active' : 'draft';
     statusMut.mutate(
       { status: next },
       {
         onSuccess: () => {
           setStatus(next);
-          toast.add({
-            title: turnOn ? `${name} is on` : `${name} paused`,
-            description: turnOn
-              ? 'People enrolled from now on will start receiving the emails.'
-              : 'It stops enrolling new people. Turn it back on any time.',
-            type: 'success',
-          });
+          // "People enrolled from now on will start receiving the emails" was a
+          // promise about a path that, platform-wide, nothing had ever taken. It
+          // now reports what is actually wired up (issue 647).
+          toast.add(
+            turnOn
+              ? turnOnWords(name, enrollers)
+              : {
+                  title: `${name} paused`,
+                  description: 'It stops adding new people. Turn it back on any time.',
+                  type: 'success',
+                }
+          );
         },
         onError: (e) => {
           toast.add({
@@ -461,7 +496,12 @@ function SequenceEditor({
     });
   };
 
-  const state = sequenceState(status);
+  // A sequence nothing is wired to feed reaches nobody, so it does not wear the
+  // same green as one that is working (issue 647). A sequence being CREATED has
+  // nothing pointed at it yet by definition, which is what the draft state says.
+  const enrollers: Enrollers = sequence?.enrollers ?? { total: 0, live: 0 };
+  const state = sequenceRowState(status, enrollers);
+  const notice = sequenceNotice(status, enrollers);
   const siteItems: Record<string, string> = { [EVERY_SITE]: 'Every business on this account' };
   for (const site of sites ?? []) siteItems[site.id] = site.name;
 
@@ -578,17 +618,39 @@ function SequenceEditor({
 
       <div className="min-h-0 flex-1 overflow-y-auto">
         <div className={COLUMN}>
-          {status === 'active' ? (
-            <Alert color="info">
+          {/* Always on screen, in every state. This used to speak only when the
+              sequence was ON, which left the state every sequence on the platform
+              was actually IN — draft, with nothing wired to feed it — with nothing
+              said at all. */}
+          {isNew ? null : (
+            <Alert color={notice.color}>
               <AlertContent>
-                <AlertTitle>This sequence is on</AlertTitle>
-                <AlertDescription>
-                  It is sending to people as they are enrolled. Any changes you save apply to people
-                  who enrol from then on.
-                </AlertDescription>
+                <AlertTitle>{notice.title}</AlertTitle>
+                <AlertDescription>{notice.body}</AlertDescription>
+                {/* The sentence above names the remedy: an automation carrying
+                    "Add to an email sequence" pointed at THIS sequence. Both
+                    halves are already on this screen, so it builds the rule
+                    rather than describing it and sending her to reassemble it
+                    from a list of dozens of actions. */}
+                {sequence && offersToBuildEnroller(status, enrollers) ? (
+                  <Button
+                    color="module"
+                    size="sm"
+                    className="mt-3 w-fit"
+                    onClick={() => {
+                      ctx.open('automations.detail', {
+                        id: 'new',
+                        addToSequence: sequence.id,
+                        seedName: buildEnrollerWords(name).ruleName,
+                      });
+                    }}
+                  >
+                    {buildEnrollerWords(name).action}
+                  </Button>
+                ) : null}
               </AlertContent>
             </Alert>
-          ) : null}
+          )}
 
           <FormSection
             title="Basics"
@@ -932,8 +994,8 @@ function StepCard({
         </div>
         {sourceKind === 'builder' && (emailsUnavailable || emails.length === 0) ? (
           <FieldDescription>
-            You have no designed emails to choose from yet. Design one under Email, or use the
-            advanced option to name a built-in email by its key.
+            You have no designed emails to choose from yet. Design one on the Email designs screen,
+            or use the advanced option to name a built-in email by its key.
           </FieldDescription>
         ) : sourceKind === 'builtin' ? (
           <FieldDescription>

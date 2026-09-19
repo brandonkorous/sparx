@@ -27,7 +27,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { EnrollmentPanel } from './enrollment-panel';
-import { runState } from './automations-presentation';
+import { runState, triggerTypeLabel } from './automations-presentation';
 import { useAutomation, useAutomationRuns, type AutomationRunRow } from './automations-data';
 
 type SortKey = 'started' | 'finished' | 'steps' | 'status';
@@ -52,9 +52,12 @@ function triggerSummary(triggerEvent: unknown): string | null {
 
 export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
   const automationId = typeof ctx.params.automationId === 'string' ? ctx.params.automationId : '';
-  // Results first — see the note by the toggle in the toolbar.
-  const [view, setView] = useState<'results' | 'runs'>('results');
-  const [status, setStatus] = useState('all');
+  // A caller may name the result it is sending her to look at — the failure
+  // banner on the rule itself does. Results first otherwise; see the note by the
+  // toggle in the toolbar.
+  const asked = typeof ctx.params.result === 'string' ? ctx.params.result : null;
+  const [view, setView] = useState<'results' | 'runs'>(asked === null ? 'results' : 'runs');
+  const [status, setStatus] = useState(asked ?? 'all');
   const [sort, setSort] = useState<{ key: SortKey; dir: Dir }>({ key: 'started', dir: 'desc' });
 
   const { data: automation } = useAutomation(automationId);
@@ -270,8 +273,13 @@ export function AutomationRunsSurface({ ctx }: { ctx: SurfaceContext }) {
                           ) : null}
                         </div>
                       </td>
-                      <td className="hidden max-w-64 truncate font-mono text-xs @xl:table-cell">
-                        {summary ?? '—'}
+                      {/* The stored event name is the hover, not the cell.
+                          See `triggerTypeLabel`. */}
+                      <td
+                        className="hidden max-w-64 truncate text-sm @xl:table-cell"
+                        title={summary ?? undefined}
+                      >
+                        {summary === null ? '—' : triggerTypeLabel(summary)}
                       </td>
                       <td className="hidden text-right tabular-nums @md:table-cell">
                         {run.actionsTotal}

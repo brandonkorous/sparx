@@ -26,8 +26,9 @@ export function requireStringField(fields: ResolvedFields, key: string, action: 
   const value = fields[key];
   if (typeof value !== 'string' || value.length === 0) {
     throw new Error(
-      `${action}: required field '${key}' is missing from the trigger entity: ` +
-        `this action needs a trigger that resolves '${key}'.`
+      `${action}: this step needs '${key}', and whatever set the rule off did not ` +
+        `carry it. Start the rule from something that has a '${key}', or use a step ` +
+        `that does not need one.`
     );
   }
   return value;

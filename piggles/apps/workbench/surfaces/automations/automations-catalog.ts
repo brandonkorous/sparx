@@ -596,13 +596,13 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         key: 'headers',
         label: 'Extra headers',
         type: 'json',
-        help: 'Advanced: a set of header name → value pairs, as JSON.',
+        help: 'Advanced: extra header lines to send, written as JSON. For example {"X-Token": "abc123"}.',
       },
       {
         key: 'payload',
         label: 'Extra data',
         type: 'json',
-        help: 'Advanced: any extra data to include, as JSON.',
+        help: 'Advanced: any extra details to send along, written as JSON. For example {"source": "piggles"}.',
       },
     ],
   },
@@ -958,7 +958,10 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         required: true,
         optionSource: 'email-sequences',
         help: 'Which sequence to start them on.',
-        emptyHint: 'No sequences yet: create one under Email → Sequences.',
+        emptyHint: productCopy(
+          'automations.sequence.none',
+          'No sequences yet: create one under Email → Sequences.'
+        ),
       },
     ],
   },
@@ -978,7 +981,10 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         required: true,
         optionSource: 'email-sequences',
         help: 'Which sequence to take them out of.',
-        emptyHint: 'No sequences yet: create one under Email → Sequences.',
+        emptyHint: productCopy(
+          'automations.sequence.none',
+          'No sequences yet: create one under Email → Sequences.'
+        ),
       },
     ],
   },

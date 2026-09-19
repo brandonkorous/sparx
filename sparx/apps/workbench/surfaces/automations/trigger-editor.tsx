@@ -18,15 +18,30 @@ import {
   FieldLabel,
   Input,
   Select,
+  SelectGroup,
+  SelectGroupLabel,
+  SelectItem,
 } from '@wizeworks/silicaui-react';
 import type { ScheduleSpec, Trigger } from '@wizeworks/automation-schemas';
 import { ConditionEditor } from './condition-editor';
 import {
   DAYS_OF_WEEK,
+  moduleLabel,
   SCAN_ENTITIES,
   SCHEDULE_CADENCES,
   TRIGGER_EVENTS,
+  type ModuleSlug,
 } from './automations-catalog';
+import { useReaderClock } from '../../lib/business-timezone';
+import {
+  hhmm,
+  isoFromWallTime,
+  localMinuteToUtc,
+  minuteFromHhmm,
+  utcMinuteToLocal,
+  wallTimeInZone,
+  whoseClockHint,
+} from './schedule-clock';
 
 const EMPTY_WHERE = { logic: 'AND' as const, conditions: [] };
 const CUSTOM = '__custom__';
@@ -38,23 +53,27 @@ const DEFAULT_SCHEDULE: Trigger = {
   predicate: { entity: 'customer', where: EMPTY_WHERE },
 };
 
-function minuteToHHMM(minute: number): string {
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${pad(Math.floor(minute / 60))}:${pad(minute % 60)}`;
-}
-
-function hhmmToMinute(hhmm: string): number {
-  const [h, m] = hhmm.split(':').map((p) => Number(p));
-  if (!Number.isFinite(h) || !Number.isFinite(m)) return 0;
-  return Math.min(1439, Math.max(0, (h ?? 0) * 60 + (m ?? 0)));
-}
-
 function atMinuteOf(schedule: ScheduleSpec): number {
   return schedule.cadence === 'once' || schedule.cadence === 'interval' ? 0 : schedule.atMinuteUtc;
 }
 
-/** Picks the event from a friendly menu of suggestions, with an "Something else"
- *  escape hatch that reveals a text box — the schema allows any event type. */
+/**
+ * Picks the event from a friendly menu of suggestions, with a "Something else"
+ * escape hatch that reveals a text box — the schema allows any event type.
+ *
+ * GROUPED BY THE PART OF THE BUSINESS IT BELONGS TO. This was one flat list of
+ * 72 choices: "An order is placed", "A sales deal is created", "A staff member
+ * clocks in", 71 of them, in one column, with no headings. The first rule a shop
+ * owner ever builds starts here, and the screen asked her to read the whole
+ * catalog to find the one line she wanted.
+ *
+ * Every entry already carried its module. Nothing new is fetched or computed:
+ * the menu just stopped throwing away the field it was standing on.
+ * [[feedback_fetched_but_never_rendered]]
+ *
+ * File order is the curated order, so the groups come out in the order the
+ * catalog wrote them rather than alphabetically or by size.
+ */
 function EventPicker({
   value,
   onChange,
@@ -70,9 +89,21 @@ function EventPicker({
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `active` is derived from enabledModules
     [enabledModules]
   );
+  const groups = useMemo(() => {
+    const byModule = new Map<ModuleSlug, { eventType: string; label: string }[]>();
+    for (const e of suggestions) {
+      const bucket = byModule.get(e.module);
+      if (bucket) bucket.push(e);
+      else byModule.set(e.module, [e]);
+    }
+    return [...byModule.entries()];
+  }, [suggestions]);
+
   const isKnown = suggestions.some((e) => e.eventType === value);
   const [custom, setCustom] = useState(!isKnown && value !== '');
 
+  // `items` still carries every label: it is what the CLOSED trigger reads, and
+  // the popup below is rendered from `groups`.
   const items: Record<string, string> = {};
   for (const e of suggestions) items[e.eventType] = e.label;
   items[CUSTOM] = 'Something else…';
@@ -95,7 +126,22 @@ function EventPicker({
             onChange(chosen);
           }
         }}
-      />
+      >
+        {groups.map(([module, events]) => (
+          <SelectGroup key={module}>
+            <SelectGroupLabel>{moduleLabel(module)}</SelectGroupLabel>
+            {events.map((e) => (
+              <SelectItem key={e.eventType} value={e.eventType}>
+                {e.label}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        ))}
+        <SelectGroup>
+          <SelectGroupLabel>Anything else</SelectGroupLabel>
+          <SelectItem value={CUSTOM}>Something else…</SelectItem>
+        </SelectGroup>
+      </Select>
       {custom || (!isKnown && value !== '') ? (
         <Field>
           <FieldLabel>Event name</FieldLabel>
@@ -132,6 +178,12 @@ export function TriggerEditor({
   onChange: (next: Trigger) => void;
   enabledModules: readonly string[];
 }) {
+  // Whose clock the time fields are on. The labels used to read "At (UTC)",
+  // which is both a word most operators have no reason to know and, for anyone
+  // not on that meridian, the wrong number. See schedule-clock.ts.
+  const clock = useReaderClock();
+  const zone = clock.zone ?? clock.device;
+
   function setKind(kind: 'event' | 'schedule') {
     if (kind === value.kind) return;
     onChange(kind === 'event' ? DEFAULT_EVENT : DEFAULT_SCHEDULE);
@@ -256,22 +308,21 @@ export function TriggerEditor({
             ) : null}
 
             {value.schedule.cadence === 'once' ? (
-              <Field className="w-60">
-                <FieldLabel>At (UTC)</FieldLabel>
+              <Field className="w-72">
+                <FieldLabel>At</FieldLabel>
                 <FieldControl
                   render={
                     <Input
                       color="module"
                       type="datetime-local"
-                      value={value.schedule.at ? value.schedule.at.slice(0, 16) : ''}
+                      value={value.schedule.at ? wallTimeInZone(value.schedule.at, zone) : ''}
                       onChange={(event) => {
-                        patchSchedule({
-                          at: event.target.value ? `${event.target.value}:00.000Z` : '',
-                        });
+                        patchSchedule({ at: isoFromWallTime(event.target.value, zone) });
                       }}
                     />
                   }
                 />
+                <FieldDescription>{whoseClockHint(clock)}</FieldDescription>
               </Field>
             ) : value.schedule.cadence === 'interval' ? (
               <Field className="w-40">
@@ -297,20 +348,23 @@ export function TriggerEditor({
                 />
               </Field>
             ) : (
-              <Field className="w-40">
-                <FieldLabel>At (UTC)</FieldLabel>
+              <Field className="w-56">
+                <FieldLabel>At</FieldLabel>
                 <FieldControl
                   render={
                     <Input
                       color="module"
                       type="time"
-                      value={minuteToHHMM(value.schedule.atMinuteUtc)}
+                      value={hhmm(utcMinuteToLocal(value.schedule.atMinuteUtc, zone))}
                       onChange={(event) => {
-                        patchSchedule({ atMinuteUtc: hhmmToMinute(event.target.value) });
+                        patchSchedule({
+                          atMinuteUtc: localMinuteToUtc(minuteFromHhmm(event.target.value), zone),
+                        });
                       }}
                     />
                   }
                 />
+                <FieldDescription>{whoseClockHint(clock)}</FieldDescription>
               </Field>
             )}
           </div>

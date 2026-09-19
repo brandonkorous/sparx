@@ -43,6 +43,8 @@ import {
   type Automation,
 } from './automations-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { automationHealth } from './automation-health';
+import { useReaderClock } from '../../lib/business-timezone';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -54,7 +56,19 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function AutomationDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
-  if (id === 'new') return <AutomationEditor ctx={ctx} />;
+  if (id === 'new') {
+    // Opened from a screen that already knows what the rule is for — today only
+    // the email-sequence editor, whose notice names the exact action and the
+    // exact sequence. It hands both over rather than describing them and making
+    // her build the sentence again. Absent params are an ordinary blank rule.
+    const sequenceId = ctx.params.addToSequence;
+    const seedName = ctx.params.seedName;
+    const seed =
+      typeof sequenceId === 'string' && sequenceId !== ''
+        ? { sequenceId, name: typeof seedName === 'string' ? seedName : '' }
+        : undefined;
+    return <AutomationEditor ctx={ctx} seed={seed} />;
+  }
   return <ManageAutomation ctx={ctx} id={id} />;
 }
 
@@ -88,9 +102,11 @@ function ManageAutomation({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 }
 
 function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation: Automation }) {
+  const clock = useReaderClock();
   const toast = useToast();
   const clone = useCloneAutomation(automation.id);
   const state = automationState(automation.status);
+  const health = automationHealth(automation.status, automation.runCount, automation.errorCount);
 
   const actions = useMemo(() => parseActions(automation.actions), [automation.actions]);
   const conditions = useMemo(() => parseConditions(automation.conditions), [automation.conditions]);
@@ -145,8 +161,15 @@ function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation
         }
         controls={
           <>
-            <Badge color={state.tone} variant="soft" size="sm">
-              {state.label}
+            {/* The list and the pane must not disagree about whether a rule
+                is working. See `automation-health`. */}
+            <Badge
+              color={health ? health.tone : state.tone}
+              variant="soft"
+              size="sm"
+              title={health ? health.detail : state.detail}
+            >
+              {health ? health.label : state.label}
             </Badge>
             <TierBadge origin={automation.origin} locked={automation.locked} />
             <Button
@@ -187,7 +210,7 @@ function LockedAutomation({ ctx, automation }: { ctx: SurfaceContext; automation
 
           <FormSection title="When this runs">
             <Text className="text-sm">
-              {summarizeTrigger(automation.triggerType, automation.triggerConfig)}
+              {summarizeTrigger(automation.triggerType, automation.triggerConfig, clock)}
             </Text>
           </FormSection>
 

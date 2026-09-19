@@ -31,6 +31,7 @@ import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { actionLabel } from './automations-catalog';
 import { runState, stepState } from './automations-presentation';
+import { explainRunError, showsReported } from './run-errors';
 import {
   useAutomation,
   useAutomationRun,
@@ -88,7 +89,39 @@ function parseGateLog(raw: unknown): GateLogEntry[] {
   return out;
 }
 
-function StepCard({ step }: { step: AutomationRunStepRow }) {
+/**
+ * WHY ONE STEP DID NOT WORK.
+ *
+ * The engine's own wording is kept, labeled, under a sentence she can read —
+ * she needs it to quote at us, and hiding it would trade one problem for
+ * another. It is dropped only when the translation changed nothing, because
+ * printing the identical sentence twice is what this screen used to do.
+ */
+function StepFailure({
+  error,
+  actionType,
+  saidAbove,
+}: {
+  error: string;
+  actionType: string;
+  /** The banner at the top of the run already carries this exact sentence. */
+  saidAbove: boolean;
+}) {
+  const explained = explainRunError(error, actionLabel(actionType));
+  return (
+    <div className="flex flex-col gap-1">
+      {saidAbove ? null : <Text className="text-error text-sm">{explained.detail}</Text>}
+      {showsReported(explained) ? (
+        <Text className="text-sm">
+          What it reported:{' '}
+          <span className="font-mono text-xs break-all">{explained.reported}</span>
+        </Text>
+      ) : null}
+    </div>
+  );
+}
+
+function StepCard({ step, blamed }: { step: AutomationRunStepRow; blamed: boolean }) {
   const state = stepState(step.status);
   const gates = parseGateLog(step.gateLog);
   return (
@@ -107,7 +140,11 @@ function StepCard({ step }: { step: AutomationRunStepRow }) {
 
       <span className="font-mono text-xs break-all">{step.actionType}</span>
 
-      {step.error ? <Text className="text-error text-sm">{step.error}</Text> : null}
+      {/* The card's own heading already names the step, so only the reason and
+          the engine's wording go here. See `run-errors`. */}
+      {step.error ? (
+        <StepFailure error={step.error} actionType={step.actionType} saidAbove={blamed} />
+      ) : null}
 
       {gates.length > 0 ? (
         <div className="border-base-300 flex flex-col gap-1.5 border-t pt-2">
@@ -180,6 +217,16 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const state = runState(run.status);
   const steps = [...run.steps].sort((a, b) => a.actionIndex - b.actionIndex);
 
+  // The run's error is almost always one step's error copied up. Name that step
+  // so the banner can say which one, and let the step card carry the engine's
+  // wording — this screen printed the same raw string in both places.
+  const blamed = run.errorMessage
+    ? steps.find((s) => s.error !== null && s.error.trim() === run.errorMessage?.trim())
+    : undefined;
+  const failure = run.errorMessage
+    ? explainRunError(run.errorMessage, blamed ? actionLabel(blamed.actionType) : null)
+    : null;
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
@@ -222,8 +269,19 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
           <Alert color={run.status === 'failed' ? 'error' : state.tone} variant="soft">
             <AlertContent>
-              <AlertTitle>{state.label}</AlertTitle>
-              <AlertDescription>{run.errorMessage ?? state.detail}</AlertDescription>
+              <AlertTitle>{failure ? failure.headline : state.label}</AlertTitle>
+              <AlertDescription>
+                {failure ? failure.detail : state.detail}
+                {/* No step card will carry the engine's wording, so it goes
+                    here instead of nowhere. */}
+                {failure && blamed === undefined && showsReported(failure) ? (
+                  <>
+                    <br />
+                    What it reported:{' '}
+                    <span className="font-mono text-xs break-all">{failure.reported}</span>
+                  </>
+                ) : null}
+              </AlertDescription>
             </AlertContent>
           </Alert>
 
@@ -238,7 +296,7 @@ export function AutomationRunDetailSurface({ ctx }: { ctx: SurfaceContext }) {
             ) : (
               <div className="flex flex-col gap-3">
                 {steps.map((step) => (
-                  <StepCard key={step.id} step={step} />
+                  <StepCard key={step.id} step={step} blamed={step.id === blamed?.id} />
                 ))}
               </div>
             )}

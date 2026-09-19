@@ -71,7 +71,8 @@ function readString(config: Record<string, unknown>, key: string): string | null
 
 async function executeNotify(ctx: TenantCtx, effect: EffectInput): Promise<ActionOutput> {
   const title = readString(effect.config, 'title');
-  if (!title) throw new Error('platform.notify requires a non-empty `title`');
+  if (!title)
+    throw new Error('platform.notify: this step needs something to say. Give the notice a title.');
 
   const kind = readString(effect.config, 'kind') ?? 'platform.notice';
   const audienceKey = readString(effect.config, 'audience') ?? 'owners';

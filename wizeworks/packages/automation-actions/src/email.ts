@@ -24,6 +24,7 @@
 // today. A dedicated rate/volume gate is a future addition (docs/81 §7.1).
 
 import {
+  installOnce,
   registerAction,
   type ActionOutput,
   type EffectInput,
@@ -122,13 +123,8 @@ const InternalConfig = z.object({
   delaySeconds: z.number().int().min(0).optional(),
 });
 
-let installed = false;
-
 /** Register the email action executors exactly once (idempotent). */
-export function installEmailActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installEmailActions = installOnce((): void => {
   registerAction({
     type: 'email.send_campaign',
     module: 'email',
@@ -229,7 +225,8 @@ export function installEmailActions(): void {
       const recipient = fromField ?? cfg.to ?? (await resolveTenantActor(ctx)).email;
       if (!recipient) {
         throw new Error(
-          'email.send_internal: no recipient resolved and the tenant has no contact.'
+          'email.send_internal: this step could not work out who to email, and your ' +
+            'business has no contact address to fall back to.'
         );
       }
       // Internal mail is pre-rendered here, so its `{{token}}` merge fields resolve
@@ -257,4 +254,4 @@ export function installEmailActions(): void {
       return { recipient: cfg.to, enqueued, suppressed };
     },
   });
-}
+});

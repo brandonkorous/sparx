@@ -289,6 +289,23 @@ async function enqueueAndMark(
     getSettings(ctx, broadcast.propertyId),
   ]);
 
+  // CAN-SPAM wants a real postal address in every email sent to a list, and the
+  // settings screen tells the owner so over the box. Refused HERE, before any
+  // ScheduledSend row exists, so she is told while she can still fix it — the
+  // old gate refused at the dispatch tick, after the send screen had already
+  // reported it went to everybody.
+  //
+  // Silica composes the unsubscribe line into every marketing send, so that half
+  // cannot be authored away and needs no gate. The ADDRESS half is conditional
+  // (`frame.ts`: `if (opts.compliance?.physicalAddress)`), and when the gate was
+  // removed on the strength of the first half it took the second with it.
+  if ((settings.physicalAddress ?? '').trim() === '') {
+    throw new EmailValidationError(
+      'Add your mailing address in Email settings before sending to a list. ' +
+        'Anti-spam law requires a real postal address in the footer of every one.'
+    );
+  }
+
   const doc = await loadPublishedBuilderEmail(ctx, broadcast.builderEmailId);
   if (!doc) throw new EmailNotFoundError('BuilderEmail', broadcast.builderEmailId);
 
@@ -322,6 +339,12 @@ async function enqueueAndMark(
     // `marketing: true` injects the legal footer. The unsubscribe URL is per-recipient
     // and a render-once body has no recipient, so it falls back to `#` — exactly what
     // the retired `unsubscribe_link` node did on this same path.
+    //
+    // The postal address is NOT per-recipient and was being dropped here anyway:
+    // this branch passed no `compliance` at all, so a render-once broadcast went
+    // out with no address in its footer even for an owner who had filled it in.
+    // The personalized branch gets it at dispatch; this one is rendered here, so
+    // it has to be handed over here.
     const rendered = renderSilicaEmail(
       {
         doc: silicaDoc,
@@ -330,6 +353,7 @@ async function enqueueAndMark(
         preheader: broadcast.preheader,
         data,
         marketing: true,
+        compliance: { physicalAddress: settings.physicalAddress ?? '' },
         ...(tracking ? { tracking } : {}),
       },
       { brand: brand ?? undefined }
@@ -358,9 +382,13 @@ async function enqueueAndMark(
             // instead. So the intent is DECLARED: a broadcast is marketing, always,
             // and the footer + List-Unsubscribe headers depend on that flag. This is
             // now unconditional (docs/120 slice 7): every broadcast is silica, so the
-            // compliance gate applies to every one of them — a broadcast from a tenant
-            // with no postal address on file is refused, which is the CAN-SPAM rule the
-            // old tree-inference could be authored around by omitting a node.
+            // legal footer is composed into every one of them and the unsubscribe link
+            // cannot be authored away by omitting a node.
+            //
+            // It does NOT refuse a tenant with no postal address, whatever this comment
+            // used to say — the address line in `frame.ts` is conditional and nothing
+            // downstream checks it. That refusal is now above, at enqueue, where the
+            // owner is standing.
             emailType: 'marketing' as const,
           },
           from,

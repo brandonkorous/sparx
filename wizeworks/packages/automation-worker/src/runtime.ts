@@ -52,16 +52,25 @@ import { env } from './env.js';
 
 let engineInstalled = false;
 
-/** One-time engine setup (idempotent guards make repeat calls safe). */
+/**
+ * One-time engine setup, LATCHED ON SUCCESS.
+ *
+ * The flag used to be set on the line after the guard, before any of the work.
+ * So a throw in any install left this process marked ready with a part-filled
+ * action registry, for ever, and every automation that reached a missing
+ * executor failed with "no executor registered" — which reads like an
+ * unimplemented feature rather than a bad boot. See `installOnce` in the engine
+ * for the measurement; the same shape was in nine action modules.
+ */
 function ensureEngineInstalled(logger: Logger): void {
   if (engineInstalled) return;
-  engineInstalled = true;
   installBuiltins();
   installModuleActions();
   // Routes the crm.* events the executors emit onto the shared publisher, so
   // they reach whichever broker EVENT_BROKER selects. No project id: passing one
   // is what tied this to Google, and the bridge now always installs regardless.
   installCrmPubSubBridge({ logger });
+  engineInstalled = true;
 }
 
 function makeDeps(logger: Logger): EngineDeps {

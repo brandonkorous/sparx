@@ -47,6 +47,7 @@ import { TriggerEditor } from './trigger-editor';
 import { ConditionEditor } from './condition-editor';
 import { ActionConfigEditor } from './action-config-editor';
 import { productCopy } from '../../lib/product';
+import { useReaderClock } from '../../lib/business-timezone';
 
 const EVERY_SITE = '__all__';
 
@@ -241,10 +242,11 @@ function SettingsPanel({
 }
 
 function TriggerPanel({ trigger, onTrigger, enabledModules }: InspectorProps) {
+  const clock = useReaderClock();
   const Glyph = NODE_ICONS[triggerIcon(trigger)];
   return (
     <Panel>
-      <PanelHead icon={Glyph} title="When this runs" subtitle={triggerHeadline(trigger)} />
+      <PanelHead icon={Glyph} title="When this runs" subtitle={triggerHeadline(trigger, clock)} />
       <TriggerEditor value={trigger} onChange={onTrigger} enabledModules={enabledModules} />
     </Panel>
   );

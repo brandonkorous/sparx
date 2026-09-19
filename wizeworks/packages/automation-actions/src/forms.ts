@@ -19,6 +19,7 @@
 // tenant-active + kill-switch gates apply.
 
 import {
+  installOnce,
   registerAction,
   type ActionOutput,
   type EffectInput,
@@ -72,13 +73,8 @@ function buildAnswers(fields: EffectInput['fields']): { label: string; value: st
   return out;
 }
 
-let installed = false;
-
 /** Register the site-form action executors exactly once (idempotent). */
-export function installFormActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installFormActions = installOnce((): void => {
   registerAction({
     type: 'form.notify',
     // Platform-transactional (a form notification is not marketing) — no email-module
@@ -166,4 +162,4 @@ export function installFormActions(): void {
       return { submissionId, enqueued: res.enqueued, suppressed: res.suppressed };
     },
   });
-}
+});

@@ -5,6 +5,8 @@ import {
   confirmationStillExpected,
   deliveredTile,
   shareOfLabel,
+  engagementCell,
+  anythingCameBack,
 } from './broadcast-stats-words';
 
 /**
@@ -98,5 +100,97 @@ describe('the other tiles', () => {
   it('never calls a share "of delivered" while nothing is delivered', () => {
     expect(shareOfLabel(0)).toBe('of those sent');
     expect(shareOfLabel(23)).toBe('of delivered');
+  });
+});
+
+/**
+ * A SHARE NOBODY MEASURED, ON THE LIST.
+ *
+ * "Autumn drop announcement · Sent to 23 · Opened 0% · Clicked 0%" reads as
+ * twenty-three people getting her newsletter and not one opening it — a fact
+ * about her writing. The truth is that her mail service has never reported an
+ * open to this platform at all: measured 2026-09-16, every one of the 153
+ * `email_events` rows on this platform is `accepted`, with no `delivered`,
+ * `opened`, `clicked` or `bounced` among them.
+ *
+ * The DETAIL screen was given four honest states for exactly this in issue 531.
+ * The list kept `Math.round((opened / base) * 100)` over the same numbers, so
+ * the fix reached one of the two places it lives — for the third time on this
+ * screen family (246, 251, 531).
+ */
+describe('engagementCell', () => {
+  const nothingBack = {
+    accepted: 23,
+    delivered: 0,
+    opened: 0,
+    clicked: 0,
+    bounced: 0,
+    complained: 0,
+    unsubscribed: 0,
+  };
+
+  it('does NOT print 0% when nothing has come back at all', () => {
+    const cell = engagementCell(0, nothingBack, 23);
+    expect(cell.text).toBe('—');
+    expect(cell.title).toContain('nothing has come back');
+    expect(cell.title).toContain('not zero, it is unknown');
+  });
+
+  it('prints a real zero once the service HAS reported something', () => {
+    // 23 delivered and no opens is a measurement, and an unwelcome one. It is
+    // hers to see.
+    const delivered = { ...nothingBack, delivered: 23 };
+    const cell = engagementCell(0, delivered, 23);
+    expect(cell.text).toBe('0%');
+    expect(cell.title).toBe('0 of 23 delivered.');
+  });
+
+  it('counts a bounce as something coming back', () => {
+    // The service reports, so a zero for opens means what it says.
+    const bounced = { ...nothingBack, bounced: 2 };
+    expect(engagementCell(0, bounced, 23).text).toBe('0%');
+  });
+
+  it('works the share out against what landed, when anything did', () => {
+    const stats = { ...nothingBack, delivered: 20, opened: 5 };
+    const cell = engagementCell(5, stats, 23);
+    expect(cell.text).toBe('25%');
+    expect(cell.title).toBe('5 of 20 delivered.');
+  });
+
+  it('falls back to what went out when nothing is confirmed but opens are reported', () => {
+    const stats = { ...nothingBack, opened: 6 };
+    const cell = engagementCell(6, stats, 23);
+    expect(cell.text).toBe('26%');
+    expect(cell.title).toBe('6 of 23 sent.');
+  });
+
+  it('says nothing has gone out yet rather than dividing by zero', () => {
+    const none = { ...nothingBack, accepted: 0 };
+    const cell = engagementCell(0, none, 0);
+    expect(cell.text).toBe('—');
+    expect(cell.title).toBe('Nothing has gone out yet.');
+  });
+});
+
+describe('anythingCameBack', () => {
+  const none = {
+    delivered: 0,
+    opened: 0,
+    clicked: 0,
+    bounced: 0,
+    complained: 0,
+    unsubscribed: 0,
+  };
+
+  it('is false when the service has reported nothing', () => {
+    expect(anythingCameBack(none)).toBe(false);
+  });
+
+  it('counts every kind of report, not just the welcome ones', () => {
+    // An unsubscribe is somebody acting on the mail, so the pipe works.
+    for (const key of Object.keys(none)) {
+      expect(anythingCameBack({ ...none, [key]: 1 })).toBe(true);
+    }
   });
 });

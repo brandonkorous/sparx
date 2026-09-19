@@ -1,8 +1,8 @@
 # 120 — Email builder → silicaui adoption (the second engine cutover)
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-12
+**Last Updated:** 2026-09-17
 
 > **STATUS (2026-07-12) — DONE. There is ONE email engine.** Slice 7 landed: `renderEmailTree`
 > (583 lines + 378 of tests), the legacy `EmailBuilderApp` + its preview modal + merge-tags panel,
@@ -164,8 +164,16 @@ in as a host panel on the three asset-bearing kinds (§6).
 
 **D5 — Compliance gate survives.** The marketing gate (`treeHasNodeType(tree,
 'unsubscribe_link')`) becomes "the send composes a legal footer" — since `renderSilicaEmail`
-injects the unsubscribe section for `marketing` sends, the gate is satisfied structurally; a
-marketing send with no configured `physicalAddress`/unsubscribe still refuses, unchanged.
+injects the unsubscribe section for `marketing` sends, the gate is satisfied structurally.
+
+> **Refreshed 2026-09-17 (issue 617).** That was true of the unsubscribe link and only of
+> the unsubscribe link. The legal footer has two halves and `frame.ts` composes them
+> differently: the unsubscribe line is unconditional on a `marketing` send, the postal
+> address is `if (opts.compliance?.physicalAddress)`. So when slice 7 removed the gate on
+> the strength of the first half, a broadcast from a tenant with no `physicalAddress`
+> stopped being refused and simply went out without one. Juniper Row sent to 23 people
+> that way. The refusal now lives in `broadcastService.enqueueAndMark`, at enqueue rather
+> than at dispatch, so the owner is told while she can still fix it.
 
 ---
 

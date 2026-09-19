@@ -16,6 +16,7 @@
 
 import {
   PROPERTY_FIELD,
+  installOnce,
   registerResolver,
   registerScanner,
   type ResolvedFields,
@@ -23,7 +24,7 @@ import {
   type TenantCtx,
 } from '@wizeworks/automation';
 
-import { daysPastDue } from '@wizeworks/crm';
+import { businessTimeZone, daysPastDue } from '@wizeworks/crm';
 
 import { fieldValueToString } from './entity.js';
 
@@ -193,10 +194,14 @@ interface BillingLike {
  *  so counting elapsed 24-hour periods instead made the day a customer got
  *  chased depend on the hour the invoice happened to be raised at rather than
  *  the date printed on it. An invoice raised at 4pm was chased a day later than
- *  the identical one raised at 9am. */
-function billingFields(d: BillingLike, now: number): ResolvedFields {
+ *  the identical one raised at 9am.
+ *
+ *  And on the BUSINESS's calendar wherever it has said where it is: a shop in
+ *  Denver is still on Tuesday for seven hours after the server says Wednesday,
+ *  so a UTC ladder chased its customers a day early for those seven hours. */
+function billingFields(d: BillingLike, now: number, timeZone?: string | null): ResolvedFields {
   const at = new Date(now);
-  const past = d.dueAt ? daysPastDue(d.dueAt, at) : null;
+  const past = d.dueAt ? daysPastDue(d.dueAt, at, timeZone) : null;
   const daysUntilDue = past === null ? null : -past;
   const overdueDays = past === null ? 0 : Math.max(0, past);
   return {
@@ -259,7 +264,7 @@ async function hydrateBillingDocument(ctx: TenantCtx, docId: string): Promise<Re
   });
   if (!d) return {};
   return {
-    ...billingFields(d, Date.now()),
+    ...billingFields(d, Date.now(), await businessTimeZone(ctx.tx, ctx.tenantId)),
     ...(d.workflow.slug === B2B_QUOTES_WORKFLOW_SLUG ? quoteFields(d) : {}),
     ...(await resolveContact(ctx, { customerId: d.customerId, companyId: d.companyId })),
   };
@@ -1130,13 +1135,8 @@ const BOOKING_EVENTS = [
   'booking.no_show',
 ];
 
-let installed = false;
-
 /** Register the module entity resolvers + scheduled scanners exactly once. */
-export function installEntityResolvers(): void {
-  if (installed) return;
-  installed = true;
-
+export const installEntityResolvers = installOnce((): void => {
   for (const ev of BILLING_EVENTS) {
     registerResolver(
       ev,
@@ -1353,6 +1353,8 @@ export function installEntityResolvers(): void {
   // `overdueDays == 7/14/30`) and partition user invoices vs B2B AR by `workflowSlug`.
   registerScanner('billing_document', async (ctx: TenantCtx): Promise<ScannedRow[]> => {
     const now = Date.now();
+    // One read for the whole scan, not one per document.
+    const timeZone = await businessTimeZone(ctx.tx, ctx.tenantId);
     const docs = await ctx.tx.billingDocument.findMany({
       where: {
         deletedAt: null,
@@ -1366,7 +1368,7 @@ export function installEntityResolvers(): void {
       docs.map(async (d) => ({
         id: d.id,
         fields: {
-          ...billingFields(d as BillingLike, now),
+          ...billingFields(d as BillingLike, now, timeZone),
           ...(await resolveContact(ctx, {
             customerId: d.customerId,
             companyId: d.companyId,
@@ -1375,4 +1377,4 @@ export function installEntityResolvers(): void {
       }))
     );
   });
-}
+});

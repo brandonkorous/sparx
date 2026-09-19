@@ -175,13 +175,19 @@ export interface AutomationRunWithSteps extends AutomationRunRow {
 /* ── Reporting ──────────────────────────────────────────────────────────── */
 
 /** One row of the per-rule overview (`/reports/summary`). `successRate` is a
- *  0–1 fraction over the trailing window, or null when the rule never ran. */
+ *  0–1 fraction over the trailing window, or null when the rule never ran.
+ *
+ *  `completedCount` and `failedCount` are the same window split in two, so the
+ *  badge on the row can say whether the rule is WORKING rather than only whether
+ *  it is switched on. See `automation-health`. */
 export interface AutomationOverviewRow {
   id: string;
   name: string;
   triggerType: string;
   status: AutomationStatus;
   runs: number;
+  completedCount: number;
+  failedCount: number;
   successRate: number | null;
 }
 

@@ -22,7 +22,8 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useSites } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { sequenceState, useSequences, type SequenceRow } from './sequences-data';
+import { useSequences, type SequenceRow } from './sequences-data';
+import { sequenceRowState } from './sequence-words';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -182,7 +183,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((sequence: SequenceRow) => {
-                const state = sequenceState(sequence.status);
+                const state = sequenceRowState(sequence.status, sequence.enrollers);
                 return (
                   <tr
                     key={sequence.id}
@@ -231,7 +232,7 @@ export function SequencesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint what="a sequence to open it" />
+      {rows.length > 0 ? <RowOpenHint what="a sequence to open it" /> : null}
     </div>
   );
 }

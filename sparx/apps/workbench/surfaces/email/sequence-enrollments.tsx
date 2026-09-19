@@ -114,12 +114,16 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             color="module"
             className="ml-auto shrink-0 @md:ml-0"
+            // `hidden` is display:none, so the label below leaves the accessibility
+            // tree with it and a narrow pane had a button with no name at all.
+            aria-label="Enroll someone"
+            title="Enroll someone"
             onClick={() => {
               setEnrollOpen(true);
             }}
           >
             <UserPlus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Enrol someone</span>
+            <span className="hidden @lg:inline">Enroll someone</span>
           </Button>
         }
         controls={
@@ -134,7 +138,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
                   active: 'In progress',
                   completed: 'Finished',
                   exited: 'Left early',
-                  cancelled: 'Cancelled',
+                  cancelled: 'Canceled',
                 }}
                 onValueChange={(next) => {
                   setStatus((next as string) || 'all');
@@ -197,7 +201,7 @@ export function SequenceEnrollmentsSurface({ ctx }: { ctx: SurfaceContext }) {
                   }}
                 >
                   <UserPlus className="size-4" aria-hidden />
-                  Enrol someone
+                  Enroll someone
                 </Button>
               ),
             }}

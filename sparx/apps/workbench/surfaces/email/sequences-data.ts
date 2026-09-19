@@ -33,6 +33,7 @@ import type {
   UpdateSequenceInput,
 } from '@wizeworks/email-sequences/schemas';
 import { api } from '../../lib/api/client';
+import type { Enrollers } from './sequence-words';
 
 /* ── Semantic tone (shared with the Badge/Button color axis) ────────────── */
 
@@ -67,6 +68,11 @@ export interface SequenceRow {
     cancelled: number;
     total: number;
   };
+  /** How many automations carry "Add to an email sequence" pointed at this one,
+   *  and how many of those are switched on. A sequence sends nothing by itself,
+   *  so this is the difference between "it is on" and "it can reach somebody"
+   *  (issue 647). Counted server-side in ONE query for the whole list. */
+  enrollers: Enrollers;
 }
 
 /** One enrolled person, as `GET /v1/email/sequences/:id/enrollments` returns it. */
@@ -304,18 +310,6 @@ export function useUnenrollFromSequence(id: string) {
 
 /* ── Presentation helpers ───────────────────────────────────────────────── */
 
-/** A sequence's status as a badge tone + a plain-English label. */
-export function sequenceState(status: SequenceStatus): { tone: Tone; label: string } {
-  switch (status) {
-    case 'active':
-      return { tone: 'success', label: 'On' };
-    case 'archived':
-      return { tone: 'neutral', label: 'Stopped' };
-    case 'draft':
-      return { tone: 'info', label: 'Draft' };
-  }
-}
-
 /** An enrollment's status as a badge tone + a plain-English label. */
 export function enrollmentState(status: EnrollmentStatus): { tone: Tone; label: string } {
   switch (status) {
@@ -326,7 +320,7 @@ export function enrollmentState(status: EnrollmentStatus): { tone: Tone; label: 
     case 'exited':
       return { tone: 'warning', label: 'Left early' };
     case 'cancelled':
-      return { tone: 'neutral', label: 'Cancelled' };
+      return { tone: 'neutral', label: 'Canceled' };
   }
 }
 

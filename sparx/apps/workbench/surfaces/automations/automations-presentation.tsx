@@ -53,17 +53,18 @@ import type {
 } from '@wizeworks/automation-schemas';
 import { ModuleScope, type WorkbenchModule } from '../../components/module-scope';
 import {
-  DAYS_OF_WEEK,
   actionLabel,
   deriveModules,
   moduleLabel,
   operatorDef,
   primitiveText,
   scanEntityLabel,
+  SCHEDULE_CADENCES,
   TRIGGER_EVENTS,
   type ModuleSlug,
 } from './automations-catalog';
 import type { Tone } from './automations-data';
+import { scheduleLine, type DailySchedule, type ReaderClock } from './schedule-clock';
 
 // ─── parsing (defensive) ─────────────────────────────────────────────────────
 
@@ -92,40 +93,32 @@ export function parseActions(actions: unknown): Action[] {
 
 // ─── schedule + trigger summaries ────────────────────────────────────────────
 
-const pad = (n: number) => String(n).padStart(2, '0');
-
-function minuteToHHMM(minute: number): string {
-  return `${pad(Math.floor(minute / 60))}:${pad(minute % 60)}`;
-}
-
-export function humanizeSchedule(schedule: ScheduleSpec): string {
-  switch (schedule.cadence) {
-    case 'daily':
-      return `Every day at ${minuteToHHMM(schedule.atMinuteUtc)} UTC`;
-    case 'weekly': {
-      const day = DAYS_OF_WEEK.find((d) => d.value === schedule.dayOfWeek)?.label ?? 'day';
-      return `Every ${day} at ${minuteToHHMM(schedule.atMinuteUtc)} UTC`;
-    }
-    case 'monthly':
-      return `On day ${String(schedule.dayOfMonth)} of the month at ${minuteToHHMM(
-        schedule.atMinuteUtc
-      )} UTC`;
-    case 'interval':
-      return `Every ${String(schedule.everyMinutes)} minutes`;
-    case 'once':
-      return schedule.at ? `Once, at ${schedule.at.slice(0, 16).replace('T', ' ')} UTC` : 'Once';
-  }
+/**
+ * When a scheduled rule runs, on the reader's own clock.
+ *
+ * This used to print `Every day at 00:00 UTC` — a word a shop owner has no
+ * reason to know, wrapped around a figure that is not the time it happens where
+ * she is. `schedule-clock.ts` has the conversion and the reasoning; the `clock`
+ * argument is REQUIRED so a new caller has to answer whose clock it is rather
+ * than inheriting UTC by omitting something.
+ */
+export function humanizeSchedule(schedule: ScheduleSpec, clock: ReaderClock): string {
+  return scheduleLine(schedule as DailySchedule, clock);
 }
 
 /** A one-line, plain-language summary of what starts a rule. */
-export function summarizeTrigger(triggerType: string, triggerConfig: unknown): string {
+export function summarizeTrigger(
+  triggerType: string,
+  triggerConfig: unknown,
+  clock: ReaderClock
+): string {
   const trigger = parseTrigger(triggerType, triggerConfig);
   if (!trigger) return triggerType;
   if (trigger.kind === 'event') {
     const known = TRIGGER_EVENTS.find((e) => e.eventType === trigger.eventType);
     return known ? known.label : `When ${trigger.eventType}`;
   }
-  return `${humanizeSchedule(trigger.schedule)} · scanning ${scanEntityLabel(
+  return `${humanizeSchedule(trigger.schedule, clock)} · scanning ${scanEntityLabel(
     trigger.predicate.entity
   )}`;
 }
@@ -451,8 +444,8 @@ export const NODE_ICONS: Record<NodeIconKey, LucideIcon> = {
 
 /* ── trigger node ────────────────────────────────────────────────────────── */
 
-export function triggerHeadline(trigger: Trigger): string {
-  if (trigger.kind === 'schedule') return humanizeSchedule(trigger.schedule);
+export function triggerHeadline(trigger: Trigger, clock: ReaderClock): string {
+  if (trigger.kind === 'schedule') return humanizeSchedule(trigger.schedule, clock);
   const label = TRIGGER_EVENTS.find((e) => e.eventType === trigger.eventType)?.label;
   if (label) return label;
   return trigger.eventType.trim() ? `When ${trigger.eventType}` : 'Choose what starts this';
@@ -475,6 +468,34 @@ export function isCuratedTriggerEvent(trigger: Trigger): boolean {
 
 export function triggerIcon(trigger: Trigger): NodeIconKey {
   return trigger.kind === 'schedule' ? 'clock' : 'zap';
+}
+
+/**
+ * NAME A TRIGGER WHEN ITS TYPE IS ALL YOU HAVE.
+ *
+ * Two screens printed the stored type in mono — `schedule.daily`,
+ * `crm.deal.created` — while the flow canvas two clicks away said "Every day at
+ * 6:00pm" and "A sales deal is created" for the very same trigger: the runs
+ * list, and the "By automation" list on the report, where `summarizeTrigger`
+ * was handed an empty config, could not parse a schedule out of it, and fell
+ * back to returning the raw type. Measured 2026-09-18: 494 of the platform's
+ * runs read `schedule.daily` and 576 read `crm.deal.created`.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * Neither caller holds the schedule itself, so this cannot say the time of day
+ * the way the canvas can. "Every day" is the honest amount. Use
+ * `summarizeTrigger` wherever the config IS in hand.
+ */
+export function triggerTypeLabel(eventType: string): string {
+  const known = TRIGGER_EVENTS.find((e) => e.eventType === eventType);
+  if (known) return known.label;
+  if (eventType.startsWith('schedule.')) {
+    const cadence = eventType.slice('schedule.'.length);
+    const named = SCHEDULE_CADENCES.find((c) => c.value === cadence);
+    if (named) return named.label;
+    return 'On a schedule';
+  }
+  return `When ${eventType}`;
 }
 
 /* ── conditions node ─────────────────────────────────────────────────────── */

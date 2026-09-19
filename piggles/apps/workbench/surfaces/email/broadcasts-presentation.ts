@@ -19,7 +19,7 @@ export function broadcastState(status: BroadcastStatus): { label: string; tone: 
     case 'sent':
       return { label: 'Sent', tone: 'success' };
     case 'cancelled':
-      return { label: 'Cancelled', tone: 'warning' };
+      return { label: 'Canceled', tone: 'warning' };
     case 'failed':
       return { label: 'Failed', tone: 'error' };
   }

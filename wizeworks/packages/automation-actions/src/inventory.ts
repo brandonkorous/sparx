@@ -9,6 +9,7 @@
 // auto-reorder on from its automations once it trusts the suggestions.
 
 import {
+  installOnce,
   registerAction,
   type ActionOutput,
   type EffectInput,
@@ -18,13 +19,8 @@ import { inventoryService } from '@wizeworks/inventory';
 
 import { requireEntityId } from './entity.js';
 
-let installed = false;
-
 /** Register the inventory action executors exactly once (idempotent). */
-export function installInventoryActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installInventoryActions = installOnce((): void => {
   registerAction({
     type: 'inventory.draft_reorder_po',
     module: 'inventory',
@@ -56,4 +52,4 @@ export function installInventoryActions(): void {
       };
     },
   });
-}
+});

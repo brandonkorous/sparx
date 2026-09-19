@@ -233,7 +233,24 @@ function foldByGrain(daily: RunsTimeseriesPoint[], grain: 'week' | 'month'): Run
   return [...map.values()].sort((a, b) => (a.bucket < b.bucket ? -1 : 1));
 }
 
-function successRateOf(completed: number, failed: number): number {
+/**
+ * THE ONE DEFINITION OF "how reliably did this run".
+ *
+ * A SKIPPED run is not a failure: the rule fired, its conditions no longer
+ * matched, and nothing was supposed to happen. So skipped runs (and runs still
+ * in flight) are excluded from the denominator, not counted against the rate.
+ *
+ * Exported because `automationsOverview` had its own arithmetic 200 lines below
+ * this one — `completed / runs`, skipped included — and both numbers land on the
+ * SAME screen under one sentence that describes only this rule. Nobody could see
+ * it: there is not a single skipped run on the platform yet, so the two agree to
+ * the digit right up until the day one is skipped.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * Returns a PERCENTAGE (0-100). `AutomationOverviewRow.successRate` is a
+ * FRACTION, so that caller divides; the field's own doc comment says which.
+ */
+export function successRateOf(completed: number, failed: number): number {
   const settled = completed + failed;
   return settled > 0 ? +((completed / settled) * 100).toFixed(1) : 0;
 }
@@ -403,7 +420,19 @@ export interface AutomationOverviewRow {
   name: string;
   triggerType: string;
   status: string;
+  /** Every run in the window, whatever became of it. */
   runs: number;
+  /** Runs that finished. */
+  completedCount: number;
+  /**
+   * Runs that failed.
+   *
+   * Sent because the screen drawing this row badged every rule a green "On" and
+   * had nothing to argue with it: the stored status word is the only thing it
+   * had, and nothing on the platform ever writes `error` (issue 540).
+   */
+  failedCount: number;
+  /** A FRACTION (0-1), not a percentage. `successRateOf` is the definition. */
   successRate: number | null;
 }
 
@@ -427,23 +456,28 @@ export async function automationsOverview(
       }),
     ]);
 
-    const statById = new Map<string, { runs: number; completed: number }>();
+    const statById = new Map<string, { runs: number; completed: number; failed: number }>();
     for (const g of grouped) {
-      const s = statById.get(g.automationId) ?? { runs: 0, completed: 0 };
+      const s = statById.get(g.automationId) ?? { runs: 0, completed: 0, failed: 0 };
       s.runs += g._count._all;
       if (g.status === 'completed') s.completed += g._count._all;
+      if (g.status === 'failed') s.failed += g._count._all;
       statById.set(g.automationId, s);
     }
 
     return automations.map((a) => {
-      const s = statById.get(a.id);
+      const s = statById.get(a.id) ?? { runs: 0, completed: 0, failed: 0 };
+      const settled = s.completed + s.failed;
       return {
         id: a.id,
         name: a.name,
         triggerType: a.triggerType,
         status: a.status,
-        runs: s?.runs ?? 0,
-        successRate: s && s.runs > 0 ? +(s.completed / s.runs).toFixed(4) : null,
+        runs: s.runs,
+        completedCount: s.completed,
+        failedCount: s.failed,
+        // `successRateOf` returns a percentage; this field is a fraction.
+        successRate: settled > 0 ? +(successRateOf(s.completed, s.failed) / 100).toFixed(4) : null,
       };
     });
   });

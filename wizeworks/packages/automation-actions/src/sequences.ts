@@ -16,6 +16,7 @@
 // into the run-step tx so the step + the enrollment commit atomically.
 
 import {
+  installOnce,
   registerAction,
   type ActionOutput,
   type EffectInput,
@@ -43,13 +44,8 @@ function entityRefsFromFields(fields: EffectInput['fields']): Record<string, str
   };
 }
 
-let installed = false;
-
 /** Register the email-sequence action executors exactly once (idempotent). */
-export function installSequenceActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installSequenceActions = installOnce((): void => {
   registerAction({
     type: 'email.sequence_add',
     module: 'email',
@@ -95,4 +91,4 @@ export function installSequenceActions(): void {
       return { sequenceId: cfg.sequenceId, removed };
     },
   });
-}
+});

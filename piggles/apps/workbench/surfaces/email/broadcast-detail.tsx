@@ -134,7 +134,14 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
   // Enough to keep as a draft: the two things the server insists a broadcast has.
   const canSave = draft.name.trim() !== '' && draft.subject.trim() !== '';
 
-  const missing = missingPieces({ draft, emailUnpublished, recipientCount });
+  // `settings.data` is undefined while it loads, which the check reads as
+  // "not known yet" rather than as blank.
+  const missing = missingPieces({
+    ...draft,
+    emailUnpublished,
+    recipientCount,
+    mailingAddress: settings.data?.physicalAddress,
+  });
   const ready = missing.length === 0 && recipientCount !== undefined && recipientCount > 0;
 
   const scheduleValid =

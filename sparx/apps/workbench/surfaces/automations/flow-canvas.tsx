@@ -68,6 +68,7 @@ import {
   type NodeId,
 } from './automations-presentation';
 import { nestedNodeId } from './branch-tree';
+import { useReaderClock } from '../../lib/business-timezone';
 
 // Lock dragging to the vertical axis — the spine is a single column, so sideways
 // drift would only ever be noise. Inline so we don't add @dnd-kit/modifiers.
@@ -225,6 +226,7 @@ function TriggerNode({
   selected: boolean;
   onSelect: (id: NodeId) => void;
 }) {
+  const clock = useReaderClock();
   const Glyph = NODE_ICONS[triggerIcon(trigger)];
   const detail = triggerDetail(trigger);
   return (
@@ -238,12 +240,12 @@ function TriggerNode({
       <div
         role="button"
         tabIndex={0}
-        aria-label={`When: ${triggerHeadline(trigger)}`}
+        aria-label={`When: ${triggerHeadline(trigger, clock)}`}
         className={`${nodeCardClass(selected)} cursor-pointer`}
         onClick={() => onSelect(TRIGGER_NODE)}
         onKeyDown={keySelect(() => onSelect(TRIGGER_NODE))}
       >
-        <NodeBody title={triggerHeadline(trigger)}>
+        <NodeBody title={triggerHeadline(trigger, clock)}>
           {isCuratedTriggerEvent(trigger) ? (
             <span className="truncate font-mono text-xs">{detail}</span>
           ) : (

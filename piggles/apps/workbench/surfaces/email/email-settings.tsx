@@ -37,6 +37,9 @@ import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
+import { useActivePropertyId } from '../../lib/api/shell-data';
+import { useSite } from '../sites/data';
+import { contactOf } from '../builder/site-identity-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import {
   emailSettingsErrorMessage,
@@ -150,6 +153,19 @@ export function EmailSettingsSurface() {
   const save = useUpdateEmailSettings();
 
   const [form, setForm] = useState<FormState>(EMPTY);
+
+  // She already told the console her postal address once, on Site identity,
+  // where it is the address customers write to. Sending her here to type it a
+  // second time — and, since issue 617, BLOCKING her send until she does — asks
+  // her to repeat herself to the same software.
+  //
+  // Offered, never substituted. It is a suggestion while the box is untouched,
+  // and the moment she types anything her answer is the answer
+  // ([[feedback_honor_the_users_choice]]). A site's address is per site, so it
+  // is read from THIS site, which is the one this page's settings belong to.
+  const activeSiteId = useActivePropertyId();
+  const site = useSite(activeSiteId ?? '');
+  const siteAddress = contactOf(site.data).address.trim();
   const [loaded, setLoaded] = useState(false);
   const [touched, setTouched] = useState<{ fromAddress: boolean; replyTo: boolean }>({
     fromAddress: false,
@@ -409,6 +425,24 @@ export function EmailSettingsSurface() {
                   This appears in small print at the bottom of every email, alongside an unsubscribe
                   link.
                 </FieldDescription>
+                {form.physicalAddress.trim() === '' && siteAddress !== '' ? (
+                  <div className="flex flex-col items-start gap-2">
+                    <Text className="text-sm">
+                      Your site already shows this address on its contact page and footer:
+                    </Text>
+                    <Text className="text-sm whitespace-pre-line">{siteAddress}</Text>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      color="module"
+                      onClick={() => {
+                        set('physicalAddress')(siteAddress);
+                      }}
+                    >
+                      Use that address
+                    </Button>
+                  </div>
+                ) : null}
               </Field>
             </FormSection>
           </div>

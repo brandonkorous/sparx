@@ -38,6 +38,7 @@ import {
   useBroadcastStats,
   type Broadcast,
 } from './broadcasts-data';
+import { engagementCell } from './broadcast-stats-words';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 const DETAIL_KEY = 'email.broadcasts.detail';
@@ -50,25 +51,23 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 /** A whole percentage of a base, or an em-dash when the base is zero (dividing by
  *  nobody is not "0%", it is "not applicable yet"). */
-function rate(part: number, base: number): string {
-  if (base <= 0) return '—';
-  return `${String(Math.round((part / base) * 100))}%`;
-}
-
 /** Opened / clicked for one SENT broadcast, fetched from its own stats. Rendered
  *  only for sent and sending rows, so drafts never trigger a request. */
 function EngagementCells({ broadcast }: { broadcast: Broadcast }) {
   const { data } = useBroadcastStats(broadcast.id, true);
-  // Opens and clicks are shares of what actually landed — fall back to accepted,
-  // then to the recorded recipient count, so an early row still reads sensibly.
-  const base = data ? data.delivered || data.accepted || broadcast.recipientCount : 0;
+  // A share needs two measured numbers, and a send nothing has come back about
+  // has only one. `engagementCell` answers "unknown" rather than 0% there —
+  // 0% reads as a fact about her writing, and it is a fact about her mail
+  // service never having reported an open (issue 551).
+  const opened = data ? engagementCell(data.opened, data, broadcast.recipientCount) : null;
+  const clicked = data ? engagementCell(data.clicked, data, broadcast.recipientCount) : null;
   return (
     <>
-      <td className="hidden text-right tabular-nums @xl:table-cell">
-        {data ? rate(data.opened, base) : '…'}
+      <td className="hidden text-right tabular-nums @xl:table-cell" title={opened?.title}>
+        {opened ? opened.text : '…'}
       </td>
-      <td className="hidden text-right tabular-nums @2xl:table-cell">
-        {data ? rate(data.clicked, base) : '…'}
+      <td className="hidden text-right tabular-nums @2xl:table-cell" title={clicked?.title}>
+        {clicked ? clicked.text : '…'}
       </td>
     </>
   );
@@ -141,7 +140,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <option value="draft">Draft</option>
                 <option value="scheduled">Scheduled</option>
                 <option value="sent">Sent</option>
-                <option value="cancelled">Cancelled</option>
+                <option value="cancelled">Canceled</option>
                 <option value="failed">Failed</option>
               </NativeSelect>
             </div>
@@ -276,7 +275,7 @@ export function BroadcastsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint what="a broadcast to open it" />
+      {rows.length > 0 ? <RowOpenHint what="a broadcast to open it" /> : null}
     </div>
   );
 }

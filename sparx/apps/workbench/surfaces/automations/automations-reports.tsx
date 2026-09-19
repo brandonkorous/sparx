@@ -29,7 +29,8 @@ import { RefreshButton } from '../../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { automationState, summarizeTrigger } from './automations-presentation';
+import { automationState, triggerTypeLabel } from './automations-presentation';
+import { automationHealth } from './automation-health';
 import {
   automationErrorMessage,
   presetRange,
@@ -104,6 +105,10 @@ function OverviewRow({
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const state = automationState(row.status);
+  // Every row wore a green "On" beside its own amber "50% ok". The counters were
+  // already in the response; the badge simply was not reading them. Fifth screen
+  // to show a rule's state. [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const health = automationHealth(row.status, row.completedCount, row.failedCount);
   const pct = row.successRate === null ? null : Math.round(row.successRate * 100);
   return (
     <button
@@ -113,13 +118,21 @@ function OverviewRow({
     >
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <span className="min-w-0 flex-1 truncate font-medium">{row.name}</span>
-        <Badge color={state.tone} variant="soft" size="sm">
-          {state.label}
+        <Badge
+          color={health ? health.tone : state.tone}
+          variant="soft"
+          size="sm"
+          title={health ? health.detail : state.detail}
+        >
+          {health ? health.label : state.label}
         </Badge>
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
         <Text as="span" className="min-w-0 flex-1 text-sm">
-          {summarizeTrigger(row.triggerType, {})}
+          {/* The report carries the trigger TYPE and no config, so
+              `summarizeTrigger` could not parse a schedule out of the empty
+              object and printed `schedule.daily` at her. */}
+          {triggerTypeLabel(row.triggerType)}
         </Text>
         <Text as="span" className="shrink-0 text-sm tabular-nums">
           {row.runs === 0
@@ -242,7 +255,7 @@ export function AutomationsReportsSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Text>
               </div>
 
-              <Stats className="w-full">
+              <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
                 <Stat>
                   <StatTitle>Runs</StatTitle>
                   <StatValue>{NUMBER.format(totals?.runsCount ?? 0)}</StatValue>

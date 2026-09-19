@@ -109,3 +109,72 @@ export function achievedTone(count: number): Tone {
 export function shareOfLabel(delivered: number): string {
   return delivered > 0 ? 'of delivered' : 'of those sent';
 }
+
+/**
+ * Everything a mail service reports back AFTER a message is handed over.
+ *
+ * `accepted` is not in it: that is the send itself, written by us. Every other
+ * count arrives later, from outside, and if none of them ever does then nothing
+ * here has been measured at all.
+ */
+export interface ReturnedCounts {
+  delivered: number;
+  opened: number;
+  clicked: number;
+  bounced: number;
+  complained: number;
+  unsubscribed: number;
+}
+
+/** Has ANYTHING come back about this send? */
+export function anythingCameBack(stats: ReturnedCounts): boolean {
+  return (
+    stats.delivered > 0 ||
+    stats.opened > 0 ||
+    stats.clicked > 0 ||
+    stats.bounced > 0 ||
+    stats.complained > 0 ||
+    stats.unsubscribed > 0
+  );
+}
+
+/**
+ * One opened/clicked cell on the LIST, where there is no room for a sentence.
+ *
+ * A share needs two measured numbers, and a send that nothing has come back
+ * about has only one. Printing `0%` there is a figure nobody worked out: it
+ * reads as "twenty-three people got it and not one opened it", which is a fact
+ * about her writing, when the truth is that her mail service has never reported
+ * an open to this platform at all. Measured 2026-09-16: every one of the 153
+ * `email_events` rows on this platform is `accepted`, and there is not one
+ * `delivered`, `opened`, `clicked` or `bounced` among them.
+ *
+ * The detail screen was given four honest states for this in issue 531. The
+ * list kept `${Math.round((opened / base) * 100)}%` over the same numbers, so
+ * the fix reached one of the two places it lives.
+ *
+ * Returns a `title` for the cell, because the dash on its own is only half an
+ * answer and the column is too narrow for the other half.
+ */
+export function engagementCell(
+  part: number,
+  stats: ReturnedCounts & { accepted: number },
+  recipientCount: number
+): { text: string; title: string } {
+  const base = stats.delivered || stats.accepted || recipientCount;
+  if (base <= 0) {
+    return { text: '—', title: 'Nothing has gone out yet.' };
+  }
+  if (!anythingCameBack(stats)) {
+    return {
+      text: '—',
+      title:
+        'These went out, and nothing has come back about them since: no deliveries, opens, clicks or bounces. There is nothing to work a share out of, so this is not zero, it is unknown.',
+    };
+  }
+  const pct = Math.round((part / base) * 100);
+  return {
+    text: `${String(pct)}%`,
+    title: `${String(part)} of ${String(base)} ${stats.delivered > 0 ? 'delivered' : 'sent'}.`,
+  };
+}

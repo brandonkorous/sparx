@@ -48,6 +48,7 @@ import {
   type NodeId,
 } from './automations-presentation';
 import { actionDef, availableActions } from './automations-catalog';
+import { automationHealth } from './automation-health';
 import {
   actionAt,
   insertIntoBranch,
@@ -98,6 +99,34 @@ const EMPTY_FIELDS: DocFields = {
   goal: null,
   maxDepth: 3,
 };
+
+/**
+ * A new rule opened from somewhere that already knows what it is for.
+ *
+ * The email-sequence editor says, correctly, that the way people get into a
+ * sequence is an automation carrying "Add to an email sequence" pointed at it.
+ * It knows the action and it knows the sequence, so it hands both over rather
+ * than sending somebody off to reassemble the sentence it just said.
+ *
+ * Deliberately only the ACTION and the NAME. The trigger is the real decision —
+ * when should this happen — and guessing it would be the editor pretending to
+ * know something it does not. She lands on a rule that says what it does, with
+ * the one question worth asking still open.
+ */
+export interface NewAutomationSeed {
+  /** The sequence to add people to. */
+  sequenceId: string;
+  /** What the rule is called before she renames it. Empty is fine. */
+  name: string;
+}
+
+function seededFields(seed: NewAutomationSeed): DocFields {
+  return {
+    ...EMPTY_FIELDS,
+    name: seed.name,
+    actions: [{ type: 'email.sequence_add', config: { sequenceId: seed.sequenceId } }],
+  };
+}
 
 /** Read the editing document out of an automation — from its staged draft when one
  *  exists (source 'draft'), or from the live published columns (source 'live'). */
@@ -168,10 +197,13 @@ interface Validation {
 export function AutomationEditor({
   ctx,
   automation,
+  seed,
 }: {
   ctx: SurfaceContext;
   /** Undefined = creating a new rule; present = editing that rule. */
   automation?: Automation;
+  /** Only read when creating. What the screen that sent her here already knew. */
+  seed?: NewAutomationSeed;
 }) {
   const isNew = !automation;
   const toast = useToast();
@@ -198,7 +230,11 @@ export function AutomationEditor({
   // ── Document state (seeded once from the automation; owned locally after) ──
   const initial = useMemo(
     () =>
-      automation ? docFieldsFrom(automation, automation.draft ? 'draft' : 'live') : EMPTY_FIELDS,
+      automation
+        ? docFieldsFrom(automation, automation.draft ? 'draft' : 'live')
+        : seed
+          ? seededFields(seed)
+          : EMPTY_FIELDS,
     // Seed ONCE — the editor owns the doc after mount (updated from mutation
     // results), so a background refetch of the same row never churns it.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -636,6 +672,15 @@ export function AutomationEditor({
   };
 
   const state = automationState(status);
+  // IS THIS RULE ACTUALLY WORKING? The list has asked that since issue 540, and
+  // so has the read-only view of a managed rule. The editor — the screen an
+  // owner reaches by clicking her own rule — went on badging a green "On" over
+  // eight failed runs out of eight. Same module, same counters, third caller.
+  // `status` rather than `automation.status` so pausing it settles the badge at
+  // once, before the save lands. [[feedback_a_fix_leaves_its_neighbour_behind]]
+  const health = automation
+    ? automationHealth(status, automation.runCount, automation.errorCount)
+    : null;
   const showDiscard = !isNew && serverHasDraft && !dirty;
   // The flow map is the gray canvas the step cards sit ON (base-200); the
   // inspector to its right is the raised working surface (base-100). Matches the
@@ -650,8 +695,13 @@ export function AutomationEditor({
         controls={
           <>
             {!isNew ? (
-              <Badge color={state.tone} variant="soft" size="sm">
-                {state.label}
+              <Badge
+                color={health ? health.tone : state.tone}
+                variant="soft"
+                size="sm"
+                title={health ? health.inside : state.detail}
+              >
+                {health ? health.label : state.label}
               </Badge>
             ) : null}
             {hasUnpublished && !isNew ? (
@@ -780,6 +830,31 @@ export function AutomationEditor({
             <AlertTitle>{isNew ? 'Cannot create this yet' : 'Cannot save this yet'}</AlertTitle>
             <AlertDescription>{error}</AlertDescription>
           </AlertContent>
+        </Alert>
+      ) : null}
+
+      {/* A badge she has to hover is not enough for "this rule has never once
+          worked". The banner says it, and carries the way to the failures. */}
+      {health && automation ? (
+        <Alert color={health.tone === 'error' ? 'error' : 'warning'} className="shrink-0">
+          <AlertContent>
+            <AlertTitle>{health.label}</AlertTitle>
+            <AlertDescription>{health.inside}</AlertDescription>
+          </AlertContent>
+          <Button
+            size="sm"
+            color={health.tone === 'error' ? 'danger' : 'warning'}
+            className="shrink-0"
+            onClick={(event) => {
+              ctx.open(
+                'automations.runs',
+                { automationId: automation.id, result: 'failed' },
+                { target: targetFor(event) }
+              );
+            }}
+          >
+            See what went wrong
+          </Button>
         </Alert>
       ) : null}
 

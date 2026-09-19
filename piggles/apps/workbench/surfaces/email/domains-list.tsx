@@ -229,7 +229,7 @@ export function SendingDomainsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint what="an address to set it up" />
+      {matches.length > 0 ? <RowOpenHint what="an address to set it up" /> : null}
     </div>
   );
 }

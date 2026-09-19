@@ -39,6 +39,8 @@ import {
 import { useAutomations, type Automation } from './automations-data';
 import { productCopy } from '../../lib/product';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { automationHealth, lastAttempt } from './automation-health';
+import { useReaderClock } from '../../lib/business-timezone';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
  *  app's own picture rather than the generic one. */
@@ -56,6 +58,7 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const clock = useReaderClock();
   const [status, setStatus] = useState('all');
   const [origin, setOrigin] = useState('all');
   const [search, setSearch] = useState('');
@@ -86,8 +89,8 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         case 'trigger':
           return (
             dir *
-            summarizeTrigger(a.triggerType, a.triggerConfig).localeCompare(
-              summarizeTrigger(b.triggerType, b.triggerConfig)
+            summarizeTrigger(a.triggerType, a.triggerConfig, clock).localeCompare(
+              summarizeTrigger(b.triggerType, b.triggerConfig, clock)
             )
           );
         case 'runs':
@@ -98,7 +101,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
           return dir * ((STATUS_RANK[a.status] ?? 9) - (STATUS_RANK[b.status] ?? 9));
       }
     });
-  }, [data, needle, sort]);
+  }, [data, needle, sort, clock]);
 
   const toggleSort = (key: SortKey) => {
     setSort((current) =>
@@ -276,6 +279,12 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
             <tbody>
               {rows.map((automation) => {
                 const state = automationState(automation.status);
+                const health = automationHealth(
+                  automation.status,
+                  automation.runCount,
+                  automation.errorCount
+                );
+                const attempt = lastAttempt(automation.lastRunAt, automation.lastErrorAt);
                 const actions = parseActions(automation.actions);
                 return (
                   <tr
@@ -304,7 +313,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </div>
                     </td>
                     <td className="hidden max-w-64 truncate text-sm @lg:table-cell">
-                      {summarizeTrigger(automation.triggerType, automation.triggerConfig)}
+                      {summarizeTrigger(automation.triggerType, automation.triggerConfig, clock)}
                     </td>
                     <td className="hidden @2xl:table-cell">
                       <ModuleTags
@@ -330,15 +339,30 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </div>
                     </td>
                     <td className="hidden text-sm @xl:table-cell">
-                      {automation.lastRunAt ? (
-                        <Timestamp value={automation.lastRunAt} format="relative" />
+                      {/* A failed run does not write `lastRunAt`, so reading only
+                          that said "Not run yet" over a red failure count. It
+                          ran. It did not work. See `lastAttempt`. */}
+                      {attempt ? (
+                        <span className={attempt.failed ? 'text-error' : undefined}>
+                          <Timestamp value={attempt.at} format="relative" />
+                          {attempt.failed ? ' · failed' : ''}
+                        </span>
                       ) : (
                         'Not run yet'
                       )}
                     </td>
                     <td>
-                      <Badge color={state.tone} variant="soft" size="sm">
-                        {state.label}
+                      {/* WHETHER IT WORKS outranks whether it is switched on. A
+                          rule whose every run failed said "On", in success
+                          green, two columns from its own failure count. See
+                          `automation-health`. */}
+                      <Badge
+                        color={health ? health.tone : state.tone}
+                        variant="soft"
+                        size="sm"
+                        title={health ? health.detail : state.detail}
+                      >
+                        {health ? health.label : state.label}
                       </Badge>
                     </td>
                   </tr>
@@ -349,7 +373,7 @@ export function AutomationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint what="a rule to open it" />
+      {rows.length > 0 ? <RowOpenHint what="a rule to open it" /> : null}
     </div>
   );
 }

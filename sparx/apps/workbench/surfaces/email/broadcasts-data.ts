@@ -104,24 +104,13 @@ export interface DesignedEmail {
 }
 
 /** This site's sender identity, shown read-only in the composer. */
-export interface EmailSettings {
-  fromName: string | null;
-  fromAddress: string | null;
-  replyTo: string | null;
-  /**
-   * The exact `From` header a send from this site will carry — the SAME string
-   * `buildTenantFrom` gives the mailer, resolved by the server rather than
-   * guessed again here.
-   *
-   * A console that re-derived the unconfigured fallback for itself named a bare
-   * `noreply@sparx.email` and dropped the sender NAME entirely, so an owner read
-   * one thing on screen and her customers received another. The sender name is
-   * the one part of an email a recipient actually reads, so it is not something
-   * a second implementation gets to have an opinion about.
-   */
-  resolvedFrom: string;
-}
-
+// ONE type over one endpoint. This was a second, narrower declaration of
+// `GET /v1/email/settings` that dropped `physicalAddress` — so the compose
+// screen fetched the mailing address the law requires, held it, and could not
+// see it. The value was on the wire the whole time
+// ([[feedback_fetched_but_never_rendered]]).
+import type { EmailSettings } from './settings-data';
+export type { EmailSettings };
 /** What this broadcast will look like in somebody's inbox, or the reason there
  *  isn't one yet. `ready:false` names the missing piece rather than showing a
  *  blank frame. */
@@ -329,7 +318,7 @@ export function broadcastState(status: BroadcastStatus): { label: string; tone: 
     case 'sent':
       return { label: 'Sent', tone: 'success' };
     case 'cancelled':
-      return { label: 'Cancelled', tone: 'warning' };
+      return { label: 'Canceled', tone: 'warning' };
     case 'failed':
       return { label: 'Failed', tone: 'error' };
   }

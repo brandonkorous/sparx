@@ -125,15 +125,13 @@ export type BroadcastPreview =
   | { ready: true; to: string; from: string; subject: string; html: string; text: string };
 
 /** This site's sender identity, shown read-only in the composer. */
-export interface EmailSettings {
-  fromName: string | null;
-  fromAddress: string | null;
-  replyTo: string | null;
-  /** The literal `From` header the send will carry, resolved by the server —
-   *  including the platform fallback when nothing here is filled in. */
-  resolvedFrom: string;
-}
-
+// ONE type over one endpoint. This was a second, narrower declaration of
+// `GET /v1/email/settings` that dropped `physicalAddress` — so the compose
+// screen fetched the mailing address the law requires, held it, and could not
+// see it. The value was on the wire the whole time
+// ([[feedback_fetched_but_never_rendered]]).
+import type { EmailSettings } from './settings-data';
+export type { EmailSettings };
 /* ── Query keys ───────────────────────────────────────────────────────────── */
 
 export const emailKeys = {

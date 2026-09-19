@@ -22,7 +22,7 @@ import {
   ticketService,
 } from '@wizeworks/crm/services';
 import type { ActionOutput, EffectInput, TenantCtx } from '@wizeworks/automation';
-import { registerAction } from '@wizeworks/automation';
+import { installOnce, registerAction } from '@wizeworks/automation';
 import { scoreFormQuiz } from './quiz-scoring';
 import { z } from 'zod';
 
@@ -135,13 +135,8 @@ function subjectFor(source: string, fields: Record<string, unknown>): string {
   return `Request${who}`.slice(0, 255);
 }
 
-let installed = false;
-
 /** Register the CRM action executors exactly once (idempotent). */
-export function installCrmActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installCrmActions = installOnce((): void => {
   registerAction({
     type: 'crm.add_tag',
     module: 'crm',
@@ -228,7 +223,10 @@ export function installCrmActions(): void {
         : undefined;
       const assignee = fromField ?? cfg.assignedToUserId ?? (await resolveTenantActor(ctx)).userId;
       if (!assignee) {
-        throw new Error('crm.create_task: no assignee resolved and the tenant has no users.');
+        throw new Error(
+          'crm.create_task: this step could not work out who to give the task to, and ' +
+            'there is nobody on your team to fall back to.'
+        );
       }
       const dueAt =
         cfg.dueInDays !== undefined
@@ -358,4 +356,4 @@ export function installCrmActions(): void {
       return { dealId: deal.id, stageId: deal.stageId };
     },
   });
-}
+});

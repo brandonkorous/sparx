@@ -62,8 +62,12 @@ export interface ListEnrollmentsFilter {
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
-/** Parse the stored JSON steps, tolerating a legacy/blank shape as an empty list. */
-function parseSteps(raw: unknown): SequenceStep[] {
+/** Parse the stored JSON steps, tolerating a legacy/blank shape as an empty list.
+ *
+ *  Exported because the REST layer asks the same question of the same column
+ *  before turning a sequence on, and a second parse of one JSON shape is a
+ *  second opinion about what a step is. */
+export function parseSteps(raw: unknown): SequenceStep[] {
   const parsed = SequenceSteps.safeParse(raw);
   return parsed.success ? parsed.data : [];
 }

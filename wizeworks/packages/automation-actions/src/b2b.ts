@@ -9,6 +9,7 @@
 // suspension events the email-worker consumes.
 
 import {
+  installOnce,
   registerAction,
   registerScanner,
   type ActionOutput,
@@ -78,13 +79,8 @@ const EscalateConfig = z.object({
   suspendDays: z.number().int().min(1).optional(),
 });
 
-let installed = false;
-
 /** Register the B2B scanner + executor exactly once (idempotent). */
-export function installB2bActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installB2bActions = installOnce((): void => {
   // Scheduled scan over B2B accounts. Returns every non-deleted account with its
   // resolved fields; one aggregate query joins in each account's oldest past-due
   // age + whether it has any actionable (unpaid-past-due or overdue) invoice, so
@@ -184,4 +180,4 @@ export function installB2bActions(): void {
       };
     },
   });
-}
+});

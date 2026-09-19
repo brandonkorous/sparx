@@ -68,23 +68,11 @@ export function formatList(parts: string[]): string {
 
 /** Everything a real send needs that this draft has not got. Each missing piece
  *  names itself, so the Send button being off is never a mystery. */
-export function missingPieces(args: {
-  draft: Draft;
-  emailUnpublished: boolean;
-  recipientCount: number | undefined;
-}): string[] {
-  const missing: string[] = [];
-  if (args.draft.name.trim() === '') missing.push('a name');
-  if (args.draft.subject.trim() === '') missing.push('a subject line');
-  if (!args.draft.segmentId) missing.push('who it goes to');
-  if (!args.draft.builderEmailId) missing.push('an email to send');
-  if (args.emailUnpublished) missing.push('a published email (this one is still a draft)');
-  if (args.draft.segmentId && args.recipientCount === 0) {
-    missing.push('an audience with people in it');
-  }
-  return missing;
-}
-
+// Moved to `broadcast-ready.ts`, which imports nothing, because one of these
+// rules is a legal one and a file importing the surface registry cannot be
+// reached from the node test seat. Re-exported so the call sites read the same.
+export { hasMailingAddress, missingPieces } from './broadcast-ready';
+export type { MailingAddress, ReadinessFacts } from './broadcast-ready';
 /** How many people, said in words — "23 people", "1 person". */
 export function peopleCount(count: number): string {
   return `${count.toLocaleString()} ${count === 1 ? 'person' : 'people'}`;

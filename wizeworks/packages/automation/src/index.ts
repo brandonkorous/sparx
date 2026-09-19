@@ -56,6 +56,7 @@ export {
   registerAction,
   registeredActionTypes,
 } from './actions/registry';
+export { installOnce } from './actions/install-once';
 export { installBuiltinActions } from './actions/builtins';
 export { dispatch, UnregisteredActionError } from './dispatch/dispatcher';
 
@@ -71,6 +72,7 @@ export {
   AutomationNotFoundError,
   AutomationVersionNotFoundError,
   cloneAutomation,
+  countAutomationsByActionConfig,
   createAutomation,
   deleteAutomation,
   discardDraft,
@@ -85,6 +87,7 @@ export {
   setAutomationStatus,
   updateAutomation,
   upsertSystemAutomation,
+  type ActionUseCount,
   type ListAutomationsFilter,
   type ServiceCtx,
   type SystemAutomationSpec,

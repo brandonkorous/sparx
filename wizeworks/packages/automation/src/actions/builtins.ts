@@ -15,6 +15,7 @@ import type { ActionOutput, EffectInput, TenantCtx } from '../engine-types';
 import { webhookEgressGate } from '../gates/builtins';
 import { registerNotifyAction } from './notify';
 import { registerAction } from './registry';
+import { installOnce } from './install-once';
 
 const WEBHOOK_TIMEOUT_MS = 10_000;
 
@@ -50,7 +51,10 @@ async function executeWebhook(ctx: TenantCtx, effect: EffectInput): Promise<Acti
       signal: controller.signal,
     });
     if (res.status < 200 || res.status >= 300) {
-      throw new Error(`webhook responded ${res.status}`);
+      throw new Error(
+        `platform.webhook: the web address answered with an error (${String(res.status)}). ` +
+          `Check the address is right and that it is ready to receive messages.`
+      );
     }
     return { status: res.status };
   } finally {
@@ -58,13 +62,8 @@ async function executeWebhook(ctx: TenantCtx, effect: EffectInput): Promise<Acti
   }
 }
 
-let installed = false;
-
 /** Register the built-in (platform-level) executors exactly once. Idempotent. */
-export function installBuiltinActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installBuiltinActions = installOnce((): void => {
   registerAction({
     type: 'platform.webhook',
     module: null, // platform-level — no module-active gate
@@ -77,4 +76,4 @@ export function installBuiltinActions(): void {
   // — it writes through the tenant-scoped tx it is already handed — so it
   // belongs with the built-ins rather than the module-wired seam.
   registerNotifyAction();
-}
+});

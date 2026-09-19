@@ -42,6 +42,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { SaveFailure } from '@/components/save-failure';
+import { missingPieces } from './broadcast-ready';
 import { BroadcastPreview } from './broadcast-preview';
 import {
   broadcastErrorMessage,
@@ -63,6 +64,7 @@ import {
 } from './broadcasts-data';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { achievedTone, deliveredTile, shareOfLabel, type Tone } from './broadcast-stats-words';
+import { NOT_A_DATE, localMomentInstant } from '../../lib/today';
 
 const DETAIL_KEY = 'email.broadcasts.detail';
 const SETTINGS_KEY = 'email.settings';
@@ -203,13 +205,16 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
 
   // Everything a real send needs. Each missing piece names itself, so the button
   // being off is never a mystery.
-  const missing: string[] = [];
-  if (name === '') missing.push('a name');
-  if (subject === '') missing.push('a subject line');
-  if (!draft.segmentId) missing.push('who it goes to');
-  if (!draft.builderEmailId) missing.push('an email to send');
-  if (emailUnpublished) missing.push('a published email (this one is still a draft)');
-  if (draft.segmentId && recipientCount === 0) missing.push('an audience with people in it');
+  // `settings.data` is undefined while it loads, which the check reads as
+  // "not known yet" rather than as blank.
+  const missing = missingPieces({
+    ...draft,
+    name,
+    subject,
+    emailUnpublished,
+    recipientCount,
+    mailingAddress: settings.data?.physicalAddress,
+  });
   const ready = missing.length === 0 && recipientCount !== undefined && recipientCount > 0;
 
   const scheduleValid =
@@ -296,8 +301,14 @@ function BroadcastComposer({ ctx, broadcast }: { ctx: SurfaceContext; broadcast?
     setServerError(null);
     committing.current = true;
     try {
+      const when = localMomentInstant(scheduledAt);
+      if (when === null) {
+        setServerError(NOT_A_DATE);
+        committing.current = false;
+        return;
+      }
       const id = await persist();
-      await schedule.mutateAsync({ id, scheduledAt: new Date(scheduledAt).toISOString() });
+      await schedule.mutateAsync({ id, scheduledAt: when });
       ctx.open(DETAIL_KEY, { id }, { target: 'replace' });
       afterPaneChange(() => {
         toast.add({ title: 'Broadcast scheduled', type: 'success' });

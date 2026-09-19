@@ -22,6 +22,7 @@
 // starter automations ship disabled and light up once an account is connected.
 
 import {
+  installOnce,
   registerAction,
   type ActionOutput,
   type EffectInput,
@@ -113,13 +114,8 @@ export function deriveSocialPostState(autoApprove: boolean, now: Date): SocialPo
   return { status: 'pending_approval', scheduledAt: null, approvedAt: null };
 }
 
-let installed = false;
-
 /** Register the social action executor exactly once (idempotent). */
-export function installSocialActions(): void {
-  if (installed) return;
-  installed = true;
-
+export const installSocialActions = installOnce((): void => {
   registerAction({
     type: 'social.post',
     module: 'social',
@@ -134,8 +130,8 @@ export function installSocialActions(): void {
       const draft = buildSocialDraft(config, effect.fields);
       if (draft.body.length === 0) {
         throw new Error(
-          'social.post: the post template produced an empty body. Set a message or a ' +
-            '{{announce.title}} token that the trigger resolves.'
+          'social.post: the post came out empty. Write a message for it, or use a ' +
+            'tag like {{announce.title}} that whatever sets the rule off can fill in.'
         );
       }
 
@@ -194,4 +190,4 @@ export function installSocialActions(): void {
       };
     },
   });
-}
+});

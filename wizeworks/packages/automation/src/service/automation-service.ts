@@ -494,6 +494,74 @@ export async function listAutomations(
   );
 }
 
+export interface ActionUseCount {
+  /** Automations carrying this action at all, whatever their status. */
+  total: number;
+  /** Of those, the ones switched on — the ones that could fire today. */
+  live: number;
+}
+
+/**
+ * For one action type, how many automations name each value of one config field.
+ *
+ * The question this answers is "is anything actually wired to do this?", asked
+ * from the OTHER side. An email sequence, a funnel, a segment: each is a thing an
+ * automation can point at, and each has a screen with an on switch that says what
+ * will happen once it is on. None of them can send anything by itself — something
+ * has to put a person in — so a screen that says "it is on" without knowing
+ * whether anything feeds it is stating an intention as a fact.
+ *
+ * Measured 2026-09-18: 2,411 automations on this platform, and **not one** of them
+ * carried `email.sequence_add`. All 15 sequences sat in draft with zero
+ * enrollments ever. Turning any of them on would have reported success and then
+ * sent nothing, for good. [[feedback_never_present_absence_as_measurement]]
+ *
+ * ONE query for the whole set rather than one per id, so a list screen can ask
+ * about every row it draws without an N+1. The `@>` containment narrows to rows
+ * carrying the action type at all (a partial object matches, nested config
+ * included); the per-row walk then reads the config value, because containment
+ * cannot report WHICH value matched.
+ *
+ * Only PUBLISHED actions count. A draft edit that wires one up is not running
+ * yet, and saying otherwise would be the same lie one level down.
+ */
+export async function countAutomationsByActionConfig(
+  ctx: ServiceCtx,
+  type: string,
+  configKey: string
+): Promise<Map<string, ActionUseCount>> {
+  return withTenant({ tenantId: ctx.tenantId }, async (tx) => {
+    const rows = await tx.automation.findMany({
+      where: { actions: { array_contains: [{ type }] } },
+      select: { status: true, actions: true },
+    });
+
+    const counts = new Map<string, ActionUseCount>();
+    for (const row of rows) {
+      if (!Array.isArray(row.actions)) continue;
+      // One automation naming the same target twice is ONE automation pointed at
+      // it, not two — the count is of rules, not of steps.
+      const named = new Set<string>();
+      for (const action of row.actions) {
+        if (typeof action !== 'object' || action === null || Array.isArray(action)) continue;
+        const shape = action as { type?: unknown; config?: unknown };
+        if (shape.type !== type) continue;
+        const config = shape.config;
+        if (typeof config !== 'object' || config === null || Array.isArray(config)) continue;
+        const value = (config as Record<string, unknown>)[configKey];
+        if (typeof value === 'string' && value !== '') named.add(value);
+      }
+      for (const value of named) {
+        const seen = counts.get(value) ?? { total: 0, live: 0 };
+        seen.total += 1;
+        if (row.status === 'active') seen.live += 1;
+        counts.set(value, seen);
+      }
+    }
+    return counts;
+  });
+}
+
 // ─── system / seed path (§3.1 Locked + Managed) ──────────────────────────────
 
 export interface SystemAutomationSpec {

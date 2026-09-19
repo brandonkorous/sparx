@@ -334,7 +334,10 @@ export function installCrmDepthActions(): void {
         : undefined;
       const assignee = fromField ?? cfg.assignedToUserId ?? (await resolveTenantActor(ctx)).userId;
       if (!assignee) {
-        throw new Error('voice.log_call_task: no assignee resolved and the tenant has no users.');
+        throw new Error(
+          'voice.log_call_task: this step could not work out who to give the task to, ' +
+            'and there is nobody on your team to fall back to.'
+        );
       }
 
       const task = await taskService.create(
