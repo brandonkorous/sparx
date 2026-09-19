@@ -1,8 +1,8 @@
-# silicaui (core CSS) — the asks (§1, §2 OPEN)
+# silicaui (core CSS) — the asks (§1, §3 OPEN; §2 SHIPPED)
 
-**Version:** 1.1.0
+**Version:** 1.3.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-09-18
 
 > The register for **`@wizeworks/silicaui`**, the Tailwind plugin that emits the color and component
 > classes. Its sibling [01 — silicaui-builder](01-builder-asks.md) covers the builder editor's host
@@ -13,10 +13,48 @@
 > [RULE #1](../../CLAUDE.md) — a call-site override is a deferred fix everyone downstream pays
 > interest on, so a gap that can only be closed by painting over the component belongs here.
 
-| §   | Raised     | Verified against             | Status   | Ask                                                             |
-| --- | ---------- | ---------------------------- | -------- | --------------------------------------------------------------- |
-| 1   | 2026-08-02 | `@wizeworks/silicaui@0.41.0` | **OPEN** | `stack`'s peek is fixed-distance, so it vanishes above ~320px   |
-| 2   | 2026-08-02 | `@wizeworks/silicaui@0.41.0` | **OPEN** | `soft` / `outline` ink is the raw accent — 1.66:1 on light hues |
+| §   | Raised     | Verified against             | Status      | Ask                                                                                        |
+| --- | ---------- | ---------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
+| 1   | 2026-08-02 | `@wizeworks/silicaui@0.41.0` | **OPEN**    | `stack`'s peek is fixed-distance, so it vanishes above ~320px                              |
+| 2   | 2026-08-02 | `@wizeworks/silicaui@0.56.0` | **SHIPPED** | `soft` / `outline` ink is the raw accent — 1.66:1 on light hues                            |
+| 3   | 2026-09-18 | `@wizeworks/silicaui@0.55.0` | **OPEN**    | a color an app ADDS gets `bg`/`text`/`border` only; `ring-*` and the rest draw the default |
+
+> **[§2 — `soft` and `outline` set their ink to the RAW accent](#2--soft-and-outline-set-their-ink-to-the-raw-accent-so-light-hues-go-unreadable)
+> — ANSWERED in `0.56.0` (2026-09-18).** Shipped as shape (b), the computed one, which is the
+> half of the ask that mattered: it reaches every registered color by construction, including the
+> 27 sparx declares and any a tenant invents at runtime, so nothing has to be hand-authored per
+> hue and nothing can be forgotten.
+>
+> ```js
+> // packages/silicaui/src/lib/ink.js
+> export const ink = (colorRef) =>
+>   `oklch(from color-mix(in oklab, ${colorRef} 50%, var(--color-base-content)) l calc(c * 2) h)`;
+> ```
+>
+> Mixing halfway toward `--color-base-content` moves the hue toward whatever the CURRENT surface
+> uses as ink, so the direction is right in every theme rather than in the one that was measured.
+> The mix costs about half the chroma and the second step multiplies it back, so the color still
+> reads as itself. Reported: **15 of 21 soft/outline/ghost/link pairs below AA in light, now 40 of
+> 40 passing in both themes.**
+>
+> It went further than the ask in two ways worth knowing about:
+>
+> - **`text-<role>` utilities now paint the ink form, not the fill.** That is 954 call sites
+>   across the two consoles (`text-primary` 177, `text-module` 367, `text-warning` 122,
+>   `text-success` 108, `text-error` 80, `text-info` 43, `text-secondary` 25, `text-neutral` 19,
+>   `text-accent` 13) that get a readable ink without a single edit here. This is exactly the
+>   propagation RULE #1 exists for, and the reason none of them was ever patched locally.
+> - **`neutral` as ink resolves to `--color-base-content`**, where it measured 1.5:1 in dark.
+> - Fifteen rules across twelve components stopped writing a role token straight into a `color:`,
+>   and thirteen stopped fading readable text with `opacity` — silica's own move to RULE #3.
+>
+> **What sparx should now do**, once `0.56.0` is installed: the `/features` page dropped `soft`
+> entirely as a workaround and moved its price chips, status chips and selected filter to `solid`.
+> Those can go back to `soft`, and the ~19 "In build" / 35 "On the roadmap" markers stop being
+> small dark solids. Nothing is broken until they do.
+>
+> **§1 and §3 are untouched by `0.56.0`** — checked against its changelog, which mentions neither
+> `stack`'s peek distance nor the `ring-*` family. Both stay open.
 
 ---
 
@@ -113,6 +151,10 @@ reads as one card rather than a deck.
 
 ## 2 — `soft` and `outline` set their ink to the RAW accent, so light hues go unreadable
 
+**SHIPPED in `0.56.0`, 2026-09-18.** Kept in full below because the measurements are the
+evidence the fix was needed and the bar any future regression is read against. What landed is
+summarized in the callout above.
+
 `btn-<c> btn-soft` / `badge-<c> badge-soft` fill with a ~15% tint of `--color-<c>` and then set the
 foreground to **`--color-<c>` itself**. That only works while the accent is dark. For any mid- or
 light-toned hue the label is the same color family as the surface it sits on, and the contrast
@@ -191,3 +233,97 @@ that is legible on it.**
 `/features` can move its status pills back to `soft`, and the ~19 "In build" / 35 "On the roadmap"
 markers stop being small dark solids. Nothing else on sparx needs to change — but every `soft` badge
 across workbench and admin quietly becomes readable, which is the larger win.
+
+---
+
+## 3 — a registered color gets three utilities, and the other nine draw the default
+
+`@plugin '@wizeworks/silicaui' { colors: …; }` registers a color name. The plugin then emits its
+component classes (`btn-module`, `badge-module`) and exactly three color utilities:
+
+```css
+.bg-module {
+  background-color: var(--color-module);
+  --u-accent: …;
+}
+.text-module {
+  color: var(--color-module);
+  --u-accent: …;
+}
+.border-module {
+  border-color: var(--color-module);
+  --u-accent: …;
+}
+```
+
+silica's OWN default color names are in Tailwind's theme namespace, so `ring-primary` and
+`divide-base-300` work. **The names an app adds to the list are not**, and since the `colors:` list
+REPLACES the default set rather than extending it, every name an app adds beyond the defaults lands
+in the gap. For those names none of these exist:
+
+`ring-*` · `outline-*` · `divide-*` · `caret-*` · `decoration-*` · `from-*` · `via-*` · `to-*`
+
+Compiled against the Piggles console's real stylesheet with `@source inline(...)` forcing every
+combination, Tailwind 4.3.0, 2026-09-18:
+
+| family                                                      | `primary` `success` `base-300` | `module` `danger` `chrome` `group-sell` `module-commerce` |
+| ----------------------------------------------------------- | :----------------------------: | :-------------------------------------------------------: |
+| `bg-` `text-` `border-`                                     |            emitted             |                          emitted                          |
+| `ring-` `outline-` `divide-` `caret-` `decoration-` `from-` |            emitted             |                        **no rule**                        |
+
+### Why it is worse than a missing feature
+
+Tailwind cannot warn about a class it cannot build, so it emits no rule and says nothing. The
+property keeps its default, which for a ring is `currentColor`. Measured in the Piggles console on
+2026-09-18, before the fix:
+
+| class           | emitted rule                        | drawn                        |
+| --------------- | ----------------------------------- | ---------------------------- |
+| `border-module` | `border-color: var(--color-module)` | `#83b9b7` — correct          |
+| `ring-module`   | **none**                            | `rgb(32,38,49)` — near-black |
+
+That split is what makes it invisible: `ring-primary` two files away works perfectly, and
+`ring-module` beside it is spelled the same way and draws nothing. It shipped to **fourteen call
+sites** across two consoles and a marketing site. Among them: every
+"this is the one you picked" marker in the onboarding wizard, each pairing a correct
+`border-module` with a near-black `ring-module ring-1` pressed against it, in the first five minutes
+a business ever spends on the platform.
+
+### The local workaround, and why it is not a fix
+
+Each app now carries a second list beside the first:
+
+```css
+@plugin '@wizeworks/silicaui' {
+  colors: primary, module, module-chat, …;
+}
+
+@theme inline {
+  --color-module: var(--color-module);
+  --color-module-content: var(--color-module-content);
+  /* …once per registered name… */
+}
+```
+
+`inline` keeps it honest: Tailwind puts `var(--color-module)` straight into the utility instead of
+emitting a `:root` value, so the block adds the missing utilities and decides no colors. A subtree
+that repoints `--color-module` (`data-app`, `data-group`, a tenant theme) still wins, so a ring
+drawn this way follows the app the pane belongs to, exactly as its background does.
+
+It works, and it is a **second source of truth for the same list**. Seven apps now name their colors
+twice — 39 names in the Piggles console alone — and a color added to one list and not the other is
+invisible again. `scripts/check-silica-color-utilities.mjs` fails the build on that drift, which is
+a guard standing in for a thing the plugin should simply do.
+
+### The ask
+
+When the plugin registers a color, register it in Tailwind's theme namespace too — the way it
+already effectively does for its own defaults — so the whole namespaced vocabulary generates from
+one list. Then the `@theme inline` blocks and the check that
+guards them are deleted from all seven apps and nothing else changes.
+
+### If it ships
+
+`ring-module`, `divide-base-300` and `from-primary` mean what they say everywhere, including on
+tenant-authored colors that silica can never hand-check — and the platform stops shipping the
+`@theme inline` half of every app's color list.
