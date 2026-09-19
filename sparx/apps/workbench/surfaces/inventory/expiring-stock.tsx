@@ -56,6 +56,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { ItemName, itemNameText } from './item-name';
 import { formatCents, plural, stockErrorMessage } from './data';
 import {
   bucketLabel,
@@ -148,12 +149,13 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
         <tbody>
           {items.map((lot) => (
             <tr key={lot.lotId}>
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate">
-                    {lot.variantName ?? lot.variantSku ?? 'Unnamed item'}
-                    <span className="ml-1.5 font-mono text-sm">{lot.lotNumber}</span>
-                  </span>
+                  <ItemName
+                    productTitle={lot.productTitle}
+                    variantName={lot.variantName}
+                    code={lot.lotNumber}
+                  />
                   <span className="truncate text-sm">
                     {lot.warehouseName ?? 'Unknown location'}
                     {lot.recallStatus ? ` · recall ${lot.recallStatus}` : ''}
@@ -267,11 +269,11 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
         <Alert color="danger" variant="soft">
           <AlertContent>
             <AlertTitle>
-              {plural(expired.lots, 'batch is', 'batches are')} already past their date
+              {plural(expired.lots, 'batch is', 'batches are')} already out of date
             </AlertTitle>
             <AlertDescription>
-              These are excluded from picking automatically, so nothing will ship them, but they are
-              still counted as stock you own until somebody writes them off.
+              That stock is excluded from picking automatically, so nothing will ship it, but it is
+              still counted as stock you own until somebody writes it off.
               {expired.valueCents !== null
                 ? ` That is ${formatCents(expired.valueCents)} on the books that is not really there.`
                 : ''}
@@ -287,9 +289,8 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
               {plural(undatedLots, 'batch has', 'batches have')} no expiry date recorded
             </AlertTitle>
             <AlertDescription>
-              They are listed below rather than left out. Nothing can warn you about a date nobody
-              entered, and for stock that goes off, that is a gap worth closing at the receiving
-              door.
+              Listed below rather than left out. Nothing can warn you about a date nobody entered,
+              and for stock that goes off, that is a gap worth closing at the receiving door.
             </AlertDescription>
           </AlertContent>
         </Alert>
@@ -305,7 +306,9 @@ export function ExpiringStockSurface(_props: { ctx: SurfaceContext }) {
         }}
       >
         <DialogContent>
-          <DialogTitle>Mark down {acting?.lot.variantName ?? acting?.lot.lotNumber}</DialogTitle>
+          <DialogTitle>
+            Mark down {acting ? itemNameText(acting.lot, acting.lot.lotNumber) : ''}
+          </DialogTitle>
           <DialogDescription>
             The price change applies to the ITEM, not just this batch: a price is a property of what
             you sell, and per-batch pricing would have to reach the product page and the till as

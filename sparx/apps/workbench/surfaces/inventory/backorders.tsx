@@ -41,6 +41,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { ItemName } from './item-name';
 import { plural } from './data';
 import {
   backorderStatusTone,
@@ -76,6 +77,7 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
   const rows = list.data?.items ?? [];
   const undatedCount = list.data?.undatedCount ?? 0;
   const overdueCount = list.data?.overdueCount ?? 0;
+  const neverPromised = (list.data?.everCount ?? 0) === 0;
   const unitsOutstanding = list.data?.unitsOutstanding ?? 0;
 
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
@@ -104,16 +106,24 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
         <EmptyState
           icon={<Inbox className="size-6" aria-hidden />}
           title={
-            lens === 'undated'
-              ? 'Every commitment has a date'
-              : lens === 'overdue'
-                ? 'Nothing is past its promised date'
-                : 'Nobody is waiting on stock'
+            neverPromised
+              ? 'Nobody has ever waited on stock'
+              : lens === 'undated'
+                ? 'Every commitment has a date'
+                : lens === 'overdue'
+                  ? 'Nothing is past its promised date'
+                  : 'Nobody is waiting on stock'
           }
           description={
-            lens === 'waiting'
-              ? 'Every order you have taken was covered by stock on the shelf. A commitment appears here the moment one is not.'
-              : 'Nothing matches this view. Try “Everything” to see the full history.'
+            // "Every order you have taken was covered by stock on the shelf" is
+            // a claim about orders taken. 34 of the 48 real businesses on the
+            // platform have never taken one, and it reads to them as a clean
+            // bill of health on a shop that has not opened.
+            neverPromised
+              ? 'Nothing has ever had to wait for stock. A commitment appears here the moment you take an order the shelf cannot cover.'
+              : lens === 'waiting'
+                ? 'Every order you have taken was covered by stock on the shelf. A commitment appears here the moment one is not.'
+                : 'Nothing matches this view. Try “Everything” to see the full history.'
           }
         />
       );
@@ -151,14 +161,13 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
                   salesperson on the phone can say. Derived server-side, so it is
                   always contiguous. */}
               <td className="text-right tabular-nums">{row.position ?? '—'}</td>
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate">
-                    {row.variantName ?? row.variantSku ?? 'Unnamed item'}
-                    {row.variantSku && row.variantName ? (
-                      <span className="ml-1.5 font-mono text-sm">{row.variantSku}</span>
-                    ) : null}
-                  </span>
+                  <ItemName
+                    productTitle={row.productTitle}
+                    variantName={row.variantName}
+                    code={row.variantSku}
+                  />
                   <span className="truncate text-sm">
                     {row.customerName ?? 'A guest'}
                     {row.orderNumber ? ` · ${row.orderNumber}` : ''}
@@ -221,7 +230,17 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
             variant="soft"
             size="sm"
             className="ml-auto"
-            disabled={refresh.isPending}
+            // Off when nothing has ever waited. Pressed on an empty queue it
+            // answered "Every commitment already carries the best date
+            // available" — true of nothing, and it reads to somebody who has
+            // never taken such an order as though they had some.
+            // [[feedback_never_present_absence_as_measurement]]
+            disabled={refresh.isPending || neverPromised}
+            title={
+              neverPromised
+                ? 'Nothing is waiting on stock, so there are no dates to check'
+                : 'Ask every open commitment for its best arrival date again'
+            }
             onClick={() => {
               refresh.mutate(undefined, {
                 onSuccess: (result) => {
@@ -309,8 +328,8 @@ export function BackordersSurface({ ctx }: { ctx: SurfaceContext }) {
               {plural(overdueCount, 'commitment is', 'commitments are')} past the date you gave
             </AlertTitle>
             <AlertDescription>
-              These customers were told a date that has now gone by. Chase the order behind them, or
-              give them a new date, and tell them, which the detail pane records.
+              Each was promised a date that has now gone by. Chase the order behind it, or give a
+              new date and tell the customer, which the detail pane records.
             </AlertDescription>
           </AlertContent>
         </Alert>

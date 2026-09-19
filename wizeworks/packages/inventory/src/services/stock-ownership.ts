@@ -28,6 +28,7 @@
 // instead of a plausible one.
 
 import { withTenant } from '@wizeworks/db';
+import { VARIANT_LABEL_COLUMNS, VARIANT_LABEL_JOINS } from './variant-label';
 import { SetStockOwnershipInput, countsTowardValuation } from '@wizeworks/commerce-schemas';
 
 import { writeAuditLog } from '../audit';
@@ -36,6 +37,8 @@ import { InventoryNotFoundError, InventoryValidationError, type ServiceContext }
 export interface OwnedStockRow {
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS; `variantName` is which one of them. variant-label.ts */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -102,8 +105,7 @@ export async function listNonOwnedStock(
                 OR l.owner_supplier_id = ${filter.ownerSupplierId ?? null}::uuid)
       )
       SELECT m.variant_id       AS "variantId",
-             v.sku              AS "variantSku",
-             v.title             AS "variantName",
+             v.sku              AS "variantSku",${VARIANT_LABEL_COLUMNS},
              m.warehouse_id     AS "warehouseId",
              w.name             AS "warehouseName",
              m.ownership,
@@ -117,6 +119,7 @@ export async function listNonOwnedStock(
              (SELECT COUNT(*)::int FROM matched) AS "totalCount"
         FROM matched m
         LEFT JOIN commerce_product_variants v ON v.id = m.variant_id
+${VARIANT_LABEL_JOINS}
         LEFT JOIN inventory_warehouses w      ON w.id = m.warehouse_id
         LEFT JOIN inventory_suppliers s       ON s.id = m.owner_supplier_id
         LEFT JOIN customers c                 ON c.id = m.owner_customer_id
@@ -128,6 +131,7 @@ export async function listNonOwnedStock(
       items: rows.map((r) => ({
         variantId: r.variantId,
         variantSku: r.variantSku,
+        productTitle: r.productTitle,
         variantName: r.variantName,
         warehouseId: r.warehouseId,
         warehouseName: r.warehouseName,

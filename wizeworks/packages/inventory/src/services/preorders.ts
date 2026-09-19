@@ -33,6 +33,7 @@ import {
 } from '@wizeworks/commerce-schemas';
 
 import { writeAuditLog } from '../audit';
+import { VARIANT_LABEL_SELECT, variantLabel, type LabelledVariant } from './variant-label';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -44,6 +45,9 @@ export interface PreorderWindowRow {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS. `variantName` is which one of them — a row needs both;
+   *  see `variant-label.ts` for why neither alone is a name. */
+  productTitle: string | null;
   variantName: string | null;
   status: string;
   startsAt: string | null;
@@ -80,7 +84,7 @@ interface WindowRecord {
   chargeUpFront: boolean;
   note: string | null;
   createdAt: Date;
-  variant?: { sku: string | null; title: string | null } | null;
+  variant?: LabelledVariant | null;
 }
 
 function serialize(w: WindowRecord, now: Date): PreorderWindowRow {
@@ -98,8 +102,7 @@ function serialize(w: WindowRecord, now: Date): PreorderWindowRow {
   return {
     id: w.id,
     variantId: w.variantId,
-    variantSku: w.variant?.sku ?? null,
-    variantName: w.variant?.title ?? null,
+    ...variantLabel(w.variant),
     status: w.status,
     startsAt: w.startsAt?.toISOString() ?? null,
     endsAt: w.endsAt?.toISOString() ?? null,
@@ -132,7 +135,7 @@ const SELECT = {
   chargeUpFront: true,
   note: true,
   createdAt: true,
-  variant: { select: { sku: true, title: true } },
+  variant: { select: VARIANT_LABEL_SELECT },
 } as const;
 
 export interface ListPreorderWindowsFilter {

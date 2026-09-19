@@ -44,6 +44,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { afterCommit } from '../../lib/defer';
 import { useConfirm } from '../../lib/confirm';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { ItemName } from './item-name';
 import { formatCents, plural, stockErrorMessage } from './data';
 
 /** Registry module for this pane, so the brand draws Stock's own picture rather
@@ -268,8 +269,8 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
               {plural(data.unpricedUnits, 'unit', 'units')} sold with no cost recorded
             </AlertTitle>
             <AlertDescription>
-              They are not in the total below, and they are not worth nothing. Nobody has recorded
-              what they cost. Closing now would pay {owner} short. Put a cost on those items, then
+              That stock is not in the total below, and it is not worth nothing: nobody has recorded
+              what it cost. Closing now would pay {owner} short. Put a cost on the items, then
               rebuild.
             </AlertDescription>
           </AlertContent>
@@ -343,12 +344,13 @@ export function ConsignmentSettlementDetailSurface({ ctx }: { ctx: SurfaceContex
               <tbody>
                 {data.lines.map((line) => (
                   <tr key={line.id}>
-                    <td className="w-full max-w-0">
-                      <span className="truncate">
-                        {line.variantName ?? line.variantSku ?? 'Unnamed item'}
-                        {line.variantSku && line.variantName ? (
-                          <span className="ml-1.5 font-mono text-sm">{line.variantSku}</span>
-                        ) : null}
+                    <td className="w-full max-w-0 min-w-56">
+                      <span className="flex min-w-0 flex-col">
+                        <ItemName
+                          productTitle={line.productTitle}
+                          variantName={line.variantName}
+                          code={line.variantSku}
+                        />
                       </span>
                     </td>
                     <td className="hidden max-w-[12rem] truncate @lg:table-cell">

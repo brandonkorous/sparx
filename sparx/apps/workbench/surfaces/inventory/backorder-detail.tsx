@@ -39,6 +39,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { afterCommit } from '../../lib/defer';
 import { useConfirm } from '../../lib/confirm';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
+import { itemNameText } from './item-name';
 import { plural, stockErrorMessage } from './data';
 import {
   backorderStatusTone,
@@ -49,10 +50,14 @@ import {
   useMarkBackorderNotified,
   useUpdateBackorder,
 } from './demand-data';
+import { badDayIn, dayStartUtc } from '../../lib/today';
 
 /** `<input type="date">` wants `YYYY-MM-DD`; the API speaks ISO instants. */
 function toDateInput(iso: string | null): string {
-  return iso ? new Date(iso).toISOString().slice(0, 10) : '';
+  if (!iso) return '';
+  const at = new Date(iso);
+  // A row the server should never send still must not take the pane down.
+  return Number.isNaN(at.getTime()) ? '' : at.toISOString().slice(0, 10);
 }
 
 export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -109,9 +114,14 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const savePromise = () => {
+    const bad = badDayIn(promised);
+    if (bad) {
+      toast.add({ title: 'Check the date', description: bad, type: 'error' });
+      return;
+    }
     update.mutate(
       {
-        promisedAt: promised ? new Date(`${promised}T00:00:00Z`).toISOString() : null,
+        promisedAt: promised === '' ? null : dayStartUtc(promised),
         priority: Number(priority) || 0,
         note: note.trim() === '' ? null : note.trim(),
       },
@@ -218,7 +228,7 @@ export function BackorderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
           <div className="flex flex-col gap-2">
             <Text>
               {plural(data.outstanding, 'unit', 'units')} of{' '}
-              <strong>{data.variantName ?? data.variantSku ?? 'an unnamed item'}</strong>
+              <strong>{itemNameText(data, 'an unnamed item')}</strong>
               {data.variantSku && data.variantName ? (
                 <span className="ml-1.5 font-mono text-sm">{data.variantSku}</span>
               ) : null}

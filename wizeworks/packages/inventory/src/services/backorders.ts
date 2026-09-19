@@ -38,6 +38,7 @@
 // published, not a commitment they made about this order.
 
 import { withTenant } from '@wizeworks/db';
+import { VARIANT_LABEL_COLUMNS, VARIANT_LABEL_JOINS } from './variant-label';
 import type { TxClient } from '@wizeworks/db';
 import {
   backorderStatusFor,
@@ -445,6 +446,8 @@ export interface BackorderRow {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS; `variantName` is which one of them. variant-label.ts */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -477,14 +480,35 @@ export interface BackorderRow {
 
 export interface ListBackordersResult {
   items: BackorderRow[];
+  /** Rows matching the LENS. Cannot answer "has anything ever waited for
+   *  stock" — see `everCount`. */
   total: number;
-  /** Rows nobody could promise a date for. Counted separately because it is the
-   *  buyer's actual work list, and because a screen that shows "0 overdue" while
-   *  40 rows have no date at all is telling a comfortable lie. */
+  /**
+   * Rows nobody could promise a date for. Counted separately because it is the
+   * buyer's actual work list, and because a screen that shows "0 overdue" while
+   * 40 rows have no date at all is telling a comfortable lie.
+   *
+   * These were computed off the FILTERED set, which is the lie the sentence
+   * above was written against. The console shows each as a banner while you are
+   * on a different lens (`undatedCount > 0 && lens !== 'undated'`), and the
+   * undated/overdue tests both require `status IN ('open','partial')` — so on
+   * the Overdue lens the undated count was structurally always 0, and on the
+   * Allocated lens both were. The two nudges were dead on exactly the views
+   * that needed them. They are now counted across the whole queue.
+   */
   undatedCount: number;
   overdueCount: number;
   /** Units owed across everything the filter matched. */
   unitsOutstanding: number;
+  /**
+   * Every commitment this business has ever recorded, whatever the lens.
+   *
+   * An empty list is two opposite facts: every order was covered by stock, or
+   * no order has ever been taken. The screen said the first — "Every order you
+   * have taken was covered by stock on the shelf" — and 34 of the 48 real
+   * businesses on the platform have never taken an order at all.
+   */
+  everCount: number;
 }
 
 export interface ListBackordersParams {
@@ -502,6 +526,8 @@ interface BackorderQueryRow {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS; `variantName` is which one of them. variant-label.ts */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -535,6 +561,29 @@ export async function listBackorders(
   const skip = Math.max(params.skip ?? 0, 0);
 
   return withTenant(ctx, async (tx) => {
+    // The cross-lens tallies, as their own query. They cannot ride on the row
+    // query: its counts are CROSS JOINed onto the rows, so an empty list
+    // carries no counts at all, and they were computed over the lens's own
+    // filtered set besides. Narrowed by what you are LOOKING AT (one item, one
+    // place, one customer) and never by the lens, which is the whole point.
+    const [tally] = await tx.$queryRaw<
+      { everCount: number; undatedCount: number; overdueCount: number }[]
+    >`
+      SELECT COUNT(*)::int AS "everCount",
+             COUNT(*) FILTER (
+               WHERE promised_at IS NULL AND status IN ('open', 'partial')
+             )::int AS "undatedCount",
+             COUNT(*) FILTER (
+               WHERE promised_at IS NOT NULL AND promised_at < now()
+                 AND status IN ('open', 'partial')
+             )::int AS "overdueCount"
+        FROM inventory_backorders
+       WHERE tenant_id = ${ctx.tenantId}::uuid
+         AND (${params.variantId ?? null}::uuid   IS NULL OR variant_id   = ${params.variantId ?? null}::uuid)
+         AND (${params.warehouseId ?? null}::uuid IS NULL OR warehouse_id = ${params.warehouseId ?? null}::uuid)
+         AND (${params.customerId ?? null}::uuid  IS NULL OR customer_id  = ${params.customerId ?? null}::uuid)
+    `;
+
     const rows = await tx.$queryRaw<BackorderQueryRow[]>`
       WITH ranked AS (
         SELECT b.*,
@@ -577,8 +626,7 @@ export async function listBackorders(
       )
       SELECT f.id,
              f.variant_id          AS "variantId",
-             v.sku                 AS "variantSku",
-             v.title                AS "variantName",
+             v.sku                 AS "variantSku",${VARIANT_LABEL_COLUMNS},
              f.warehouse_id        AS "warehouseId",
              w.name                AS "warehouseName",
              f.quantity,
@@ -604,6 +652,7 @@ export async function listBackorders(
         FROM filtered f
         CROSS JOIN tallies t
         LEFT JOIN commerce_product_variants v ON v.id = f.variant_id
+${VARIANT_LABEL_JOINS}
         LEFT JOIN inventory_warehouses w      ON w.id = f.warehouse_id
         LEFT JOIN customers c                 ON c.id = f.customer_id
         LEFT JOIN inventory_purchase_orders po ON po.id = f.expected_purchase_order_id
@@ -622,9 +671,10 @@ export async function listBackorders(
     return {
       items: rows.map((r) => serializeBackorder(r, now)),
       total: first?.totalCount ?? 0,
-      undatedCount: first?.undatedCount ?? 0,
-      overdueCount: first?.overdueCount ?? 0,
+      undatedCount: tally?.undatedCount ?? 0,
+      overdueCount: tally?.overdueCount ?? 0,
       unitsOutstanding: first?.unitsOutstanding ?? 0,
+      everCount: tally?.everCount ?? 0,
     };
   });
 }
@@ -635,6 +685,7 @@ function serializeBackorder(r: BackorderQueryRow, nowMs: number): BackorderRow {
     id: r.id,
     variantId: r.variantId,
     variantSku: r.variantSku,
+    productTitle: r.productTitle,
     variantName: r.variantName,
     warehouseId: r.warehouseId,
     warehouseName: r.warehouseName,

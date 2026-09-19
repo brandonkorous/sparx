@@ -27,6 +27,7 @@ import { CreateConsignmentSettlementInput, draftSettlement } from '@wizeworks/co
 import type { ConsignedSale, SettlementDraft } from '@wizeworks/commerce-schemas';
 
 import { writeAuditLog } from '../audit';
+import { VARIANT_LABEL_SELECT, variantLabel } from './variant-label';
 import {
   InventoryConflictError,
   InventoryNotFoundError,
@@ -60,6 +61,8 @@ export interface ConsignmentSettlementLineRow {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS; `variantName` is which one of them. variant-label.ts */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -231,7 +234,7 @@ export async function getConsignmentSettlement(
         unitCostCents: true,
         amountCents: true,
         movementIds: true,
-        variant: { select: { sku: true, title: true } },
+        variant: { select: VARIANT_LABEL_SELECT },
         warehouse: { select: { name: true } },
       },
     });
@@ -247,8 +250,7 @@ export async function getConsignmentSettlement(
       lines: lines.map((l) => ({
         id: l.id,
         variantId: l.variantId,
-        variantSku: l.variant?.sku ?? null,
-        variantName: l.variant?.title ?? null,
+        ...variantLabel(l.variant),
         warehouseId: l.warehouseId,
         warehouseName: l.warehouse?.name ?? null,
         unitsSold: l.unitsSold,

@@ -31,6 +31,10 @@ export interface Backorder {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS — "Linen Shirtdress". `variantName` is WHICH one of them
+   *  — "Chalk / L". A row needs both: the product alone cannot tell two sizes
+   *  apart, and the version alone does not say what it is a version of. */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -80,6 +84,9 @@ export interface BackorderList {
   undatedCount: number;
   overdueCount: number;
   unitsOutstanding: number;
+  /** Every commitment ever recorded, whatever the lens. An empty list is two
+   *  opposite facts and only this tells them apart. */
+  everCount: number;
   skip: number;
   take: number;
 }
@@ -247,6 +254,10 @@ export interface PreorderWindow {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS — "Linen Shirtdress". `variantName` is WHICH one of them
+   *  — "Chalk / L". A row needs both: the product alone cannot tell two sizes
+   *  apart, and the version alone does not say what it is a version of. */
+  productTitle: string | null;
   variantName: string | null;
   status: string;
   startsAt: string | null;
@@ -358,7 +369,7 @@ export function preorderStateLabel(window: PreorderWindow): string {
     case 'ended':
       return 'Ended';
     case 'cancelled':
-      return 'Cancelled';
+      return 'Canceled';
     default:
       return 'Closed';
   }
@@ -369,6 +380,10 @@ export function preorderStateLabel(window: PreorderWindow): string {
 export interface OwnedStock {
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS — "Linen Shirtdress". `variantName` is WHICH one of them
+   *  — "Chalk / L". A row needs both: the product alone cannot tell two sizes
+   *  apart, and the version alone does not say what it is a version of. */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -490,6 +505,10 @@ export interface ConsignmentSettlementLine {
   id: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS — "Linen Shirtdress". `variantName` is WHICH one of them
+   *  — "Chalk / L". A row needs both: the product alone cannot tell two sizes
+   *  apart, and the version alone does not say what it is a version of. */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -643,6 +662,10 @@ export interface ExpiringLot {
   lotNumber: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS — "Linen Shirtdress". `variantName` is WHICH one of them
+   *  — "Chalk / L". A row needs both: the product alone cannot tell two sizes
+   *  apart, and the version alone does not say what it is a version of. */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;

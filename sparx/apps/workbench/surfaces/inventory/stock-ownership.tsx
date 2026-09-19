@@ -37,6 +37,7 @@ import { useState } from 'react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { ItemName } from './item-name';
 import { formatCents, plural } from './data';
 import { ownershipLabel, ownershipTone, useNonOwnedStock } from './demand-data';
 
@@ -112,14 +113,13 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
                 open(row.variantId, event);
               }}
             >
-              <td className="w-full max-w-0">
+              <td className="w-full max-w-0 min-w-56">
                 <span className="flex min-w-0 flex-col">
-                  <span className="truncate">
-                    {row.variantName ?? row.variantSku ?? 'Unnamed item'}
-                    {row.variantSku && row.variantName ? (
-                      <span className="ml-1.5 font-mono text-sm">{row.variantSku}</span>
-                    ) : null}
-                  </span>
+                  <ItemName
+                    productTitle={row.productTitle}
+                    variantName={row.variantName}
+                    code={row.variantSku}
+                  />
                   <span className="truncate text-sm">
                     {row.warehouseName ?? 'Unknown location'}
                   </span>
@@ -213,9 +213,9 @@ export function StockOwnershipSurface({ ctx }: { ctx: SurfaceContext }) {
           <AlertContent>
             <AlertTitle>{plural(uncosted, 'line has', 'lines have')} no cost recorded</AlertTitle>
             <AlertDescription>
-              Their value is shown as blank rather than as nothing, because a zero here would say
-              the owner gave them to you. Settlement will refuse to close a period containing them.
-              Put a cost on those items first.
+              The value is shown as blank rather than as nothing, because a zero here would say the
+              owner gave that stock to you. Settlement will refuse to close a period containing it.
+              Put a cost on the items first.
             </AlertDescription>
           </AlertContent>
         </Alert>

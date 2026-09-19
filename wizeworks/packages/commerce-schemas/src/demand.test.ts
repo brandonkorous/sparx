@@ -74,6 +74,18 @@ describe('resolvePromisedDate', () => {
     expect(result.promisedAt?.toISOString()).toBe('2026-03-13T00:00:00.000Z');
   });
 
+  it('lands on a whole day even when it counted from the middle of one', () => {
+    // Every anchor above is already UTC midnight, so none of them could ever
+    // have caught this. The REAL caller passes `new Date()` — a moment — and the
+    // other branch of this function returns a purchase order's arrival day. One
+    // column, two writers, one of them carrying an afternoon.
+    const result = resolvePromisedDate({
+      measuredLeadTimeDays: 12,
+      leadTimeFrom: new Date('2026-03-01T17:42:09.412Z'),
+    });
+    expect(result.promisedAt?.toISOString()).toBe('2026-03-13T00:00:00.000Z');
+  });
+
   it('rounds a fractional measured lead time UP', () => {
     // 4.2 days measured means some deliveries took five. Rounding down promises
     // a date a fifth of deliveries have never once hit.
@@ -120,6 +132,21 @@ describe('promise slippage', () => {
   it('reports no slip when either side is missing', () => {
     expect(promiseSlipDays(null, new Date())).toBe(0);
     expect(promiseSlipDays(new Date(), null)).toBe(0);
+  });
+
+  it('stays quiet about a two-day drift measured off a lead time', () => {
+    // The pair this function actually gets in production: what the customer was
+    // last told (a purchase order's arrival day) against a fresh lead-time
+    // promise counted from the moment the sweep ran. While that second one
+    // carried a time of day the subtraction came out at 2.7 days, rounded to 3,
+    // and emailed somebody about a two-day slip the threshold exists to swallow.
+    const told = new Date('2026-03-10T00:00:00Z');
+    const now = resolvePromisedDate({
+      measuredLeadTimeDays: 2,
+      leadTimeFrom: new Date('2026-03-10T17:00:00Z'),
+    }).promisedAt;
+    expect(promiseSlipDays(told, now)).toBe(2);
+    expect(shouldRenotify(told, now)).toBe(false);
   });
 });
 

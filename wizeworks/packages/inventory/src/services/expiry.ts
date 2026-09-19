@@ -27,6 +27,7 @@
 // failure FEFO exists to prevent, and the old query would do it every time.
 
 import { withTenant } from '@wizeworks/db';
+import { VARIANT_LABEL_COLUMNS, VARIANT_LABEL_JOINS } from './variant-label';
 import {
   EXPIRY_HORIZON_DAYS,
   MarkdownExpiringLotInput,
@@ -53,6 +54,8 @@ export interface ExpiringLotRow {
   lotNumber: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS; `variantName` is which one of them. variant-label.ts */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -97,6 +100,8 @@ interface RawLot {
   lotNumber: string;
   variantId: string;
   variantSku: string | null;
+  /** What the thing IS; `variantName` is which one of them. variant-label.ts */
+  productTitle: string | null;
   variantName: string | null;
   warehouseId: string;
   warehouseName: string | null;
@@ -136,8 +141,7 @@ export async function listExpiringStock(
       SELECT lb.id            AS "lotId",
              lb.lot_number    AS "lotNumber",
              lb.variant_id    AS "variantId",
-             v.sku            AS "variantSku",
-             v.title           AS "variantName",
+             v.sku            AS "variantSku",${VARIANT_LABEL_COLUMNS},
              lb.warehouse_id  AS "warehouseId",
              w.name           AS "warehouseName",
              lb.quantity,
@@ -149,6 +153,7 @@ export async function listExpiringStock(
              lb.expiry_alerted_at AS "alertedAt"
         FROM inventory_lot_batches lb
         LEFT JOIN commerce_product_variants v ON v.id = lb.variant_id
+${VARIANT_LABEL_JOINS}
         LEFT JOIN inventory_warehouses w      ON w.id = lb.warehouse_id
         LEFT JOIN inventory_levels l
                ON l.variant_id = lb.variant_id AND l.warehouse_id = lb.warehouse_id
@@ -171,6 +176,7 @@ export async function listExpiringStock(
       lotNumber: r.lotNumber,
       variantId: r.variantId,
       variantSku: r.variantSku,
+      productTitle: r.productTitle,
       variantName: r.variantName,
       warehouseId: r.warehouseId,
       warehouseName: r.warehouseName,

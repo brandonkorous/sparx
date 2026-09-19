@@ -1078,9 +1078,14 @@ morning should find last night's answer rather than yesterday's.
   have to reach the product page and the till, which is a far larger feature than
   the one warranted here. The lot is what identified the problem; the markdown is
   an ordinary price change with a note saying why.
-- **`chargeUpFront` drives wording, not payment capture.** The column records the
-  merchant's intent and the storefront reads it; actually deferring the charge to
-  fulfilment is a payments change, not an inventory one.
+- **`chargeUpFront` is stored and read by nothing.** This line used to say it
+  "drives wording, not payment capture — the storefront reads it". MEASURED
+  2026-09-18: the storefront does not read it, nor does the checkout, nor any
+  email. The column travels from the service to the public product payload and
+  stops. The workbench switch that wrote it has been removed (persona issue 680),
+  because its off position promised something no card authorization can deliver
+  over a months-long preorder; the column stays at its default for when a
+  charge-at-fulfilment payments feature exists to give it meaning.
 
 ### Phase 10 — Reporting, data portability, accounting ✅
 

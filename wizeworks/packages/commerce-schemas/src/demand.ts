@@ -138,6 +138,20 @@ export function resolvePromisedDate(inputs: PromiseInputs): ResolvedPromise {
   if (days != null && days > 0 && from) {
     const at = new Date(from.getTime());
     at.setUTCDate(at.getUTCDate() + Math.ceil(days));
+    // Land on UTC midnight, like every other day-valued field on the platform.
+    //
+    // WITHOUT this the column has two writers that disagree about what it holds.
+    // The branch above returns a purchase order's `expectedArrivalAt`, which is a
+    // calendar day at UTC midnight; this branch returned "the instant this ran,
+    // plus N days", which carries a meaningless time of day. Two consequences,
+    // both real: the shop page prints the field with `timeZone: 'UTC'` and would
+    // have shifted one source by a day, and `promiseSlipDays` subtracts one
+    // stored promise from another and ROUNDS — so a day measured against an
+    // afternoon came out fractional and always rounded AWAY from zero, which
+    // turned a two-day drift into "three" and emailed a customer about a slip
+    // the threshold exists to keep quiet. A promise to a customer is a day,
+    // never a moment. Issue 679.
+    at.setUTCHours(0, 0, 0, 0);
     return { promisedAt: at, source: 'lead_time' };
   }
   return { promisedAt: null, source: null };
@@ -604,7 +618,7 @@ export const MarkdownExpiringLotInput = z.object({
    *  markdown is not a price, it is giving stock away, and that decision should
    *  be a deliberate zero-price entry rather than a slider hitting its end. */
   discountPercent: z.number().int().min(1).max(90),
-  note: z.string().max(500).optional(),
+  note: z.string().max(500).nullish(),
 });
 export type MarkdownExpiringLotInput = z.infer<typeof MarkdownExpiringLotInput>;
 
