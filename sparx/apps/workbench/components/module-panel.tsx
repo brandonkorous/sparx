@@ -41,6 +41,7 @@ import { useWorkbench } from '../lib/workbench/context';
 import { isTourableModule } from '../lib/tour/module-tours';
 import { launchModuleTour } from '../lib/tour/module-tour-offers';
 import { productName } from '../lib/product';
+import { wordForms } from './word-forms';
 
 interface ModulePanelProps {
   module: WorkbenchModule;
@@ -104,11 +105,14 @@ function navRowKey(surface: SurfaceDefinition): string {
     .join(',')}`;
 }
 
+/** Every spelling of what was typed, so "shelf" finds Shelves — see word-forms.ts. */
 function matches(surface: SurfaceDefinition, filter: string): boolean {
   if (!filter) return true;
-  const needle = filter.toLowerCase();
-  if (resolveTitle(surface, {}).toLowerCase().includes(needle)) return true;
-  return (surface.keywords ?? []).some((keyword) => keyword.toLowerCase().includes(needle));
+  const title = resolveTitle(surface, {}).toLowerCase();
+  const keywords = (surface.keywords ?? []).map((keyword) => keyword.toLowerCase());
+  return wordForms(filter).some(
+    (needle) => title.includes(needle) || keywords.some((keyword) => keyword.includes(needle))
+  );
 }
 
 export function ModulePanel({

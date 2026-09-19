@@ -226,6 +226,118 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'partner.pitch.pricing':
     'Every Piggles account starts with a free trial: long enough to build the whole thing and see it working before paying anything. After that it is one flat monthly price with every app included. No tiers, and nothing to switch on later for more money.',
 
+  // ── The partner's pitch deck ─────────────────────────────────────────────
+  //
+  // Resources is the screen a partner has OPEN while they talk to a client, so
+  // every sentence on it is one they are about to say out loud. Five of its
+  // sections, the whole one-pager and all six playbooks were still sparx's,
+  // which made this the largest single leak in the console: the product named
+  // by name, "modules" a client "switches on", and CRM and CMS as though a shop
+  // owner used those words.
+  //
+  // The pricing ones are not a voice problem, they are a FACTUAL one, in the
+  // same way `partner.pitch.pricing` above already was. sparx sells modules
+  // separately; Piggles is one flat price with every app in it. A partner
+  // reading sparx's sentence off this screen would promise a client a way of
+  // paying that does not exist here.
+  'partner.pitch.modularHeading': 'Everything is included, from day one',
+  'partner.pitch.modular':
+    'Piggles is not sold in pieces. Every app is there on the first day: the website, the shop, the customer list, the messages, the invoices, the bookings. A client who only wants a website today can start selling next month without buying anything, moving anything, or calling you first. One price, everything in it.',
+  'partner.pitch.modularPoints': `My Site: pages, design, and a real website live quickly
+    Sell: your products, a checkout, and getting paid
+    Content: posts, guides, and anything else you write
+    Customers: everyone who has bought, asked, or booked
+    Messages: emails and campaigns from your own address
+    Bookings, Invoices, Stock, Wholesale, Chats and Connections, all in the same price`,
+  'partner.pitch.live':
+    'A client picks a look they like, starts from a finished site rather than an empty one, and has a real website with real words on it inside an hour. You tidy it up together from there. Nobody needs a developer to get to the point where it is live.',
+  'partner.pitch.grows':
+    'When a website starts selling, the shop is already there. When a shop starts supplying other shops, wholesale is already there. Nothing to move and nothing to rebuild: their customers, their orders and their words are all in the same place already.',
+
+  'partner.onePager.tagline':
+    'One place for your website, your shop, your customers and your money. One login, one bill.',
+  'partner.onePager.what':
+    'Piggles replaces the website builder, the customer list, the email tool and the invoicing app with one place where each part already knows about the rest. Everything is included, so there is nothing to buy later.',
+  'partner.onePager.bestFor': `Owners paying for five separate tools and wiring them together by hand
+    Websites that are starting to sell
+    Businesses that need a site, a customer list and email in one place
+    Shops that supply other shops and need both sides together`,
+
+  // The playbooks. Labels are what the client will see in their own rail, so a
+  // partner reading step one is looking at the same word they are.
+  'partner.guide.builder.label': 'My Site',
+  'partner.guide.builder.blurb': 'Get the website up: pages, layout, and their own look.',
+  'partner.guide.builder.steps': `Start from a ready-made site that suits their trade, or from a blank page.
+    Set their look once: logo, colors and fonts. Every page follows it.
+    Build the pages that matter first: home, about, and how to reach them.
+    Point their web address at the site under Settings, then publish.`,
+
+  'partner.guide.commerce.label': 'Sell',
+  'partner.guide.commerce.blurb': 'Turn the website into a shop: products, checkout, getting paid.',
+  'partner.guide.commerce.steps': `Connect the account their money will land in.
+    Add the products with photos, sizes and prices, or bring a list in.
+    Set up postage and tax, then buy something yourself and watch it go through.
+    Put the shop on the site and publish it.`,
+
+  'partner.guide.cms.label': 'Content',
+  'partner.guide.cms.blurb': 'Somewhere to write: posts, guides, and anything with a shape.',
+  'partner.guide.cms.steps': `Decide what they write: posts, guides, the questions people keep asking.
+    Put a few real pieces in, so the page has something true on it.
+    Add the list of posts to the site and link it in the menu.
+    Hand the writing over. They press Save, and the last save wins, the same as everywhere else.`,
+
+  'partner.guide.crm.label': 'Customers',
+  'partner.guide.crm.blurb': 'One place with everyone who has bought, asked, or booked.',
+  'partner.guide.crm.steps': `Forms on the site and orders from the shop start filling this in on their own.
+    Set up the stages that match how they actually win work.
+    Bring in the contacts they already have and group them.
+    Show them one customer: every order, every email and every note, in order.`,
+
+  'partner.guide.email.label': 'Messages',
+  'partner.guide.email.blurb': 'Emails and campaigns that come from their own address.',
+  'partner.guide.email.steps': `Prove the address is theirs, using the records their web host gives you.
+    Set up a welcome email that goes out when a new customer appears.
+    Design the first campaign from the pieces that are already there.
+    Send one to yourself before you send one to everybody.`,
+
+  'partner.guide.b2b.label': 'Wholesale',
+  'partner.guide.b2b.blurb': 'Trade accounts, their own prices, and somewhere for them to order.',
+  'partner.guide.b2b.steps': `Create a trade account for each shop they supply.
+    Give each account its own prices and how long it has to pay.
+    Invite the buyers in.
+    Put a trade order through yourself and check the price that comes out.`,
+
+  'partner.resources.title': 'Pitch Piggles, and get clients live',
+  'partner.resources.intro':
+    'Everything you need to walk a client through Piggles and get each part working for them. Use it in a conversation, print it, or send it on.',
+  'partner.resources.pitchHeading': 'The Piggles pitch',
+  'partner.resources.guidesHeading': 'Get each app working',
+  'partner.resources.guidesIntro':
+    'Short playbooks for what to do, in order, to get a client running on each part of Piggles.',
+
+  // The rest of the partner program. Same leak, same reason: a partner is told
+  // what they earn, who pays them, and which directory they appear in, and all
+  // three named the other product. A Piggles partner is paid by Piggles.
+  'partner.referrals.linkHelp':
+    'Share this anywhere. When a business signs up through it they are credited to you, and you earn commission on their first payment to Piggles.',
+  'partner.referrals.unnamed': 'A Piggles account',
+  'partner.commissions.connectBank':
+    'Connect a bank account so we can pay your commissions. The setup is handled by our payments provider: you will be taken there to confirm your details, then brought back here.',
+  'partner.commissions.intro':
+    'What you have earned bringing businesses onto Piggles, what is still building up, and every payment that has settled it.',
+  'partner.commissions.none':
+    'Nothing yet. When a business you referred makes its first payment to Piggles, your commission starts building up here, at the rate that was set when they signed up.',
+  'partner.bootcamp.signupHelp':
+    'Sign-ups on Piggles go straight into your customer list. Choose your own link if you take names somewhere else.',
+  'partner.bootcamp.liveHint':
+    'It is on the public directory and taking sign-ups. Everyone who signs up on Piggles lands in your customer list.',
+  'partner.bootcamp.draftOnly':
+    'You can build and save this bootcamp as a draft now. Publishing it to the public Piggles directory unlocks when you reach the Certified partner tier.',
+  'partner.profile.intro':
+    'This is how you appear in the Piggles partner directory, where businesses go looking for someone to help them build. Turn your listing off to stay unlisted while still earning.',
+  'partner.profile.pendingActivation':
+    'You can fill everything in now. It appears in the directory as soon as we activate your partner account.',
+
   // ── Things that "come with" the product ──────────────────────────────────
   //
   // sparx says "comes with sparx" / "set up by sparx" in half a dozen places to
@@ -239,6 +351,11 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'commerce.productType.forked':
     'You changed one that came with Piggles, so we saved it as your own copy. Your version only affects your business.',
   'automations.recipes.otherGroup': 'Other ones we set up for you.',
+  // The platform's version sends you to “Email → Sequences”, and this console has
+  // neither of those words: the app is Messages and the screen is Automatic emails.
+  // A pointer to a screen by a name the reader cannot find is worse than no pointer.
+  'automations.sequence.none':
+    'You have no automatic emails yet. Make one under Messages › Automatic emails, then come back here.',
   'automations.field.ownHint':
     'Leave this as “one of my own” unless you are changing something that came with Piggles, like which stage a customer is at.',
 
@@ -270,7 +387,7 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'crm.phoneSystems.description':
     'Connect your phone account and a Call button appears on every customer. We ring you first, then dial them and put the two of you together, so the call is written down without anyone having to remember to do it.',
   'crm.templates.description':
-    'A saved subject and message your team can pick when they email a customer, so the fourth follow-up this week reads as well as the first. We then count how many were sent, opened and answered, which is how you find out which of your own words work.',
+    'A saved subject and message your team can pick when they email a customer, so the fourth follow-up this week reads as well as the first. We then count how many were sent and how many got an answer, which is how you find out which of your own words work.',
   'crm.mailbox.zohoHint':
     'In Zoho Mail, open Settings → Security → App passwords and make one for us.',
 
@@ -299,7 +416,9 @@ export const PIGGLES_COPY: Readonly<Record<string, string>> = {
   'inventory.barcodes.description':
     'A barcode lets someone scan a box instead of typing what is in it. Anything that arrived with a code from the maker can have it saved here, and anything without one can be given its own. We will print the labels.',
   'inventory.labels.needsBarcode':
-    'Things need a barcode before a label can be printed. We can make one for anything that arrived without a code from the maker: a real barcode any scanner reads, from the range set aside for your own use.',
+    'A label can only be printed for something that already has a barcode. Anything without one is listed above, ready to be given a code.',
+  'inventory.labels.mintOffer':
+    'A label can only be printed for something that already has a code. We can make one for each of these now: a real barcode any scanner reads, taken from the range set aside for a shop to use on its own things, so it can never clash with a code off a supplier tag.',
   'inventory.gl.ourFigure': 'What we make it',
   'inventory.reportSchedule.recipients':
     'One address per line, or separated by commas. They do not need an account here.',

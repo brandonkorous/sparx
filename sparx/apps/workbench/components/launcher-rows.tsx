@@ -4,7 +4,10 @@
 // there are none. Split from launcher.tsx, which owns the dialog, the query and
 // the keyboard; this owns only what a row looks like.
 
+import { Button, useToast } from '@wizeworks/silicaui-react';
 import type { Entry } from './launcher-match';
+import { recordSearchLine, type SearchGaps } from './launcher-search-words';
+import { useReindexSearch } from '../lib/api/search';
 
 /** One run of rows under the module they belong to, carrying each row's index in
  *  the FLAT list so the keyboard and the render agree on what is highlighted. */
@@ -55,20 +58,62 @@ export function RecordSearchNote({
   searching,
   found,
   query,
+  gaps,
 }: {
   searching: boolean;
   found: number;
   query: string;
+  /** What `/v1/search/status` says this box cannot reach. Undefined until it
+   *  arrives, which is silence rather than "all clear". */
+  gaps: SearchGaps | undefined;
 }) {
+  const toast = useToast();
+  const reindex = useReindexSearch();
   if (!query.trim()) return null;
+
+  const missing =
+    (gaps?.productsMissing ?? 0) + (gaps?.customersMissing ?? 0) + (gaps?.ordersMissing ?? 0);
+
   return (
-    <p className="border-base-300 border-t px-3 py-2 text-sm" role="status">
-      {searching
-        ? 'Looking through your records…'
-        : found > 0
-          ? `${String(found)} ${found === 1 ? 'record' : 'records'} matched. The rest are screens.`
-          : `Nothing in your records matches “${query.trim()}”. Everything below is a screen.`}
-    </p>
+    <div className="border-base-300 flex flex-wrap items-center gap-2 border-t px-3 py-2">
+      <p className="min-w-0 flex-1 text-sm" role="status">
+        {recordSearchLine({ searching, found, query, gaps })}
+      </p>
+      {/* The only remedy, on the screen that is wrong. It existed on the
+          products list, which is not where anybody is standing when the box
+          says it has never heard of their best seller. */}
+      {missing > 0 && !searching ? (
+        <Button
+          size="sm"
+          color="module"
+          loading={reindex.isPending}
+          onClick={() => {
+            reindex.mutate(undefined, {
+              onSuccess: () => {
+                // No time estimate: the rebuild runs elsewhere and this screen
+                // cannot see it start. The sentence above IS the status, and it
+                // goes when the records are reachable again.
+                toast.add({
+                  title: 'Asked for your records to be put back',
+                  description:
+                    'The line above will change when this box can see them again. If it is the same tomorrow, tell us.',
+                  type: 'success',
+                });
+              },
+              onError: () => {
+                toast.add({
+                  title: 'Could not start that',
+                  description: 'Nothing changed. Try again in a moment.',
+                  type: 'error',
+                });
+              },
+            });
+          }}
+        >
+          Put them back
+        </Button>
+      ) : null}
+    </div>
   );
 }
 

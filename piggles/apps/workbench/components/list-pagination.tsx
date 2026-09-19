@@ -33,6 +33,7 @@
 // numbers would look more consistent and behave worse.
 
 import { Button, NativeSelect, Pagination, Text } from '@wizeworks/silicaui-react';
+import { pagerHasContent, rangeLabel } from './list-pagination-words';
 import { faChevronLeft, faChevronRight } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 
@@ -93,14 +94,20 @@ export function ListPagination({
   const cursorMode = onOlder !== undefined;
   const pageCount = total === undefined ? 1 : Math.max(1, Math.ceil(total / pageSize));
   const lastRow = firstRow + shown - 1;
-  // Undefined total is reported as unknown, never as zero — "1–50 of 0" would
-  // be a lie the moment an endpoint stops sending a count.
-  const range =
-    shown === 0
-      ? 'Nothing to show'
-      : total === undefined
-        ? `Showing ${String(firstRow)}–${String(lastRow)}`
-        : `Showing ${String(firstRow)}–${String(lastRow)} of ${String(total)}`;
+  const range = rangeLabel(shown, firstRow, total);
+
+  // With nothing on screen and nowhere to go, this whole row is one grey
+  // sentence under an empty state that has already said it better, in a heading
+  // and a paragraph that explain what WOULD be here. Saying "Nothing to show"
+  // after that is the screen repeating itself in a weaker voice.
+  //
+  // This is the last step of a guard the rest of this file already walks: the
+  // "Load 1 more" button and the rows-per-page picker are both hidden at zero,
+  // for exactly this reason, and the row they leave behind is empty except for
+  // the sentence. The exceptions below are real, though — a reader who has
+  // paged past the end, or walked a cursor feed to a quiet window, needs the
+  // control that carries them back.
+  if (!pagerHasContent({ shown, cursorMode, pageCount })) return null;
 
   // `shown > 0` guards the empty case: with no rows, lastRow is firstRow - 1,
   // so an empty result set reported `-1 < 0` and offered "Load 1 more" beside
@@ -163,23 +170,31 @@ export function ListPagination({
           />
         ) : null}
 
-        <label className="flex items-center gap-1.5">
-          <span className="sr-only">Rows per page</span>
-          <NativeSelect
-            size="sm"
-            value={String(pageSize)}
-            aria-label="Rows per page"
-            onChange={(event) => {
-              onPageSizeChange(Number(event.target.value) as PageSize);
-            }}
-          >
-            {PAGE_SIZES.map((size) => (
-              <option key={size} value={size}>
-                {size} per page
-              </option>
-            ))}
-          </NativeSelect>
-        </label>
+        {/* How many rows to show is a question about rows. With none on screen
+            it is a control over nothing, beside the words "Nothing to show" —
+            the same shape as the "Load 1 more" this component already guards
+            against a few lines up, which is how it got missed. The pager above
+            still renders when there are pages, so somebody who has stepped past
+            the end can still step back. */}
+        {shown > 0 ? (
+          <label className="flex items-center gap-1.5">
+            <span className="sr-only">Rows per page</span>
+            <NativeSelect
+              size="sm"
+              value={String(pageSize)}
+              aria-label="Rows per page"
+              onChange={(event) => {
+                onPageSizeChange(Number(event.target.value) as PageSize);
+              }}
+            >
+              {PAGE_SIZES.map((size) => (
+                <option key={size} value={size}>
+                  {size} per page
+                </option>
+              ))}
+            </NativeSelect>
+          </label>
+        ) : null}
       </div>
     </div>
   );

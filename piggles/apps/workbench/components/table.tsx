@@ -40,6 +40,39 @@
 // definition of a deferred fix. This is the single point of change: the default
 // lives here, and if it ever needs to become something else it changes once.
 //
+// ── THE GIVE-CELL, AND THE FLOOR UNDER IT ─────────────────────────────
+//
+// Not this component, but the idiom that surrounds it, written down here
+// because it is the one place every table in the console already passes.
+//
+// A list table names its row in one column and puts figures in the rest, and
+// that naming column is marked:
+//
+//   <td className="w-full max-w-0 min-w-56">
+//
+// `w-full` makes it the cell that GIVES, so when the row is crowded the
+// truncation happens there and a number is never the thing pushed off the
+// right edge. `max-w-0` is what makes `truncate` inside it actually bite.
+//
+// `min-w-56` is the floor, and it is not optional. Without it "gives" means
+// "gives EVERYTHING", because every sibling column has an effective floor of
+// its own: a declared `min-w-`, or `whitespace-nowrap`, or just a badge. The
+// give-cell is the only one with nothing holding it up, so it absorbs the
+// entire shortfall and collapses to its padding — 64px, about two characters.
+//
+// Measured on one tenant, before the floor: the stock grid rendered its
+// product code at 64px at every pane width from 320 to 900, and the reorder
+// worklist went 229px → 140px → 97px → 64px as the pane got WIDER, because
+// each container breakpoint revealed another column and the name paid for it.
+// Both tables were already scrolling sideways at those widths, so they had
+// given up on fitting AND crushed the name anyway.
+//
+// 56 is 224px. Less 32px of cell padding that leaves 192px, which holds the
+// longest product code seen on a real account (185px) on one line. Past the
+// floor the column still grows, because `w-full` is kept.
+//
+// `scripts/check-column-floor.mjs` holds the rule.
+//
 // Workbench-only on purpose. `@piggles/ui` is not a general component library,
 // and the only other app that renders a table is `web`, whose tables are
 // marketing prose in auto-height sections — the shape this default is inert in.

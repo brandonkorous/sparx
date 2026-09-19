@@ -185,7 +185,7 @@ export const ORDER_SURFACES: SurfaceDefinition[] = [
     icon: Heart,
     section: 'After the sale',
     order: 43,
-    keywords: ['saved', 'favourites'],
+    keywords: ['saved', 'favorites', 'favourites'],
     component: WishlistsSurface,
   },
 ];

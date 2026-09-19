@@ -12,6 +12,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Alert, AlertContent, AlertDescription, AlertTitle } from '@wizeworks/silicaui-react';
+import { messageBeyondTitle } from './save-failure-words';
 
 export function SaveFailure({
   title,
@@ -68,6 +69,7 @@ export function SaveFailure({
   }, [message, edited]);
 
   if (!message || edited) return null;
+  const beyond = messageBeyondTitle(title, message);
 
   // The wrapper carries the ref and the focus target rather than the Alert
   // itself: Alert already sets `role="alert"`, and nesting a second one would
@@ -77,7 +79,13 @@ export function SaveFailure({
       <Alert color="error">
         <AlertContent>
           <AlertTitle>{title}</AlertTitle>
-          <AlertDescription>{message}</AlertDescription>
+          {/* A fallback message often opens with the title's own words, so the
+              refusal read "Could not create this / Could not create this.
+              Nothing was saved." — the same sentence twice, and the second one
+              carrying the only new word in it. The repeat is dropped and what
+              follows is kept, so this reads "Could not create this / Nothing
+              was saved." */}
+          {beyond === null ? null : <AlertDescription>{beyond}</AlertDescription>}
         </AlertContent>
       </Alert>
     </div>

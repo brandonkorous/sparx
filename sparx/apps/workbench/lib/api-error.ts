@@ -5,6 +5,8 @@
 
 import { ApiError } from '@wizeworks/api-client';
 
+import { refusedWhat } from './refused-fields';
+
 /**
  * "There is no such record here" — as opposed to "something went wrong".
  *
@@ -56,11 +58,20 @@ export function paneLoadReason(error: unknown): 'missing' | 'unreachable' | 'fai
  * An EMPTY message is worse than the fallback for the obvious reason — the toast
  * renders a title and no body. Two of the eighty-two already guarded this; the
  * other eighty did not.
+ *
+ * Dropping the schema's SENTENCE is right. Dropping its FIELD LIST was not: the
+ * paragraph above says the useful part is keyed by field path, and then for a
+ * year nothing read it, so a refused save on a twenty-field form named no box at
+ * all. `refusedWhat` turns that list into one plain sentence and leaves the
+ * reason where it belongs ([[feedback_fetched_but_never_rendered]]).
  */
 export function apiErrorMessage(error: unknown, fallback: string): string {
   if (!(error instanceof ApiError)) return fallback;
   if (error.status < 400 || error.status >= 500) return fallback;
-  if (schemaReportingOnItself(error)) return fallback;
+  if (schemaReportingOnItself(error)) {
+    const which = refusedWhat(error.details);
+    return which === null ? fallback : `${fallback} ${which}`;
+  }
   return error.message || fallback;
 }
 

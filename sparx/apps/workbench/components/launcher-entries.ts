@@ -42,7 +42,10 @@ export function useNavEntries(): Entry[] {
       label: resolveTitle(s, {}),
       icon: s.icon,
       module: s.module,
-      keywords: [...(s.keywords ?? []), s.module],
+      // The section is the heading the navigation panel puts in front of a
+      // person — "Going out the door", "Set up", "In progress" — so it is a
+      // phrase they have read and may well type. It was not searchable.
+      keywords: [...(s.keywords ?? []), s.module, ...(s.section ? [s.section] : [])],
       run: (mods) => controller.open(s.key, undefined, { target: targetFor(mods) }),
     });
 

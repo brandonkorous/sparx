@@ -30,6 +30,7 @@ import { Dialog, DialogContent, DialogTitle, Kbd, SearchInput } from '@wizeworks
 import { useNavEntries, useRecordEntries } from './launcher-entries';
 import { rankEntries, rankRecords, type Entry } from './launcher-match';
 import { groupEntries, LauncherEmpty, LauncherGroup, RecordSearchNote } from './launcher-rows';
+import { useSearchStatus } from '../lib/api/search';
 
 export function Launcher({
   open,
@@ -44,6 +45,10 @@ export function Launcher({
 
   const navEntries = useNavEntries();
   const { entries: recordEntries, searching } = useRecordEntries(query, open);
+  // How much of the business this box can actually reach. Asked for once and
+  // cached for a minute, so it costs nothing per keystroke; the note below the
+  // list needs it before it may say her records do not match.
+  const status = useSearchStatus({ watch: open });
 
   // Bind ⌘K / Ctrl+K here — silica's <CommandPalette> used to own this, and it
   // left with it. Only one Launcher is mounted at a time (the compact shell
@@ -170,7 +175,12 @@ export function Launcher({
           {/* The record half's own result — see RecordSearchNote. Outside the
               scrolling list, because it is a statement ABOUT the list rather
               than a row in it, and it must not scroll out of sight. */}
-          <RecordSearchNote searching={searching} found={recordEntries.length} query={query} />
+          <RecordSearchNote
+            searching={searching}
+            found={recordEntries.length}
+            query={query}
+            gaps={status.data}
+          />
 
           {/* The modifier contract, spelled out — the same three destinations for
               a surface and a record. */}

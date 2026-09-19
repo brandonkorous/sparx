@@ -10,7 +10,7 @@ import type { ComponentType } from 'react';
 import type { PigglesIcon } from '@piggles/ui';
 import type { WorkbenchModule } from '../../components/module-scope';
 import type { PaneDescriptor, SurfaceParams } from './descriptor';
-import { productHidesSurface, productSurfaceTitle } from '../product';
+import { productHidesSurface, productSectionTitle, productSurfaceTitle } from '../product';
 
 /** Where a newly-opened pane should land. */
 export type OpenTarget =
@@ -278,13 +278,36 @@ export function titleFor(descriptor: PaneDescriptor): string {
 }
 
 /**
- * Every extra word this surface can be found by. A Piggles name REPLACES the
- * platform's, so "Collections" stops being findable once it reads "Groups of
- * products" — and the old word is often the one somebody arrives knowing.
+ * Every extra word this surface can be found by.
+ *
+ * Two sources, and the second was missing.
+ *
+ * THE OLD NAME. A Piggles name REPLACES the platform's, so "Collections" stops
+ * being findable once it reads "Groups of products" — and the old word is often
+ * the one somebody arrives knowing.
+ *
+ * THE SECTION IT SITS UNDER, which is the heading the navigation panel puts in
+ * front of her: "Worth chasing", "Keeping it legal", "Who can get in", "Did you
+ * make money". Those phrases were written to be memorable, shown to her, and
+ * then not answered to. Typing "keeping it legal" into the box that asks what
+ * you want to do returned "Nothing matches that", over a section with screens in
+ * it. Both spellings go in, the platform's and this brand's, for the same reason
+ * the old title does.
  */
 export function surfaceKeywords(definition: SurfaceDefinition): readonly string[] {
-  const keywords = definition.keywords ?? [];
+  const keywords = [...(definition.keywords ?? [])];
+
   const platform = definition.title;
-  if (typeof platform !== 'string' || resolveTitle(definition, {}) === platform) return keywords;
-  return [...keywords, platform];
+  if (typeof platform === 'string' && resolveTitle(definition, {}) !== platform) {
+    keywords.push(platform);
+  }
+
+  const { section } = definition;
+  if (section) {
+    keywords.push(section);
+    const renamed = productSectionTitle(section);
+    if (renamed && renamed !== section) keywords.push(renamed);
+  }
+
+  return keywords;
 }

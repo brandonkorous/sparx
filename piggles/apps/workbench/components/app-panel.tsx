@@ -35,6 +35,7 @@ import { AppScope } from './app-scope';
 import { PanelHeader } from './panel/panel-header';
 import { PanelSections } from './panel/panel-sections';
 import { targetFor } from './panel/nav-row';
+import { wordForms } from './word-forms';
 
 /** Above this many rows the panel offers a search box. Folding handles LENGTH;
  *  search handles "I know its name and do not know which section it is in". */
@@ -65,11 +66,14 @@ interface AppPanelProps {
   width?: 'panel' | 'fill';
 }
 
+/** Every spelling of what was typed, so "shelf" finds Shelves — see word-forms.ts. */
 function matches(surface: SurfaceDefinition, filter: string): boolean {
   if (!filter) return true;
-  const needle = filter.toLowerCase();
-  if (resolveTitle(surface, {}).toLowerCase().includes(needle)) return true;
-  return surfaceKeywords(surface).some((keyword) => keyword.toLowerCase().includes(needle));
+  const title = resolveTitle(surface, {}).toLowerCase();
+  const keywords = surfaceKeywords(surface).map((keyword) => keyword.toLowerCase());
+  return wordForms(filter).some(
+    (needle) => title.includes(needle) || keywords.some((keyword) => keyword.includes(needle))
+  );
 }
 
 export function AppPanel({

@@ -5,10 +5,17 @@
 // silica's `renderHostNode` hook asks the host to DRAW a host node on the canvas.
 // Two kinds of answer, and the split is about SIZE, not importance:
 //
-//   · CHROME cores (brand, theme toggle, account link, legal links, pager, embeds) —
-//     drawn at their REAL size, inline. They live in a navbar or a footer column, and
-//     their whole promise is "the platform keeps this filled in for you". The marks are
-//     in `host-core-marks.tsx`.
+//   · CHROME cores — drawn at their REAL size, inline. They live in a navbar or a footer
+//     column, and their whole promise is "the platform keeps this filled in for you".
+//     The marks are in `host-core-marks.tsx`.
+//
+//     WHICH ONES: everything the catalog files under the "Your site" category, plus the
+//     two under "Your media". That is a fact in the catalog, not a list kept here — this
+//     comment used to name the six that had marks, and the seventh ("Social links") sat
+//     in a footer column drawn as a page-sized skeleton for exactly as long as the list
+//     went unread. `pnpm check:host-cores` now asserts the coverage and prints the
+//     denominator, so a core added to the catalog reddens the build rather than landing
+//     on a canvas as a grey box.
 //   · TRANSACTION cores (cart, checkout, search, PLP, booking…) — a labelled,
 //     non-interactive SKELETON. The real widget is a live transaction that can't run
 //     on a canvas (no cart/session/Stripe), and it legitimately occupies a page-sized
@@ -26,6 +33,8 @@ import {
   FrameMark,
   LegalLinksColumn,
   PagerMark,
+  SaveForLaterMark,
+  SocialLinksMark,
   ThemeToggleMark,
 } from './host-core-marks';
 
@@ -38,14 +47,20 @@ function Bar({ w = 'w-full' }: { w?: string }) {
   return <div className={`bg-base-content/10 h-3 rounded ${w}`} />;
 }
 
-/** The frame every skeleton sits in — a labelled dashed card that reads as "a live
- *  region your customers see here" without pretending to be interactive. */
+/** The frame every skeleton sits in — a labelled dashed card that says the real thing
+ *  appears here without pretending to be interactive.
+ *
+ *  THE LABEL IS IN HER WORDS. It used to end "· live region", which is a screen-reader
+ *  term borrowed to mean "the platform fills this in". A shop owner has no reason to
+ *  know it, and the question she is actually asking, standing in front of a dashed box
+ *  full of grey bars, is whether her customers are going to see THIS. They are not, and
+ *  now the label says so. Same voice as `FrameMark`'s "Your map shows here". */
 function CoreFrame({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="border-base-content/25 bg-base-100 rounded-lg border border-dashed p-6">
       <div className="mb-4 flex items-center gap-2 text-sm font-medium">
         <span className="bg-primary inline-block size-2 rounded-full" />
-        {label} · live region
+        {label} · the real one shows on your site
       </div>
       {children}
     </div>
@@ -84,6 +99,19 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
         <LegalLinksColumn
           heading={typeof node.props?.heading === 'string' ? node.props.heading : 'Legal'}
           hint={hint}
+        />
+      );
+    }
+    if (node.component === HOST_KEYS.siteSocialLinks) {
+      return <SocialLinksMark root={root} hint={hint} />;
+    }
+    // Filed under "Your shop", but the size rule above is what decides how it draws,
+    // and this one is a single control beside the Add-to-cart button.
+    if (node.component === HOST_KEYS.commerceProductSave) {
+      return (
+        <SaveForLaterMark
+          hint={hint}
+          label={typeof node.props?.label === 'string' ? node.props.label : 'Save for later'}
         />
       );
     }

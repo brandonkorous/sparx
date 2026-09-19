@@ -26,9 +26,13 @@
 // dark theme's surface. That is fine and not worth a workaround: the white glyph carries
 // the recognition, and inside an `AvatarGroup` silica's own base-100 gap draws the edge.
 
+import { type PlatformKey, platformGlyphKey } from './platform-name';
+
+export { platformGlyphKey };
+
 /** Each platform's own color, as the brand publishes it. Not tokens, and not eligible to
  *  become tokens — see above. */
-const BRAND_HEX: Record<string, string> = {
+const BRAND_HEX: Record<PlatformKey, string> = {
   facebook_page: '#1877F2',
   instagram: '#E4405F',
   threads: '#000000',
@@ -40,8 +44,11 @@ const BRAND_HEX: Record<string, string> = {
   google_business: '#4285F4',
 };
 
-/** The 24×24 solid glyph for each platform, verbatim from simple-icons. */
-const GLYPH: Record<string, string> = {
+/** The 24×24 solid glyph for each platform, verbatim from simple-icons.
+ *
+ *  Typed against `PlatformKey`, so a platform named in `platform-name.ts` with no
+ *  artwork here is a COMPILE error rather than a footer that prints its own name. */
+const GLYPH: Record<PlatformKey, string> = {
   facebook_page:
     'M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 9.101 11.647Z',
   instagram:
@@ -69,9 +76,10 @@ const GLYPH_SCALE = 0.56;
 const GLYPH_OFFSET = (24 - 24 * GLYPH_SCALE) / 2;
 
 /** Whether this platform has a mark to draw. Callers that lay out around it ask first, so
- *  an unknown platform collapses the space instead of reserving a hole in it. */
+ *  an unknown platform collapses the space instead of reserving a hole in it. Name
+ *  resolution — aliases, case, punctuation — lives in `platform-name.ts`. */
 export function hasPlatformMark(platform: string): boolean {
-  return platform in GLYPH;
+  return platformGlyphKey(platform) !== null;
 }
 
 /**
@@ -85,29 +93,46 @@ export function hasPlatformMark(platform: string): boolean {
  * Decorative by default: it is nearly always paired with the account name in the same row,
  * and a screen reader announcing "Pinterest" twice per destination is noise. Pass `label`
  * where the mark stands alone.
+ *
+ * TWO TONES, one artwork. `brand` is the disc above. `ink` draws the glyph alone in
+ * `currentColor`, which is what a SITE FOOTER renders: the live `SocialLinks` puts a
+ * mono glyph inside a ghost circle button so the row inherits the site theme's own ink
+ * and hover. Drawing brand discs there would be a different design, not a preview of
+ * that one. `ink` needs no color exception — `currentColor` answers light and dark by
+ * construction, which is the whole reason the `brand` note above has to argue its case
+ * and this one does not.
  */
 export function PlatformMark({
   platform,
   className = 'size-4',
   label,
+  tone = 'brand',
 }: {
   platform: string;
   className?: string;
   label?: string;
+  tone?: 'brand' | 'ink';
 }) {
-  const glyph = GLYPH[platform];
-  if (!glyph) return null;
+  const key = platformGlyphKey(platform);
+  const glyph = key === null ? undefined : GLYPH[key];
+  if (!glyph || key === null) return null;
+  const a11y = {
+    role: label ? ('img' as const) : undefined,
+    'aria-label': label,
+    'aria-hidden': label ? undefined : true,
+  };
+  if (tone === 'ink') {
+    return (
+      <svg viewBox="0 0 24 24" className={`shrink-0 ${className}`} fill="currentColor" {...a11y}>
+        <path d={glyph} />
+      </svg>
+    );
+  }
   return (
     // One SVG, two shapes — no nested positioning, so this owns no `relative`/`absolute`
     // and can never fight a placement its caller passes in.
-    <svg
-      viewBox="0 0 24 24"
-      className={`shrink-0 ${className}`}
-      role={label ? 'img' : undefined}
-      aria-label={label}
-      aria-hidden={label ? undefined : true}
-    >
-      <circle cx="12" cy="12" r="12" fill={BRAND_HEX[platform]} />
+    <svg viewBox="0 0 24 24" className={`shrink-0 ${className}`} {...a11y}>
+      <circle cx="12" cy="12" r="12" fill={BRAND_HEX[key]} />
       <path
         d={glyph}
         fill="#FFFFFF"

@@ -87,6 +87,26 @@ export const SOURCES = {
     path: '/v1/inventory',
     query: { out_of_stock_only: true, take: 1, skip: 0 },
   },
+  // Somebody filled in a form on the website and nobody has opened it.
+  //
+  // The oldest "a stranger is waiting" channel there is, and the only one with
+  // no count: orders, chat, bookings, invoices, stock and both social queues all
+  // had one. An owner running seven sites had two people asking about sizing
+  // seventeen days after they asked, marked New, with nothing anywhere saying so
+  // (issue 629).
+  //
+  // The endpoint already answers `counts.new` beside every window it serves, so
+  // `limit: 1` asks for the number and one row rather than the inbox.
+  formReplies: {
+    key: 'formReplies',
+    module: 'builder',
+    path: '/v1/forms/submissions',
+    query: { status: 'new', limit: 1 },
+    read: (data) => {
+      const counts = (data as { counts?: { new?: unknown } }).counts;
+      return typeof counts?.new === 'number' ? counts.new : undefined;
+    },
+  },
   // Somebody asked a question on a social account and nobody has answered.
   social: {
     key: 'social',

@@ -70,6 +70,10 @@ export const PIGGLES_SURFACES: Readonly<Record<string, string>> = {
   // "Redirects" is infrastructure. What it means to a shop owner is that a link
   // they printed on a flyer two years ago still works.
   'cms.redirects.list': 'Old links',
+  // Unlisted, so never a nav row — but it IS the pane tab once the import is
+  // open, which is the same seam the webhooks entry below documents. It read
+  // "Import redirects" while the list beside it read "Old links".
+  'cms.redirects.import': 'Import old links',
   // Webhooks are developer territory and RULE #3 keeps them out of a
   // non-developer context. The capability is real; the name says what it buys.
   'cms.webhooks.list': 'Tell other software',

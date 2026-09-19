@@ -99,7 +99,7 @@ export const STAFF_SURFACES: SurfaceDefinition[] = [
   /* ── Compliance ─────────────────────────────────────────────────────────── */
   {
     key: 'staff.certifications',
-    title: 'Tickets and licences',
+    title: 'Tickets and licenses',
     module: 'staff',
     icon: ShieldCheck,
     component: CertificationsSurface,

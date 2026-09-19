@@ -20,6 +20,8 @@ import {
   type HostComponentMeta,
 } from '@wizeworks/silica-catalog';
 
+import { PlatformMark, hasPlatformMark } from '../../components/platform-mark';
+
 /** The tenant's real brand mark — logo and/or name, exactly as the live site's
  *  `site.brand` core renders it, read from the resolver root `site.identity` that
  *  `buildPreviewRoot` overlays. Degrades: logo-only with no logo → the name; no name
@@ -180,6 +182,104 @@ export function FrameMark({ node, meta }: { node: HostNode; meta?: HostComponent
             ? 'Type your address under Settings to show the map here'
             : 'Paste a link under Settings to show it here'}
       </span>
+    </span>
+  );
+}
+
+/**
+ * The site's social row at its REAL size — her own accounts, as the live footer draws
+ * them.
+ *
+ * WHY THIS IS A CHROME MARK. It sits in a footer column beside the legal links, and the
+ * live control is a wrapped row of small circular ghost buttons about as tall as one
+ * line of text. Drawn as a page-sized skeleton it stood 146px tall in a 116px column,
+ * which is the exact footprint lie this file exists to stop.
+ *
+ * REAL DATA, like the brand mark and unlike the legal column. `site.social` is already
+ * in the canvas resolver root — `buildPreviewRoot` overlays it from the same chrome read
+ * that supplies the name and logo, and even overwrites it when empty — and nothing was
+ * drawing it ([[feedback_fetched_but_never_rendered]]). So the author sees HER accounts,
+ * in HER order, and can tell at a glance whether the footer is showing what she meant.
+ *
+ * THE EMPTY CASE DRAWS A SENTENCE, NOT A ROW. The live footer renders nothing at all
+ * until she adds one, so inventing three marks here would show her a row she never
+ * chose and cannot remove. `FrameMark` already settled this shape for a core whose
+ * field is not filled in yet: say which, and name where to fix it.
+ *
+ * An unknown platform ("Other", or a network with no glyph) draws its own name, exactly
+ * as the live `SocialLinks` does — a link is never silently dropped.
+ */
+export function SocialLinksMark({ root, hint }: { root: unknown; hint: string }) {
+  const social = (root as { site?: { social?: unknown } })?.site?.social;
+  const items = Array.isArray(social)
+    ? social.filter(
+        (s): s is { platform: string; url: string } =>
+          typeof (s as { platform?: unknown })?.platform === 'string'
+      )
+    : [];
+
+  if (items.length === 0) {
+    return (
+      <span
+        className="border-base-content/25 text-base-content inline-flex items-center rounded-full border border-dashed px-3 py-1 text-sm"
+        title={hint}
+      >
+        Add your accounts under Site identity to show them here
+      </span>
+    );
+  }
+
+  return (
+    // The live row's own classes, so the footer column reflows here exactly as it will
+    // on the site. Spans rather than links: a click selects the node in the builder.
+    <span className="flex flex-wrap items-center gap-1" title={hint}>
+      {items.map((item, i) => {
+        const known = hasPlatformMark(item.platform);
+        return (
+          <span
+            key={`${String(i)}-${item.platform}`}
+            className={known ? 'btn btn-ghost btn-sm btn-circle' : 'btn btn-ghost btn-sm'}
+          >
+            {known ? (
+              <PlatformMark platform={item.platform} tone="ink" className="size-5" />
+            ) : (
+              item.platform
+            )}
+          </span>
+        );
+      })}
+    </span>
+  );
+}
+
+/** The save-for-later heart at its REAL size — a single control that sits beside the
+ *  Add-to-cart button, not a page-sized band.
+ *
+ *  It is filed under "Your shop" rather than "Your site", so `check:host-cores` does not
+ *  require a mark for it — but the reason the check exists applies exactly: a 40px
+ *  control drawn as a dashed page-width card blows the buy box apart on the canvas and
+ *  the author styles around a shape that will never exist. The rule is about SIZE, and
+ *  this one is small. */
+export function SaveForLaterMark({ hint, label }: { hint: string; label: string }) {
+  return (
+    <span
+      className="rounded-field border-base-300 text-base-content inline-flex items-center gap-2 border px-3 py-2 text-base"
+      title={hint}
+    >
+      <svg
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+      </svg>
+      <span>{label}</span>
     </span>
   );
 }

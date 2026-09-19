@@ -165,4 +165,10 @@ export const BANNED_IN_PRODUCT_COPY = [
   'GraphQL',
   'webhook',
   'API key',
+  // The word the console renamed a whole surface to avoid: "What fits what",
+  // not "Fitment". It was still reaching the screen from a shared package,
+  // five times on one pane, because this list is what a reviewer greps and
+  // 'fitment' was not on it.
+  'fitment',
+  'redirect',
 ] as const;

@@ -39,10 +39,29 @@ describe('the counts on "what needs you"', () => {
 
   it('asks for one row, because only the total is wanted', () => {
     // Fifty rows of JSON to display one integer, on every count, on every load.
+    //
+    // `limit` as well as `take`: the forms inbox spells its page size the other
+    // way, and a loop that only knew one word would have gone on passing while
+    // the newest count pulled a full window (issue 629).
     for (const [key, source] of Object.entries(SOURCES)) {
       const q = source.query as Record<string, unknown> | undefined;
       if (q && 'take' in q) expect(q.take, key).toBe(1);
+      if (q && 'limit' in q) expect(q.limit, key).toBe(1);
     }
+  });
+
+  it('counts the people who wrote in from the website', () => {
+    // Every other "somebody is waiting" channel had a count and this one did
+    // not, so two people asking about sizing sat marked New for seventeen days
+    // with nothing on Home, the rail or the app saying so.
+    const forms = SOURCES.formReplies;
+    expect(forms.query).toMatchObject({ status: 'new' });
+    // It reads `counts.new`, which the endpoint answers beside every window —
+    // NOT the length of the rows it happens to return, which is capped at one.
+    expect(forms.read?.({ counts: { new: 2 }, submissions: [] })).toBe(2);
+    // Unknown, never zero: a shape it does not recognise must not read as
+    // "nobody is waiting".
+    expect(forms.read?.({ submissions: [] })).toBeUndefined();
   });
 
   it('still counts a real queue for every other source', () => {

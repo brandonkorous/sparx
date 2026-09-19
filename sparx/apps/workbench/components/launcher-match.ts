@@ -7,6 +7,7 @@
 import type { LucideIcon } from 'lucide-react';
 import type { OpenTarget } from '../lib/surfaces/registry';
 import { moduleLabel } from '../lib/surfaces/nav';
+import { bestOverForms } from './word-forms';
 import type { WorkbenchModule } from './module-scope';
 
 /** One selectable row — a surface to open, a record to open, or an action. */
@@ -83,8 +84,18 @@ export function startsAWord(haystack: string, needle: string): boolean {
  * "sale" sits inside "wholesale" by accident while Orders carries it on purpose.
  * A word we chose is evidence; a word that happens to be inside another one is
  * a coincidence, and a coincidence should not win.
+ *
+ * Every rung is tried against each spelling of the word — "shelf" reaches
+ * Shelves, "categories" reaches Category — and the best rung any spelling earns
+ * is the row's rank. A singular and its plural are the same word, so neither is
+ * demoted for being the one that was not typed. See word-forms.ts.
  */
 export function score(entry: Entry, query: string): number {
+  return bestOverForms(query, (form) => rate(entry, form));
+}
+
+/** One rung-by-rung reading of a row against one exact spelling. */
+function rate(entry: Entry, query: string): number {
   const label = entry.label.toLowerCase();
   if (label === query) return 100;
   if (label.startsWith(query)) return 80;

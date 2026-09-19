@@ -72,11 +72,19 @@ export const api = {
    *
    * `total` is undefined when the endpoint doesn't report one, which callers
    * must treat as "unknown", never as zero.
+   *
+   * `meta` is the envelope's whole `meta` object, for the endpoints that attach
+   * their own counts beside the pagination ones. `PaginationMeta` is open on
+   * purpose so a list route can report something about the WHOLE narrowed set
+   * that a page of rows cannot show; unwrapping only `total` here meant those
+   * counts were computed, serialized and then dropped on the floor one step
+   * short of the screen. Most callers ignore it, and that costs them nothing.
    */
   list: <T>(path: string, query?: RequestOptions['query']) =>
     apiRequest<T[]>({ method: 'GET', path, query }).then((r) => ({
       items: r.data,
       total: typeof r.page?.total === 'number' ? r.page.total : undefined,
+      meta: r.page,
     })),
 };
 

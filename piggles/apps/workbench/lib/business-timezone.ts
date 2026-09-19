@@ -58,3 +58,15 @@ export function useBusinessTimezone(): string | undefined {
   if (zone === undefined) return undefined;
   return zone ?? thisComputersTimezone();
 }
+
+/**
+ * Both halves of "whose clock", for anything that SHOWS a stored time.
+ *
+ * `useBusinessTimezone()` above folds the two together, which is right for a
+ * form that must stamp a value and has nowhere to explain itself. A screen that
+ * merely displays a time can explain itself, and should: "7:00pm" and "7:00pm
+ * (this computer's clock)" are different promises.
+ */
+export function useReaderClock(): { zone: string | null | undefined; device: string } {
+  return { zone: useBusinessZone(), device: thisComputersTimezone() };
+}

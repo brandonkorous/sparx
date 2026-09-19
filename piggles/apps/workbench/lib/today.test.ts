@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { dayIso, dayStartUtc, todayIso, todayStartUtc } from './today';
+import { dayFromStored, dayIso, dayStartUtc, pickedDayUtc, todayIso, todayStartUtc } from './today';
 
 /**
  * THE EVENING A COST DISAPPEARED.
@@ -67,7 +67,8 @@ describe('today, as the person reading the screen would say it', () => {
     // The round trip a form makes: show a day, save it, read it back. A LOCAL
     // midnight here would come back as the day before for anyone east of UTC.
     const saved = dayStartUtc('2026-09-30');
-    expect(new Date(saved).toISOString().slice(0, 10)).toBe('2026-09-30');
+    expect(saved).not.toBeNull();
+    expect(new Date(saved ?? '').toISOString().slice(0, 10)).toBe('2026-09-30');
   });
 
   it("stamps the reader's own day, at that midnight, in one step", () => {
@@ -85,5 +86,132 @@ describe('today, as the person reading the screen would say it', () => {
     const monthEnd = new Date(2026, 8, 30, 18, 0, 0);
     expect(todayIso(monthEnd)).toBe('2026-09-30');
     expect(todayStartUtc(monthEnd)).toBe('2026-09-30T00:00:00.000Z');
+  });
+});
+
+describe('dayStartUtc refuses what is not a day', () => {
+  /**
+   * "THIS PANEL RAN INTO A PROBLEM", FROM ONE MISTYPED YEAR.
+   *
+   * Money -> Bills to pay -> Shop rent, September, 2026-09-16. The empty "Late"
+   * tab had just told the owner to open a cost and fill in "Due by", so she did.
+   * A slip in the year box, and the whole editor was replaced by an error card,
+   * taking the unsaved edit with it:
+   *
+   *     RangeError: Invalid time value
+   *       at Date.toISOString
+   *       at dayStartUtc            (lib/today.ts)
+   *       at dateValue              (finance/expense-detail.tsx)
+   *       at toDraft
+   *       at ExpenseDetail.useMemo[draft]
+   *
+   * `<input type="date">` does not promise a real date. Chrome's year box takes
+   * SIX digits (verified in the page: setting "20266-09-01" and "275760-09-13"
+   * both read straight back out), so `new Date("20266-09-01T00:00:00.000Z")` is
+   * an Invalid Date and `toISOString()` throws. The call sat in a render-time
+   * `useMemo`, so the throw reached the error boundary rather than a catch.
+   *
+   * A function that is handed form values has to be TOTAL. Null is a result the
+   * caller can show; an exception during render is not.
+   */
+  it('turns a real day into midnight UTC', () => {
+    expect(dayStartUtc('2026-09-15')).toBe('2026-09-15T00:00:00.000Z');
+  });
+
+  it('returns null for the five- and six-digit years the date box allows', () => {
+    expect(dayStartUtc('20266-09-01')).toBeNull();
+    expect(dayStartUtc('275760-09-13')).toBeNull();
+  });
+
+  it('returns null rather than throwing on anything unparseable', () => {
+    for (const bad of ['', 'abc', '2026-13-01', '2026-09', '2026/09/01', '  ']) {
+      expect(() => dayStartUtc(bad)).not.toThrow();
+      expect(dayStartUtc(bad)).toBeNull();
+    }
+  });
+
+  it('returns null for a day that does not exist, rather than the day after', () => {
+    // `new Date` accepts 2026-02-30 and rolls it to March 2. Handing back a day
+    // nobody typed is the same class of lie as crashing.
+    expect(dayStartUtc('2026-02-30')).toBeNull();
+    expect(dayStartUtc('2026-02-28')).toBe('2026-02-28T00:00:00.000Z');
+  });
+
+  it('keeps a leap day', () => {
+    expect(dayStartUtc('2028-02-29')).toBe('2028-02-29T00:00:00.000Z');
+  });
+});
+
+/**
+ * THE DAY A BUYER TYPED AND A DIFFERENT DAY SHE READ BACK.
+ *
+ * MEASURED 2026-09-18 in Los Angeles. A buyer opened a purchase order, typed
+ * `09 / 10 / 2026` into "New expected date", pressed Record it, and got "New
+ * date recorded". The Order details panel a few inches above then read
+ * **September 9, 2026**.
+ *
+ * Nothing had failed. The order had TWO controls on one field and they did not
+ * agree: one stored the day at UTC midnight, the other stored whatever local
+ * midnight happened to be, and the formatter printed in the reader's own zone.
+ * UTC midnight printed in Los Angeles is five o'clock the previous evening, so
+ * the day came back one short.
+ *
+ * `dayMiddayUtc` above carries this same warning for invoicing, which met the
+ * same bug first. Buying never got it.
+ *
+ * Every fixture is built with the LOCAL date constructor, so each means a wall
+ * clock rather than an instant and the guards say the same thing on every
+ * machine, UTC included.
+ */
+describe('a picked day survives the round trip', () => {
+  it('stores the day the person saw, not local midnight pushed into UTC', () => {
+    // A date control hands back LOCAL midnight. `toISOString()` on that is
+    // 07:00Z in Los Angeles and the PREVIOUS day at 23:00Z in Berlin, which is
+    // the whole defect.
+    expect(pickedDayUtc(new Date(2026, 8, 10))).toBe('2026-09-10T00:00:00.000Z');
+  });
+
+  it('keeps the day whatever time of day the control was used', () => {
+    for (const at of [
+      new Date(2026, 8, 10, 0, 0),
+      new Date(2026, 8, 10, 12, 30),
+      new Date(2026, 8, 10, 23, 59),
+    ]) {
+      expect(pickedDayUtc(at)).toBe('2026-09-10T00:00:00.000Z');
+    }
+  });
+
+  it('gives the same day back to the control that stored it', () => {
+    const picked = new Date(2026, 8, 10);
+    const stored = pickedDayUtc(picked);
+    const shown = dayFromStored(stored);
+    expect(shown).not.toBeNull();
+    expect(shown?.getFullYear()).toBe(2026);
+    expect(shown?.getMonth()).toBe(8);
+    expect(shown?.getDate()).toBe(10);
+  });
+
+  it('reads a day stored the OLD way back as the same day', () => {
+    // Rows already in the table were written as local midnight by the other
+    // control. Taking the UTC calendar day off them still lands on the day that
+    // was typed for every reader west of Greenwich, so the reader can be fixed
+    // without a data migration.
+    const shown = dayFromStored('2026-09-04T07:00:00.000Z');
+    expect(shown?.getMonth()).toBe(8);
+    expect(shown?.getDate()).toBe(4);
+  });
+
+  it('carries a month end and a leap day across', () => {
+    expect(pickedDayUtc(new Date(2026, 8, 30))).toBe('2026-09-30T00:00:00.000Z');
+    expect(pickedDayUtc(new Date(2028, 1, 29))).toBe('2028-02-29T00:00:00.000Z');
+  });
+
+  it('says nothing rather than guessing, on nothing', () => {
+    expect(pickedDayUtc(null)).toBeNull();
+    expect(pickedDayUtc(undefined)).toBeNull();
+    expect(pickedDayUtc(new Date('nonsense'))).toBeNull();
+    expect(dayFromStored(null)).toBeNull();
+    expect(dayFromStored('')).toBeNull();
+    expect(dayFromStored('not a date')).toBeNull();
   });
 });
