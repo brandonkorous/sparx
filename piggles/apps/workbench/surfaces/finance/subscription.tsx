@@ -59,7 +59,7 @@ function planState(bill: Bill): {
   if (status === 'trialing') return { label: 'Free trial', tone: 'info' };
   if (status === 'active') return { label: 'Active', tone: 'success' };
   if (status === 'past_due' || status === 'unpaid') return { label: 'Payment due', tone: 'error' };
-  if (status === 'canceled') return { label: 'Cancelled', tone: 'neutral' };
+  if (status === 'canceled') return { label: 'Canceled', tone: 'neutral' };
   if (bill.cancelAtPeriodEnd) return { label: 'Ends soon', tone: 'warning' };
   if (bill.planModules.length > 0) return { label: 'Active', tone: 'success' };
   return { label: 'No paid plan', tone: 'neutral' };

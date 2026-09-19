@@ -75,7 +75,7 @@ export function ArSummary() {
     // their own lifted surface on the pane rather than a hairline separating
     // them from it.
     <Card className="shrink-0">
-      <Stats className="px-2 py-1">
+      <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
         <Stat>
           <StatTitle>Outstanding</StatTitle>
           <StatValue className="text-2xl tabular-nums">

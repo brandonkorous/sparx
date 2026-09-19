@@ -3,6 +3,7 @@
 // aren't in the published spec yet — swap these for the generated types once
 // they are, and the surfaces below won't change.
 
+import { daysPastDue } from '../../lib/console/days';
 import { invoiceState, type InvoiceStatus, type InvoiceTone } from '../../lib/invoice-status';
 
 export type ArStatus = InvoiceStatus;
@@ -310,7 +311,11 @@ export interface AgingReport {
  */
 export function describeDue(
   dueAt: string | null | undefined,
-  overdueDays: number
+  overdueDays: number,
+  /** The business's own zone, from `useBusinessZone()`. The server counts on the
+   *  same one, so this is what keeps the invoice list and the chase list saying
+   *  the same number about the same invoice. */
+  timeZone?: string | null
 ): { label: string; tone: 'danger' | 'warning' | 'muted'; title: string } {
   // NOT "no payment terms set". A due date arrives from the payer's terms only
   // when the document is ADVANCED into a payable stage, so an invoice raised
@@ -326,10 +331,16 @@ export function describeDue(
   }
 
   const due = new Date(dueAt);
-  const title = due.toLocaleDateString(undefined, { dateStyle: 'medium' });
+  const title = due.toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
 
-  const elapsed = Math.floor((Date.now() - due.getTime()) / 86_400_000);
-  const late = Math.max(overdueDays, elapsed);
+  // CALENDAR DAYS, not elapsed milliseconds — `daysPastDue` is the console's one
+  // rule for this and the reasoning is in `lib/console/days.ts`. The old
+  // `(Date.now() - due) / 86_400_000` let the HOUR a document happened to be
+  // raised decide the answer: eight invoices all printed "Due Sep 8, 2026" and
+  // this function called seven of them "9 days late" and the one raised at noon
+  // "8 days late", on the same screen, under the same printed date.
+  const past = daysPastDue(dueAt, new Date(), timeZone) ?? 0;
+  const late = Math.max(overdueDays, past);
   if (late > 0) {
     return {
       label: late === 1 ? '1 day late' : `${String(late)} days late`,
@@ -338,7 +349,7 @@ export function describeDue(
     };
   }
 
-  const days = Math.ceil((due.getTime() - Date.now()) / 86_400_000);
+  const days = -past;
   if (days <= 0) return { label: 'Due today', tone: 'warning', title: `Due ${title}` };
   if (days === 1) return { label: 'Due tomorrow', tone: 'warning', title: `Due ${title}` };
   if (days <= 7)

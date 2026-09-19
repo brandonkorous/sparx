@@ -23,6 +23,7 @@
 // axes — the kind rides the category badge, the state rides its own.
 
 import { useMemo, useRef, useState } from 'react';
+import { useBusinessZone } from '../../lib/business-timezone';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
   Badge,
@@ -241,7 +242,9 @@ function ExpenseRow({
   item: Expense;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
-  const state = billState(item.paidAt, item.dueAt);
+  // The business's day, not this computer's. Shares one cached read across
+  // every row, and keeps a bill's badge agreeing with the aging report.
+  const state = billState(item.paidAt, item.dueAt, useBusinessZone());
   return (
     <tr
       className="cursor-pointer"
@@ -255,9 +258,15 @@ function ExpenseRow({
       }}
     >
       <td className="text-sm whitespace-nowrap">{formatDay(item.incurredAt)}</td>
+      {/* WRAPS, never truncates. A `truncate` div keeps `white-space: nowrap`, so
+          in a table it demands the full width of its text as the column's
+          minimum however narrow the pane gets — which is what pushed the Amount
+          column off the right edge below 600px. A clamp wraps instead: the
+          minimum falls to the longest word, the table fits from 390px up, and
+          the reader sees MORE of what the cost was for, not less. */}
       <td className="max-w-56 min-w-0">
-        <div className="truncate font-medium">{item.description}</div>
-        {item.vendor ? <div className="truncate text-sm">{item.vendor.name}</div> : null}
+        <div className="line-clamp-2 font-medium">{item.description}</div>
+        {item.vendor ? <div className="line-clamp-1 text-sm">{item.vendor.name}</div> : null}
       </td>
       <td className="hidden @lg:table-cell">
         {item.category ? (

@@ -298,7 +298,7 @@ export function PayoutsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint what="a deposit to see the sales it settles" />
+        {rows.length > 0 ? <RowOpenHint what="a deposit to see the sales it settles" /> : null}
       </div>
     </div>
   );

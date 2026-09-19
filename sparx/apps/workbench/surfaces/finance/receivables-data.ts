@@ -2,14 +2,24 @@
 
 // Receivables data — invoiced-but-unpaid, bucketed by how late.
 //
-// Reads the finance receivables endpoint, which buckets open billing documents on
-// the SAME stored `overdueDays` the AR aging report and the invoice list use — so
-// this surface can never disagree with invoicing about whether a document is late.
+// Reads the finance receivables endpoint, which buckets open billing documents
+// through `daysPastDue` — the same shared rule the AR aging report and the
+// invoice list use, computed at QUERY time rather than read from the stored
+// `overdueDays` column, so this surface can never disagree with invoicing about
+// whether a document is late. (This comment used to say it bucketed on the
+// stored column; that stopped being true when the column was found to be only as
+// fresh as its last recompute job.)
+//
+// The WORDS and the color for one row live in `receivables-words.ts`, so they can
+// be tested without this module's data layer; both are re-exported here so the
+// surface keeps one import.
 
 import { useQuery } from '@wizeworks/query';
 import { api } from '../../lib/api/client';
+import { bucketTone, type ReceivableBucketKey } from './receivables-words';
 
-export type ReceivableBucketKey = 'current' | 'd1_30' | 'd31_60' | 'd61_90' | 'd90_plus';
+export { bucketTone };
+export type { ReceivableBucketKey };
 
 export interface Receivable {
   id: string;
@@ -65,20 +75,4 @@ export function useReceivables(params: ReceivablesQuery) {
       }),
     placeholderData: (previous) => previous,
   });
-}
-
-/** The color a lateness bucket wears — the whole point of the surface is that a
- *  90-days-late balance does not look like a not-yet-due one. */
-export function bucketTone(key: ReceivableBucketKey): 'success' | 'warning' | 'error' | 'info' {
-  switch (key) {
-    case 'current':
-      return 'info';
-    case 'd1_30':
-      return 'warning';
-    case 'd31_60':
-    case 'd61_90':
-      return 'error';
-    case 'd90_plus':
-      return 'error';
-  }
 }

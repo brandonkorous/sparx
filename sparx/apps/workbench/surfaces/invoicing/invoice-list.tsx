@@ -16,6 +16,7 @@
 // columns in 300px.
 
 import { useState } from 'react';
+import { useBusinessZone } from '../../lib/business-timezone';
 import { useQuery, useQueryClient } from '@wizeworks/query';
 import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
 import { ArrowDown, ArrowUp, FileText, Plus } from 'lucide-react';
@@ -94,6 +95,9 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 }
 
 export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
+  // Lateness is counted on the BUSINESS's day, the same zone the server uses,
+  // so this list and Money -> Owed to you cannot give one invoice two ages.
+  const businessZone = useBusinessZone();
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [sent, setSent] = useState('all');
@@ -341,7 +345,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((doc) => {
-                const due = describeDue(doc.dueAt, doc.overdueDays);
+                const due = describeDue(doc.dueAt, doc.overdueDays, businessZone);
                 const state = invoiceState(doc.status);
                 return (
                   <tr
@@ -449,7 +453,7 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* The open gestures, and only where there is a pointer to do them
             with — on the stack these three modifiers do not exist. */}
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

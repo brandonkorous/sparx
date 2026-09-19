@@ -310,7 +310,7 @@ export function PaymentsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint what="a payment to open its order" />
+        {rows.length > 0 ? <RowOpenHint what="a payment to open its order" /> : null}
       </div>
     </div>
   );

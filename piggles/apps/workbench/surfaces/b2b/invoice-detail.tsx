@@ -65,6 +65,8 @@ import {
   type InvoiceRow,
   type PaidMethod,
 } from './invoices-data';
+import { NOT_A_DATE, dayStartUtc } from '../../lib/today';
+import { ChoiceListNote, choiceListState } from '../../components/choice-list-note';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -165,7 +167,8 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
   const accountError = accountId === '' ? 'Choose which business this invoice is for.' : null;
   const numberError = number.trim() === '' ? 'Give this invoice a number.' : null;
   const amountError = amount <= 0 ? 'Enter how much this invoice is for.' : null;
-  const dateError = dueDate === '' ? 'Set a due date.' : null;
+  const dueIso = dueDate === '' ? null : dayStartUtc(dueDate);
+  const dateError = dueDate === '' ? 'Set a due date.' : dueIso === null ? NOT_A_DATE : null;
   const blocking = accountError ?? numberError ?? amountError ?? dateError;
 
   const dirty =
@@ -184,14 +187,14 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
 
   const submit = () => {
     mark();
-    if (blocking) return;
+    if (blocking || dueIso === null) return;
     setFailure(null);
     create.mutate(
       {
         accountId,
         invoiceNumber: number.trim(),
         amountCents: Math.round(amount * 100),
-        dueAt: new Date(`${dueDate}T00:00:00Z`).toISOString(),
+        dueAt: dueIso,
         notes: notes.trim() === '' ? null : notes.trim(),
       },
       {
@@ -258,11 +261,15 @@ function InvoiceCreate({ ctx }: { ctx: SurfaceContext }) {
               />
               {accountError && touched ? (
                 <FieldStatus status="error">{accountError}</FieldStatus>
-              ) : (accountsQuery.data?.items ?? []).length === 0 && !accountsQuery.isPending ? (
-                <FieldDescription>
-                  You have no trade accounts yet. Add one under Accounts first.
-                </FieldDescription>
-              ) : null}
+              ) : (
+                <ChoiceListNote
+                  state={choiceListState(accountsQuery)}
+                  words={{
+                    none: 'You have no trade accounts yet. Add one under Accounts first.',
+                    noun: 'trade accounts',
+                  }}
+                />
+              )}
             </Field>
 
             <div className="grid grid-cols-1 gap-4 @md:grid-cols-2">
@@ -398,16 +405,21 @@ function InvoiceManage({
 
   const editable = invoice.status !== 'paid' && invoice.status !== 'void';
   const dirty = editable && (dueDate !== savedDate || notes !== savedNotes);
+  // A date box can hold something that is not a date; see `lib/today`.
+  const dueIso = dueDate === '' ? null : dayStartUtc(dueDate);
+  const dateError = dueDate !== '' && dueIso === null ? NOT_A_DATE : null;
 
   useDirtySource(dirty, 'This invoice has unsaved changes. Close anyway?');
 
   const save = () => {
+    if (dateError) {
+      setFailure(dateError);
+      return;
+    }
     setFailure(null);
     update.mutate(
       {
-        ...(dueDate !== savedDate && dueDate !== ''
-          ? { dueAt: new Date(`${dueDate}T00:00:00Z`).toISOString() }
-          : {}),
+        ...(dueDate !== savedDate && dueIso !== null ? { dueAt: dueIso } : {}),
         ...(notes !== savedNotes ? { notes } : {}),
       },
       {

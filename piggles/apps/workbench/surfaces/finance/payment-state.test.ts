@@ -53,7 +53,7 @@ describe('paymentState', () => {
     expect(paymentState('failed', 0, 60).label).toBe('Failed');
     expect(paymentState('pending', 0, 60).label).toBe('Pending');
     expect(paymentState('authorized', 0, 60).label).toBe('Held');
-    expect(paymentState('voided', 0, 60).label).toBe('Cancelled');
+    expect(paymentState('voided', 0, 60).label).toBe('Canceled');
   });
 
   it('still honors the stored word when a processor does write it', () => {

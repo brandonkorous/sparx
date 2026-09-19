@@ -44,7 +44,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useConfirm } from '../../lib/confirm';
-import { todayIso } from '../../lib/today';
+import { badDayIn, dayStartUtc, todayIso } from '../../lib/today';
 import { afterPaneChange } from '../../lib/defer';
 import {
   centsToInput,
@@ -111,7 +111,7 @@ function formFrom(template: RecurringExpense): FormState {
 /** Midnight UTC, matching how the server stores a schedule date — a local
  *  midnight would shift "the 1st" to the 31st for anyone west of UTC. */
 function dateValue(value: string): string | null {
-  return value === '' ? null : new Date(`${value}T00:00:00.000Z`).toISOString();
+  return value === '' ? null : dayStartUtc(value);
 }
 
 /* ── The editor ─────────────────────────────────────────────────────────────*/
@@ -137,7 +137,8 @@ function TemplateEditor({
 
   const amountCents = parseMoneyToCents(form.amount);
   const amountOk = amountCents !== null && amountCents > 0;
-  const datesOk = form.endsOn === '' || form.endsOn >= form.startsOn;
+  const dateError = badDayIn(form.startsOn, form.endsOn);
+  const datesOk = dateError === null && (form.endsOn === '' || form.endsOn >= form.startsOn);
   const canSave = form.name.trim() !== '' && form.categoryId !== '' && amountOk && datesOk;
 
   // Only monthly-and-longer cadences land on a day of the month; asking a weekly
@@ -340,7 +341,9 @@ function TemplateEditor({
             }
           />
           {!datesOk ? (
-            <FieldStatus status="error">The end date cannot be before the start.</FieldStatus>
+            <FieldStatus status="error">
+              {dateError ?? 'The end date cannot be before the start.'}
+            </FieldStatus>
           ) : (
             <FieldDescription>Leave blank for something with no end, like rent.</FieldDescription>
           )}

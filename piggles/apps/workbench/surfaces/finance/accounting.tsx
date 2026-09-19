@@ -24,6 +24,7 @@
 // stop trusting the feed.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { explainEmptyPeriod, periodCountLine } from './export-period-words';
 import { productCopy } from '../../lib/product';
 import { PaneWaiting } from '../../components/pane-waiting';
 import {
@@ -63,7 +64,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useConfirm } from '../../lib/confirm';
-import { todayIso } from '../../lib/today';
+import { badDayIn, dayStartUtc, todayIso } from '../../lib/today';
 import { afterPaneChange } from '../../lib/defer';
 import {
   downloadAccountingExport,
@@ -110,6 +111,18 @@ function ExportPanel({
   // so `limit: 1` is the cheapest way to ask "is this period empty, and if not
   // how much is in it" without loading costs this screen never draws.
   const inPeriod = useExpenses({ from: range.from, to: range.to, limit: 1 });
+  // A SECOND count, with no dates: has this business recorded a cost at ALL?
+  // Without it "no costs recorded" says the same thing to a shop that has never
+  // recorded one and to a shop whose five costs are all in the month the picker
+  // is not showing — and only the second of those is alarmed by it. Same trick
+  // as above: one row, read for its total.
+  const everRecorded = useExpenses({ limit: 1 });
+  const counts =
+    inPeriod.data && everRecorded.data
+      ? { inPeriod: inPeriod.data.totalCount, everRecorded: everRecorded.data.totalCount }
+      : null;
+  const countLine = periodCountLine(counts);
+  const emptyReason = explainEmptyPeriod(counts, period === 'last_month');
   const descriptor = catalog.find((entry) => entry.provider === provider);
   const usable = catalog.filter((entry) => entry.availability === 'available');
   const existing = connections.find((connection) => connection.provider === provider);
@@ -229,18 +242,20 @@ function ExportPanel({
           />
           {/* The dates alone do not answer the question somebody is actually
               asking, which is "will this file have my spending in it?". The
-              default period is LAST month, so on the 9th it is perfectly normal
+              default period is LAST month, so on the 16th it is perfectly normal
               for the answer to be no — and better said here than discovered in
               a spreadsheet. Counting costs is free: the list endpoint already
-              aggregates them, so this asks for one row and reads the total. */}
+              aggregates them, so this asks for one row and reads the total.
+              The wording is in `export-period-words.ts`, because "no costs
+              recorded" was one sentence for two situations: a business that has
+              never recorded one, and a business whose costs are simply in a
+              different month. Only the second is alarmed by it, and it is the
+              common one. */}
           <FieldDescription>
             {formatDay(range.from)} to {formatDay(range.to)}
-            {inPeriod.data
-              ? inPeriod.data.totalCount === 0
-                ? ' · no costs recorded'
-                : ` · ${String(inPeriod.data.totalCount)} ${inPeriod.data.totalCount === 1 ? 'cost' : 'costs'}`
-              : ''}
+            {countLine ? ` · ${countLine}` : ''}
           </FieldDescription>
+          {emptyReason ? <FieldDescription>{emptyReason}</FieldDescription> : null}
         </Field>
 
         <Field>
@@ -1027,12 +1042,17 @@ function ConnectionCard({
   );
 
   const saveClosedOn = () => {
+    const bad = badDayIn(closedOn);
+    if (bad) {
+      toast.add({ title: 'Check the date', description: bad, type: 'error' });
+      return;
+    }
     save.mutate(
       {
         provider: connection.provider,
         displayName: connection.displayName,
         syncCadence: connection.syncCadence as 'manual' | 'daily' | 'weekly',
-        syncFromDate: closedOn === '' ? null : new Date(`${closedOn}T00:00:00.000Z`).toISOString(),
+        syncFromDate: closedOn === '' ? null : dayStartUtc(closedOn),
       },
       {
         onSuccess: () => {

@@ -6,6 +6,8 @@
 // someone who has never heard the underlying term, per the platform's
 // non-technical-audience rule.
 
+import { daysPastDue } from '../../lib/console/days';
+import { channelLabel } from '../../lib/console/channels';
 import { paymentMethodLabel } from '../../lib/payment-methods';
 
 export function formatMoney(amount: number, currency = 'USD'): string {
@@ -107,32 +109,11 @@ export function formatDay(iso: string | null | undefined): string {
   return new Date(iso).toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
 }
 
-/** A calendar day as a day NUMBER, so two days can be compared without a clock
- *  dragging one of them across a midnight. Local Y/M/D for "today" (the reader's
- *  day), UTC Y/M/D for a stored day — the same convention as `period.ts`. */
-function dayNumber(value: Date, stored: boolean): number {
-  const ms = stored
-    ? Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate())
-    : Date.UTC(value.getFullYear(), value.getMonth(), value.getDate());
-  return Math.floor(ms / 86_400_000);
-}
-
-/**
- * Whole days past a due date — negative when it is still ahead, `null` when
- * nobody set one. Null is NOT zero: "no deadline" and "due today" are different
- * facts, and rendering the first as the second invents a deadline.
- *
- * Lives here rather than in a surface because both the bill BADGE and the
- * aging BUCKETS need it and they must never disagree. Each had its own copy of
- * `(now - dueAt) / 86_400_000`, which counts elapsed milliseconds between a
- * UTC-midnight day and a local instant — so from early evening onward a US
- * reader's bill due TODAY was badged "1 day late" and filed under "1–30 days
- * late" in the same view.
- */
-export function daysPastDue(dueAt: string | null | undefined, now = new Date()): number | null {
-  if (!dueAt) return null;
-  return dayNumber(now, false) - dayNumber(new Date(dueAt), true);
-}
+/** Whole days past a due date. Re-exported rather than redefined: invoicing and
+ *  the receivables badge count lateness too, and three copies of this rule is
+ *  how one of them came to count elapsed milliseconds instead of days. The rule
+ *  and the reasoning live in `lib/console/days.ts`. */
+export { daysPastDue };
 
 export function formatDateTime(iso: string | null | undefined): string {
   if (!iso) return '—';
@@ -151,45 +132,10 @@ export function formatRelativeDay(iso: string | null | undefined): string {
   return formatDate(iso);
 }
 
-type MarketplaceLabels = Record<string, string>;
-const MARKETPLACE: MarketplaceLabels = {
-  etsy: 'Etsy',
-  amazon: 'Amazon',
-  ebay: 'eBay',
-  walmart: 'Walmart',
-  tiktok_shop: 'TikTok Shop',
-  faire: 'Faire',
-  meta: 'Facebook & Instagram',
-  google_shopping: 'Google Shopping',
-  pinterest: 'Pinterest',
-  sparx_market: 'sparx Market',
-};
-
-/** Where a sale happened, in plain words. A marketplace keeps its own name;
- *  everything else describes the place a business owner would recognise. */
-export function channelLabel(channel: string | null, source: string | null): string {
-  if (channel === 'marketplace') {
-    if (source && MARKETPLACE[source]) return MARKETPLACE[source];
-    if (source) return source.replace(/_/g, ' ');
-    return 'Marketplace';
-  }
-  switch (channel) {
-    case 'storefront':
-      return 'Your website';
-    case 'b2b_portal':
-      return 'Wholesale portal';
-    case 'admin':
-      return 'In person or by phone';
-    case 'import':
-      return 'Imported';
-    case 'mcp':
-      return 'AI assistant';
-    case 'pos':
-      return 'In person';
-    default:
-      return channel ? channel.replace(/_/g, ' ') : 'Other';
-  }
-}
+/** Where a sale happened, in plain words. Re-exported rather than redefined:
+ *  Money and the selling report were naming one till sale two different things
+ *  ("In person or by phone" against "Added by your team"). */
+export { channelLabel };
 
 /** How the money was taken, in plain words. One vocabulary for the whole
  *  console — this pane used to spell a cheque "Check" and call a cash sale
@@ -239,7 +185,7 @@ export function paymentState(
     case 'failed':
       return { label: 'Failed', tone: 'error' };
     case 'voided':
-      return { label: 'Cancelled', tone: 'neutral' };
+      return { label: 'Canceled', tone: 'neutral' };
     case 'refunded':
       return { label: 'Refunded', tone: 'warning' };
     default:
@@ -311,18 +257,72 @@ export function kindHelp(kind: ExpenseKindName): string {
 export function billState(
   paidAt: string | null,
   dueAt: string | null,
+  /** The business's own zone, from `useBusinessZone()`. Her books belong to her
+   *  shop, not to whichever airport she opened the console in. */
+  timeZone?: string | null,
   now = new Date()
 ): { label: string; tone: Tone } {
   if (paidAt) return { label: 'Paid', tone: 'success' };
   if (!dueAt) return { label: 'Unpaid', tone: 'warning' };
 
-  const days = daysPastDue(dueAt, now) ?? 0;
+  const days = daysPastDue(dueAt, now, timeZone) ?? 0;
   if (days > 0) {
     return { label: days === 1 ? '1 day late' : `${String(days)} days late`, tone: 'error' };
   }
   if (days === 0) return { label: 'Due today', tone: 'warning' };
   if (days >= -7) return { label: `Due in ${String(-days)} days`, tone: 'warning' };
   return { label: `Due ${formatDay(dueAt)}`, tone: 'info' };
+}
+
+/**
+ * WHAT AN EMPTY "Late" OR "Coming up" TAB IS ALLOWED TO CLAIM.
+ *
+ * Both tabs filter on `dueAt`, and a cost recorded through the Spending
+ * quick-add has none, because the quick-add never asks for one. So a business
+ * whose unpaid costs all arrived that way filters BOTH tabs down to nothing,
+ * and was told two opposite things three seconds apart:
+ *
+ *     Late         "Every bill you owe is still within its due date."
+ *     Coming up    "Everything outstanding is already past its due date."
+ *
+ * Neither was true, and they cannot both be. None of the five costs had a due
+ * date at all, so none of them was inside one or past one. Measured 2026-09-16:
+ * both tenants on this platform with unpaid costs were in exactly that state.
+ *
+ * ONE EMPTY LIST, TWO CAUSES, DIFFERENT REMEDIES. "Nothing is late" is good news
+ * and needs no action. "Nothing has a date to be late against" is a standing
+ * gap: the tab will stay empty for ever, and the owner has to open a cost and
+ * fill in a date before it can ever watch anything. `dated` is what tells them
+ * apart, so it is required rather than inferred.
+ *
+ * The caller guarantees at least one unpaid bill; a wholly empty list is a
+ * different screen.
+ */
+export function billsEmptyState(
+  band: 'overdue' | 'due_soon',
+  counts: { dated: number; undated: number }
+): { title: string; description: string } {
+  if (counts.dated === 0 && counts.undated > 0) {
+    const costs = counts.undated === 1 ? '1 unpaid cost' : `${String(counts.undated)} unpaid costs`;
+    return {
+      title: 'Nothing has a day to pay it by',
+      description: `This tab watches due dates, and none of your ${costs} has one, so nothing will ever show here. Open a cost and fill in "Due by" to have it watched. Switch to All to see them.`,
+    };
+  }
+  // Scoped to the bills this tab can actually see. "Every bill you owe" swept in
+  // the dateless ones, which is how the sentence came to be false.
+  if (band === 'overdue') {
+    return {
+      title: 'Nothing is late',
+      description:
+        'Every bill with a day to pay it by is still inside it. Switch to All to see them.',
+    };
+  }
+  return {
+    title: 'Nothing coming up',
+    description:
+      'Every bill with a day to pay it by is already past it. Switch to All to see them.',
+  };
 }
 
 /** How often a recurring cost lands, in plain words. */

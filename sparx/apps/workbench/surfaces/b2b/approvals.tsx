@@ -57,6 +57,7 @@ import {
   type ApprovalRule,
   type QueueItem,
 } from './approvals-data';
+import { holdQueueNotice } from './approval-hold-notice';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -74,6 +75,13 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const queue = useApprovalQueue(search.trim());
   const items = queue.data?.items ?? [];
+
+  // The rules the section below owns, read here too so the empty queue can say
+  // what it actually means. Same query key, so this costs no extra request —
+  // and an empty queue whose limits are all switched off has to say so rather
+  // than promise that orders will be held (`approval-hold-notice.ts`).
+  const rules = useApprovalRules().data ?? [];
+  const emptyQueue = holdQueueNotice(rules);
 
   return (
     <div className={PANE_SHELL}>
@@ -119,11 +127,11 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
               <div className="py-2">
                 <EmptyState
                   icon={<CheckCircle className="size-6" aria-hidden />}
-                  title={search.trim() ? 'Nothing matches that' : 'Nothing waiting'}
+                  title={search.trim() ? 'Nothing matches that' : emptyQueue.title}
                   description={
                     search.trim()
                       ? 'No held order matches that. Clear the search to see the whole queue.'
-                      : 'No orders are held for sign-off right now. When one goes over a limit you set below, it lands here.'
+                      : emptyQueue.detail
                   }
                 />
               </div>

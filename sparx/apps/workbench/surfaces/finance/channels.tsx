@@ -7,6 +7,22 @@
 // bar, because an owner deciding where to spend attention needs the numbers, not
 // just their shape. "Takings" is money actually received, so a channel that sells
 // a lot but refunds a lot doesn't overstate itself.
+//
+// THE COLUMNS HAVE TO RECONCILE. Sales, Refunds and Received sat side by side
+// and did not add up, because the term between them was missing. One real shop
+// read $2,140.50 sold, $212.00 refunded, $325.00 received — and the $1,603.50
+// difference was seven orders nobody had paid for, three quarters of that
+// channel, shown nowhere. "Still owed" closes it:
+//
+//     Sales − Refunds − Still owed = Received
+//
+// and the subtitle says the same thing in a sentence, because the subtitle is
+// visible at every width and the columns are not.
+//
+// BREAKPOINTS: one column arrives per step, never two. Sales at @lg, Still owed
+// at @xl, Refunds at @2xl. Still owed comes BEFORE Refunds because it is both
+// the bigger number on a shop that invoices and the one that is still an action
+// — an unpaid order can be chased, a refund is already history.
 
 import { useState } from 'react';
 import {
@@ -25,6 +41,7 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useChannels, type ChannelRow } from './channels-data';
+import { ordersLine, unreceivedLine } from './channels-words';
 import { channelLabel, formatMoney, formatMoneyCompact } from './format';
 
 const RANGES = [
@@ -45,8 +62,11 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
 
   const currency = data?.currency ?? 'USD';
   const rows: ChannelRow[] = data?.channels ?? [];
-  const totals = data?.totals ?? { orders: 0, gross: 0, net: 0, refunds: 0 };
+  const totals = data?.totals ?? { orders: 0, gross: 0, net: 0, refunds: 0, owed: 0 };
   const topNet = rows.reduce((m, r) => Math.max(m, r.net), 0);
+  const measurement = { ...totals, places: rows.length };
+  const money = (amount: number): string => formatMoney(amount, currency);
+  const unreceived = unreceivedLine(measurement, money);
 
   return (
     <div className={PANE_SHELL}>
@@ -120,10 +140,10 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
               <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
                 {formatMoney(totals.net, currency)}
               </Heading>
-              <Text className="mt-1 text-sm">
-                from {totals.orders === 1 ? '1 order' : `${String(totals.orders)} orders`} across{' '}
-                {rows.length === 1 ? '1 place' : `${String(rows.length)} places`}
-              </Text>
+              <Text className="mt-1 text-sm">{ordersLine(measurement)}</Text>
+              {/* What happened to the rest of the money. Shown at every width,
+                  because the columns that carry the same facts are not. */}
+              {unreceived === null ? null : <Text className="mt-1 text-sm">{unreceived}</Text>}
 
               <div className="mt-4 flex flex-col gap-3">
                 {rows.map((r) => (
@@ -152,6 +172,12 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
                 <Heading level={3} className="text-base font-semibold">
                   The numbers
                 </Heading>
+                {/* Which column the percentage divides. Beside a sales figure
+                    four times the size of takings, "Share" alone reads as share
+                    of sales, and the two answers differ by thirty points. */}
+                <Text className="mt-1 text-sm">
+                  Share is of money received, not of what was sold.
+                </Text>
               </header>
               <Table size="sm">
                 <thead>
@@ -159,7 +185,8 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
                     <th>Where</th>
                     <th className="text-right">Orders</th>
                     <th className="hidden text-right @lg:table-cell">Sales</th>
-                    <th className="hidden text-right @xl:table-cell">Refunds</th>
+                    <th className="hidden text-right @xl:table-cell">Still owed</th>
+                    <th className="hidden text-right @2xl:table-cell">Refunds</th>
                     <th className="text-right">Received</th>
                     <th className="text-right">Share</th>
                   </tr>
@@ -173,6 +200,9 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
                         {formatMoney(r.gross, currency)}
                       </td>
                       <td className="hidden text-right tabular-nums @xl:table-cell">
+                        {r.owed > 0 ? formatMoney(r.owed, currency) : '—'}
+                      </td>
+                      <td className="hidden text-right tabular-nums @2xl:table-cell">
                         {r.refunds > 0 ? `−${formatMoney(r.refunds, currency)}` : '—'}
                       </td>
                       <td className="text-right font-medium tabular-nums">
@@ -190,6 +220,9 @@ export function ChannelsSurface(_props: { ctx: SurfaceContext }) {
                       {formatMoney(totals.gross, currency)}
                     </td>
                     <td className="hidden text-right tabular-nums @xl:table-cell">
+                      {totals.owed > 0 ? formatMoney(totals.owed, currency) : '—'}
+                    </td>
+                    <td className="hidden text-right tabular-nums @2xl:table-cell">
                       {totals.refunds > 0 ? `−${formatMoney(totals.refunds, currency)}` : '—'}
                     </td>
                     <td className="text-right tabular-nums">{formatMoney(totals.net, currency)}</td>

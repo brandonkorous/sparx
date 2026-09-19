@@ -32,6 +32,7 @@
 // repairs needs to see what is left before they save, not after.
 
 import { useEffect, useMemo, useState } from 'react';
+import { useBusinessZone } from '../../lib/business-timezone';
 import {
   Alert,
   AlertContent,
@@ -140,10 +141,28 @@ function dateInput(iso: string | null): string {
   return iso ? iso.slice(0, 10) : '';
 }
 
-/** A `<input type="date">` value back to the instant the server keeps a day at.
- *  See `lib/today` for why that is midnight UTC and not local midnight. */
-function dateValue(value: string): string | null {
-  return value === '' ? null : dayStartUtc(value);
+/**
+ * A `<input type="date">` value back to the instant the server keeps a day at.
+ * See `lib/today` for why that is midnight UTC and not local midnight.
+ *
+ * THREE OUTCOMES, NOT TWO. Empty is a real answer ("no day set") and must save
+ * as null. A string the control let through that is not a day at all is NOT the
+ * same answer, and must not quietly become one: the person typed something, and
+ * saving a null would throw it away without telling them. Chrome's year box
+ * takes six digits, so "20266" is one keystroke away from "2026".
+ */
+type DayValue = { ok: true; iso: string | null } | { ok: false };
+
+function dateValue(value: string): DayValue {
+  if (value === '') return { ok: true, iso: null };
+  const iso = dayStartUtc(value);
+  return iso === null ? { ok: false } : { ok: true, iso };
+}
+
+/** Whether what is in a date box right now is a day. Empty counts as fine —
+ *  "required" is a separate question, asked by `canSave`. */
+function dayLooksWrong(value: string): boolean {
+  return !dateValue(value).ok;
 }
 
 const EMPTY_FORM: FormState = {
@@ -193,7 +212,12 @@ function toDraft(form: FormState): ExpenseDraft | null {
   const taxCents = form.tax.trim() === '' ? 0 : parseMoneyToCents(form.tax);
   if (taxCents === null || taxCents < 0) return null;
   const incurredAt = dateValue(form.incurredAt);
-  if (!incurredAt) return null;
+  const dueAt = dateValue(form.dueAt);
+  const paidAt = dateValue(form.paidAt);
+  // A date box holding something that is not a date stops the save. It used to
+  // take the pane down instead; dropping it silently would be no better.
+  if (!incurredAt.ok || !dueAt.ok || !paidAt.ok) return null;
+  if (incurredAt.iso === null) return null;
 
   return {
     categoryId: form.categoryId,
@@ -202,9 +226,9 @@ function toDraft(form: FormState): ExpenseDraft | null {
     amountCents,
     currency: form.currency.trim().toUpperCase() || 'USD',
     taxCents,
-    incurredAt,
-    paidAt: dateValue(form.paidAt),
-    dueAt: dateValue(form.dueAt),
+    incurredAt: incurredAt.iso,
+    paidAt: paidAt.iso,
+    dueAt: dueAt.iso,
     paymentMethod: form.paymentMethod === '' ? null : form.paymentMethod,
     reference: form.reference.trim() === '' ? null : form.reference.trim(),
     notes: form.notes.trim() === '' ? null : form.notes.trim(),
@@ -479,6 +503,8 @@ function Receipts({
 /* ── The pane ───────────────────────────────────────────────────────────────*/
 
 function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
+  // The business's day, so a cost's badge here agrees with the one in the list.
+  const businessZone = useBusinessZone();
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
   const isNew = id === 'new';
 
@@ -661,7 +687,9 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  const state = expense.data ? billState(expense.data.paidAt, expense.data.dueAt) : null;
+  const state = expense.data
+    ? billState(expense.data.paidAt, expense.data.dueAt, businessZone)
+    : null;
   const currency = form.currency || 'USD';
   const selectedCategory = (categories.data ?? []).find((c) => c.id === form.categoryId);
 
@@ -897,6 +925,11 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>Which month it counts against.</FieldDescription>
+                {dayLooksWrong(form.incurredAt) ? (
+                  <FieldStatus status="error">
+                    That is not a date. A year is four digits, like 2026.
+                  </FieldStatus>
+                ) : null}
               </Field>
               <Field>
                 <FieldLabel>Due by</FieldLabel>
@@ -914,6 +947,11 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>Puts it on Bills to pay until it is settled.</FieldDescription>
+                {dayLooksWrong(form.dueAt) ? (
+                  <FieldStatus status="error">
+                    That is not a date. A year is four digits, like 2026.
+                  </FieldStatus>
+                ) : null}
               </Field>
               <Field>
                 <FieldLabel>Paid on</FieldLabel>
@@ -931,6 +969,11 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                   }
                 />
                 <FieldDescription>Leave blank until the money has gone.</FieldDescription>
+                {dayLooksWrong(form.paidAt) ? (
+                  <FieldStatus status="error">
+                    That is not a date. A year is four digits, like 2026.
+                  </FieldStatus>
+                ) : null}
               </Field>
 
               <Field>
@@ -962,7 +1005,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                       color="module"
                       value={form.reference}
                       disabled={readOnly}
-                      placeholder="Invoice number, cheque number…"
+                      placeholder="Invoice number, check number…"
                       spellCheck={false}
                       onChange={(event) => {
                         set('reference', event.target.value);
@@ -1028,7 +1071,7 @@ function ExpenseDetail({ ctx }: { ctx: SurfaceContext }) {
                     rows={3}
                     value={form.notes}
                     disabled={readOnly}
-                    placeholder="Warranty period, who authorised it, what it replaced…"
+                    placeholder="Warranty period, who authorized it, what it replaced…"
                     onChange={(event) => {
                       set('notes', event.target.value);
                     }}

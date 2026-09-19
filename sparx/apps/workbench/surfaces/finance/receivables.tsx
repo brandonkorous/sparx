@@ -10,6 +10,17 @@
 // paged table (a dense list of records belongs in a table, not a stack of cards).
 // Search, the aging filter, sort and paging are all server-driven, so each spans
 // the whole set rather than one loaded window. Opening a row opens the invoice.
+//
+// COLUMNS DROP IN THE ORDER SHE CAN AFFORD TO LOSE THEM, and Balance is never one
+// of them. This table used to admit the Due column at @lg (512px) while needing
+// 628px to draw five columns, so between 512 and 646 the money ran off the right
+// edge: a pane headed "Total outstanding $1,645.50" listed nine debts with no
+// amounts on them. Measured, not guessed — the customer name wraps rather than
+// truncating (which is what a nowrap cell costs a table), so three columns need
+// 324px, four need 440 and five need 561. Invoice at @lg, Due at @2xl, one
+// column per step, nothing scrolling sideways from 360px up. Invoice is the one
+// that goes first because she opens the row to quote it anyway; below @lg the
+// number rides under the customer name so two identical debts stay distinct.
 
 import { useState } from 'react';
 import {
@@ -30,7 +41,8 @@ import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-p
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
-import { bucketTone, useReceivables, type Receivable } from './receivables-data';
+import { useReceivables, type Receivable } from './receivables-data';
+import { bucketTone, lateness } from './receivables-words';
 import { formatMoney, formatMoneyCompact, formatDay } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
 
@@ -54,21 +66,6 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   return 'tab';
 }
 
-/** How late this invoice is, in plain words + its semantic tone. */
-function lateness(r: Receivable): {
-  label: string;
-  tone: 'success' | 'warning' | 'error' | 'info';
-} {
-  if (r.overdueDays <= 0) {
-    return { label: 'Not yet due', tone: 'info' };
-  }
-  const days = r.overdueDays;
-  return {
-    label: days === 1 ? '1 day late' : `${String(days)} days late`,
-    tone: bucketTone(r.bucket),
-  };
-}
-
 function ReceivableRow({
   item,
   onOpen,
@@ -89,14 +86,27 @@ function ReceivableRow({
         onOpen(event);
       }}
     >
-      <td className="font-mono text-sm whitespace-nowrap">{item.number ?? 'Draft'}</td>
-      <td className="max-w-48 truncate font-medium">{item.customerName}</td>
+      <td className="hidden font-mono text-sm whitespace-nowrap @lg:table-cell">
+        {item.number ?? 'Draft'}
+      </td>
+      {/* The name WRAPS, never truncates. A `truncate` div keeps
+          `white-space: nowrap`, so in a table it demands the full width of the
+          longest name as this column's minimum however narrow the pane gets. A
+          clamp wraps instead and the minimum falls to the longest word, which is
+          what lets the Invoice column come back at @lg rather than @xl. */}
+      <td className="max-w-48 min-w-0">
+        <div className="line-clamp-2 font-medium">{item.customerName}</div>
+        {/* Below @lg the Invoice column is gone, so the number rides here. Two
+            invoices to the same customer for the same amount are otherwise the
+            same row printed twice, with nothing to tell her which is which. */}
+        <div className="line-clamp-1 font-mono text-sm @lg:hidden">{item.number ?? 'Draft'}</div>
+      </td>
       <td>
         <Badge color={late.tone} variant="soft" size="sm">
           {late.label}
         </Badge>
       </td>
-      <td className="hidden text-sm whitespace-nowrap @lg:table-cell">{formatDay(item.dueAt)}</td>
+      <td className="hidden text-sm whitespace-nowrap @2xl:table-cell">{formatDay(item.dueAt)}</td>
       <td className="text-right font-medium tabular-nums">
         {formatMoney(item.balance, item.currency)}
       </td>
@@ -308,10 +318,10 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Table size="sm" hover>
                   <thead>
                     <tr>
-                      <th>Invoice</th>
+                      <th className="hidden @lg:table-cell">Invoice</th>
                       <th>Customer</th>
                       {header('overdueDays', 'How late')}
-                      <th className="hidden @lg:table-cell">Due</th>
+                      <th className="hidden @2xl:table-cell">Due</th>
                       {header('balance', 'Balance', 'text-right')}
                     </tr>
                   </thead>
@@ -352,7 +362,7 @@ export function ReceivablesSurface({ ctx }: { ctx: SurfaceContext }) {
                   setTake(size);
                 }}
               />
-              <RowOpenHint what="an invoice to open it" />
+              {rows.length > 0 ? <RowOpenHint what="an invoice to open it" /> : null}
             </div>
           </div>
         )}

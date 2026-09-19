@@ -15,6 +15,10 @@ export interface ChannelRow {
   /** Money actually received. */
   net: number;
   refunds: number;
+  /** Sold, not refunded, and nobody has paid for it yet. Completes the
+   *  arithmetic: gross − refunds − owed = net. Without it the three figures on
+   *  screen do not reconcile and the gap is unexplained. */
+  owed: number;
 }
 
 export interface ChannelsReport {
@@ -22,7 +26,7 @@ export interface ChannelsReport {
   to: string;
   currency: string;
   channels: ChannelRow[];
-  totals: { orders: number; gross: number; net: number; refunds: number };
+  totals: { orders: number; gross: number; net: number; refunds: number; owed: number };
 }
 
 /** `days` picks the trailing window; the server defaults to 90 when omitted. */

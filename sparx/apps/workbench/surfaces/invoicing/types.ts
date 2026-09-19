@@ -3,6 +3,7 @@
 // aren't in the published spec yet — swap these for the generated types once
 // they are, and the surfaces below won't change.
 
+import { daysPastDue } from '../../lib/console/days';
 import { invoiceState, type InvoiceStatus, type InvoiceTone } from '../../lib/invoice-status';
 
 export type ArStatus = InvoiceStatus;
@@ -298,27 +299,59 @@ export interface AgingReport {
 
 /**
  * Due-date phrasing, in the words an owner would use rather than a raw date.
- * `overdueDays` is computed server-side, so the UI never re-derives "how late is
- * this" and can't disagree with the AR report about it.
+ *
+ * `overdueDays` is a STORED column with a default of `0`, and nothing recomputes
+ * it when a document goes past its date: setting a due date of two weeks ago
+ * flipped the status to `overdue` and left `overdueDays` at 0. Trusting it alone
+ * printed "Due today" in the Due column beside a "Late" chip in the Status
+ * column, on the same row, for an invoice fourteen days late. "Due today" is the
+ * damaging half: it reads as nothing-to-do-yet.
+ *
+ * A default zero is indistinguishable from a measured zero, so the count is
+ * taken from the DATE, which is a fact, and the stored value is used only when
+ * it is larger. The server stays authoritative wherever it has actually counted.
  */
 export function describeDue(
   dueAt: string | null | undefined,
-  overdueDays: number
+  overdueDays: number,
+  /** The business's own zone, from `useBusinessZone()`. The server counts on the
+   *  same one, so this is what keeps the invoice list and the chase list saying
+   *  the same number about the same invoice. */
+  timeZone?: string | null
 ): { label: string; tone: 'danger' | 'warning' | 'muted'; title: string } {
-  if (!dueAt) return { label: 'No due date', tone: 'muted', title: 'No payment terms set' };
+  // NOT "no payment terms set". A due date arrives from the payer's terms only
+  // when the document is ADVANCED into a payable stage, so an invoice raised
+  // straight into one has none however carefully the terms were agreed. Sending
+  // her to set terms she already set is advice that cannot work; the invoice is
+  // where the date is fixed, so that is what this says.
+  if (!dueAt) {
+    return {
+      label: 'No due date',
+      tone: 'muted',
+      title: 'No date set, so this never counts as late. Open it to give it one.',
+    };
+  }
 
   const due = new Date(dueAt);
-  const title = due.toLocaleDateString(undefined, { dateStyle: 'medium' });
+  const title = due.toLocaleDateString(undefined, { dateStyle: 'medium', timeZone: 'UTC' });
 
-  if (overdueDays > 0) {
+  // CALENDAR DAYS, not elapsed milliseconds — `daysPastDue` is the console's one
+  // rule for this and the reasoning is in `lib/console/days.ts`. The old
+  // `(Date.now() - due) / 86_400_000` let the HOUR a document happened to be
+  // raised decide the answer: eight invoices all printed "Due Sep 8, 2026" and
+  // this function called seven of them "9 days late" and the one raised at noon
+  // "8 days late", on the same screen, under the same printed date.
+  const past = daysPastDue(dueAt, new Date(), timeZone) ?? 0;
+  const late = Math.max(overdueDays, past);
+  if (late > 0) {
     return {
-      label: overdueDays === 1 ? '1 day late' : `${String(overdueDays)} days late`,
+      label: late === 1 ? '1 day late' : `${String(late)} days late`,
       tone: 'danger',
       title: `Was due ${title}`,
     };
   }
 
-  const days = Math.ceil((due.getTime() - Date.now()) / 86_400_000);
+  const days = -past;
   if (days <= 0) return { label: 'Due today', tone: 'warning', title: `Due ${title}` };
   if (days === 1) return { label: 'Due tomorrow', tone: 'warning', title: `Due ${title}` };
   if (days <= 7)

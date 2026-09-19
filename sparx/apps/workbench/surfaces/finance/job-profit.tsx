@@ -35,6 +35,8 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { useJobProfit, type JobProfit } from './spend-data';
+import { useUncostedStock } from '../inventory/uncosted-data';
+import { marginHeadline, marginSubline, uncostedMarginNote } from './job-margin-words';
 import { PERIOD_OPTIONS, rangeFor, type PeriodKey } from './period';
 import {
   formatCents,
@@ -95,7 +97,11 @@ function JobRow({
             </Badge>
           ) : null}
         </div>
-        <div className="truncate text-sm">
+        {/* WRAPS, never truncates. A `truncate` line keeps `white-space: nowrap`,
+            so in a table it demands the full width of the customer's name and
+            the date as this column's minimum however narrow the pane gets, and
+            the Margin column goes over the right edge below 440px. */}
+        <div className="line-clamp-2 text-sm">
           {[job.customerName, formatDate(job.occurredAt)].filter(Boolean).join(' · ')}
         </div>
       </td>
@@ -141,15 +147,31 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
     let losing = 0;
     let losingCents = 0;
     let estimated = 0;
+    let cogsCents = 0;
     for (const job of jobs) {
       if (job.marginCents < 0) {
         losing += 1;
         losingCents += job.marginCents;
       }
       if (job.revenueBasis === 'list_price') estimated += 1;
+      cogsCents += job.cogsCents;
     }
-    return { losing, losingCents, estimated };
+    return { losing, losingCents, estimated, cogsCents };
   }, [jobs]);
+
+  // WHETHER THESE MARGINS REST ON ANYTHING. A shop with no costs on its shelves
+  // ranks every job at 100% and the card congratulates it, which is the most
+  // confident sentence on the screen over the least evidence. Only the counts
+  // are wanted, so ask for one row — the same reader the profit screen uses for
+  // the same condition, which this screen never got.
+  const uncosted = useUncostedStock(1, 0);
+  const costEvidence = {
+    jobs: jobs.length,
+    cogsCents: summary.cogsCents,
+    uncostedItems: uncosted.data?.total ?? 0,
+    uncostedUnits: uncosted.data?.uncostedUnits ?? 0,
+  };
+  const uncostedNote = uncostedMarginNote(costEvidence);
 
   const open = (job: JobProfit, event: { shiftKey: boolean; altKey: boolean }) => {
     const surface = job.type === 'order' ? 'commerce.order.detail' : 'scheduling.bookings.detail';
@@ -274,19 +296,29 @@ export function JobProfitSurface({ ctx }: { ctx: SurfaceContext }) {
                 </>
               ) : (
                 <>
-                  <Text className="text-sm">Every job in this period made money</Text>
+                  <Text className="text-sm">{marginHeadline(costEvidence)}</Text>
                   <Heading
                     level={2}
-                    className="text-success mt-1 text-3xl font-semibold tabular-nums"
+                    className={`mt-1 text-3xl font-semibold tabular-nums ${
+                      uncostedNote ? 'text-warning' : 'text-success'
+                    }`}
                   >
                     {jobs.length === 1 ? '1 job' : `${String(jobs.length)} jobs`}
                   </Heading>
-                  <Text className="mt-1 text-sm">
-                    Sort by Worst first to see which came closest to not.
-                  </Text>
+                  <Text className="mt-1 text-sm">{marginSubline(costEvidence)}</Text>
                 </>
               )}
             </Card>
+
+            {uncostedNote ? (
+              <Card className="flex items-start gap-3 p-4">
+                <AlertTriangle className="text-warning mt-0.5 size-5 shrink-0" aria-hidden />
+                <div className="flex min-w-0 flex-col gap-1">
+                  <Text className="font-medium">These margins are not measured yet</Text>
+                  <Text className="text-sm">{uncostedNote}</Text>
+                </div>
+              </Card>
+            ) : null}
 
             {summary.estimated > 0 ? (
               <Card className="flex items-start gap-3 p-4">

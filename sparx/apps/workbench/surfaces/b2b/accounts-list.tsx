@@ -76,6 +76,15 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const openDetail = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('b2b.account.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a trade account',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('b2b.account.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -102,12 +111,10 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Add a trade account. Hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('b2b.account.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            Add a trade account
+            {createFirst.label}
           </Button>
         }
         controls={
@@ -160,6 +167,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No trade accounts yet',
               description:
                 'A trade account is a business you supply on agreed prices and terms (a garage, a builder, a reseller) rather than a shopper paying card at checkout. Add your first one to give them their own prices and let their people order.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -203,7 +211,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

@@ -44,6 +44,7 @@ import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { MoneyInput } from '../../components/money-input';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { holdQueueNotice } from './approval-hold-notice';
 
 /** Registry module for this pane, so the brand draws Trade's own picture rather
  *  than the generic one. */
@@ -81,6 +82,13 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const queue = useApprovalQueue(search.trim());
   const items = queue.data?.items ?? [];
+
+  // The rules the section below owns, read here too so the empty queue can say
+  // what it actually means. Same query key, so this costs no extra request —
+  // and an empty queue whose limits are all switched off has to say so rather
+  // than promise that orders will be held (`approval-hold-notice.ts`).
+  const rules = useApprovalRules().data ?? [];
+  const emptyQueue = holdQueueNotice(rules);
 
   return (
     <div className={PANE_SHELL}>
@@ -142,9 +150,8 @@ export function ApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                 }}
                 firstRun={{
                   icon: <Icon glyph={faCheckCircle} className="size-6" aria-hidden />,
-                  title: 'Nothing waiting',
-                  description:
-                    'No orders are held for sign-off right now. When one goes over a limit you set below, it lands here.',
+                  title: emptyQueue.title,
+                  description: emptyQueue.detail,
                 }}
               />
             ) : (

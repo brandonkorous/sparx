@@ -15,10 +15,18 @@ import {
   FieldControl,
   FieldDescription,
   FieldLabel,
+  FieldStatus,
   Input,
   Textarea,
 } from '@wizeworks/silicaui-react';
 import { CustomerPicker, customerLabel } from './customer-picker';
+import { useCustomerOnRecord } from './customer-picker-data';
+import {
+  clearedFromCustomer,
+  fillFromCustomer,
+  misdirectedEmail,
+  type BilledParty,
+} from './bill-to-fill';
 
 export interface BillToValue {
   name: string;
@@ -40,6 +48,15 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
     onChange({ billTo: { ...value, [field]: next } });
   };
 
+  // Who the document is on right now. The same cached read the picker itself
+  // makes, so this costs nothing, and it is what lets the printed fields tell
+  // "she typed this" from "we filled it from the last customer".
+  const onRecord = useCustomerOnRecord(customerId);
+  const attached: BilledParty | null = onRecord.data
+    ? { name: customerLabel(onRecord.data), email: onRecord.data.email ?? '' }
+    : null;
+  const wrongAddress = misdirectedEmail(value.email, attached);
+
   return (
     <div className="flex flex-col gap-4">
       <Field>
@@ -52,14 +69,26 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
               customerId: customer.id,
               billTo: {
                 ...value,
-                // Fill what's empty, keep what was typed.
-                name: value.name || customerLabel(customer),
-                email: value.email || (customer.email ?? ''),
+                // A printed field follows the customer while it still agrees
+                // with the one it belongs to, and stays once it has been made
+                // different on purpose. `attached` is still the PREVIOUS
+                // customer here, which is exactly the comparison needed.
+                ...fillFromCustomer(value, attached, {
+                  name: customerLabel(customer),
+                  email: customer.email ?? '',
+                }),
               },
             });
           }}
           onClear={() => {
-            onChange({ customerId: null });
+            // Their details leave with them. Otherwise the next pick meets full
+            // boxes with nothing attached to compare against, and the departing
+            // customer's name and address survive the swap — which is the whole
+            // bug, one step later.
+            onChange({
+              customerId: null,
+              billTo: { ...value, ...clearedFromCustomer(value, attached) },
+            });
           }}
         />
         <FieldDescription>
@@ -129,7 +158,15 @@ export function BillTo({ customerId, value, dueAt, readOnly, onChange }: BillToP
               />
             }
           />
-          <FieldDescription>Where the invoice gets sent</FieldDescription>
+          {/* Every document that reached the broken state still has it, and no
+              fix to the picker repairs one — so the screen says so. The name is
+              allowed to differ (billing a person's business, or their accounts
+              department); the ADDRESS is where the bill physically goes. */}
+          {wrongAddress ? (
+            <FieldStatus status="warning">{wrongAddress}</FieldStatus>
+          ) : (
+            <FieldDescription>Where the invoice gets sent</FieldDescription>
+          )}
         </Field>
       </div>
 

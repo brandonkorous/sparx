@@ -23,8 +23,16 @@
 // payment date because the quick-add never asks for one, so "not marked paid" is
 // an ABSENCE, not a debt. The headline counts what has a day to pay it by; the
 // rest is listed, and said, and left out of the figure (persona issue 465).
+//
+// AND THE TWO DATED TABS MAY ONLY CLAIM WHAT THEY CAN SEE. Both filter on
+// `dueAt`, so a business whose costs all came in through the quick-add empties
+// both of them — and each used to guess its own reason from its own name, so
+// "Late" said every bill was still within its due date while "Coming up" said
+// every bill was already past one. Neither was true and they contradicted each
+// other. `billsEmptyState` decides from the COUNTS instead (persona issue 534).
 
 import { useMemo, useState } from 'react';
+import { useBusinessZone } from '../../lib/business-timezone';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
@@ -46,7 +54,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { spendErrorMessage, useExpenses, useSetExpensePaid, type Expense } from './spend-data';
-import { daysPastDue, formatCents, formatDay, kindColor } from './format';
+import { billsEmptyState, daysPastDue, formatCents, formatDay, kindColor } from './format';
 import { RowOpenHint } from '../../components/row-open-hint';
 
 /** Registry module for this surface, so the brand's empty-state artwork is this
@@ -187,12 +195,14 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
   // whole list, so two rows can never land on different days, and a stable one,
   // so the memo below is not invalidated every render the way a bare
   // `Date.now()` in the render body was. Zero until the first fetch lands.
+  // The business's day, the same one the server ages invoices on.
+  const businessZone = useBusinessZone();
   const now = useMemo(() => new Date(dataUpdatedAt || Date.now()), [dataUpdatedAt]);
 
   const bills = useMemo(() => {
     const items = data?.items ?? [];
     return items
-      .map((bill) => ({ bill, late: daysPastDue(bill.dueAt, now) }))
+      .map((bill) => ({ bill, late: daysPastDue(bill.dueAt, now, businessZone) }))
       .sort((a, b) => {
         // Most overdue first; anything with no deadline sinks below everything
         // that has one, because it is the only group with no clock running.
@@ -201,7 +211,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
         if (b.late === null) return -1;
         return b.late - a.late;
       });
-  }, [data?.items, now]);
+  }, [data?.items, now, businessZone]);
 
   /**
    * OWED IS NOT THE SAME AS "NOT MARKED PAID", AND ONLY ONE OF THEM IS A DEBT.
@@ -254,6 +264,17 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
     if (band === 'due_soon') return bills.filter((row) => row.late !== null && row.late <= 0);
     return bills;
   }, [bills, band]);
+
+  // Which of the two "nothing here" sentences is TRUE depends on whether any
+  // bill has a due date at all, not on which tab is open. See `billsEmptyState`.
+  const empty = useMemo(
+    () =>
+      billsEmptyState(band === 'overdue' ? 'overdue' : 'due_soon', {
+        dated: totals.owedCount,
+        undated: totals.unmarkedCount,
+      }),
+    [band, totals.owedCount, totals.unmarkedCount]
+  );
 
   const pay = (bill: Expense) => {
     setPayingId(bill.id);
@@ -391,12 +412,8 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
               <Card>
                 <EmptyState
                   icon={<Icon glyph={faCircleCheck} className="size-6" aria-hidden />}
-                  title={band === 'overdue' ? 'Nothing is late' : 'Nothing coming up'}
-                  description={
-                    band === 'overdue'
-                      ? 'Every bill you owe is still within its due date. Switch to All to see them.'
-                      : 'Everything outstanding is already past its due date. Switch to All to see the lot.'
-                  }
+                  title={empty.title}
+                  description={empty.description}
                 />
               </Card>
             ) : (
@@ -436,7 +453,7 @@ export function BillsToPaySurface({ ctx }: { ctx: SurfaceContext }) {
               </Card>
             )}
 
-            <RowOpenHint what="a bill to open it" />
+            {rows.length > 0 ? <RowOpenHint what="a bill to open it" /> : null}
           </div>
         )}
       </div>

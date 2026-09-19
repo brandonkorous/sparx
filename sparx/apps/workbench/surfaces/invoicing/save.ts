@@ -21,6 +21,7 @@
 import { api } from '../../lib/api/client';
 import { isBlank, type DraftLine } from './totals';
 import { normalizeDocument, type BillingDocument } from './types';
+import { dayMiddayUtc } from '../../lib/today';
 
 export interface DocumentWorkflow {
   id: string;
@@ -131,7 +132,7 @@ function headerBody(header: InvoiceHeader) {
     // Midday UTC, not midnight: a due date is a DAY, and midnight lands on the
     // day before for anyone west of UTC, so the invoice would read as due a day
     // early for them and go late a day early with it.
-    dueAt: header.dueAt ? new Date(`${header.dueAt}T12:00:00Z`).toISOString() : null,
+    dueAt: header.dueAt === '' ? null : dayMiddayUtc(header.dueAt),
   };
 }
 

@@ -13,7 +13,7 @@ import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { ApiError } from '@wizeworks/api-client';
 import { apiErrorMessage } from '../../lib/api-error';
 import { api } from '../../lib/api/client';
-import { getTokenState, resolveToken } from '../../lib/api/token';
+import { downloadServerFile } from '../../lib/api/download';
 import { readMoney } from '../../lib/read-money';
 
 /* ── Shapes ────────────────────────────────────────────────────────────────── */
@@ -651,10 +651,12 @@ export function useSaveMappings(connectionId: string) {
 /**
  * Download the accounting export.
  *
- * A raw fetch rather than `api.*`, because the export route answers with a FILE
- * — the shared client unwraps a JSON envelope and would throw on a CSV body. The
- * two things it still has to borrow from the client are the resolved API origin
- * and a live bearer token, so a long-open pane cannot download with a dead one.
+ * `downloadServerFile` rather than `api.*`, because the export route answers
+ * with a FILE and the shared client unwraps a JSON envelope, which would throw
+ * on a CSV body. It resolves the API origin and a live bearer token at click
+ * time, so a long-open pane cannot download from the wrong place or with a dead
+ * token, and it rebuilds a refusal as a real `ApiError` so `spendErrorMessage`
+ * shows the server's own sentence.
  *
  * Returns the number of rows the server left out. That count arrives in a header
  * because a download cannot carry a warning, and dropping it on the floor is how
@@ -667,9 +669,6 @@ export async function downloadAccountingExport(params: {
   connectionId?: string | null;
   markSent?: boolean;
 }): Promise<{ filename: string; rowCount: number; skipped: number }> {
-  const state = await getTokenState();
-  const token = await resolveToken();
-
   const query = new URLSearchParams({
     provider: params.provider,
     from: params.from,
@@ -678,50 +677,17 @@ export async function downloadAccountingExport(params: {
     ...(params.markSent ? { markSent: 'true' } : {}),
   });
 
-  const response = await fetch(`${state.apiUrl}/v1/finance/accounting/export?${query.toString()}`, {
-    headers: {
-      authorization: `Bearer ${token}`,
-      ...(state.propertyId ? { 'x-sparx-property-id': state.propertyId } : {}),
-    },
-  });
+  const { filename, headers } = await downloadServerFile(
+    `/v1/finance/accounting/export?${query.toString()}`,
+    'expenses.csv'
+  );
 
-  if (!response.ok) {
-    // The error path DOES answer JSON — the file body only exists on success.
-    // Rebuilt as a real ApiError so `spendErrorMessage` treats it exactly like
-    // any other 4xx and shows the server's own sentence.
-    const detail = (await response.json().catch(() => null)) as {
-      error?: { message?: string; code?: string; request_id?: string };
-    } | null;
-    throw new ApiError(response.status, {
-      success: false,
-      error: {
-        message: detail?.error?.message ?? 'The export could not be built.',
-        code: detail?.error?.code ?? 'EXPORT_FAILED',
-        request_id: detail?.error?.request_id ?? '',
-      },
-    });
-  }
-
-  const disposition = response.headers.get('content-disposition') ?? '';
-  const filename = /filename="([^"]+)"/.exec(disposition)?.[1] ?? 'expenses.csv';
-  const skipped = Number(response.headers.get('x-sparx-skipped-rows') ?? '0');
+  const skipped = Number(headers.get('x-sparx-skipped-rows') ?? '0');
   // How many rows the file actually carries. A header-only CSV downloads exactly
   // like a full one, so without this the caller cannot tell a person which they
   // just got — and "every cost in that period is in the file" is technically
   // true of an empty one, which is the worst kind of true.
-  const rows = Number(response.headers.get('x-sparx-row-count') ?? 'NaN');
-
-  const blob = await response.blob();
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-  // Revoking immediately races the download in Safari; a tick is enough and the
-  // object is tiny compared with leaking it for the pane's lifetime.
-  setTimeout(() => {
-    URL.revokeObjectURL(url);
-  }, 1000);
+  const rows = Number(headers.get('x-sparx-row-count') ?? 'NaN');
 
   return {
     filename,

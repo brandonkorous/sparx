@@ -44,6 +44,7 @@ import { RefreshButton } from '../../components/refresh-button';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { spendErrorMessage, useProfit, useRecomputeProfit, type ProfitFigures } from './spend-data';
+import { unchargedJobCostLine } from './uncharged-words';
 import { PERIOD_OPTIONS, previousLabel, rangeFor, type PeriodKey } from './period';
 import { ProfitChart } from './profit-chart';
 import {
@@ -55,6 +56,8 @@ import {
   kindColor,
   kindLabel,
 } from './format';
+import { costOfGoodsNote } from './cogs-note';
+import { useUncostedStock } from '../inventory/uncosted-data';
 
 /** Which way a movement points, and whether that is good news.
  *
@@ -333,6 +336,14 @@ function ProfitBody({
   currency: string;
 }) {
   const revenue = current.revenueCents;
+  // Only the counts are wanted, so ask for one row. A zero cost of goods on a
+  // shop whose shelves carry no costs is a gap, not a figure.
+  const uncosted = useUncostedStock(1, 0);
+  const cogs = costOfGoodsNote(
+    current.cogsCents,
+    uncosted.data?.total ?? 0,
+    uncosted.data?.uncostedUnits ?? 0
+  );
   const lost = current.netProfitCents < 0;
   const margin = revenue > 0 ? current.netProfitCents / revenue : null;
 
@@ -351,6 +362,10 @@ function ProfitBody({
   // kept, and the ledger's cost-of-sale categories. One number in the summary
   // because that is the gross-profit subtrahend, broken out in the lines below.
   const directCents = current.cogsCents + current.feeCents + current.costOfSaleCents;
+
+  // Worked out once, above the card, because a sentence called twice in the JSX
+  // is a sentence that comes to be computed two different ways.
+  const unchargedJobCost = unchargedJobCostLine(current, (cents) => formatCents(cents, currency));
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
@@ -421,9 +436,11 @@ function ProfitBody({
         </div>
 
         <div className="border-base-300 flex flex-col gap-5 border-t pt-5">
+          {/* A zero here is either a measurement or a gap, and only the STOCK
+              can say which. See `cogs-note`. */}
           <Line
             label="Cost of the goods"
-            detail="What the stock you sold actually cost you, from your inventory records."
+            detail={cogs.detail}
             cents={current.cogsCents}
             currency={currency}
             share={shareOf(current.cogsCents, revenue)}
@@ -505,6 +522,12 @@ function ProfitBody({
             job&apos;s parts are sitting in here, that job will look more profitable than it was.
             Charging costs to jobs as you record them is what makes the job figures trustworthy.
           </Text>
+          {/* The paragraph above warns in the conditional. This settles it: the
+              screen already holds the job-cost figure, so it can say whether her
+              parts ARE sitting in the pile rather than sending her to look. */}
+          {unchargedJobCost ? (
+            <Text className="mt-1 text-sm font-medium">{unchargedJobCost}</Text>
+          ) : null}
         </Card>
       ) : null}
 

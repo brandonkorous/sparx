@@ -151,7 +151,7 @@ export function PayoutDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               )}
             </Card>
 
-            <RowOpenHint what="a sale to open its order" />
+            {data.sales.length > 0 ? <RowOpenHint what="a sale to open its order" /> : null}
           </div>
         )}
       </div>

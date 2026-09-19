@@ -10,7 +10,7 @@
 // from @wizeworks/events, matching the other api-mcp tool registries).
 
 import { z } from 'zod';
-import { withTenant, type Prisma } from '@wizeworks/db';
+import { nameSearchClauses, withTenant, type Prisma } from '@wizeworks/db';
 import { notFound } from '@wizeworks/api-core/errors';
 import { isModuleEnabled } from '@wizeworks/auth';
 import { b2bArService } from '@wizeworks/crm';
@@ -52,6 +52,23 @@ export type ApprovalQueueInput = z.infer<typeof ApprovalQueueQuery>;
 
 // ── View mappers ──────────────────────────────────────────────────────────────
 
+/**
+ * A spending limit, written the way a person reads it.
+ *
+ * This was `$${(cents / 100).toFixed(2)}`, which prints a five-figure limit as
+ * "$5000.00" — no separator on the one figure a reader has to count. 38 of the
+ * 42 approval rules on the platform are five figures, so it has never once read
+ * correctly, and it sits directly under a sentence about when orders get held.
+ *
+ * Built once, not per row: constructing an `Intl.NumberFormat` is the expensive
+ * half and this runs inside a list response. Pinned to `en-US` because this is a
+ * SERVER-rendered string and the container's locale is a coin toss, not a
+ * reader's preference. The currency is hardcoded for now because a rule carries
+ * a `minAmountCents` and no currency of its own; the same shape as before, but
+ * now it is a stated gap rather than a buried one.
+ */
+const LIMIT = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
 function toRuleView(rule: {
   id: string;
   accountId: string | null;
@@ -71,7 +88,7 @@ function toRuleView(rule: {
     // threshold reaches businesses other than the one they're looking at.
     propertyId: rule.propertyId,
     minAmountCents: rule.minAmountCents,
-    minAmountFormatted: `$${(rule.minAmountCents / 100).toFixed(2)}`,
+    minAmountFormatted: LIMIT.format(rule.minAmountCents / 100),
     requiredApproverUserId: rule.requiredApproverUserId,
     requiredApproverName: rule.requiredApprover?.name ?? rule.requiredApprover?.email ?? null,
     isActive: rule.isActive,
@@ -189,19 +206,15 @@ export async function listQueue(ctx: B2bContext, input: ApprovalQueueInput) {
     tenantId: ctx.tenantId,
     status: 'pending_approval',
     ...(input.account_id ? { customer: { companyId: input.account_id } } : {}),
-    ...(input.q
-      ? {
-          OR: [
-            { orderNumber: { contains: input.q, mode: 'insensitive' } },
-            { customer: { firstName: { contains: input.q, mode: 'insensitive' } } },
-            { customer: { lastName: { contains: input.q, mode: 'insensitive' } } },
-            { customer: { email: { contains: input.q, mode: 'insensitive' } } },
-            {
-              customer: { company: { companyName: { contains: input.q, mode: 'insensitive' } } },
-            },
-          ],
-        }
-      : {}),
+    // Every typed word must land somewhere, so a buyer's full name finds their
+    // order waiting for approval. See `nameSearchClauses`.
+    AND: nameSearchClauses(input.q, (term) => [
+      { orderNumber: { contains: term, mode: 'insensitive' as const } },
+      { customer: { firstName: { contains: term, mode: 'insensitive' as const } } },
+      { customer: { lastName: { contains: term, mode: 'insensitive' as const } } },
+      { customer: { email: { contains: term, mode: 'insensitive' as const } } },
+      { customer: { company: { companyName: { contains: term, mode: 'insensitive' as const } } } },
+    ]),
   };
 
   const { orders, total } = await withTenant(ctx, async (tx) => {

@@ -38,6 +38,15 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('b2b.pricing-tier.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a price tier',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('b2b.pricing-tier.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -60,12 +69,10 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Add a price tier: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('b2b.pricing-tier.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            Add a price tier
+            {createFirst.label}
           </Button>
         }
         refresh={
@@ -102,6 +109,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No price tiers yet',
               description:
                 'A price tier is a named trade level (trade, distributor, key account) with a discount you set once and give to every account on it. Add your first one, then put accounts on it.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -113,7 +121,7 @@ export function PricingTiersListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint />
+      {rows.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

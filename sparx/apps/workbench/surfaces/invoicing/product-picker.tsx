@@ -216,10 +216,15 @@ export function ProductPicker({
         />
       ) : null}
 
+      {/* The search box filters THESE rows in the browser, so "refine your
+          search" was advice that works only when the product is already among
+          them — and this band exists precisely for the ones that are not. It
+          names what actually works instead. A promise of a remedy has to be a
+          remedy that is available. [[feedback_one_outcome_two_causes]] */}
       {total > products.length ? (
         <Text className="text-sm">
-          Showing {products.length} of {total} products: refine your search, or open the full
-          catalog in Selling.
+          These are the first {products.length} of your {total} products, and typing here searches
+          only those. For any of the others, open it in Selling and add it from there.
         </Text>
       ) : null}
     </div>
