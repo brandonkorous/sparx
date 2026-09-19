@@ -6,8 +6,18 @@
 // collection. Phase 1 ships the Commerce + CRM projectors (both re-exported
 // from @wizeworks/commerce, which the indexer already depends on — no new
 // dependency edge). Phase 2 appends CMS / Email / Site Builder bundles here.
+//
+// The EMAIL bundle is in — campaigns, automatic emails and the rules that fire
+// them (`messaging-projection.ts`). It reads Prisma directly, so it needed no
+// new dependency either; the header there says why it lives in this package.
+// CMS and Site Builder are still outstanding.
 
 import { commerceUniversalProjectors } from '@wizeworks/commerce';
 import { buildRegistry } from '@wizeworks/search';
 
-export const REGISTRY = buildRegistry([...commerceUniversalProjectors]);
+import { messagingUniversalProjectors } from './messaging-projection.js';
+
+export const REGISTRY = buildRegistry([
+  ...commerceUniversalProjectors,
+  ...messagingUniversalProjectors,
+]);

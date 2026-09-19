@@ -140,7 +140,8 @@ export async function runReindex(
   if (failures.length > 0) {
     throw new Error(
       `reindex incomplete for tenant ${tenantId}: ` +
-        `${String(failures.length)} of ${String(requested.length)} collection(s) failed: ` +
+        `${String(failures.length)} of ${String(requested.length)} ` +
+        `${requested.length === 1 ? 'collection' : 'collections'} failed: ` +
         failures.join('; ')
     );
   }

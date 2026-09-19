@@ -44,6 +44,11 @@ vi.mock('@wizeworks/search', () => ({
   deleteOrder: vi.fn(),
   deleteEntity: vi.fn(),
   buildRegistry: () => new Map(),
+  // The reserved module for records that belong to none. Real value, not a stub:
+  // the projectors this mock stands in front of put it in the document, and a
+  // mocked-out `undefined` would make a test pass over a document Typesense
+  // cannot filter. [[feedback_a_test_that_cannot_go_red]]
+  PLATFORM_MODULE: 'platform',
 }));
 
 const { handleEvent } = await import('./handler.js');

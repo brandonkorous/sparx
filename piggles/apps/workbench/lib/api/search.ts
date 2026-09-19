@@ -16,7 +16,7 @@
 // from the palette — taking products from both would list each one twice.
 
 import { useEffect, useMemo, useState } from 'react';
-import { useQuery } from '@wizeworks/query';
+import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { api } from './client';
 
 /** A normalized hit, uniform across both backends — what the palette renders. */
@@ -145,4 +145,98 @@ export function useRecordSearch(query: string): RecordSearchResult {
   }, [enabled, universal.data, palette.data]);
 
   return { hits, isLoading: enabled && (universal.isFetching || palette.isFetching) };
+}
+
+/* ── How much of the business this box can actually SEE ──────────────── */
+
+export interface SearchCollectionStat {
+  collection: string;
+  documents: number;
+}
+
+export interface SearchStatus {
+  collections: SearchCollectionStat[];
+  /** Products on sale that searching cannot find. `null` means the check could
+   *  not run — say nothing, never render it as none. */
+  productsMissing: number | null;
+  /** The same reading for the other two things this box promises to find.
+   *  Customers and orders live ONLY in the palette's own collections, so
+   *  nothing else on the platform was in a position to notice them missing.
+   *  MEASURED 2026-09-18 on Juniper Row: 36 of 36 customers and 16 of 16
+   *  orders, under an empty state reading "Nothing in your records matches". */
+  customersMissing: number | null;
+  ordersMissing: number | null;
+}
+
+export function useSearchStatus(options: { watch?: boolean } = {}) {
+  const query = useQuery({
+    queryKey: ['search', 'status'],
+    queryFn: () => api.get<SearchStatus>('/v1/search/status'),
+    // A search-side hiccup must never take the products list down with it.
+    retry: false,
+    staleTime: 60_000,
+  });
+
+  // `watch` is for the one screen holding this open while it CHANGES: a rebuild
+  // is accepted in milliseconds and finishes seconds later, so invalidating on
+  // the mutation's success re-reads a number that has not moved yet. Without
+  // this the warning sat there after the fix had already worked, which reads as
+  // the button having done nothing — and the obvious response to that is to
+  // press it again.
+  //
+  // Only while there is something to watch, and only while the screen asking is
+  // in front of somebody. Closed, or once the gap is gone, it is off.
+  const missing =
+    (query.data?.productsMissing ?? 0) +
+    (query.data?.customersMissing ?? 0) +
+    (query.data?.ordersMissing ?? 0);
+  const shouldWatch = options.watch === true && missing > 0;
+  // Pulled out of the query object: `refetch` is stable for a given key, so the
+  // timer is set up once. Depending on `query` itself would tear it down and
+  // rebuild it on every render.
+  const { refetch } = query;
+  useEffect(() => {
+    if (!shouldWatch) return undefined;
+    const id = setInterval(() => {
+      void refetch();
+    }, 8_000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [shouldWatch, refetch]);
+
+  return query;
+}
+
+/** How many of her products are on sale but cannot be found by searching, or
+ *  null when nothing measured it. Distinct from a document COUNT: twelve
+ *  documents look exactly like sixteen until something knows there should be
+ *  sixteen, which is why the count alone left four of Devi's products silently
+ *  unfindable (issue 318). */
+export function unfindableProductCount(data: SearchStatus | undefined): number | null {
+  return data?.productsMissing ?? null;
+}
+
+/** How many PRODUCT documents this business has in search, or null when the
+ *  answer could not be fetched \u2014 which is not the same as zero and must not
+ *  render as one. */
+export function indexedProductCount(
+  data: { collections: SearchCollectionStat[] } | undefined
+): number | null {
+  if (!data) return null;
+  const row = data.collections.find((c) => c.collection.includes('product'));
+  return row ? row.documents : null;
+}
+
+/** Rebuild this business's search index from its real records. The work happens
+ *  on a worker, so this returns as soon as the request is accepted \u2014 the copy
+ *  has to say "started", never "done". */
+export function useReindexSearch() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.post<{ runId: string }>('/v1/search/reindex'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['search', 'status'] });
+    },
+  });
 }

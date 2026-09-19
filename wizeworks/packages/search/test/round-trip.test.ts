@@ -1,11 +1,31 @@
 // Round-trip integration test against a real Typesense.
 //
-// Self-skips when Typesense isn't reachable (no TYPESENSE running) so it runs
-// locally after `pnpm db:up` and no-ops in CI / on machines without one.
-// Covers the core contract the read path depends on: schemas create, docs
-// upsert, the typed search wrappers return them, the ⌘K palette spans
-// collections, status counts are tenant-scoped, and — critically — every
-// query is isolated to its tenant.
+// ── THIS SUITE WIPES THE SEARCH INSTANCE IT TALKS TO ───────────────────────
+//
+// `beforeAll` calls `dropAllSchemas()`. Collection names are fixed constants,
+// so there is no per-run namespace to hide in: the drop takes EVERY tenant's
+// documents on that instance, not just the two this file seeds. Afterwards the
+// whole dev environment's search reads empty until somebody reindexes each
+// tenant by hand, and nothing anywhere says that is what happened.
+//
+// Found the hard way on 2026-09-18: a persona walk had just rebuilt Juniper
+// Row's index (34 products, 36 customers, 16 orders, 314 other records), a
+// `vitest run` in this package followed, and the console's search box went back
+// to answering "nothing matches" about all of it. The collections' `created_at`
+// was the second the test started.
+//
+// So it now refuses to run under `CI=true`, which is what the pre-push hook
+// sets — otherwise every `git push` from a machine with `pnpm db:up` running
+// silently emptied that machine's search. It costs no coverage: CI has no
+// Typesense, so the suite already skipped there. Run it deliberately with
+// `pnpm --filter @wizeworks/search test`, and expect to reindex afterwards.
+//
+// ── What it covers ────────────────────────────────────────────────
+//
+// The core contract the read path depends on: schemas create, docs upsert, the
+// typed search wrappers return them, the palette spans collections, status
+// counts are tenant-scoped, and — critically — every query is isolated to its
+// tenant.
 
 import { beforeAll, describe, expect, it } from 'vitest';
 
@@ -47,7 +67,9 @@ async function typesenseUp(): Promise<boolean> {
   }
 }
 
-const AVAILABLE = await typesenseUp();
+// `CI=true` is set by the pre-push hook as well as by CI itself. Skipping on it
+// keeps a push from wiping the pusher's own search index; see the header.
+const AVAILABLE = process.env.CI === 'true' ? false : await typesenseUp();
 
 function product(
   tenantId: string,
@@ -140,7 +162,14 @@ function entity(
 describe.skipIf(!AVAILABLE)('@wizeworks/search round-trip', () => {
   beforeAll(async () => {
     _resetClientForTest();
-    await dropAllSchemas();
+    // Loud on purpose. This is the line that empties the machine's search, and
+    // it used to happen in silence.
+    const dropped = await dropAllSchemas();
+    console.warn(
+      `[@wizeworks/search] dropped ${String(dropped.length)} collection(s) on ` +
+        `${process.env.TYPESENSE_HOST ?? 'localhost'}: ${dropped.join(', ')}. ` +
+        `EVERY tenant's documents went with them — reindex before using the console.`
+    );
     await ensureSchemas();
     await bulkUpsertProducts([
       product(TENANT_A, 'p1'),

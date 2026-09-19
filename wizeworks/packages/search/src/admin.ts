@@ -8,6 +8,7 @@ import {
   allSchemas,
   CUSTOMERS_COLLECTION,
   ENTITIES_COLLECTION,
+  GLOBAL_SITE_SCOPE,
   ORDERS_COLLECTION,
   PRODUCTS_COLLECTION,
 } from './schemas';
@@ -130,6 +131,48 @@ export async function collectionStats(
 }
 
 /**
+ * How many of a tenant's CUSTOMERS or ORDERS the ⌘K palette can actually reach.
+ *
+ * The palette (`GET /v1/search`) is the only home of those two collections, and
+ * it filters on the tenant alone — no site scope — so this counts the same way.
+ * Products need `findableProductCount` instead, because their count has to be
+ * narrowed to one site and to what is on sale.
+ *
+ * Why a second count exists at all, when `collectionStats` already reports a
+ * number per collection: a doc count cannot see what is MISSING. Five documents
+ * look exactly like thirty-six until something holds the records and the index
+ * side by side. MEASURED on 2026-09-18, Juniper Row: 36 customers and 16 orders
+ * in the database, 0 and 0 in the index, and the search box answered "nothing
+ * in your records matches that" about every one of them.
+ *
+ * `collectionStats` reports a missing collection as zero, which is the one
+ * reading that must never drive a warning. This returns null for it instead:
+ * "we could not look", never "you have nothing".
+ */
+export async function findableRecordCount(
+  collection: 'customers' | 'orders',
+  tenantId: string,
+  client: Client = getClient()
+): Promise<number | null> {
+  const name = collection === 'customers' ? CUSTOMERS_COLLECTION : ORDERS_COLLECTION;
+  try {
+    const res = (await client
+      .collections(name)
+      .documents()
+      .search({
+        q: '*',
+        query_by: STAT_QUERY_BY[name] ?? 'id',
+        filter_by: `tenant_id:=${tenantId}`,
+        per_page: 0,
+      })) as { found?: number };
+    return res.found ?? 0;
+  } catch (err: unknown) {
+    if ((err as { httpStatus?: number }).httpStatus === 404) return null;
+    throw err;
+  }
+}
+
+/**
  * How many of a tenant's products are actually FINDABLE — on sale and present in
  * the index.
  *
@@ -150,8 +193,16 @@ export async function collectionStats(
  */
 export async function findableProductCount(
   tenantId: string,
+  propertyId: string | null = null,
   client: Client = getClient()
 ): Promise<number | null> {
+  // The SAME filter the storefront and `/v1/search/products` use: global
+  // products plus the ones scoped to this site. Without it this counted every
+  // site's catalog while the screen rendering it listed one site's, so an owner
+  // with seven sites read "Searching your shop won't find 31 of your products"
+  // over a list of 10.
+  const site =
+    propertyId === null ? '' : ` && property_ids:=[\`${GLOBAL_SITE_SCOPE}\`,\`${propertyId}\`]`;
   try {
     const res = (await client
       .collections(PRODUCTS_COLLECTION)
@@ -159,7 +210,7 @@ export async function findableProductCount(
       .search({
         q: '*',
         query_by: STAT_QUERY_BY[PRODUCTS_COLLECTION] ?? 'id',
-        filter_by: `tenant_id:=${tenantId} && status:=active`,
+        filter_by: `tenant_id:=${tenantId} && status:=active${site}`,
         per_page: 0,
       })) as { found?: number };
     return res.found ?? 0;
