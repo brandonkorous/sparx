@@ -83,7 +83,7 @@ export const GeneratePickListInput = z.object({
   /** Overrides the warehouse's setting for THIS walk. Recorded on the list. */
   strategy: AllocationStrategy.optional(),
   assignedTo: z.string().trim().max(127).nullish(),
-  note: z.string().trim().max(2000).optional(),
+  note: z.string().trim().max(2000).nullish(),
   /**
    * Include order lines that have no variant (free-text items) as unallocated
    * instructions. Off by default: there is no stock record to walk to, and a
@@ -113,7 +113,7 @@ export const AssignPickListInput = z.object({
 export type AssignPickListInput = z.infer<typeof AssignPickListInput>;
 
 export const CancelPickListInput = z.object({
-  reason: z.string().trim().max(500).optional(),
+  reason: z.string().trim().max(500).nullish(),
 });
 export type CancelPickListInput = z.infer<typeof CancelPickListInput>;
 
@@ -141,7 +141,7 @@ export const ShortPickInput = z.object({
   /** How many were found. Zero is the common case. */
   quantity: z.number().int().min(0).max(1_000_000).optional(),
   reason: ShortPickReason,
-  note: z.string().trim().max(1000).optional(),
+  note: z.string().trim().max(1000).nullish(),
   /**
    * Raise a count for the shelf so a human settles what is actually there.
    * Defaults ON, and that default is the point of the feature: a short pick is
@@ -176,12 +176,12 @@ export type ScanToPickInput = z.infer<typeof ScanToPickInput>;
 export const CreatePackageInput = z.object({
   orderId: Uuid,
   pickListId: Uuid.nullish(),
-  packagingType: z.string().trim().max(32).optional(),
+  packagingType: z.string().trim().max(32).nullish(),
   weightGrams: z.number().int().min(0).max(10_000_000).nullish(),
   lengthMm: z.number().int().min(0).max(100_000).nullish(),
   widthMm: z.number().int().min(0).max(100_000).nullish(),
   heightMm: z.number().int().min(0).max(100_000).nullish(),
-  note: z.string().trim().max(2000).optional(),
+  note: z.string().trim().max(2000).nullish(),
 });
 export type CreatePackageInput = z.infer<typeof CreatePackageInput>;
 

@@ -1240,7 +1240,9 @@ async function validateOptionValueSet(
   if (values.length !== optionValueIds.length) {
     const found = new Set(values.map((v) => v.id));
     const missing = optionValueIds.filter((id) => !found.has(id));
-    throw new CommerceValidationError('Unknown option-value id(s)', [
+    throw new CommerceValidationError(
+      missing.length === 1 ? 'Unknown option value' : 'Unknown option values',
+      [
       { field: 'optionValueIds', message: `Not part of product: ${missing.join(', ')}` },
     ]);
   }

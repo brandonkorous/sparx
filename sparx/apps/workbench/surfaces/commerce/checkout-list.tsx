@@ -74,6 +74,25 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const rows = data?.items ?? [];
   const total = data?.total;
 
+  // HAS THIS BUSINESS EVER HAD A CHECKOUT AT ALL?
+  //
+  // `total` is the count matching the FILTER, so an empty "unfinished" view and
+  // a shop that has never taken a payment look identical — and the screen said
+  // "Every checkout either went through or timed out. Nothing is sitting
+  // half-paid" to both. 40 of the 48 real businesses on the platform have never
+  // had a checkout session, and every one of them read that as a clean bill of
+  // health on a till that has never rung.
+  //
+  // A `take: 1` probe rather than a new field on the response: it is the same
+  // endpoint with no filter and it costs one row. Asked only when the answer
+  // could matter — the list is narrowed and came back empty — so the ordinary
+  // case makes no extra request at all.
+  const probe = useCheckoutSessions(
+    { take: 1, skip: 0 },
+    { enabled: filtered && !isLoading && rows.length === 0 }
+  );
+  const everHadOne = filtered ? (probe.data?.total ?? 0) > 0 : rows.length > 0;
+
   // What is sitting in here, in money. It is the reason anyone opens this list,
   // and adding a column up by eye is not an answer.
   //
@@ -144,18 +163,22 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           <EmptyState
             icon={<CreditCard className="size-6" aria-hidden />}
             title={
-              filter === 'unfinished'
-                ? 'Nothing half-finished'
-                : filtered
-                  ? 'Nothing at this step'
-                  : 'No checkout sessions'
+              !everHadOne
+                ? 'No checkout sessions'
+                : filter === 'unfinished'
+                  ? 'Nothing half-finished'
+                  : filtered
+                    ? 'Nothing at this step'
+                    : 'No checkout sessions'
             }
             description={
-              filter === 'unfinished'
-                ? 'Every checkout either went through or timed out. Nothing is sitting half-paid.'
-                : filtered
-                  ? `No sessions are at “${activeFilter.label}” right now. Switch to All to see the rest.`
-                  : 'When a shopper starts paying, their progress shows up here: useful for spotting where a payment got stuck.'
+              !everHadOne
+                ? 'When a shopper starts paying, their progress shows up here: useful for spotting where a payment got stuck. Nobody has started one yet.'
+                : filter === 'unfinished'
+                  ? 'Every checkout either went through or timed out. Nothing is sitting half-paid.'
+                  : filtered
+                    ? `No sessions are at “${activeFilter.label}” right now. Switch to All to see the rest.`
+                    : 'When a shopper starts paying, their progress shows up here: useful for spotting where a payment got stuck.'
             }
           />
         ) : (
@@ -259,7 +282,7 @@ export function CheckoutSessionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

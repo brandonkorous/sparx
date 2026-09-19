@@ -783,10 +783,16 @@ async function runResolution(
       errors.push(`Option "${opt.label}" accepts only one selection`);
     }
     if (opt.minSelections != null && chosenKeys.length < opt.minSelections) {
-      errors.push(`Option "${opt.label}" requires at least ${opt.minSelections} selection(s)`);
+      errors.push(
+        `Option "${opt.label}" requires at least ${String(opt.minSelections)} ` +
+          `${opt.minSelections === 1 ? 'selection' : 'selections'}`
+      );
     }
     if (opt.maxSelections != null && chosenKeys.length > opt.maxSelections) {
-      errors.push(`Option "${opt.label}" accepts at most ${opt.maxSelections} selection(s)`);
+      errors.push(
+        `Option "${opt.label}" accepts at most ${String(opt.maxSelections)} ` +
+          `${opt.maxSelections === 1 ? 'selection' : 'selections'}`
+      );
     }
     for (const k of chosenKeys) {
       if (!choiceByOptionAndKey.get(optKey)?.has(k)) {

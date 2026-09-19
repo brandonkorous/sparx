@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   MIN_SCORED_COMPONENTS,
+  canSignOff,
   gradeFor,
   matchBillLine,
   resolveApprovalRule,
@@ -457,5 +458,48 @@ describe('matchBillLine', () => {
       receivedQuantity: 10,
     });
     expect(r.amountVarianceCents).toBe(2 * 400 + 20 * 10);
+  });
+});
+
+describe('who a spending limit lets sign off', () => {
+  it('lets an owner sign what the owner must sign', () => {
+    expect(canSignOff('owner', 'owner')).toBe(true);
+  });
+
+  it('refuses the editor who raised it', () => {
+    // The hole this closes: the decide endpoint gates on `editor`, so a rule
+    // reading "The owner signs it off" was satisfied by the most junior person
+    // who could raise the order in the first place.
+    expect(canSignOff('editor', 'owner')).toBe(false);
+    expect(canSignOff('editor', 'admin')).toBe(false);
+    expect(canSignOff('admin', 'owner')).toBe(false);
+  });
+
+  it('lets anyone senior enough sign a looser rule', () => {
+    expect(canSignOff('owner', 'editor')).toBe(true);
+    expect(canSignOff('admin', 'editor')).toBe(true);
+    expect(canSignOff('editor', 'editor')).toBe(true);
+  });
+
+  it('is a yes when the rule named nobody', () => {
+    // No role means "anyone who can edit buying", which the endpoint has already
+    // established. A no here would hold every such order forever.
+    expect(canSignOff('editor', null)).toBe(true);
+    expect(canSignOff(undefined, undefined)).toBe(true);
+    expect(canSignOff('editor', '')).toBe(true);
+  });
+
+  it('refuses a caller whose role is unknown when the rule names one', () => {
+    // A spending control that assumes when it cannot tell is not a control.
+    expect(canSignOff(null, 'owner')).toBe(false);
+    expect(canSignOff(undefined, 'admin')).toBe(false);
+  });
+
+  it('does not strand an order behind a role nobody recognises', () => {
+    // `viewer` and `member` are deliberately outside ApproverRole. A rule
+    // carrying one could never be satisfied, and holding an order forever is
+    // worse than admitting whoever the endpoint already let in.
+    expect(canSignOff('owner', 'viewer')).toBe(true);
+    expect(canSignOff('editor', 'member')).toBe(true);
   });
 });

@@ -31,7 +31,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
  *  the same meaning everywhere else on this pane. */
 function invoiceState(invoice: OrderInvoice): { label: string; tone: string } {
   if (invoice.status === 'paid') return { label: 'Paid', tone: 'success' };
-  if (invoice.status === 'void') return { label: 'Cancelled', tone: 'warning' };
+  if (invoice.status === 'void') return { label: 'Canceled', tone: 'warning' };
   if (invoice.status === 'overdue') return { label: 'Late', tone: 'danger' };
   if (invoice.status === 'partial') return { label: 'Part paid', tone: 'info' };
   return { label: 'Waiting to be paid', tone: 'warning' };

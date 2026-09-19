@@ -122,22 +122,22 @@ export type VariantImageBinding = z.infer<typeof VariantImageBinding>;
 
 export const CreateVariantInput = z.object({
   sku: Sku,
-  barcode: Barcode.optional(),
-  title: z.string().max(255).optional(), // computed from options when omitted
+  barcode: Barcode.nullish(),
+  title: z.string().max(255).nullish(), // computed from options when omitted
   // Maps the variant onto the option lattice. Each entry is an
   // existing ProductOptionValue id on the parent product. The service
   // validates that the set spans every option exactly once.
   optionValueIds: z.array(Uuid).max(8).default([]),
   priceCents: MoneyCents,
-  compareAtPriceCents: MoneyCents.optional(),
-  costCents: MoneyCents.optional(),
+  compareAtPriceCents: MoneyCents.nullish(),
+  costCents: MoneyCents.nullish(),
   currency: Currency.default('USD'),
-  weight: WeightGrams.optional(),
-  dimensions: Dimensions.optional(),
+  weight: WeightGrams.nullish(),
+  dimensions: Dimensions.nullish(),
   inventoryPolicy: InventoryPolicy.default('deny'),
   requiresShipping: z.boolean().default(true),
-  fulfillmentType: FulfillmentType.optional(), // overrides product-level
-  dropshipSourceId: Uuid.optional(),
+  fulfillmentType: FulfillmentType.nullish(), // overrides product-level
+  dropshipSourceId: Uuid.nullish(),
   isDefault: z.boolean().default(false),
   position: z.number().int().nonnegative().default(0),
   metadata: z.record(z.string(), z.unknown()).optional(),
@@ -251,10 +251,10 @@ export type ReorderProductImagesInput = z.infer<typeof ReorderProductImagesInput
 
 export const CreateVariantImageInput = z.object({
   productId: Uuid,
-  variantId: Uuid.optional(), // null = product-level
+  variantId: Uuid.nullish(), // null = product-level
   mediaAssetId: Uuid,
   position: z.number().int().nonnegative().default(0),
-  alt: z.string().max(512).optional(),
+  alt: z.string().max(512).nullish(),
   optionValueIds: z.array(Uuid).max(8).default([]),
 });
 export type CreateVariantImageInput = z.infer<typeof CreateVariantImageInput>;
@@ -274,39 +274,39 @@ export type SeoFields = z.infer<typeof SeoFields>;
 export const CreateProductInput = z.object({
   title: z.string().min(1).max(255),
   handle: Handle.optional(), // auto-derived from title if absent
-  description: z.string().max(50_000).optional(), // rich text (HTML allowed)
+  description: z.string().max(50_000).nullish(), // rich text (HTML allowed)
   status: ProductStatus.default('draft'),
-  productType: z.string().max(127).optional(),
+  productType: z.string().max(127).nullish(),
   // The typed product-type link (docs/143) — mirrors ContentEntry.typeKey. When
   // set, the product's `attributes` bag is validated against this type's schema
   // in the service. Distinct from the free-text `productType` above (merchandising
   // label). A key string, resolved by the service — not validated for existence here.
-  productTypeKey: ProductTypeKey.optional(),
+  productTypeKey: ProductTypeKey.nullish(),
   // The typed descriptive attribute bag (docs/143). Shape is validated in the
   // product service against the RESOLVED type schema (not statically here — the
   // schema lives per-tenant in the DB), so accept any JSON object at the wire.
   attributes: AttributesBag.optional(),
-  vendor: z.string().max(127).optional(),
+  vendor: z.string().max(127).nullish(),
   tags: z.array(z.string().min(1).max(63)).max(50).default([]),
   fulfillmentType: FulfillmentType.default('physical'),
-  weight: WeightGrams.optional(), // default for variants without explicit weight
+  weight: WeightGrams.nullish(), // default for variants without explicit weight
   dimensions: Dimensions.optional(),
   hazmatClass: HazmatClass.default('none'),
   requiresShipping: z.boolean().default(true),
-  taxClass: z.string().max(63).optional(), // e.g. "clothing", "food", "digital"
+  taxClass: z.string().max(63).nullish(), // e.g. "clothing", "food", "digital"
   originCountry: z
     .string()
     .length(2)
     .regex(/^[A-Z]{2}$/)
-    .optional(),
-  hsCode: z.string().max(15).optional(), // Harmonized System code for customs
+    .nullish(),
+  hsCode: z.string().max(15).nullish(), // Harmonized System code for customs
   categoryIds: z.array(Uuid).max(20).default([]),
   collectionIds: z.array(Uuid).max(50).default([]),
   // Model B per-site scoping (docs/49 §3): the web PROPERTIES this product is
   // visible on. EMPTY = visible on ALL sites (the default). Update sends the full
   // replacement set; UpdateProductInput inherits it as optional via .partial().
   propertyIds: z.array(Uuid).max(50).default([]),
-  defaultWarehouseId: Uuid.optional(),
+  defaultWarehouseId: Uuid.nullish(),
   metadata: z.record(z.string(), z.unknown()).optional(),
   ...MadeToOrderInput.shape,
   ...SeoFields.shape,

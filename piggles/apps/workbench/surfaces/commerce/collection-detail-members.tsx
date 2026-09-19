@@ -26,6 +26,7 @@ import { CollectionRulesEditor } from './collection-rules';
 import { CollectionProductsEditor } from './collection-products';
 import type { CollectionDetail, CollectionType } from './collections-data';
 import type { Draft } from './collection-draft';
+import { membershipLine } from './collection-members-words';
 
 export function CollectionMembers({
   id,
@@ -117,9 +118,10 @@ export function CollectionMembers({
 
           {!isNew && collection ? (
             <Text className="text-sm">
-              {collection.productCount === 0
-                ? 'No products match these conditions yet, or the last check has not run. Membership is worked out in the background after you save.'
-                : `${String(collection.productCount)} product${collection.productCount === 1 ? '' : 's'} matched when membership was last worked out. It refreshes in the background after a change.`}
+              {membershipLine({
+                shown: collection.productCount,
+                hidden: collection.hiddenProductCount,
+              })}
             </Text>
           ) : null}
 

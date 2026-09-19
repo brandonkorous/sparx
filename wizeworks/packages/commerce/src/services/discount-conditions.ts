@@ -13,6 +13,7 @@
 
 import type { DiscountCondition } from '@wizeworks/commerce-schemas';
 import type { TxClient } from '@wizeworks/db';
+import { formatCents } from './money';
 
 /** One basket line, reduced to what a condition can ask about. */
 export interface CartLineFacts {
@@ -40,7 +41,7 @@ export interface CartFacts {
 }
 
 function money(cents: number): string {
-  return `$${(cents / 100).toFixed(2)}`;
+  return formatCents(cents);
 }
 
 /** Products the discount is limited to, or null when it is not limited. */

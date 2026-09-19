@@ -138,7 +138,7 @@ export function RecordHandover({ order, plan }: { order: Order; plan: DeliveryPl
         <span className="text-base font-medium">Anything to note (optional)</span>
         <Input
           value={note}
-          placeholder={plan.collected ? 'Who picked it up…' : 'Left with a neighbour…'}
+          placeholder={plan.collected ? 'Who picked it up…' : 'Left with a neighbor…'}
           onChange={(event) => {
             setNote(event.target.value);
           }}

@@ -3097,60 +3097,18 @@ export function splitMemberships(
  * That is the gap this closes. It is not a diagnostic: it is the only place the
  * owner can learn their shop is invisible.
  */
-export interface SearchCollectionStat {
-  collection: string;
-  documents: number;
-}
-
-export interface SearchStatus {
-  collections: SearchCollectionStat[];
-  /** Products on sale that searching cannot find. `null` means the check could
-   *  not run — say nothing, never render it as none. */
-  productsMissing: number | null;
-}
-
-export function useSearchStatus() {
-  return useQuery({
-    queryKey: ['search', 'status'],
-    queryFn: () => api.get<SearchStatus>('/v1/search/status'),
-    // A search-side hiccup must never take the products list down with it.
-    retry: false,
-    staleTime: 60_000,
-  });
-}
-
-/** How many of her products are on sale but cannot be found by searching, or
- *  null when nothing measured it. Distinct from a document COUNT: twelve
- *  documents look exactly like sixteen until something knows there should be
- *  sixteen, which is why the count alone left four of Devi's products silently
- *  unfindable (issue 318). */
-export function unfindableProductCount(data: SearchStatus | undefined): number | null {
-  return data?.productsMissing ?? null;
-}
-
-/** How many PRODUCT documents this business has in search, or null when the
- *  answer could not be fetched \u2014 which is not the same as zero and must not
- *  render as one. */
-export function indexedProductCount(
-  data: { collections: SearchCollectionStat[] } | undefined
-): number | null {
-  if (!data) return null;
-  const row = data.collections.find((c) => c.collection.includes('product'));
-  return row ? row.documents : null;
-}
-
-/** Rebuild this business's search index from its real records. The work happens
- *  on a worker, so this returns as soon as the request is accepted \u2014 the copy
- *  has to say "started", never "done". */
-export function useReindexSearch() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => api.post<{ runId: string }>('/v1/search/reindex'),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['search', 'status'] });
-    },
-  });
-}
+// The search-status reads live in lib/api/search.ts, beside the palette they are
+// really about. The launcher needs them too, and console chrome must not import
+// from a commerce surface to get at them. Re-exported here so this file's own
+// callers are unchanged.
+export {
+  indexedProductCount,
+  unfindableProductCount,
+  useReindexSearch,
+  useSearchStatus,
+  type SearchCollectionStat,
+  type SearchStatus,
+} from '../../lib/api/search';
 
 /**
  * Can this shop actually take a customer's money?

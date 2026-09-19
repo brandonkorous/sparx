@@ -227,7 +227,7 @@ export function ProductTypesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </div>
 
-      <RowOpenHint />
+      {filtered.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }
@@ -262,8 +262,14 @@ function TypeGroup({ title, description, types, emptyHint, onOpen }: TypeGroupPr
           <thead>
             <tr>
               <th>Name</th>
-              <th className="hidden @xl:table-cell">Key</th>
-              <th className="hidden @2xl:table-cell">Attributes</th>
+              {/* Measured, not guessed. Name alone costs 169px, Name+Attributes
+                  236px and all three 377px, so both extra columns fit long
+                  before the old @xl/@2xl let them in. Attributes comes FIRST
+                  because it is the one a person reads: `key` is the machine
+                  name for the type, and a technical id is the last thing a
+                  narrow pane should spend its width on. */}
+              <th className="hidden @sm:table-cell">Attributes</th>
+              <th className="hidden @lg:table-cell">Key</th>
             </tr>
           </thead>
           <tbody>
@@ -296,16 +302,26 @@ function TypeGroup({ title, description, types, emptyHint, onOpen }: TypeGroupPr
                       </Badge>
                     )}
                   </span>
+                  {/* WRAPS, never truncates. `truncate` is white-space: nowrap,
+                      so in a table it makes the column's minimum width the whole
+                      sentence — 416px here, which ran off the right of every
+                      phone. Clamping to two lines drops the minimum to the
+                      longest word (169px) and shows more of the sentence, not
+                      less. `max-w-96` is a maximum and sets no floor, so the
+                      reading measure survives.
+
+                      NO DISPLAY UTILITY HERE. `line-clamp-2` works by setting
+                      display to -webkit-box, so putting `block` beside it wins
+                      the cascade and the clamp silently does nothing: the
+                      sentence ran to four lines with the class still on it. */}
                   {type.description ? (
-                    <span className="mt-0.5 block max-w-96 truncate text-sm">
-                      {type.description}
-                    </span>
+                    <span className="mt-0.5 line-clamp-2 max-w-96 text-sm">{type.description}</span>
                   ) : null}
                 </td>
-                <td className="hidden font-mono text-sm @xl:table-cell">{type.key}</td>
-                <td className="hidden text-sm whitespace-nowrap @2xl:table-cell">
+                <td className="hidden text-sm whitespace-nowrap @sm:table-cell">
                   {attributeLabel(type)}
                 </td>
+                <td className="hidden font-mono text-sm @lg:table-cell">{type.key}</td>
               </tr>
             ))}
           </tbody>

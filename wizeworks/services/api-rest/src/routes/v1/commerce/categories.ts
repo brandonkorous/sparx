@@ -156,10 +156,17 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.get('/v1/commerce/collections/:id', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
-    return ok(await collectionService.get(toCommerceContext(request), id));
+    // The site decides what the pane's product count MEANS, the same way it does
+    // one route up for a category (issue 626).
+    const propertyId = await resolveListScope(
+      auth,
+      undefined,
+      request.headers['x-sparx-property-id']
+    );
+    return ok(await collectionService.get(toCommerceContext(request), id, propertyId));
   });
 
   app.post('/v1/commerce/collections', async (request, reply) => {

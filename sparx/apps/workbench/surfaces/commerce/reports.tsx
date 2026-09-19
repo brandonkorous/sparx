@@ -205,7 +205,7 @@ export function ReportsSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                 />
               ) : (
                 <>
-                  <Stats className="w-full">
+                  <Stats className="grid grid-cols-1 gap-2 px-2 py-1 @2xl:grid-cols-3">
                     <Stat>
                       <StatTitle>Revenue</StatTitle>
                       <StatValue>{formatCentsRounded(data.netRevenueCents, currency)}</StatValue>

@@ -46,6 +46,7 @@ import {
   type TaxZone,
 } from './tax-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { taxSilenceNotice } from './tax-notice';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -128,7 +129,16 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
   // Deliberately keyed on HAVING A RATE. A brand-new shop is seeded one empty
   // country place, switched off, and telling that owner their tax is not working
   // would be a warning about nothing.
-  const setUpButSilent = rows.some((zone) => zone.rateCount > 0 && !zoneIsCollecting(zone));
+  // Two counts, not one boolean. `some()` is true the moment ANY place is
+  // silent, and a title built on that reported "charging nothing" over a shop
+  // charging in Colorado. Places with no rate are counted in neither: a new shop
+  // is seeded one empty country place, and warning about that is a warning about
+  // nothing. The sentence is built in `tax-notice.ts` so it has a test.
+  const silentCount = rows.filter((zone) => zone.rateCount > 0 && !zoneIsCollecting(zone)).length;
+  const collectingCount = rows.filter(
+    (zone) => zone.rateCount > 0 && zoneIsCollecting(zone)
+  ).length;
+  const silenceNotice = taxSilenceNotice(silentCount, collectingCount);
 
   return (
     <div className={PANE_SHELL}>
@@ -181,16 +191,11 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                   : 'Add a place for each country or state where you have to collect tax, then set the rate. A shopper is only charged tax in a place that is switched on. If you are not sure where you owe tax, check with an accountant.'}
               </Text>
 
-              {setUpButSilent ? (
+              {silenceNotice ? (
                 <Alert color="warning">
                   <AlertContent>
-                    <AlertTitle>Set up, but charging nothing</AlertTitle>
-                    <AlertDescription>
-                      Tax is worked out and added at checkout. Every place starts switched off, so
-                      nothing is charged before you have looked at it. Open each place you are
-                      registered to collect in, check its rate, then switch it on. If you are not
-                      sure where you have to collect, ask an accountant.
-                    </AlertDescription>
+                    <AlertTitle>{silenceNotice.title}</AlertTitle>
+                    <AlertDescription>{silenceNotice.detail}</AlertDescription>
                   </AlertContent>
                 </Alert>
               ) : null}
@@ -235,7 +240,7 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
                 them.
               </Text>
 
-              <RowOpenHint />
+              {rows.length > 0 ? <RowOpenHint /> : null}
             </>
           )}
         </div>

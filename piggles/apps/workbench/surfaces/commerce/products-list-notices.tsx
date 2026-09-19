@@ -76,9 +76,9 @@ export function ProductsListNotices({
                 : `${String(unfindableCount)} of your products`}
             </AlertTitle>
             <AlertDescription>
-              They are on your site and people can buy them. What isn’t working is the search box
-              and the filters beside your shop. Those look things up in a separate list, and these
-              are not in it, so a customer searching for one by name is told you don’t have it.
+              Your site still shows it and people can still buy it. What isn’t working is the search
+              box and the filters beside your shop. Those look things up in a separate list, and
+              this is not in it, so a customer searching by name is told you do not have it.
             </AlertDescription>
           </AlertContent>
           <Button
@@ -108,7 +108,7 @@ export function ProductsListNotices({
               });
             }}
           >
-            Put them back
+            {unfindableCount === 1 ? 'Put it back' : 'Put them back'}
           </Button>
         </Alert>
       ) : null}

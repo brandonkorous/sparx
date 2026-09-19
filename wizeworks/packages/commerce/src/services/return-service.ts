@@ -33,6 +33,7 @@ import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
 import { CUSTOMER_NAME_SELECT, customerDisplayName } from './customer-name';
 import { attemptReturnLabel } from './return-label-purchase';
+import { replacementStockNote } from './return-notes';
 import { canRecordInspection, inspectionAdvancesStatus, isSettledReturn } from './return-status';
 
 /** A restockable return line resolved to its variant + (optional) location. */
@@ -712,6 +713,11 @@ export async function settleExchange(
   let restockLines: RestockLine[] = [];
   let unitsRestocked = 0;
   let sentLabel = '';
+  // The name this return goes by everywhere else in the product. A return has
+  // no number of its own, so every screen that shows one names its ORDER:
+  // `Return · O-000016` on the detail pane, the order number in the list. The
+  // stock note below is read on the same screens, by the same person.
+  let sentOnOrder: string | null = null;
   await withTenant(ctx, async (tx) => {
     const ret = await assertReturnWritable(tx, input.returnId);
     if (ret.status !== 'inspected' && ret.status !== 'received') {
@@ -738,6 +744,9 @@ export async function settleExchange(
     const values = replacement.optionAssignments.map((row) => row.optionValue.value).join(' · ');
     const version = replacement.title ?? (values === '' ? replacement.sku : values);
     sentLabel = `${replacement.product.title}: ${version}`;
+    sentOnOrder =
+      (await tx.order.findFirst({ where: { id: ret.orderId }, select: { orderNumber: true } }))
+        ?.orderNumber ?? null;
 
     // The staff note is the only place the record can say WHAT went out — a
     // return has no column for a replacement. Appended rather than replacing so
@@ -816,7 +825,12 @@ export async function settleExchange(
         referenceType: 'Return',
         referenceId: input.returnId,
         idempotencyKey: `return-exchange-out:${input.returnId}`,
-        note: `Replacement sent for return ${input.returnId}`,
+        // Named by its order, never by its id. Built in `return-notes.ts` so the
+        // sentence has a test: it used to print a uuid onto the "Every change"
+        // ledger, which is a line for a developer on a screen a shop owner reads
+        // every week, and it is the exact fault issue 224 fixed in the approval
+        // toast and left standing here.
+        note: replacementStockNote(sentOnOrder),
       });
     }
   }

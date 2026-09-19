@@ -11,6 +11,7 @@ import { FormSection } from '../../components/form-section';
 import { MoneyRow } from './order-detail-blocks';
 import { amountDue, formatMoney, type Order } from './data';
 import { deliveryPlan } from './order-types';
+import { refundNote } from './refund-note';
 
 type OrderItem = NonNullable<Order['items']>[number];
 
@@ -84,6 +85,11 @@ function OrderTotals({ order }: { order: Order }) {
       {order.refundTotal > 0 ? (
         <MoneyRow label="Given back" amount={order.refundTotal} currency={currency} />
       ) : null}
+      {/* An unmarked line beside a full refund reads as "this one was kept", and
+          on O-000004 that was wrong about $128 of stock. The note says which kind
+          of refund it was; it states no figure, because the split was never
+          recorded (see refund-note.ts). */}
+      {refundNote(order) !== null ? <Text className="text-sm">{refundNote(order)}</Text> : null}
       {due > 0 ? <MoneyRow label="Still owed" amount={due} currency={currency} emphasis /> : null}
     </div>
   );

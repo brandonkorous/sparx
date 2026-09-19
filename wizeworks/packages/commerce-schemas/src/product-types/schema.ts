@@ -33,9 +33,9 @@ export interface ProductTypeDefinition {
 export const CreateProductTypeInput = z.object({
   key: ProductTypeKey,
   name: z.string().min(1).max(127),
-  pluralName: z.string().min(1).max(127).optional(),
-  description: z.string().max(2000).optional(),
-  icon: z.string().max(63).optional(),
+  pluralName: z.string().min(1).max(127).nullish(),
+  description: z.string().max(2000).nullish(),
+  icon: z.string().max(63).nullish(),
   // The web PROPERTY this type is scoped to. Omitted / null = available to every
   // site (the common case — a type is a generic schema). Mirrors ContentType.
   propertyId: z.string().uuid().nullish(),

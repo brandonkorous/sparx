@@ -2822,7 +2822,13 @@ export interface CategoryNode {
   path: string;
   depth: number;
   featured: boolean;
+  /** What a SHOPPER would find filed here on the site being asked about. The
+   *  server has counted it this way since issue 382; this side had it labelled
+   *  "filed in this category", which is a different and larger number. */
   productCount: number;
+  /** Filed here but not shown: archived, still a draft, or kept for one of the
+   *  business's other sites. */
+  hiddenProductCount: number;
   children: CategoryNode[];
 }
 
@@ -2834,7 +2840,10 @@ export interface CategoryChoice {
   name: string;
   /** Ancestor names, root first, INCLUDING this one. */
   trail: string[];
+  /** What a shopper finds here — see {@link CategoryNode.productCount}. */
   productCount: number;
+  /** Filed here but not shown — see {@link CategoryNode.hiddenProductCount}. */
+  hiddenProductCount: number;
   /** Whether the category is flagged featured. Carried through so the category
    *  LIST can badge it; the parent picker simply ignores it. */
   featured: boolean;
@@ -2869,6 +2878,7 @@ export function flattenCategories(nodes: CategoryNode[] | undefined): CategoryCh
         name: node.name,
         trail: here,
         productCount: node.productCount,
+        hiddenProductCount: node.hiddenProductCount,
         featured: node.featured,
       });
       walk(node.children, here);
@@ -2962,55 +2972,15 @@ export function splitMemberships(
  * the same api-rest, the same indexer and the same Typesense, and had no way to
  * see any of this or to do anything about it (issue 513).
  */
-export interface SearchCollectionStat {
-  collection: string;
-  documents: number;
-}
-
-export interface SearchStatus {
-  collections: SearchCollectionStat[];
-  /** Products on sale that searching cannot find. `null` means the check could
-   *  not run — say nothing, never render it as none. */
-  productsMissing: number | null;
-}
-
-export function useSearchStatus() {
-  return useQuery({
-    queryKey: ['search', 'status'],
-    queryFn: () => api.get<SearchStatus>('/v1/search/status'),
-    // A search-side hiccup must never take the products list down with it.
-    retry: false,
-    staleTime: 60_000,
-  });
-}
-
-/** How many products are on sale but cannot be found by searching, or null when
- *  nothing measured it. Distinct from a document COUNT: twelve documents look
- *  exactly like sixteen until something knows there should be sixteen. */
-export function unfindableProductCount(data: SearchStatus | undefined): number | null {
-  return data?.productsMissing ?? null;
-}
-
-/** How many PRODUCT documents this tenant has in search, or null when the
- *  answer could not be fetched — which is not the same as zero and must not
- *  render as one. */
-export function indexedProductCount(
-  data: { collections: SearchCollectionStat[] } | undefined
-): number | null {
-  if (!data) return null;
-  const row = data.collections.find((c) => c.collection.includes('product'));
-  return row ? row.documents : null;
-}
-
-/** Rebuild this tenant's search index from its real records. The work happens on
- *  a worker, so this returns as soon as the request is accepted — the copy has
- *  to say "started", never "done". */
-export function useReindexSearch() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: () => api.post<{ runId: string }>('/v1/search/reindex'),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({ queryKey: ['search', 'status'] });
-    },
-  });
-}
+// The search-status reads live in lib/api/search.ts, beside the palette they are
+// really about. The launcher needs them too, and console chrome must not import
+// from a commerce surface to get at them. Re-exported here so this file's own
+// callers are unchanged.
+export {
+  indexedProductCount,
+  unfindableProductCount,
+  useReindexSearch,
+  useSearchStatus,
+  type SearchCollectionStat,
+  type SearchStatus,
+} from '../../lib/api/search';

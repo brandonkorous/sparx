@@ -113,7 +113,7 @@ export function giftCardState(status: string): { label: string; tone: Tone; deta
       };
     case 'cancelled':
       return {
-        label: 'Cancelled',
+        label: 'Canceled',
         tone: 'danger',
         detail: 'It was canceled and can no longer be spent.',
       };

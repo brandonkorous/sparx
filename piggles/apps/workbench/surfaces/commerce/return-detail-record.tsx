@@ -7,7 +7,7 @@
 
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
-import { Text } from '@wizeworks/silicaui-react';
+import { Button, Text } from '@wizeworks/silicaui-react';
 import { ReturnDispositionPanel } from './return-disposition-panel';
 import { formatDateTime, formatMoney, type Order } from './data';
 import { ReturnParcels } from './return-parcels';
@@ -18,17 +18,23 @@ import {
   type ReturnDetail,
 } from './returns-data';
 import { money } from './return-action-dialog';
+import { faArrowUpRightFromSquare } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 
 export function ReturnRecord({
   detail,
   order,
   currency,
+  openCustomer,
 }: {
   detail: ReturnDetail;
   /** Backs the line prices. A return stores only quantities and an orderItemId,
    *  so without the order there is no money on this screen. */
   order: Order | undefined;
   currency: string;
+  /** Opens the buyer's own record. Passed in rather than reaching for the pane
+   *  context here, so this file stays the read-only record it says it is. */
+  openCustomer: (id: string) => void;
 }) {
   const priceByOrderItem = new Map((order?.items ?? []).map((it) => [it.id, it.unitPrice]));
   const conditionByLine = new Map(
@@ -75,11 +81,32 @@ export function ReturnRecord({
         </ul>
       </FormSection>
 
-      {/* CRM's data on a commerce screen wears CRM's hue. */}
+      {/* CRM's data on a commerce screen wears CRM's hue.
+          THE NAME IS ALREADY IN THE HEADING, so on its own this card said
+          nothing twice. `customerId` was in the component's hand the whole time
+          and nothing drew it, which is the commonest defect shape here. The
+          question an owner has in front of a return is whether this person sends
+          everything back, and that answer is one click away on their record
+          (persona issue 538). */}
       {detail.customerName ? (
         <ModuleScope module="crm">
           <FormSection title="Who is returning it">
-            <Text className="text-base font-medium">{detail.customerName}</Text>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <Text className="text-base font-medium">{detail.customerName}</Text>
+              {detail.customerId ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  color="module"
+                  onClick={() => {
+                    openCustomer(detail.customerId ?? '');
+                  }}
+                >
+                  <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
+                  Open their record
+                </Button>
+              ) : null}
+            </div>
           </FormSection>
         </ModuleScope>
       ) : null}

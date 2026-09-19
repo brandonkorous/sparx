@@ -16,10 +16,10 @@ import {
   UpdateCollectionInput,
 } from '@wizeworks/commerce-schemas';
 import { withTenant } from '@wizeworks/db';
-import type { Prisma, ProductCollection } from '@wizeworks/db';
+import type { Prisma, ProductCollection, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
-import { collectionSiteVisibility } from './site-visibility';
+import { collectionSiteVisibility, shopperVisibleProduct } from './site-visibility';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
@@ -31,7 +31,13 @@ export interface CollectionSummary {
   name: string;
   handle: string;
   type: 'manual' | 'rules';
+  /** What a SHOPPER would find in this group on the site being asked about —
+   *  the question anybody reading the Products column is asking. */
   productCount: number;
+  /** Filed in the group but not on that site's shop: archived, still a draft,
+   *  or kept for one of the business's other sites. The aisle list beside this
+   *  one has said this since issue 382; the group list had not (issue 626). */
+  hiddenProductCount: number;
   featured: boolean;
   updatedAt: string;
 }
@@ -100,6 +106,36 @@ function collectionOrderBy(
  */
 const LIVE_MEMBERS = { where: { product: { deletedAt: null } } } as const;
 
+/** How many SHOPPER-VISIBLE products sit in each of these groups, keyed by id.
+ *
+ *  The same shape `visibleProductCounts` uses for aisles, over the same
+ *  predicate, for the same reason: a filing row survives its product being
+ *  archived, drafted or moved to another of the business's sites, so
+ *  `_count.products` answers "how many links exist" while the screen asks "how
+ *  many things would somebody find here". Groups with nothing visible come back
+ *  as 0 rather than absent, so a caller never has to tell "none" apart from "not
+ *  asked about". */
+async function visibleMemberCounts(
+  tx: TxClient,
+  collectionIds: readonly string[],
+  propertyId?: string
+): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+  for (const id of collectionIds) counts.set(id, 0);
+  if (collectionIds.length === 0) return counts;
+
+  const rows = await tx.collectionProduct.groupBy({
+    by: ['collectionId'],
+    where: {
+      collectionId: { in: [...collectionIds] },
+      product: shopperVisibleProduct(propertyId),
+    },
+    _count: { _all: true },
+  });
+  for (const row of rows) counts.set(row.collectionId, row._count._all);
+  return counts;
+}
+
 export async function list(
   ctx: ServiceContext,
   filter: ListCollectionsFilter = {}
@@ -132,13 +168,22 @@ export async function list(
       tx.productCollection.count({ where }),
     ]);
 
+    const visible = await visibleMemberCounts(
+      tx,
+      rows.map((r) => r.id),
+      filter.propertyId
+    );
+
     return {
       items: rows.map((r) => ({
         id: r.id,
         name: r.name,
         handle: r.handle,
         type: r.type as 'manual' | 'rules',
-        productCount: r._count.products,
+        productCount: visible.get(r.id) ?? 0,
+        // Never negative: the visible set is a subset of the filed set, both
+        // counted over the same join rows in the same transaction.
+        hiddenProductCount: Math.max(0, r._count.products - (visible.get(r.id) ?? 0)),
         featured: r.featured,
         updatedAt: r.updatedAt.toISOString(),
       })),
@@ -147,19 +192,33 @@ export async function list(
   });
 }
 
-export async function get(ctx: ServiceContext, collectionId: string): Promise<CollectionDetail> {
-  const row = await withTenant(ctx, (tx) =>
-    tx.productCollection.findFirst({
+/**
+ * One group.
+ *
+ * `propertyId` is the site the pane is standing on, and it decides what
+ * `productCount` MEANS — the same argument `categoryService.get` has taken
+ * since issue 382. Omitted, the counts answer "visible anywhere in this
+ * business", which is the right answer for a caller that is not standing
+ * anywhere.
+ */
+export async function get(
+  ctx: ServiceContext,
+  collectionId: string,
+  propertyId?: string
+): Promise<CollectionDetail> {
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.productCollection.findFirst({
       where: { id: collectionId, deletedAt: null },
       include: {
         products: { ...LIVE_MEMBERS, select: { productId: true } },
         propertyLinks: { select: { propertyId: true } },
         _count: { select: { products: LIVE_MEMBERS } },
       },
-    })
-  );
-  if (!row) throw new CommerceNotFoundError('Collection', collectionId);
-  return toDetail(row);
+    });
+    if (!row) throw new CommerceNotFoundError('Collection', collectionId);
+    const visible = await visibleMemberCounts(tx, [row.id], propertyId);
+    return toDetail(row, visible.get(row.id) ?? 0);
+  });
 }
 
 export async function getByHandle(ctx: ServiceContext, handle: string): Promise<CollectionDetail> {
@@ -174,7 +233,10 @@ export async function getByHandle(ctx: ServiceContext, handle: string): Promise<
     })
   );
   if (!row) throw new CommerceNotFoundError('Collection', handle);
-  return toDetail(row);
+  // No site is named here: this is the storefront's own by-handle read, which
+  // already filters the products it renders.
+  const visible = await withTenant(ctx, (tx) => visibleMemberCounts(tx, [row.id]));
+  return toDetail(row, visible.get(row.id) ?? 0);
 }
 
 // ─── Writes ───────────────────────────────────────────────────────────
@@ -519,13 +581,18 @@ type CollectionWithIncludes = ProductCollection & {
   _count: { products: number };
 };
 
-function toDetail(c: CollectionWithIncludes): CollectionDetail {
+/** `visible` is the shopper-visible count from {@link visibleMemberCounts}. It
+ *  is required rather than optional on purpose: every read path has to decide
+ *  what it means, and an accidental omission would silently reinstate the raw
+ *  filing-row count this whole helper exists to replace. */
+function toDetail(c: CollectionWithIncludes, visible: number): CollectionDetail {
   return {
     id: c.id,
     name: c.name,
     handle: c.handle,
     type: c.type as 'manual' | 'rules',
-    productCount: c._count.products,
+    productCount: visible,
+    hiddenProductCount: Math.max(0, c._count.products - visible),
     featured: c.featured,
     updatedAt: c.updatedAt.toISOString(),
     description: c.description,

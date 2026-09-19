@@ -24,7 +24,7 @@ export const CreateTaxZoneInput = z.object({
     .regex(/^[A-Z]{2}-[A-Z0-9]{1,3}$/, 'Region must be a country-region code, e.g. "US-CA".')
     .optional(),
   nexusType: NexusType,
-  registrationNumber: z.string().max(63).optional(), // sales-tax permit / VAT
+  registrationNumber: z.string().max(63).nullish(), // sales-tax permit / VAT
   registeredAt: z.string().datetime().optional(),
   // DEFAULTS TO OFF, and `taxService.createZone` REFUSES `true` outright: a tax
   // place is always created switched off, and starting to collect is its own
@@ -82,7 +82,7 @@ export const CreateTaxRateInput = z.object({
   name: z.string().min(1).max(127), // "California Sales Tax"
   rateBasisPoints: z.number().int().min(0).max(10_000), // 825 == 8.25%
   appliesToShipping: z.boolean().default(false),
-  productTaxClass: z.string().max(63).optional(), // ties to Product.taxClass
+  productTaxClass: z.string().max(63).nullish(), // ties to Product.taxClass
 });
 export type CreateTaxRateInput = z.infer<typeof CreateTaxRateInput>;
 
@@ -100,12 +100,12 @@ export const ExemptionReason = z.enum([
 export type ExemptionReason = z.infer<typeof ExemptionReason>;
 
 export const CreateTaxExemptionInput = z.object({
-  customerId: Uuid.optional(),
-  companyId: Uuid.optional(),
+  customerId: Uuid.nullish(),
+  companyId: Uuid.nullish(),
   jurisdiction: z.string().min(2).max(6), // "US" or "US-CA"
   reason: ExemptionReason,
   certificateNumber: z.string().min(1).max(127),
-  certificateMediaId: Uuid.optional(),
+  certificateMediaId: Uuid.nullish(),
   validFrom: z.string().datetime(),
   validTo: z.string().datetime().optional(),
 });

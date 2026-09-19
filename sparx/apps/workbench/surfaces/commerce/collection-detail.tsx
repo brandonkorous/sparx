@@ -47,6 +47,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaField } from './media-field';
 import { CollectionRulesEditor } from './collection-rules';
 import { CollectionProductsEditor } from './collection-products';
+import { filedInGroup, membershipLine } from './collection-members-words';
 import { SaveFailure } from '@/components/save-failure';
 import {
   asRuleSet,
@@ -361,7 +362,13 @@ function CollectionEditor({
 
   const onDelete = async () => {
     if (!collection) return;
-    const count = collection.productCount;
+    // Every site's worth: deleting the group removes it everywhere, so counting
+    // only what is visible here would name a number that is not the number kept
+    // (issue 626).
+    const count = filedInGroup({
+      shown: collection.productCount,
+      hidden: collection.hiddenProductCount,
+    });
     const ok = await confirm({
       title: `Delete ${collection.name}?`,
       description:
@@ -583,9 +590,10 @@ function CollectionEditor({
 
               {!isNew && collection ? (
                 <Text className="text-sm">
-                  {collection.productCount === 0
-                    ? 'No products match these conditions yet, or the last check has not run. Membership is worked out in the background after you save.'
-                    : `${String(collection.productCount)} product${collection.productCount === 1 ? '' : 's'} matched when membership was last worked out. It refreshes in the background after a change.`}
+                  {membershipLine({
+                    shown: collection.productCount,
+                    hidden: collection.hiddenProductCount,
+                  })}
                 </Text>
               ) : null}
 

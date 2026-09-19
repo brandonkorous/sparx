@@ -25,6 +25,7 @@ import { CategoryDetail } from '@/components/category/category-detail';
 import { BookingServices, toHeadingText } from '@/components/booking/booking-services';
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
 import { ProductReviewsCore } from '@/components/products/product-reviews-core';
+import { ProductSaveCore } from '@/components/products/product-save-core';
 import { ProductQuestionsCore } from '@/components/products/product-questions-core';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { AccountLink } from '@/components/account/account-link';
@@ -162,6 +163,18 @@ export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
             heading={toHeadingText(node.props?.heading, 'Questions')}
             emptyText={toHeadingText(node.props?.emptyText, 'No questions yet. Ask us anything.')}
             showForm={node.props?.showForm !== false}
+          />
+        );
+      case HOST_KEYS.commerceProductSave:
+        // Per-record, like reviews and questions. It takes the product handle and
+        // reads the versions from it, so the buy box's chosen version can be checked
+        // against what the product actually has before anything is saved.
+        return (
+          <ProductSaveCore
+            tenantSlug={ctx.site.slug}
+            handle={ctx.recordHandle ?? ''}
+            label={toHeadingText(node.props?.label, 'Save for later')}
+            savedLabel={toHeadingText(node.props?.savedLabel, 'Saved')}
           />
         );
       case HOST_KEYS.schedulingServiceDetail:

@@ -19,7 +19,7 @@ export const PAYMENT_STATUS_LABELS: Record<string, string> = {
   authorized: 'Held, not taken',
   captured: 'Taken',
   failed: 'Failed',
-  voided: 'Cancelled',
+  voided: 'Canceled',
   refunded: 'Given back',
 };
 
@@ -64,7 +64,7 @@ export const FULFILLMENT_STATUS_LABELS: Record<string, string> = {
   shipped: 'On the way',
   delivered: 'Delivered',
   failed: 'Delivery failed',
-  cancelled: 'Cancelled',
+  cancelled: 'Canceled',
 };
 
 /**

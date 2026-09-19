@@ -60,9 +60,14 @@ export interface CollectionDetail {
   name: string;
   handle: string;
   type: CollectionType;
-  /** How many products are currently IN it. For a rules collection this is the
-   *  last projection the indexer wrote, not a live recount — see `useReindex`. */
+  /** How many products a SHOPPER would find in it on the site this pane is
+   *  standing on. For a rules collection the membership behind it is the last
+   *  projection the indexer wrote, not a live recount — see `useReindex`. */
   productCount: number;
+  /** Filed in the group but not on this site's shop: archived, still a draft, or
+   *  kept for one of your other sites. Zero on a single-site business with a
+   *  tidy catalog, which is why the badge only appears when it is not. */
+  hiddenProductCount: number;
   featured: boolean;
   description: string | null;
   heroMediaId: string | null;
@@ -90,7 +95,9 @@ export interface CollectionSummary {
   name: string;
   handle: string;
   type: CollectionType;
+  /** What a shopper would find here, on this site. See {@link CollectionDetail}. */
   productCount: number;
+  hiddenProductCount: number;
   featured: boolean;
   updatedAt: string;
 }

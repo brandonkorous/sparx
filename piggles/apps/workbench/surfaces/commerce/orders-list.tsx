@@ -211,7 +211,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* Only where there is a pointer to do them with — on the stack these
             three modifiers do not exist. */}
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

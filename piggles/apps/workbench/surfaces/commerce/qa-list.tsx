@@ -42,14 +42,18 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, questionState } from './products-data';
 import {
+  customerAccountNote,
   customerLabel,
   useBulkModerateQuestions,
   useModerateQueueQuestion,
+  useModerationEverCount,
   useQuestionsList,
   type ModerationSortDir,
   type QuestionSort,
 } from './moderation-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { moderationEmptyWords } from './moderation-empty';
+import { bulkDecisionWords, questionDecisions, unchangedWords } from './moderation-decisions';
 
 /** Plain-language filter over the stored statuses. Default is "Waiting" — the
  *  queue's whole job is the backlog, so that is what opens. */
@@ -72,13 +76,17 @@ function preview(body: string): string {
   return flat.length > 140 ? `${flat.slice(0, 140)}…` : flat;
 }
 
+/** The queue this pane OPENS on. Nobody chose it, so it must never be reported
+ *  back to the reader as a filter they set. */
+const DEFAULT_STATUS = 'pending';
+
 export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const moderate = useModerateQueueQuestion();
   const bulkModerate = useBulkModerateQuestions();
 
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('pending');
+  const [status, setStatus] = useState(DEFAULT_STATUS);
   const [sort, setSort] = useState<{ key: QuestionSort; dir: ModerationSortDir }>({
     key: 'createdAt',
     dir: 'desc',
@@ -105,7 +113,17 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const rows = data?.items ?? [];
   const total = data?.total;
-  const anyFilter = search.trim() !== '' || status !== 'all';
+  const searching = search.trim() !== '';
+  // Asked only when the answer could matter: the list came back empty and the
+  // pane is not already showing everything. A queue with rows in it makes no
+  // extra request at all.
+  const ever = useModerationEverCount('question', rows.length === 0 && !searching);
+  const empty = moderationEmptyWords('question', {
+    searching,
+    status,
+    defaultStatus: DEFAULT_STATUS,
+    everCount: ever.data?.total ?? null,
+  });
 
   const selectedIds = rows.filter((r) => selected.has(r.id)).map((r) => r.id);
   const allSelected = rows.length > 0 && selectedIds.length === rows.length;
@@ -149,8 +167,13 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
     moderate.mutate(
       { id, status: next },
       {
-        onSuccess: () => {
-          toast.add({ title: done, type: 'success' });
+        onSuccess: (result) => {
+          // A decision that moved nothing is not announced as one. The button
+          // that could produce this has been taken off the row, so it is reachable
+          // only when somebody else worked the same queue first (issue 640).
+          toast.add(
+            result.changed ? { title: done, type: 'success' } : unchangedWords('question', next)
+          );
         },
         onError: (err) => {
           toast.add({
@@ -166,13 +189,14 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   };
 
-  const bulkSetStatus = (next: 'published' | 'rejected', done: string) => {
+  const bulkSetStatus = (next: 'published' | 'rejected') => {
     bulkModerate.mutate(
       { questionIds: selectedIds, status: next },
       {
         onSuccess: (result) => {
           clearSelection();
-          toast.add({ title: `${done} (${String(result.count)})`, type: 'success' });
+          // Counts what MOVED, and names what did not.
+          toast.add(bulkDecisionWords('question', next, result));
         },
         onError: (err) => {
           toast.add({
@@ -287,7 +311,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="module"
             loading={bulkModerate.isPending}
             onClick={() => {
-              bulkSetStatus('published', 'Shown');
+              bulkSetStatus('published');
             }}
           >
             <Icon glyph={faCheck} className="size-4" aria-hidden />
@@ -299,7 +323,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
             color="neutral"
             loading={bulkModerate.isPending}
             onClick={() => {
-              bulkSetStatus('rejected', 'Hidden');
+              bulkSetStatus('rejected');
             }}
           >
             <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
@@ -332,12 +356,8 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faCircleQuestion} className="size-6" aria-hidden />}
-            title={anyFilter ? 'Nothing matches those filters' : 'No questions yet'}
-            description={
-              anyFilter
-                ? 'Try a different word, or switch the filter back to All.'
-                : 'When a shopper asks something on one of your product pages, it appears here for you to answer and show.'
-            }
+            title={empty.title}
+            description={empty.detail}
           />
         ) : (
           <Table size="sm" hover>
@@ -405,8 +425,22 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-40 truncate text-sm @lg:table-cell">
                       {row.productTitle ?? '—'}
                     </td>
-                    <td className="hidden max-w-40 truncate text-sm @xl:table-cell">
-                      {customerLabel(row.customer, row.displayName)}
+                    <td className="hidden max-w-40 text-sm @xl:table-cell">
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate">
+                          {customerLabel(row.customer, row.displayName)}
+                        </span>
+                        {customerAccountNote(row.customer, row.displayName) ? (
+                          <span
+                            className="truncate text-sm"
+                            // The column is narrow enough to cut a long account
+                            // name; the whole of it stays reachable on hover.
+                            title={customerAccountNote(row.customer, row.displayName) ?? undefined}
+                          >
+                            {customerAccountNote(row.customer, row.displayName)}
+                          </span>
+                        ) : null}
+                      </div>
                     </td>
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">
@@ -423,36 +457,27 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
                       }}
                     >
                       <div className="inline-flex items-center gap-1">
-                        <Tooltip content="Show on the page">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            color="module"
-                            shape="square"
-                            aria-label="Show this question on the page"
-                            loading={busyRow}
-                            onClick={() => {
-                              setStatusFor(row.id, 'published', 'Question shown on the page');
-                            }}
-                          >
-                            <Icon glyph={faCheck} className="size-4" aria-hidden />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip content="Hide" align="end">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            color="neutral"
-                            shape="square"
-                            aria-label="Hide this question"
-                            loading={busyRow}
-                            onClick={() => {
-                              setStatusFor(row.id, 'rejected', 'Question hidden');
-                            }}
-                          >
-                            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-                          </Button>
-                        </Tooltip>
+                        {questionDecisions(row.status).map((decision) => (
+                          <Tooltip key={decision.next} content={decision.tooltip} align="end">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              {...(decision.icon === 'show' ? { color: 'module' as const } : {})}
+                              shape="square"
+                              aria-label={decision.aria}
+                              loading={busyRow}
+                              onClick={() => {
+                                setStatusFor(row.id, decision.next, decision.done);
+                              }}
+                            >
+                              {decision.icon === 'show' ? (
+                                <Icon glyph={faCheck} className="size-4" aria-hidden />
+                              ) : (
+                                <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+                              )}
+                            </Button>
+                          </Tooltip>
+                        ))}
                       </div>
                     </td>
                   </tr>
@@ -487,7 +512,7 @@ export function QaListSurface({ ctx }: { ctx: SurfaceContext }) {
             clearSelection();
           }}
         />
-        <RowOpenHint what="a row to open it in the queue" />
+        {rows.length > 0 ? <RowOpenHint what="a row to open it in the queue" /> : null}
       </div>
     </div>
   );

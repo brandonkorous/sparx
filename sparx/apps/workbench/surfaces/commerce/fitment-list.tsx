@@ -241,7 +241,7 @@ export function FitmentListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint what="a list to manage it" />
+      {matches.length > 0 ? <RowOpenHint what="a list to manage it" /> : null}
 
       {pickerOpen ? (
         <FitmentDictionaryPicker

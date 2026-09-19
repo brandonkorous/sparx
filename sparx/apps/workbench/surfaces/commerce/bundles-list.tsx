@@ -112,6 +112,15 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.bundle.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a bundle',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.bundle.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -137,12 +146,10 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Add a bundle: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('commerce.bundle.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Add a bundle</span>
+            <span className="hidden @lg:inline">{createFirst.label}</span>
           </Button>
         }
         refresh={
@@ -178,6 +185,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No bundles yet',
               description:
                 'A bundle sells several products together as one item (a kit, a gift set, a package) usually for less than buying the parts separately. Add your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -241,7 +249,7 @@ export function BundlesListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

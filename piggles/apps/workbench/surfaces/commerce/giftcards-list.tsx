@@ -130,6 +130,16 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.giftcard.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar and the empty state's invitation.
+  // Split, the label drifts — and the first-run state used to have no button
+  // at all, so "Add your first one" pointed at a round plus that never wears
+  // its label on screen.
+  const createFirst = {
+    label: 'Issue a gift card',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.giftcard.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -150,11 +160,8 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Issue a gift card',
+          ...createFirst,
           icon: faPlus,
-          onClick: (event) => {
-            ctx.open('commerce.giftcard.detail', { id: 'new' }, { target: targetFor(event) });
-          },
           title: 'Issue a gift card: hold Shift to open alongside, Alt for a new window',
         }}
         views={{
@@ -202,6 +209,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No gift cards yet',
               description:
                 'A gift card lets someone pre-pay an amount for another person to spend with you. Issue your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -283,7 +291,7 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

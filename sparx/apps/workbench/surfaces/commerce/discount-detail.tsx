@@ -59,6 +59,7 @@ import {
   type DiscountType,
 } from './discounts-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { discountUsageLine } from './discount-words';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -416,6 +417,10 @@ function DiscountEditor({
   };
 
   const state = discount ? discountState(discount) : null;
+  // What the offer has DONE, not just how often. See `discount-words`.
+  const usageLine = discount
+    ? discountUsageLine(discount.usageCount, discount.givenAwayCents, discount.currency ?? 'USD')
+    : null;
   const canCreateType = CREATABLE_TYPES.includes(draft.type);
 
   return (
@@ -441,9 +446,9 @@ function DiscountEditor({
                 {state.label}
               </Badge>
             ) : null}
-            {discount && discount.usageCount > 0 ? (
+            {usageLine ? (
               <Text as="span" className="hidden shrink-0 text-sm @md:inline">
-                Used {discount.usageCount === 1 ? 'once' : `${String(discount.usageCount)} times`}
+                {usageLine}
               </Text>
             ) : null}
           </>

@@ -24,6 +24,7 @@ import {
   FilterItem,
   SearchInput,
   Table,
+  Tooltip,
 } from '@wizeworks/silicaui-react';
 import { ArrowDown, ArrowUp, Layers, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
@@ -56,6 +57,31 @@ function formatUpdated(iso: string): string {
     day: 'numeric',
     ...(sameYear ? {} : { year: 'numeric' }),
   }).format(date);
+}
+
+/** The number beside a group, and the honest footnote when it is not the
+ *  whole story.
+ *
+ *  The figure is what a SHOPPER would find there on this site, which is the
+ *  question anybody reading this column is asking. It used to be a raw count of filing
+ *  rows, so on a business running several sites a group read 5 over a page
+ *  holding nothing it sells there (issue 626).
+ *  A truthful 0 alone would read as "my products have vanished", so where
+ *  anything is filed-but-unshown the row says so and the tooltip says why. */
+function GroupCount({ count, hidden }: { count: number; hidden: number }) {
+  if (hidden === 0) return <>{String(count)}</>;
+  return (
+    <span className="inline-flex items-center justify-end gap-2">
+      {String(count)}
+      <Tooltip
+        content={`${String(hidden)} more ${hidden === 1 ? 'product is' : 'products are'} in this group but not on your website: archived, still a draft, or kept for one of your other sites.`}
+      >
+        <Badge color="info" variant="soft" size="sm">
+          {String(hidden)} not shown
+        </Badge>
+      </Tooltip>
+    </span>
+  );
 }
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -137,6 +163,15 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (row: CollectionSummary, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.collection.detail', { id: row.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a collection',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -162,12 +197,10 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Add a collection: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Add a collection</span>
+            <span className="hidden @lg:inline">{createFirst.label}</span>
           </Button>
         }
         controls={
@@ -223,6 +256,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No collections yet',
               description:
                 'A collection is a themed group of products you show together: a sale, a gift guide, new arrivals. Add your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -267,7 +301,9 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </Badge>
                     )}
                   </td>
-                  <td className="text-right tabular-nums">{String(row.productCount)}</td>
+                  <td className="text-right tabular-nums">
+                    <GroupCount count={row.productCount} hidden={row.hiddenProductCount} />
+                  </td>
                   <td className="hidden text-right text-sm tabular-nums @2xl:table-cell">
                     {formatUpdated(row.updatedAt)}
                   </td>
@@ -300,7 +336,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

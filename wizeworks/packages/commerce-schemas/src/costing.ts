@@ -76,16 +76,16 @@ export type CostingMethod = z.infer<typeof CostingMethod>;
 
 const chargeAmount = z
   .number()
-  .int('Enter the amount in whole pence')
+  .int('Enter the amount with no more than two decimal places')
   .min(0, 'A charge cannot be negative')
-  // A ten-million-pound freight bill on one delivery is a typo, and catching it
+  // A ten-million-dollar freight bill on one delivery is a typo, and catching it
   // here is cheaper than catching it in a valuation report next quarter.
   .max(1_000_000_000, 'That is larger than any single charge we can record');
 
 export const CreatePurchaseOrderChargeInput = z.object({
   purchaseOrderId: Uuid,
   kind: ChargeKind,
-  description: z.string().trim().max(255).optional(),
+  description: z.string().trim().max(255).nullish(),
   amountCents: chargeAmount,
   allocationBasis: PurchaseOrderAllocationBasis.optional(),
 });
@@ -111,7 +111,7 @@ export type ManualAllocation = z.infer<typeof ManualAllocation>;
 export const CreateGoodsReceiptChargeInput = z.object({
   goodsReceiptId: Uuid,
   kind: ChargeKind,
-  description: z.string().trim().max(255).optional(),
+  description: z.string().trim().max(255).nullish(),
   amountCents: chargeAmount,
   allocationBasis: AllocationBasis.optional(),
   manualAllocation: ManualAllocation.optional(),

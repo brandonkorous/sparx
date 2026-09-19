@@ -19,6 +19,7 @@ import type { Prisma } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
 import { CommerceNotFoundError, CommerceValidationError } from '../errors';
+import { formatCents } from './money';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 
@@ -105,7 +106,7 @@ export function computeNewPrice(currentCents: number, adj: PriceAdjustment): num
 }
 
 function describeAdjustment(adj: PriceAdjustment): string {
-  const money = (cents: number) => `$${(Math.abs(cents) / 100).toFixed(2)}`;
+  const money = (cents: number) => formatCents(Math.abs(cents));
   switch (adj.mode) {
     case 'percent':
       return adj.percent >= 0

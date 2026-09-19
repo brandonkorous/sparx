@@ -49,17 +49,17 @@ export type DiscountCondition = z.infer<typeof DiscountCondition>;
 export const CreateDiscountInput = z.object({
   code: z.string().min(1).max(63).nullable().optional(), // null = automatic
   name: z.string().min(1).max(127),
-  description: z.string().max(2000).optional(),
+  description: z.string().max(2000).nullish(),
   type: DiscountType,
   scope: DiscountScope.default('order'),
   // Required when type=percent/fixed; ignored for free_shipping/buy_x_get_y.
-  valueCents: MoneyCents.optional(), // for fixed
-  valuePercent: z.number().min(0).max(100).optional(), // for percent
-  currency: Currency.optional(),
+  valueCents: MoneyCents.nullish(), // for fixed
+  valuePercent: z.number().min(0).max(100).nullish(), // for percent
+  currency: Currency.nullish(),
   conditions: z.array(DiscountCondition).max(20).default([]),
   startAt: z.string().datetime().optional(),
   endAt: z.string().datetime().optional(),
-  totalUsageLimit: z.number().int().positive().optional(),
+  totalUsageLimit: z.number().int().positive().nullish(),
   perCustomerLimit: z.number().int().positive().default(1),
   stacking: DiscountStacking.default('none'),
   priority: z.number().int().nonnegative().default(0),
@@ -103,14 +103,14 @@ export type GiftCardStatus = z.infer<typeof GiftCardStatus>;
 export const IssueGiftCardInput = z.object({
   initialBalanceCents: MoneyCents.refine((v) => v > 0, 'Gift card must have a positive balance'),
   currency: Currency,
-  recipientEmail: z.string().email().optional(),
-  recipientName: z.string().max(127).optional(),
-  message: z.string().max(2000).optional(),
+  recipientEmail: z.string().email().nullish(),
+  recipientName: z.string().max(127).nullish(),
+  message: z.string().max(2000).nullish(),
   expiresAt: z.string().datetime().optional(),
   // When set, the gift card was sold as a product (the order item that
   // funded it). Used for refund handling — refunding the sale revokes
   // the unspent balance.
-  purchasingOrderItemId: Uuid.optional(),
+  purchasingOrderItemId: Uuid.nullish(),
   customCode: z
     .string()
     .min(8)
@@ -150,7 +150,7 @@ export const GrantAccountCreditInput = z.object({
   amountCents: MoneyCents.refine((v) => v > 0, 'Grant amount must be positive'),
   currency: Currency,
   reason: AccountCreditReason.default('grant'),
-  note: z.string().max(2000).optional(),
+  note: z.string().max(2000).nullish(),
   expiresAt: z.string().datetime().optional(),
 });
 export type GrantAccountCreditInput = z.infer<typeof GrantAccountCreditInput>;

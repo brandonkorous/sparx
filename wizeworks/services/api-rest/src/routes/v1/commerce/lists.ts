@@ -1,5 +1,5 @@
 // Commerce list endpoints that the dashboard needs but the service layer
-// hasn't yet abstracted: tenant-wide variant catalog, account-credit balances,
+// hasn't yet abstracted: the sellable variant catalog, account-credit balances,
 // cart inbox, checkout-session inbox, tenant-wide reviews / questions, question
 // detail, and wishlist analytics. (Inventory's enriched-levels + active-recalls
 // reads moved to the inventory module's own namespace — see routes/v1/inventory/
@@ -11,14 +11,16 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { nameSearchClauses, productSiteVisibilityWhere } from '@wizeworks/db';
 import type { Prisma } from '@wizeworks/db';
 import { depositFromColumns } from '@wizeworks/commerce';
 import { withRequestTenant } from '@wizeworks/api-core/db';
 import { ok, paged } from '@wizeworks/api-core/envelope';
-import { requireRole } from '@wizeworks/api-core/auth';
+import { requireAuth, requireRole } from '@wizeworks/api-core/auth';
 import { notFound } from '@wizeworks/api-core/errors';
 import { requireCommerceModule } from '../../../lib/commerce-context.js';
 import { cartContacts } from './cart-contact.js';
+import { resolveListScope } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -143,17 +145,41 @@ const ListReviewsQuery = z.object({
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const commerceListRoutes: FastifyPluginAsync = async (app) => {
-  // ── Variants tenant-wide ──────────────────────────────────────────
+  // ── What THIS SITE sells ──────────────────────────────────────────
+  //
+  // Scoped, like every other catalog read. It answers the till and the bundle
+  // picker, and both of those ask "what can I sell from where I am standing",
+  // which on a tenant with more than one business is not the same question as
+  // "what does this company own".
+  //
+  // Measured 2026-09-17 on a maker who runs seven sites: her clothing counter
+  // offered 108 versions where the site sells 75. The first two rows under the
+  // search box were a signet ring at $1,450 belonging to her jewelry line, and
+  // a tennis bracelet at $6,800 sat four rows below them. The products LIST in
+  // the same app showed 10 of her 34 products, correctly — so within one app
+  // the list was scoped and the till was not ([[feedback_site_is_the_business]]).
   app.get('/v1/commerce/variants', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
+    const auth = requireAuth(request);
     const q = request.query as Record<string, string | undefined>;
     const take = q?.take ? Math.min(Number(q.take), 1000) : 500;
     const includeArchived = q?.include_archived === 'true';
+    const propertyId = await resolveListScope(
+      auth,
+      q?.property,
+      request.headers['x-sparx-property-id']
+    );
 
     const rows = await withRequestTenant(request, (tx) =>
       tx.productVariant.findMany({
-        where: { ...(includeArchived ? {} : { deletedAt: null }) },
+        where: {
+          ...(includeArchived ? {} : { deletedAt: null }),
+          // The same clause the products list filters on, so the two screens
+          // agree by construction rather than by coincidence. A product with no
+          // site rows is global and belongs to every counter.
+          ...(propertyId === undefined ? {} : { product: productSiteVisibilityWhere(propertyId) }),
+        },
         orderBy: [{ product: { title: 'asc' } }, { sku: 'asc' }],
         take,
         select: {
@@ -234,18 +260,14 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
     const where: Prisma.AccountCreditWhereInput = {
       balanceCents: { gte: minBalance },
       ...(q.currency ? { currency: q.currency } : {}),
-      ...(q.q
-        ? {
-            customer: {
-              OR: [
-                { firstName: { contains: q.q, mode: 'insensitive' } },
-                { lastName: { contains: q.q, mode: 'insensitive' } },
-                { email: { contains: q.q, mode: 'insensitive' } },
-                { companyName: { contains: q.q, mode: 'insensitive' } },
-              ],
-            },
-          }
-        : {}),
+      // Every typed word has to land somewhere, so a whole name finds whoever
+      // holds the credit. See `nameSearchClauses`.
+      AND: nameSearchClauses(q.q, (term) => [
+        { customer: { firstName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { lastName: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { email: { contains: term, mode: 'insensitive' as const } } },
+        { customer: { companyName: { contains: term, mode: 'insensitive' as const } } },
+      ]),
     };
 
     const { rows, total } = await withRequestTenant(request, async (tx) => {

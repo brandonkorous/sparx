@@ -114,7 +114,7 @@ export function returnState(
       };
     case 'cancelled':
       return {
-        label: 'Cancelled',
+        label: 'Canceled',
         tone: 'neutral',
         detail: 'This return was called off before it was settled.',
       };

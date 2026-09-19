@@ -60,6 +60,10 @@ export interface Discount {
    *  actually experiences also depends on the schedule; see `discountState`. */
   status: string;
   usageCount: number;
+  /** What this offer has taken off, in cents, over its whole life. Summed from
+   *  the redemption ledger, so it is what actually came off the baskets rather
+   *  than the percentage re-applied. See `discount-words`. */
+  givenAwayCents: number;
   /** The sites this offer runs on. EMPTY = all of them. */
   propertyIds: string[];
   updatedAt: string;
@@ -78,6 +82,8 @@ export interface DiscountRow {
   startAt: string | null;
   endAt: string | null;
   usageCount: number;
+  /** See `Discount.givenAwayCents`. */
+  givenAwayCents: number;
   totalUsageLimit: number | null;
   updatedAt: string;
 }
@@ -207,20 +213,31 @@ export function useInvalidateDiscounts() {
 /* ── Mutations ──────────────────────────────────────────────────────────── */
 
 /** The exact `CreateDiscountInput` shape, validated against the real schema in
- *  `parseDiscountInput` before it leaves the browser. */
+ *  `parseDiscountInput` before it leaves the browser.
+ *
+ *  `| null` on the optional text fields is not decoration: every form in this
+ *  console sends null for an empty box, and the schema was widened to accept it
+ *  (issue 602). This interface is a HAND-WRITTEN MIRROR of that schema, so it
+ *  has to be widened with it — otherwise `parseDiscountInput` cannot return its
+ *  own parse result, which is what tsc caught. */
 export interface DiscountInput {
   code?: string | null;
   name: string;
-  description?: string;
+  description?: string | null;
   type: DiscountType;
   scope?: DiscountScope;
-  valueCents?: number;
-  valuePercent?: number;
-  currency?: string;
+  // Null, like its sibling below: a fixed-amount discount switched to a percent
+  // one clears this, and the API accepts that clearing on create as well as on
+  // edit now.
+  valueCents?: number | null;
+  valuePercent?: number | null;
+  /** Null on a percent discount: there is no amount for a currency to apply to,
+   *  and the service has always written null there. */
+  currency?: string | null;
   conditions?: DiscountCondition[];
   startAt?: string;
   endAt?: string;
-  totalUsageLimit?: number;
+  totalUsageLimit?: number | null;
   perCustomerLimit?: number;
   stacking?: DiscountStacking;
   priority?: number;

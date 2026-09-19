@@ -37,19 +37,35 @@ export class CommerceConflictError extends Error {
   }
 }
 
-// Out-of-stock / inventory-policy violations. Distinct from a generic
-// 422 because the storefront has a specific recovery path: surface a
-// "wait-list me" or "swap to back-orderable variant" CTA.
+/**
+ * The commerce-side twin of `InventoryOutOfStockError`, kept in step with it
+ * deliberately: the two packages raise the same refusal and api-rest maps both
+ * to one 409, so a shopper must never get two different sentences for one fact.
+ * The reasoning for the wording, and for naming the item rather than its id,
+ * lives on the inventory copy.
+ *
+ * Nothing in this package throws it today. It is kept because the mapping in
+ * api-rest's error handler is written against it and the checkout paths that
+ * will raise it are the ones a UUID would reach a SHOPPER through.
+ */
 export class CommerceOutOfStockError extends Error {
   readonly code = 'OUT_OF_STOCK' as const;
   readonly variantId: string;
   readonly requested: number;
   readonly available: number;
-  constructor(variantId: string, requested: number, available: number) {
-    super(`Variant ${variantId} out of stock (requested ${requested}, available ${available})`);
+  /** What a person calls it, when the caller knew. */
+  readonly label: string | null;
+  constructor(variantId: string, requested: number, available: number, label?: string | null) {
+    const named = label?.trim();
+    super(
+      named
+        ? `Not enough ${named}. This asks for ${String(requested)} and ${String(available)} ${available === 1 ? 'is' : 'are'} available.`
+        : `Not enough stock for variant ${variantId}. This asks for ${String(requested)} and ${String(available)} ${available === 1 ? 'is' : 'are'} available.`
+    );
     this.variantId = variantId;
     this.requested = requested;
     this.available = available;
+    this.label = named && named !== '' ? named : null;
   }
 }
 

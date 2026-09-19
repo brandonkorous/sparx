@@ -48,6 +48,7 @@ import {
   useRespondQueueReview,
   type QueueReview,
 } from './moderation-data';
+import { bulkDecisionWords, reviewDecisions, unchangedWords } from './moderation-decisions';
 
 const LABEL = 'Reviews';
 
@@ -145,8 +146,12 @@ function ReviewCard({
     moderate.mutate(
       { id: review.id, status },
       {
-        onSuccess: () => {
-          toast.add({ title: done, type: 'success' });
+        onSuccess: (result) => {
+          // Only the decisions this review is not already in are drawn below, so
+          // an unchanged answer means somebody else got here first (issue 640).
+          toast.add(
+            result.changed ? { title: done, type: 'success' } : unchangedWords('review', status)
+          );
         },
         onError: failed('Could not change that review'),
       }
@@ -281,29 +286,35 @@ function ReviewCard({
         />
       ) : (
         <div className="flex flex-wrap items-center gap-2">
-          <Button
-            size="sm"
-            color="module"
-            loading={moderate.isPending}
-            onClick={() => {
-              setStatus('approved', 'Review published');
-            }}
-          >
-            <Check className="size-4" aria-hidden />
-            Publish it
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            loading={moderate.isPending}
-            onClick={() => {
-              setStatus('rejected', 'Review hidden');
-            }}
-          >
-            <EyeOff className="size-4" aria-hidden />
-            Hide it
-          </Button>
+          {reviewDecisions(review.status).map((decision) =>
+            decision.icon === 'show' ? (
+              <Button
+                key={decision.next}
+                size="sm"
+                color="module"
+                loading={moderate.isPending}
+                onClick={() => {
+                  setStatus(decision.next, decision.done);
+                }}
+              >
+                <Check className="size-4" aria-hidden />
+                {decision.label}
+              </Button>
+            ) : (
+              <Button
+                key={decision.next}
+                size="sm"
+                variant="outline"
+                loading={moderate.isPending}
+                onClick={() => {
+                  setStatus(decision.next, decision.done);
+                }}
+              >
+                <EyeOff className="size-4" aria-hidden />
+                {decision.label}
+              </Button>
+            )
+          )}
           <Button
             size="sm"
             variant="outline"
@@ -375,13 +386,14 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
     setSelected(new Set());
   };
 
-  const bulkSetStatus = (status: 'approved' | 'rejected', done: string) => {
+  const bulkSetStatus = (status: 'approved' | 'rejected') => {
     bulkModerate.mutate(
       { reviewIds: selectedIds, status },
       {
         onSuccess: (result) => {
           clearSelection();
-          toast.add({ title: `${done} (${String(result.count)})`, type: 'success' });
+          // Counts what MOVED, and names what did not (issue 640).
+          toast.add(bulkDecisionWords('review', status, result));
         },
         onError: (error) => {
           toast.add({
@@ -533,7 +545,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                         loading={bulkModerate.isPending}
                         disabled={busy}
                         onClick={() => {
-                          bulkSetStatus('approved', 'Published');
+                          bulkSetStatus('approved');
                         }}
                       >
                         <Check className="size-4" aria-hidden />
@@ -546,7 +558,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                         loading={bulkModerate.isPending}
                         disabled={busy}
                         onClick={() => {
-                          bulkSetStatus('rejected', 'Hidden');
+                          bulkSetStatus('rejected');
                         }}
                       >
                         <EyeOff className="size-4" aria-hidden />

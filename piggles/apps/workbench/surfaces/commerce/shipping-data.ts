@@ -69,6 +69,10 @@ export interface ShippingProfile {
    *  identical, and only one of them is the default. */
   isDefault: boolean;
   collectionCount: number;
+  /** Delivery options naming this group, across every region. ZERO is a broken
+   *  group: a rate belongs to a (region, group) pair, so anything filed under a
+   *  group nothing prices is offered no way to be delivered at checkout. */
+  rateCount: number;
   updatedAt: string;
 }
 

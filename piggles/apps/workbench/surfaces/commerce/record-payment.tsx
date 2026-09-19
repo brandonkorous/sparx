@@ -123,7 +123,7 @@ export function RecordPayment({ order, due }: { order: Order; due: number }) {
         <span className="text-base font-medium">Anything to note (optional)</span>
         <Input
           value={reference}
-          placeholder="Cheque number, who took it…"
+          placeholder="Check number, who took it…"
           onChange={(event) => {
             setReference(event.target.value);
           }}

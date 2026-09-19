@@ -50,7 +50,7 @@ const FILTERS = [
   { value: 'to_send', label: 'To send', status: 'placed', paymentStatus: undefined },
   { value: 'sent', label: 'On the way', status: 'fulfilled', paymentStatus: undefined },
   { value: 'delivered', label: 'Delivered', status: 'delivered', paymentStatus: undefined },
-  { value: 'cancelled', label: 'Cancelled', status: 'cancelled', paymentStatus: undefined },
+  { value: 'cancelled', label: 'Canceled', status: 'cancelled', paymentStatus: undefined },
 ] as const;
 
 type FilterValue = (typeof FILTERS)[number]['value'];
@@ -324,7 +324,7 @@ export function OrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* Only where there is a pointer to do them with — on the stack these
             three modifiers do not exist. */}
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

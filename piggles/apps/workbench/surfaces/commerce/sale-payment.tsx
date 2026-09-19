@@ -94,7 +94,7 @@ export function SalePayment({
             color="module"
             value={paidNote}
             disabled={taken <= 0}
-            placeholder="Cheque number, who took it…"
+            placeholder="Check number, who took it…"
             onChange={(event) => {
               setPaidNote(event.target.value);
             }}

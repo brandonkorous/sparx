@@ -99,6 +99,16 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (row: CollectionSummary, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.collection.detail', { id: row.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar and the empty state's invitation.
+  // Split, the label drifts — and the first-run state used to have no button
+  // at all, so "Add your first one" pointed at a round plus that never wears
+  // its label on screen.
+  const createFirst = {
+    label: 'Add a group',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -119,11 +129,8 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Add a group',
+          ...createFirst,
           icon: faPlus,
-          onClick: (event) => {
-            ctx.open('commerce.collection.detail', { id: 'new' }, { target: targetFor(event) });
-          },
           title: 'Add a group: hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
@@ -182,6 +189,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No groups yet',
               description:
                 'A group is a set of products you show together: a sale, a gift guide, what is new this month. Add your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -211,7 +219,7 @@ export function CollectionsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

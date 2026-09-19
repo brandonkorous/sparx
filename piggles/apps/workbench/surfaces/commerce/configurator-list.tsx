@@ -116,6 +116,20 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.configurator-template.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar and the empty state's invitation.
+  // Split, the label drifts — and the first-run state used to have no button
+  // at all, so "Add your first one" pointed at a round plus that never wears
+  // its label on screen.
+  const createFirst = {
+    label: 'Set up a build',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open(
+        'commerce.configurator-template.detail',
+        { id: 'new' },
+        { target: targetFor(event) }
+      );
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -136,15 +150,8 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Set up a build',
+          ...createFirst,
           icon: faPlus,
-          onClick: (event) => {
-            ctx.open(
-              'commerce.configurator-template.detail',
-              { id: 'new' },
-              { target: targetFor(event) }
-            );
-          },
           title: 'Set up a build: hold Shift to open alongside, Alt for a new window',
         }}
         filters={[
@@ -209,6 +216,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No builds yet',
               description:
                 'A build lets a shopper make a product to order: choosing a size, a finish, an engraving, anything that changes what they get or what it costs. Set up your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -283,7 +291,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

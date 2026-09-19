@@ -72,7 +72,16 @@ export type UpdateShippingZoneInput = z.infer<typeof UpdateShippingZoneInput>;
 
 export const CreateShippingProfileInput = z.object({
   name: z.string().min(1).max(127),
-  description: z.string().max(2000).optional(),
+  // NULLISH, not optional. The console's note box is labelled "Note (optional)"
+  // and sends `null` when it is empty — which `.optional()` rejected, so a group
+  // could not be CREATED without typing a note, and a note once written could
+  // never be cleared. Both came back as a bare 422 and "Nothing was changed".
+  //
+  // The two absences are different and the service already tells them apart:
+  // `undefined` means leave the note alone, `null` means clear it
+  // (`input.description !== undefined ? { description: input.description ?? null }`).
+  // Only this line disagreed.
+  description: z.string().max(2000).nullish(),
   // Carrier service slugs that may quote for this profile. Empty = any.
   allowedCarrierServices: z.array(z.string().min(1).max(63)).max(50).default([]),
   // Hazmat class allow-list — items above this class are routed to a
@@ -123,8 +132,8 @@ export const CreateShippingRateInput = z.object({
   name: z.string().min(1).max(127),
   type: ShippingRateType,
   // For flat / free_above_threshold:
-  amountCents: MoneyCents.optional(),
-  freeAboveCents: MoneyCents.optional(),
+  amountCents: MoneyCents.nullish(),
+  freeAboveCents: MoneyCents.nullish(),
   // For by_weight / by_price / by_item_count — array of bands.
   bands: z
     .array(
@@ -137,8 +146,8 @@ export const CreateShippingRateInput = z.object({
     .max(50)
     .optional(),
   currency: Currency,
-  carrier: z.string().max(63).optional(), // display only ("USPS Priority")
-  estimatedDeliveryDays: z.number().int().positive().max(60).optional(),
+  carrier: z.string().max(63).nullish(), // display only ("USPS Priority")
+  estimatedDeliveryDays: z.number().int().positive().max(60).nullish(),
 });
 export type CreateShippingRateInput = z.infer<typeof CreateShippingRateInput>;
 

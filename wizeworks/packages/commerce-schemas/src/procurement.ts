@@ -200,15 +200,69 @@ export type PurchaseOrderApprovalStatus = z.infer<typeof PurchaseOrderApprovalSt
 export const ApproverRole = z.enum(['owner', 'admin', 'editor']);
 export type ApproverRole = z.infer<typeof ApproverRole>;
 
+// Who a required role actually admits. Spelled out as sets rather than compared
+// against a rank number, because there are exactly three of them and the ladder
+// already exists in two hand-synced copies elsewhere; a third would be a third
+// thing to drift.
+const ADMITTED_BY: Record<ApproverRole, readonly string[]> = {
+  editor: ['owner', 'admin', 'editor'],
+  admin: ['owner', 'admin'],
+  owner: ['owner'],
+};
+
+/**
+ * May this person sign off an order the rule routed to `requiredRole`?
+ *
+ * The decide endpoint is `editor`-gated, which is the floor for touching buying
+ * at all — so WITHOUT this check a rule reading "The owner signs it off" was
+ * satisfied by the most junior person who could raise the order in the first
+ * place. The rule's own words were decorative: stored, printed on the Spending
+ * limits list, and never consulted. It is the same hole the route header already
+ * closed for WRITING a rule ("a spending control an ordinary editor can raise
+ * the threshold on is not a control") left open one step along, on signing.
+ * [[feedback_a_fix_leaves_its_neighbour_behind]]
+ *
+ * No role on the rule means "anyone who can edit buying", which the endpoint has
+ * already established — so that is a yes, not a no.
+ */
+export function canSignOff(
+  actorRole: string | null | undefined,
+  requiredRole: string | null | undefined
+): boolean {
+  if (requiredRole === null || requiredRole === undefined || requiredRole === '') return true;
+  const admitted = ADMITTED_BY[requiredRole as ApproverRole];
+  // A role nobody recognises must not hold an order forever with no possible
+  // approver — the same reasoning that keeps `viewer` and `member` out of the
+  // enum above.
+  if (!admitted) return true;
+  if (actorRole === null || actorRole === undefined || actorRole === '') return false;
+  return admitted.includes(actorRole);
+}
+
+// "Every supplier", "every location" and "whoever can edit buying" are NULL on
+// these four fields, and null is how a form says them: a <select> whose blank
+// option means "no narrowing" sends null, not a missing key. Creating and
+// editing therefore have to accept the SAME payload, and for a long time they
+// did not — only the update below carried `.nullable()`, so the identical object
+// saved fine on an existing rule and 400'd on a new one with "the problem is
+// with Supplier id and Warehouse id" over two fields nobody had touched.
+//
+// The screen that sends it opens on "Any supplier · Any location", so the form's
+// own default state was the unsaveable one. MEASURED 2026-09-18: ZERO rows in
+// `inventory_po_approval_rules` on the whole platform — no tenant had ever
+// managed to set a spending limit, which is why no purchase order has ever been
+// held for sign-off either. [[feedback_a_fix_leaves_its_neighbour_behind]]
 export const CreatePoApprovalRuleInput = z.object({
   name: z.string().trim().min(1).max(80),
-  /** Omit for "every supplier". */
-  supplierId: Uuid.optional(),
-  /** Omit for "every location". */
-  warehouseId: Uuid.optional(),
+  /** Null or omitted for "every supplier". */
+  supplierId: Uuid.nullable().optional(),
+  /** Null or omitted for "every location". */
+  warehouseId: Uuid.nullable().optional(),
   minAmountCents: z.number().int().nonnegative().max(1_000_000_000).default(0),
-  requiredApproverUserId: Uuid.optional(),
-  requiredRole: ApproverRole.optional(),
+  /** Null or omitted routes to the role below rather than to one person. */
+  requiredApproverUserId: Uuid.nullable().optional(),
+  /** Null or omitted means anyone who can edit buying. */
+  requiredRole: ApproverRole.nullable().optional(),
   sortOrder: z.number().int().min(-1000).max(1000).default(0),
   isActive: z.boolean().default(true),
 });
@@ -217,12 +271,9 @@ export type CreatePoApprovalRuleInput = z.infer<typeof CreatePoApprovalRuleInput
 // Same defaults-survive-`.partial()` trap as UpdateSupplierInput: editing a
 // rule's name must not silently reactivate a rule somebody switched off, nor
 // reset its threshold to "every order". Keep in sync with every `.default()`
-// above.
+// above — and ONLY with those. The four nullable fields are inherited through
+// `.partial()` now, so there is nothing left here for them to drift from.
 export const UpdatePoApprovalRuleInput = CreatePoApprovalRuleInput.partial().extend({
-  supplierId: Uuid.nullable().optional(),
-  warehouseId: Uuid.nullable().optional(),
-  requiredApproverUserId: Uuid.nullable().optional(),
-  requiredRole: ApproverRole.nullable().optional(),
   minAmountCents: z.number().int().nonnegative().max(1_000_000_000).optional(),
   sortOrder: z.number().int().min(-1000).max(1000).optional(),
   isActive: z.boolean().optional(),
@@ -299,14 +350,14 @@ export type AsnLineInput = z.infer<typeof AsnLineInput>;
 
 export const CreateAsnInput = z.object({
   purchaseOrderId: Uuid,
-  reference: z.string().trim().max(120).optional(),
-  carrier: z.string().trim().max(80).optional(),
-  trackingNumber: z.string().trim().max(120).optional(),
-  packageCount: z.number().int().positive().max(100_000).optional(),
-  shippedAt: z.string().datetime().optional(),
-  expectedArrivalAt: z.string().datetime().optional(),
+  reference: z.string().trim().max(120).nullish(),
+  carrier: z.string().trim().max(80).nullish(),
+  trackingNumber: z.string().trim().max(120).nullish(),
+  packageCount: z.number().int().positive().max(100_000).nullish(),
+  shippedAt: z.string().datetime().nullish(),
+  expectedArrivalAt: z.string().datetime().nullish(),
   source: AsnSource.default('manual'),
-  notes: z.string().max(2000).optional(),
+  notes: z.string().max(2000).nullish(),
   lines: z.array(AsnLineInput).min(1).max(500),
 });
 export type CreateAsnInput = z.infer<typeof CreateAsnInput>;
@@ -354,13 +405,13 @@ export type SupplierReturnLineInput = z.infer<typeof SupplierReturnLineInput>;
 export const CreateSupplierReturnInput = z.object({
   supplierId: Uuid,
   warehouseId: Uuid,
-  purchaseOrderId: Uuid.optional(),
+  purchaseOrderId: Uuid.nullish(),
   reason: SupplierReturnReason,
-  rmaNumber: z.string().trim().max(64).optional(),
-  carrier: z.string().trim().max(80).optional(),
-  trackingNumber: z.string().trim().max(120).optional(),
+  rmaNumber: z.string().trim().max(64).nullish(),
+  carrier: z.string().trim().max(80).nullish(),
+  trackingNumber: z.string().trim().max(120).nullish(),
   currency: z.string().length(3).default('USD'),
-  notes: z.string().max(2000).optional(),
+  notes: z.string().max(2000).nullish(),
   lines: z.array(SupplierReturnLineInput).min(1).max(500),
 });
 export type CreateSupplierReturnInput = z.infer<typeof CreateSupplierReturnInput>;
@@ -414,11 +465,11 @@ export type SupplierBillLineInput = z.infer<typeof SupplierBillLineInput>;
 
 export const CreateSupplierBillInput = z.object({
   supplierId: Uuid,
-  purchaseOrderId: Uuid.optional(),
+  purchaseOrderId: Uuid.nullish(),
   /** Their invoice number. */
   number: z.string().trim().min(1).max(40),
   billedAt: z.string().datetime(),
-  dueAt: z.string().datetime().optional(),
+  dueAt: z.string().datetime().nullish(),
   currency: z.string().length(3).default('USD'),
   fxRate: z
     .string()
@@ -428,7 +479,7 @@ export const CreateSupplierBillInput = z.object({
     .optional(),
   taxCents: z.number().int().nonnegative().max(1_000_000_000).default(0),
   freightCents: z.number().int().nonnegative().max(1_000_000_000).default(0),
-  notes: z.string().max(2000).optional(),
+  notes: z.string().max(2000).nullish(),
   lines: z.array(SupplierBillLineInput).min(1).max(500),
 });
 export type CreateSupplierBillInput = z.infer<typeof CreateSupplierBillInput>;

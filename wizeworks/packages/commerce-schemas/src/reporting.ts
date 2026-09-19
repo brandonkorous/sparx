@@ -578,11 +578,11 @@ export const CreateReportScheduleInput = z.object({
   name: z.string().trim().min(1).max(120),
   cadence: ReportCadence,
   /** 0=Sunday … 6=Saturday. Weekly only. */
-  dayOfWeek: z.number().int().min(0).max(6).optional(),
+  dayOfWeek: z.number().int().min(0).max(6).nullish(),
   /** 1–28 only: a monthly report set to the 31st would skip February, and
    *  silently missing a month is exactly the failure a schedule exists to
    *  prevent. */
-  dayOfMonth: z.number().int().min(1).max(28).optional(),
+  dayOfMonth: z.number().int().min(1).max(28).nullish(),
   /** Hour of day in the tenant's timezone, 0–23. */
   hour: z.number().int().min(0).max(23).default(7),
   timezone: z.string().trim().min(1).max(64).default('UTC'),
@@ -750,6 +750,16 @@ export interface ImportRowPlan {
    *  Applied to the stock position, and applied even on a row that changes no
    *  quantity — a file correcting only the aisle number is a real import. */
   customFields?: Record<string, unknown>;
+  /**
+   * What the person wrote beside the count, in their own words.
+   *
+   * The template Piggles hands out ships a `note` column, and the parser has
+   * always recognised it under three spellings — and nothing read the value.
+   * Every movement said "Imported from <file>, row N" however carefully
+   * somebody had explained the difference, so the one place on a stock-take to
+   * say WHY a shelf disagreed with the books went nowhere at all.
+   */
+  note?: string | null;
   /** How a person resolved this row: `skip`, `match` (point it at an item that
    *  already exists) or `create`. Absent on a row nobody touched. */
   resolution?: 'skip' | 'match' | 'create';

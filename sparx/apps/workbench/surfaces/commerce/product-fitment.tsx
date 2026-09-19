@@ -96,6 +96,7 @@ import {
   type ProductFitment,
   type ProductFitmentRange,
 } from './products-data';
+import { ActionLabel } from '../../components/action-label';
 
 const LABEL = 'Fitment';
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -759,7 +760,7 @@ function FitmentBody({
                 }}
               >
                 <Plus className="size-4" aria-hidden />
-                <span className="hidden @md:inline">Add what it fits</span>
+                <ActionLabel from="md">Add what it fits</ActionLabel>
               </Button>
             ) : null}
           </>

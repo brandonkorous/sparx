@@ -10,10 +10,15 @@
 // rules (freight, signature), which is what a rate needs to know.
 
 import { shownInPlace } from '@wizeworks/query';
+import { groupDeliveryWarning } from './shipping-group-words';
 import { useEffect, useMemo, useState } from 'react';
 import { PaneWaiting } from '../../components/pane-waiting';
 import { PaneLoadError } from '../../components/pane-load-error';
 import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
   Card,
@@ -251,21 +256,35 @@ function ProfileEditor({
 
   const productCount = profile ? profile.productCount + profile.variantCount : 0;
 
+  // One read, one sentence. Null when a region prices this group.
+  const gap = profile && !isNew ? groupDeliveryWarning(profile) : null;
+
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Product group actions"
         status={
           !isNew ? (
-            <Badge variant="soft" size="sm">
-              {profile?.isDefault
-                ? 'All other products'
-                : productCount === 0
-                  ? 'Nothing in it yet'
-                  : productCount === 1
-                    ? '1 product'
-                    : `${String(productCount)} products`}
-            </Badge>
+            <>
+              {/* Whether anything in here can actually reach a customer comes
+                  first: a group no region prices renders exactly like a group
+                  with three options, and the difference is a basket that
+                  cannot be checked out. */}
+              {gap ? (
+                <Badge color={gap.tone === 'error' ? 'danger' : 'warning'} variant="soft" size="sm">
+                  {gap.short}
+                </Badge>
+              ) : null}
+              <Badge variant="soft" size="sm">
+                {profile?.isDefault
+                  ? 'All other products'
+                  : productCount === 0
+                    ? 'Nothing in it yet'
+                    : productCount === 1
+                      ? '1 product'
+                      : `${String(productCount)} products`}
+              </Badge>
+            </>
           ) : null
         }
         primary={
@@ -302,6 +321,15 @@ function ProfileEditor({
           ) : null}
 
           <SaveFailure title="Could not save this group" message={failure} />
+
+          {gap ? (
+            <Alert color={gap.tone === 'error' ? 'error' : 'warning'}>
+              <AlertContent>
+                <AlertTitle>{gap.short}</AlertTitle>
+                <AlertDescription>{gap.detail}</AlertDescription>
+              </AlertContent>
+            </Alert>
+          ) : null}
 
           <FormSection title="The group">
             <Field>

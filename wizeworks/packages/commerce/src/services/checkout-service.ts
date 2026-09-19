@@ -10,7 +10,7 @@
 // Order via @wizeworks/crm's orderService and fires the post-commit events
 // (order.placed, inventory.adjusted, email.send).
 
-import { orderService, orderPaymentsService, b2bArService } from '@wizeworks/crm';
+import { orderService, b2bArService } from '@wizeworks/crm';
 import {
   type AppliedSurcharge,
   applySurcharges,
@@ -43,6 +43,7 @@ type AnyTx = TxClient & Record<string, any>;
 
 import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
+import { formatAmount } from './money';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
 import { isInventoryActive } from '../inventory-gate';
@@ -949,8 +950,20 @@ export async function complete(
       const available = Number(account.creditLimit) - Number(account.creditUsed);
       const orderDollars = session.totalCents / 100;
       if (orderDollars > available) {
+        // The person reading this is a buyer who has just been stopped at
+        // checkout, so the two numbers have to be countable and the sentence has
+        // to say what to do about it. It used to read "Insufficient credit:
+        // $50000.00 available, $52340.00 required" — every credit limit on the
+        // platform is five figures, so the digits a reader has to count were
+        // exactly the ones with no separator between them.
+        const order = formatAmount(orderDollars, session.currency);
+        const left =
+          available > 0
+            ? `your account has ${formatAmount(available, session.currency)} of credit left`
+            : 'your account has no credit left';
         throw new CommerceValidationError(
-          `Insufficient credit: $${available.toFixed(2)} available, $${orderDollars.toFixed(2)} required`
+          `This order comes to ${order} and ${left}. ` +
+            'Pay down what is outstanding, or ask your account manager to raise the limit.'
         );
       }
     }
@@ -1195,28 +1208,11 @@ export async function complete(
           orderId: order.id,
         }
       );
-      // …and the order has to KNOW it was part-paid, or the shopper pays twice.
-      //
-      // The order's own total is the value of the goods and the delivery: it is
-      // not reduced by a gift card, because a card is not a discount. What the
-      // card does is settle part of the bill, so it is recorded as MONEY IN,
-      // which is what `amountPaid` and "Still owed" are already built from.
-      //
-      // Without this the shopper was shown "$509.00 to pay", $150 came off the
-      // card, and the order was still written asking for $659 — the same $150
-      // charged twice, once off the card and once on the invoice.
-      await orderPaymentsService.recordPayment(
-        { ...ctx, tx },
-        {
-          orderId: order.id,
-          processor: 'gift_card',
-          processorRef: reservedCard.code,
-          amount: session.giftCardAppliedCents / 100,
-          currency: session.currency,
-          status: 'captured',
-          metadata: { giftCardId: reservedCard.id, giftCardCode: reservedCard.code },
-        }
-      );
+      // The order also has to KNOW it was part-paid, or the shopper pays
+      // twice — "$509.00 to pay" on screen, $150 off the card, and an order
+      // still written asking for $659. `redeemGiftCard` records that itself,
+      // in the same transaction as the debit: it was this caller's job once,
+      // and an earlier caller forgot (issue 548).
     }
 
     // Card payments: open a PENDING OrderPayment keyed to the gateway intent so the

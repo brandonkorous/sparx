@@ -117,6 +117,19 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.configurator-template.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Set up a build',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open(
+        'commerce.configurator-template.detail',
+        { id: 'new' },
+        { target: targetFor(event) }
+      );
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -142,16 +155,10 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Set up a build: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open(
-                'commerce.configurator-template.detail',
-                { id: 'new' },
-                { target: targetFor(event) }
-              );
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Set up a build</span>
+            <span className="hidden @lg:inline">{createFirst.label}</span>
           </Button>
         }
         controls={
@@ -208,6 +215,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No builds yet',
               description:
                 'A build lets a shopper make a product to order: choosing a size, a finish, an engraving, anything that changes what they get or what it costs. Set up your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -282,7 +290,7 @@ export function ConfiguratorListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

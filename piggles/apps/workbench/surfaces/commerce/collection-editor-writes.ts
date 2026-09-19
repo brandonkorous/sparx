@@ -13,6 +13,7 @@ import { api } from '../../lib/api/client';
 import { afterPaneChange } from '../../lib/defer';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { sameSet, type Draft } from './collection-draft';
+import { filedInGroup } from './collection-members-words';
 import { slugify } from '../../lib/slugify';
 import {
   buildRuleSet,
@@ -45,7 +46,7 @@ export function useCollectionWrites({
   /** The address the field is showing, which is what gets claimed. */
   handle: string;
   /** The saved collection, when there is one — deleting needs its name and count. */
-  collection: { name: string; productCount: number } | null;
+  collection: { name: string; productCount: number; hiddenProductCount: number } | null;
   nameError: string | null;
   setRuleError: (next: string | null) => void;
   /** Called once the server has confirmed, so the form can adopt it. */
@@ -173,7 +174,13 @@ export function useCollectionWrites({
 
   const onDelete = async () => {
     if (!collection) return;
-    const count = collection.productCount;
+    // Every site's worth: deleting the group removes it everywhere, so counting
+    // only what is visible here would name a number that is not the number kept
+    // (issue 626).
+    const count = filedInGroup({
+      shown: collection.productCount,
+      hidden: collection.hiddenProductCount,
+    });
     const ok = await confirm({
       title: `Delete ${collection.name}?`,
       description:

@@ -74,7 +74,7 @@ export const CreateBomInput = z.object({
    *  legitimate answer and the default; it is folded into the finished unit's
    *  cost, because pricing off components alone prices your own time at zero. */
   laborCostCents: z.number().int().min(0).max(100_000_000).optional(),
-  notes: z.string().trim().max(2000).optional(),
+  notes: z.string().trim().max(2000).nullish(),
   components: z.array(BomComponentInput).min(1).max(200),
 });
 export type CreateBomInput = z.infer<typeof CreateBomInput>;
@@ -117,8 +117,8 @@ export const CreateAssemblyOrderInput = z.object({
   /** In OUTPUT units: how many finished things to make (or take apart). */
   quantity: z.number().int().min(1).max(1_000_000),
   laborCostCents: z.number().int().min(0).max(100_000_000).optional(),
-  plannedFor: z.string().datetime().optional(),
-  notes: z.string().trim().max(2000).optional(),
+  plannedFor: z.string().datetime().nullish(),
+  notes: z.string().trim().max(2000).nullish(),
 });
 export type CreateAssemblyOrderInput = z.infer<typeof CreateAssemblyOrderInput>;
 
@@ -154,12 +154,12 @@ export const CompleteAssemblyOrderInput = z.object({
     )
     .max(200)
     .optional(),
-  note: z.string().trim().max(500).optional(),
+  note: z.string().trim().max(500).nullish(),
 });
 export type CompleteAssemblyOrderInput = z.infer<typeof CompleteAssemblyOrderInput>;
 
 export const CancelAssemblyOrderInput = z.object({
-  reason: z.string().trim().max(500).optional(),
+  reason: z.string().trim().max(500).nullish(),
 });
 export type CancelAssemblyOrderInput = z.infer<typeof CancelAssemblyOrderInput>;
 

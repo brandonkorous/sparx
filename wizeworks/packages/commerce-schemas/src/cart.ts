@@ -38,16 +38,16 @@ export type UpdateCartItemInput = z.infer<typeof UpdateCartItemInput>;
 export const CreateCartInput = z.object({
   channel: Channel,
   currency: Currency,
-  customerId: Uuid.optional(),
+  customerId: Uuid.nullish(),
   // Cookie-bound guest token; set when no customer is authenticated.
-  guestToken: z.string().min(8).max(127).optional(),
+  guestToken: z.string().min(8).max(127).nullish(),
   // Optional carry-over: when a B2B contact starts a cart from an accepted
   // billing document (a quote).
-  fromDocumentId: Uuid.optional(),
-  fromSubscriptionId: Uuid.optional(),
+  fromDocumentId: Uuid.nullish(),
+  fromSubscriptionId: Uuid.nullish(),
   // Origin site (docs/58 D1) — the storefront property this cart belongs to, so
   // the order placed from it inherits the site. Omitted for admin / MCP carts.
-  propertyId: Uuid.optional(),
+  propertyId: Uuid.nullish(),
 });
 export type CreateCartInput = z.infer<typeof CreateCartInput>;
 

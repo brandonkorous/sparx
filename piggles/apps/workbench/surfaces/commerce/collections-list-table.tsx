@@ -6,11 +6,41 @@
 // and columns disclose by @container width, because a group pane is 320px beside
 // an editor or the whole window.
 
-import { Badge, Text } from '@wizeworks/silicaui-react';
+import { Badge, Text, Tooltip } from '@wizeworks/silicaui-react';
 import { faArrowDown, faArrowUp } from '@fortawesome/pro-solid-svg-icons';
 import { Icon } from '@piggles/ui';
 import { Table } from '../../components/table';
 import type { CollectionSort, CollectionSummary, SortDir } from './collections-data';
+
+/** The number beside a group, and the honest footnote when it is not the whole
+ *  story.
+ *
+ *  The figure is what a SHOPPER would find in the group on this site, which is
+ *  the question anybody reading this column is asking. It used to be a raw count
+ *  of filing rows, so on a maker running seven websites "New arrivals" read 5
+ *  over a group page holding nothing she sells here — all five were jewelry and
+ *  fragrance from her other sites (issue 626). A truthful 0 alone would read as
+ *  "my products have vanished", so where anything is filed-but-unshown the row
+ *  says so and the tooltip says why.
+ *
+ *  This is the aisle list's `ProductCount` (issue 382), one screen over. It was
+ *  written there and not here. */
+function GroupCount({ row }: { row: CollectionSummary }) {
+  const hidden = row.hiddenProductCount;
+  if (hidden === 0) return <>{String(row.productCount)}</>;
+  return (
+    <span className="inline-flex items-center justify-end gap-2">
+      {String(row.productCount)}
+      <Tooltip
+        content={`${String(hidden)} more ${hidden === 1 ? 'product is' : 'products are'} in this group but not on your website: archived, still a draft, or kept for one of your other sites.`}
+      >
+        <Badge color="info" variant="soft" size="sm">
+          {String(hidden)} not shown
+        </Badge>
+      </Tooltip>
+    </span>
+  );
+}
 
 export interface Sort {
   key: CollectionSort;
@@ -132,7 +162,9 @@ export function CollectionsTable({
                 </Text>
               )}
             </td>
-            <td className="text-right tabular-nums">{String(row.productCount)}</td>
+            <td className="text-right tabular-nums">
+              <GroupCount row={row} />
+            </td>
             <td className="hidden text-right text-sm tabular-nums @2xl:table-cell">
               {formatUpdated(row.updatedAt)}
             </td>

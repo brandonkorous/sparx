@@ -22,6 +22,7 @@ import {
   SpendAccountCreditInput,
   UpdateDiscountInput,
 } from '@wizeworks/commerce-schemas';
+import { orderPaymentsService } from '@wizeworks/crm';
 import { withTenant } from '@wizeworks/db';
 import type { Discount, GiftCard, Prisma, TxClient } from '@wizeworks/db';
 
@@ -65,6 +66,21 @@ export interface DiscountRow {
   priority: number;
   status: string;
   usageCount: number;
+  /**
+   * WHAT THE OFFER HAS COST, over its whole life, in cents.
+   *
+   * `usageCount` on its own answers a question nobody asks. A shop owner runs an
+   * offer to make a trade, so the number they need is the size of it: "used 4
+   * times" and "$91.20 off" are the same four redemptions, and only one of them
+   * tells her whether to run it again.
+   *
+   * Summed from the `DiscountUsage` ledger, which records `appliedCents` on
+   * every redemption, so it is exact rather than re-derived from the percentage.
+   * A part-refunded order does not give the money back here: the offer still
+   * came off the price. Lifetime, not a window, because the question is what
+   * this offer has cost, not what it cost recently.
+   */
+  givenAwayCents: number;
   /** Model B: the sites this offer runs on. EMPTY = every site. */
   propertyIds: string[];
   updatedAt: string;
@@ -121,19 +137,49 @@ export async function listDiscounts(
       }),
       tx.discount.count({ where }),
     ]);
-    return { items: rows.map(serializeDiscount), total };
+    // One grouped read for the whole page, not one per row. `groupBy` is bounded
+    // by the ids actually on screen, so a shop with a thousand offers still does
+    // two queries.
+    const givenAway = await sumGivenAway(
+      tx,
+      rows.map((row) => row.id)
+    );
+    return {
+      items: rows.map((row) => serializeDiscount(row, givenAway.get(row.id) ?? 0)),
+      total,
+    };
   });
 }
 
+/**
+ * What each of these offers has taken off, in cents, keyed by discount id.
+ *
+ * Reads the redemption ledger rather than recomputing the percentage: a
+ * redemption records what actually came off that basket, and re-deriving it from
+ * `valuePercent` would disagree the moment a cap, a minimum, or a rounding rule
+ * was in play. Ids not present in the result gave away nothing, which is why the
+ * callers default to 0 rather than treating a missing key as unknown.
+ */
+async function sumGivenAway(tx: TxClient, discountIds: string[]): Promise<Map<string, number>> {
+  if (discountIds.length === 0) return new Map();
+  const rows = await tx.discountUsage.groupBy({
+    by: ['discountId'],
+    where: { discountId: { in: discountIds } },
+    _sum: { appliedCents: true },
+  });
+  return new Map(rows.map((row) => [row.discountId, row._sum.appliedCents ?? 0]));
+}
+
 export async function getDiscount(ctx: ServiceContext, id: string): Promise<DiscountRow> {
-  const row = await withTenant(ctx, (tx) =>
-    tx.discount.findFirst({
+  return withTenant(ctx, async (tx) => {
+    const row = await tx.discount.findFirst({
       where: { id, deletedAt: null },
       include: { siteLinks: { select: { propertyId: true } } },
-    })
-  );
-  if (!row) throw new CommerceNotFoundError('Discount', id);
-  return serializeDiscount(row);
+    });
+    if (!row) throw new CommerceNotFoundError('Discount', id);
+    const givenAway = await sumGivenAway(tx, [row.id]);
+    return serializeDiscount(row, givenAway.get(row.id) ?? 0);
+  });
 }
 
 export async function createDiscount(
@@ -849,9 +895,31 @@ export { giftCardOnCart, giftCardReservation };
 export type { ReservedGiftCard } from './gift-card-reservation';
 
 /**
- * Debit a gift card. Called from checkout on order placement (NOT from
- * cart application). Atomically decrements balanceCents, writes a
- * redeem transaction, and updates status='spent' when balance hits 0.
+ * Debit a gift card AND record what that paid for.
+ *
+ * Called from checkout on order placement (NOT from cart application).
+ * Atomically decrements balanceCents, writes a redeem transaction, records the
+ * money against the order, and updates status='spent' when the balance hits 0.
+ *
+ * ── Why the payment is written HERE, and not left to the caller ─────────────
+ *
+ * The order's own total is the value of the goods and the delivery: a gift card
+ * does not reduce it, because a card is not a discount. What the card does is
+ * SETTLE part of the bill, so it has to be recorded as money in — which is what
+ * `amountPaid` and "Still owed" are built from.
+ *
+ * That was the caller's job, and a caller forgot. Juniper Row's O-000015: $150
+ * came off Marguerite Adeyemi's card against that order, no payment was
+ * written, and the order reads "$659.00 still owed · No money has come in for
+ * this order yet" while the gift card screen shows the same $150 as spent on
+ * it. Two screens, one event, opposite answers — and the customer is asked for
+ * money she has already handed over.
+ *
+ * Checkout was fixed on 2026-09-08 by adding the `recordPayment` call beside
+ * this one. That fix is one caller's, and this function takes an `orderId`, so
+ * the next caller starts with the same hole. Both writes belong to one act, in
+ * one transaction, so there is no version of "redeemed" that is not also
+ * "paid".
  */
 export async function redeemGiftCard(
   ctx: ServiceContext,
@@ -887,6 +955,22 @@ export async function redeemGiftCard(
         actorUserId: ctx.userId ?? null,
       },
     });
+    // Money in, in the same transaction as the debit. `recordPayment` is given
+    // this `tx`, so a failure below rolls the card's balance back with it: a
+    // card debited against an order that records nothing is money the shopper
+    // can neither spend nor get back.
+    await orderPaymentsService.recordPayment(
+      { ...ctx, tx },
+      {
+        orderId: input.orderId,
+        processor: 'gift_card',
+        processorRef: card.code,
+        amount: input.deltaCents / 100,
+        currency: card.currency,
+        status: 'captured',
+        metadata: { giftCardId: card.id, giftCardCode: card.code },
+      }
+    );
     await publishCommerceEvent({
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
@@ -1247,7 +1331,10 @@ function generateGiftCardCode(): string {
   ].join('-');
 }
 
-function serializeDiscount(row: Discount & { siteLinks?: { propertyId: string }[] }): DiscountRow {
+function serializeDiscount(
+  row: Discount & { siteLinks?: { propertyId: string }[] },
+  givenAwayCents = 0
+): DiscountRow {
   return {
     id: row.id,
     code: row.code,
@@ -1269,6 +1356,7 @@ function serializeDiscount(row: Discount & { siteLinks?: { propertyId: string }[
     priority: row.priority,
     status: row.status,
     usageCount: row.usageCount,
+    givenAwayCents,
     propertyIds: row.siteLinks?.map((l) => l.propertyId) ?? [],
     updatedAt: row.updatedAt.toISOString(),
   };

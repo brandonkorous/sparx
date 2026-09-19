@@ -256,7 +256,7 @@ export function useInstallFitmentDictionary() {
 
 /**
  * The server's own sentence for a 4xx, which these routes write to be shown
- * verbatim: "Can't remove level "Model" — 12 node(s) still use it", "A node with
+ * verbatim: "Can't remove level "Model": 12 entries still use it", "A node with
  * slug "ford" already exists here". A 5xx carries no such sentence, so it falls
  * back to the caller's wording.
  */

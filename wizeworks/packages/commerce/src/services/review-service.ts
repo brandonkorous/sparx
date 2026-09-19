@@ -298,7 +298,34 @@ export async function submit(
   return { id: review.id, status: initialStatus };
 }
 
-export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<void> {
+/**
+ * What a moderation call actually did.
+ *
+ * `changed: false` means the row was ALREADY in the state that was asked for, so
+ * nothing was written and nothing was announced. Callers that report to a person
+ * must say that rather than claim a decision — see `moderate` below for why.
+ */
+export interface ModerationOutcome {
+  changed: boolean;
+}
+
+/**
+ * Publish, hide, flag or un-flag one review.
+ *
+ * A DECISION THAT CHANGES NOTHING IS NOT RECORDED AS A DECISION. This function
+ * used to ask "did the status actually move?" twice — once for the rating
+ * roll-up, once for the event — and not at all for the three writes above them,
+ * so pressing Publish on an already-published review re-stamped `moderatedAt`,
+ * appended a second `approved` row to the moderation log, and wrote an audit
+ * entry reading approved → approved. The owner's own history of that review then
+ * said she approved it twice, weeks apart, over a button that could not do
+ * anything (issue 640). On a platform where 111 of 129 reviews are already
+ * published, that button is the ordinary case, not the edge.
+ *
+ * The note is part of the decision: re-recording the same status WITH a new note
+ * is a real change and is still written.
+ */
+export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<ModerationOutcome> {
   const input = ModerateReviewInput.parse(rawInput);
 
   const change = await withTenant(ctx, async (tx) => {
@@ -307,6 +334,9 @@ export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<
     });
     if (!existing) throw new CommerceNotFoundError('ProductReview', input.reviewId);
     const previousStatus = existing.status;
+
+    const nextNote = input.moderationNote ?? null;
+    if (previousStatus === input.status && nextNote === existing.moderationNote) return null;
 
     await tx.productReview.update({
       where: { id: input.reviewId },
@@ -352,6 +382,10 @@ export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<
     return { previousStatus, productId: existing.productId, rating: existing.rating };
   });
 
+  // Nothing moved, so nothing is announced either. The storefront has no cache
+  // to bust for a review it is already showing.
+  if (change === null) return { changed: false };
+
   if (input.status === 'approved' && change.previousStatus !== 'approved') {
     await publishCommerceEvent({
       tenantId: ctx.tenantId,
@@ -367,6 +401,8 @@ export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<
       data: { reviewId: input.reviewId, productId: change.productId },
     });
   }
+
+  return { changed: true };
 }
 
 export async function respond(ctx: ServiceContext, rawInput: unknown): Promise<void> {
@@ -497,27 +533,33 @@ export async function deleteReview(ctx: ServiceContext, reviewId: string): Promi
 
 // Bulk moderation — apply one status to many reviews. Loops the single-review
 // path so every id still fires its events, audit log, and rating recompute;
-// a missing/stale id is skipped rather than aborting the batch. Returns how
-// many actually changed.
+// a missing/stale id is skipped rather than aborting the batch.
+//
+// `count` is what MOVED, which is what this comment always claimed and what the
+// code did not do: it counted every id that did not throw, so showing three
+// already-shown reviews reported "Shown (3)" over three rows that never changed
+// (issue 640). `unchanged` carries the rest, so the caller can say which it was.
 export async function moderateMany(
   ctx: ServiceContext,
   input: { reviewIds: string[]; status: ReviewModerationStatus; moderationNote?: string }
-): Promise<{ count: number }> {
+): Promise<{ count: number; unchanged: number }> {
   let count = 0;
+  let unchanged = 0;
   for (const reviewId of input.reviewIds) {
     try {
-      await moderate(ctx, {
+      const outcome = await moderate(ctx, {
         reviewId,
         status: input.status,
         ...(input.moderationNote ? { moderationNote: input.moderationNote } : {}),
       });
-      count += 1;
+      if (outcome.changed) count += 1;
+      else unchanged += 1;
     } catch (err) {
       if (err instanceof CommerceNotFoundError) continue;
       throw err;
     }
   }
-  return { count };
+  return { count, unchanged };
 }
 
 // Bulk soft-delete. Same resilient-skip semantics as moderateMany.
@@ -649,16 +691,25 @@ export async function submitQuestion(
   return { id: question.id };
 }
 
+/**
+ * Show one customer question on the product page, or take it off.
+ *
+ * Same rule as `moderate`, and the same split it was fixed from: the event below
+ * already asked whether the status moved, the audit log above it did not, so
+ * showing an already-shown question wrote a published → published entry into her
+ * record (issue 640).
+ */
 export async function moderateQuestion(
   ctx: ServiceContext,
   input: { questionId: string; status: 'published' | 'rejected' }
-): Promise<void> {
+): Promise<ModerationOutcome> {
   const change = await withTenant(ctx, async (tx) => {
     const existing = await tx.productQuestion.findFirst({
       where: { id: input.questionId },
       select: { id: true, status: true, productId: true },
     });
     if (!existing) throw new CommerceNotFoundError('ProductQuestion', input.questionId);
+    if (existing.status === input.status) return null;
 
     await tx.productQuestion.update({
       where: { id: input.questionId },
@@ -679,6 +730,8 @@ export async function moderateQuestion(
     return { previousStatus: existing.status, productId: existing.productId };
   });
 
+  if (change === null) return { changed: false };
+
   // A question becoming published changes what the PDP renders — emit so the
   // storefront cache busts (cache-revalidation-worker → commerce scope) and the
   // realtime product channel can push it to viewers. Mirrors review.published.
@@ -690,25 +743,30 @@ export async function moderateQuestion(
       data: { questionId: input.questionId, productId: change.productId },
     });
   }
+
+  return { changed: true };
 }
 
 // Bulk question moderation — publish/reject many. Loops the single path so each
-// fires its event + audit; a stale id is skipped. Returns how many changed.
+// fires its event + audit; a stale id is skipped. `count` is what MOVED and
+// `unchanged` is what was already in that state — see `moderateMany`.
 export async function moderateQuestionMany(
   ctx: ServiceContext,
   input: { questionIds: string[]; status: 'published' | 'rejected' }
-): Promise<{ count: number }> {
+): Promise<{ count: number; unchanged: number }> {
   let count = 0;
+  let unchanged = 0;
   for (const questionId of input.questionIds) {
     try {
-      await moderateQuestion(ctx, { questionId, status: input.status });
-      count += 1;
+      const outcome = await moderateQuestion(ctx, { questionId, status: input.status });
+      if (outcome.changed) count += 1;
+      else unchanged += 1;
     } catch (err) {
       if (err instanceof CommerceNotFoundError) continue;
       throw err;
     }
   }
-  return { count };
+  return { count, unchanged };
 }
 
 export async function submitAnswer(

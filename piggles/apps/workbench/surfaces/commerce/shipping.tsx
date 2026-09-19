@@ -12,6 +12,7 @@
 // options and their prices) are edited inside a region, because a price only
 // means something once you know the region it applies to.
 
+import { groupDeliveryWarning } from './shipping-group-words';
 import {
   Alert,
   AlertContent,
@@ -82,6 +83,10 @@ function ZoneRow({ zone, onOpen }: { zone: ShippingZone; onOpen: RowOpen }) {
 
 function ProfileRow({ profile, onOpen }: { profile: ShippingProfile; onOpen: RowOpen }) {
   const count = profile.productCount + profile.variantCount;
+  // A group no region prices offers a shopper no way to receive their order,
+  // and looks exactly like a group with three options. The region rows beside
+  // these have warned about it since they were built.
+  const gap = groupDeliveryWarning(profile);
   return (
     <button
       type="button"
@@ -103,6 +108,11 @@ function ProfileRow({ profile, onOpen }: { profile: ShippingProfile; onOpen: Row
           </Text>
         ) : null}
       </span>
+      {gap ? (
+        <Badge color={gap.tone === 'error' ? 'danger' : 'warning'} variant="soft" size="sm">
+          {gap.short}
+        </Badge>
+      ) : null}
       <Text as="span" className="shrink-0 text-sm tabular-nums">
         {/* "All other products" belongs to the DEFAULT group and to nothing
             else. It used to be shown for any group with no members, which made
@@ -288,7 +298,7 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                 )}
               </FormSection>
 
-              <RowOpenHint />
+              {zoneRows.length > 0 || profileRows.length > 0 ? <RowOpenHint /> : null}
             </>
           )}
         </div>

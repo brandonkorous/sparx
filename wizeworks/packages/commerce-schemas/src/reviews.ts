@@ -11,17 +11,17 @@ export const SubmitReviewInput = z.object({
   productId: Uuid,
   // The storefront this was written on (docs/131 §4). Optional so a staff-side
   // or import path can omit it; the public route always passes its own site.
-  propertyId: Uuid.optional(),
-  variantId: Uuid.optional(),
-  customerId: Uuid.optional(), // anonymous reviews allowed when null
-  orderId: Uuid.optional(), // populated → verified-purchase badge
+  propertyId: Uuid.nullish(),
+  variantId: Uuid.nullish(),
+  customerId: Uuid.nullish(), // anonymous reviews allowed when null
+  orderId: Uuid.nullish(), // populated → verified-purchase badge
   rating: ReviewRating,
   // Title is optional — the storefront form lets shoppers leave it blank and a
   // headline isn't required for a useful review. Stored as empty when omitted.
   title: z.string().max(127).optional(),
   body: z.string().min(1).max(10_000),
   mediaAssetIds: z.array(Uuid).max(10).default([]),
-  displayName: z.string().max(63).optional(), // overrides customer name
+  displayName: z.string().max(63).nullish(), // overrides customer name
 });
 export type SubmitReviewInput = z.infer<typeof SubmitReviewInput>;
 
@@ -31,7 +31,7 @@ export type ReviewModerationStatus = z.infer<typeof ReviewModerationStatus>;
 export const ModerateReviewInput = z.object({
   reviewId: Uuid,
   status: ReviewModerationStatus,
-  moderationNote: z.string().max(2000).optional(),
+  moderationNote: z.string().max(2000).nullish(),
 });
 export type ModerateReviewInput = z.infer<typeof ModerateReviewInput>;
 
@@ -43,7 +43,7 @@ export type RespondToReviewInput = z.infer<typeof RespondToReviewInput>;
 
 export const HelpfulVoteInput = z.object({
   reviewId: Uuid,
-  customerId: Uuid.optional(),
+  customerId: Uuid.nullish(),
   voterFingerprint: z.string().min(8).max(127), // hashed IP + UA when anon
   helpful: z.boolean(),
 });
@@ -54,9 +54,9 @@ export type HelpfulVoteInput = z.infer<typeof HelpfulVoteInput>;
 export const SubmitQuestionInput = z.object({
   productId: Uuid,
   // The storefront this was asked on (docs/131 §4).
-  propertyId: Uuid.optional(),
-  customerId: Uuid.optional(),
-  displayName: z.string().max(63).optional(),
+  propertyId: Uuid.nullish(),
+  customerId: Uuid.nullish(),
+  displayName: z.string().max(63).nullish(),
   body: z.string().min(1).max(2000),
 });
 export type SubmitQuestionInput = z.infer<typeof SubmitQuestionInput>;
@@ -66,7 +66,7 @@ export const SubmitAnswerInput = z.object({
   body: z.string().min(1).max(10_000),
   // Staff answers are flagged; customer answers default to false.
   isOfficial: z.boolean().default(false),
-  authorCustomerId: Uuid.optional(),
+  authorCustomerId: Uuid.nullish(),
 });
 export type SubmitAnswerInput = z.infer<typeof SubmitAnswerInput>;
 
@@ -75,7 +75,7 @@ export type SubmitAnswerInput = z.infer<typeof SubmitAnswerInput>;
 export const CreateWishlistInput = z.object({
   customerId: Uuid,
   // The storefront this list was saved on (docs/131 §4).
-  propertyId: Uuid.optional(),
+  propertyId: Uuid.nullish(),
   name: z.string().min(1).max(127).default('My Wishlist'),
   isPublic: z.boolean().default(false),
 });
@@ -84,6 +84,6 @@ export type CreateWishlistInput = z.infer<typeof CreateWishlistInput>;
 export const AddWishlistItemInput = z.object({
   wishlistId: Uuid,
   variantId: Uuid,
-  note: z.string().max(2000).optional(),
+  note: z.string().max(2000).nullish(),
 });
 export type AddWishlistItemInput = z.infer<typeof AddWishlistItemInput>;

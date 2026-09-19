@@ -188,7 +188,7 @@ export function PaymentProvidersSurface({ ctx }: { ctx: SurfaceContext }) {
                 </div>
               </FormSection>
 
-              <RowOpenHint />
+              {gateways.length > 0 ? <RowOpenHint /> : null}
             </>
           )}
         </div>

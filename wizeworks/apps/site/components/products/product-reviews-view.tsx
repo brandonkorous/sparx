@@ -12,6 +12,7 @@
 import { RatingStars } from '@/components/rating-stars';
 import { ReviewForm } from '@/components/review-form';
 import type { PublicReview } from '@/lib/commerce';
+import { reviewAuthorName } from './review-author-words';
 
 function formatReviewDate(iso: string): string {
   const d = new Date(iso);
@@ -28,9 +29,7 @@ function ReviewCard({ review }: { review: PublicReview }) {
     <li className="border-base-300 border-b py-[1.1rem] first:pt-0">
       <div className="mb-2 flex flex-wrap items-center gap-2.5">
         <RatingStars rating={review.rating} compact />
-        {review.author ? (
-          <span className="text-base-content font-semibold">{review.author}</span>
-        ) : null}
+        <span className="text-base-content font-semibold">{reviewAuthorName(review.author)}</span>
         {review.verifiedPurchase ? (
           <span className="badge badge-primary badge-sm">Verified purchase</span>
         ) : null}

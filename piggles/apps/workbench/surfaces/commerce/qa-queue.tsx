@@ -42,6 +42,7 @@ import {
   useQueueQuestion,
   type QueueQuestion,
 } from './moderation-data';
+import { bulkDecisionWords, questionDecisions, unchangedWords } from './moderation-decisions';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -130,8 +131,12 @@ function QuestionCard({
     moderate.mutate(
       { id: question.id, status },
       {
-        onSuccess: () => {
-          toast.add({ title: done, type: 'success' });
+        onSuccess: (result) => {
+          // Only the decisions this question is not already in are drawn below,
+          // so an unchanged answer means somebody else got here first (640).
+          toast.add(
+            result.changed ? { title: done, type: 'success' } : unchangedWords('question', status)
+          );
         },
         onError: failed('Could not change that question'),
       }
@@ -233,30 +238,36 @@ function QuestionCard({
             <Icon glyph={faReply} className="size-4" aria-hidden />
             {question.answers.length > 0 ? 'Add another answer' : 'Answer it'}
           </Button>
-          <Button
-            size="sm"
-            color="module"
-            loading={moderate.isPending}
-            onClick={() => {
-              setStatus('published', 'Question shown on the page');
-            }}
-          >
-            <Icon glyph={faCheck} className="size-4" aria-hidden />
-            Show it on the page
-          </Button>
-          <Button
-            size="sm"
-            variant="ghost"
-            color="neutral"
-            className="ml-auto"
-            loading={moderate.isPending}
-            onClick={() => {
-              setStatus('rejected', 'Question hidden');
-            }}
-          >
-            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-            Hide it
-          </Button>
+          {questionDecisions(question.status).map((decision) =>
+            decision.icon === 'show' ? (
+              <Button
+                key={decision.next}
+                size="sm"
+                color="module"
+                loading={moderate.isPending}
+                onClick={() => {
+                  setStatus(decision.next, decision.done);
+                }}
+              >
+                <Icon glyph={faCheck} className="size-4" aria-hidden />
+                {decision.label}
+              </Button>
+            ) : (
+              <Button
+                key={decision.next}
+                size="sm"
+                variant="ghost"
+                className="ml-auto"
+                loading={moderate.isPending}
+                onClick={() => {
+                  setStatus(decision.next, decision.done);
+                }}
+              >
+                <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+                {decision.label}
+              </Button>
+            )
+          )}
         </div>
       )}
     </article>
@@ -304,13 +315,14 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
     setSelected(new Set());
   };
 
-  const bulkSetStatus = (status: 'published' | 'rejected', done: string) => {
+  const bulkSetStatus = (status: 'published' | 'rejected') => {
     bulkModerate.mutate(
       { questionIds: selectedIds, status },
       {
         onSuccess: (result) => {
           clearSelection();
-          toast.add({ title: `${done} (${String(result.count)})`, type: 'success' });
+          // Counts what MOVED, and names what did not (issue 640).
+          toast.add(bulkDecisionWords('question', status, result));
         },
         onError: (error) => {
           toast.add({
@@ -428,7 +440,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                         color="module"
                         loading={bulkModerate.isPending}
                         onClick={() => {
-                          bulkSetStatus('published', 'Shown');
+                          bulkSetStatus('published');
                         }}
                       >
                         <Icon glyph={faCheck} className="size-4" aria-hidden />
@@ -440,7 +452,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
                         color="neutral"
                         loading={bulkModerate.isPending}
                         onClick={() => {
-                          bulkSetStatus('rejected', 'Hidden');
+                          bulkSetStatus('rejected');
                         }}
                       >
                         <Icon glyph={faEyeSlash} className="size-4" aria-hidden />

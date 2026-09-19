@@ -49,6 +49,7 @@ import {
   type BundlePricingMode,
 } from './bundles-data';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { ActionLabel } from '../../components/action-label';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -360,7 +361,7 @@ function BundleEditor({
             {!isNew ? (
               <Badge color="info" variant="soft" size="sm">
                 <Blocks className="size-3" aria-hidden />
-                <span className="hidden @md:inline">Bundle</span>
+                <ActionLabel from="md">Bundle</ActionLabel>
               </Badge>
             ) : null}
           </>

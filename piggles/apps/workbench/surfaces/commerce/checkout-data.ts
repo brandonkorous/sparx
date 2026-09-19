@@ -90,8 +90,11 @@ export interface CheckoutQuery {
   skip: number;
 }
 
-export function useCheckoutSessions(query: CheckoutQuery) {
+export function useCheckoutSessions(query: CheckoutQuery, options: { enabled?: boolean } = {}) {
   return useQuery({
+    // `enabled` is deliberately OUT of the key: it says whether to ask, not what
+    // was asked, and a key that carries it would mint a second cache entry for
+    // the same question.
     queryKey: [...CHECKOUT_KEY, 'list', query],
     queryFn: () =>
       api.list<CheckoutRow>('/v1/commerce/checkout-sessions', {
@@ -101,6 +104,7 @@ export function useCheckoutSessions(query: CheckoutQuery) {
         skip: query.skip,
       }),
     placeholderData: (previous) => previous,
+    ...(options.enabled === undefined ? {} : { enabled: options.enabled }),
   });
 }
 

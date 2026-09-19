@@ -101,11 +101,15 @@ export interface WishlistAnalytics {
  *
  * The TABLE surfaces read the fuller `/v1/commerce/reviews` and
  * `/v1/commerce/questions` list endpoints — every status, paged and sorted —
- * rather than the `/pending` backlog the card queues read. Those endpoints
- * resolve the customer's ACCOUNT identity (a relation) rather than the review's
- * chosen public `displayName`, which is what a moderator wants: who really wrote
- * it, not the alias it appears under. So the row carries a `customer` object,
- * not a `displayName`. */
+ * rather than the `/pending` backlog the card queues read.
+ *
+ * BOTH NAMES, not one. This used to carry only the customer's ACCOUNT identity,
+ * arguing that who really wrote it beats the alias it appears under. Both halves
+ * are needed and for different jobs: the account is who to look an order up
+ * against, and the SIGNED name is the only one the shopper and the website ever
+ * see, so it is the one to search for when that shopper writes in (issue 641).
+ * Without it, every guest review read "A guest" and two signed reviews were
+ * indistinguishable. The endpoint has returned `displayName` all along. */
 
 export interface QueueCustomer {
   id: string;
@@ -124,6 +128,8 @@ export interface QuestionListRow {
   status: string;
   createdAt: string;
   customer: QueueCustomer | null;
+  /** The name they signed it with, and the only one the website publishes. */
+  displayName: string | null;
 }
 
 /** One row of the reviews TABLE. */
@@ -139,16 +145,12 @@ export interface ReviewListRow {
   verifiedPurchase: boolean;
   createdAt: string;
   customer: QueueCustomer | null;
+  /** The name they signed it with, and the only one the website publishes. */
+  displayName: string | null;
 }
 
-/** A person's name from their account, or their email, or a plain fallback —
- *  the label a table cell shows under "Asked by" / "By". */
-export function customerLabel(customer: QueueCustomer | null): string {
-  if (!customer) return 'A guest';
-  const name = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-  if (name) return name;
-  return customer.email ?? 'A guest';
-}
+export type { NamedCustomer } from './moderation-names';
+export { customerAccountNote, customerLabel } from './moderation-names';
 
 /* ── Keys ───────────────────────────────────────────────────────────────── */
 
@@ -163,6 +165,9 @@ export const moderationKeys = {
   review: (id: string) => [...moderationKeys.reviews(), 'detail', id] as const,
   questionsList: (params: unknown) => [...moderationKeys.questions(), 'list', params] as const,
   question: (id: string) => [...moderationKeys.questions(), 'detail', id] as const,
+  /** The "has this ever happened" probe — deliberately its own key, so it is not
+   *  invalidated by every change to a filtered window. */
+  everCount: (kind: 'question' | 'review') => [...moderationKeys.all, 'ever', kind] as const,
 };
 
 export const wishlistKeys = {
@@ -252,6 +257,30 @@ export function useQuestionsList(params: ModerationPageParams<QuestionSort>) {
   });
 }
 
+/**
+ * Has this business EVER had one of these, past every filter on the pane?
+ *
+ * A `take: 1` probe against the same endpoint with no status, rather than a new
+ * response field: the list's own `total` carries the filter, so it cannot tell
+ * "all dealt with" from "nobody has ever asked" — the exact defect this answers.
+ *
+ * `enabled` is deliberately OUTSIDE the query key: it says whether to ask, not
+ * what was asked. Gated by the caller so the ordinary case (a queue with rows in
+ * it) makes no extra request at all.
+ */
+export function useModerationEverCount(kind: 'question' | 'review', enabled: boolean) {
+  return useQuery({
+    queryKey: moderationKeys.everCount(kind),
+    queryFn: () =>
+      api.list<{ id: string }>(
+        kind === 'question' ? '/v1/commerce/questions' : '/v1/commerce/reviews',
+        { take: 1, skip: 0 }
+      ),
+    enabled,
+    staleTime: 60_000,
+  });
+}
+
 /** One server-paged, server-sorted window of the reviews table. */
 export function useReviewsList(params: ModerationPageParams<ReviewSort>) {
   return useQuery({
@@ -337,11 +366,33 @@ export function useWishlistAnalytics() {
 
 /* ── Review mutations ───────────────────────────────────────────────────── */
 
+/**
+ * What ONE moderation call did. `changed` is false when the row was already in
+ * the state that was asked for, in which case the server wrote nothing at all —
+ * so the screen must not report a decision either (issue 640).
+ */
+export interface ModerationResult {
+  id: string;
+  changed: boolean;
+}
+
+/**
+ * What a BULK moderation call did. `count` is what moved; `unchanged` is what was
+ * already there. The endpoint used to return only `count`, and counted every id
+ * it did not fail on, so "Shown (3)" could mean nothing happened three times.
+ */
+export interface BulkModerationResult {
+  count: number;
+  unchanged: number;
+}
+
 export function useModerateQueueReview() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { id: string; status: 'approved' | 'rejected' | 'flagged' }) =>
-      api.post(`/v1/commerce/reviews/${input.id}/moderate`, { status: input.status }),
+      api.post<ModerationResult>(`/v1/commerce/reviews/${input.id}/moderate`, {
+        status: input.status,
+      }),
     onSuccess: () => {
       invalidateReviewCaches(queryClient);
     },
@@ -373,7 +424,7 @@ export function useBulkModerateReviews() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { reviewIds: string[]; status: 'approved' | 'rejected' | 'flagged' }) =>
-      api.post<{ count: number }>('/v1/commerce/reviews/bulk-moderate', input),
+      api.post<BulkModerationResult>('/v1/commerce/reviews/bulk-moderate', input),
     onSuccess: () => {
       invalidateReviewCaches(queryClient);
     },
@@ -397,7 +448,9 @@ export function useModerateQueueQuestion() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { id: string; status: 'published' | 'rejected' }) =>
-      api.post(`/v1/commerce/questions/${input.id}/moderate`, { status: input.status }),
+      api.post<ModerationResult>(`/v1/commerce/questions/${input.id}/moderate`, {
+        status: input.status,
+      }),
     onSuccess: () => {
       invalidateQuestionCaches(queryClient);
     },
@@ -419,7 +472,7 @@ export function useBulkModerateQuestions() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input: { questionIds: string[]; status: 'published' | 'rejected' }) =>
-      api.post<{ count: number }>('/v1/commerce/questions/bulk-moderate', input),
+      api.post<BulkModerationResult>('/v1/commerce/questions/bulk-moderate', input),
     onSuccess: () => {
       invalidateQuestionCaches(queryClient);
     },

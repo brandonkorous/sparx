@@ -65,6 +65,7 @@ import {
   useCreatePriceList,
   useCustomerSegments,
   useDeletePriceListEntry,
+  useInvalidatePriceLists,
   usePriceList,
   usePriceListEntries,
   useUpdatePriceList,
@@ -73,6 +74,9 @@ import {
   type PriceListRow,
   type PriceListWriteInput,
 } from './price-lists-data';
+import { badDayIn, dayEndUtc, dayStartUtc } from '../../lib/today';
+import { createdWithoutPrices, saveFailureLine, type SavePoint } from './price-list-save-words';
+import { ChoiceListNote, choiceListState } from '../../components/choice-list-note';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -218,7 +222,11 @@ function PriceListLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const listQuery = usePriceList(id);
   const entriesQuery = usePriceListEntries(id);
 
-  if (listQuery.isError) {
+  // The PRICES are the price list, so a pane that waits for them has to say
+  // when they did not arrive. It waited and never asked: on a bad response the
+  // editor rendered an empty price table under a row that says "1 price", which
+  // is a failed read wearing the shape of an answer (issue 627).
+  if (listQuery.isError || entriesQuery.isError) {
     return (
       <div className={`${PANE_SHELL} p-2`}>
         <Card className="min-h-0 flex-1 items-center justify-center">
@@ -229,6 +237,7 @@ function PriceListLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             description="This is a problem reaching the server. The price list itself is unaffected. Nothing has been lost."
             onRetry={() => {
               void listQuery.refetch();
+              void entriesQuery.refetch();
             }}
           />
         </Card>
@@ -329,9 +338,10 @@ function PriceListEditor({
     : null;
 
   const dateError =
-    draft.startDate && draft.endDate && draft.startDate > draft.endDate
+    badDayIn(draft.startDate, draft.endDate) ??
+    (draft.startDate && draft.endDate && draft.startDate > draft.endDate
       ? 'The end date is before the start date.'
-      : null;
+      : null);
 
   const blocking = nameError ?? audienceError ?? entryError ?? dateError;
 
@@ -361,6 +371,7 @@ function PriceListEditor({
       entriesSignature(draft.entries) !== entriesSignature(saved.entries);
 
   const saving = create.isPending || update.isPending || bulkSet.isPending || deleteEntry.isPending;
+  const invalidate = useInvalidatePriceLists();
 
   useDirtySource(
     dirty && !create.isSuccess,
@@ -371,9 +382,8 @@ function PriceListEditor({
 
   /* ── Save ─────────────────────────────────────────────────────────────── */
 
-  const toIsoStart = (value: string) =>
-    value ? new Date(`${value}T00:00:00Z`).toISOString() : null;
-  const toIsoEnd = (value: string) => (value ? new Date(`${value}T23:59:59Z`).toISOString() : null);
+  const toIsoStart = (value: string) => (value === '' ? null : dayStartUtc(value));
+  const toIsoEnd = (value: string) => (value === '' ? null : dayEndUtc(value));
 
   const writePayload = (): PriceListWriteInput => ({
     name: draft.name.trim(),
@@ -410,7 +420,26 @@ function PriceListEditor({
           };
           const payload = entriesPayload();
           if (payload.length > 0) {
-            void bulkSetEntriesFor(created.id, payload).finally(land);
+            // The prices go in a SECOND request, and it can fail on its own. It
+            // used to be swallowed — `.catch(() => undefined)`, called "soft" —
+            // and the pane then landed announcing "<name> created" over a list
+            // with no prices in it, with everything typed here gone and no
+            // message anywhere. Landing is still right (the list exists, and not
+            // landing would invite a second one), but the toast has to say which
+            // of the two things happened.
+            void bulkSetEntriesFor(created.id, payload).then((wrote) => {
+              if (wrote) {
+                land();
+                return;
+              }
+              ctx.open('commerce.pricelist.detail', { id: created.id }, { target: 'replace' });
+              afterPaneChange(() => {
+                toast.add({
+                  title: createdWithoutPrices(draft.name.trim(), payload.length),
+                  type: 'error',
+                });
+              });
+            });
           } else {
             land();
           }
@@ -423,6 +452,12 @@ function PriceListEditor({
     }
 
     void (async () => {
+      // WHICH OF THE THREE REQUESTS WE ARE IN. There is no transaction across
+      // them — the server commits each — so the failure sentence has to know how
+      // far it got. It used to say "Nothing was changed" from inside a catch
+      // wrapped around all three, which is true of the first one only.
+      let point: SavePoint = 'settings';
+      let deleted = 0;
       try {
         await update.mutateAsync(writePayload());
 
@@ -436,19 +471,26 @@ function PriceListEditor({
         const removed = (saved.entries ?? []).filter(
           (entry) => entry.entryId && !keptIds.has(entry.entryId)
         );
+        point = 'removals';
         for (const entry of removed) {
           if (entry.entryId) await deleteEntry.mutateAsync(entry.entryId);
+          deleted += 1;
         }
 
+        point = 'prices';
         const payload = entriesPayload();
         if (payload.length > 0) await bulkSet.mutateAsync(payload);
 
         setTouched(false);
         toast.add({ title: 'Price list saved', type: 'success' });
       } catch (error) {
-        setFailure(
-          priceListErrorMessage(error, 'Could not save this price list. Nothing was changed.')
-        );
+        setFailure(priceListErrorMessage(error, saveFailureLine(point, deleted)));
+        // A PART of this save committed, so what the pane believes is saved is
+        // now stale — and `saved` is what the next attempt computes its
+        // deletions from. Without this, saving again re-deletes prices that are
+        // already gone and fails on the 404. `touched` stays true, so nothing
+        // she typed is replaced by the refetch.
+        if (point !== 'settings') invalidate(id);
       }
     })();
   };
@@ -714,12 +756,15 @@ function PriceListEditor({
                 />
                 {audienceError && touched ? (
                   <FieldStatus status="error">{audienceError}</FieldStatus>
-                ) : (segmentsQuery.data?.items ?? []).length === 0 && !segmentsQuery.isPending ? (
-                  <FieldDescription>
-                    You have no customer groups yet. Create one under Customers, then choose it
-                    here.
-                  </FieldDescription>
-                ) : null}
+                ) : (
+                  <ChoiceListNote
+                    state={choiceListState(segmentsQuery)}
+                    words={{
+                      none: 'You have no customer groups yet. Create one under Customers, then choose it here.',
+                      noun: 'customer groups',
+                    }}
+                  />
+                )}
               </Field>
             ) : null}
 
@@ -747,12 +792,15 @@ function PriceListEditor({
                 />
                 {audienceError && touched ? (
                   <FieldStatus status="error">{audienceError}</FieldStatus>
-                ) : (accountsQuery.data?.items ?? []).length === 0 && !accountsQuery.isPending ? (
-                  <FieldDescription>
-                    You have no trade accounts yet. Add one under Wholesale accounts, then choose it
-                    here.
-                  </FieldDescription>
-                ) : null}
+                ) : (
+                  <ChoiceListNote
+                    state={choiceListState(accountsQuery)}
+                    words={{
+                      none: 'You have no trade accounts yet. Add one under Wholesale accounts, then choose it here.',
+                      noun: 'trade accounts',
+                    }}
+                  />
+                )}
               </Field>
             ) : null}
 
@@ -1029,11 +1077,18 @@ function PriceListEditor({
  *
  * A plain function, not the `useBulkSetEntries(id)` hook: it runs in the create
  * callback AFTER the list exists, so the hook — bound to the id we didn't have a
- * moment ago — cannot serve. Failure is soft: the list was created, so the pane
- * still lands on it and the prices can be re-saved there.
+ * moment ago — cannot serve.
+ *
+ * RETURNS WHETHER IT WROTE. The list must survive a failure here — it exists,
+ * and throwing would leave the pane on a create form that would make a second
+ * one — but SWALLOWING the failure is what this used to do, and the caller then
+ * announced "<name> created" over a list with no prices in it. The rejection is
+ * turned into an answer instead of a silence, so the caller can say which of the
+ * two happened.
  */
-async function bulkSetEntriesFor(listId: string, entries: BulkEntryInput[]): Promise<void> {
-  await api
+async function bulkSetEntriesFor(listId: string, entries: BulkEntryInput[]): Promise<boolean> {
+  return api
     .post(`/v1/commerce/price-lists/${listId}/entries/bulk`, { entries })
-    .catch(() => undefined);
+    .then(() => true)
+    .catch(() => false);
 }

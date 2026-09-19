@@ -87,6 +87,16 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (category: CategoryChoice, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.category.detail', { id: category.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar and the empty state's invitation.
+  // Split, the label drifts — and the first-run state used to have no button
+  // at all, so "Add your first one" pointed at a round plus that never wears
+  // its label on screen.
+  const createFirst = {
+    label: 'Add a category',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.category.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -104,11 +114,8 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
           </div>
         }
         primaryAction={{
-          label: 'Add a category',
+          ...createFirst,
           icon: faPlus,
-          onClick: (event) => {
-            ctx.open('commerce.category.detail', { id: 'new' }, { target: targetFor(event) });
-          },
           title: 'Add a category: hold Shift to open alongside, Alt for a new window',
         }}
         views={{
@@ -156,6 +163,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No categories yet',
               description:
                 'Categories are the aisles of your website menu: the structure shoppers browse down. Add your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -163,7 +171,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint />
+      {rows.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

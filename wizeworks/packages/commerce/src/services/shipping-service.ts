@@ -70,6 +70,17 @@ export interface ShippingProfileRow {
    *  a default priced a basket of scarves as coats (issue 427). */
   isDefault: boolean;
   collectionCount: number;
+  /**
+   * Delivery options that name this group, across every region.
+   *
+   * ZERO IS A BROKEN GROUP, not an empty one. A rate belongs to a (region,
+   * group) pair, so products filed under a group nothing prices show a shopper
+   * no delivery option at all and the basket cannot be checked out. The region
+   * side has carried this count since it was built, and wears a warning badge
+   * when it is zero; the group side never had it, so the one screen that can
+   * CREATE the broken state said nothing about it.
+   */
+  rateCount: number;
   updatedAt: string;
 }
 
@@ -203,7 +214,12 @@ export async function listProfiles(
       tx.shippingProfile.findMany({
         include: {
           _count: {
-            select: { productLinks: true, variantLinks: true, collectionLinks: true },
+            select: {
+              productLinks: true,
+              variantLinks: true,
+              collectionLinks: true,
+              rates: true,
+            },
           },
         },
         orderBy: { name: 'asc' },
@@ -224,7 +240,12 @@ export async function getProfile(ctx: ServiceContext, id: string): Promise<Shipp
         where: { id },
         include: {
           _count: {
-            select: { productLinks: true, variantLinks: true, collectionLinks: true },
+            select: {
+              productLinks: true,
+              variantLinks: true,
+              collectionLinks: true,
+              rates: true,
+            },
           },
         },
       }),
@@ -900,7 +921,12 @@ export async function defaultProfileId(tx: TxClient, propertyId?: string): Promi
 
 function serializeProfile(
   row: ShippingProfile & {
-    _count: { productLinks: number; variantLinks: number; collectionLinks: number };
+    _count: {
+      productLinks: number;
+      variantLinks: number;
+      collectionLinks: number;
+      rates: number;
+    };
   },
   defaultId: string | null
 ): ShippingProfileRow {
@@ -919,6 +945,7 @@ function serializeProfile(
     productCount: row._count.productLinks,
     variantCount: row._count.variantLinks,
     collectionCount: row._count.collectionLinks,
+    rateCount: row._count.rates,
     isDefault: row.id === defaultId,
     updatedAt: row.updatedAt.toISOString(),
   };

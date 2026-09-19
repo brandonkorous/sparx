@@ -29,9 +29,12 @@ import {
   AlertDescription,
   AlertTitle,
   Badge,
+  Button,
   Card,
   Text,
 } from '@wizeworks/silicaui-react';
+import { faArrowUpRightFromSquare } from '@fortawesome/pro-solid-svg-icons';
+import { Icon } from '@piggles/ui';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -104,6 +107,7 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // (useOrder has no enabled guard of its own).
   return (
     <ReturnDetailBody
+      ctx={ctx}
       detail={detail}
       isFetching={isFetching}
       updatedAt={dataUpdatedAt}
@@ -115,11 +119,13 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 }
 
 function ReturnDetailBody({
+  ctx,
   detail,
   isFetching,
   updatedAt,
   onRefresh,
 }: {
+  ctx: SurfaceContext;
   detail: ReturnDetail;
   isFetching: boolean;
   updatedAt: number;
@@ -159,7 +165,25 @@ function ReturnDetailBody({
               </Badge>
             )}
             <div className="flex-1" />
-            <Text className="text-sm">{gone ? 'No order' : `Order ${detail.orderNumber}`}</Text>
+            {/* The sale this return is against. The order is ALREADY fetched
+                two lines up, for the line prices, and the number sat here as
+                plain text: an owner checking a return had to go and search for
+                the order she was looking at the number of. */}
+            {gone ? (
+              <Text className="text-sm">No order</Text>
+            ) : (
+              <Button
+                size="sm"
+                variant="ghost"
+                color="module"
+                onClick={() => {
+                  ctx.open('commerce.order.detail', { id: detail.orderId }, { target: 'tab' });
+                }}
+              >
+                <Icon glyph={faArrowUpRightFromSquare} className="size-4" aria-hidden />
+                Order {detail.orderNumber}
+              </Button>
+            )}
           </>
         }
         refresh={
@@ -200,7 +224,14 @@ function ReturnDetailBody({
             </Alert>
           )}
 
-          <ReturnRecord detail={detail} order={order} currency={currency} />
+          <ReturnRecord
+            detail={detail}
+            order={order}
+            currency={currency}
+            openCustomer={(id) => {
+              ctx.open('crm.customer.detail', { id }, { target: 'tab' });
+            }}
+          />
 
           <ReturnMoves detail={detail} currency={currency} suggestedCents={suggestedCents} />
         </div>

@@ -74,7 +74,13 @@ function humanizeTypeKey(k: string): string {
 
 const warehouseProjector: EntityProjector = {
   entityType: 'warehouse',
-  module: 'commerce',
+  // `inventory`, matching the document below. Warehouses moved to the Inventory
+  // module (docs/100 P1e) and this declaration was left behind saying 'commerce'
+  // — harmless, because nothing reads it, and that is exactly what makes it
+  // dangerous: it is the line somebody edits believing they have changed the
+  // module, while the document three lines down goes on saying something else.
+  // One `site` projector was "fixed" that way and stayed broken.
+  module: 'inventory',
   listIdsForTenant: (ctx: ProjectorContext) =>
     withTenant(ctx, async (tx) => {
       const rows = await tx.warehouse.findMany({
@@ -656,7 +662,13 @@ const productProjector: EntityProjector = {
     }),
 };
 
-// ─── cms: page (reindex-only — CMS emits no domain events yet, docs/39 §6.3) ─
+// ─── cms: page ─────────────────────────────────────────────────────────────
+// Signalled live from the content routes since 2026-09-18 (create, update,
+// delete, publish, unpublish, restore), through api-rest's `indexContentEntry`,
+// which signals THIS name and `cms_entry` together: one table feeds both
+// projectors and a route holds an id, not a typeKey. It was reindex-only until
+// then, and `check:search-entities` read it as signalled on the strength of an
+// SEO audit snapshot that happens to use the same word.
 // Read via the shared Prisma client (no @wizeworks/cms dep / Dockerfile edge, same
 // as the CRM projectors). Public storefront search filters status:='published'.
 //
@@ -709,14 +721,20 @@ const cmsPageProjector: EntityProjector = {
     }),
 };
 
-// ─── sitebuilder: site (docs/39 Ph2 / docs/66 — multi-property) ──────
+// ─── builder: site (docs/39 Ph2 / docs/66 — multi-property) ──────────
 // A tenant's web properties. Real-time via the site.* indexEntity calls in
 // the /v1/properties routes; reindex backfills regardless. Deep-links to the
 // sites management surface.
-
+//
+// `builder`, not `sitebuilder`. The universal search route filters documents to
+// the tenant's ENABLED modules, and `sitebuilder` is not in `ALL_MODULES` — the
+// slug for the site builder is `builder`. So every one of these documents was
+// dropped by the filter: a tenant with seven websites typed one of their names
+// and was told "Nothing in your records matches". Measured 2026-09-18: 7 site
+// documents indexed, 7 unreachable. [[feedback_absent_behaves_like_fine]]
 const siteProjector: EntityProjector = {
   entityType: 'site',
-  module: 'sitebuilder',
+  module: 'builder',
   listIdsForTenant: (ctx: ProjectorContext) =>
     withTenant(ctx, async (tx) => {
       const rows = await tx.property.findMany({ select: { id: true } });
@@ -730,7 +748,7 @@ const siteProjector: EntityProjector = {
         id: universalId(ctx.tenantId, 'site', p.id),
         tenant_id: ctx.tenantId,
         entity_type: 'site',
-        module: 'sitebuilder',
+        module: 'builder',
         record_id: p.id,
         title: p.name,
         subtitle: p.isPrimary ? `${p.slug} · primary site` : p.slug,
@@ -743,9 +761,10 @@ const siteProjector: EntityProjector = {
     }),
 };
 
-// ─── cms: content entry (reindex-only, like cms_page) ─────────────────
-// Covers every ContentEntry typeKey EXCEPT `page` (the Page model is handled
-// by cmsPageProjector; ContentEntry `page` rows are legal-policy docs). Title
+// ─── cms: content entry (signalled live, paired with cms_page) ─────────────
+// Covers every ContentEntry typeKey EXCEPT `page`, which cmsPageProjector takes
+// (those rows are a tenant's policy and standalone pages). Same table, split on
+// one column, so neither indexes the other's rows. Title
 // lives in the body JSON — there is no title column. Public search filters
 // status:='published'.
 
@@ -789,7 +808,10 @@ const contentEntryProjector: EntityProjector = {
     }),
 };
 
-// ─── cms: media asset (reindex-only) ──────────────────────────────────
+// ─── cms: media asset ──────────────────────────────────────────────────────
+// Signalled on upload reserved, upload completed, metadata edited and deleted.
+// media-worker signals again on the 'uploading' -> 'ready' flip, which is a
+// FACETED field and the only thing that moves it on a transcoding backend.
 // Filename + alt-text + mime search for the ⌘K media-finder use case.
 
 const mediaProjector: EntityProjector = {

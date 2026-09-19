@@ -22,7 +22,7 @@ import { withTenant } from '@wizeworks/db';
 import type { Prisma, ProductCategory, TxClient } from '@wizeworks/db';
 
 import { writeAuditLog } from '../audit';
-import { categorySiteVisibility, productSiteVisibility } from './site-visibility';
+import { categorySiteVisibility, shopperVisibleProduct } from './site-visibility';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
@@ -496,20 +496,9 @@ export async function setProductCategories(
 
 // ─── Internal helpers ─────────────────────────────────────────────────
 
-/** What a shopper can actually see, as a `where` on Product.
- *
- *  This MIRRORS the storefront's own product filter (api-rest
- *  `public/commerce.ts`: `status: 'active'`, `deletedAt: null`,
- *  `productSiteVisibilityWhere`). The two have to agree, because the whole point
- *  of the count is that it predicts what the shop page will print — if this
- *  drifts from that, the console starts lying again in a new way. */
-function shopperVisibleProduct(propertyId?: string): Prisma.ProductWhereInput {
-  return {
-    status: 'active',
-    deletedAt: null,
-    ...(propertyId ? productSiteVisibility(propertyId) : {}),
-  };
-}
+// `shopperVisibleProduct` moved to ./site-visibility so the COLLECTION service
+// reads the same predicate. It was private here, and the group counts four files
+// away were raw filing rows because of it (issue 626).
 
 /** How many VISIBLE products sit in each of these categories, keyed by id.
  *

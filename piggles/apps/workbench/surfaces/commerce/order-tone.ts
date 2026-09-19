@@ -49,18 +49,44 @@ export function shippingState(order: Order): { label: string; tone: Tone; detail
       };
     case 'cancelled':
       return {
-        label: 'Cancelled',
+        label: 'Canceled',
         tone: 'danger',
         detail: order.cancelledReason
           ? `This order was canceled: ${order.cancelledReason}`
           : 'This order was canceled and nothing more will be sent.',
       };
-    case 'refunded':
+    case 'refunded': {
+      // "Refunded" is a MONEY word, and it was the whole answer this column
+      // gave to its own question, which is: have the goods gone?
+      //
+      // On Juniper Row's list it sat in the Delivery column next to an
+      // identical "Refunded" in the Payment column, so one of the two told her
+      // nothing. And the two cases need opposite things from her: goods that
+      // went out are with a customer who has had their money back, and goods
+      // that never went are still on her shelf.
+      //
+      // Measured 2026-09-17: 9 refunded orders on the platform, 8 of which
+      // never shipped at all — and `fulfilledAt` agreed with the shipment
+      // records on every one of the 9. The fact was already on the row
+      // ([[feedback_fetched_but_never_rendered]]).
+      const went = order.fulfilledAt !== null;
+      if (!went) {
+        return {
+          label: collected ? 'Never collected' : 'Never sent',
+          tone: 'neutral',
+          detail: collected
+            ? 'The money has gone back and the customer never came for this, so it is still yours.'
+            : 'The money has gone back and nothing was ever sent, so it is still on your shelf.',
+        };
+      }
       return {
-        label: 'Refunded',
-        tone: 'neutral',
-        detail: 'The customer has had their money back on this order.',
+        label: collected ? 'Collected, then refunded' : 'Sent, then refunded',
+        tone: 'warning',
+        detail: collected
+          ? 'The customer took this away and has since had their money back.'
+          : 'This went out before the money went back, so it is with the customer.',
       };
+    }
     default:
       return {
         label: collected ? 'To collect' : 'To send',
@@ -72,9 +98,45 @@ export function shippingState(order: Order): { label: string; tone: Tone; detail
   }
 }
 
-/** Has it been paid for? Money truth is its own axis — an order can be paid and
- *  unsent, or sent and unpaid, and both are situations someone acts on. */
+/**
+ * Has it been paid for? Money truth is its own axis — an order can be paid and
+ * unsent, or sent and unpaid, and both are situations someone acts on.
+ *
+ * TAKES THE MONEY, NOT JUST THE WORD. `order.paymentStatus` is derived from
+ * `amountPaid`, which is captured MINUS refunded, so an order paid in full and
+ * then part refunded falls below its total and is stored as `partially_paid`:
+ *
+ *     O-000005   total $147.00   captured $147.00   refunded $42.00
+ *                stored: partially_paid
+ *                shown:  "Part paid — some of this order has been paid for,
+ *                         and some is still owed"
+ *
+ * Nothing is owed. The customer paid every penny and had $42.00 back. That
+ * sentence tells a shop owner to go and chase a debt that does not exist, which
+ * is the same harm as issue 533 and the same shape as issue 532 one level down.
+ * Measured 2026-09-16: 2 of the 3 `partially_paid` orders on the platform, on 2
+ * different shops, were paid in full and part refunded.
+ *
+ * The public account endpoint already worked around this for the SHOPPER'S view
+ * (issue 292, "which reads as a debt rather than as money returned") by sending
+ * the amounts. The console kept reading the word (persona issue 543).
+ */
 export function paymentState(order: Order): { label: string; tone: Tone; detail: string } {
+  // Money that came back outranks the stored word, because the word cannot know.
+  if (order.paymentStatus === 'partially_paid' && order.refundTotal > 0) {
+    const settled = order.amountPaid + order.refundTotal >= order.total;
+    return settled
+      ? {
+          label: 'Part refunded',
+          tone: 'warning',
+          detail: 'Paid in full, and some of it has since gone back. Nothing is owed.',
+        }
+      : {
+          label: 'Part paid, part back',
+          tone: 'warning',
+          detail: 'Some was paid and some of that has gone back. There is still an amount owed.',
+        };
+  }
   switch (order.paymentStatus) {
     case 'paid':
       return { label: 'Paid', tone: 'success', detail: 'Paid in full.' };

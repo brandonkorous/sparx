@@ -36,3 +36,27 @@ export function categorySiteVisibility(propertyId: string): Prisma.ProductCatego
     AND: [{ OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }] }],
   };
 }
+
+/**
+ * What a SHOPPER can actually see, as a `where` on Product.
+ *
+ * This MIRRORS the storefront's own product filter (api-rest
+ * `public/commerce.ts`: `status: 'active'`, `deletedAt: null`,
+ * `productSiteVisibilityWhere`). The two have to agree, because the whole point
+ * of a count built on it is that it predicts what the shop page will print — if
+ * this drifts from that, the console starts lying again in a new way.
+ *
+ * It lives HERE, beside the three visibility fragments, for the reason written
+ * at the top of this file. It was category-service's private helper, and the
+ * collection service four files away counted raw filing rows instead — so
+ * Juniper Row's Categories screen said "Apparel 7 · 2 not shown" while its
+ * Groups screen said "New arrivals 5" over a group holding nothing she sells
+ * here (issue 626). One rule, one place.
+ */
+export function shopperVisibleProduct(propertyId?: string): Prisma.ProductWhereInput {
+  return {
+    status: 'active',
+    deletedAt: null,
+    ...(propertyId ? productSiteVisibility(propertyId) : {}),
+  };
+}

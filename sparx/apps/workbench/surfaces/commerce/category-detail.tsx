@@ -449,12 +449,12 @@ function CategoryEditor({
             />
 
             <Field>
-              <FieldLabel>Order among its neighbours</FieldLabel>
+              <FieldLabel>Order among its neighbors</FieldLabel>
               <FieldControl
                 render={
                   <div className="max-w-40">
                     <NumberField
-                      label="Order among its neighbours"
+                      label="Order among its neighbors"
                       min={0}
                       value={draft.position}
                       onValueChange={(value: number | null) => {

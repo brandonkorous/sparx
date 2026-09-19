@@ -28,7 +28,7 @@ export const StartCheckoutInput = z.object({
   cartId: Uuid,
   channel: Channel,
   currency: Currency,
-  customerEmail: z.string().email().optional(),
+  customerEmail: z.string().email().nullish(),
 });
 export type StartCheckoutInput = z.infer<typeof StartCheckoutInput>;
 
@@ -40,7 +40,7 @@ export const SubmitContactInput = z.object({
   // the address to learn the name is how a collection-only bakery came to
   // demand a postal code over its own counter (issue 064).
   name: z.string().max(255).optional(),
-  phone: z.string().max(50).optional(),
+  phone: z.string().max(50).nullish(),
   acceptsMarketing: z.boolean().default(false),
 });
 export type SubmitContactInput = z.infer<typeof SubmitContactInput>;
@@ -81,8 +81,8 @@ export const SubmitPaymentInput = z.object({
   paymentRef: z.string().min(1).max(255).optional(),
   // B2B: PO number + requested net terms — a "bill to account" submission
   // requests one of these instead of a card.
-  poNumber: z.string().max(63).optional(),
-  paymentTermsRequested: z.enum(['prepay', 'net15', 'net30', 'net60', 'net90']).optional(),
+  poNumber: z.string().max(63).nullish(),
+  paymentTermsRequested: z.enum(['prepay', 'net15', 'net30', 'net60', 'net90']).nullish(),
 });
 export type SubmitPaymentInput = z.infer<typeof SubmitPaymentInput>;
 

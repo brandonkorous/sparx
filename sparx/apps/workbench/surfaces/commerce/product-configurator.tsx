@@ -108,6 +108,7 @@ import {
   type ConfiguratorTemplate,
   type Tone,
 } from './products-data';
+import { ActionLabel } from '../../components/action-label';
 
 const LABEL = 'Configurator';
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -1431,7 +1432,7 @@ function ConfiguratorBody({
             {liveCount > 0 ? (
               <Badge color="success" variant="soft" size="sm">
                 <Blocks className="size-3" aria-hidden />
-                <span className="hidden @md:inline">Built to order</span>
+                <ActionLabel from="md">Built to order</ActionLabel>
               </Badge>
             ) : null}
             {/* This pane's Save, in this pane's own toolbar. It is here and not
@@ -1451,7 +1452,7 @@ function ConfiguratorBody({
                   }}
                 >
                   <Undo2 className="size-4" aria-hidden />
-                  <span className="hidden @md:inline">Discard</span>
+                  <ActionLabel from="md">Discard</ActionLabel>
                 </Button>
                 <Button
                   size="sm"

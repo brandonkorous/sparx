@@ -413,13 +413,18 @@ function FailedPaymentsSection({
 }) {
   const preset = matchRetryPreset(policy.retryDelaysHours);
   const presetItems = Object.fromEntries(RETRY_PRESETS.map((p) => [p.value, p.label]));
-  // A schedule set through the API that matches no preset is shown as its own
-  // option rather than snapped to the nearest one — it was chosen deliberately,
-  // and silently rewriting it on the next save would be the same class of bug as
-  // a patch schema fabricating defaults.
+  // A schedule that matches no preset is shown as its own option rather than
+  // snapped to the nearest one — it was chosen deliberately, and silently
+  // rewriting it on the next save would be the same class of bug as a patch
+  // schema fabricating defaults.
+  //
+  // The label said "(set through the API)". The only person who ever sees this
+  // option is a shop owner looking at a schedule somebody else set, and that
+  // phrase tells her nothing except that there is a word she does not know. What
+  // she needs is that it did not come from this screen.
   const items =
     preset === 'custom'
-      ? { custom: 'Custom schedule (set through the API)', ...presetItems }
+      ? { custom: 'Custom schedule (set somewhere other than this screen)', ...presetItems }
       : presetItems;
 
   return (

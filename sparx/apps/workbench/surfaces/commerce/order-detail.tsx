@@ -38,6 +38,7 @@ import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { deferTick } from '../../lib/defer';
 import { useSites, useModuleStates, useViewer } from '../../lib/api/shell-data';
+import { refundNote } from './refund-note';
 import { SoldBySection } from './sold-by-section';
 import { RecordPayment } from './record-payment';
 import { RecordHandover } from './record-handover';
@@ -192,7 +193,7 @@ function SubSection({
  */
 function invoiceState(invoice: OrderInvoice): { label: string; tone: string } {
   if (invoice.status === 'paid') return { label: 'Paid', tone: 'success' };
-  if (invoice.status === 'void') return { label: 'Cancelled', tone: 'warning' };
+  if (invoice.status === 'void') return { label: 'Canceled', tone: 'warning' };
   if (invoice.status === 'overdue') return { label: 'Late', tone: 'danger' };
   if (invoice.status === 'partial') return { label: 'Part paid', tone: 'info' };
   return { label: 'Waiting to be paid', tone: 'warning' };
@@ -811,6 +812,13 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
               ) : null}
               {order.refundTotal > 0 ? (
                 <MoneyRow label="Given back" amount={order.refundTotal} currency={currency} />
+              ) : null}
+              {/* An unmarked line beside a full refund reads as "this one was kept", and
+                  on O-000004 that was wrong about $128 of stock. The note says which kind
+                  of refund it was; it states no figure, because the split was never
+                  recorded (see refund-note.ts). */}
+              {refundNote(order) !== null ? (
+                <Text className="text-sm">{refundNote(order)}</Text>
               ) : null}
               {due > 0 ? (
                 <MoneyRow label="Still owed" amount={due} currency={currency} emphasis />

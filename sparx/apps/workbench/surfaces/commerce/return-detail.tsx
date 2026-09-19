@@ -33,7 +33,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { PackageCheck } from 'lucide-react';
+import { ExternalLink, PackageCheck } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -144,10 +144,10 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // Split so the body always has a loaded return: the order lookup below keys on
   // a real orderId, never the empty string the pane holds while the return loads
   // (useOrder has no enabled guard of its own).
-  return <ReturnDetailBody detail={detail} />;
+  return <ReturnDetailBody ctx={ctx} detail={detail} />;
 }
 
-function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
+function ReturnDetailBody({ ctx, detail }: { ctx: SurfaceContext; detail: ReturnDetail }) {
   const toast = useToast();
   const confirm = useConfirm();
 
@@ -156,6 +156,9 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
   // stores only quantities and an orderItemId, so without the order there is no
   // money on this screen — the refund modal then simply asks for the amount.
   const { data: order } = useOrder(detail.orderId);
+  const openCustomer = (id: string): void => {
+    ctx.open('crm.customer.detail', { id }, { target: 'tab' });
+  };
   const receive = useReceiveReturn(detail.id);
 
   const [approveOpen, setApproveOpen] = useState(false);
@@ -244,7 +247,27 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
     <div className={PANE_SHELL}>
       <PaneToolbar
         label="Return actions"
-        status={<Text className="text-sm">Order {detail.orderNumber ?? '—'}</Text>}
+        status={
+          /* The sale this return is against. The order is ALREADY fetched above,
+             for the line prices, and the number sat here as plain text: an owner
+             checking a return had to go and search for the order whose number
+             she was looking at. */
+          detail.orderNumber === null ? (
+            <Text className="text-sm">No order</Text>
+          ) : (
+            <Button
+              size="sm"
+              variant="ghost"
+              color="module"
+              onClick={() => {
+                ctx.open('commerce.order.detail', { id: detail.orderId }, { target: 'tab' });
+              }}
+            >
+              <ExternalLink className="size-4" aria-hidden />
+              Order {detail.orderNumber}
+            </Button>
+          )
+        }
         controls={
           <>
             <Badge color={state.tone} variant="soft" size="sm">
@@ -313,11 +336,32 @@ function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
             </ul>
           </FormSection>
 
-          {/* CRM's data on a commerce screen wears CRM's hue. */}
+          {/* CRM's data on a commerce screen wears CRM's hue.
+              THE NAME IS ALREADY IN THE HEADING, so on its own this card said
+              nothing twice. `customerId` was in the component's hand the whole
+              time and nothing drew it, which is the commonest defect shape here.
+              The question an owner has in front of a return is whether this
+              person sends everything back, and that answer is one click away on
+              their record. */}
           {detail.customerName ? (
             <ModuleScope module="crm">
               <FormSection title="Who is returning it">
-                <Text className="text-base font-medium">{detail.customerName}</Text>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Text className="text-base font-medium">{detail.customerName}</Text>
+                  {detail.customerId ? (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      color="module"
+                      onClick={() => {
+                        openCustomer(detail.customerId ?? '');
+                      }}
+                    >
+                      <ExternalLink className="size-4" aria-hidden />
+                      Open their record
+                    </Button>
+                  ) : null}
+                </div>
               </FormSection>
             </ModuleScope>
           ) : null}

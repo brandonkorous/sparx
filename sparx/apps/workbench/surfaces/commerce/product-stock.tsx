@@ -960,7 +960,10 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
             }
           : null;
 
-  const failedToLoad = stock.isError || variantsQuery.isError;
+  // Locations too: the pane WAITS for them, so it has to handle them failing.
+  // Without this, an unread location list renders as a shorter set of places to
+  // count stock into, which reads like locations somebody deleted (issue 627).
+  const failedToLoad = stock.isError || variantsQuery.isError || locationsQuery.isError;
   const stillLoading = stock.isPending || variantsQuery.isPending || locationsQuery.isPending;
 
   const body = () => {
@@ -983,6 +986,7 @@ function StockBody({ ctx, scope }: { ctx: SurfaceContext; scope: ReadyScope }) {
             onClick={() => {
               void stock.refetch();
               void variantsQuery.refetch();
+              void locationsQuery.refetch();
             }}
           >
             Try again

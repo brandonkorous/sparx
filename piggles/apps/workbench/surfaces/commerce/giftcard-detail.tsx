@@ -52,6 +52,7 @@ import {
   useIssueGiftCard,
   type GiftCardDetail,
 } from './giftcards-data';
+import { NOT_A_DATE, dayStartUtc } from '../../lib/today';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -163,9 +164,13 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
     ? giftCardErrorMessage(issue.error, 'Could not issue this gift card. Nothing was created.')
     : null;
 
+  // A date box can hold something that is not a date; see `lib/today`.
+  const expiryIso = expiry.trim() === '' ? null : dayStartUtc(expiry.trim());
+  const expiryError = expiry.trim() !== '' && expiryIso === null ? NOT_A_DATE : null;
+
   const submit = () => {
     setTouched(true);
-    if (amountError || amountCents === undefined) return;
+    if (amountError || amountCents === undefined || expiryError) return;
     issue.mutate(
       {
         initialBalanceCents: amountCents,
@@ -173,7 +178,7 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
         ...(recipientName.trim() ? { recipientName: recipientName.trim() } : {}),
         ...(recipientEmail.trim() ? { recipientEmail: recipientEmail.trim() } : {}),
         ...(message.trim() ? { message: message.trim() } : {}),
-        ...(expiry.trim() ? { expiresAt: new Date(expiry).toISOString() } : {}),
+        ...(expiryIso === null ? {} : { expiresAt: expiryIso }),
       },
       {
         onSuccess: (created) => {
@@ -327,6 +332,7 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
                   </div>
                 }
               />
+              {expiryError ? <FieldStatus status="error">{expiryError}</FieldStatus> : null}
             </Field>
           </FormSection>
         </div>

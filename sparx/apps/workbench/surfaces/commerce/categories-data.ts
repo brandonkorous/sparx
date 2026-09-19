@@ -63,8 +63,13 @@ export interface CategoryDetail {
   featured: boolean;
   iconMediaId: string | null;
   heroMediaId: string | null;
-  /** How many products are filed in this category. */
+  /** What a SHOPPER would find filed here on this site. Counted this way by
+   *  the server since issue 382; the label here said "filed in this category",
+   *  which is the larger number it stopped being. */
   productCount: number;
+  /** Filed here but not shown: archived, still a draft, or kept for one of your
+   *  other sites. */
+  hiddenProductCount: number;
   seoTitle: string | null;
   seoDescription: string | null;
   ogImageId: string | null;

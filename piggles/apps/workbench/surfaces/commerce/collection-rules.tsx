@@ -157,10 +157,10 @@ export function CollectionRulesEditor({
         <div className="border-base-300 flex flex-col gap-2 rounded border p-3">
           <div className="flex items-center gap-2">
             <Text as="span" className="font-medium">
-              {fitment.length === 1 ? 'A fitment condition' : 'Fitment conditions'}
+              {fitment.length === 1 ? 'A rule about what it fits' : 'Rules about what it fits'}
             </Text>
             <Badge color="info" variant="soft" size="sm">
-              Set up in Fitment
+              Set up in What fits what
             </Badge>
           </div>
           <Text className="text-sm">

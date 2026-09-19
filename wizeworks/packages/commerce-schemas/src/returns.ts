@@ -89,7 +89,7 @@ export const ApproveReturnInput = z.object({
     )
     .min(1),
   generateLabel: z.boolean().default(true),
-  staffNote: z.string().max(2000).optional(),
+  staffNote: z.string().max(2000).nullish(),
 });
 export type ApproveReturnInput = z.infer<typeof ApproveReturnInput>;
 
@@ -120,7 +120,7 @@ export const IssueReturnRefundInput = z.object({
   returnId: Uuid,
   refundAmountCents: MoneyCents,
   asAccountCredit: z.boolean().default(false),
-  restockingFeeCents: MoneyCents.optional(),
+  restockingFeeCents: MoneyCents.nullish(),
 });
 export type IssueReturnRefundInput = z.infer<typeof IssueReturnRefundInput>;
 

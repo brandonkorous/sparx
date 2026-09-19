@@ -17,7 +17,7 @@ export type PriceListStatus = z.infer<typeof PriceListStatus>;
 
 export const CreatePriceListInput = z.object({
   name: z.string().min(1).max(127),
-  description: z.string().max(2000).optional(),
+  description: z.string().max(2000).nullish(),
   currency: Currency,
   // null = applies on all channels. Nullable (not merely optional) so an update
   // can CLEAR a channel back to "everywhere" — the service already maps null
@@ -109,8 +109,8 @@ export const CreateContractPriceInput = z.object({
   priceCents: MoneyCents,
   validFrom: z.string().datetime(),
   validTo: z.string().datetime().optional(),
-  signedAgreementMediaId: Uuid.optional(),
-  notes: z.string().max(2000).optional(),
+  signedAgreementMediaId: Uuid.nullish(),
+  notes: z.string().max(2000).nullish(),
 });
 export type CreateContractPriceInput = z.infer<typeof CreateContractPriceInput>;
 

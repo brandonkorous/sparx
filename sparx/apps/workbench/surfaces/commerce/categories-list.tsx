@@ -19,7 +19,15 @@
 // hierarchy stays legible however it is ordered.
 
 import { useMemo, useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import {
+  Badge,
+  Button,
+  Card,
+  EmptyState,
+  SearchInput,
+  Table,
+  Tooltip,
+} from '@wizeworks/silicaui-react';
 import { ArrowDown, ArrowUp, Plus, Tags } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -33,6 +41,31 @@ import { RowOpenHint } from '../../components/row-open-hint';
 // meaningful default and cannot be expressed as a single column.
 type CatSortKey = 'name' | 'productCount';
 type SortDir = 'asc' | 'desc';
+
+/** The number beside an aisle, and the honest footnote when it is not the
+ *  whole story.
+ *
+ *  The figure is what a SHOPPER would find there on this site, which is the
+ *  question anybody reading this column is asking. It used to be a raw count of filing
+ *  rows, and the console beside this one has said so since issue 382 while this
+ *  one still printed the raw number (issue 626).
+ *  A truthful 0 alone would read as "my products have vanished", so where
+ *  anything is filed-but-unshown the row says so and the tooltip says why. */
+function AisleCount({ count, hidden }: { count: number; hidden: number }) {
+  if (hidden === 0) return <>{String(count)}</>;
+  return (
+    <span className="inline-flex items-center justify-end gap-2">
+      {String(count)}
+      <Tooltip
+        content={`${String(hidden)} more ${hidden === 1 ? 'product is' : 'products are'} filed under this heading but not on your website: archived, still a draft, or kept for one of your other sites.`}
+      >
+        <Badge color="info" variant="soft" size="sm">
+          {String(hidden)} not shown
+        </Badge>
+      </Tooltip>
+    </span>
+  );
+}
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -105,6 +138,15 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (category: CategoryChoice, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.category.detail', { id: category.id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a category',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.category.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -127,12 +169,10 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Add a category: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('commerce.category.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Add a category</span>
+            <span className="hidden @lg:inline">{createFirst.label}</span>
           </Button>
         }
         refresh={
@@ -168,6 +208,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No categories yet',
               description:
                 'Categories are the aisles of your website menu: the structure shoppers browse down. Add your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -210,7 +251,12 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
                       </Badge>
                     ) : null}
                   </td>
-                  <td className="text-right tabular-nums">{String(category.productCount)}</td>
+                  <td className="text-right tabular-nums">
+                    <AisleCount
+                      count={category.productCount}
+                      hidden={category.hiddenProductCount}
+                    />
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -218,7 +264,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint />
+      {rows.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

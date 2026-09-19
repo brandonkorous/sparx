@@ -92,7 +92,7 @@ export const SetClassificationOverrideInput = z.object({
   warehouseId: z.string().uuid(),
   abcClass: AbcClass.nullish(),
   xyzClass: XyzClass.nullish(),
-  reason: z.string().trim().max(255).optional(),
+  reason: z.string().trim().max(255).nullish(),
 });
 export type SetClassificationOverrideInput = z.infer<typeof SetClassificationOverrideInput>;
 
@@ -103,7 +103,7 @@ export const CreateCountScheduleInput = z.object({
   zoneName: z.string().trim().max(60).nullish(),
   cadence: CountCadence,
   /** Required when the cadence is `custom`; ignored otherwise. */
-  intervalDays: z.number().int().min(1).max(3650).optional(),
+  intervalDays: z.number().int().min(1).max(3650).nullish(),
   maxItemsPerRun: z.number().int().min(1).max(500).default(50),
   isBlind: z.boolean().default(true),
   assignedTo: z.string().trim().max(127).nullish(),

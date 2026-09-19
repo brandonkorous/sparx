@@ -212,7 +212,11 @@ export async function updateDomain(
         });
         if (used > 0) {
           throw new CommerceConflictError(
-            `Can't remove level "${removed.join(', ')}": ${used} node(s) still use it. Delete those first.`,
+            // "node(s)" is a programmer counting. The person reading this is
+            // deleting a level off their own fitment tree.
+            `Can't remove level "${removed.join(', ')}": ${String(used)} ${
+              used === 1 ? 'entry' : 'entries'
+            } still use it. Delete those first.`,
             'dimensions'
           );
         }
@@ -429,7 +433,9 @@ export async function createNode(ctx: ServiceContext, rawInput: unknown): Promis
     const dimensionKey = levelKeys[depth];
     if (!dimensionKey) {
       throw new CommerceConflictError(
-        `This domain has ${levelKeys.length} level(s); can't add a node deeper than that. Add a level dimension first.`,
+        `This domain has ${String(levelKeys.length)} ${
+          levelKeys.length === 1 ? 'level' : 'levels'
+        }; can't add a node deeper than that. Add a level dimension first.`,
         'parentId'
       );
     }

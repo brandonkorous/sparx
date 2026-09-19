@@ -61,8 +61,14 @@ const reviewRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body as Record<string, unknown>) ?? {};
-    await reviewService.moderate(toCommerceContext(request), { ...body, reviewId: id });
-    return ok({ id, moderated: true });
+    // `changed` is false when the review was already in the state asked for, so
+    // the console can avoid telling her it published something already published
+    // (issue 640). Nothing is written in that case.
+    const outcome = await reviewService.moderate(toCommerceContext(request), {
+      ...body,
+      reviewId: id,
+    });
+    return ok({ id, moderated: true, changed: outcome.changed });
   });
 
   app.post('/v1/commerce/reviews/:id/respond', async (request) => {
@@ -134,11 +140,11 @@ const reviewRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
     const body = z.object({ status: z.enum(['published', 'rejected']) }).parse(request.body ?? {});
-    await reviewService.moderateQuestion(toCommerceContext(request), {
+    const outcome = await reviewService.moderateQuestion(toCommerceContext(request), {
       questionId: id,
       status: body.status,
     });
-    return ok({ id, moderated: true });
+    return ok({ id, moderated: true, changed: outcome.changed });
   });
 
   app.post('/v1/commerce/questions/bulk-moderate', async (request) => {

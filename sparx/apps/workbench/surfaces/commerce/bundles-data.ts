@@ -114,12 +114,17 @@ export interface VariantChoice {
 }
 
 /**
- * The whole sellable catalog, one call.
+ * Everything THIS SITE sells, one call.
  *
- * The tenant-wide variants endpoint takes no search term of its own, so this
- * pulls a window ordered by product title and the picker filters it in the
- * browser. Fine for the realistic case; a catalog past the ceiling is the
- * signal to give that endpoint a real `q`.
+ * The endpoint takes no search term of its own, so this pulls a window ordered
+ * by product title and the picker filters it in the browser. Fine for the
+ * realistic case; a catalog past the ceiling is the signal to give that
+ * endpoint a real `q`.
+ *
+ * The site rides the `x-sparx-property-id` header the client attaches to every
+ * request, and switching site reloads the page, so there is no site in the key
+ * here. It was genuinely tenant-wide until 2026-09-17, which put one business's
+ * stock in another one's till.
  */
 export function useVariantCatalog() {
   return useQuery({

@@ -37,8 +37,8 @@ export const CreateWarehouseInput = z.object({
     )
     .max(7)
     .optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
+  latitude: z.number().min(-90).max(90).nullish(),
+  longitude: z.number().min(-180).max(180).nullish(),
   isActive: z.boolean().default(true),
 });
 export type CreateWarehouseInput = z.infer<typeof CreateWarehouseInput>;
@@ -94,10 +94,10 @@ export const AdjustInventoryInput = z.object({
   warehouseId: Uuid,
   delta: z.number().int(), // signed
   reason: InventoryAdjustReason,
-  referenceType: z.string().max(63).optional(), // 'order', 'return', 'transfer'
-  referenceId: Uuid.optional(),
-  note: z.string().max(2000).optional(),
-  unitCostCents: z.number().int().nonnegative().optional(),
+  referenceType: z.string().max(63).nullish(), // 'order', 'return', 'transfer'
+  referenceId: Uuid.nullish(),
+  note: z.string().max(2000).nullish(),
+  unitCostCents: z.number().int().nonnegative().nullish(),
   /** Which shelf the units land on or come off (docs/146 Phase 2). Omitted, the
    *  ledger's mirror picks the location's default. Named, it decides — which is
    *  what lets a returns disposition put quarantined goods somewhere a picker
@@ -108,8 +108,8 @@ export const AdjustInventoryInput = z.object({
   // write apply exactly once.
   actorType: InventoryActorType.optional(),
   actorId: z.string().max(127).optional(),
-  source: z.string().max(63).optional(),
-  idempotencyKey: z.string().max(127).optional(),
+  source: z.string().max(63).nullish(),
+  idempotencyKey: z.string().max(127).nullish(),
 });
 export type AdjustInventoryInput = z.infer<typeof AdjustInventoryInput>;
 
@@ -118,7 +118,7 @@ export const SetReorderPolicyInput = z.object({
   warehouseId: Uuid,
   reorderPoint: z.number().int().nonnegative(),
   reorderQuantity: z.number().int().positive(),
-  leadTimeDays: z.number().int().nonnegative().max(365).optional(),
+  leadTimeDays: z.number().int().nonnegative().max(365).nullish(),
 });
 export type SetReorderPolicyInput = z.infer<typeof SetReorderPolicyInput>;
 
@@ -127,7 +127,7 @@ export const TransferInventoryInput = z.object({
   fromWarehouseId: Uuid,
   toWarehouseId: Uuid,
   quantity: z.number().int().positive(),
-  note: z.string().max(2000).optional(),
+  note: z.string().max(2000).nullish(),
 });
 export type TransferInventoryInput = z.infer<typeof TransferInventoryInput>;
 
@@ -194,8 +194,8 @@ export const CreateFleetHoldInput = z.object({
   warehouseId: Uuid.optional(),
   quantity: z.number().int().positive(),
   workOrderRef: z.string().min(1).max(127),
-  note: z.string().max(2000).optional(),
-  heldByCustomerId: Uuid.optional(),
+  note: z.string().max(2000).nullish(),
+  heldByCustomerId: Uuid.nullish(),
 });
 export type CreateFleetHoldInput = z.infer<typeof CreateFleetHoldInput>;
 
@@ -237,8 +237,8 @@ export const CreateLotBatchInput = z.object({
   expiresAt: z.string().datetime().optional(),
   quantity: z.number().int().nonnegative(),
   hazmatClass: HazmatClass.default('none'),
-  supplierBatchRef: z.string().max(127).optional(),
-  certificateOfAnalysisMediaId: Uuid.optional(),
+  supplierBatchRef: z.string().max(127).nullish(),
+  certificateOfAnalysisMediaId: Uuid.nullish(),
 });
 export type CreateLotBatchInput = z.infer<typeof CreateLotBatchInput>;
 
@@ -256,7 +256,7 @@ export const CreateSerialUnitInput = z.object({
   variantId: Uuid,
   warehouseId: Uuid,
   serial: z.string().min(1).max(127),
-  lotBatchId: Uuid.optional(),
+  lotBatchId: Uuid.nullish(),
   status: SerialUnitStatus.default('in_stock'),
 });
 export type CreateSerialUnitInput = z.infer<typeof CreateSerialUnitInput>;
@@ -272,10 +272,19 @@ export type UpdateSerialStatusInput = z.infer<typeof UpdateSerialStatusInput>;
 // Recall — flips matching sold units to a `recall_pending` state and
 // generates a customer notification list. The actual workflow is a
 // separate worker but its input is this.
+/**
+ * There is no `notifyCustomers` here on purpose.
+ *
+ * There was, defaulting to TRUE, and it was parsed and then read by nothing: no
+ * recall event exists in the catalog and no template sits behind one, so every
+ * caller that asked for customers to be told got silence and a success. A flag
+ * that promises an email is the same contract as a sentence that promises one.
+ * Reaching the affected customers is done from the batch, which names the orders
+ * its sold units left on. [[feedback_a_promise_in_copy_is_a_contract]]
+ */
 export const InitiateRecallInput = z.object({
   lotBatchIds: z.array(Uuid).min(1).max(100),
   reason: z.string().min(1).max(2000),
-  notifyCustomers: z.boolean().default(true),
 });
 export type InitiateRecallInput = z.infer<typeof InitiateRecallInput>;
 
@@ -328,10 +337,10 @@ export type UpdateSupplierInput = z.infer<typeof UpdateSupplierInput>;
 // the moving-average basis on receipt).
 export const UpsertSupplierVariantInput = z.object({
   variantId: Uuid,
-  supplierSku: z.string().max(127).optional(),
-  unitCostCents: z.number().int().nonnegative().optional(),
-  minOrderQty: z.number().int().positive().optional(),
-  leadTimeDays: z.number().int().nonnegative().max(3650).optional(),
+  supplierSku: z.string().max(127).nullish(),
+  unitCostCents: z.number().int().nonnegative().nullish(),
+  minOrderQty: z.number().int().positive().nullish(),
+  leadTimeDays: z.number().int().nonnegative().max(3650).nullish(),
   isPreferred: z.boolean().optional(),
 });
 export type UpsertSupplierVariantInput = z.infer<typeof UpsertSupplierVariantInput>;
@@ -379,11 +388,11 @@ export const CreatePurchaseOrderInput = z.object({
   supplierId: Uuid,
   warehouseId: Uuid,
   currency: z.string().length(3).default('USD'),
-  paymentTerms: z.string().max(20).optional(),
-  reference: z.string().max(120).optional(),
-  expectedArrivalAt: z.string().datetime().optional(),
+  paymentTerms: z.string().max(20).nullish(),
+  reference: z.string().max(120).nullish(),
+  expectedArrivalAt: z.string().datetime().nullish(),
   freightCents: z.number().int().nonnegative().default(0),
-  notes: z.string().max(5000).optional(),
+  notes: z.string().max(5000).nullish(),
   lines: z.array(PurchaseOrderLineInput).max(500).default([]),
 });
 export type CreatePurchaseOrderInput = z.infer<typeof CreatePurchaseOrderInput>;
@@ -476,8 +485,8 @@ export const CreateGoodsReceiptInput = z.object({
   // disagrees is how a discrepancy becomes an unrecorded one.
   advanceShipNoticeId: Uuid.optional(),
   receivedAt: z.string().datetime().optional(),
-  reference: z.string().max(120).optional(), // packing slip / carrier ref
-  note: z.string().max(2000).optional(),
+  reference: z.string().max(120).nullish(), // packing slip / carrier ref
+  note: z.string().max(2000).nullish(),
   lines: z.array(ReceiveLineInput).min(1).max(500),
 
   // FX captured AT RECEIPT (docs/146 Phase 5.7). The rate on the day the goods
@@ -659,7 +668,7 @@ export type TransferLineInput = z.infer<typeof TransferLineInput>;
 export const CreateInventoryTransferInput = z.object({
   fromWarehouseId: Uuid,
   toWarehouseId: Uuid,
-  note: z.string().max(2000).optional(),
+  note: z.string().max(2000).nullish(),
   lines: z.array(TransferLineInput).max(500).default([]),
 });
 export type CreateInventoryTransferInput = z.infer<typeof CreateInventoryTransferInput>;
@@ -877,19 +886,31 @@ export const BinCode = z
 export const CreateBinInput = z.object({
   warehouseId: Uuid,
   code: BinCode,
-  name: z.string().trim().max(120).optional(),
+  name: z.string().trim().max(120).nullish(),
   // All four free text: every warehouse names its geography differently, and a
   // schema insisting on ours would be fought rather than filled in.
-  zone: z.string().trim().max(60).optional(),
-  aisle: z.string().trim().max(60).optional(),
-  rack: z.string().trim().max(60).optional(),
-  shelf: z.string().trim().max(60).optional(),
+  zone: z.string().trim().max(60).nullish(),
+  aisle: z.string().trim().max(60).nullish(),
+  rack: z.string().trim().max(60).nullish(),
+  shelf: z.string().trim().max(60).nullish(),
   type: BinType.default('pick'),
   /** Defaults from `type` when omitted; overridable because the two come apart. */
   isSellable: z.boolean().optional(),
-  pickSequence: z.number().int().min(0).max(1_000_000).optional(),
-  capacityUnits: z.number().int().positive().max(10_000_000).optional(),
-  notes: z.string().max(2000).optional(),
+  /**
+   * Where stock goes when nobody says a shelf.
+   *
+   * Exactly one per location. It is what every put-away falls back to — a
+   * delivery booked in without a shelf, a transfer arriving, a return coming
+   * back — so a location with shelves turned on and NO default cannot receive
+   * anything at all. That state was reachable and unfixable: the routing
+   * refused with "add a default shelf", and there was no way anywhere in the
+   * console or the API to add one. Every bin-enabled warehouse on the platform
+   * was in it. [[feedback_one_outcome_two_causes]]
+   */
+  isDefault: z.boolean().optional(),
+  pickSequence: z.number().int().min(0).max(1_000_000).nullish(),
+  capacityUnits: z.number().int().positive().max(10_000_000).nullish(),
+  notes: z.string().max(2000).nullish(),
 });
 export type CreateBinInput = z.infer<typeof CreateBinInput>;
 
@@ -909,7 +930,7 @@ export const MoveBetweenBinsInput = z.object({
   fromBinId: Uuid,
   toBinId: Uuid,
   quantity: z.number().int().positive().max(10_000_000),
-  note: z.string().max(2000).optional(),
+  note: z.string().max(2000).nullish(),
   /** Suffixed `:out` / `:in` for the two halves, so a retried move applies once. */
   idempotencyKey: z.string().max(100).optional(),
 });

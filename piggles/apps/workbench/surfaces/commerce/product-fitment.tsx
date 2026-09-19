@@ -108,6 +108,7 @@ import { InlineWaiting } from '../../components/inline-waiting';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
 import { PaneWaiting } from '../../components/pane-waiting';
+import { ActionLabel } from '../../components/action-label';
 
 const LABEL = 'Fitment';
 /** Registry module for this pane, so the brand draws Sell's own picture in the
@@ -751,7 +752,7 @@ function FitmentBody({
   return (
     <div className={PANE_SHELL}>
       <PaneToolbar
-        label="Fitment actions"
+        label="What it fits controls"
         status={
           scope.isFollowing ? (
             <Badge color="info" variant="soft" size="sm">
@@ -774,7 +775,7 @@ function FitmentBody({
               }}
             >
               <Icon glyph={faPlus} className="size-4" aria-hidden />
-              <span className="hidden @md:inline">Add what it fits</span>
+              <ActionLabel from="md">Add what it fits</ActionLabel>
             </Button>
           ) : null
         }

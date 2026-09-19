@@ -10,6 +10,7 @@
 
 import { QuestionForm } from '@/components/question-form';
 import type { PublicQuestion, PublicQuestionAnswer } from '@/lib/commerce';
+import { questionAuthorName } from './review-author-words';
 
 function formatQuestionDate(iso: string): string {
   const d = new Date(iso);
@@ -45,11 +46,9 @@ function QuestionCard({ question }: { question: PublicQuestion }) {
   return (
     <li className="border-base-300 border-b py-[1.1rem] first:pt-0">
       <div className="mb-2 flex flex-wrap items-center gap-2.5">
-        {question.displayName ? (
-          <span className="text-base-content font-semibold">{question.displayName}</span>
-        ) : (
-          <span className="text-base-content font-semibold">A customer asked</span>
-        )}
+        <span className="text-base-content font-semibold">
+          {questionAuthorName(question.displayName)}
+        </span>
         <span className="text-base-content ml-auto text-sm">
           {formatQuestionDate(question.createdAt)}
         </span>

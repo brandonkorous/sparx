@@ -29,7 +29,7 @@ import { orderErrorMessage } from './data';
  *  somebody to type in a card sale that never happened. */
 const WAYS = [
   { value: 'manual', label: 'Cash' },
-  { value: 'check', label: 'Cheque' },
+  { value: 'check', label: 'Check' },
   { value: 'wire', label: 'Bank transfer' },
 ] as const;
 
@@ -107,7 +107,7 @@ export function RecordPayment({ order, due }: { order: Order; due: number }) {
         <span className="text-base font-medium">Anything to note (optional)</span>
         <Input
           value={reference}
-          placeholder="Cheque number, who took it…"
+          placeholder="Check number, who took it…"
           onChange={(event) => {
             setReference(event.target.value);
           }}

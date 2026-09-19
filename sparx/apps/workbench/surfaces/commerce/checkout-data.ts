@@ -13,6 +13,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@wizeworks/query';
 import { apiErrorMessage } from '../../lib/api-error';
+import { channelLabel } from '../../lib/console/channels';
 import { api } from '../../lib/api/client';
 import type { Tone } from './data';
 import type { OrderAddress } from './data';
@@ -89,8 +90,11 @@ export interface CheckoutQuery {
   skip: number;
 }
 
-export function useCheckoutSessions(query: CheckoutQuery) {
+export function useCheckoutSessions(query: CheckoutQuery, options: { enabled?: boolean } = {}) {
   return useQuery({
+    // `enabled` is deliberately OUT of the key: it says whether to ask, not what
+    // was asked, and a key that carries it would mint a second cache entry for
+    // the same question.
     queryKey: [...CHECKOUT_KEY, 'list', query],
     queryFn: () =>
       api.list<CheckoutRow>('/v1/commerce/checkout-sessions', {
@@ -100,6 +104,7 @@ export function useCheckoutSessions(query: CheckoutQuery) {
         skip: query.skip,
       }),
     placeholderData: (previous) => previous,
+    ...(options.enabled === undefined ? {} : { enabled: options.enabled }),
   });
 }
 
@@ -202,13 +207,7 @@ export function isCheckoutLive(step: CheckoutStep): boolean {
   return step !== 'completed' && step !== 'expired';
 }
 
-export const CHECKOUT_CHANNEL_LABELS: Record<string, string> = {
-  storefront: 'Your website',
-  b2b_portal: 'Trade portal',
-  admin: 'Entered by your team',
-  mcp: 'AI assistant',
-};
-
+/** One console vocabulary — see lib/console/channels.ts. */
 export function checkoutChannelLabel(channel: string): string {
-  return CHECKOUT_CHANNEL_LABELS[channel] ?? channel;
+  return channelLabel(channel);
 }

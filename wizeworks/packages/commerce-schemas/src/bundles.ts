@@ -33,8 +33,8 @@ export type BundleComponentInput = z.infer<typeof BundleComponentInput>;
 export const CreateBundleInput = z.object({
   bundleProductId: Uuid, // the wrapping product the bundle is sold as
   pricingMode: BundlePricingMode.default('sum_of_components'),
-  fixedPriceCents: MoneyCents.optional(), // required for fixed mode
-  percentOffSum: z.number().min(0).max(100).optional(), // for percent_off_sum
+  fixedPriceCents: MoneyCents.nullish(), // required for fixed mode
+  percentOffSum: z.number().min(0).max(100).nullish(), // for percent_off_sum
   inventoryMode: BundleInventoryMode.default('decrement_components'),
   components: z.array(BundleComponentInput).min(1).max(50),
 });
@@ -151,7 +151,7 @@ export type ConfigurationAddOnInput = z.infer<typeof ConfigurationAddOnInput>;
 export const CreateConfigurationTemplateInput = z.object({
   productId: Uuid,
   name: z.string().min(1).max(127),
-  description: z.string().max(2000).optional(),
+  description: z.string().max(2000).nullish(),
   // Layout payload — step order, headers, visual hints. Free-form JSONB
   // so the dashboard editor can evolve without schema changes.
   layout: z

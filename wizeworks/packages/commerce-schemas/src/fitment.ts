@@ -82,8 +82,8 @@ export type FitmentDimensions = z.infer<typeof FitmentDimensions>;
 export const CreateFitmentDomainInput = z.object({
   slug: SlugString,
   displayName: z.string().min(1).max(127),
-  description: z.string().max(2000).optional(),
-  iconKey: z.string().min(1).max(63).optional(), // lucide icon name
+  description: z.string().max(2000).nullish(),
+  iconKey: z.string().min(1).max(63).nullish(), // lucide icon name
   dimensions: FitmentDimensions,
   position: z.number().int().min(0).max(1000).default(0),
 });

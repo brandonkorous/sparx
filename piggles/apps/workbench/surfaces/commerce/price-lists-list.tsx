@@ -77,6 +77,15 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const openDetail = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.pricelist.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a price list',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.pricelist.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -99,12 +108,10 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Add a price list: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('commerce.pricelist.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Icon glyph={faPlus} className="size-4" aria-hidden />
-            Add a price list
+            {createFirst.label}
           </Button>
         }
         controls={
@@ -162,6 +169,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No price lists yet',
               description:
                 'A price list is a set of special prices for particular customers: a wholesale sheet for the businesses you supply, or a members’ rate. Add your first one to start giving certain customers their own prices.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -217,7 +225,7 @@ export function PriceListsListSurface({ ctx }: { ctx: SurfaceContext }) {
         )}
       </Card>
 
-      <RowOpenHint />
+      {rows.length > 0 ? <RowOpenHint /> : null}
     </div>
   );
 }

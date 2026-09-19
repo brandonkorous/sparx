@@ -45,15 +45,19 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { productErrorMessage, reviewState } from './products-data';
 import {
+  customerAccountNote,
   customerLabel,
   useBulkDeleteReviews,
   useBulkModerateReviews,
   useModerateQueueReview,
+  useModerationEverCount,
   useReviewsList,
   type ModerationSortDir,
   type ReviewSort,
 } from './moderation-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { moderationEmptyWords } from './moderation-empty';
+import { bulkDecisionWords, reviewDecisions, unchangedWords } from './moderation-decisions';
 
 /** Plain-language filter over the stored statuses. `approved` reads as "Shown".
  *  Default is "Waiting" — the backlog is the queue's job. */
@@ -124,8 +128,17 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
   //
   // A filter the PANE set is not a filter the person set.
   const searching = search.trim() !== '';
-  const atDefaultQueue = !searching && status === DEFAULT_STATUS;
-  const showingEverything = !searching && status === 'all';
+  // The third state the first fix still missed: "switch to All to see the ones
+  // already on your website" points at a second empty screen for a shop that has
+  // never had one. Asked only when the answer could matter, and never from the
+  // list's own `total`, which carries the filter.
+  const ever = useModerationEverCount('review', rows.length === 0 && !searching);
+  const empty = moderationEmptyWords('review', {
+    searching,
+    status,
+    defaultStatus: DEFAULT_STATUS,
+    everCount: ever.data?.total ?? null,
+  });
 
   const selectedIds = rows.filter((r) => selected.has(r.id)).map((r) => r.id);
   const allSelected = rows.length > 0 && selectedIds.length === rows.length;
@@ -168,8 +181,13 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
     moderate.mutate(
       { id, status: next },
       {
-        onSuccess: () => {
-          toast.add({ title: done, type: 'success' });
+        onSuccess: (result) => {
+          // A decision that moved nothing is not announced as one. The button
+          // that could produce this has been taken off the row, so it is reachable
+          // only when somebody else worked the same queue first (issue 640).
+          toast.add(
+            result.changed ? { title: done, type: 'success' } : unchangedWords('review', next)
+          );
         },
         onError: (err) => {
           toast.add({
@@ -185,13 +203,15 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
     );
   };
 
-  const bulkSetStatus = (next: 'approved' | 'rejected', done: string) => {
+  const bulkSetStatus = (next: 'approved' | 'rejected') => {
     bulkModerate.mutate(
       { reviewIds: selectedIds, status: next },
       {
         onSuccess: (result) => {
           clearSelection();
-          toast.add({ title: `${done} (${String(result.count)})`, type: 'success' });
+          // Counts what MOVED, and names what did not. A selection of rows
+          // already in that state used to report itself as work done.
+          toast.add(bulkDecisionWords('review', next, result));
         },
         onError: (err) => {
           toast.add({
@@ -336,7 +356,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
             loading={bulkModerate.isPending}
             disabled={busyBulk}
             onClick={() => {
-              bulkSetStatus('approved', 'Shown');
+              bulkSetStatus('approved');
             }}
           >
             <Icon glyph={faCheck} className="size-4" aria-hidden />
@@ -349,7 +369,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
             loading={bulkModerate.isPending}
             disabled={busyBulk}
             onClick={() => {
-              bulkSetStatus('rejected', 'Hidden');
+              bulkSetStatus('rejected');
             }}
           >
             <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
@@ -393,20 +413,8 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
         ) : rows.length === 0 ? (
           <EmptyState
             icon={<Icon glyph={faMessage} className="size-6" aria-hidden />}
-            title={
-              atDefaultQueue
-                ? 'Nothing waiting for you'
-                : showingEverything
-                  ? 'No reviews yet'
-                  : 'Nothing matches those filters'
-            }
-            description={
-              atDefaultQueue
-                ? 'No review is waiting to be published. Switch the filter to All to see the ones already on your website.'
-                : showingEverything
-                  ? 'When a customer reviews one of your products, it appears here for you to publish or hide before it goes on your website.'
-                  : 'Try a different word, or switch the filter back to All.'
-            }
+            title={empty.title}
+            description={empty.detail}
           />
         ) : (
           <Table size="sm" hover>
@@ -492,8 +500,22 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     <td className="hidden max-w-40 truncate text-sm @lg:table-cell">
                       {row.productTitle ?? '—'}
                     </td>
-                    <td className="hidden max-w-40 truncate text-sm @xl:table-cell">
-                      {customerLabel(row.customer, row.displayName)}
+                    <td className="hidden max-w-40 text-sm @xl:table-cell">
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate">
+                          {customerLabel(row.customer, row.displayName)}
+                        </span>
+                        {customerAccountNote(row.customer, row.displayName) ? (
+                          <span
+                            className="truncate text-sm"
+                            // The column is narrow enough to cut a long account
+                            // name; the whole of it stays reachable on hover.
+                            title={customerAccountNote(row.customer, row.displayName) ?? undefined}
+                          >
+                            {customerAccountNote(row.customer, row.displayName)}
+                          </span>
+                        ) : null}
+                      </div>
                     </td>
                     <td>
                       <Badge color={state.tone} variant="soft" size="sm">
@@ -510,36 +532,27 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       }}
                     >
                       <div className="inline-flex items-center gap-1">
-                        <Tooltip content="Publish it">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            color="module"
-                            shape="square"
-                            aria-label="Publish this review"
-                            loading={busyRow}
-                            onClick={() => {
-                              setStatusFor(row.id, 'approved', 'Review published');
-                            }}
-                          >
-                            <Icon glyph={faCheck} className="size-4" aria-hidden />
-                          </Button>
-                        </Tooltip>
-                        <Tooltip content="Hide" align="end">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            color="neutral"
-                            shape="square"
-                            aria-label="Hide this review"
-                            loading={busyRow}
-                            onClick={() => {
-                              setStatusFor(row.id, 'rejected', 'Review hidden');
-                            }}
-                          >
-                            <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
-                          </Button>
-                        </Tooltip>
+                        {reviewDecisions(row.status).map((decision) => (
+                          <Tooltip key={decision.next} content={decision.tooltip} align="end">
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              {...(decision.icon === 'show' ? { color: 'module' as const } : {})}
+                              shape="square"
+                              aria-label={decision.aria}
+                              loading={busyRow}
+                              onClick={() => {
+                                setStatusFor(row.id, decision.next, decision.done);
+                              }}
+                            >
+                              {decision.icon === 'show' ? (
+                                <Icon glyph={faCheck} className="size-4" aria-hidden />
+                              ) : (
+                                <Icon glyph={faEyeSlash} className="size-4" aria-hidden />
+                              )}
+                            </Button>
+                          </Tooltip>
+                        ))}
                       </div>
                     </td>
                   </tr>
@@ -574,7 +587,7 @@ export function ReviewsListSurface({ ctx }: { ctx: SurfaceContext }) {
             clearSelection();
           }}
         />
-        <RowOpenHint what="a row to open it in the queue" />
+        {rows.length > 0 ? <RowOpenHint what="a row to open it in the queue" /> : null}
       </div>
     </div>
   );

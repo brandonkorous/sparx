@@ -37,6 +37,7 @@ import {
   type SortDir,
 } from './discounts-data';
 import { RowOpenHint } from '../../components/row-open-hint';
+import { givenAwayCell } from './discount-words';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -146,6 +147,15 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.discount.detail', { id }, { target: targetFor(event) });
   };
+  // ONE object, two places: the toolbar's button and the empty state's
+  // invitation. Split, the label drifts — and the first-run state used to
+  // have no button at all, so "Add your first one" pointed at nothing.
+  const createFirst = {
+    label: 'Add a discount',
+    onClick: (event: { shiftKey: boolean; altKey: boolean }) => {
+      ctx.open('commerce.discount.detail', { id: 'new' }, { target: targetFor(event) });
+    },
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -171,12 +181,10 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             size="sm"
             className="ml-auto"
             title="Add a discount: hold Shift to open alongside, Alt for a new window"
-            onClick={(event) => {
-              ctx.open('commerce.discount.detail', { id: 'new' }, { target: targetFor(event) });
-            }}
+            onClick={createFirst.onClick}
           >
             <Plus className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Add a discount</span>
+            <span className="hidden @lg:inline">{createFirst.label}</span>
           </Button>
         }
         controls={
@@ -234,6 +242,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
               title: 'No discounts yet',
               description:
                 'A discount reduces the price at checkout, with a code shoppers type, or automatically on any order that qualifies. Add your first one to get started.',
+              action: createFirst,
             }}
           />
         ) : (
@@ -247,6 +256,11 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                     it stays a plain, unsorted cell. */}
                 <th className="hidden @lg:table-cell">Takes off</th>
                 {header('status', 'State')}
+                {/* What each offer has cost, which is the question an owner
+                    opens this list with. Not sortable: the figure is summed from
+                    the redemption ledger rather than stored on the row, so the
+                    server has no column to order by. */}
+                <th className="hidden text-right @lg:table-cell">Given away</th>
                 {header('updatedAt', 'Changed', 'hidden @2xl:table-cell text-right')}
               </tr>
             </thead>
@@ -286,6 +300,9 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                         {state.label}
                       </Badge>
                     </td>
+                    <td className="hidden text-right text-sm tabular-nums @lg:table-cell">
+                      {givenAwayCell(row.usageCount, row.givenAwayCents, row.currency ?? 'USD')}
+                    </td>
                     <td className="hidden text-right text-sm @2xl:table-cell">
                       {whenChanged(row.updatedAt)}
                     </td>
@@ -319,7 +336,7 @@ export function DiscountsListSurface({ ctx }: { ctx: SurfaceContext }) {
             setTake(size);
           }}
         />
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

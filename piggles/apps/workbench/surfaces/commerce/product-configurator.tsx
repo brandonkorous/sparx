@@ -114,6 +114,7 @@ import {
 } from './products-data';
 import { PaneEmpty } from '../../components/pane-empty';
 import { PaneLoadError } from '../../components/pane-load-error';
+import { ActionLabel } from '../../components/action-label';
 
 const LABEL = 'Configurator';
 /** Registry module for this pane, so the brand draws Sell's own picture rather
@@ -1424,7 +1425,7 @@ function ConfiguratorBody({
             {liveCount > 0 ? (
               <Badge color="success" variant="soft" size="sm">
                 <Icon glyph={faCubes} className="size-3" aria-hidden />
-                <span className="hidden @md:inline">Built to order</span>
+                <ActionLabel from="md">Built to order</ActionLabel>
               </Badge>
             ) : null}
           </>
@@ -1446,7 +1447,7 @@ function ConfiguratorBody({
                 }}
               >
                 <Icon glyph={faRotateLeft} className="size-4" aria-hidden />
-                <span className="hidden @md:inline">Discard</span>
+                <ActionLabel from="md">Discard</ActionLabel>
               </Button>
               <Button
                 size="sm"

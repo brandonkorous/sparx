@@ -311,10 +311,9 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
                   : `Search cannot find ${String(unfindable)} of your products`}
               </AlertTitle>
               <AlertDescription>
-                They are on the storefront and customers can buy them. What is not working is the
-                search box and the facets beside it, which look products up in a separate index that
-                these are missing from. A customer searching for one by name is told it does not
-                exist.
+                The storefront still shows it and customers can still buy it. What is not working is
+                the search box and the facets beside it, which look products up in a separate index
+                this is missing from. A customer searching by name is told it does not exist.
               </AlertDescription>
             </AlertContent>
             <Button
@@ -481,7 +480,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
         {/* Only where there is a pointer to do them with — on the stack these
             three modifiers do not exist. */}
-        <RowOpenHint />
+        {rows.length > 0 ? <RowOpenHint /> : null}
       </div>
     </div>
   );

@@ -90,7 +90,7 @@ export const InstallProviderInput = z.object({
   config: z.record(z.string(), z.unknown()),
   // Display label so a merchant can disambiguate two installs of the
   // same provider (e.g. "Stripe — US Entity" vs "Stripe — EU Entity").
-  label: z.string().max(127).optional(),
+  label: z.string().max(127).nullish(),
 });
 export type InstallProviderInput = z.infer<typeof InstallProviderInput>;
 

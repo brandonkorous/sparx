@@ -13,7 +13,7 @@ import { DunningPolicy } from './subscriptions';
 export const UpdateCommerceSiteSettingsInput = z.object({
   defaultCurrency: Currency,
   defaultLocale: z.string().min(2).max(10).default('en-US'),
-  defaultWarehouseId: Uuid.optional(),
+  defaultWarehouseId: Uuid.nullish(),
   channelsEnabled: z.array(Channel).default(['storefront']),
   // Cart abandonment threshold in minutes (default 120 — PRD §3 cart
   // abandonment definition).

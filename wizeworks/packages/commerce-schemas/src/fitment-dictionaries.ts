@@ -69,7 +69,8 @@ export function fitmentDictionary(d: FitmentDictionary): FitmentDictionary {
 const VEHICLE = fitmentDictionary({
   slug: 'vehicle',
   name: 'Vehicle',
-  description: 'Automotive fitment. Make → Model → Engine, narrowable by model year.',
+  description:
+    'For parts that only fit certain cars and trucks. A shopper picks their make, model and engine, and you can narrow it further by year.',
   iconKey: 'car',
   tags: ['automotive', 'parts', 'truck', 'car', 'diesel'],
   dimensions: [
@@ -279,7 +280,8 @@ const VEHICLE = fitmentDictionary({
 const DEVICE = fitmentDictionary({
   slug: 'device',
   name: 'Device',
-  description: 'Phone & tablet fitment: Brand → Model, for cases, screens, and accessories.',
+  description:
+    'For cases, screens and accessories. A shopper picks the make of their phone or tablet, then the model.',
   iconKey: 'smartphone',
   tags: ['electronics', 'phone', 'tablet', 'case', 'accessory'],
   dimensions: [
@@ -323,7 +325,8 @@ const DEVICE = fitmentDictionary({
 const APPAREL = fitmentDictionary({
   slug: 'apparel-sizes',
   name: 'Apparel sizes',
-  description: 'Clothing fitment: a single Size axis (alpha + numeric), no sub-levels.',
+  description:
+    'For clothing sold by size. One plain list of sizes, with letters and numbers together, and nothing underneath them.',
   iconKey: 'shirt',
   tags: ['clothing', 'fashion', 'size', 'retail'],
   dimensions: [{ key: 'size', label: 'Size', kind: 'level' }],
@@ -342,7 +345,8 @@ const APPAREL = fitmentDictionary({
 const PET = fitmentDictionary({
   slug: 'pet',
   name: 'Pet',
-  description: 'Pet fitment: Species → Breed, narrowable by body weight.',
+  description:
+    'For collars, beds, coats and harnesses. A shopper picks the animal, then the breed, and you can narrow it further by weight.',
   iconKey: 'paw-print',
   tags: ['pet', 'animal', 'collar', 'harness', 'apparel'],
   dimensions: [
@@ -391,7 +395,8 @@ const PET = fitmentDictionary({
 const EQUIPMENT = fitmentDictionary({
   slug: 'equipment',
   name: 'Industrial equipment',
-  description: 'Machinery fitment: Class → Model, for parts, filters, and wear items.',
+  description:
+    'For parts, filters and the bits that wear out. A shopper picks the kind of machine, then the model.',
   iconKey: 'construction',
   tags: ['industrial', 'machinery', 'parts', 'agriculture', 'construction'],
   dimensions: [
@@ -431,7 +436,8 @@ const EQUIPMENT = fitmentDictionary({
 const FOOTWEAR = fitmentDictionary({
   slug: 'footwear',
   name: 'Footwear',
-  description: 'Shoe fitment: Department → Width, narrowable by US shoe size.',
+  description:
+    'For shoes sold by size and width. A shopper picks who they are buying for, then the width, and you can narrow it further by size.',
   iconKey: 'footprints',
   tags: ['shoes', 'footwear', 'size', 'retail', 'fashion'],
   dimensions: [
@@ -472,7 +478,8 @@ const FOOTWEAR = fitmentDictionary({
 const BICYCLE = fitmentDictionary({
   slug: 'bicycle',
   name: 'Bicycle',
-  description: 'Bike fitment: Discipline → Wheel size, for tires, tubes, and components.',
+  description:
+    'For tires, tubes and parts. A shopper picks the kind of riding they do, then their wheel size.',
   iconKey: 'bike',
   tags: ['cycling', 'bike', 'tire', 'component', 'outdoor'],
   dimensions: [
@@ -516,7 +523,8 @@ const BICYCLE = fitmentDictionary({
 const EYEWEAR = fitmentDictionary({
   slug: 'eyewear',
   name: 'Eyewear',
-  description: 'Glasses & sunglasses fitment: Brand → Frame, for lenses and parts.',
+  description:
+    'For lenses, arms and spare parts. A shopper picks the make of their glasses, then the frame.',
   iconKey: 'glasses',
   tags: ['eyewear', 'glasses', 'sunglasses', 'optical', 'lens'],
   dimensions: [
@@ -551,7 +559,8 @@ const EYEWEAR = fitmentDictionary({
 const TIRES_WHEELS = fitmentDictionary({
   slug: 'tires-wheels',
   name: 'Tires & wheels',
-  description: 'Tire & wheel fitment: Rim diameter → Section width.',
+  description:
+    'For tires and wheels sold by size. A shopper picks the rim they are fitting, then how wide the tire needs to be.',
   iconKey: 'disc',
   tags: ['tire', 'wheel', 'automotive', 'size'],
   dimensions: [
@@ -594,7 +603,8 @@ const TIRES_WHEELS = fitmentDictionary({
 const HVAC_FILTERS = fitmentDictionary({
   slug: 'hvac-filters',
   name: 'HVAC filters',
-  description: 'Air-filter fitment: a single Nominal size axis (W×H×D inches).',
+  description:
+    'For air filters sold by the size printed on the frame. One plain list of sizes, each written as width by height by depth, in inches.',
   iconKey: 'air-vent',
   tags: ['hvac', 'filter', 'home', 'maintenance'],
   dimensions: [{ key: 'nominal_size', label: 'Nominal size', kind: 'level' }],
@@ -611,7 +621,8 @@ const HVAC_FILTERS = fitmentDictionary({
 const FURNITURE = fitmentDictionary({
   slug: 'furniture',
   name: 'Furniture',
-  description: 'Furniture fitment: Room → Piece, for covers, cushions, and parts.',
+  description:
+    'For covers, cushions and spare parts. A shopper picks the room, then the piece of furniture.',
   iconKey: 'sofa',
   tags: ['furniture', 'home', 'cover', 'cushion'],
   dimensions: [
@@ -647,7 +658,8 @@ const FURNITURE = fitmentDictionary({
 const MARINE_POWERSPORTS = fitmentDictionary({
   slug: 'marine-powersports',
   name: 'Marine & powersports',
-  description: 'Boat, ATV & moto fitment. Make → Model, narrowable by year.',
+  description:
+    'For parts that only fit certain boats, quad bikes and motorbikes. A shopper picks the make and model, and you can narrow it further by year.',
   iconKey: 'ship',
   tags: ['marine', 'boat', 'atv', 'motorcycle', 'powersports'],
   dimensions: [
@@ -689,7 +701,8 @@ const MARINE_POWERSPORTS = fitmentDictionary({
 const INSTRUMENTS = fitmentDictionary({
   slug: 'instruments',
   name: 'Musical instruments',
-  description: 'Instrument fitment: Family → Instrument, for strings, reeds, and parts.',
+  description:
+    'For strings, reeds, pads and spare parts. A shopper picks the family of instrument, then the instrument itself.',
   iconKey: 'guitar',
   tags: ['music', 'instrument', 'strings', 'accessory'],
   dimensions: [
@@ -726,7 +739,8 @@ const INSTRUMENTS = fitmentDictionary({
 const APPLIANCES = fitmentDictionary({
   slug: 'appliances',
   name: 'Home appliances',
-  description: 'Appliance fitment: Category → Brand, for parts, filters, and seals.',
+  description:
+    'For parts, filters and door seals. A shopper picks the kind of appliance, then the make.',
   iconKey: 'washing-machine',
   tags: ['appliance', 'home', 'part', 'filter', 'repair'],
   dimensions: [
