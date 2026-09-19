@@ -1,8 +1,8 @@
 # P03 — Devi Raman · Juniper Row
 
-**Version:** 3.01
+**Version:** 5.63
 **Author:** Brandon Korous
-**Last Updated:** 2026-09-16
+**Last Updated:** 2026-09-18
 
 **Status:** in progress
 **Run:** 2026-08-23
@@ -4028,6 +4028,31 @@ Things noticed while doing something else and NOT chased, recorded so they are
 not lost between sessions. None is filed as an issue, because none has been
 verified as a defect.
 
+### Where this run stands (2026-09-16)
+
+Written down because it was only ever said out loud, and a session ends.
+
+- **The 11-act script is done in practice and NOT marked done.** Every act has
+  been performed — 7 products with 60 variants, collections, paid orders, a
+  return, an imported list, a sale, a broadcast, a review — but only **Act 1 and
+  Act 11 carry a `Met` marker**. Acts 2 through 10 are written up in the run log
+  and were never closed in the plan above, so the plan reads 2 of 11 to anyone
+  opening it cold. Recording is part of the work; this is the gap.
+- **The console walk is the real remaining half: 141 of 328 panes rated (43%).**
+  Run-log acts 82 onward are walk, not script, and it is where the last four
+  critical defects came from.
+- **Eight panes opened recently and NOT given a rating row**: Email → Broadcasts
+  (list and one sent broadcast), Money → Payments, Money → Payouts, Content
+  (list and one entry), Sell → Repeat orders, Customers (list), and a customer's
+  own card. `rating.md` still says 141, which is therefore slightly generous.
+- **Routes named and not yet walked**, in her order of business: `/finance/bills`,
+  `/commerce/discounts`, `/commerce/returns` detail, `/crm/segments`,
+  `/email/automations`, `/stock` (50 of 56 panes unopened), `/get-found`.
+- Devi's site is **offline in the console banner** ("Your site is offline. It
+  comes back as soon as a payment goes through") — her Piggles trial, not a
+  defect. It means `localhost:3004` serves "Back soon", so anything needing her
+  LIVE site cannot be checked from here right now.
+
 - **A one-person business may have to approve its own posts.** Social's
   Connections screen ships **"Posts need an admin's approval before they go
   live"** switched ON, and explains itself as keeping "anything drafted — by a
@@ -5174,6 +5199,112 @@ one" passes just as happily when the filter is ignored entirely.
 On my own screen afterwards: `status=overdue` → 0 invoices, $0.00. `pastDue=true`
 → **8 invoices, $986.50**. And the row now reads `$27.00 still owed · Late`.
 
+Then **Money -> Money paid to you**, which is empty, and the empty state is one
+of the good ones: it says what will be here when card sales settle, and it says
+out loud that cash, checks and account payments will NOT be, because they are
+money received rather than a deposit that arrives. That last sentence answered a
+question I was about to ask.
+
+And then the screen said it a third time, in grey, worse: **"Nothing to show."**
+
+That line is the pager, and it is under every empty list in the console. The
+component already hides its "Load more" button and its rows-per-page picker when
+there is nothing to count - the comments explain exactly why - so the row it
+leaves behind holds one grey sentence and nothing else. It walked up to the
+answer and stopped. It renders nothing now, except where paging is the only way
+back off an empty screen.
+
+Then **Money -> Spending**, and the same thing again, two screens later.
+$2,158.70 this month across 5 costs, and the Amount column 47 pixels past the
+right edge. I could see the total and not one of the five numbers it is made of.
+
+Three screens in a row now: the money column at the right-hand end of a table
+wider than the pane it sits in. It is always the money, because the money is
+always last.
+
+But the CAUSE was different every time, and I guessed wrong twice before
+measuring. On "Where money comes from" the column had never been built. On "Owed
+to you" the fifth column was let in at 512 and costs 628. Here the breakpoints
+were all correct and the table simply **could not get any narrower**: the "What
+for" cell truncates, truncating means never wrapping, and a line that never
+wraps demands the whole sentence as the column's minimum forever. The ellipsis
+never got its chance.
+
+One word changed. The description wraps to two lines now instead of truncating
+to one, so the column shrinks to its longest word - and I can read MORE of what
+I spent the money on, not less. No breakpoint moved.
+
+What I will take to the rest of the walk is not a rule about breakpoints. It is
+the measurement: squeeze the pane to nothing and read what the table refuses to
+go below. That one number settled all three.
+
+**Bills to pay** I could not fault. "Total owed $1,850.00 across 1 bill" and
+then, underneath, "Not counted above: $308.70 across 4 costs with no due date.
+Recording a cost does not say whether you have paid it." It names what it left
+out, says how much, and tells me what to do about it. That is the standard.
+
+But it made me look twice at a number, and the number was wrong.
+
+**My shop rent was 15 days late on one screen. My invoices were 9 days late on
+another. Both were due dates I could see.** Sep 1 to today is 15. Sep 8 to today
+is 8, not 9. One of those screens was in tomorrow.
+
+So I went back to **Invoices** and found something worse. Eight invoices, every
+one printed **Due Sep 8, 2026**. Seven said "9 days late". INV-000001 said
+"8 days late". Nothing about it is different except that somebody happened to
+raise it at midday and the rest at about a quarter to three in the morning.
+
+The hour on a due date is an accident of when a person clicked. It was deciding
+the number I chase people on.
+
+**And then the same invoice, two screens apart: 8 days on one, 9 on the other.**
+
+The cause is my shop. Juniper Row is registered in **Denver**, and at the moment
+I was looking it was half past nine in the evening here and already tomorrow in
+UTC. The console was counting on my day. The server was counting on its own. For
+seven hours of every evening, every unpaid invoice on the Money side was a day
+older than it is.
+
+Both screens were doing the arithmetic correctly. They were doing it on
+different days.
+
+Now everything that asks "is this late" asks it on MY day: the chase list, the
+aging report, the overdue status that gets stored, the credit hold that stops an
+account ordering, and the dunning ladder that decides which morning a customer
+gets an email. A day early on the last two is not a display detail. It is an
+email that should not have gone yet.
+
+A business that has not said where it is keeps the old behavior exactly. Most
+have not - 36 of 39 on this database.
+
+Two things worth keeping from this one. The elapsed-milliseconds bug is
+described, in full, in TWO other files that fixed it, symptom and all, and the
+third copy went on doing the old thing anyway. That is five now. And I almost
+wrote "the console has no field for the business timezone" as an open item - it
+has had one since issue 081, when a salon set her week to nine in the morning
+and her diary showed a full head of color at three a.m. One grep, and a wrong
+paragraph did not get written.
+
+**What you kept** is one of the best screens I have used here. Money in $726.00,
+cost of the work $308.70, what the work made $417.30, running costs $1,850.00,
+lost $1,432.70. Every step holds. Where it cannot measure something it says so:
+"68 things on your shelves, 375 units in all, have never had a cost recorded."
+
+Then the card at the bottom: "$2,158.70 was not charged to any job. That is
+normal: rent and insurance belong to the business, not to one repair. But **if a
+job's parts are sitting in here**, that job will look more profitable than it
+was."
+
+They are. $308.70 of that $2,158.70 is parts and materials, and it is printed
+four inches up the same card. The screen had both numbers and asked me to work
+out whether one was inside the other.
+
+It says it now. And it says it carefully: where some spend HAS been charged to a
+job the screen cannot tell which pile the charge came out of, so it says "at
+least" and means it. Where nothing has been charged, which is my case, the
+number is exact and it says it plainly. Hedging an exact figure teaches me not
+to trust the exact ones.
+
 | issue                                                                          | severity | what                                                    | status |
 | ------------------------------------------------------------------------------ | -------- | ------------------------------------------------------- | ------ |
 | [522](issues/522-her-overdue-list-was-empty-while-she-was-owed-986-dollars.md) | critical | 48% of late money invisible; her Overdue list was empty | fixed  |
@@ -5979,3 +6110,4494 @@ the count it touched.
 | issue                                                                                         | severity | what                                                                                           | status                |
 | --------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------- | --------------------- |
 | [533](issues/533-she-paid-me-180-dollars-and-her-record-says-she-has-never-spent-anything.md) | critical | A payment taken on an invoice, and every card settling at the gateway, never reached the buyer | fixed; repair applied |
+
+## Act 151 — two tabs told me opposite things about the same five bills
+
+Money → Bills to pay, before the weekend. Five unpaid costs, $2,158.70, every row
+badged **No due date**. So I clicked the other two tabs to see what was urgent.
+
+**Late** said:
+
+> Nothing is late
+> _Every bill you owe is still within its due date._
+
+**Coming up**, three seconds later, said:
+
+> Nothing coming up
+> _Everything outstanding is already past its due date._
+
+They cannot both be true. Neither of them was. Not one of my bills has a due date
+at all, so none is inside one and none is past one.
+
+The **Late** one is the half that would have cost me. It reads as reassurance. I
+owe $2,158.70 that nothing in here will ever flag, and the screen whose whole job
+is to warn me told me every bill was fine.
+
+Both tenants on this platform with unpaid costs are in exactly this state, so the
+sentence was false every single time it could be reached.
+
+Each tab had guessed its reason from **its own name** rather than from my data.
+One empty list, two causes, different remedies: "nothing is late" is good news
+and needs nothing from me; "nothing has a date to be late against" is a standing
+gap I have to go and close. Now it says the one that is true, and when nothing is
+dated both tabs say the **same** thing, because the cause is the same:
+
+> **Nothing has a day to pay it by**
+> This tab watches due dates, and none of your 5 unpaid costs has one, so nothing
+> will ever show here. Open a cost and fill in "Due by" to have it watched.
+
+| issue                                                                      | severity | what                                                                              | status           |
+| -------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------- | ---------------- |
+| [534](issues/534-two-tabs-told-her-opposite-things-and-both-were-false.md) | high     | Two empty states asserted opposite facts about bills with no due date; both false | fixed and proven |
+
+## Act 152 — I did what the screen said, and the screen disappeared
+
+The new sentence had told me to open a cost and fill in **Due by**, so I did. I
+opened **Shop rent, September** and typed the date into the box. One slip on the
+year, and the whole editor was gone:
+
+> ⚠ **This panel ran into a problem**
+> Nothing else in your workspace was affected. Try loading it again.
+
+My unsaved edit went with it. Nothing told me what I had done wrong, because from
+where I sat I had not done anything wrong. I typed a date into a date box.
+
+The overlay named it: `RangeError: Invalid time value`, from `Date.toISOString`
+inside `dayStartUtc`, inside a `useMemo` that runs while the pane is drawing. So
+the throw did not fail a save, it took the pane.
+
+I checked the premise instead of assuming it, in the page itself:
+
+```js
+const i = document.createElement('input');
+i.type = 'date';
+i.value = '20266-09-01'; // reads straight back out
+i.value = '275760-09-13'; // so does this
+```
+
+**A date box does not promise a date.** The year segment takes six digits. "20266"
+is one keystroke from "2026".
+
+Then I counted. The same conversion appears **44 more times** across the two
+consoles. One of them sat in render, like this one. The other 43 sit in save
+handlers, where the same slip makes the Save button do nothing at all and say
+nothing about why, which teaches an owner that the software is broken.
+
+All 45 now go through `lib/today.ts`, whose helpers return null instead of
+throwing, and every one of them either says it under the field, joins the form's
+existing list of reasons it will not save, or raises the toast that surface
+already raises. Nothing quietly drops a date I typed.
+
+And it cannot come back: `pnpm check:date-conversions` scans 2,238 files and is
+in the pre-push guard. I broke it on purpose twice to be sure it goes red, once
+by putting the old line back and once by moving a folder out from under it.
+
+Back on my own screen, the box now says so and the Save button goes dim:
+
+> ⚠ That is not a date. A year is four digits, like 2026.
+
+I fixed the year, saved, and the rent finally reads as what it is: **15 days
+late, $1,850.00, due Sep 1, 2026**. Total owed went from $0.00 to $1,850.00, and
+the four costs still without a date are counted separately and named, which is
+honest.
+
+| issue                                                                           | severity | what                                                                                | status           |
+| ------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------- | ---------------- |
+| [535](issues/535-a-mistyped-year-replaced-the-whole-pane-with-an-error-card.md) | critical | A year the date box itself allows threw RangeError in render and destroyed the pane | fixed and proven |
+
+## Act 153 - "Used 4 times", over $91.20 I could not see
+
+Sell -> Discounts -> Spring sale. The header said **Live · Used 4 times**.
+True, and no use to me. I ran 15% off to make a trade, and the only thing I want
+to know is how big the trade was.
+
+It was already written down. Every redemption records what came off the basket,
+and those four came to **$91.20**, on orders worth $563.90.
+
+It was more than written down: `discountPerformance` has been summing exactly
+this since 2026-06-15, behind a live endpoint, and the platform's own notes mark
+it **shipped**. Every reference to that route in the whole repository: the route
+itself, one mention in an analytics doc, the tick in the gaps doc, and **zero
+callers**. Three months of a green tick over a capability nobody had.
+
+A report was the wrong answer anyway. I do not go hunting for a report to find
+out what my own offer cost me. I open the offer.
+
+The header now reads **Live · Used 4 times · $91.20 given away**, and
+the list has a **Given away** column where "Changed 18 days ago" used to be.
+
+| issue                                                               | severity | what                                                               | status           |
+| ------------------------------------------------------------------- | -------- | ------------------------------------------------------------------ | ---------------- |
+| [536](issues/536-used-4-times-over-91-dollars-she-could-not-see.md) | high     | The money an offer gave away was recorded, routed, and never shown | fixed and proven |
+
+## Act 154 - twenty of my twenty-eight returns point at nothing
+
+Sell -> Returns. Twenty-eight rows, and from the ninth down every one reads
+**The sale is gone · Nothing to do**. Twenty of twenty-eight. I cannot open
+them, act on them, or get rid of them, and no filter hides them.
+
+The copy is honest and somebody wrote it carefully (issue 225). It is a label on
+a symptom. The cause is one line that was never there: `commerce_return_requests`
+has exactly one foreign key, to the tenant. `order_id` has none, alone among this
+table's relations, so 35 of the platform's 83 returns now point at orders that do
+not exist, across four shops. Every one has a line item, and every one of those
+points at an order item that is gone too.
+
+A migration adds both keys and clears the dangling rows first, looping tenants
+and setting the tenant context, because those tables force row-level security and
+a plain delete would match nothing in production while passing locally. **It has
+not been run:** that needs authorization, and it deletes rows.
+
+| issue                                                                           | severity | what                                                       | status                           |
+| ------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------- | -------------------------------- |
+| [537](issues/537-twenty-of-her-twenty-eight-returns-point-at-nothing.md)        | high     | No foreign key on a return's order, so 42% dangle          | fixed in code; migration NOT run |
+| [538](issues/538-a-return-that-would-not-let-her-open-the-sale-or-the-buyer.md) | medium   | The order and the buyer were both unopenable from a return | fixed and proven                 |
+
+## Act 155 - a group that looked broken because its rule was hidden
+
+Customers -> Groups of customers. **At Risk, No members yet, "Number of orders is
+at least 1, and 2 more"**.
+
+Six of my customers have ordered. The line says the group is everyone who has
+ever bought from me. The count says nothing. Read together that is a broken
+platform.
+
+It is not broken. At Risk is _has ordered AND has not ordered for ninety days_,
+and all six of mine bought this week. The one condition that explains the zero
+was one of the two the line hid.
+
+The column printed the first condition and counted the rest, on the reasoning
+that the first is usually what the group was named after. Against the groups the
+platform actually ships, that holds for three of five and fails on the two where
+it matters. It also dropped `not` in silence, so a group built on "not
+subscribed" would have read as "Subscribed to marketing is yes", its exact
+opposite.
+
+The other console never got this fix at all: its column called `ruleCount`, which
+looks for keys the stored tree does not have, so every row there read "From
+activity".
+
+| issue                                                                       | severity | what                                                             | status           |
+| --------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------- | ---------------- |
+| [539](issues/539-a-group-that-looked-broken-because-its-rule-was-hidden.md) | medium   | One line of a rule shown, the deciding one hidden; `not` dropped | fixed and proven |
+
+## Act 156 - twenty-two failed runs under a green "On"
+
+Automations. Twelve rules, every one badged **On** in success green. Behind the
+badges, **twenty-two of my thirty-one runs had failed**, and three rules had
+never once worked: Return refunded, Order refunded and Refund issued each showed
+two failures, zero runs, "Not run yet", and **On**.
+
+"Return approved: email" had failed all four times. Four customers whose return I
+approved were promised a confirmation and got nothing.
+
+Platform-wide: 73 failed runs, 71 of them **"no executor registered for action"**,
+the most recent yesterday. But the same action both works and fails:
+`crm.create_task` has 446 completed steps and 8 failed. That is not a missing
+feature. That is a process that booted badly. Every action module latched itself
+with `installed = true` on the line after the guard, **before** registering
+anything, so a throw part-way through left the module half registered and marked
+done, for the life of the process, in silence. **Ten places had it**, including
+the engine's own boot. One tested `installOnce` now latches on success, so a bad
+boot is retried or fails loudly every time.
+
+And the badge was waiting for a state nothing produces. There is an `error`
+status with a "Needs attention" badge, and the engine says why it never arrives:
+_"that pause-on-repeated-failure policy is a later (UI) slice."_ Zero of the
+platform's 2,411 automations carry it. The Status column now reads the failure
+counts that were already drawn two columns to its left, and "Not run yet" reads
+**"3 weeks ago · failed"**, because a failed run writes a different column.
+
+| issue                                                              | severity | what                                                            | status           |
+| ------------------------------------------------------------------ | -------- | --------------------------------------------------------------- | ---------------- |
+| [540](issues/540-twenty-two-failed-runs-under-a-green-on-badge.md) | critical | A latch set before the work; a badge that could only ever be On | fixed and proven |
+
+## Act 157 - three more screens telling me everything was fine
+
+Once I had seen it twice I went looking, and it was everywhere: **an empty list
+that explains ITSELF is making a claim, and the claim is always the reassuring
+one.**
+
+**Stock -> Running low** said _"Everything with a reorder rule is above the level
+you asked to be warned at."_ I have exactly one item with a reorder rule. It is
+at **zero**, against a rule of two. It had dropped out because this tab also
+requires something left to sell, and it had moved to "None to sell". The reorder
+screen, two clicks away, had it right and even gave me the denominator: _"73 of
+your 74 stock lines have no reorder level ... so those ones are not on it however
+low they get."_ That is how it should read.
+
+**Get Found** put _"connect Google to see"_ under two blank figures, and six
+inches below, on the same screen: _"there is nothing for you to switch on."_ Both
+cannot be true. The card checked whether the platform has Search Console at all;
+the figures above it only ever checked whether I had connected mine.
+
+**Sell -> Orders** badged O-000005 **Part paid**, _"some is still owed"_. Jo Kim
+paid all $147.00 and had $42.00 back. Nothing is owed. The stored word is
+computed from paid-minus-refunded, so a full payment followed by a part refund
+falls below the total and lands on the wrong rung. Two of the three "partially
+paid" orders on the platform were like that. The shopper's own order page had
+already been fixed for exactly this sentence, in issue 292, and my console kept
+reading the word.
+
+| issue                                                                                      | severity | what                                                            | status           |
+| ------------------------------------------------------------------------------------------ | -------- | --------------------------------------------------------------- | ---------------- |
+| [541](issues/541-nothing-is-running-low-over-the-one-thing-that-had-run-out.md)            | high     | "Nothing is running low" over an item at zero                   | fixed and proven |
+| [542](issues/542-told-her-to-connect-google-then-told-her-there-was-nothing-to-connect.md) | medium   | Told to connect Google, then told there was nothing to connect  | fixed and proven |
+| [543](issues/543-part-paid-on-an-order-that-was-paid-in-full.md)                           | high     | "Some is still owed" on an order paid in full and part refunded | fixed and proven |
+
+## Act 158 - a real review my own product page would not show
+
+Not something I saw, something I went looking for. I compared every product's
+stored star rating against its actual reviews, across all 641 on the platform:
+
+| products | wrong count | wrong average |
+| -------- | ----------- | ------------- |
+| 641      | 6           | 13            |
+
+Five of those carry an approved, moderated review and report **no reviews at
+all**. Commerce's own recompute says what that costs: _"the columns stay at
+their defaults (null / 0) and the PDP shows 'no reviews yet' no matter how many
+reviews are approved."_
+
+The service is right. It recomputes on create, on moderate, on delete, and the
+bulk versions go through the same door. The **seeds** cannot call it, because
+`@wizeworks/db` may not import a module package, so both of them wrote the
+columns by hand and each got it wrong differently: one never wrote them at all,
+the other rounded to one decimal so the stored 4.7 disagrees with the 4.666...
+the service computes and jumps the first time anybody moderates a review. Neither
+wrote the per-site rows the site grids read.
+
+Two hand-written copies of one rule is how they drift. There is one now, and its
+guards live beside the service definition they have to agree with.
+
+My own two products were correct, so this one was not mine to feel. It would be
+somebody's.
+
+| issue                                                              | severity | what                                                                    | status                                |
+| ------------------------------------------------------------------ | -------- | ----------------------------------------------------------------------- | ------------------------------------- |
+| [544](issues/544-a-real-review-the-product-page-would-not-show.md) | medium   | Seeded ratings drifted from their reviews; 5 approved reviews invisible | fixed in code; seeds re-run to repair |
+
+## Act 159 - the clothes I sew cost me nothing, apparently
+
+Money -> What you kept. **You lost $1,432.70**, which I believe. Underneath it:
+
+```
+Money in                $726.00
+Cost of the goods         $0.00    "What the stock you sold actually cost you,
+                                    from your inventory records."
+```
+
+I cut and sew everything I sell. Not one stock line of my seventy-four has a cost
+recorded, so the sum is over nothing, and the screen printed the result with the
+same confidence it would print $400.
+
+The platform already says this out loud. Two screens away, on Stock -> Costing:
+_"68 things on your shelves, 375 units in all, have never had a cost recorded, so
+they count as nothing in every figure about what your stock is worth."_ That is
+the right sentence, on the screen I have no reason to open.
+
+The number is not wrong, to be fair to it. My materials are in **Cost of the
+work** ($308.70) and the rent is in **Running costs** ($1,850.00), so the bottom
+line holds. What was wrong was the shape: a confident $0.00 against "what the
+stock you sold actually cost you" tells a clothes maker her clothes cost nothing
+to make.
+
+It now reads: _"Nothing here has been measured yet: 68 things on your shelves,
+375 units in all, have never had a cost recorded. Until they do, what you make on
+each sale cannot be worked out."_ A business that sells its time still sees the
+plain $0.00, because there the zero is the answer.
+
+| issue                                                                         | severity | what                                           | status           |
+| ----------------------------------------------------------------------------- | -------- | ---------------------------------------------- | ---------------- |
+| [545](issues/545-cost-of-the-goods-zero-on-a-shop-that-sews-what-it-sells.md) | high     | A confident $0.00 over stock nobody has costed | fixed and proven |
+
+## Act 160 - a bill in one customer's name, sent to another
+
+Invoices. Eight rows late, $986.50 between them, and the top one is
+**INV-000004, Wren Ashcombe, 8 days late, $276.00**.
+
+I opened it. The invoice is filed under **Marguerite Adeyemi** and it was
+emailed to **marguerite.adeyemi@example.com**. Wren Ashcombe is a different
+customer of mine, with her own address, who has never been told she owes me
+anything. Marguerite has a bill with somebody else's name printed on it. The
+list, which is where I chase money from, shows only the name.
+
+Picking a customer fills in the printed name and email, and the code that does
+it says _"fill what's empty, keep what was typed"_. It cannot tell what I typed
+from what it filled in a second earlier, because it only asks whether the box is
+empty. So changing who a bill is for leaves the last person's details sitting on
+it, in silence.
+
+I reproduced it in four clicks: clear the customer, pick Wren Ashcombe, and
+every field on screen says Wren Ashcombe except the one under _"Where the
+invoice gets sent"_.
+
+Then it would not let me find her. Typing **Wren Ash** into a box labelled
+"Search by name, email or company" answered **"No customer matches that. Add
+them in Customers first."** A name lives in two columns and is typed as one
+string, so asking whether the whole string is inside one column finds nobody who
+has both a first name and a last name. That is **635 of the platform's 651
+customers**, across eight search boxes, and the advice it gives is to make a
+second copy of a customer I already have.
+
+Typing "Jo Kim" into Sell -> Orders found neither of her two orders.
+
+| issue                                                                    | severity | what                                                                   | status           |
+| ------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------------- | ---------------- |
+| [546](issues/546-no-customer-matches-that-over-a-customer-who-exists.md) | high     | A person cannot be found by their own name, in eight places            | fixed and proven |
+| [547](issues/547-a-bill-with-one-persons-name-and-anothers-address.md)   | high     | Changing the customer left the last one's name and address on the bill | fixed and proven |
+
+## Act 161 - a gift card spent on an order that says nobody paid
+
+Two gift cards, both **Used up**, both **$0.00**. The $150 one was Nadia
+Ashcombe's and it was spent on order **O-000015**.
+
+That order reads **"$659.00 still owed. No money has come in for this order
+yet."** Marguerite has already handed over $150 of it, and the invoice I sent
+her asks for the full $659.
+
+Debiting the card and recording the money were two separate acts, and only the
+first lived in the function that takes the money off. The caller was told to do
+the second, with a comment quoting these exact figures, and an earlier caller
+forgot. Both writes belong to one act, so they are one act now.
+
+| issue                                                                    | severity | what                                                  | status                          |
+| ------------------------------------------------------------------------ | -------- | ----------------------------------------------------- | ------------------------------- |
+| [548](issues/548-a-gift-card-spent-on-an-order-that-says-nobody-paid.md) | high     | A gift card came off, and the order recorded no money | fixed; one row left as evidence |
+
+## Act 162 - nine kinds of thing I can write and nobody can read
+
+Content -> New offers eleven kinds: Testimonial, Announcement, Blog post, Case
+study, Event, Help article, Job posting, Landing page, News article, Page, Team
+member.
+
+I picked **Event** and wrote up my autumn sample sale. A complete editor: title,
+description, start and end, location, a registration link. Under the address
+box:
+
+> **This will live at /events/.... Leave it and we'll make one from the title.**
+
+Nothing lives at /events/ anything. My site resolves a web address two ways, and
+each asks for one kind by name: `/blog/{slug}` for a blog post, everything else
+for a page. Nine of the eleven have an address and no route, so they would be
+published, marked **Live since**, and 404.
+
+Pressing Create told me:
+
+> **Could not create this**
+> Could not create this. Nothing was saved.
+
+The same sentence twice, naming nothing. I had missed the Starts box, and the
+server knew which one. It says so in a per-field list that the console throws
+away on purpose, because "body.startAt: Required" means nothing to me. That call
+is right and throwing it away was the wrong conclusion from it: the kind of
+content carries the label **Starts** for that very key. It now says _"Title and
+Starts need filling in before this can be saved"_, worked out before the request
+even goes.
+
+The address card now tells the truth for a kind with no page, and a check reads
+the site's real routes and fails the build if the two ever disagree.
+
+| issue                                                                     | severity | what                                                           | status                                        |
+| ------------------------------------------------------------------------- | -------- | -------------------------------------------------------------- | --------------------------------------------- |
+| [549](issues/549-nine-of-eleven-kinds-of-content-have-nowhere-to-live.md) | high     | Nine of eleven kinds promise an address nothing serves         | console tells the truth; routes still missing |
+| [550](issues/550-could-not-create-this-could-not-create-this.md)          | medium   | A refusal that said the same sentence twice and named no field | fixed and proven                              |
+
+## Act 163 - "Opened 0%", over a figure nobody measured
+
+Messages -> Email campaigns. **Autumn drop announcement, sent to 23, three weeks
+ago, Opened 0%, Clicked 0%.**
+
+Read as a row that says twenty-three people got my newsletter and not one opened
+it. That is a fact about my writing and I would have acted on it.
+
+Every one of the **153 email events on this platform is `accepted`**. Not one
+`delivered`, `opened`, `clicked` or `bounced`. The 0% is not a low number; it is
+the absence of any measurement, divided by 23.
+
+The detail screen was given four honest states for exactly this in issue 531.
+The list two files away kept the arithmetic. It now reads **Opened -** with the
+reason on hover, and a real zero still shows as 0% once the mail service reports
+anything at all, because twenty-three delivered and no opens is a measurement
+and it is mine to see.
+
+| issue                                                                  | severity | what                                                           | status           |
+| ---------------------------------------------------------------------- | -------- | -------------------------------------------------------------- | ---------------- |
+| [551](issues/551-opened-zero-percent-over-a-figure-nobody-measured.md) | high     | A share worked out from one measured number and one absent one | fixed and proven |
+
+## Act 164 - the freight that was only invisible on the one screen I check
+
+Partners -> Orders to suppliers -> **PO-000002**, sixty brass buckles at $3.60.
+
+> Freight **$0.00**
+> Items $216.00 - Total $216.00
+> What they have billed: FT-INV-2291 - **$222.72**
+
+Fairfield Trims billed me **$6.72 more than I ordered** and the screen gives no
+reason. The reason is **$14.00 of freight**, charged when the buckles arrived.
+
+Everything else on the platform already had it: my stock is valued at $3.84 a
+unit against a $3.60 goods cost, and 58 received times $3.84 is exactly $222.72.
+Freight reaches an order two ways - agreed when I raise it, or charged when it
+lands - and the field read the first one only. A shop that pays carriage on
+arrival, which is most of them, sees $0.00 for ever.
+
+The two stay two numbers, because one is what I agreed to and the other is what
+turned up, and the gap between them is the whole reason I opened the screen.
+
+| issue                                                                                | severity | what                                               | status           |
+| ------------------------------------------------------------------------------------ | -------- | -------------------------------------------------- | ---------------- |
+| [552](issues/552-freight-zero-on-an-order-that-cost-fourteen-dollars-to-get-here.md) | high     | Freight charged on arrival never reached the order | fixed and proven |
+
+## Act 165 - the year-end screen said the question did not arise
+
+First, the returns. Sell -> Returns now lists **eight**, and every one of them
+names an order and a customer I can open. It listed twenty-eight before, and
+twenty of those pointed at a sale that no longer existed. Issue 537 is closed on
+my own screen, not just in the database.
+
+Then Stock -> **Stock versus your books**, which is the screen my accountant will
+ask me to open in March.
+
+> **What we make it** - 491 units on hand - **$967.92**
+>
+> **Every unit on hand has a cost behind it** - **$0.00**
+
+$967.92 across 491 units is **$1.97 a garment**. My shirtdresses sell for $145.
+The second row is the one that was supposed to tell me why, and instead it told
+me there was no why.
+
+One pane away, **What your stock cost you** already knew: _"68 things on your
+shelves, 375 units in all, have never had a cost recorded."_ Two screens, one
+fact, opposite answers.
+
+The reason is that I stocked my shelves the way every shop does - by counting
+what I already had. A count knows how many and cannot know what I paid, so it
+writes the cost down as zero. **Seventy-two of my seventy-two counted batches
+are zero, and so are all four of my returns.** Only the five real deliveries
+carry a price. The screen was reading "there is a zero here" as "somebody
+answered", and the answer it reported was that nothing was missing.
+
+Eight businesses on this platform were being told the same thing. For four of
+them the sentence sat next to a stock value of **$0.00**, which together reads
+as "your stock is worth nothing" rather than "nobody has said what it cost".
+
+It now reads:
+
+> **Units with no cost behind them** - 393 units - **Not known**
+
+Not known, in amber, and not a dollar figure. Which is the true answer.
+
+While I was there, every row on that table was saying itself twice - a heading
+that was just the description again, cut off mid-word, sitting on top of the
+description. Somebody removed the em-dashes from the copy a while back and the
+heading was being made by cutting the sentence at its em-dash. Take the dashes
+out and the cut never happens, so the "heading" became the whole sentence. No
+test noticed, because nothing breaks: it just quietly reads like that.
+
+| issue                                                                      | severity | what                                                                | status           |
+| -------------------------------------------------------------------------- | -------- | ------------------------------------------------------------------- | ---------------- |
+| [553](issues/553-every-unit-has-a-cost-behind-it-over-393-that-do-not.md)  | high     | A zero-cost layer counted as a cost, on 8 tenants                   | fixed and proven |
+| [554](issues/554-a-heading-that-is-the-whole-sentence-clipped-mid-word.md) | medium   | Row heading was the description again, clipped by the em-dash sweep | fixed and proven |
+
+## Act 166 - the same shop, worth two different amounts
+
+**Cost to keep** and **Stock versus your books**, open side by side:
+
+> Stock is worth **$1,837.92**
+>
+> What we make it - **$967.92**
+
+Same shelves, same afternoon, **$870.00** apart, and neither screen says the
+other exists. The one on the right is the screen I am supposed to hand my
+accountant. Its whole job is naming why two numbers differ.
+
+The $870 is three things: a leather-covered belt and two shirtdresses. I counted
+them onto the shelf and typed in what they cost me. Every other screen believes
+me. That one only counts what came in on a purchase order, so as far as it is
+concerned I never paid for them.
+
+What made it worse than a wrong total: the leftover would have landed in
+**Unexplained**, which is the line that means "this is the part worth
+investigating". I would have gone looking for an $870 mistake that was just me
+pricing my own stock.
+
+There is a new line now, sitting with the other ordinary reasons:
+
+> **Priced by you, not bought through us** - 3 lines - **$870.00**
+
+$967.92 and $870.00 make $1,837.92, which is what the other screen says. And the
+unknown units dropped from 393 to **375**, which is what the third screen has
+been saying the whole time. Three screens, one answer.
+
+| issue                                                                             | severity | what                                                           | status           |
+| --------------------------------------------------------------------------------- | -------- | -------------------------------------------------------------- | ---------------- |
+| [555](issues/555-two-screens-that-both-say-what-your-stock-is-worth-870-apart.md) | high     | Two stock screens $870 apart, and the reconciler stayed silent | fixed and proven |
+
+## Act 167 - the button to get my own figures out had nothing written on it
+
+**How it is performing**. Five cards, each one a way of asking whether the money
+in my stock is working. Under each description, a small empty box.
+
+Not a broken picture. Not a missing word. An empty box about the size of a
+postage stamp, with a thin outline and nothing inside it. Five of them down the
+page.
+
+I only worked out what they were because of the import screen, which says in its
+own instructions:
+
+> The file needs a code column and either a count or a change. **Download what
+> you have** and you get exactly those columns, already filled in: count the
+> shelves, correct the numbers that are wrong, upload it back.
+
+"Download what you have" is the name of a button. The button was there. It just
+had no words on it, and neither did the one on **Edit a lot at once**, and
+neither did any of the five on this screen. Seven boxes, and between them they
+were every way of getting anything out of my stock records.
+
+They now say **Spreadsheet**, **Export** and **Download what you have**, and
+they say it to a screen reader too, which they did not before.
+
+## Act 168 - three characters of a product name, and half a screen for one word
+
+**Every change** is the list of everything that has happened to a number in my
+shop. The column that says WHICH thing changed read:
+
+> `Bras...`
+> `BRASS...`
+
+Every row. Three characters. Meanwhile the column holding the word "Damaged" had
+more than half the table.
+
+I measured it rather than guessed: the item column was **84 pixels** and the
+reason column was **521**. And when I docked the pane narrow, the table would
+not shrink either - it stayed 752 pixels wide inside a 400 pixel pane, so I got
+a sideways scrollbar on a list that was built not to need one.
+
+It reads **Brass belt hardware, antique** and **The Ash Overshirt** now, and the
+table fits its pane.
+
+On the same screen, five rows that said this:
+
+> Sold
+> _Replacement sent for return 526b92cc-eecc-4e86-b6c9-5068c68b0db9_
+
+I cannot look that up. It is on no screen I have. Everywhere else in here a
+return is called by its order, which is how I think of it: the swap on order
+O-000016. That is what it will say from now on.
+
+## Act 169 - earned per pound of stock
+
+Three figures across the top of **How it is performing**. The middle one said:
+
+> **Earned per pound of stock**
+
+I do not have pounds. Every other number on that screen and the four around it
+has a dollar sign in front of it. The card underneath said the same thing again,
+"for every pound tied up in stock", and when I went to type a freight charge onto
+a delivery the box told me to enter the amount "in whole pence".
+
+It is a small thing and it is not a small thing. It is the difference between
+software written for my shop and software written for somebody else's that I am
+allowed to use.
+
+The card now says **for every $1.00 tied up in stock**, taken from my own
+currency rather than from a word somebody typed, so a shop in London gets
+$1.00's opposite number. The tile says **How hard your stock money works**, which
+is what I wanted to know anyway.
+
+| issue                                                                          | severity | what                                                              | status           |
+| ------------------------------------------------------------------------------ | -------- | ----------------------------------------------------------------- | ---------------- |
+| [556](issues/556-every-way-of-getting-my-figures-out-was-a-blank-box.md)       | high     | Seven download buttons across three Stock screens rendered empty  | fixed and proven |
+| [557](issues/557-the-item-column-was-84px-and-the-reason-column-was-521.md)    | medium   | One uncapped column starved the item name and overflowed the pane | fixed and proven |
+| [558](issues/558-a-database-id-printed-on-the-ledger-i-read-every-week.md)     | medium   | A raw database id printed as the reason on five stock movements   | fixed and proven |
+| [559](issues/559-earned-per-pound-of-stock-in-a-shop-that-deals-in-dollars.md) | medium   | British currency words on four surfaces of a dollar shop          | fixed and proven |
+
+## Act 170 - every one of the 1
+
+There is a little shield beside every line of my stock list. I pressed one,
+expecting nothing much, and got the best thing in this software: a pane that
+tells me where the number came from. What it is made of. What changed it. How
+old it is. Whether the whole history still adds up to the number on the screen.
+
+That is the thing I have never had. My old spreadsheet could tell me 6. It could
+never tell me why 6.
+
+So I read it properly. And this is what it said about the Linen Shirtdress:
+
+> **Every one of the 1 recorded change** to this item here, **added together**,
+> comes to exactly 6.
+
+Added together. One thing. And a bit further down, about the same item, **the
+most recent 1 of 1 recorded change**, and the running total after **each one**.
+
+I know what it means. That is not the point. The point is that this is the pane
+whose whole job is to make me believe a number, and it is written like a machine
+talking to itself. It is the one place in the product that cannot afford to
+sound automatic, because sounding automatic is the exact thing it is arguing
+against.
+
+Fifty-four of my seventy-four stock lines have one recorded change. So that was
+not a corner I found. That was most of my shop.
+
+It now says **the one change ever recorded against this item here comes to
+exactly 6**, and the table under it says **the one change ever recorded against
+this item here**, and the item with three changes still says every one of the
+three added together. Five more sentences elsewhere had the same fault,
+including the one on the box that asks whether I am sure I want to undo an
+import.
+
+## Act 171 - look for those words, they are not there
+
+Stock, Counting. A line across the top of my four counts:
+
+> Some counts below say **"No cost yet"**.
+
+I read the four counts. None of them says that. The one it means says **no cost
+recorded**.
+
+I am being sent to look for a phrase that is not on the screen. And the reason
+is small and annoying: "No cost yet" lives in a column that only appears when I
+make the pane wide, and I do not work with the pane wide, I work with three
+panes open. At my width that column is gone and the same fact is written out
+underneath the count's name in different words.
+
+Both sets of words are fine. Quoting one of them in a notice above the table was
+the mistake. It now describes the thing instead of quoting it, so it is true
+however wide I have the pane.
+
+| issue                                                                                  | severity | what                                                                         | status           |
+| -------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------- | ---------------- |
+| [560](issues/560-every-one-of-the-1-recorded-change-added-together.md)                 | medium   | Plural-only sentences printed over a count of one, on 54 of my 74 stock rows | fixed and proven |
+| [561](issues/561-the-notice-quoted-words-the-column-was-too-narrow-to-show.md)         | low      | A notice quoting a phrase from a column hidden at my working width           | fixed and proven |
+| [562](issues/562-everything-matched-nothing-to-correct-over-372-corrected-garments.md) | high     | The other console still said "everything matched" over 372 corrected units   | fixed and proven |
+
+## Act 172 - the whole thing stopped
+
+I was clicking through Stock, nothing unusual, and the console just stopped. Not
+one screen. All of them.
+
+> Could not load your counts. **This is a problem reaching the server.**
+
+My name went out of the top corner. "Working out the numbers..." sat there
+spinning. Every pane said something slightly different and all of them meant
+nothing is loading.
+
+My first thought was my wifi. My second was that I had broken it.
+
+It was neither. One screen I had left open, **How fast you pick**, had asked the
+server the same question **675 times**. Two of those were sixteen thousandths of
+a second apart. There is a cap of six hundred requests a minute and that one
+screen had eaten the lot, so everything else got refused.
+
+The reason is small and stupid: the screen worked out "thirty days ago" fresh
+every time it drew itself, down to the millisecond, and then used that as the
+name of the thing it was asking for. A new name every time means it never
+recognised the answer it already had, so it asked again. And again.
+
+And I could not see any of it. The screen showed me the last good numbers the
+whole time. It looked calm.
+
+They had found this exact fault before, six times, in six other places, and
+written a warning beside each one. This screen had not used the shared bit of
+code, so it never got the warning either.
+
+It now asks for **30 days** instead of a timestamp. One request instead of 675,
+and nothing at all in the half minute after.
+
+## Act 173 - the server knew, and told me something else
+
+While that was happening, the server was answering every single request like
+this:
+
+> **500 Internal Server Error**
+> An internal error occurred.
+
+and attaching, in the same breath:
+
+```
+x-ratelimit-remaining: 0
+retry-after: 50
+```
+
+So it knew precisely what was wrong and precisely what I should do, and it put
+that in a place I will never look, and told me in plain words that it had broken
+internally.
+
+That is the difference between "something is wrong with this software" and "you
+are going too fast, wait fifty seconds". One of those makes me phone somebody.
+
+Worse: five hundred means "our fault, do try again", so anything sensible on the
+other end **retries**, which spends more of the budget, which causes more five
+hundreds.
+
+And it is not just me. Ten of these caps sit on the public side of my shop. A
+customer who mistypes her password three times, or fills my contact form in a
+hurry, was being told my site had an internal error.
+
+It now says **429** and **"Rate limit of 600 requests per 1 minute exceeded"**
+with the seconds to wait in the body.
+
+## Act 174 - two letters and a badge
+
+Three panes open, which is how I always work. Stock, **What matters**:
+
+> | Item  | Worth         | Demand             |
+> | ----- | ------------- | ------------------ |
+> | Su... | No cost price | Not enough history |
+
+**What to reorder** was worse. One row, five stacked lines, none longer than
+three characters:
+
+> Th...
+> TH...
+> M...
+> No...
+> No...
+
+I am supposed to decide whether to buy more of that.
+
+The name got **64 pixels**. The badge next to it, saying "Not enough history",
+took **164**. On the supplier invoices screen the invoice number got 84 and
+"Queried with the supplier" took 198, and the amount was cut off the edge
+entirely.
+
+The counting screen managed something special: its own notice said to press
+**"Count now"** on a row, and at my width that button was off the side of the
+screen.
+
+They had already fixed this, on the main stock list, and the note they left
+there quotes the same 64 pixels and the same "Th...". It just never reached the
+other five tables.
+
+Fixed the way the stock list does it: the badges move under the name when the
+pane is narrow, instead of squeezing it. 64 to 341. 64 to 203. 84 to 262. 100 to 197. And "Count now" is back on screen.
+
+| issue                                                                             | severity | what                                                                              | status           |
+| --------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------- | ---------------- |
+| [563](issues/563-one-screen-asked-the-api-675-times-and-took-the-console-down.md) | critical | A render-time timestamp in a query key refetched forever and spent the API budget | fixed and proven |
+| [564](issues/564-rate-limited-came-back-as-an-internal-error.md)                  | high     | Every rate-limited request answered 500 INTERNAL_ERROR instead of 429             | fixed and proven |
+| [565](issues/565-five-more-tables-where-the-name-got-64-pixels.md)                | high     | Four more tables starved the name column to 64-100px in a three-pane layout       | fixed and proven |
+
+## Act 175 - it told me I was charging no tax, while charging tax
+
+Sell, Tax. Across the top, in amber:
+
+> **Set up, but charging nothing.** Tax is worked out and added at checkout.
+> Every place starts switched off, so nothing is charged before you have looked
+> at it.
+
+Four inches below it, in the list that banner is sitting on:
+
+| California | Nothing is charged here yet | Off |
+| **Colorado** | **You have a presence here** | **Collecting** |
+| New York | Nothing is charged here yet | Off |
+| Texas | Nothing is charged here yet | Off |
+
+I switched Colorado on myself. I remember doing it. So which is it.
+
+This is the worst kind of wrong, because of what a person does next. If I believe
+the banner, I think the Colorado tax on my screen is not really being taken, and
+that I have nothing to hand over. That is not a design problem, that is money I
+might not set aside.
+
+The notice fires when ANY place is set up and switched off, which is a fine thing
+to tell me. It then calls that "nothing".
+
+Ten shops on this platform have a tax place with a rate on it. Nine of them
+collect nowhere, so the sentence was true for them. The tenth is me: **the only
+one who has switched anything on**. The sentence was wrong for exactly the person
+who had done what it asked, and everybody else gets it wrong the moment they
+follow the instruction.
+
+It now says **3 places set up but switched off**, and underneath, "You are
+charging tax in 1 place, so tax is reaching your checkout." A shop charging
+nowhere still gets the urgent version, because for them it is true.
+
+## Act 176 - two empty columns and my payroll off the edge
+
+My Team. Two people, and a sideways scrollbar.
+
+| Name | Status | Clock | Tickets |
+| Priya Nandakumar | Working | | |
+| Tomas Okonkwo | Working | | |
+
+Clock and Tickets are both empty. Nobody is clocked in and nobody has a ticket
+running out, which is the normal state of my shop. Between them those two empty
+columns were holding **158 pixels** of a 357 pixel pane, and pushing everything
+that did have something in it off the side.
+
+Timesheets was the same shape with a worse casualty: the **Cost** column, the one
+number I am looking at before I approve anybody's hours, was off the edge.
+
+Both fixed the way the stock list already does it: the badge drops under the name
+when the pane is narrow, and comes back as a column when there is room. 128 pixels
+of overflow to nothing, and 90 to nothing.
+
+| issue                                                                          | severity | what                                                                      | status           |
+| ------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------- | ---------------- |
+| [566](issues/566-told-i-was-charging-no-tax-while-charging-tax-in-colorado.md) | high     | The tax banner said "charging nothing" over a shop collecting in Colorado | fixed and proven |
+| [567](issues/567-two-empty-columns-pushed-the-money-off-the-screen.md)         | medium   | Two empty exception columns pushed the Cost column off a 357px pane       | fixed and proven |
+
+## Act 177 - both of my pipelines say "Default"
+
+Sell -> Pipelines. Two rows, and the State column says **Default** on both of
+them.
+
+| Name           | Moves            | Stages | State   |
+| -------------- | ---------------- | ------ | ------- |
+| Sales Pipeline | Sales deals      | 6      | Default |
+| Support Queue  | Support requests | 5      | Default |
+
+That is fine on its face. One is for money I hope to make, one is for answers I
+already owe. Each is the default for its own kind of thing. What I wanted to know
+is which one a message from my website actually lands in.
+
+It is decided by **which of the two was created first**. Both are flagged default,
+both sit at position zero, and the only thing separating them is that my sales
+pipeline was set up six minutes before my support queue. Across the whole platform
+there are six businesses running both, and every one of them is separated by the
+same accident: two or three seconds of seeding order.
+
+If I ever outgrow my starter sales process, build a better one and archive the old
+one, archiving clears its default flag on the way out. From that moment the only
+pipeline still flagged default is my **help desk**. The next quote request through
+my contact form opens as a deal inside my support queue, in a stage called "Still
+open", on a board the deals list cannot even draw, because a board is one sales
+process.
+
+Three of the four places that go looking for a pipeline already say which kind
+they want. The fourth is the one that decides where a real customer's enquiry goes.
+
+The filter is added, and a refusal behind it: a deal cannot be opened in a support
+queue at all now, whoever asks. The guard is a scan rather than a case, because
+the next person to write a pipeline lookup is the one it is really for.
+
+## Act 178 - my limit was switched off, and the screen congratulated me
+
+Trade -> Orders to approve. One pane, two halves, disagreeing.
+
+Top half:
+
+> **Nothing waiting**
+> No orders are held for sign-off right now. When one goes over a limit you set
+> below, it lands here.
+
+Four lines down: **Over $5000.00 · Every account**, with an **Off** badge and the
+switch pushed left.
+
+So nothing will ever land there. I read that sentence as "my limit is working and
+nothing has hit it yet". What it actually means is that no order is being held,
+however large, because the control is off.
+
+It is not just me. **Thirty-eight businesses have a spending limit written down
+and thirty-four have every one of them switched off.** All thirty-four were told
+their orders would be held.
+
+And look at the figure: **$5000.00**. No comma, on the one number I am supposed to
+count. That comes from a money string built by hand in four places, and the worst
+of them is the message a wholesale customer gets when they run out of credit:
+
+> Insufficient credit: $50000.00 available, $52340.00 required
+
+Every trade account on the platform has a limit of $10,000, $25,000 or $50,000, so
+that message has never once been readable, and it is shown at the exact moment
+somebody is being told they cannot buy. It now says what happened and what to do
+about it, in figures a person can read.
+
+My screen now says **Your limit is switched off**, and the rule under it reads
+**Over $5,000.00**.
+
+## Act 179 - "every request has been answered", and nobody has ever asked
+
+My Team -> Time off.
+
+> **Nothing waiting on you**
+> Every request has been answered. Switch to Everything to see what has already
+> been decided.
+
+Nobody has ever asked me for time off. There is **one** time-off request on the
+entire platform and it belongs to somebody else. So nothing has been answered,
+nothing has been decided, and the sentence sends me to a second empty screen to
+look at decisions that were never made.
+
+Reading the code behind it turned up a second one. The route sends a "how many are
+waiting" count so the console can nudge me while I am looking at something else,
+and the comment beside it says exactly that:
+
+> _Sent rather than counted client-side because a filtered list would otherwise
+> report "0 waiting" whenever someone had narrowed it to approved requests._
+
+It was counting the filtered rows. So narrowing to Approved reported zero waiting,
+which is the case the comment was written about. Twice today now a comment has
+described the rule while the code beneath it did the opposite.
+
+## Act 180 - told to add a chat box that was already on my site
+
+Messages -> Live chat, empty, and it told me to go and add the chat box from Chat
+settings. So I went to Chat settings. It has four sections and **none of them adds
+anything to a site**.
+
+The box is not something a person adds. It mounts on every page of every site
+whenever Live chat is on, and this inbox is itself only reachable when Live chat
+is on. There has never been a reader of that sentence for whom the box was
+missing. Fourteen businesses run Live chat, eleven have no conversations yet, and
+all eleven were sent looking for a control that does not exist.
+
+It now says the box is already there, and points at Chat settings for what Chat
+settings actually does: how it looks and what it says.
+
+While I was there: the footer of every empty list was offering me **"50 per page"**
+beside the words "Nothing to show". That control already had a sibling guarded for
+exactly this, with a comment about not offering "Load 1 more" over an empty list.
+The rows-per-page picker was the neighbour left behind. One shared component, so
+every list in the console is fixed at once.
+
+## Act 181 - two more queues that told me the work was done
+
+Partners -> Sign-offs:
+
+> **Nothing is waiting on you**
+> Every order that needed signing off has been dealt with.
+
+There are **zero** spending limits for purchase orders on the whole platform and
+**zero** orders have ever been held. So no order can be held for sign-off however
+large, and the screen was telling me my buying was under control.
+
+Partners -> Sent back:
+
+> **Nothing is waiting on a credit**
+> Every return you have sent has been credited or written off. Nothing is
+> outstanding.
+
+**Zero supplier returns exist anywhere.** Nothing has been credited, because
+nothing has been sent.
+
+That pane's own other view already had the right words for a business that has
+never done this, and could not reach them, because the count in the response is
+the filtered one. The same service already had the fix one field over: the money
+headline is counted against its own query so it survives a narrowed view. The
+count never got the same treatment.
+
+That is four of these now. An empty list means two opposite things and four
+screens were stating the comfortable one.
+
+## Act 182 - a list of deliveries with no dates on it
+
+Partners -> Booking stock in. Three deliveries, and I cannot tell when any of them
+arrived. Receipt, order, units, and that is all: the date column and the location
+column both hide when the pane is narrow, and neither folds back anywhere, so in
+my ordinary layout they simply vanish. A list of deliveries that cannot answer
+"did that come in this week?" is not a list of deliveries.
+
+The **packing slip** was worse. Every receipt I have carries one - FT-8871,
+AM-DN-4502 - and it is how I match a delivery to the paper in the box. It has no
+column at all, it rode on a line that hides, and the search box on the very same
+pane invites me to type it. The console will find a receipt by a number it will
+not show me.
+
+The file's own header says a narrow pane "keeps the reference, the order and when
+it landed". It kept the order.
+
+And PO-000002 was breaking across two lines at its own hyphen, because a browser
+treats one as somewhere it may break. An order number is one word.
+
+## Act 183 - I stopped clicking and started reading
+
+Four screens with the same lie is a pattern, not bad luck. So instead of opening
+the rest of the panes I had the console read its own copy: every sentence that
+claims past work is finished, minus the ones that are about the future.
+
+**Eight candidates across 716 files.** Five were already fixed or were fine. Two
+of the five were messages that appear after I press a button, which report what
+just happened rather than describing my business - those are a different thing and
+both true. Three were not fine.
+
+**Nobody is waiting on stock** - "Every order you have taken was covered by stock
+on the shelf". Thirty-four of the forty-eight real businesses on the platform have
+never taken an order. It reads as a clean bill of health on a shop that has not
+opened.
+
+Reading that service turned up a third comment-versus-code: two banners that are
+meant to nudge me while I am looking at a different view were both computed over
+the view I was already on. On the Overdue tab the undated count was structurally
+always zero. On Allocated both were. The nudges were dead on exactly the views
+that needed them, and the doc comment above them says _a screen that shows "0
+overdue" while 40 rows have no date at all is telling a comfortable lie._
+
+**Every checkout either went through or timed out** - forty of forty-eight
+businesses have never had a checkout session at all.
+
+| issue                                                                                  | severity | what                                                                                          | status           |
+| -------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------------------------------- | ---------------- |
+| [568](issues/568-a-website-quote-request-can-open-a-deal-inside-the-help-desk.md)      | high     | A website enquiry could open a deal inside the support queue; only seeding order stopped it   | fixed and proven |
+| [569](issues/569-told-my-orders-would-be-held-by-a-limit-i-had-switched-off.md)        | high     | The sign-off queue promised to hold orders over a limit that was switched off                 | fixed and proven |
+| [570](issues/570-every-request-has-been-answered-over-a-queue-nobody-has-ever-used.md) | medium   | "Every request has been answered" over a queue with none, and a count blind to its own filter | fixed and proven |
+| [571](issues/571-told-to-add-a-chat-box-that-was-already-on-my-site.md)                | medium   | Sent to a screen with no such control, to add a box already on every page                     | fixed and proven |
+| [572](issues/572-two-more-empty-queues-that-said-the-work-had-been-done.md)            | high     | Sign-offs and supplier returns both claimed the work was done over empty history              | fixed and proven |
+| [573](issues/573-a-list-of-deliveries-with-no-dates-on-it.md)                          | medium   | The receiving list dropped the date and the packing slip at pane width                        | fixed and proven |
+| [574](issues/574-swept-for-the-rest-of-the-empty-queue-lie.md)                         | high     | A scan found three more, including two cross-lens banners that could never fire               | fixed and proven |
+
+## Act 184 - the ship-direct screens describe somebody else's shop
+
+Dropshipping has three panes and I have connected no supplier at all. One of them
+said so and gave me the button. The other two talked to me about "one of your
+suppliers" and told me to check back after my next sale.
+
+**Eleven of the twelve businesses with this app switched on have connected
+nobody.** So almost everyone reading those two screens is being shown somebody
+else's shop.
+
+The profit screen was the worse one, because both things it told me to do are
+dead ends: a longer period cannot contain a sale no supplier could have shipped,
+and waiting for my next sale is waiting for something that cannot happen. The
+orders screen already had the supplier list in its hand for the filter box three
+inches above the sentence.
+
+Both now say **No supplier is connected**, say plainly that a longer period will
+not help, and put the button that fixes it under the words.
+
+## Act 185 - a reply clock nobody can find the rule for
+
+Response times told me a promise **"is created for you the first time a support
+request comes in"**. Help requests says the same thing from the other side.
+
+Two businesses on this platform have five requests each and no promise on file at
+all. Their queues show live clocks, a breached badge and an amber badge, and the
+one screen that should explain where those came from says none exist. That is ten
+of the eleven requests anywhere.
+
+Two causes, both real.
+
+The bootstrap that creates the promise sat one level too deep, inside the branch
+that works out which queue a request goes in. A promise has nothing to do with
+which queue. So anything that named a queue - the AI tools, any API client -
+skipped it, and if that was the first request the business ever filed, it arrived
+with **no deadline at all** and nothing said so.
+
+And the sample data writes its reply deadlines by hand, which is deliberate and
+sensible - a demo has to show a breached request now, not nine working hours from
+whenever you pressed Load. But that was a decision about the dates and it was
+silently also a decision about the rule, which it never created. Loading sample
+data produced a state the product cannot produce.
+
+The dates stay hand-placed. The promise is now created beside the queue, and every
+sample request names it. **Fourth time in two sittings** a comment stated its own
+rule and missed what sat beneath it.
+
+## Act 186 - counted as opened by nothing
+
+Email templates: **"We then count how many were sent, opened and answered, which
+is how you find out which of your own words work."**
+
+Two of those three are counted. Nothing anywhere on the platform writes the open
+count - the function that bumps these counters takes the field, and both callers
+pass the other two. A one-to-one email carries no beacon, so there is nothing to
+record.
+
+The list itself never draws an open figure, which is why this survived. But the
+service divides the open count by the send count, so it stands ready to report a
+confident **0%** - "nobody opened it" - for a template everybody read. Nothing
+renders it today and it is one screen away from doing so.
+
+The sentence now names what is counted. The rate is typed null and returned null,
+with the reason written where the next person will read it.
+
+## Act 187 - a wholesale figure that is not wholesale
+
+The customer overview shows seven tiles. One says **Wholesale accounts**. Mine
+reads 0, which is right by accident.
+
+It counts company records - the businesses my customers work for or buy through,
+which is what the console's own Record types screen calls them. Click the tile
+and it opens a pane titled **Companies**.
+
+**Every business on this platform holding a company record has zero wholesale
+customers.** So the figure is wrong for all of them and right for none. It only
+reads correctly at nought, which is exactly why nobody had caught it.
+
+WizeWorks itself would open that screen and read "Wholesale accounts 7".
+
+Both halves were correct on their own. The count is right and the label is a real
+thing this platform sells; only holding the two together shows it. The tile now
+says Companies, and matches the pane it opens.
+
+| issue                                                                               | severity | what                                                                                      | status           |
+| ----------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------- | ---------------- |
+| [575](issues/575-two-dropship-screens-describing-a-business-i-do-not-have.md)       | medium   | Two ship-direct panes described a supplier setup I do not have, and advised two dead ends | fixed and proven |
+| [576](issues/576-a-reply-clock-with-no-rule-behind-it.md)                           | high     | The reply promise was skipped when a request named its queue, and sample data made none   | fixed and proven |
+| [577](issues/577-told-my-emails-are-counted-as-opened-when-nothing-counts-opens.md) | medium   | Copy promised open tracking that does not exist, over a rate ready to report 0%           | fixed and proven |
+| [578](issues/578-a-wholesale-figure-counting-something-that-is-not-wholesale.md)    | medium   | A headline labelled Wholesale accounts counted company records                            | fixed and proven |
+
+## Act 188 - four pages anyone can read, on a site nobody can reach
+
+Content -> Legal pages. A red banner across the top of my console says **"Your
+site is offline. It comes back as soon as a payment goes through."** Three inches
+below it, four rows:
+
+> Privacy Policy - Published
+> **Live on your site. Anyone can read it.**
+
+I did not take the banner's word for it either way. I fetched my own site. It
+answers, and what it answers with is **"Temporarily unavailable - Back soon."**
+So the shop really is dark, and four pages are telling me strangers are reading
+them.
+
+**Thirty-two of the hundred and thirteen businesses on this platform are past
+their grace window right now.** Every one of them is being told the same thing,
+on the legal pages screen, on the content list and on every article.
+
+"Published" is a fact about the page and it is true. "Anyone can read it" is a
+claim about somebody else's browser, and the function that says it knows nothing
+but a status column. Same shape as everything else this week: the sentence needs
+a fact from outside its own lens.
+
+The badge stays green and stays saying Published, because the page IS published
+and that is the part I control. Turning twenty badges amber would report twenty
+problems when there is one. Only the sentence changes:
+
+> Published, and it goes back on your site as soon as your site is online again.
+
+I also went looking for two neighbours and left both alone. Home says
+"**Everything** else is fine", which is scoped by that word to the queues it
+lists, and the offline state is already carried twice above it. And the banner
+offering me a refreshed design promises **"Nothing of yours is overwritten"** - I
+read the merge instead of trusting it, and a conflict resolves to my value every
+single time. That one is kept.
+
+| issue                                                                  | severity | what                                                                          | status           |
+| ---------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- | ---------------- |
+| [579](issues/579-told-anyone-can-read-pages-my-site-is-not-serving.md) | high     | Four legal pages said anyone could read them while the site served an overlay | fixed and proven |
+
+## Act 189 - the publish screen talks about visitors, and I have none
+
+Having just fixed four legal pages claiming strangers were reading them, the very
+next screen does it five more times. My Site -> Publish:
+
+> 2 pages have changes that **visitors are not seeing yet**.
+> 7:58 AM - Published - 21 pages - **This is what visitors see**
+
+and the confirm for putting my site back promises **"Visitors will see the site
+exactly as it was on Saturday, straight away."** On a site with nothing
+outstanding it says **"Everything you have saved is live."** And Ready-made sites
+says a published design is one **"visitors see on your site now."**
+
+Writing this screen about visitors is the reason it reads well. It is the only
+thing I care about. Publishing still works while the lights are off - the version
+changes and it is the version my site comes back with - so nothing about the
+buttons moved, only the sentences.
+
+The page count was also shrinking to **"21 pa..."** the moment the label beside it
+grew. It is three words long and it is the only thing on the row saying how much
+went live.
+
+## Act 190 - blamed for a filter I never touched
+
+Sell -> Questions people ask. I typed nothing and touched no control:
+
+> **Nothing matches those filters**
+> Try a different word, or switch the filter back to All.
+
+There was no word to try and no filter to switch back. The pane OPENS on the
+waiting queue, which is right, and then counted its own default as me having
+filtered.
+
+The pane next door - Reviews, same folder, same queue idea, same default -
+already fixed this and left the rule in a comment: **a filter the PANE set is not
+a filter the person set.** Its sibling was left behind. Fifth time this run.
+
+And the reviews fix still had a third state missing: "switch the filter to All to
+see the ones already on your website" points at a second empty screen for a shop
+that has never had one. **43 shops have the store on and only 10 have ever had a
+question or a review.**
+
+## Act 191 - the guard that could not see the thing it guarded
+
+I swept every sentence that sends me to a named control. 1,327 files, 13
+candidates, eleven of them fine. One was the Questions pane above. One was My
+Team -> People, which opens filtered to active staff and then tells a business
+whose last employee just left that it has **"No one on the roster yet"**, with the
+button you press on day one. Nobody is in that state today, but the path is real
+and the fix was four lines.
+
+On the same screen I found sparx saying **"Tickets and licences"** where Piggles
+says "licenses". Four screens of British spelling on an American product.
+
+Then the part worth writing down. I wrote a guard so the drift could not come
+back, ran it, and it was green. I did not believe it, so I put the drift back and
+ran it again. **Still green.** The test had been written through a shell heredoc,
+which ate a backslash and turned every word boundary into a **backspace
+character**. It scanned 686 files, matched nothing, and reported that everything
+was spelled correctly while the drift sat three lines from where it was looking.
+
+The only thing that caught it was the rule about breaking a guard before
+believing it.
+
+| issue                                                                                | severity | what                                                                     | status               |
+| ------------------------------------------------------------------------------------ | -------- | ------------------------------------------------------------------------ | -------------------- |
+| [580](issues/580-a-publish-screen-that-talks-about-visitors-a-dark-site-has-none.md) | medium   | Five sentences about visitors on a site serving an unavailable overlay   | fixed and proven     |
+| [581](issues/581-blamed-for-a-filter-i-never-touched.md)                             | medium   | The questions pane reported its own opening filter back as one I had set | fixed and proven     |
+| [582](issues/582-a-team-that-has-all-left-reads-as-a-team-i-never-had.md)            | medium   | An all-former roster read as a business that had never hired             | fixed and proven     |
+| [583](issues/583-a-spelling-guard-that-could-not-see-a-spelling.md)                  | medium   | A heredoc ate the word boundaries, so the spelling guard matched nothing | fixed and proven red |
+
+## Act 192 - the headline said I overspent by $968, the table said nothing
+
+Stock -> Cost vs plan.
+
+> What you planned to pay **$0.00** - across 98 units received
+> What it actually cost **$967.92**
+> The difference **$967.92** - **More than planned**
+
+In red. And right underneath it, the screen's own warning: **"98 units have
+nothing to compare against - those items have no planned cost set, so they are
+left out of the figures above."**
+
+Both cannot be true. And every row in the table below said **Planned each -**
+with a **No plan set** badge and a difference of nothing. The headline said I had
+overspent by $968. The table under it added up to zero.
+
+The subtraction had two sides over **two different sets**: the planned figure
+counted only the units with a plan, the actual figure counted every unit. The
+per-row number was careful and the interface comment above it even says _a
+variance against no standard is not a number, it is a gap_. The total takes the
+gap and calls it an overspend.
+
+**105 of my 108 products have no planned cost.** Two other businesses are in the
+same state. Every delivery any of us books in becomes a red overspend the size of
+the delivery.
+
+Now both halves count the same units, so the headline equals the sum of the rows
+by construction. The money is not lost - the warning band names it: "Everything
+that arrived cost $967.92, and there is no plan to weigh it against."
+
+## Act 193 - one absence explained beautifully, the one beside it silent
+
+Stock -> Cost to keep is one of the best screens here. It counts the levels with
+no cost price and says so above the figures. Two columns to the right, **Cover**
+was a dash on every single row with nothing anywhere saying why.
+
+Cover needs sales history. Of 600 stocked levels on this platform, **13** can show
+one, and they belong to two businesses. Six of the eight shops with stock cannot
+show it on a single row.
+
+The dash was right. The sentence was missing.
+
+| issue                                                                           | severity | what                                                                  | status           |
+| ------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------------- | ---------------- |
+| [584](issues/584-one-absence-explained-beautifully-the-one-beside-it-silent.md) | low      | A Cover column of dashes with nothing explaining what cover needs     | fixed and proven |
+| [585](issues/585-a-968-dollar-overspend-on-a-shop-that-never-set-a-budget.md)   | high     | The variance headline subtracted two totals taken over different sets | fixed and proven |
+
+## Act 194 - the word my database uses, printed on my screen
+
+Stock -> Things that do not add up, under **When you ran out**:
+
+> The Ash Overshirt
+> via **storefront**
+
+"storefront" is not a word I use. It is a word the database uses. Two panes away,
+on Money, the same sale is called **Your website**.
+
+The console fixed this once already. There is one vocabulary for where a sale came
+from, written because a single till sale of mine read four different ways on four
+screens. Eight panes use it. Two never did.
+
+| issue                                                                                     | severity | what                                                          | status           |
+| ----------------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------- | ---------------- |
+| [586](issues/586-the-console-has-one-word-for-my-website-and-two-panes-never-heard-it.md) | medium   | Two inventory panes printed the stored channel word on screen | fixed and proven |
+
+## Act 195 - 1 order lines
+
+Stock -> Stock versus your books is one of the best screens in here. Every
+ordinary reason my stock figure and my books differ is named and priced. Three
+things on it were wrong at once and all three are in the same eight lines of copy:
+
+- **1 order lines**, because all seven counts hard-coded their plural
+- **3 lines** for something that is three items at a location, not three lines
+- a sentence ending "an opening balance in your books may not have", which is
+  grammatical and reads, to me, as text that got cut off
+
+The words moved into their own module so each sentence has a test. That split is
+the point: three defects sat in that copy and not one was reachable without
+standing up a database.
+
+| issue                                                          | severity | what                                                            | status           |
+| -------------------------------------------------------------- | -------- | --------------------------------------------------------------- | ---------------- |
+| [587](issues/587-one-order-lines-and-a-sentence-that-stops.md) | medium   | Hard-coded plurals, two wrong nouns, and an unfinished sentence | fixed and proven |
+
+## Act 196 - five screens tell me to set a cost, none says where
+
+Cost vs plan now says, honestly, **"Nothing here had a plan to compare against"**.
+It is honest and it is a dead end.
+
+Five screens tell me the same thing and every one of them names the remedy. Not
+one gave me a way to do it. Meanwhile a screen exists that does exactly that:
+every unpriced item, biggest holding first, with a cost box on each row.
+
+The catalog entry for that screen claims, in its own comment, that it "is reached
+from the figures that admit the gap". Measured: two screens opened it, and neither
+was one of the five.
+
+| issue                                                                               | severity | what                                                            | status           |
+| ----------------------------------------------------------------------------------- | -------- | --------------------------------------------------------------- | ---------------- |
+| [588](issues/588-five-screens-tell-me-to-set-a-cost-and-none-of-them-says-where.md) | medium   | Advice with no route, on the five screens that admit a cost gap | fixed and proven |
+
+## Act 197 - the heading counts, the sentence forgets
+
+Counting schedules, one schedule due:
+
+> **1 schedule is due**
+> Tonight's run will create **their** counts.
+
+That looked like a one-off. It was not. A scan of every warning band in both
+consoles found **19 in each**: a title that counts properly above a sentence that
+assumes more than one. Two were broken in the title itself, past any body - "1
+shipment was due and **have** not arrived".
+
+A small business is the one that lands on 1. That is the whole reader.
+
+Almost every fix is number-neutral rather than a second branch, because neutral
+copy cannot come back: "They are listed below" became "Listed below".
+
+The guard's own matcher was case-sensitive on the first draft and matched nothing
+that began a sentence, which was nearly all of them. The self-test caught it.
+That is issue 583 in a different disguise, one week later.
+
+| issue                                                                            | severity | what                                                   | status           |
+| -------------------------------------------------------------------------------- | -------- | ------------------------------------------------------ | ---------------- |
+| [589](issues/589-the-heading-counts-and-then-the-sentence-underneath-forgets.md) | medium   | 20 warning bands counted in the title and not the body | fixed and proven |
+
+## Act 198 - five shelves all reading zero, and 491 units somewhere else
+
+Stock -> Shelves. Five shelves, **0** on every one, and 491 units of stock in my
+business. Nothing on the screen said why.
+
+A zero has two opposite meanings. The shelf is empty, or nothing can ever be on
+it. This screen made them look the same.
+
+The answer was in the Location column the whole time and took a second screen to
+see: every shelf I have is at Fulfillment Center, every unit I own is at Main
+Warehouse, which has no shelves at all. And the Locations list could not tell me
+either - it showed name, kind, where and state, and nothing about what was in the
+place.
+
+One fact missing from two screens, and each screen's silence made the other's
+harder to read.
+
+| issue                                                                           | severity | what                                                          | status           |
+| ------------------------------------------------------------------------------- | -------- | ------------------------------------------------------------- | ---------------- |
+| [590](issues/590-five-shelves-all-reading-zero-and-491-units-somewhere-else.md) | medium   | A wall of zeros with the explanation available and never said | fixed and proven |
+
+## Act 199 - the item name got narrower as the pane got wider
+
+Stock -> Every change. Every row identified by four characters: "Brass...",
+"Linen...", "The ...".
+
+Measured at fourteen widths. The item name sat on its 64px floor at six of them,
+and between 600px and 760px the table scrolled sideways by up to **224px** inside
+a pane that had room for it. **It got worse as the pane got wider.**
+
+Each breakpoint added more than the extra width paid for: at one of them a column
+grew by 128px AND another appeared worth 192px, for 64px of new pane.
+
+The file's own comment already says "any column added beside a give-cell needs a
+width". What was missed is that a cap which GROWS is a column being added.
+
+My own first fix repeated the mistake one breakpoint along, and only measuring
+BETWEEN the breakpoints caught it.
+
+| issue                                                                 | severity | what                                                  | status             |
+| --------------------------------------------------------------------- | -------- | ----------------------------------------------------- | ------------------ |
+| [591](issues/591-the-item-name-got-narrower-as-the-pane-got-wider.md) | medium   | Breakpoints that each cost more width than they added | fixed and measured |
+
+## Act 200 - it tells me to click a row when there are no rows
+
+Gift cards, opened for the first time. Juniper Row has never issued one, so the
+pane said "No gift cards yet". And underneath the empty box, across the bottom of
+the pane:
+
+> Click to open - Shift-click alongside - Alt-click in a new window
+
+Click what. I read the empty message again to check there was not a list further
+down that I had missed.
+
+It is on Carts before the first cart, and on Returns before the first return. It
+is worst after a search: the pane says "Nothing matches that", and directly under
+it explains how to open one of the things that do not match.
+
+Sixty-nine of the console's eighty-seven lists already hid it correctly. So the
+console knew the rule and had applied it to a fifth of the places it applies to.
+
+**The obvious fix was wrong, and I nearly shipped it.** A codemod that took the
+count from "the array this component maps over most often" resolved 47 of the 61
+and refused the rest, which felt like enough care. Reading two of its answers
+back by hand found one wrong: `cms/authors-list.tsx` maps `authors` and hands its
+table `matches`, so that guard would have kept the hint up over an empty SEARCH.
+The same defect, moved, in the file most likely to show it. Nothing would have
+gone red.
+
+What closed it was finding a count that is not a guess. Both were already written
+in each file: `<ListPagination shown={X}>`, whose prop is documented as "Rows
+currently on screen", and where there is no pager, the array the pane's own empty
+state already tests. Between them, 105 of the 123 unguarded sites across both
+consoles. The remaining 18 I read one at a time.
+
+Two needed a judgement no scan makes. The shipping pane draws two tables under
+one hint, so either one having rows earns it. The shared entity list already
+carried a condition, so the count is ANDed onto it rather than nested.
+
+A divergence turned up while doing it: the authors list is a plain `<tbody>` in
+sparx and a separate table component in piggles. Same screen, same fix, but only
+one of them is legible to a scan that looks for a table body.
+
+| issue                                                                  | severity | what                                                      | status                        |
+| ---------------------------------------------------------------------- | -------- | --------------------------------------------------------- | ----------------------------- |
+| [592](issues/592-it-tells-me-to-click-a-row-when-there-are-no-rows.md) | design   | "Click to open" printed under 123 lists that can be empty | fixed, not yet seen on screen |
+
+Not yet seen on screen. The dev stack was down for this act, so every claim is
+from the parser, the guard and the files. Recorded as unverified rather than
+claimed.
+
+## Act 201 - the same sale had five names in the other console
+
+Issue 260 fixed this in Piggles a while back: one sale, four screens, four names
+for where it came from. One shared file, every screen calling it.
+
+The sparx console was never brought along. Issue 586 had noted "three separate
+channelLabel functions" and left it. There were **six**, and one order entered by
+hand reads five different ways: "In person or by phone" on Money, "Added by your
+team" on the selling report, "Entered by your team" on its own order, "Orders you
+enter by hand" in the price-list picker, and "Entered by your team" again in
+Carts and Checkouts from two more private tables.
+
+`admin` had four names. `b2b_portal` had three. Five other slugs had two each.
+
+**Why 586 said three and the answer was six.** Two of the six are not called
+`channelLabel` - `CHECKOUT_CHANNEL_LABELS` and `CART_CHANNEL_LABELS` - so a
+search for the function name found four, and reading that search reported three.
+Grepping for the name of a thing finds the copies that kept the name. What found
+all six was asking who IMPORTS the shared function: the two extra tables showed
+up as callers with no import.
+
+The Piggles wording won, because issue 260 already reasoned it through against a
+real business. "Added by hand" rather than "Entered by your team", which tells a
+sole trader about a team she does not have, or "In person or by phone", which
+claims to know how the order arrived when the stored value only knows it did not
+come through the website.
+
+| issue                                                                  | severity | what                                          | status                        |
+| ---------------------------------------------------------------------- | -------- | --------------------------------------------- | ----------------------------- |
+| [593](issues/593-the-same-sale-had-five-names-in-the-other-console.md) | copy     | Six channel vocabularies in the sparx console | fixed, not yet seen on screen |
+
+Not yet seen on screen; the dev stack was down for this act.
+
+## Act 202 - I sold $2,350 and the screen only talks about $535
+
+Money -> Where money comes from, to settle whether the website or the orders I
+type in myself are worth more.
+
+> Money received in the last 90 days
+> **$535.00**
+> from 14 orders across 2 places
+
+And the table under it: sales $2,350.50, received $535.00. I sold two and a half
+thousand dollars and the screen only wants to talk about five hundred. Where did
+the other $1,815.50 go? Nothing on the page says.
+
+I did the subtraction myself and still did not know, because "sales minus
+received" is one number made of two different things. The answer, which I had to
+find in a different pane: **seven orders nobody has paid for, $1,603.50**, plus
+$212.00 refunded. Three quarters of everything my website sold.
+
+There is a Refunds column that explains a tenth of it. It shows at 576px. My
+pane opens at **567**.
+
+**The share is the sharp end.** "Your website 61%" is a share of money received.
+By sales it is **91%**. "Added by hand 39%" is really **9%**. I would have kept
+typing orders in by hand on the strength of 39%.
+
+The endpoint had every field it needed and threw one away. It selects the order
+total, what was paid and what was refunded, and returned only the first two. Now
+it returns the third, the columns close -
+
+> $2,140.50 − $212.00 − $1,603.50 = $325.00
+
+- and the subtitle says it in a sentence, because a sentence is visible at every
+  width and a column is not.
+
+> Another $1,603.50 of these sales has not been paid for yet. $212.00 was
+> refunded.
+
+**"of these sales" is doing work.** The first draft of that sentence said
+"was sold and has not been paid for yet". Then I walked one pane along to
+**Money -> Owed to you** and was told "Total outstanding **$1,645.50** across 9
+invoices". Two numbers $42 apart, both in Money, both apparently saying people
+owe me. They are not the same measurement: mine is orders, through these
+channels, inside the window I picked; that one is invoices, all time. Naming the
+scope is what stops me having to guess which one is right.
+
+I nearly filed that $42 as a defect. Nine of my orders have an invoice for the
+same customer and the same amount, which looks a lot like one debt counted
+twice. It is not - every one of my invoices carries the order it bills. I
+checked before I wrote it down, which is the only reason this paragraph is not
+an apology.
+
+Breakpoints: one column per step, four to five to six to seven, measured at
+twelve widths. That is act 199's lesson applied rather than learned again.
+
+| issue                                                                | severity | what                                                                                                     | status         |
+| -------------------------------------------------------------------- | -------- | -------------------------------------------------------------------------------------------------------- | -------------- |
+| [594](issues/594-i-sold-2350-and-the-screen-only-talks-about-535.md) | major    | Sales, refunds and received did not add up, and the missing $1,603.50 was the biggest number on the shop | fixed and seen |
+
+Also confirmed this act, now the dev stack is back: act 200's fix is real. Repeat
+orders with nothing in it no longer prints "Click to open"; Gift cards searched
+for a code I misremembered says "Nothing matches that search" and nothing else;
+and Gift cards unsearched, with two rows, still shows the line. That third case
+is the one worth having - a guard on the wrong array would have got it backwards.
+
+## Act 203 - nine people owe me and the screen will not say how much
+
+Straight on from the last one, because the $1,645.50 was still bothering me.
+**Money -> Owed to you**, to work out who to ring first.
+
+The top of the pane is exactly right. Total outstanding $1,645.50 across 9
+invoices, split into "Not yet due $659.00" and "1-30 days late $986.50", with a
+bar each. Then the table:
+
+| Invoice    | Customer           | How late    | Due         |
+| ---------- | ------------------ | ----------- | ----------- |
+| INV-000004 | Wren Ashcombe      | 9 days late | Sep 8, 2026 |
+| INV-000005 | Marguerite Adeyemi | 9 days late | Sep 8, 2026 |
+| INV-000006 | Tessa Wren         | 9 days late | Sep 8, 2026 |
+
+Nine debts and **not one amount**. The screen told me I was owed $1,645.50 and
+then would not say who owed which part of it.
+
+The Balance column is 79 pixels off the right edge. There is a sideways
+scrollbar under the table and I did not notice it, because the table looked
+finished - "Due" is a perfectly good last column and nothing hinted at a sixth.
+
+Ringing someone about money without knowing the amount is not a shorter phone
+call. It is a different one.
+
+**It is the same mistake as act 202 with the roles reversed.** There, the money
+had no column at any width. Here it has one and it is the first thing thrown
+overboard. The Due column comes in at 512px; five columns need 628px to draw.
+Nobody checked that those two numbers agreed.
+
+And the screen NEXT DOOR already had it right. **Money you owe** is this pane's
+mirror - same module, same table, same aging badge - and it holds its Due column
+back to 672px. One file over, the same decision made correctly. This one never
+got it. That is four now.
+
+Columns now go in the order I can afford to lose them: customer, how late and
+the amount always; the invoice number from 576; the due date from 672. Below 576
+the invoice number tucks under the customer name instead of vanishing, because I
+have two Tessa Wren invoices for $101.95 on the same day and without the number
+they are the same row twice.
+
+Three columns, four, five. Nothing scrolls sideways from 360px up.
+
+**And a second one fell out of the same file.** The other console's copy of the
+"how late is this" function is missing a branch mine has - the one that refuses
+to call an invoice with no agreed date "Not yet due". Mine carries a whole
+paragraph explaining why that matters. Theirs never got it, so over there a debt
+with no deadline reads as fine forever, can never turn red and never reaches the
+chase list.
+
+Both copies are now one file with a test. There is no longer a second copy to
+drift.
+
+Then **Your accounting package**, to send my spending over. It opened on "Last
+month", and told me:
+
+> Aug 1, 2026 to Aug 31, 2026 - **no costs recorded**
+
+I recorded five costs this month. Two of them yesterday and today. Nothing said
+the period was last month by default, or that my costs were sitting in a month
+it was not showing me. I would have gone back through Spending to check they
+were still there.
+
+And the comment in the code says the thing the screen does not:
+
+> The default period is LAST month, so on the 9th it is perfectly normal for the
+> answer to be no - and better said here than discovered in a spreadsheet.
+
+Somebody worked out the whole answer and stopped one sentence short of writing
+it down where I could read it. That is the third time this walk: the profit card
+warning me in the conditional about a number it was printing, the pager saying
+"Nothing to show" under an empty state that had already said it better, and now
+this.
+
+It reads properly now, and it tells the two cases apart, because they want
+opposite things from me:
+
+> Aug 1, 2026 to Aug 31, 2026 - nothing in this period, though you have 5 costs
+> recorded
+> Last month is what an accountant usually wants, because it is finished. Change
+> the period above to send a different one.
+
+A shop that has never recorded a cost still gets "no costs recorded yet" and no
+advice about the period, because changing the period will not help it.
+
+**By job** is the screen for working out which pieces of work are worth doing.
+It told me:
+
+> Every job in this period made money
+> **2 jobs**
+
+Both at **100.0%**. Made $67.00, kept $67.00. Made $659.00, kept $659.00.
+
+I make clothes. Nothing I sell costs me nothing.
+
+Both rows read 100% because not one item in my shop has ever had a cost
+recorded, so "made" and "kept" are the same number by construction. Every row
+ties for first and the ranking the whole screen exists for cannot mean anything.
+
+The screen ONE CLICK AWAY says this perfectly: "Nothing here has been measured
+yet: 68 things on your shelves, 375 units in all, have never had a cost
+recorded." Same module, same condition, same reader. This one congratulated me
+instead. That is six.
+
+Worse: it already knew HOW. It carries a warning card for a different soft
+figure - jobs priced off a list rather than off what was actually charged - with
+the icon, the heading and the count. The pattern was in the same file. Cost never
+got one.
+
+It now says "What these jobs cost has not been measured", the number goes amber
+instead of green, and the card underneath names the 68 things and the 375 units
+and says out loud that the ranking cannot mean anything yet.
+
+A service business that genuinely has no cost of goods is left alone. The two
+zeros are told apart by the STOCK, never by the sum.
+
+And the table ran off the edge below 440px, same as Spending, same cause, same
+one-word fix. It now fits at every width down to 320.
+
+| issue                                                                                  | severity | what                                                                                      | status         |
+| -------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------------------- | -------------- |
+| [595](issues/595-nine-people-owe-me-and-the-screen-will-not-say-how-much.md)           | major    | The amounts on the chase list were off the right edge, and the mirror screen had it right | fixed and seen |
+| [596](issues/596-the-screen-told-me-twice-that-i-have-no-payouts.md)                   | minor    | Every empty list in the console repeated its own empty state in a blanker voice           | fixed and seen |
+| [597](issues/597-my-spending-total-was-on-screen-and-none-of-the-amounts-were.md)      | major    | The Spending total was on screen and none of the five amounts behind it were              | fixed and seen |
+| [598](issues/598-the-same-invoice-is-8-days-late-on-one-screen-and-9-on-the-next.md)   | major    | One invoice was 8 days late on my invoice list and 9 on my chase list                     | fixed and seen |
+| [599](issues/599-it-told-me-to-go-and-check-something-it-already-knew.md)              | minor    | The profit card warned me in the conditional about a number it was already printing       | fixed and seen |
+| [600](issues/600-it-said-i-have-no-costs-the-day-after-i-recorded-five.md)             | major    | The accounting export said I have no costs, the day after I recorded five                 | fixed and seen |
+| [601](issues/601-it-told-me-every-job-made-money-because-it-had-never-measured-one.md) | major    | Every job showed a 100% margin, because not one item in my shop has a cost recorded       | fixed and seen |
+
+## Act 204 - the optional field was required
+
+I make coats and I make small things, and they do not post the same way. Postage
+and delivery already had a group for **Coats and heavy knits**, so I went to add
+one for trims and buttons.
+
+Add a group. Typed the name. Left **Note (optional)** empty, because it says
+optional. Pressed Create group.
+
+> **Could not save this group**
+> Nothing was changed.
+
+No field named. Nothing wrong on the form. I tried again and got the same thing.
+
+It saves the moment you type something in the note. **The optional field is
+required.**
+
+That is the first thing a shop does on this screen. A person who hits it decides
+the product is broken, and from where she is sitting it is.
+
+The cause is one word. Every form in this console sends `null` when a box is
+empty - forty-odd of them do it - and the rule guarding that field accepted
+"nothing" but refused `null`. The code one file over already disagreed with it:
+it writes "leave it alone" for one and "clear it" for the other, in as many
+words. Only that line had not been told.
+
+**Then I went looking, and the first scan was wrong in a way worth keeping.**
+Joining on the NAME of a field across a whole module found 173, most of them a
+`notes` in one file matched to a `notes` in an unrelated one. A name is not a
+link. Following the real link - one function, the rule it actually checks
+against, that field - found **106**, across 26 files. Every one is a form that
+cannot be left blank, or a value that can never be cleared, and none of them can
+be seen without pressing Save.
+
+All 106 are fixed, and there is a check in the push guard now, because nothing
+else can catch this. It typechecks: the screen's type says "text or nothing",
+the rule's says "text or absent", and the two never meet, because the wire is
+between them. It lints. Every test passes, because a test builds a payload that
+is already valid rather than the one a blank form sends.
+
+**And a second one fell out of the same screen.** A delivery price belongs to a
+region AND a product group together. The region half of this screen has always
+known that - it says "No delivery options" in amber when it has none. The group
+half never had the number. So the one screen that can CREATE a group nobody can
+post to said nothing at all about it, and a shopper with one of those in her
+basket is offered no way to receive it.
+
+The group I had just made showed it straight away:
+
+> **No delivery options**
+> No region has a delivery option for this group yet. Nothing is filed under it,
+> so nothing is affected, but anything you file here will have no way to be
+> delivered until a region prices it.
+
+An empty group is a warning. A group with products in it, or the default group
+that covers everything else, is red.
+
+| issue                                                                                  | severity | what                                                                          | status         |
+| -------------------------------------------------------------------------------------- | -------- | ----------------------------------------------------------------------------- | -------------- |
+| [602](issues/602-i-could-not-make-a-product-group-without-writing-an-optional-note.md) | critical | An "optional" note could not be left empty, and 105 more fields were the same | fixed and seen |
+
+## What I did not file
+
+Screens I went at hard and could not fault, which is worth writing down as much
+as the rest:
+
+- **Stock -> At risk.** The best screen on the platform. It names its own
+  denominator (_"2 stock lines have never been measured"_), badges every input
+  **Measured / Assumed / Not much to go on**, says out loud that the assumed
+  fortnight _"is the weakest part of the calculation"_, and prints the actual
+  arithmetic underneath. Its one fault was a row sentence truncated at the
+  clause where it stops being reassuring, with no way to read the rest. That is
+  a tooltip, not an issue.
+- **Partners -> Overdue deliveries.** Says _"Nothing is overdue"_ only when
+  every order HAS a date, and switches to naming the undated ones when any
+  exist. The lesson from issue 534 travelled here on its own.
+- **Bookings -> Take a booking.** I have two people who can take appointments
+  and nothing they can be booked for. The form says so at the top, explains what
+  a service is, and puts the button to make one next to the sentence.
+- **Stock -> What your stock cost you.** I went at this one expecting it to be
+  wrong, because the screen beside it was. It is not. _"68 things on your
+  shelves, 375 units in all, have never had a cost recorded"_ matches its own
+  query exactly, it says what the number is short by rather than rounding it
+  off, it sorts the biggest holdings first and tells me why, and it puts the box
+  to fix it on the same row. It was the screen that proved the other one was
+  lying.
+- **Stock -> Not selling.** It told me everything is moving and I did not
+  believe it, because I have plenty that has not shifted. It is right. The
+  longest anything has been quiet in my shop is **23 days** and the window for
+  calling something dead is **180**, so nothing could qualify yet. The empty
+  state says so itself: _"Either the buying is well judged, or there is not
+  enough history yet to tell."_ It could tell me which of those two it is, since
+  it knows both numbers. That is a better screen, not a broken one.
+- **Stock -> Things that do not add up.** _"The check runs every night"_ is the
+  kind of sentence I have learned to check. It is true: there is a job that runs
+  at half past four every morning and this screen is what it writes to. I ran it
+  myself and it came back **74 records checked, nothing outstanding, $0.00 in
+  question**, and 74 is exactly how many stock lines I have.
+
+## Act 205 - the kinds of product, and a wholesale sheet
+
+Devi finishes the Money app and starts on the rest of Sell.
+
+**Money -> Your sparx bill.** Not a screen I have. It is hidden from this
+console on purpose: what I pay for Piggles lives on Get Piggles, and the only
+thing the workspace says about it is the red bar across the top, which is
+already telling me my site is offline until a payment goes through. That bar is
+in the right place. It is above the header where the rail cannot hide it, it
+says what happens rather than what state a record is in, and the one button on
+it goes out to the app that can actually take my money. Good.
+
+**Sell -> Kinds of product.** Seven built-in kinds and none of my own. Apparel
+is mine: fabric, fit, care, materials, made in. It reads well and it is the
+first screen today that got two things wrong at once.
+
+The first I could see. Narrow the pane and the table slides sideways - at 390px
+it runs over by 42px, at 320px by 112px, and it is showing **one column** while
+it does it. Just the name. The cause is the same one as the money screens
+([595](issues/595-nine-people-owe-me-and-the-screen-will-not-say-how-much.md),
+[597](issues/597-my-spending-total-was-on-screen-and-none-of-the-amounts-were.md)):
+a description set to `truncate`, which is `white-space: nowrap`, which makes the
+column demand the whole sentence forever. Wrapping it to two lines takes the
+floor from **416px to 169px** and there is no sideways scroll from 320px up.
+With the room that freed, the two hidden columns were re-ordered by measurement:
+"Attributes" now arrives before "Key", because `apparel` is a machine name and
+"5 attributes" is the thing a person is scanning for.
+[603](issues/603-the-list-of-product-kinds-ran-off-the-side-of-my-phone.md).
+
+The second I could only see because I stopped to read it:
+
+> Clothing and worn goods — fabric, fit, care, and material composition.
+
+Piggles does not write em-dashes, so I went to fix the sentence and found it
+**already fixed** in the repo, months ago, with a colon. Every database still
+had the dash.
+
+That array is the starter vocabulary every business on the platform is handed.
+It reached a database exactly once, through a migration whose own comment asks
+the next person to "keep the two in lockstep when either changes". Nobody could:
+a migration runs once, and no running code imports the array, so editing it
+changes nothing anywhere at all. It had already happened once before, to the
+icons, and was patched with a _second_ migration rather than fixed as a class -
+which is what made this one inevitable.
+
+Eight strings adrift, seven descriptions and one field's help text. That last
+one sits under **Fabric & construction** on the apparel type. It is the sentence
+I read while filling the box in.
+
+The array is now applied on every deploy, by the stage that exists for exactly
+this and that was written the last time platform content sat committed and
+absent (twenty theme bundles, an empty marketplace, a month). It reads back
+every row it writes and fails the deploy if one did not land as written.
+[604](issues/604-the-words-on-the-built-in-product-kinds-were-fixed-in-the-repo-and-nowhere-else.md).
+
+**Sell -> Where you charge tax.** Nothing to fix. It knows I am collecting in
+Colorado and says so, it counts the three places that have a rate and are
+switched off without counting the one that has no rate at all, and it tells me
+to ask an accountant twice without making me feel stupid. The comment in its
+code says this sentence used to be wrong for exactly the shop that had done what
+it asked. It is right now.
+
+**Sell -> How you take payment.** Seven ways in, mine is Manual, and every row
+says the same true thing: no Piggles fee, you pay the processor's rates. No
+first-party gateway offered, because there isn't one to offer.
+
+**Sell -> Selling settings.** Long, plain, and every hint says what the setting
+does rather than what it is called. "Only the first failure is emailed: the
+tries in between are silent, so nobody gets four emails about one card" is a
+promise, so I followed it: there is an automation seeded on the failure event,
+it names a real email template, and the template exists on my account. It keeps
+it.
+
+**Sell -> Special prices.** I supply a few shops, so this is a real job. Made
+**Trade sheet 2026**, left the note empty (which works now), put the Astrid
+Signet Ring on at $1,100 instead of $1,450, pressed Save.
+
+It spun for ten seconds and told me:
+
+> Could not save this price list. Nothing was changed.
+
+I pressed it again and it worked. The failure itself I could not reproduce -
+three more identical requests came back in 14, 16 and 29 milliseconds - so I
+have not filed it. What I did file is what it showed me. Saving a price list is
+**three separate requests**, each of which commits on its own, and that sentence
+sat in a catch wrapped around all three. It is true of the first one only.
+Somebody who fails at the third is told nothing changed after their settings
+have been written and the prices they deleted are already gone.
+
+Worse, on the same screen: creating a list wrote its prices in a second request
+whose failure was **swallowed on purpose** - and the pane then landed announcing
+"Trade sheet 2026 created" over a list with no prices in it. I would have found
+out when a shop I supply paid full price.
+[605](issues/605-it-told-me-nothing-changed-after-it-had-already-changed-things.md).
+
+**Sell -> Made to order.** Empty, and the card says "Set up your first one to
+get started". There is nothing to press. The way in is a small round plus at the
+top with no words on it, and I measured when it grows words: **700px**. My pane
+was 567. So on a phone, or in any two-up split, the screen tells you to make the
+first one and points at an unlabeled icon.
+
+Fourteen lists were like that, across Sell, Customers and Partners, and the
+component they all share already said in writing what they should have been
+doing. They do it now, from the same object the toolbar gets, so the label
+cannot drift.
+[606](issues/606-it-told-me-to-add-my-first-one-and-gave-me-nothing-to-press.md).
+
+Two I left alone and said why: Shelves, whose empty state tells you to do
+something else first, and Sites, which already carries a comment explaining the
+omission.
+
+I got that measurement wrong the first time, in a way worth writing down. I
+resized the pane and read the button in the same tick, and concluded the label
+never appears at any width. The bar sizes itself from a ResizeObserver that had
+not run yet. **A measurement that does not wait for the thing it measures is a
+guess with numbers on it.**
+
+I also broke something fixing it. Wanting to redo a sweep, I ran
+`git checkout --` on seven files and deleted an earlier session's uncommitted
+work in all of them - seven empty-list guards and a whole "Given away" column. A
+structural test named the guards; nothing would have named the column. It came
+back because a scratch copy happened to exist. Nobody commits during these runs,
+so the working tree is the only copy there is.
+
+**Sell -> What fits what.** I sell coats in sizes, so this one is mine. One list,
+Apparel sizes, eight of them. Then I opened **Start from a ready-made list** to
+see what else there was, and read the word **fitment** five times before I had to
+scroll - on a screen this console is called "What fits what" specifically so that
+word never reaches me. Plus "axis", "narrowable", "sub-levels" and `W×H×D`.
+
+The same sentence is stamped onto my own record when I install a list, into a box
+labelled "Only your team sees this". Mine said "Clothing fitment - a single Size
+axis (alpha + numeric), no sub-levels", with an em-dash, as though somebody on my
+team had written it.
+
+All fourteen are rewritten. The chip underneath each one already draws the chain
+(`Make -> Model -> Engine · Year`), so the sentence was repeating a picture in
+worse words; it now carries the half the chip cannot, which is what the list is
+for and what a shopper does with it.
+[607](issues/607-the-ready-made-lists-talked-to-me-in-the-word-the-screen-was-renamed-to-avoid.md).
+
+The guard for exactly this said clean, for three reasons, and all three are worth
+more than the words were. It only read files inside the console, so a shared
+package was invisible to it. `fitment` was never on the banned list. And its
+banned list was a hand-typed copy of the lexicon's under a comment claiming it
+came from there - the third time today I have found a list written in one place,
+copied into another, and a promise that they are kept in step.
+
+Fixing it turned up two more leaks on screens I had not opened: a "Fitment
+conditions" heading with a "Set up in Fitment" badge, and a toolbar whose
+accessible name was "Fitment actions" - the one reader who cannot see the renamed
+tab above it for context.
+
+And the guard file had a **literal NUL byte** in it, which makes a file binary to
+grep. Every repo-wide search has been silently skipping the vocabulary checker,
+including three of mine this evening.
+
+## Act 206 - what I owe my suppliers
+
+**Stock -> Where stock moves, Batches, Barcodes, Counting, Scanner, How stock is
+valued, Overdue deliveries.** Seven screens, nothing wrong with any of them, and
+two worth saying out loud.
+
+**How stock is valued** opens with "You are on the standard setting - nobody has
+chosen here yet, so your stock is valued at average cost, which is the right
+answer for most businesses. Change it only if your accountant has asked you to."
+That is the difference between a setting somebody picked and a setting nobody
+touched, said in one sentence, on the screen where it matters most.
+
+**Overdue deliveries** says "Nothing is overdue", and I went looking for the trap
+
+- an order with no promised date counted as being on time. It is not there. If
+  any order has no date, the sentence changes to "The orders with no date at all
+  are counted above. Those cannot be late, which is not the same as being on time."
+  Somebody had already thought about it.
+
+**Stock -> What suppliers billed you.** Then this.
+
+> $684.00 owed across 1 bill
+
+Under it, four unpaid bills worth **$1,626.72**. And the single bill it was
+counting was **AM-2231**, the one I have queried with Ashcombe Mills - the only
+bill on the list I have told them I am not paying yet.
+
+The rows and the total were two different questions with no overlap at all. The
+total excluded every bill in the state this console calls "Entered", which is a
+bill that has arrived and been typed in, which is the money I owe. And it did not
+exclude the queried one. Wrong in both directions at the same time, which is why
+the two numbers had nothing in common rather than merely differing.
+
+It now counts every unpaid bill that has not been cancelled, and names the
+uncertain part instead of hiding it:
+
+> $1,626.72 owed across 4 bills · $684.00 of that is queried with the supplier
+
+[608](issues/608-the-total-above-my-supplier-bills-was-counting-the-one-bill-i-am-disputing.md).
+
+The guard for it is a rule rather than a sentence: a shop-wide total can never
+count fewer things than the list under it is showing. One counted, four on
+screen.
+
+And I checked the screen next door rather than assuming it had the same fault.
+**Supplier returns** uses the same sentence shape and is right - its total is
+exactly what the screen calls "awaiting credit", and it carries a second count on
+purpose "to see past the filter".
+
+---
+
+## Act 207 - the rest of Stock, and what the screens call things
+
+**Supplier returns, backorders, whose stock, on consignment, stock sources,
+count schedules, sign-offs, picking walks, shelves, packing, units, things that
+do not add up, on the way, expiring, cost vs plan, your own columns.** Sixteen
+screens read the way they should. Two I want to name: **shelves** tells me why
+it is empty rather than just being empty ("Your stock is at Main Warehouse,
+which has no shelves, so there is nowhere here for it to show"), and **sign-offs**
+tells me no order can be held because I have set no spending limit, instead of
+saying everything is under control.
+
+Then two screens in a row got the same thing wrong in two different ways.
+
+### Every row said the same two letters
+
+**Stock -> Edit a lot at once** is the screen that replaces a spreadsheet. Every
+row on it read:
+
+```
+AS...
+Th...
+```
+
+Fourteen on screen, seventy-four in all. Two characters of a product code, two
+of a name, then a box asking me for a quantity.
+
+The rows are not different products. Eleven of them are The Ash Overshirt, and
+the only thing telling `ASH-OVERSHIRT-L-INK` from `ASH-OVERSHIRT-XL-MOSS` is the
+end of the code - which is exactly the part that was cut off. Seventy-four rows
+carry nine names between them.
+
+The five number columns each had a minimum width, with a comment explaining that
+a clipped number is wrong rather than merely small. The column holding the name
+had none, so it paid for all of them: **64px, at every pane width from 320 up to
+900**. And the table was already scrolling sideways anyway, so I was paying twice
+over. [609](issues/609-every-row-in-my-stock-grid-said-the-same-two-letters.md).
+
+### The next one got worse as I made it bigger
+
+**What to reorder**, the screen that tells me what to buy. Same four cut-off
+lines, next to a box saying order 12.
+
+Then I widened the pane and it got **worse**: 229px at 400, 140 at 512, 97 at
+567, **64 at 704**. Readable on a phone and unreadable on a laptop, because every
+step wider revealed another column and the name paid for that one too.
+
+The building the line was short in went missing as well, from 567px up. The name
+cell hid it so it could "fold back out" to a Location column, and there is no
+Location column in that table. It folded out to nothing. I have two buildings.
+"Order 12 of this" without saying which one is an instruction with the important
+word missing.
+
+Fixed by letting a column arrive only at the width where it fits, folding
+everything hidden back into the name, and putting a floor under the name so the
+next column added cannot starve it. At my own pane it went from 97px to 298px,
+and the sideways scroll is gone at every width.
+[610](issues/610-my-reorder-list-got-harder-to-read-the-wider-i-made-it.md).
+
+Two screens in one afternoon, from two different causes, so the third was never
+going to be found by looking. That naming column is the same idiom on **150
+tables across the two consoles**, and not one of them had a floor. All of them do
+now.
+
+### Words
+
+**Stock -> Your own columns** told me my new column would appear "in the API",
+five times on one screen. I make shirts. And **Sell -> Settings** offered "Custom
+schedule (set through the API)", which exists to tell me where a setting came
+from and tells me in the one word that cannot.
+[612](issues/612-my-stock-screen-told-me-about-the-api.md).
+
+While I was looking, the scan found something else: **Piggles screens that say
+"sparx" out loud.** The partner pitch deck, the thing a partner has open while
+they are talking to a client, was still selling the other product - including
+its **prices**. "Modules switch on independently, and a client pays for exactly
+the ones they use." Piggles is one flat price with everything in it. Somebody had
+already found this, fixed two paragraphs, written down why it matters, and left
+the other three, the whole one-pager and all six playbooks.
+[611](issues/611-the-partner-sales-pitch-quoted-prices-piggles-does-not-charge.md).
+
+### A clock I do not own
+
+**Automations.** The rule that chases unpaid invoices said:
+
+> Every day at 00:00 UTC
+
+I do not know what UTC is, and nothing said. And knowing it would not help:
+00:00 UTC is 6:00pm here. The one thing that sentence exists to tell me is the
+one thing it did not. Setting a new time asked for "At (UTC)", so scheduling a
+chase for nine in the morning meant working out what nine in the morning is
+somewhere else.
+
+The console has known my clock since a salon set her week to 09:00-17:30 and her
+diary showed a full head of color at three in the morning. Money reads it,
+Invoices reads it, Bookings reads it. Automations had typed the word by hand.
+
+It now says **Every day at 6:00pm**, and the editor asks for the time in my own
+clock and says whose clock that is.
+[613](issues/613-my-automations-told-me-the-time-in-a-clock-i-do-not-own.md).
+
+### A phrase it taught me and would not answer to
+
+The box at the top of every screen asks **"What do you want to do?"**. I wanted
+the legal pages, and I remembered the heading the navigation panel puts them
+under: **Keeping it legal**. I typed it.
+
+> Nothing matches that. Try a different word.
+
+**Who can get in**, the heading over signing in and connected software, got the
+same. Those are not words I made up. They are this console's own headings,
+written in plain English on purpose so I would remember them, and then the box
+that asks what I want to do had never heard of them.
+
+The code already knew why this matters. The function that decides what a screen
+can be found by carries a comment saying a renamed screen stops being findable
+under its old name, "and the old word is often the one somebody arrives
+knowing". It did that for the screen's name and not for the heading above it.
+Typing "keeping it legal" now finds Tickets and licenses, and "who can get in"
+finds all three of the screens under it.
+[614](issues/614-the-console-taught-me-a-phrase-and-then-did-not-answer-to-it.md).
+
+### Told I have no suppliers, on the day I paid two of them
+
+**Partners -> What they can send:**
+
+> **No suppliers connected**
+
+I have two. Ashcombe Mills and Fairfield Trims. I was looking at their bills
+twenty minutes ago, in this same app, and I owe them $1,626.72. The other two
+ship-direct screens said the same thing in their own words.
+
+Both numbers are right: two suppliers, no ship-direct suppliers. The sentence is
+what is wrong, because the word means two things in here and it was used in the
+meaning I do not have without saying so.
+
+And again, somebody had already worked this out. The table that names the screens
+says it in full: the two apps both have a screen called Suppliers, Partners shows
+them side by side, "two rows, one word, two entirely different lists", so the
+ship-direct one is named by what makes it different. They renamed the screen and
+left the sentences inside it.
+
+The empty screens now say **Nobody is shipping for you yet**, name the thing that
+makes it different - another business posts the parcel straight to my customer -
+and say out loud that it is not the suppliers I buy from and stock myself.
+[615](issues/615-told-i-have-no-suppliers-on-the-day-i-paid-two-of-them.md).
+
+That is four in one afternoon where the thinking was done, written down, applied
+to the one example in front of somebody, and not to its neighbors.
+
+### And then the button said it again
+
+The stack came back and I went to look at the screen I had just fixed. The
+paragraph was right. The button under it said:
+
+> **Connect a supplier**
+
+Three sentences to separate the two meanings of that word, and then the word on
+its own, on the thing I am meant to press. If I press it, I still do not know
+whether I am about to see Ashcombe Mills.
+
+The same shape, one level down, inside the fix for it. The reason is that the
+button was not where the words were: two panes read a yes-or-no off the words
+file and then wrote their own label, and the third did not even read the yes-or-no.
+So the words moved and the label had no reason to follow.
+
+The yes-or-no is gone. The words file now hands out **the label itself**, or
+nothing. A screen cannot decide to show the button without holding the words that
+go on it. All three now read **Connect a ship-direct supplier**, which is what
+the navigation calls it.
+
+Seen on screen, all three panes. [615](issues/615-told-i-have-no-suppliers-on-the-day-i-paid-two-of-them.md).
+
+### Two deliveries, and then no deliveries
+
+Ashcombe Mills, on one card:
+
+> **How they have performed** - A - 99
+> Based on all four measures, across **2 deliveries** and 1 order worth $720.00.
+> On time 100%, **0 of 2 late**. In full 100%. Price 0.0%. Damaged 5%.
+>
+> **No delivery from them has been measured yet**, so planning still uses
+> whatever delivery time was typed in on their record.
+
+Two deliveries, none of them late, and then no delivery has been measured. I
+cannot tell whether the A is real.
+
+Both halves are true about different things and the sentence used one word for
+both. The four green numbers come from one pass over my receipts. How long they
+TAKE comes from a different table that a different job fills, and nobody had run
+it. Both my orders have a date sent and a date arrived on them, so the number was
+sitting there waiting.
+
+Now it says what is missing - how long they actually take - tells apart "nobody
+has run it" from "nothing has ever arrived from them", and only offers the button
+where pressing it would produce something.
+
+I pressed it, and the screen did not move. The pass had worked; the card just
+never asked again. That is fixed too, in the shared place, because the Planning
+screen's own button had the same hole.
+
+And now the figure says how much to trust it:
+
+> Deliveries take 0.03 days on average, measured across 1 delivery, they say 21,
+> so they run faster than stated by 20.97 days. **That is too few deliveries to
+> plan on, so planning still uses the 21 days typed in on their record.**
+
+Without that last sentence, "faster by 20.97 days" off one delivery looks like
+something I should act on.
+[616](issues/616-my-supplier-card-counted-two-deliveries-and-then-said-there-were-none.md).
+
+### I emailed 23 people without the address the law requires
+
+Messages -> Setting it up -> Email settings, over an empty box:
+
+> **Your mailing address**
+> Anti-spam laws (like the US CAN-SPAM Act) require a real physical mailing
+> address in every email you send to a list.
+
+My box is empty. And I sent "Autumn drop announcement" to 23 people on August 26.
+All 23 delivered. No error on any of them. No address in any footer.
+
+Nothing warned me before, and nothing told me after.
+
+The reason is a fix that stopped halfway. The legal footer has two parts: the
+unsubscribe link and the postal address. Somebody made the unsubscribe link
+automatic, so it can never be left out, and then removed the check that was
+guarding BOTH. The address was never automatic. It is still only printed if you
+have one.
+
+Three places in the code and one on my screen said this could not happen. None of
+them was doing it.
+
+And a second one on the way: even if I HAD filled the box in, a broadcast sent to
+everybody at once would have dropped it anyway, because the piece that renders
+that kind was never handed the address. Doing the right thing and having it
+thrown away is worse than the first one.
+
+Now the screen says, before I can send:
+
+> Before you can send, this still needs an audience with people in it and **a
+> mailing address on your email settings, which the law requires in the footer**.
+
+And the server refuses too, before it makes a single queued email, instead of in
+a back room after the screen has told me it went to everybody.
+
+My automatic emails had the same hole. The "Welcome series" is set to
+**Marketing: a promotion or offer** and it goes down the same pipe. Fixing only
+the campaigns would have left the neighbor behind for the third time today.
+Turning a sequence on is its send button, so it now says:
+
+> **Add your mailing address first**
+> Anti-spam law wants a real postal address in the footer of every marketing
+> email, and this sequence sends one. It goes on your email settings.
+
+It stayed in Draft.
+
+And then my own fix asked me to repeat myself. **My Site -> Site identity ->
+Address** already has my address on it, 1418 Larimer Street, Denver. The block I
+just added sent me to type it into a second box. So the email settings screen now
+shows me what my site already says and gives me a button:
+
+> Your site already shows this address on its contact page and footer:
+> 1418 Larimer Street
+> Denver, CO 80202
+> [ Use that address ]
+
+Offered, not decided for me. It only shows while the box is untouched, and I
+still press Save. I pressed it, saved, went back to my campaign, and the warning
+about the mailing address was gone. What is left is the real one: that audience
+has nobody in it yet.
+
+What it does NOT do is tell me which of my past campaigns went out bare, or stop
+a scheduled one if I clear the address afterwards. Those two are still open.
+[617](issues/617-i-emailed-23-people-without-the-address-the-law-requires.md).
+
+### My own security screen could not tell me where, or what
+
+**Signing in and security**, two cards, two versions of the same failure.
+
+**Devices signed in** said:
+
+> Chrome on Windows - This device
+> **From ::** - Active 5 hours ago - Signed in 3 weeks ago
+
+`::` is not a place. It is what a machine writes down when it has no idea. The
+card's only job is letting me decide whether I recognize a device, so a line on
+it is either evidence or it is nothing, and this was a placeholder wearing the
+costume of evidence. The field right beside it already knew how to say "Unknown
+device" for the browser. Nobody did it for the address.
+[618](issues/618-my-security-screen-said-a-device-signed-in-from-nowhere.md).
+
+**Recent account activity** said this six times in a row:
+
+> Updated - Price list updated - Devi Raman - 4 hours ago
+
+One price list six times, or six price lists? I could not tell. Two rows further
+down a purchase order says (PO-000002) and a supplier bill says (AM-2231), so the
+screen clearly CAN name a record.
+
+It names one when the person who wrote the log happened to include a name in what
+they recorded. A purchase order writes down its number, so it reads beautifully.
+A price list writes down its status, so it is anonymous. Across the whole log:
+404 of 404 stock items, 126 of 126 customers, 18 of 18 orders, nameless.
+
+The identifier was sitting on the row the whole time, in the column next door.
+
+Now 62 kinds of record are looked up by name, in one question per kind rather
+than one per row, and the ones that genuinely have no name (a basket, a
+checkout, a stock level) stay quiet rather than being given a made-up one.
+
+> Updated - **Price list updated (Trade sheet 2026)**
+> Updated - **Shipping profile updated (Trims and haberdashery)**
+
+[619](issues/619-six-identical-lines-and-no-way-to-tell-which-price-list.md).
+
+### Ten points for pictures I do not have
+
+**Get Found -> my Products page, 62 out of 100.** Two things did not add up.
+
+It told me about the summary **twice**:
+
+> Worth a look - The page has a short summary - not written yet
+> Worth a look - How long the summary is - nothing written
+
+One missing summary, two jobs on my list, and the second one had no advice under
+it at all while every other row did. It also charged me for the same gap twice.
+
+And under **"Already good - Nothing to do here. These are set up correctly"**:
+
+> Looking good - Every picture is described - **no images**
+
+Nothing was set up. There was nothing to set up. And that is the heaviest check
+on the page, ten points out of a hundred, handed to me for a test that never ran.
+
+The file's own rule already said what to do. It keeps a third answer for a check
+I cannot act on, shows it, and leaves it out of the score. That is what an
+intentionally hidden page already gets. The two checks above did not get it.
+
+Now they do, and the facts have their own place instead of being filed as things
+I did right:
+
+> **Worth knowing**
+> Nothing to fix and nothing to praise. These say what the checker found, and
+> none of them counts towards the score.
+
+**My score went DOWN, 62 to 58**, and the "what is on the page" bar from 56% to
+27%. That is right. I was being marked out of a hundred where ten were free.
+
+I nearly got a new wrong sentence out of my own fix: the picture check kept its
+advice, so a page with no pictures was told "Write one for each". A fact is not a
+job, and that is now enforced in one place rather than remembered per check.
+[620](issues/620-my-page-scored-ten-points-for-describing-pictures-it-does-not-have.md).
+
+### "Refunded" twice on one row
+
+**Sell -> Orders.** O-000004, Anneliese Vogt, $170:
+
+| Order    | Payment      | Delivery     |
+| :------- | :----------- | :----------- |
+| O-000004 | **Refunded** | **Refunded** |
+
+Two columns, one word. The Delivery column asks whether my goods have gone, and
+it answered the other column's question instead. So I still did not know the
+thing I opened the list to find out: **is that $170 of stock on my shelf, or is
+it at Anneliese's house?**
+
+Those need opposite things from me. Stock that never went is mine and I can sell
+it again. Stock that went out is with somebody who already has her money back.
+
+The answer was already on the row. Nobody read it.
+
+Across the platform: 9 refunded orders, **8 of which never shipped at all**. One
+word covering two opposite situations, and wrong about the goods in eight cases
+out of nine. Mine is the ninth.
+
+Now:
+
+| Payment  | Delivery                        |
+| :------- | :------------------------------ |
+| Refunded | **Sent, then refunded** (amber) |
+
+And "Never sent" in plain grey when nothing left, because stock on my own shelf
+is not something I need to chase.
+
+A test had to change to allow it, and it was a test stating a rule rather than
+protecting a bug: it said refunded and cancelled are the same whichever way the
+order was going. That was true while refunded said nothing about the goods. It
+says something now. Cancelled keeps the rule; refunded moved out from under it,
+with the reason written where the old line was.
+[621](issues/621-refunded-twice-on-one-row-and-neither-told-me-where-my-goods-are.md).
+
+### One item marked returned, and the whole order refunded
+
+Same order, one card further down.
+
+> The Ash Overshirt - 1 x $128.00
+> The Everyday Tee - 1 x $42.00 - **1 refunded**
+> Order total $170.00
+> **Given back $170.00**
+
+One item marked returned. The whole $170 back. So the Overshirt was kept and I
+refunded it anyway? No. Both came back: $42 through a return on August 26, $128
+straight off the order on August 28.
+
+A refund raised through a RETURN knows which items it covers. A refund raised
+against the ORDER is just an amount, and nobody is asked. Across the platform:
+**12 refunds, 1 with any item detail at all. 11 orders with refunds, 10 with no
+item marked.**
+
+So the blank is honest. It is the SCREEN that let the blank read as "this one
+was kept" - about $128 of my stock.
+
+Now, under Given back:
+
+> The whole order was given back, though only some of the items above are marked
+> as returned. The rest was given back against the order as a whole.
+
+It states no figure, deliberately. The split was never recorded and I would
+rather be told that than handed a number somebody worked out.
+[622](issues/622-one-item-marked-returned-and-the-whole-order-refunded.md).
+
+### Told 31 of my products cannot be found, on a screen showing 10
+
+**Sell -> Products**, one pane, top and bottom:
+
+> **Searching your shop won't find 31 of your products**
+
+> Showing 1-10 of 10
+
+I do not have 31 products here. I have ten. So either the warning is about
+something else, or the list is hiding things, and the screen does not say which.
+
+I run **seven sites**. Products are shared across the business and attached to
+sites, so "my products" means something different depending on where you stand.
+Of the three product-search routes in one file, two work out which site you are
+on and the third does not. That third one feeds this banner. It compared every
+site's catalog against every site's index, and put the answer over a list showing
+one site's.
+
+Now it says **7** - and I can check that from the pane in front of me: ten
+products, three marked Not on sale, and the warning only counts what is on sale.
+
+Both halves had to move together. Counting the index per site while counting the
+catalog across all of them would have turned a confusing number into a wrong one.
+[623](issues/623-told-31-of-my-products-cannot-be-found-on-a-screen-listing-10.md).
+
+### A refused save would not say which box it refused
+
+Every screen that saves anything reports a refusal the same way. When the refusal
+comes from the checking layer rather than from a rule, it said:
+
+> **Could not save this account.** Nothing was changed.
+
+Twenty boxes on the form, and not one of them named. The only way forward is to
+change something, press Save, and see whether the same sentence comes back.
+
+The server had already said which box. It comes back on the same answer, keyed by
+field, and 83 places in this console read the error and not one read that part.
+The helper's own note says where the useful part is, and then throws it away.
+
+Now the sentence ends: **The problem is with Physical address.** It names the box
+and not the reason, because the reason is written in the checker's own language
+and none of the 142 files that check a form writes its own. Where the server
+refuses a whole row rather than a box, it says nothing rather than pointing me at
+one that is fine.
+[624](issues/624-a-refused-save-would-not-say-which-box-it-refused.md).
+
+### My clothing till offered a $6,800 bracelet from another business
+
+**Sell -> Take a sale**, standing on Juniper Row. Under "What they had", the list
+I pick from at the counter, sorted by name:
+
+```
+Astrid Signet Ring      Rose gold                      $1,450.00
+Astrid Signet Ring      Yellow gold                    $1,450.00
+Brass belt hardware, antique                               $0.00
+Céleste Cuff            Large                            $890.00
+Colette Tennis Bracelet                                $6,800.00
+Frequency Membership — annual                            $120.00
+```
+
+Two of my first three rows are jewelry. I do not sell jewelry at Juniper Row.
+
+This is the till. Somebody is standing at my counter. The first thing under the
+search box is a ring I cannot hand them, and a $6,800 bracelet is four rows
+below it. It offered 108 versions where this shop sells 75.
+
+The endpoint behind it was labelled tenant-wide, in the code and in the note
+above it, and it never asked which site. The products list in the same app has
+always asked. So within one app the list was right and the till was not. It now
+uses the same rule the list does, so the two agree by construction rather than by
+luck.
+[625](issues/625-my-clothing-till-offered-a-6800-dollar-bracelet-from-another-business.md).
+
+### A group said five products over a page holding none of mine
+
+**Sell -> Groups of products**. Eight groups, correctly mine. The top row is the
+one I have marked **Featured**, so it is the one my home page leads with:
+
+```
+New arrivals   Automatic   Featured   5 products
+```
+
+There are no clothes in it. All five are jewelry and fragrance from my other
+websites. Opening it said the same thing: "5 products matched."
+
+The aisles one screen over have been honest about this for months. Categories
+says **Apparel 7** with a small **2 not shown** beside it, and hovering explains:
+archived, still a draft, or kept for one of your other sites. Those are the exact
+words. The groups list never got them.
+
+Now it reads **0 · 5 not shown**, and the pane says:
+
+> 5 products match these conditions, but none of them is on this website:
+> archived, still a draft, or kept for one of your other sites.
+
+That second sentence had to be written carefully. The obvious version would have
+said "no products match these conditions yet", which is false and would have sent
+me to rewrite a rule that is working perfectly.
+
+The rule for what a shopper can see now lives in one place instead of two, so the
+aisle count and the group count cannot drift apart again.
+[626](issues/626-a-group-said-five-products-over-a-page-holding-none-of-mine.md).
+
+### A failed fetch told me I have no customer groups
+
+**Sell -> Special prices**, opening Trade sheet 2026. The server had stumbled for
+a moment, and the pane said:
+
+> **You have no customer groups yet.** Create one under Customers, then choose it
+> here.
+
+I have nine.
+
+That is not a report about my screen. It is a statement about my business, and it
+appears whenever a request does not come back. The same pane would have shown my
+price list with no prices in it at all, under a row that says "1 price".
+
+Four panes in this console had the shape, and four in the other: they wait for
+something to load, and then have nothing to say when it fails to. Now a chooser
+that cannot read its options says so plainly, and a pane that cannot read the
+thing it is about stops and tells me.
+
+There is also a new check that refuses to let the shape be written again. It
+prints how many screens it looked at, so a check that has quietly stopped looking
+is visible rather than green.
+[627](issues/627-a-failed-fetch-told-me-i-have-no-customer-groups.md).
+
+### A customer question came with "Their IP address ::1"
+
+**My Site -> Form replies.** Rosalind asked whether to size up or down in the Ash
+Overshirt. Under her message:
+
+```
+Their IP address   ::1
+Their browser      Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+                   (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36
+```
+
+The labels are in my words. What is beside them is not. And `::1` is not a place:
+it is what a machine says when it is talking to itself.
+
+Both of those had already been solved for the Devices list under Signing in and
+security, where a browser reads "Chrome on Windows" and a placeholder address is
+simply not shown. They were solved there and nowhere else, and every form reply
+anybody has ever opened carried both.
+
+The address row is gone and the browser now reads **Chrome on Windows**.
+[628](issues/628-a-customer-question-came-with-their-ip-address-colon-colon-one.md).
+
+### Two people wrote in from my website and nothing counted them
+
+Still on **Form replies**. Three of the four are marked New, dated August 31 and
+September 1. Today is September 17.
+
+Home, at that moment, said **2 things are waiting for you** and listed late
+invoices and a sold-out item. The rail badged Stock and Invoices. Nothing
+anywhere counted the people.
+
+I was told, to be fair: an email went out for each one the day it arrived. But
+the console is where I look every morning, and the console did not know. Orders,
+live chat, bookings, invoices, stock and both social queues all had a count.
+Somebody filling in the form on my own website did not, and to the person who
+wrote it that is the same act as a chat message.
+
+Home now opens with **2 people wrote to you from your website**, My Site carries
+a **2**, and the line underneath still says everything else is fine without
+quietly including my website in "everything else".
+[629](issues/629-two-people-wrote-in-and-nothing-anywhere-counted-them.md).
+
+Wiring that number up turned out to matter twice. The inbox behind it answered
+for every site I run, which nothing on my screen could show because all four of
+my replies came from one of them. A badge built on that would have put "2 people
+wrote to you" on a business nobody wrote to.
+[630](issues/630-the-form-inbox-answered-for-every-site-she-runs.md).
+
+### Two emails called Welcome, and no way to tell which one goes out
+
+**My Site -> Email designs**, the first two rows:
+
+```
+Welcome    Welcome to {{site.name}}   All your sites   Live
+Welcome    Welcome to {{site.name}}   All your sites   Not sending yet
+```
+
+Same name, same subject, same day. If I open one to change the words my
+customers read, I cannot tell whether I am editing the one that actually goes
+out. "Used by" is no help: it means which of my sites, and both say all of them.
+
+Four rows further down there is a **Welcome (Fashion Boutique (Minimal))**, so
+something already knows how to name these apart. It does it as they are written,
+and these two were written before it learned. Thirteen businesses on this
+platform have the same pair sitting in their list.
+
+The thing that tells them apart was already on the row and simply not drawn. Now
+the first says **Comes with Piggles** under its name and the second says **A
+copy on your account**, and every email whose name is already unique says
+nothing at all.
+[631](issues/631-two-emails-called-welcome-and-no-way-to-tell-them-apart.md).
+
+### My footer's social column was a grey box saying "live region"
+
+**My Site -> Header & footer.** My footer has four columns. Between my address
+and my legal links:
+
+```
+● Social links · live region
+  ▬▬▬▬▬▬▬▬▬
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+  ▬▬▬▬▬▬▬▬▬▬▬▬▬
+```
+
+I do not know what a live region is. The box stood 146 pixels tall in a column
+whose legal links are 116, and my real footer puts a row of two small round icons
+there, about 32 pixels high. So the shape I was arranging my footer around is a
+shape my site will never have.
+
+My Instagram and my Pinterest were already in the editor's own data. Nothing drew
+them.
+
+The editor is careful about this everywhere else. My name draws as my name, my
+legal links draw as a real column, the light and dark switch draws as a real
+little button. The note at the top of the file explaining why lists the six
+blocks that get that treatment, and mine was the seventh.
+
+Now the column is 32 pixels tall and it is my Instagram and my Pinterest. And the
+grey boxes that are still grey boxes, because a shopping cart cannot really run
+inside an editor, say **the real one shows on your site** instead.
+[632](issues/632-my-footer-social-column-was-a-grey-box-saying-live-region.md).
+
+### And the checker that should have caught those words could not read them
+
+There is a check on this product whose only job is words a shop owner should not
+have to learn. It reads 1,180 files and reports the number.
+
+It could not see one sentence in eight. Any sentence with a number or a name in
+the middle of it was invisible to it, which is most sentences on most screens.
+One of the 576 it could not read was on my Pulse screen, telling me older runs
+live in the "module" that started them. Piggles has no modules. It has apps.
+
+It also was not looking at the builder at all, which is where the live region
+came from.
+
+It reads 1,253 files now, watches one more word, and can read a sentence with a
+value in it. Both strings were proved to fail it before either was fixed.
+[633](issues/633-the-word-checker-could-not-read-a-sentence-with-a-value-in-it.md).
+
+### A saved piece told me my Contact page had been deleted
+
+**My Site -> Saved pieces**, standing in **Juniper Row Archive**. One piece:
+
+```
+Send me a message                                     [ Site-wide ]
+The contact form. Lives at the bottom of Contact; reuse it on Trade
+if we open wholesale.
+```
+
+That note is mine and it is about a different shop. I only worked that out by
+switching sites and seeing the same row again.
+
+The badge did not help. "Site-wide" is the only thing on that screen that sounds
+like it is about reach, and the Email designs screen next door says "All your
+sites" for exactly that. It turns out to mean neither: it means the piece can go
+in my header and footer.
+
+I opened it. Under **Where it's used**:
+
+```
+Contact                                                      Page
+```
+
+I have six pages called Contact, one for each of my sites. So I clicked it:
+
+> **This page isn't here any more. It may have been deleted.**
+
+It had not been deleted. It is sitting on Juniper Row where I left it. My
+console just told me I had lost a page.
+
+Now the list opens with **These belong to your whole business, not to one
+site**, the badge says **Header & footer**, the row reads **Contact / Juniper
+Row**, and clicking it moves me to Juniper Row and opens the page. Which it did,
+and there was my contact form.
+[634](issues/634-a-saved-piece-said-my-contact-page-had-been-deleted.md).
+
+### My "Old links" screen called them redirects, twenty-eight times
+
+**Content -> Old links.** Eleven rows, the top one sending `/gift-cards` to
+`/gifts`. The screen is called Old links. Everything on it is not:
+
+```
+Column header          Redirect
+Button                 Add redirect
+Under the list         11 redirects
+When something breaks  Could not load your redirects
+```
+
+I know what an old link is, because the screen just told me. I do not know what
+a redirect is.
+
+Somebody already decided this. It is written in the console's own file: "Redirects
+is infrastructure. What it means to a shop owner is that a link they printed on a
+flyer two years ago still works." And three lines below it, the same person
+catches the same mistake for a different screen and fixes it there.
+
+I also tried adding `/sale` twice, since it is already on the list. It said:
+
+> A redirect from "/sale" already exists.
+
+That sentence comes from the server, which the other product shares, so it could
+not simply be reworded. It is translated on the way in now:
+
+> **Could not add that old link**
+> There is already an old link from "/sale". [ Change the existing one ]
+
+That button still being there mattered more than it looks. It decides to appear
+by reading the words "already exists" in that sentence, which the new one does
+not contain. It would have quietly stopped appearing on the only refusal a
+person can actually do something about.
+
+The word is now on the banned list, so it cannot come back. Turning that on found
+seventeen of the twenty-eight, and the missing eleven were a second blind spot in
+the checker: it could not see a short phrase like "Add a redirect".
+[635](issues/635-my-old-links-screen-said-redirect-twenty-eight-times.md).
+
+### The banner said one of my required pages was marked, and none of them was
+
+**Content -> Legal pages.** Green banner at the top:
+
+> **Your required pages are all set**
+> Every page you are expected to have is published, up to date, and linked in
+> your footer. 1 of them still says things we guessed about your business. They
+> are marked below.
+
+Underneath: Privacy Policy, Terms of Service, Cookie Policy, Return Policy. All
+four published. None of them marked.
+
+The marked one is two sections down, under Optional pages. It is my Refund
+Policy, and what it says there is genuinely useful:
+
+> Nobody has changed this page, so it still says: that a refund is paid within
+> five to ten working days of being approved; that you keep the original delivery
+> charge unless something arrived wrong. We had to write something, and we
+> guessed. Change anything that is not how you work.
+
+I did not know either of those things were on my site. So the fact is right and
+the sentence pointing at it sent me to the wrong four rows.
+
+The two groups are pulled apart one line above the count, and the count was taken
+over both. Now it says **1 of your optional pages**, and when there is only one
+of anything it says "It is marked below" instead of "They are".
+[636](issues/636-the-banner-said-one-of-my-required-pages-was-marked-and-none-was.md).
+
+### Nine of the eleven rows had nothing in the Entries column
+
+**Content -> Kinds of content.** Three columns: Name, Key, Entries. Eleven rows.
+Nine of the Entries cells were empty, including the top one, which is the only
+kind of content I made myself.
+
+I could not tell whether that meant none, or whether the screen had not finished
+loading. Blog post said "3 entries, 18 on your other sites" two rows down, so
+plainly it had finished.
+
+It means none. The count arrives as a list of the kinds that have something in
+them, so a kind nobody has used is simply not in the list, and the screen read
+that the same way it reads "we have not been told yet". The wording for none was
+already written and could never appear, because a brand-new kind of content has
+none of everything. Every row now reads.
+
+The same blank sat behind the Delete button on the kind's own page, where it
+promised to remove the type "for good" before anybody had checked whether
+anything used it. If the answer has not arrived, it now says so.
+
+And the same idea had three names in this one section: Key here, Id in the editor
+one click away, Reference on Tags and topics. It is **Reference** everywhere now,
+which is the only one of the three that says what the thing is for.
+[637](issues/637-nine-of-eleven-rows-had-an-empty-entries-column.md).
+
+### My saved replies never said which shop they belonged to
+
+**Messages -> Quick replies.** The form asks a real question when I write one:
+"Where it is offered: this site only, or all my sites." The list underneath then
+shows seven replies and says nothing about the answer.
+
+I run seven websites. So I cannot tell which of my shops would offer any of them,
+and if I write one here and then change shop it is simply gone, with nothing on
+screen saying why.
+
+The delete was the part that mattered. "Your team will no longer be able to send
+this saved reply" is true, and every one of my seven is shared, so each one goes
+from all seven businesses at once. It now says so, and the rows now say which
+they are.
+
+A one-site business is never asked the question at all, and never reads a sentence
+about sites it does not have.
+[638](issues/638-my-saved-replies-never-said-which-shop-they-belonged-to.md).
+
+### Half the pages in my search score were my other shop's
+
+**Get Found -> How people find you.** "Average score 79, across 96 pages
+checked." My shop has 49 pages and they average 75.
+
+The other 47 were my Press, Journal, Lookbook and Sample Sale sites. My Sample
+Sale stock scores 95, so the pages that are not mine were making my shop look
+better than it is, on the screen whose whole job is telling me what to fix.
+
+This was found before and fixed for one of the four kinds of page. The note left
+behind said the rest were a nine-page problem. They were never nine: they were
+whatever share of my catalog belongs to my other shops, and that grew as I opened
+them. The scoring now asks each page which of my sites actually shows it.
+
+Things worth fixing, beside it, said 96 too. Both say 49 now.
+[639](issues/639-half-the-pages-in-my-search-score-were-my-other-shops.md).
+
+### It told me it published a review that was already published
+
+**Sell -> After the sale -> Reviews.** It opens on Waiting, which was empty, and
+the empty screen told me to switch the filter to All. There were my two reviews,
+both Published.
+
+Every row had a green tick and a crossed-out eye. I hovered the tick and it said
+"Publish it", on a review the row beside it called Published. I pressed it,
+because I could not tell whether it meant put this on my website or this is on
+your website.
+
+"Review published." Nothing was published. It already was.
+
+Something did happen, though. My record of that review now said I approved it
+twice, three weeks apart, and the date I made the decision moved to today. I
+pressed a button that could not do anything and it wrote down a decision I never
+made.
+
+Six rows in seven on this platform are already published, so that tick was on
+almost every row anybody would ever see. A row now offers only what it can
+actually do: Hide on a published one, "Show it again" on a hidden one, and both
+while the decision is still mine to make. And when I press something that changes
+nothing, it says so instead of congratulating me.
+[640](issues/640-it-said-it-published-a-review-that-was-already-published.md).
+
+### My published reviews had nobody's name on them
+
+Two cards sit side by side on a product page. The questions one says "A customer
+asked" when nobody signed their name. The reviews one beside it said nothing at
+all: stars, a "Verified purchase" badge, a date, and no person.
+
+85 of the 111 reviews published on websites here are like that, across eight
+businesses. Mine are not, but the card was one absence away.
+
+The other half was on my own screen. My one customer question is signed Tomas
+Villalobos on my website, and my console called it Marguerite Adeyemi, which is
+the account it came from. If he writes in about it I search for the name he used
+and find nothing. It now leads with the name my customers see and says whose
+account it came from underneath.
+[641](issues/641-my-published-reviews-had-nobody-s-name-on-them.md).
+
+### Nobody could save anything, on the screen listing what people saved
+
+**Sell -> After the sale -> Wishlists.** "When a shopper saves a product for
+later, it shows up here. Once a few have, this becomes a good list of what to
+keep in stock or put on offer."
+
+That is exactly what I want, and it could not happen. Nothing on my website could
+be pressed to save anything. 43 shops on this platform, nought saved lists,
+nought items.
+
+Everything else was already built: the place it saves to, the page where a
+customer reads their own list, the link to it in their account menu, and the
+heart itself. The heart was only ever placed on the old kind of product page, and
+when product pages changed it went out of reach and nothing said so.
+
+The same thing happened with questions once, and somebody wrote it down in the
+code: "the queue was waiting on a doorbell nobody had fitted". It was written two
+lines above the gap.
+
+There is now a **Save for later** block in my Insert list. I put it on my product
+page and published it. It follows the size and color the customer has chosen,
+because a saved thing is a size, not a garment.
+[642](issues/642-nobody-can-save-anything-on-the-screen-that-lists-what-people-saved.md).
+
+### The red "1 Issue" in the corner of my builder, which is not mine
+
+Chased and **not filed**, because it is not something anyone but a developer can
+see.
+
+A red "1 Issue" badge sits in the bottom corner the whole time I edit my product
+page. Opening it shows a React warning about the **Quantity** box in my buy box:
+it carries a starting value of 1 and no handler, so on the builder's canvas it
+cannot be typed into.
+
+The canvas is a picture of my page, not a form to fill, so that costs nothing.
+The question that matters is whether the real one works, and it does: on a live
+product page the field is plain HTML, it took a 3, and nothing about it is
+read-only. The badge itself is the development tool's, and does not exist on a
+site a customer visits.
+
+Written down so the next walk does not chase it twice.
+
+### I could not change a saved reply, only throw it away and type it again
+
+**Messages -> Setting it up -> Quick replies.** Eight saved answers, seven of
+them written by Piggles the day my chat box came on. One of them says my team is
+here Monday to Friday, 9am to 5pm. My studio answers Tuesday to Saturday.
+
+Nine words to change, in a sentence my customers are being sent.
+
+Every row had exactly one button: a red bin. Nothing on the name, nothing on the
+row. The only way to fix nine words was to delete the whole thing and retype it
+from nothing, remembering the shortcut and remembering to put it back on all my
+sites, with the reply missing from my team's inbox in between. 102 saved replies
+on this platform and not one of them has ever been changed, because nothing could
+change one.
+
+The code that writes those seven says out loud that the shop "edits or replaces"
+them. Only the replacing half was ever built. And Customers -> Saved paragraphs,
+which is the same idea one door along, has had a pencil the whole time, with its
+own note naming my exact case: the opening hours, the returns policy, the lead
+time, and whoever knows that fact should be able to fix it in one place.
+
+There is a pencil now. It fills the form already on the screen rather than
+opening another one. The shortcut is shown as a fact instead of a box, because
+`/hours` is what my team types without thinking and re-pointing it would break
+the habit while the old word quietly did nothing. And pressing Save on a reply I
+only read says "Nothing to change" instead of telling me it saved something.
+[643](issues/643-i-could-not-change-a-saved-reply-only-delete-it-and-type-it-again.md).
+
+### The ring that says "this is the one you picked" was black
+
+Building that, I wanted to ring the row whose words were in the boxes. I wrote
+the class this console writes everywhere else for the app's own color. It drew a
+near-black ring.
+
+It turned out not to be a class at all. A color is named twice here, in two
+lists, and only the first list had the app's own colors in it. So `bg-module`
+worked and `ring-module` matched no rule, drew the default, and nothing anywhere
+said so.
+
+Fourteen places. The worst of them are every "this is the one you picked" marker
+in the setup wizard: the starting point, the web address, the summary. Each one a
+correct pink border with a black halo pressed against it, in the first five
+minutes anybody spends here.
+
+The tenant websites hit this months ago and wrote the reason down. The consoles
+never got the second half.
+[644](issues/644-the-marker-that-says-this-is-the-one-you-picked-was-drawn-in-black.md).
+
+### It asked me to write a message nobody can ever see
+
+**Messages -> Setting it up -> Chat settings.** An **Away message** box, with
+words already in it that are not mine, under the sentence "Shown when you are
+outside your available hours".
+
+Thirty lines below, on the same screen: **Set specific hours**, off, and "Chat is
+always available. There is no away state."
+
+Both of those were true at once. Thirteen of the fourteen shops with a chat box
+are in exactly that state.
+
+And there is a worse one underneath. Turning the hours switch on gives seven days,
+all off, which closes the chat every hour of the week. The switch said "outside
+THESE hours" about hours that did not exist.
+
+Three states now, in both places, and the middle one gets a warning: your chat is
+away all week.
+[645](issues/645-it-asked-me-to-write-a-message-nobody-can-ever-see.md).
+
+### The guard was counting words nobody reads
+
+Not my screen, this one, but it stopped the work. The check that watches for
+another company's name inside Piggles went red at 59 against a ceiling of 49, on
+a day when nobody had written the word once.
+
+It reads text in quotes. A sentence sitting in the page markup is not in quotes,
+so it had never been looked at. Moving eighteen of those into a wrapper put them
+in quotes and the guard saw them all at once.
+
+And every one of them was already answered. Piggles has its own sentence for each
+of those eighteen, written out in its own file; the quoted text was only the
+fallback for a sentence nobody had written yet. Nothing puts it on a screen. The
+guard was reporting me reading another company's name when I was not.
+
+It now reads Piggles' own writing first and skips what has already been answered.
+59 became 11, and the eleven left are sparx's own products on screens I do not
+have. The ceiling came down 38.
+[646](issues/646-the-guard-watching-for-another-company-s-name-was-counting-words-nobody-reads.md).
+
+## Act 224 - the welcome emails, and what my websites are called
+
+### It said the welcome emails were on and nobody could ever be in them
+
+**Messages -> Automatic emails.** One row, seeded with the account: **Welcome
+series**, greets a new customer on day 0 and follows up on day 3. Two emails.
+Draft.
+
+The editor is good. It asks what to call it, which of my businesses it is for,
+whether one person can go through it twice, and it has a switch that stops the
+rest of the emails arriving once somebody buys. The section holding all that is
+headed "Who it is for. Where this runs and how it treats people."
+
+It never says how anybody gets in.
+
+I pressed **Turn on** anyway, because that is what the button is for, and it told
+me "People enrolled from now on will start receiving the emails."
+
+Nobody would be. A sequence sends nothing by itself: something has to put a
+person in it, and the only things that can are a rule I build myself, or me
+adding somebody by hand. There were 2,411 rules on this platform and not one of
+them put anybody into a sequence. Fifteen shops had one of these. Not one had
+ever been switched on, and not one person had ever been in one.
+
+The screen that explains this is one button along. **Enrolled people**, empty,
+says it perfectly: "People are added automatically by any automation that starts
+this sequence, or you can add someone by hand." The screen with the on switch on
+it said nothing at all.
+
+It says it now, in every state, and it counts. On with nothing feeding it turns
+amber and says so, on the row as well: **On, adds nobody**. And the message after
+I turn it on reports what is actually wired up instead of promising me a delivery.
+
+Three smaller things went with it. The button said **Enrol**, which is not how it
+is spelled two inches above it. Narrow, that button had no name at all. And the
+rule builder told me to go to "Email, then Sequences" - I have neither of those.
+I have Messages, and Automatic emails.
+[647](issues/647-it-said-the-welcome-emails-were-on-and-nothing-could-ever-put-a-person-in-them.md).
+
+### Three of my seven websites have somebody else's name in the address
+
+I went to **Sending addresses** because I want my email to come from me. It asks
+for "a domain you own", so I went and looked at what I already have.
+
+Seven sites. Four of them are at juniper-row.piggles.site or something under it.
+The other three are:
+
+    archive.juniper-row.sparx.zone
+    press.juniper-row.sparx.zone
+    trade.juniper-row.sparx.zone
+
+That is not a label in a menu. That is the address. It is what somebody types, it
+is what a browser shows them, it is what goes on a card. And I have never seen
+that word anywhere in here, so I would not know what it was or who it belonged to.
+
+The three of them were made in an hour and a half on 29 August. Everything made
+after 4:33 that morning is on my own address. So somebody found this and fixed
+it, properly - the code is careful about it now and even says out loud what goes
+wrong if it is not. They fixed the machine and left the three it had already
+made.
+
+There is a repair written for it now. It gives each site its right address, makes
+that the one everything shows, and leaves the old one alive so nothing that is
+already printed stops working. It refuses to guess for a brand nobody has told it
+about, which is the exact thing that caused this.
+
+It has not been run. That part is not mine.
+[648](issues/648-three-of-her-seven-websites-have-another-company-s-name-in-the-address.md).
+
+### What I still cannot see
+
+My chat box is switched on. I still cannot see one conversation, from anywhere.
+The inbox cannot start one, and the other way in is my own website - which is
+switched off over the bill, so it serves "Back soon" and there is no chat box on
+it to type into.
+
+So the one thing I cannot check is whether the thing I turned on works.
+
+### I typed the name of the thing on my screen and it said I had nothing like it
+
+The box at the top says **What do you want to do?** so I used it. **Welcome
+series** was open in the pane behind me. I typed `welcome`.
+
+It gave me two screens and then, at the bottom:
+
+> Nothing in your records matches "welcome". Everything below is a screen.
+
+It was on my screen. That sentence is about my business and it was wrong about it.
+
+Nothing in Messages could be searched at all. Not a campaign I sent, not an
+automatic email, not a rule. Sixteen campaigns, fifteen automatic emails and two
+thousand four hundred rules on this platform, and none of them findable from the
+box whose whole job is finding things.
+
+That sentence is deliberately unqualified, which I only know because somebody
+wrote down why: it used to list what it looked through, that list went stale
+twice, and the choice made was to grow what it searches instead of keeping a
+caveat in step. Which makes the sentence a promise about everything, and it was
+not keeping it.
+
+All three now go in. A campaign under BOTH its names, because what I called it
+and what my customers read are different sentences and I might remember either.
+A rule under its name, with its trigger matching but never read back at me in
+machine words.
+
+I typed `welcome` again. A new heading, **Automatic emails**, and my Welcome
+series under it. The line at the bottom said **1 record matched. The rest are
+screens.** I clicked it and it opened.
+[649](issues/649-i-typed-the-name-of-the-thing-on-my-screen-and-it-said-i-had-nothing-like-it.md).
+
+### The three addresses are mine now
+
+Brandon stopped the dev stack and let the repair run. All three moved:
+
+    archive.juniper-row.sparx.zone  ->  archive.juniper-row.piggles.site
+    press.juniper-row.sparx.zone    ->  press.juniper-row.piggles.site
+    trade.juniper-row.sparx.zone    ->  trade.juniper-row.piggles.site
+
+Each site now holds both: the new one as the address everything shows, and the
+old one still alive behind it, so anything already printed keeps working.
+
+Then it was run a second time and said three still to move. Nothing was broken -
+the rows were right - but the REPORT was. It counted the old addresses, which are
+meant to be there. A number that says the same thing whether the work is done or
+not is the exact thing the repair exists to stop somebody reading past.
+
+It asks per site now: does this site already have its own address? It says
+**39 of 39 already on their own brand, 0 to move.**
+
+### Eight invoices were never chased, and the rule said it was on
+
+I went into Automations to see what the shop runs on its own. The list was the
+best screen I have used here: it told me straight away that **Invoice overdue (7
+days)** had a red warning on it, eight failures, last tried two days ago, and it
+called that **Some failures** rather than pretending.
+
+So I clicked it.
+
+The rule's own screen said **On**. In green. That was the whole of it.
+
+The screen I had come from had just warned me, and the screen I landed on took
+the warning away. Five places in this app show whether a rule is working and only
+two of them were telling the truth.
+
+The worst one is the friendly screen. **Ready-made automations** is the one
+written for me rather than for somebody who thinks in rules, and it had a card
+saying:
+
+> **Chase an invoice a week overdue**
+> Emails the customer when an invoice is seven days past due.
+> **On**
+
+That is the same rule. Eight people owed me money, the shop was supposed to
+write to them, it did not write to any of them, and the card built to tell me
+whether it was working said yes.
+
+All of them read the count now. The rule's own screen carries an amber strip:
+
+> **Some failures**
+> 8 of its 16 attempts failed, so some of what it promises did not happen.
+> **See what went wrong**
+
+The button drops me straight into the eight failures instead of leaving me to
+find them.
+
+### It told me about an executor
+
+I opened one of the failures, and the screen said this to me, twice:
+
+> no executor registered for action "email.send_campaign"
+
+I sell clothes. I do not know what an executor is, I cannot find one, and I
+cannot tell from that sentence whether I built the rule wrong. Reading it, I
+assumed I had.
+
+I had not. It is their fault, not mine, and they already knew: somebody had
+measured it and repaired the cause weeks ago and left the sentence sitting there
+for the next person.
+
+Now it says:
+
+> **We could not carry out "Send a marketing email".**
+> This is a fault on our side, not something you set up wrong. Nothing you change
+> in this rule will fix it, and no step after this one ran. If you keep seeing
+> it, send us the wording below.
+
+The exact words are still there underneath, labeled **What it reported**, which
+is right - that is the bit I would read down the phone to somebody.
+
+### Three smaller things on the way
+
+**schedule.daily.** That is what two of these screens called the rule's timer,
+while the picture of the rule three inches away said **Every day at 6:00pm**.
+Both now say it in words.
+
+**A sentence that was not true.** The report says a skipped run is not counted
+against the success rate. It was, in the per-rule numbers, and not in the big one
+at the top. The same screen, two different sums.
+
+**Seventy-two choices in one column.** Building a rule starts with "Start this
+rule when...", and the list was every single thing that can happen in a business,
+one after another, no headings. It is grouped now - Selling, Customers, Invoices,
+Wholesale, Your team - which it could always have done, because every choice
+already knew which one it belonged to.
+
+[652](issues/652-eight-invoices-were-never-chased-and-four-screens-said-the-rule-was-on.md).
+
+### Two of the three numbers were shouting about nothing
+
+Stock, "Things that do not add up". The top of it is the best answer to a
+question I have never been able to ask a stock system before: can I trust these
+numbers? A green tick, and **"Every change ever recorded was added back up and
+compared with 74 stock records."** Nothing outstanding. Nothing unaccounted for.
+
+Then three figures under it:
+
+    1                 0                   0
+    Sales refused     Promised anyway     Sold below zero
+
+amber, blue, red. The red one is a zero. My eye went to it first, every time,
+because it is the loudest thing on the screen, and it is the number telling me
+nothing went wrong.
+
+The colours were fixed to the kind of problem rather than to whether I had one.
+They read the count now: the 1 is amber and the two zeros are just numbers.
+
+While they were at it, six more were doing the same thing on other stock
+screens, including one the other way round - a spreadsheet import that had
+matched nothing reported it in green.
+[653](issues/653-two-of-the-three-numbers-were-shouting-about-nothing.md).
+
+### The best-written screen in here
+
+**Planning settings.** It opens with "Four judgements the figures cannot make for
+you", and then, instead of a slider, it tells me what each choice costs:
+
+> **99 times out of 100** - Costs roughly 40% more spare stock than 19 out of 20,
+> to save four disappointments in a hundred.
+
+And the one that is already ticked says of itself: _"The usual choice, and what
+you get if you never come here."_ I have never seen a setting admit that.
+
+At the bottom: "Nothing is recalculated while you are reading it", and a button.
+I pressed it. **"Numbers brought up to date. 74 stock lines re-measured."**
+
+### A note I could not read
+
+On **Every change**, every replacement I have sent a customer says:
+
+> Sold
+> _Replacement sent for retur..._
+
+and stops. The column cannot be any wider - they measured that, and a longer one
+dragged the whole table sideways on a narrow screen. But it means the useful half
+of the sentence is the half you cannot see. They had already fixed that sentence
+once, to put the ORDER NUMBER in it, and the order number is exactly what gets
+cut off.
+
+Hovering shows the whole thing now, and the shield at the end of the row opens a
+screen that prints it in full anyway.
+
+## Act 229 - I asked for price tickets and got three pictures of a pig
+
+I want tickets on the rails. Size, price, and one of those striped codes so
+Ines can ring things up without typing.
+
+**Barcodes** said: _No barcodes registered yet_, and offered **Create codes and
+print labels**. I pressed it.
+
+**Product labels** said: _No barcodes to print_, and offered **Pick items to
+create codes for**. I pressed that.
+
+It opened my stock list. Seventy-four rows. A search box. Nothing to tick,
+nothing about codes, no button. That was the end of the road.
+
+I have **108 things** in this shop and not one of them can be scanned. The screen
+built to tell me that never mentioned the number once.
+
+### The strange part
+
+The button that does it was already written. So was the count. Somebody wrote a
+note above it explaining exactly how it should work:
+
+> It offers to mint one. That is the whole path from a spreadsheet catalogue to a
+> scannable warehouse, and it is two clicks.
+
+And then never put it on a screen. There was even a little green message ready to
+say "Created 12 codes" that nothing could ever make appear.
+
+### What it does now
+
+Barcodes opens with the number, in amber, and a button:
+
+> **108 things you sell have no barcode**
+> Nothing can scan them, and no label can be printed for them. Piggles can give
+> each one a real barcode from the range set aside for a shop's own things, so it
+> can never clash with a code off a supplier tag.
+> **[ Give them codes ]**
+
+That opens the labels screen with everything listed and ticked. I unticked one
+ring to see what would happen, and the button changed to **Create 107 barcodes**.
+I pressed it. The list on the left filled up, the sheet filled with real striped
+codes, and it told me the ring was still waiting. I gave that one a code too:
+
+> **Everything can be scanned now**
+> 108 codes created. The labels are below, ready to print.
+
+Three presses. The sheet says "What you see here is exactly what prints" and,
+underneath, the thing nobody tells you until you have wasted forty stickers:
+
+> Set your printer to actual size: scaling a barcode to fit the page narrows the
+> bars and is the commonest reason a printed label will not scan.
+
+### Somebody has been leaving my newsletter and I could not see it
+
+While they were looking, they found the same thing in Customers. My
+**Newsletter Subscribers** group says 23 people. It has 27 comings and goings on
+record, so four people came OFF it, and there was nowhere in here that said so.
+
+The panel that shows it existed. It was being shown on the OTHER kind of list -
+the kind where you add people by hand, and where nothing has ever happened.
+
+It is on my group now, with tabs for **Everything / Joined / Left**. Under Left:
+
+> Tomas Beaulieu - the rules - 3 weeks ago
+> Tomas Beaulieu - the rules - 3 weeks ago
+
+Twice. He has been in and out of my newsletter twice in three weeks. I would
+quite like to know why, and now at least I know that he has.
+
+## Act 230 - I asked it for my stock list and it gave me its own web page
+
+I wanted to do a proper count. The screen could not have been clearer about how:
+
+> Download what you have, count the shelves, and upload it back. The differences
+> become stock movements you can trace and undo.
+
+So I pressed **Download what you have**. Something downloaded. I opened it.
+
+It was a web page. Not a list of my stock: the Piggles screen itself, all 146
+kilobytes of it, saved as `template.html`. There is no way to count a shelf with
+that.
+
+Nothing warned me. A file arrived with the name it promised, at the size a real
+file would be, and if I had not opened it I would have taken it to the stockroom
+and found out there.
+
+### It turned out to be every download in Stock
+
+The button was a link, and a link cannot sign in. My stock lives behind a
+password, so asking for it by link just asks the console for its own front page
+and gets one. The same link was on **Export** in the stock grid and on
+**Spreadsheet** on every report on "How it is performing". Eight buttons. All of
+them handing back the same web page.
+
+They tell me the correct way to do it was already written down in this software,
+in a file whose opening line says a plain link cannot carry a password. The
+button was built as a plain link anyway.
+
+### What I got the second time
+
+```
+inventory-stock-count.csv     74 rows
+sku,item,warehouse,on_hand,note
+ASH-OVERSHIRT,The Ash Overshirt,MAIN,6,
+```
+
+My actual shelves, with the quantities already filled in. I counted three rails
+of the Ash Overshirt, and two of them had moved without anybody writing it down:
+
+- two ink large had gone into the window display
+- two ink medium were behind the stockroom door
+
+I typed the real numbers, and beside each one I typed WHY, in the column it gives
+you for exactly that. Uploaded it back.
+
+> **74 rows read · 74 matched an item · 71 already correct · 0 to sort out**
+
+Three rows to change, and it showed me every one before it touched anything.
+Then, when I pressed the button:
+
+> **Apply 3 changes?**
+> 5 units will move. Every one is recorded against this import, so it can be
+> undone as a unit afterwards.
+
+### The undo is real, and I checked
+
+I pressed **Undo** on purpose, to see whether it meant it.
+
+> Every one of the 3 changes it made will be reversed with an opposite movement.
+> Nothing is deleted: the original entries stay on the record, with the undo
+> beside them.
+
+That is exactly what happened. The line said **Undone**, my numbers went back to
+where they were, and both the change and the undo are still sitting there in the
+history. Nothing was quietly erased. That is the first undo I have used in here
+that I would actually trust.
+
+Then I did the count again for real, and left it.
+
+### The bit I wrote down went nowhere at first
+
+That `note` column in the file - the one I filled in with "two went to the window
+display" - was being thrown away. Every line in my stock history said the same
+thing:
+
+> Imported from juniper-row-count.csv, row 3
+
+Which tells me nothing. I know it came from a spreadsheet. I uploaded it. What I
+wanted to know, in six months, is why the number moved.
+
+It says what I wrote now, and my words come first:
+
+> Two went to the window display (imported from juniper-row-count.csv, row 3)
+
+That ordering matters more than it sounds, because that column is narrow and gets
+cut off. The bit that survives is the bit I typed.
+
+### And one small thing that was not small
+
+The box where you say what kind of file this is had an option reading
+
+> A stock count: differences count
+
+on my phone. The rest of the sentence - "as shrinkage" - did not fit. That box
+decides whether a missing jumper goes down as stock that walked out or as a
+number somebody typed wrong, and half the sentence is the half that says which.
+
+It is short now, with the explanation written underneath where there is room for
+it.
+
+## Act 231 - it told me I do not own something I have 58 of
+
+I wanted to send a few things over to the Fulfillment Center, so I started a
+transfer, picked the two places, pressed **Add item** and typed the name of a
+box that is on my shelf right now.
+
+> No product matches that.
+
+I have fifty-eight of them. I printed a label for one an hour ago.
+
+### Two reasons, and neither of them was about the box
+
+The first: those buckles are not on my website yet. That is true, and it has
+nothing whatever to do with whether I can carry a box from one building to
+another. The software was treating "not for sale" as "does not exist".
+
+The second is the one that would have bitten me later. That list was the
+products of whichever of my seven websites I happened to have open - ten of my
+thirty-four. A warehouse is not a website. It is a room with boxes in it.
+
+Both fixed. Drafts are in the list now and say **"not for sale yet"** beside
+them, so I know why they look different, and the list is everything I sell
+rather than everything one site sells.
+
+### Then it let me ask for a hundred
+
+I typed 100 into the box. Nothing said anything. I added the line, saved the
+transfer, pressed **Send it**, and confirmed a dialog that told me all about the
+hundred units. Then:
+
+> Variant 4fc1c2e4-ee74-4f65-a5ad-4533c63e3cf5 out of stock (requested 100,
+> available 58)
+
+It stopped me, which is what matters. But that is a computer talking to itself.
+It is now:
+
+> Not enough Brass belt hardware, antique (BRASS-BELT-1). This asks for 100 and
+> 58 are available.
+
+And better than that, the number is now sitting under the box while I type:
+**58 available at Main Warehouse.** Over fifty-eight it goes amber and says the
+send will be refused. That is four steps and a dialog I no longer have to walk
+through to be told something the screen already knew.
+
+### And then it sent them somewhere they could not go
+
+With a sensible number it sent fine. At the other end, when I went to book the
+van in:
+
+> This location has no default shelf, so there is nowhere to record the stock.
+
+My twelve units were in a van, going to a place that could not accept them, and
+the only button that helped was the one that called the whole thing off.
+
+It checks before anything leaves the shelf now:
+
+> There is nowhere to put Brass belt hardware, antique (BRASS-BELT-1) at
+> Fulfillment Center when it arrives. That location uses shelves and none of them
+> can take it, so add a default shelf there, or turn shelves off for it.
+> **Nothing has been sent.**
+
+### The fix it told me to do did not exist
+
+"Add a default shelf there." I went to Shelves. Five shelves at the Fulfillment
+Center. No such setting, anywhere - not on a shelf, not on the location.
+
+It exists now, and it found me rather than the other way round. Shelves opened
+with:
+
+> **Nothing can be booked in at Fulfillment Center**
+> It uses shelves, and none of them is the one things go on when nobody says
+> which. Until one is, every delivery, transfer and return there will be refused.
+
+I opened my Receiving bay, turned on **Put things here when nobody says which
+shelf**, saved, and the warning went. The receiving bay now wears a small badge
+that says **Where things land**, which I would have liked to see from the start -
+five shelves that all look the same and no way to know which one a delivery
+actually goes to.
+
+Then I sent the transfer, and received it, and it said **1 of 1 arrived**.
+
+### One more, and it is the kind of thing customers notice
+
+When I called off the first transfer, the little message said **canceled** and
+the badge right next to it said **Cancelled**. Two spellings of one word, an inch
+apart.
+
+They tell me it was on about seventy screens. It is one spelling now.
+
+## Act 232 - I could call off a recall I could never start
+
+I went looking at **Batches and serial numbers**, which I have never used. Both
+halves were empty and both of them told me something useful instead of just
+saying "none":
+
+> A batch appears here when you book in a delivery and record its batch code, so
+> you can later trace exactly which run a customer got, and find every unit if a
+> run turns out to be bad.
+
+That is the whole reason I would ever want this. Fairfield still owed me two
+buckles on an order, so I went and booked them in, and there was a **Batch / lot**
+column right there with a sentence under it explaining when to bother - something
+with an expiry, or something that could be recalled. I put **FT-8871-B** in it.
+
+It worked. The batch appeared. Two units, Main Warehouse, tracked.
+
+### Then I tried to say the run had gone bad
+
+There was no way to. Not on the batch, not on the list, not on the product,
+nowhere.
+
+What there WAS: a **Clear recall** button. A red banner with a reason in it. And
+a filter offering me Recalled, Recall pending and Recall cleared. All of it
+waiting for something to happen that nothing could make happen.
+
+They tell me there are twenty-one batches across the whole of Piggles, two of
+them recalled, and neither of those was put there by a person.
+
+### Three things it was telling people that were not true
+
+The first I would never have seen, but it matters: somewhere in the plumbing
+there was a switch saying "tell the customers", switched ON by default, wired to
+nothing. Anyone who used it was told their customers had been contacted. Nobody
+had been.
+
+The second had reached my screen. When I went to call the recall off, the box
+said **"Units already marked recalled keep that history"** - in the box where I
+decide whether a safety problem is over. No unit is ever marked recalled. There
+is no such thing.
+
+The third: my item's stock page. I had just declared a batch bad, clicked through
+to the product one second later, and it said **60 to sell, 60 on the shelf** with
+no mention of it at all. Two of that sixty must not go anywhere.
+
+### What it does now
+
+There is a **Recall** button on the batch, in red. It asks me what is wrong with
+it, and it will not let me past without a sentence - which is right, because that
+sentence is what the next person reads. And it tells me plainly what it is about
+to do, including the part I would have assumed wrong:
+
+> A location that picks by expiry date stops handing this batch out. The batch is
+> marked, with your reason and the time, and the mark stays until somebody clears
+> it. No individually-numbered unit from it has been sold. **Nobody is emailed:
+> telling customers is yours to do.**
+
+I would rather be told that than find out. Telling my customers is my job and I
+am glad it is not quietly pretending to do it for me.
+
+My stock page now carries a red band under the numbers naming the batch code, and
+it is honest about the same thing: those units are still counted, nothing has
+been held back, check the code on the box. Then I cleared the recall and the
+band went, the badge went back to Tracked, and the reason stayed on the record
+where somebody can still see it happened.
+
+### One small thing that made me smile
+
+When I first raised it, the banner read "...do not put any of it on a belt**..**
+Raised 3 minutes ago." Two full stops, because I had written a proper sentence in
+a box that asked me for one. That is fixed too.
+
+### And a different sort of thing entirely
+
+Earlier in the day I typed **shelf** into the box at the top that asks what I want
+to do. It offered me Shelf labels and Expiring stock. Not **Shelves**, which is
+the screen called shelves and which I had opened an hour before.
+
+It turns out the box was looking for those exact letters, so "shelf" could never
+reach "shelves". Fifteen screens across the two versions of this were like that -
+company and Companies, category and Categories, reply and Quick replies. Typing
+the singular of a screen's own name got me "Nothing here matches that", which
+reads exactly like the screen not existing.
+
+It knows they are the same word now. I typed "shelf" again and Shelves was first.
+
+## Act 233 - I walked an order out of the building
+
+I have never used the picking side of this. There was one walk waiting -
+PICK-000001, for an order of two things - so I opened it and did the whole
+thing properly.
+
+### Giving it to somebody
+
+There is a box that says **Who is walking it**. I typed Tomas's name into it and
+pressed Assign, and it took it.
+
+What it did not do was offer me Tomas. I have two people. It is a plain box, and
+the report that tells me how much each of them picked adds up whatever string is
+in it - so if I write "Tomas" one day and "Tomas Okonkwo" the next, that is two
+pickers who each did half the work, and I would never know.
+
+It suggests them now. I still get to type whatever I like, because the person on
+the floor of somebody else's warehouse might not have an account at all, but the
+two who work for me are one click.
+
+### The walk itself is the best screen in here
+
+One item at a time. Big. It told me what to take, how many, which order it was
+for, and what the barcode on it should say. Three buttons: **Got all 1**, **Not
+there**, **Come back to it**.
+
+That is exactly the right three, and only the first one is colored, which is the
+right one to be.
+
+I took the trousers. Then I pretended the tee was not on the shelf, which
+happens, and pressed **Not there**. It asked what happened, how many I DID find,
+and told me what it was about to do before it did it:
+
+> The units you could not find go back into stock and are held for this order, so
+> nobody else can buy them. The shelf goes on a count so somebody settles what is
+> really there.
+
+Both of those turned out to be true. That is the whole thing I want from
+software: tell me what will happen, then do that.
+
+> **Walk PICK-000001 is done** - 1 line came up short. Those shelves are on a
+> count now. Everything else is on the trolley.
+
+### And then the next screen forgot
+
+It handed me to the pack bench, which is right. I started a box. Under **Still
+to pack** it listed both things, with an **Add all** button on each - including
+the tee that thirty seconds earlier it had told me nobody could find.
+
+If I were packing at five o'clock with a trolley in front of me I would have
+pressed it. It is a button that says the shirt is in the box.
+
+It should not vanish either - I still owe that customer a tee, and the units are
+being held for them. So it says it now:
+
+> The Everyday Tee
+> **Nobody could find it while picking. It is still held for this order.**
+
+and the button beside it went amber, so I can still add it if I am holding one.
+
+### Two little ones on the bench
+
+It said **Another box** when there were no boxes, four inches above a button that
+said **Start a box**. It says Start a box now.
+
+And both of those buttons, if the server had refused them, would have done
+nothing at all - no message, nothing. They speak up now.
+
+### One before that
+
+**Waiting for stock** has never had a single row for me, and it still had a live
+**Re-check dates** button. I pressed it out of curiosity and it said "Every
+commitment already carries the best date available", which sounds like I have
+commitments. I have never had one. The button is off now and says why.
+
+### Afterwards - who picked it
+
+I opened **How fast you pack** straight after, because I wanted to see what it
+made of what I had just done.
+
+Under **By picker**, where the person's name goes, it said:
+
+> db9c1296-1ed4-4109-90ba-adfc090adf50
+
+That is me. That is the whole point of the screen - who is quick, who keeps
+coming up short - and it was thirty-six characters of nonsense.
+
+It says **Devi Raman** now.
+
+The number beside it was its own small lie. **0.0 units an hour**, over "1 unit
+over 0 hours of picking". I picked something. It took me a few seconds, so it
+came out as zero hours, and zero hours worth of work an hour is zero. It reads
+like I am the slowest person alive.
+
+It says **-** now, with "1 unit picked, too close together in time to work out a
+rate" under it. Which is the truth.
+
+## Act 234 - it sent me somewhere that had nothing on it
+
+**Whose stock** is a screen I have never needed. Everything on my shelves I
+bought. But the empty page was interesting enough to read:
+
+> Everything on your shelves is yours. Nothing is marked as consignment,
+> customer-owned, or belonging to a warehouse partner. **Set it on an item's
+> stock screen** when you start holding goods you have not bought.
+
+I am talking to another maker about carrying some of her belts on the same terms,
+so I went to find out how that would work. An item's stock screen. There was
+nothing there. I looked twice, opened "Change how this is managed", looked at the
+product, and decided I had misread it.
+
+I had not. There was no such setting anywhere.
+
+They tell me the rest of it was all built - the column in the database, the two
+web addresses, even the piece of the console that does the saving. Just nothing
+to press.
+
+### What it does now
+
+Every location on an item now finishes with a plain sentence:
+
+> Yours, so it counts toward what your stock is worth.
+
+and a **Whose stock is this?** button. I tried it on the one buckle at the
+Fulfillment Center: "A supplier's, until it sells", then Fairfield Trims. Before
+I saved it told me the thing I would have got wrong:
+
+> Stock that is not yours still sells exactly as normal, because being able to
+> sell it is the whole reason to hold it. What changes is what your stock is
+> WORTH: these units stop counting as money you have tied up.
+
+I had assumed the opposite - that marking something as not mine would stop it
+selling. It would have taken me a sale to find out.
+
+It would not let me save "on consignment" without saying whose, which is right:
+somebody is owed for it when it sells.
+
+Then the card wore a little **Held for Fairfield Trims** badge beside the
+location, and **Whose stock** finally had a line on it: $3.84, on consignment,
+Fairfield Trims, 1. I set it back to mine afterwards, because it is mine.
+
+### And one it caught on the way
+
+The badge crashed the panel the first time. They tell me the check that is
+supposed to catch that had been quietly checking nothing at all for a while,
+because of an unrelated file the dev server keeps rewriting. It was only found
+because somebody actually clicked the thing.
+
+## Act 235 - a buying list I could not buy from, and a search box that had never read my records
+
+I had just walked an order out of the door, so the next thing on my mind was what
+I need to get more of. **What to reorder**.
+
+One line on it. The extra-small bone Ash Overshirt, none left, order twelve.
+
+At the bottom of the screen, with a little lorry beside it: **"Choose lines to
+draft orders."** So I ticked the box.
+
+Nothing. I ticked the one at the top of the column. Nothing.
+
+I clicked it a few more times the way you do. The box just sat there. Two columns
+away, in small letters, it said **No supplier yet** - which I read as a label
+about the shirt, not as the reason the thing under my finger was dead.
+
+That is the whole screen, for me. One line, and it will not let me act on it, and
+the sentence at the bottom is still telling me to.
+
+### It is not just me
+
+They went and counted. Seventy-one of the seventy-six lines on that screen across
+every business using this thing are in the same state. One shop has sixty-five of
+them and not one can be ordered.
+
+### What it says now
+
+> **This one cannot be ordered yet**
+> Drafting an order needs to know who you buy from, and no supplier is linked to
+> this item. Open the supplier under Suppliers and add the item under "What you
+> buy from this supplier". Until then this list can tell you what is running low,
+> but it cannot turn it into an order.
+
+With a **Suppliers** button. I pressed it, it opened beside the list, I picked
+Ashcombe Mills, added the shirt at $24.00, and when I looked back the warning was
+gone, the column said Ashcombe Mills, and the box ticked.
+
+The sentence at the bottom only invites me to choose lines when there is
+something I can choose.
+
+### Why this number
+
+Clicking the row opens the working-out, and I want to say this properly: it is
+the best screen in here. It shows the actual sum with my numbers in it and says
+"check it on paper if you like, that is the point of showing it". Every figure
+says whether it was measured or assumed. At the bottom it tells me the one thing
+that would most improve it.
+
+One sentence in it was nonsense: **"The forecast uses the nothing sold, at 0 a
+day."** It says something a person would say now.
+
+### Then I typed a name into the search box
+
+I wanted the supplier page next to the list, so I typed **Ashcombe** into the box
+at the top. It said:
+
+> Nothing in your records matches "Ashcombe".
+
+Ashcombe Mills is one of my two suppliers. I had their page open four minutes
+earlier.
+
+I tried **Marlow**. That is a knit I sell in ten sizes. Same answer.
+
+They counted that too. I have thirty-four products, thirty-six customers and
+sixteen orders. That box could see three products and nothing else - and the
+three were only the ones I had touched that morning.
+
+So it had never read any of it, and it was telling me my records do not have
+them.
+
+### What it says now
+
+> Nothing the box can see matches "Marlow". 5 products, 36 customers and 16
+> orders are not in this box yet, so it cannot look at them.
+
+with a **Put them back** button. I pressed it. It took seconds. Then "Marlow
+Knit" found the knit and its three photographs, and "Marguerite" found her, four
+of her invoices, six of her orders and her reviews - thirteen things.
+
+The warning went away on its own.
+
+What bothers me is that the button existed. It was on the product list, which is
+not where I was standing when the thing told me I had never heard of my own
+supplier.
+
+## Act 236 - it let me order the same twelve shirts twice
+
+Now that the shirt had a supplier on it, I ticked the box and pressed **Draft 1
+order**. PO-000003. Twelve shirts on their way from Ashcombe.
+
+The line then changed under me to say **12 already on the way**, which I thought
+was good of it.
+
+Then I ticked it and pressed the button again, the way you do when you are not
+sure the first one took.
+
+PO-000004. Twelve more.
+
+It did not say a word. Not in the are-you-sure box, not in the little green
+message afterwards, which said "1 draft order created" both times. I would have
+got PO-000005 if I had carried on.
+
+That is $576 of shirts I did not mean to buy, and two orders to the same people
+for the same thing that somebody now has to notice and cancel one of.
+
+### What it says now
+
+> One of these already has stock on the way: 24 units on an order you have not
+> received yet. Drafting now asks for that much again, on top of what is coming.
+
+It still lets me do it - sometimes I will want to - but I am told first.
+
+And it no longer starts a second order. If Ashcombe already has an order open for
+that warehouse, the line goes onto that one:
+
+> **Added to a draft order you already had**
+> PO-000004. Nothing new was created.
+
+They tell me the automatic version of this, the one that runs on its own when
+something gets low, has always refused to order what is already coming and has
+always put everything for one supplier onto one order. It was only the button I
+press that did neither.
+
+## Act 237 — The safety catch that had never been fitted to anything
+
+I had just put $288 of shirts on order with nobody looking over my shoulder, so I
+went to find the screen that is meant to stop that. **Sign-offs**. It was empty,
+and it told me why, which I appreciated:
+
+> You have not set a spending limit, so every order goes straight to the supplier
+> however large it is. Set one under Spending limits.
+
+It did not offer to take me there. I had to go back up to the search box and type
+"spending limits" myself, which is a small thing, but it is the second screen this
+week that has told me where to go and then not opened the door.
+
+The form was good. Name it, pick the amount, pick who signs. I typed **200**,
+chose **The owner**, left the supplier and the location alone, and pressed **Set
+the limit**.
+
+> **Could not save that limit**
+> Nothing was changed. The problem is with Supplier id and Warehouse id.
+
+I had not touched either of those. They said "Any supplier" and "Any location",
+which is what they say when you open the form, and which the little grey writing
+underneath spends two sentences explaining to you.
+
+I tried it three or four times. It is the sort of thing where you start doubting
+yourself.
+
+### What it turned out to be
+
+Nobody has ever managed to set a spending limit. Not me, not anybody, on any
+account. **Zero.** Which means no purchase order anywhere has ever been held for
+anyone's yes.
+
+The screens are all there. The queue, the form, the little status on the order,
+the lot. It just would not take "any supplier and any location", which is the only
+answer most people are going to give it.
+
+### And then the rest of it
+
+Once it saved, I went round the whole loop, and it kept telling me things that
+were not true.
+
+I pressed **Place order** on the $288 one and it asked me:
+
+> This sends the order and locks it. You will not be able to change the items
+> afterwards.
+
+and then told me **"PO-000004 placed"** - over a screen that said, in two separate
+places about an inch below, that nothing had been ordered and Ashcombe had not
+seen it. It had not been placed. It had been held. Which is what I asked it to do.
+
+The order's own page said **"Anybody who can approve spending can sign it off"**,
+when my rule says **The owner**. I have no staff yet so it did not cost me
+anything, but that is the whole point of the screen and it was saying the opposite
+of what I had set.
+
+Then I sent the order back to myself, which I only did to see what happened, and
+typed why. The box made me. It said underneath, in writing:
+
+> Required. **The buyer sees it**, and it stays on the order's history.
+
+I opened the order. It said "Not sent yet. You can still change anything on it."
+and nothing else at all. No mention that it had come back. No reason. If that had
+been somebody working for me, they would have sent the identical order straight
+back at me, and I would have turned it down again, and neither of us would have
+known why the other one was being difficult.
+
+### What it says now
+
+The dialog names the limit and refuses to say "sends":
+
+> This order is over your "Anything over $200" limit, which holds anything of
+> $200.00 or more. It will **not** go to Ashcombe Mills yet: it waits under
+> Sign-offs until somebody approves it.
+
+The order says **"The owner has to sign it off."** And the server means it now:
+somebody with lesser rights cannot sign a limit that says owner, which apparently
+it could before.
+
+And the refusal turns up where the person it was written for will read it:
+
+> **This was sent back to you**
+> Devi Raman turned it down. Change what they asked for and place it again: it
+> goes back to them, not to the supplier.
+>
+> **What they asked for**
+> Ask Ashcombe for a price on 24 first. We nearly always pay less per shirt at two
+> dozen.
+
+I did that. Changed it to 24, placed it, it was held again at $576, and I signed
+it off, and it went. The empty screen now says:
+
+> Nothing is waiting on you. You are holding every order of **$200.00 or more**.
+
+That last bit is new too. It used to say "over $200", and an order of exactly $200
+was held, which would have caught me out eventually.
+
+## Act 238 — A date field that would not take a date
+
+Ashcombe were meant to send me six rolls of the natural linen tape on the 4th. I
+rang them for it back in August, never wrote it down in here, and it has not
+turned up. So: write the order down after the fact, put the 4th on it, and let
+Piggles chase it.
+
+New order. Ashcombe Mills. Main Warehouse. Then:
+
+> **Expected**
+> `mm / dd / yyyy`
+> When you expect it. Left blank, the supplier's usual lead time fills it in when
+> you place the order.
+
+I clicked the month and typed **9**. The cursor jumped to the day. The month
+still said `mm`.
+
+I typed the rest anyway. Nothing. Eight keystrokes and the box still said
+`mm / dd / yyyy`. I tried the up arrow, which is the other thing those boxes do.
+Nothing.
+
+**There is no calendar button next to it.** So there was no way in at all. I left
+it blank and let it guess.
+
+The odd part came later. On **Stock versus your books** the same kind of box
+opens with today's date already sitting in it — and that one types fine. I
+pressed Backspace once, in the month, meaning to put a different month in. All
+three went blank at once. And then that one would not take anything either.
+
+So: a box you can type in if it already has something in it, and cannot if it
+does not. Which is the wrong way round, because the empty one is the one you need
+to type into.
+
+[667](issues/667-i-could-not-type-the-date-it-asked-me-for.md). It is the date
+box itself, not this screen — every date on the place runs through it.
+
+---
+
+I pasted the date in instead, which does work, and placed the order. $108 of
+linen tape, six rolls, due the 4th, two weeks gone. Then **Overdue deliveries**:
+
+> $108.00 of stock is late across 1 order
+>
+> PO-000005 · Ashcombe Mills
+> against the date on the order · not yet flagged
+> **14 days** · 2 weeks ago · 6 · $108.00
+
+Two things there.
+
+"Overdue by 14 days" and "Was due 2 weeks ago" are the same sentence twice, and
+**the 4th is nowhere on the screen**. When I ring Ashcombe the thing I say is
+"you promised me the 4th". I had to open the order to get it.
+
+And "not yet flagged" — flagged by whom? I thought for a second it was something
+I was supposed to have done. It is not. It means the overnight check has not
+passed the order on to any other software I have connected, which is nothing, so
+it means nothing to me.
+
+Both fixed. It reads **Sep 4** now, and the other bit says what it actually is.
+[668](issues/668-it-told-me-how-late-but-never-what-day.md).
+
+What I will say for the rest of that screen: it sorts by the MONEY still owed
+rather than by days late, which is right — if I had eleven late orders I would
+ring about the dearest one, not the oldest. And it tells me whether the date it
+is judging by is the one on the order or just the supplier's usual turnaround.
+That is the difference between "you promised me the 4th" and "you normally take
+three weeks", and I would not want to get those two the wrong way round on the
+phone.
+
+## Act 239 — Both screens sent me to the other one
+
+Two orders out with suppliers, so I opened **On the way** expecting to see them.
+
+> **Nothing on the way**
+> When a supplier tells you what they have shipped, record it against the order
+> and it appears here.
+
+Fine. Went to the order.
+
+> **What they say has shipped**
+> Nothing recorded. Without a dispatch note, a short shipment and a short order
+> look identical when the invoice arrives.
+>
+> \[ See everything on the way ]
+
+One button, and it takes me back to the screen I just came from.
+
+**Neither screen could do the thing both of them told me to do.** There is no
+form for it anywhere. Nobody on the whole platform has ever recorded one, which
+figures.
+
+[669](issues/669-both-screens-told-me-to-do-it-on-the-other-one.md). There is a
+**Record what they sent** button on the order now, which is where both screens
+were already pointing.
+
+---
+
+Then I used it properly, because Ashcombe rang: four of the six rolls had gone
+out with Brindle Haulage, the last two to follow.
+
+> **What PO-000005 says has shipped**
+> Copy this off their dispatch note or the email they sent. It does not add
+> anything to your stock.
+>
+> Linen, natural, 200gsm · Still owed **6** · They sent ⟦ **4** ⟧
+
+Booked it in, and the receiving screen had the 4 already in the box:
+
+> **Filled in from ASN-000001, what they say they sent**
+> These are the supplier's figures, not a count. Change anything that did not
+> turn up.
+
+with **2 short** against the line. That is the entire reason for writing a
+dispatch note down, and it had never worked: the screen used to open with every
+box empty, no matter what the note said.
+
+Two more things were wrong after that, and I would not have found either without
+doing the whole thing twice.
+
+Booking the delivery in **did not close the note**. It sat there saying "Nothing
+has been checked in against this yet" with the Arrived column reading 4, and
+offered to book the same delivery in again.
+
+And when the last two rolls came and I recorded and received them — two said,
+two arrived, exact — it told me:
+
+> **More arrived than the notice claimed. Worth checking before it is paid for
+> twice.** · **4 more than the notice**
+
+I would have rung Ashcombe about that. There was nothing to ring about. It was
+counting everything that had ever arrived on that line, across both deliveries,
+against a note about two rolls.
+
+It reads what it should now:
+
+> **What arrived matched the notice** — Every line came in at the quantity they
+> said it would.
+> Linen, natural, 200gsm · On order 6 · They sent 2 · **Arrived 2** · **Matched**
+
+---
+
+Once it works, that shipment screen is the best-built thing in Buying. It keeps
+what they SAID and what actually TURNED UP in two separate columns and never
+mixes them, and before the delivery arrives it refuses to say the note matched —
+"nothing has been compared, because nothing has arrived" — instead of printing a
+zero that would read as agreement. Somebody thought hard about it. Nobody could
+reach it.
+
+---
+
+## Act 240 — The day I typed and the day it showed me
+
+Ashcombe rang with a new date for the shirting: the 10th. I opened PO-000004,
+found **When it is expected**, typed `09 / 10 / 2026` and pressed **Record it**.
+
+> **New date recorded**
+> If they miss this one too, you will hear about it.
+
+Good. Then I looked up, at the panel on the same screen, three inches above the
+box I had just typed into:
+
+> **Expected**
+> **September 9, 2026**
+
+I typed the tenth.
+
+I sat with that for a minute, because it is not the sort of mistake you expect a
+computer to make. I typed it again. Same. The order says the ninth, Ellen's
+paperwork says the tenth, and if I ring her on the 11th to ask where my shirting
+is, one of us is wrong about which day she promised and it is going to be me.
+
+It turns out this order has two boxes for that one date and they did not agree
+about what a day is. One stored midnight in Greenwich, one stored midnight where
+I am standing, and the thing that prints it printed Greenwich's midnight on my
+clock — which, here, is five in the afternoon the day before. Somebody had
+already met this in the invoicing screens and written a paragraph about it. The
+buying screens never got told.
+
+It says **September 10, 2026** now.
+
+---
+
+While I was in there, the red panel above the box:
+
+> **This order is past its date**
+> **It has been flagged once.** Recording a new date starts the clock again…
+
+Flagged where? Flagged to whom? Nothing had been flagged. Not this order, not any
+order — twenty of them on the whole system and not one had ever been. The screen
+was not reading anything. It just said it.
+
+And the little green message when I saved: _"If they miss this one too, you will
+hear about it."_ I will not. I checked. The only thing that ever finds out is
+other software I have connected, and I have not connected any. So the sentence
+that decides whether I set my own reminder was telling me not to bother.
+
+Both say what is true now, and the true version is more useful anyway: _if they
+miss this one too, it comes back on your overdue list_. That I can work with.
+
+---
+
+**Overdue deliveries** was then telling me the order was 9 days late against a
+date of the 10th, on the 18th. I can count. It is 8. It was counting in
+Greenwich again.
+
+## Act 240b — Bills, and a place that is not a place
+
+**What suppliers billed you.** Four invoices, $1,626.72 owed. Due: _in 11 days,
+in 20 days, in 20 days, in 21 days._
+
+In 20 days from when? I am doing this on a Tuesday and I will pay them on
+Friday, and by Friday every one of those numbers is wrong. I cannot write "in 20
+days" on a check. The screen a payment run is worked from was the one screen with
+no dates on it — and the same screen under **Money**, which does exactly this job
+for my rent and my couriers, has shown both all along.
+
+It reads _"in 20 days / October 9, 2026"_ now.
+
+---
+
+Then a roll of the linen came up with a water stain along the selvedge, about
+four metres in. Ellen said send it back. **Sent back → Send something back.**
+
+The second box had already answered itself: **Leaving from: Fulfillment Center**.
+My stock is at Main Warehouse. Every order I have ever placed lands at Main
+Warehouse. Nothing chose Fulfillment Center except the alphabet.
+
+And when I opened the list to change it, there were three:
+
+> Fulfillment Center · **In transit** · Main Warehouse
+
+In transit is not a place. It is where the system puts things that are on a van
+between my two warehouses. You cannot put a pallet on a courier from a van.
+
+Now it asks rather than guesses, and it only offers the two places that exist.
+
+---
+
+Then I added the roll and got this:
+
+| Item                   | Going back | Paid each |
+| ---------------------- | ---------- | --------- |
+| Linen, natural, 200gsm | `'`        | `W`       |
+
+That apostrophe is a 1. The box was about twenty pixels wide and what fitted in
+it was a sliver of the digit. I could not read the quantity I was sending back,
+and the box beside it was showing the first letter of its own placeholder.
+
+The same two boxes are on **Enter their invoice**, which is where I check a bill
+before I pay it.
+
+---
+
+The rest of it was good, and I want to say so. It asked before it sent:
+
+> 1 item will come off the shelf at Main Warehouse, and $18.00 goes on the list
+> of what this supplier owes you. This cannot be undone from here: a mistake is
+> corrected with a count.
+
+That is exactly what I want a machine to say to me before it moves my stock.
+Which shelf, how many, how much money, and what to do if I have got it wrong.
+
+Ellen credited the $18.00 and I recorded it. The return closed. The last figure
+on it said:
+
+> **Waiting** — 39 seconds ago
+
+Nothing was waiting. It was done. And "39 seconds ago" was when it left, not when
+it settled. It says **Credited · September 18, 2026** now.
+
+---
+
+One more, and it is the one that would have cost me. My window was narrow, and
+the middle figure on that return read:
+
+> **They have credited** **$18.0**
+
+It is $18.00. The last character was cut off against the edge of the panel — no
+dots, no scrollbar, nothing to say it had been cut. Twelve screens did that, nine
+of them about money. I work with three panes open. Narrow IS my window.
+
+## What I think, after two days in Buying
+
+Buying is the best-built part of this thing and the least finished. Every screen
+in it has clearly been thought about by somebody who knows what a buyer actually
+does — the shipment pane keeps what they SAID and what TURNED UP in separate
+columns, the return screen leads with the money I am owed rather than a status,
+the confirm boxes name the shelf and the amount. Nobody has to explain those to
+me.
+
+And then the date comes back a day early, the quantity box is two pixels wide, a
+figure loses a digit against a border, and a red panel tells me something has
+happened that has not happened. None of that is design. It is all the last inch:
+the part where somebody uses it for real and reads what came back.
+
+Which, I suppose, is what I am for.
+
+---
+
+## Act 241 — the screen with no door
+
+Preorders. I have wanted this since the spring, because the way a run of
+shirtdresses actually gets made is that people pay for them first and then I buy
+the linen. So I went looking, and it was there, and it said:
+
+> **No preorders running**
+> Open one from a product's stock screen when you want to take orders for
+> something before it arrives.
+
+So I went looking at a product's stock screen. The only thing on it about
+preorders is a dropdown called **When you run out of this one**, whose third
+option is **Take pre-orders for it** — and that is not the same thing. It only
+says what the shop does when the number hits zero. The offer itself — the date,
+the window, the limit — belongs to the screen I had just come from, and there was
+no way to make one. Not on the product, not on the version, not on the preorder
+screen. The whole capability was built and had no door.
+
+---
+
+Once there was a button, it worked first time. I searched my own products, picked
+the Linen Shirtdress in chalk, size L, and typed **10 March 2027** — the spring
+run. A note underneath: _cut and sewn in the spring run, posted the week it comes
+off the table._ A limit of twenty, because twenty is as many as I can cut in a
+month and I am not promising twenty-one.
+
+And the row came back saying **March 9**.
+
+I have had this exact argument with this software twice now, on two different
+screens, and I recognised it the second I saw it. The date I type is a day. The
+software is storing a moment. Somewhere between the two, an hour goes missing and
+takes the day with it.
+
+What is different this time is where else it goes. That date is not for me. It
+goes on my shop, under the dress, where somebody deciding whether to wait reads
+it. My page would have promised the ninth. I would have shipped on the tenth and
+been late on my own first preorder, by one day, in writing, for a reason nobody
+could have found.
+
+---
+
+The bottom of the form had a switch: **Take payment now**. On by default.
+
+That is the whole question. If I take the money now I can buy linen in January.
+If I do not, I am funding it myself and hoping. It is the difference between
+running the preorder and not bothering.
+
+It does nothing. Turning it off changes nothing about when anyone is charged —
+not on my shop, not in the email, nowhere. It was a switch over a setting that
+nothing on this platform reads.
+
+I would rather be told "you get paid at the checkout, like everything else" than
+be given a choice that is not one. That is what it says now.
+
+---
+
+Last one, and it is small, and it is the kind of small that wears you down.
+
+I picked the **Linen Shirtdress**, from a list that said "Linen Shirtdress · L ·
+Chalk". The row it made said:
+
+> **LINEN-SHIRTD-L-CHALK**
+
+I picked a dress and got a barcode. The same on four other screens — what people
+are waiting for, what is about to go out of date, whose stock is on my shelf. And
+the ones that DID have a name were worse: "White / 2XL", on a list that never
+once says a size of what.
+
+A third of everything I sell has no name of its own in there. It is all named
+after the product, which is the word I use for it. It just was not being asked
+for.
+
+It reads **Linen Shirtdress**, then **L / Chalk**, then the code, now. Which is
+what the search box was showing me all along, two inches higher up the same
+screen.
+
+---
+
+Then I went and looked at my own shop, the way somebody buying from me would.
+
+The Colette Tennis Bracelet, on the Journal site. Six thousand eight hundred
+dollars. A photograph of somebody's hands setting the stones. **Add to cart**, in
+black, ready to press.
+
+I have none of them. Not one. I had told the console ten minutes earlier that it
+ships next July and that it is strung to order by the workshop in Lyon.
+
+The page did not say preorder. It did not say out of stock. It did not say when
+it ships. It said nothing at all, and offered the button.
+
+That is the one that would have finished me. Not the date being a day out — the
+date being absent, on a six-thousand-eight-hundred-dollar piece, with a live
+button under it. Somebody pays that on a Tuesday expecting a box by Friday, and
+what they actually get is nine months of silence and then an email from me
+explaining.
+
+It turns out there are two versions of my product page in there. The old one knew
+about preorders and nobody uses it. The one my shop actually runs had never been
+told preorders exist.
+
+I do not mind that something was missed. I mind that the thing that was missed is
+the only part a customer sees. All the careful work is on my side of the screen —
+the screen where I type the date. The screen where somebody reads it had none of
+it.
+
+Then somebody went and counted the rest of them, which is the part I would want
+done and would never have thought to ask for.
+
+My shop can say five things about supply. Sold out. Only a few left. Made to
+order. Preorder, ships on a date. Back in stock on a date. The page my customers
+land on could say the first three. The last two, it could not say at all.
+
+So the other one is the same hole. When the thistle silk sells out and my
+weaver in Como gives me a week, I can put that week into the console. My own
+site will still tell a customer "we will put it back as soon as we have more,"
+which is a sentence that means nothing, while I sit here knowing it is the
+fourteenth of March.
+
+Nobody has been hurt by that one yet, because I have never had a supplier commit
+to a day. But it is the same shape, two rows apart in the same list, and it was
+found by reading the list rather than by waiting for it to cost somebody money.
+
+The two sentences live in one place now. That matters more to me than it sounds.
+When the fix first went in, the old page said "Preorder: ships 1 July" and the
+new page said "Preorder — ships 1 July," and they were written the same
+afternoon by the same person. If two copies of one sentence can drift apart in
+an hour, they will drift apart in a year, and only one of them will be the one I
+ever read.
+
+What I still cannot do is look at it. Something else on this machine has taken
+the door my shop comes in through, so every page on my site is dark. I am told
+the words reach the page, and that there are tests which were each broken on
+purpose first to prove they would notice. I believe it. I would still rather see
+it.
+
+They got my shop back up, and I went to look at the bracelet again.
+
+It said nothing. Same page. Same button. Same six thousand eight hundred dollars
+with no word about July.
+
+I will admit I assumed somebody had got it wrong twice. What it turns out to be
+is worse and more interesting. My product page was not built this morning. It was
+built the day I made this site, printed out once like a form, and filed. The
+people who fixed the shop page fixed the PRINTER. Every shop opened after today
+gets the new one. Mine is still the old sheet in the drawer.
+
+Then they counted. Thirteen shops on this platform have a live product page.
+Three of them can say "sold out". One can say "made to order". None of them can
+say either of the two things that were just fixed.
+
+Ten shops cannot tell a customer the thing is gone. Not preorders, which is a
+thing I do; sold out, which is a thing everybody does, every week. Their button
+just sits there on an empty shelf.
+
+So there is now a repair that brings an old page up to date the first time its
+owner opens it, and I watched it run on mine. The bottom of the screen said
+"Saved. Visitors still see the last published version," which is exactly right
+and exactly the remaining problem: my shop is unchanged until I press Publish,
+and nothing on this screen tells me that my live page is behind.
+
+And there was a moment in the middle of that I want written down. The repair ran,
+the database said it had worked, every check was green, and there was a mustard
+rectangle the size of a door sitting next to my photograph. It had put the
+preorder notice in the page layout instead of in the buy box, and wrapped the
+whole right-hand side of my page in "hide this when sold out" — so a sold-out
+bracelet would have taken its own name and price down with it.
+
+Nothing caught that except looking at it. Every box was ticked. The thing was on
+the screen the whole time, in mustard, and you had to open the page to see it.
+
+It is on my shop.
+
+I opened the page, the repair ran properly this time, I pressed Publish, and I
+went and looked at the bracelet the way somebody with six thousand eight hundred
+dollars would look at it.
+
+Under the description, above the button, in amber:
+
+**Preorder: ships July 1, 2027**
+Strung to order by the workshop in Lyon.
+
+July the first. Not the thirtieth of June. And my own sentence, the one I typed
+about the workshop, sitting on my own shop in my own words.
+
+I checked the other two, because I did not believe it would be that clean. The
+shirtdress and the tee are both sold in a lot of sizes, and only one size of each
+is on preorder. Both of them say nothing at all, which is right. If my page told
+somebody buying a medium that it ships in March when the medium is on the shelf
+today, that is a worse lie than saying nothing.
+
+So: the day I type is the day the customer reads, on the screen where the money
+changes hands. That took a fix to what the page knows, a fix to what the page
+draws, a shared sentence so the two halves of my shop cannot drift apart, and a
+repair for the fact that my page was printed months ago.
+
+The thing I am left holding is the last one. My shop only changed because
+somebody told me to open the page and press Publish. Nothing on that screen said
+my live page was out of date. If I had liked my site the day I made it and never
+gone back in, I would still be selling a bracelet I do not have with nothing on
+the page to say so, and I would never have known.
+
+This morning it told me by itself, which is the part I actually wanted.
+
+Amber box on my home screen, right where I look first:
+
+**Your live shop is behind the pages you have saved.**
+Until you publish, your product pages cannot tell a customer:
+When something sells out, your page does not say so. The Add to cart button stays
+on it, and somebody can buy a thing you do not have.
+
+And two lines under that, in the list of things needing me: **3 items are sold
+out.** Three. Right now. My shop could not say so about any of them, and until
+this morning nothing on this screen would have mentioned it.
+
+There is a button on the box. I pressed it, it took me to the publish screen, the
+same sentence was waiting there beside a note about my header, and I pressed
+Publish everything. Then I went back and the box was gone. Not ticked off, not
+dismissed, gone, because it is not true any more.
+
+That is the right way round. It did not ask me to remember to check. It did not
+make me learn what a record template is. It told me what my customers were not
+being told, in a sentence about my customers, and gave me the one button that
+ends it.
+
+I do want to note the near-miss, because it is the same near-miss as yesterday and
+I am starting to recognise the shape. The first count said three of thirteen shops
+could say "sold out". The real number was none. The check had found the words
+"sold out" sitting inside the size picker and counted that as the shop being able
+to say it. And the repair was making exactly the same mistake, so for a while it
+was quietly not fixing the one thing that matters most, while every report said it
+had.
+
+Twice now the thing has been present and in the wrong place, and both times the
+only thing that caught it was somebody opening the screen and looking.
